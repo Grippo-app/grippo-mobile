@@ -1,0 +1,26 @@
+android {
+    buildFeatures {
+        compose = true
+    }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+
+    composeCompiler {
+        // Enable 'strong skipping'
+        // https://medium.com/androiddevelopers/jetpack-compose-strong-skipping-mode-explained-cbdb2aa4b900
+        enableStrongSkippingMode.set(true)
+    }
+}
+
+dependencies {
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
+    implementation(libs.immutable.collections)
+    debugImplementation(libs.androidx.ui.tooling)
+}

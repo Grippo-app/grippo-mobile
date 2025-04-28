@@ -4,35 +4,33 @@ plugins {
     alias(libs.plugins.compose.compiler)
 }
 
+apply(from = "$rootDir/gradle/common/android.gradle")
+
 android {
-    namespace = "com.voitenko.dev.android"
-    compileSdk = 35
-    defaultConfig {
-        applicationId = "com.voitenko.dev.android"
-        minSdk = 26
-        targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
-    }
     buildFeatures {
         compose = true
     }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
+
+    defaultConfig {
+        applicationId = "com.grippo"
+        multiDexEnabled = true
     }
+
+    signingConfigs.create("release") {
+        storeFile = file("$rootDir/gradle/keys/developer")
+        storePassword = "qwerty123"
+        keyAlias = "developer"
+        keyPassword = "qwerty123"
+    }
+
     buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            val default = getDefaultProguardFile("proguard-android-optimize.txt")
+            proguardFiles(default, "proguard-rules.pro")
+            signingConfig = signingConfigs["release"]
         }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
     }
 }
 

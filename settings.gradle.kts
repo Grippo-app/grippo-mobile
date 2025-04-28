@@ -34,3 +34,4 @@ rootProject.name = "Grippo"
 
 include(":androidApp")
 include(":shared")
+include(":data-services:network")

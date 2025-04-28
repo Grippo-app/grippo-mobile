@@ -1,4 +1,4 @@
-package com.voitenko.dev.android
+package com.grippo.android
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape

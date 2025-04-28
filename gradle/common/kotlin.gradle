@@ -1,0 +1,29 @@
+kotlin {
+    explicitApi()
+
+    androidTarget()
+
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+
+    // to make iosMain as default for each ios target
+    applyDefaultHierarchyTemplate()
+
+    kotlin.sourceSets.configureEach {
+        languageSettings.optIn("androidx.compose.ui.text.ExperimentalTextApi")
+        languageSettings.optIn("androidx.compose.foundation.ExperimentalFoundationApi")
+        languageSettings.optIn("androidx.compose.ui.ExperimentalComposeUiApi")
+        languageSettings.optIn("androidx.compose.material.ExperimentalMaterialApi")
+        languageSettings.optIn("androidx.compose.ui.unit.ExperimentalMaterialApi")
+        languageSettings.optIn("androidx.compose.foundation.layout.ExperimentalLayoutApi")
+        languageSettings.optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
+        languageSettings.optIn("androidx.compose.ui.unit.ExperimentalUnitApi")
+        languageSettings.optIn("androidx.compose.animation.ExperimentalAnimationApi")
+        languageSettings.optIn("kotlin.time.ExperimentalTime")
+        languageSettings.optIn("org.jetbrains.compose.resources.ExperimentalResourceApi")
+        languageSettings.optIn("androidx.media3.common.util.UnstableApi")
+        languageSettings.optIn("kotlinx.cinterop.ExperimentalForeignApi")
+        languageSettings.optIn("androidx.compose.material3.ExperimentalMaterial3Api")
+    }
+}

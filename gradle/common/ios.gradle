@@ -1,0 +1,15 @@
+/*
+    use with custom:
+    cocoapods { project.file("../iosApp/Podfile") }
+*/
+
+kotlin.cocoapods {
+    version = "1.0"
+    summary = "Shared Code"
+    homepage = "https://github.com/voitenkodev/Grippo"
+    ios.deploymentTarget = "16.0"
+    framework {
+        baseName = "shared"
+        isStatic = true
+    }
+}
