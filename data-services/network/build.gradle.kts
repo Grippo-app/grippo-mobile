@@ -9,7 +9,6 @@ apply(from = "$rootDir/gradle/common/kotlin.gradle")
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            // Ktor
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.logging)
             implementation(libs.ktor.client.content.negotiation)
@@ -17,6 +16,11 @@ kotlin {
             implementation(libs.ktor.auth)
 
             implementation(libs.kotlinx.serialization.json)
+            implementation(libs.koin.core)
+
+            implementation(projects.common.platformCore)
+            implementation(projects.common.logger)
+            implementation(projects.common.errors)
         }
 
         androidMain.dependencies {

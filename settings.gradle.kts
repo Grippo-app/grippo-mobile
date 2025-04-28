@@ -34,4 +34,9 @@ rootProject.name = "Grippo"
 
 include(":androidApp")
 include(":shared")
+
 include(":data-services:network")
+
+include(":common:platform-core")
+include(":common:logger")
+include(":common:errors")
