@@ -38,6 +38,12 @@ include(":shared")
 include(":data-services:network")
 include(":data-services:database")
 
+include(":data-features:authorization")
+
 include(":common:platform-core")
 include(":common:logger")
 include(":common:errors")
+
+include(":data-mappers:database-mapper")
+include(":data-mappers:network-mapper")
+include(":data-mappers:domain-mapper")
