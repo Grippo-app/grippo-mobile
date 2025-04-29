@@ -14,7 +14,17 @@ kotlin.cocoapods {
 
 kotlin {
     sourceSets.commonMain.dependencies {
+        implementation(projects.common.platformCore)
+
         implementation(projects.dataServices.database)
         implementation(projects.dataServices.network)
+
+        implementation(projects.dataFeatures.authorization)
+
+        implementation(libs.koin.core)
+    }
+
+    sourceSets.androidMain.dependencies {
+        implementation(libs.koin.android)
     }
 }
