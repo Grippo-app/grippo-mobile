@@ -36,6 +36,7 @@ include(":androidApp")
 include(":shared")
 
 include(":data-services:network")
+include(":data-services:database")
 
 include(":common:platform-core")
 include(":common:logger")

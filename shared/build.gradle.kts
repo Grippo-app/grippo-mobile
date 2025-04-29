@@ -14,5 +14,7 @@ kotlin.cocoapods {
 
 kotlin {
     sourceSets.commonMain.dependencies {
+        implementation(projects.dataServices.database)
+        implementation(projects.dataServices.network)
     }
 }
