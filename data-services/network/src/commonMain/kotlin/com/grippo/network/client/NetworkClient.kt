@@ -35,7 +35,7 @@ public class NetworkClient(
         }
 
         defaultRequest {
-            host = "" // todo add host
+            host = "192.168.0.101:3010"
             url { protocol = URLProtocol.HTTPS }
             contentType(ContentType.Application.Json)
         }
