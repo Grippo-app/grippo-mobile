@@ -10,7 +10,7 @@ datetime = "0.6.0"
 koin = "4.0.2"
 coil = "3.1.0"
 decompose = "3.2.2"
-androidxRoom = "2.7.1"
+room = "2.7.1"
 ksp = "2.1.0-1.0.29"
 ktor = "3.0.3"
 data-store = "1.1.5"
@@ -37,8 +37,8 @@ decompose = { module = "com.arkivanov.decompose:decompose", version.ref = "decom
 decompose-extensions = { module = "com.arkivanov.decompose:extensions-compose", version.ref = "decompose" }
 
 #Room
-androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidxRoom" }
-androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidxRoom" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 sqlite = { module = "androidx.sqlite:sqlite", version.ref = "sqlite" }
 
@@ -70,7 +70,7 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-cocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-room = { id = "androidx.room", version.ref = "androidxRoom" }
+room = { id = "androidx.room", version.ref = "room" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
