@@ -38,6 +38,7 @@ include(":shared")
 include(":data-services:network")
 include(":data-services:database")
 
+include(":data-features:api")
 include(":data-features:authorization")
 
 include(":common:platform-core")

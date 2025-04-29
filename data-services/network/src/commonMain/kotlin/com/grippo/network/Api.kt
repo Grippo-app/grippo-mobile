@@ -22,7 +22,7 @@ import io.ktor.http.HttpMethod
 
 public class Api(private val client: NetworkClient) {
 
-    public suspend fun login(body: AuthDto): TokenDto {
+    public suspend fun login(body: AuthDto): Result<TokenDto> {
         return request(
             method = HttpMethod.Post,
             path = "/auth/login",
@@ -30,7 +30,7 @@ public class Api(private val client: NetworkClient) {
         )
     }
 
-    public suspend fun register(body: RegisterDto): TokenDto {
+    public suspend fun register(body: RegisterDto): Result<TokenDto> {
         return request(
             method = HttpMethod.Post,
             path = "/auth/register",
@@ -38,7 +38,7 @@ public class Api(private val client: NetworkClient) {
         )
     }
 
-    public suspend fun getTrainings(startDate: String, endDate: String): List<TrainingDto> {
+    public suspend fun getTrainings(startDate: String, endDate: String): Result<List<TrainingDto>> {
         return request(
             method = HttpMethod.Get,
             path = "/trainings",
@@ -48,7 +48,7 @@ public class Api(private val client: NetworkClient) {
         )
     }
 
-    public suspend fun setTraining(body: TrainingDto): TrainingDto {
+    public suspend fun setTraining(body: TrainingDto): Result<TrainingDto> {
         return request(
             method = HttpMethod.Post,
             path = "/trainings",
@@ -56,7 +56,7 @@ public class Api(private val client: NetworkClient) {
         )
     }
 
-    public suspend fun getTraining(trainingId: String): TrainingDto {
+    public suspend fun getTraining(trainingId: String): Result<TrainingDto> {
         return request(
             method = HttpMethod.Get,
             path = "/trainings/$trainingId"
@@ -73,7 +73,7 @@ public class Api(private val client: NetworkClient) {
         category: String?,
         muscleIds: List<String>,
         equipmentIds: List<String>
-    ): List<ExerciseExampleDto> {
+    ): Result<List<ExerciseExampleDto>> {
         return request(
             method = HttpMethod.Post,
             path = "/exercise-examples/all",
@@ -99,7 +99,7 @@ public class Api(private val client: NetworkClient) {
         exerciseCount: Int?,
         targetMuscleId: String?,
         exerciseExampleIds: List<String>
-    ): List<ExerciseExampleDto> {
+    ): Result<List<ExerciseExampleDto>> {
         return request(
             method = HttpMethod.Post,
             path = "/exercise-examples/recommended",
@@ -115,14 +115,14 @@ public class Api(private val client: NetworkClient) {
         )
     }
 
-    public suspend fun getExerciseExampleFilters(): ExerciseExampleFiltersDto {
+    public suspend fun getExerciseExampleFilters(): Result<ExerciseExampleFiltersDto> {
         return request(
             method = HttpMethod.Get,
             path = "/filters"
         )
     }
 
-    public suspend fun setExerciseExample(body: ExerciseExampleDto): ExerciseExampleDto {
+    public suspend fun setExerciseExample(body: ExerciseExampleDto): Result<ExerciseExampleDto> {
         return request(
             method = HttpMethod.Post,
             path = "/exercise-examples",
@@ -130,7 +130,7 @@ public class Api(private val client: NetworkClient) {
         )
     }
 
-    public suspend fun getExerciseExample(exerciseExampleId: String): ExerciseExampleDto {
+    public suspend fun getExerciseExample(exerciseExampleId: String): Result<ExerciseExampleDto> {
         return request(
             method = HttpMethod.Get,
             path = "/exercise-examples/$exerciseExampleId"
@@ -140,7 +140,7 @@ public class Api(private val client: NetworkClient) {
     public suspend fun getExerciseExampleAchievements(
         exerciseExampleId: String,
         size: Int
-    ): ExerciseExampleAchievementsDto {
+    ): Result<ExerciseExampleAchievementsDto> {
         return request(
             method = HttpMethod.Get,
             path = "/statistics/achievements/exercise-example",
@@ -150,77 +150,77 @@ public class Api(private val client: NetworkClient) {
         )
     }
 
-    public suspend fun getUserMuscles(): List<MuscleGroupDto> {
+    public suspend fun getUserMuscles(): Result<List<MuscleGroupDto>> {
         return request(
             method = HttpMethod.Get,
             path = "/user-muscles"
         )
     }
 
-    public suspend fun getPublicMuscles(): List<MuscleGroupDto> {
+    public suspend fun getPublicMuscles(): Result<List<MuscleGroupDto>> {
         return request(
             method = HttpMethod.Get,
             path = "/public-muscles"
         )
     }
 
-    public suspend fun getUserEquipments(): List<EquipmentGroupDto> {
+    public suspend fun getUserEquipments(): Result<List<EquipmentGroupDto>> {
         return request(
             method = HttpMethod.Get,
             path = "/user-equipments"
         )
     }
 
-    public suspend fun getPublicEquipments(): List<EquipmentGroupDto> {
+    public suspend fun getPublicEquipments(): Result<List<EquipmentGroupDto>> {
         return request(
             method = HttpMethod.Get,
             path = "/public-equipments"
         )
     }
 
-    public suspend fun getUserMuscleById(id: String): MuscleDto {
+    public suspend fun getUserMuscleById(id: String): Result<MuscleDto> {
         return request(
             method = HttpMethod.Get,
             path = "/user-muscles/$id"
         )
     }
 
-    public suspend fun getUser(): UserDto {
+    public suspend fun getUser(): Result<UserDto> {
         return request(
             method = HttpMethod.Get,
             path = "/users/profile"
         )
     }
 
-    public suspend fun deleteExcludedMuscle(id: String): ExcludedMuscleDto {
+    public suspend fun deleteExcludedMuscle(id: String): Result<ExcludedMuscleDto> {
         return request(
             method = HttpMethod.Delete,
             path = "/excluded-muscles/$id"
         )
     }
 
-    public suspend fun setExcludedMuscle(id: String): ExcludedMuscleDto {
+    public suspend fun setExcludedMuscle(id: String): Result<ExcludedMuscleDto> {
         return request(
             method = HttpMethod.Post,
             path = "/excluded-muscles/$id"
         )
     }
 
-    public suspend fun deleteExcludedEquipment(id: String): ExcludedEquipmentDto {
+    public suspend fun deleteExcludedEquipment(id: String): Result<ExcludedEquipmentDto> {
         return request(
             method = HttpMethod.Delete,
             path = "/excluded-equipments/$id"
         )
     }
 
-    public suspend fun setExcludedEquipment(id: String): ExcludedEquipmentDto {
+    public suspend fun setExcludedEquipment(id: String): Result<ExcludedEquipmentDto> {
         return request(
             method = HttpMethod.Post,
             path = "/excluded-equipments/$id"
         )
     }
 
-    public suspend fun updateWeightHistory(value: Double): WeightHistoryDto {
+    public suspend fun updateWeightHistory(value: Double): Result<WeightHistoryDto> {
         return request(
             method = HttpMethod.Post,
             path = "/weight-history",
@@ -228,14 +228,14 @@ public class Api(private val client: NetworkClient) {
         )
     }
 
-    public suspend fun removeWeight(id: String) {
+    public suspend fun removeWeight(id: String): Result<Unit> {
         return request(
             method = HttpMethod.Delete,
             path = "/weight-history/${id}",
         )
     }
 
-    public suspend fun getWeightHistory(): List<WeightHistoryDto> {
+    public suspend fun getWeightHistory(): Result<List<WeightHistoryDto>> {
         return request(
             method = HttpMethod.Get,
             path = "/weight-history"
@@ -247,12 +247,14 @@ public class Api(private val client: NetworkClient) {
         path: String,
         body: Any? = null,
         queryParams: Map<String, String>? = null
-    ): T {
-        return client.invoke(
-            method = method,
-            path = path,
-            body = body,
-            queryParams = queryParams
-        ).body()
+    ): Result<T> {
+        return runCatching {
+            client.invoke(
+                method = method,
+                path = path,
+                body = body,
+                queryParams = queryParams
+            ).body()
+        }
     }
 }

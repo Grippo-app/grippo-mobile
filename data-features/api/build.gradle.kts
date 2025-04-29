@@ -5,10 +5,3 @@ plugins {
 
 apply(from = "$rootDir/gradle/common/android.gradle")
 apply(from = "$rootDir/gradle/common/kotlin.gradle")
-
-kotlin {
-    sourceSets.commonMain.dependencies {
-        implementation(projects.dataFeatures.api)
-        implementation(projects.dataServices.network)
-    }
-}
