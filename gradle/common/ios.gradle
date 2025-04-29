@@ -7,9 +7,12 @@ kotlin.cocoapods {
     version = "1.0"
     summary = "Shared Code"
     homepage = "https://github.com/voitenkodev/Grippo"
+    podfile = project.file("$rootDir/iosApp/Podfile")
     ios.deploymentTarget = "16.0"
     framework {
         baseName = "shared"
         isStatic = true
+        // Required when using NativeSQLiteDriver
+        linkerOpts.add("-lsqlite3")
     }
 }

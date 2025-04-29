@@ -8,10 +8,6 @@ apply(from = "$rootDir/gradle/common/android.gradle")
 apply(from = "$rootDir/gradle/common/ios.gradle")
 apply(from = "$rootDir/gradle/common/kotlin.gradle")
 
-kotlin.cocoapods {
-    podfile = project.file("../iosApp/Podfile")
-}
-
 kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.common.platformCore)
