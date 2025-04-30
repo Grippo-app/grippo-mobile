@@ -1,6 +1,6 @@
 package com.grippo.data.features.api.authorization.models
 
-public data class Registration(
+public data class SetRegistration(
     val email: String,
     val password: String,
     val name: String,

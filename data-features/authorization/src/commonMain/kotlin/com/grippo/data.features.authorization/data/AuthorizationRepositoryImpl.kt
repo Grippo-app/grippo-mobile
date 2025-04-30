@@ -1,6 +1,6 @@
 package com.grippo.data.features.authorization.data
 
-import com.grippo.data.features.api.authorization.models.Registration
+import com.grippo.data.features.api.authorization.models.SetRegistration
 import com.grippo.data.features.authorization.domain.AuthorizationRepository
 import com.grippo.database.dao.TokenDao
 import com.grippo.database.entity.TokenEntity
@@ -27,7 +27,7 @@ internal class AuthorizationRepositoryImpl(
         return response.map { }
     }
 
-    override suspend fun register(registration: Registration): Result<Unit> {
+    override suspend fun register(registration: SetRegistration): Result<Unit> {
         val response = api.register(registration.toDto())
 
         response.onSuccess { r ->

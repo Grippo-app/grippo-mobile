@@ -1,9 +1,9 @@
 package com.grippo.domain.mapper
 
-import com.grippo.data.features.api.authorization.models.Registration
+import com.grippo.data.features.api.authorization.models.SetRegistration
 import com.grippo.network.dto.RegisterDto
 
-public fun Registration.toDto(): RegisterDto {
+public fun SetRegistration.toDto(): RegisterDto {
     return RegisterDto(
         email = email,
         password = password,

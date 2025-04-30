@@ -1,0 +1,20 @@
+package com.grippo.data.features.api.exercise.example.models
+
+public enum class ExperienceEnum(private val key: String) {
+    BEGINNER(key = "beginner"),
+    INTERMEDIATE(key = "intermediate"),
+    ADVANCED(key = "advanced"),
+    PRO(key = "pro"),
+    UNIDENTIFIED(key = "unidentified");
+
+
+    override fun toString(): String {
+        return key
+    }
+
+    public companion object {
+        public fun of(key: String?): ExperienceEnum {
+            return entries.firstOrNull { it.key == key } ?: UNIDENTIFIED
+        }
+    }
+}
