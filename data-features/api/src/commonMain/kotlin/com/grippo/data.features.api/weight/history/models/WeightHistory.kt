@@ -1,4 +1,4 @@
-package com.grippo.data.features.api.user.models
+package com.grippo.data.features.api.weight.history.models
 
 public data class WeightHistory(
     val id: String,

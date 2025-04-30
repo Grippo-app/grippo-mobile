@@ -3,7 +3,11 @@ package com.grippo.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.grippo.database.dao.EquipmentDao
+import com.grippo.database.dao.EquipmentGroutDao
+import com.grippo.database.dao.ExerciseEquipmentDao
+import com.grippo.database.dao.ExerciseExampleBundleDao
 import com.grippo.database.dao.ExerciseExampleDao
+import com.grippo.database.dao.ExerciseTutorialDao
 import com.grippo.database.dao.MuscleDao
 import com.grippo.database.dao.TokenDao
 import com.grippo.database.dao.TrainingDao
@@ -45,11 +49,18 @@ import com.grippo.database.entity.WeightHistoryEntity
     exportSchema = false
 )
 public abstract class AppDatabase : RoomDatabase() {
-    public abstract fun equipmentDao(): EquipmentDao
-    public abstract fun muscleDao(): MuscleDao
-    public abstract fun exerciseExampleDao(): ExerciseExampleDao
-    public abstract fun trainingDao(): TrainingDao
     public abstract fun userDao(): UserDao
-    public abstract fun weightHistoryDao(): WeightHistoryDao
     public abstract fun tokenDao(): TokenDao
+    public abstract fun weightHistoryDao(): WeightHistoryDao
+
+    public abstract fun equipmentDao(): EquipmentDao
+    public abstract fun equipmentGroutDao(): EquipmentGroutDao
+
+    public abstract fun exerciseExampleDao(): ExerciseExampleDao
+    public abstract fun exerciseExampleBundleDao(): ExerciseExampleBundleDao
+    public abstract fun exerciseEquipmentDao(): ExerciseEquipmentDao
+    public abstract fun exerciseTutorialDao(): ExerciseTutorialDao
+
+    public abstract fun muscleDao(): MuscleDao
+    public abstract fun trainingDao(): TrainingDao
 }

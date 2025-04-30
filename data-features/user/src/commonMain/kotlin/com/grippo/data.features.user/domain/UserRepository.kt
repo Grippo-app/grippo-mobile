@@ -6,11 +6,9 @@ import kotlinx.coroutines.flow.Flow
 internal interface UserRepository {
     fun observeUser(): Flow<User?>
 
-
-    fun getUser(): Result<Unit>
-
-    fun setExcludedMuscle(id: String): Result<Unit>
-    fun deleteExcludedMuscle(id: String): Result<Unit>
-    fun setExcludedEquipment(id: String): Result<Unit>
-    fun deleteExcludedEquipment(id: String): Result<Unit>
+    suspend fun getUser(): Result<Unit>
+    suspend fun setExcludedMuscle(id: String): Result<Unit>
+    suspend fun deleteExcludedMuscle(id: String): Result<Unit>
+    suspend fun setExcludedEquipment(id: String): Result<Unit>
+    suspend fun deleteExcludedEquipment(id: String): Result<Unit>
 }

@@ -1,7 +1,11 @@
 package com.grippo.database.mapper
 
-import com.grippo.data.features.api.user.models.WeightHistory
+import com.grippo.data.features.api.weight.history.models.WeightHistory
 import com.grippo.database.entity.WeightHistoryEntity
+
+public fun List<WeightHistoryEntity>.toDomain(): List<WeightHistory> {
+    return mapNotNull { it.toDomain() }
+}
 
 public fun WeightHistoryEntity.toDomain(): WeightHistory {
     return WeightHistory(

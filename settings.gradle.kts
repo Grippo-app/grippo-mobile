@@ -41,6 +41,7 @@ include(":data-services:database")
 include(":data-features:api")
 include(":data-features:authorization")
 include(":data-features:user")
+include(":data-features:weight-history")
 
 include(":common:platform-core")
 include(":common:logger")
