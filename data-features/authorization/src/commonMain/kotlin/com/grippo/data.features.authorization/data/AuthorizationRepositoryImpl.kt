@@ -8,10 +8,12 @@ import com.grippo.domain.mapper.toDto
 import com.grippo.network.Api
 import com.grippo.network.dto.AuthDto
 import com.grippo.network.mapper.toEntityOrNull
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 internal class AuthorizationRepositoryImpl(
     private val api: Api,
-    private val tokenDao: TokenDao
+    private val tokenDao: TokenDao,
 ) : AuthorizationRepository {
 
     override suspend fun login(email: String, password: String): Result<Unit> {
@@ -33,5 +35,13 @@ internal class AuthorizationRepositoryImpl(
         }
 
         return response.map { }
+    }
+
+    override fun getToken(): Flow<String?> {
+        return tokenDao.get().map { it?.access }
+    }
+
+    override suspend fun logout() {
+        // todo implement remove all tables
     }
 }

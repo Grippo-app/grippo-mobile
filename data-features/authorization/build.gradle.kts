@@ -17,5 +17,6 @@ kotlin {
         implementation(projects.dataMappers.networkMapper)
 
         implementation(libs.koin.core)
+        implementation(libs.kotlinx.coroutines.core)
     }
 }
