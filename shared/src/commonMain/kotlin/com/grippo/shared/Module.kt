@@ -1,6 +1,8 @@
 package com.grippo.shared
 
 import com.grippo.data.features.authorization.authorizationFeatureModule
+import com.grippo.data.features.user.userFeatureModule
+import com.grippo.data.features.weight.history.weightHistoryFeatureModule
 import com.grippo.database.databaseModule
 import com.grippo.network.networkModule
 import org.koin.core.KoinApplication
@@ -16,5 +18,7 @@ public fun initKoin(
         networkModule,
         databaseModule,
         authorizationFeatureModule,
+        userFeatureModule,
+        weightHistoryFeatureModule
     )
 }

@@ -16,6 +16,8 @@ kotlin {
         implementation(projects.dataServices.network)
 
         implementation(projects.dataFeatures.authorization)
+        implementation(projects.dataFeatures.user)
+        implementation(projects.dataFeatures.weightHistory)
 
         implementation(libs.koin.core)
     }
