@@ -8,7 +8,7 @@ public interface TrainingFeature {
     public fun observeTrainings(startDate: String, endDate: String): Flow<List<Training>>
     public fun observeTraining(id: String): Flow<Training?>
 
-    public suspend fun syncTrainings(startDate: String, endDate: String): Result<Unit>
+    public suspend fun getTrainings(startDate: String, endDate: String): Result<Unit>
     public suspend fun setTraining(training: Training): Result<String?>
     public suspend fun deleteTraining(id: String): Result<Unit>
 }

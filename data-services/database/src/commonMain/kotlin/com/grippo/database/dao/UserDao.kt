@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.grippo.database.entity.UserEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 public interface UserDao {
@@ -13,7 +14,7 @@ public interface UserDao {
     public suspend fun insertOrUpdateUser(user: UserEntity)
 
     @Query("SELECT * FROM user LIMIT 1")
-    public suspend fun getUser(): UserEntity?
+    public fun getUser(): Flow<UserEntity?>
 
     @Query("DELETE FROM user")
     public suspend fun deleteTableUser()

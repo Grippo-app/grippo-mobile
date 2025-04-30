@@ -7,6 +7,6 @@ public data class User(
     val name: String,
     val email: String,
     val experience: ExperienceEnum,
-    val weight: Double,
-    val height: Double
+    val weight: Float,
+    val height: Float
 )

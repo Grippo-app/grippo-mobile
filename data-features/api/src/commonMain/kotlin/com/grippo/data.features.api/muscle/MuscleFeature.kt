@@ -8,6 +8,6 @@ public interface MuscleFeature {
     public fun observeMuscles(): Flow<List<MuscleGroup>>
     public fun observeMusclesById(ids: List<String>): Flow<List<Muscle>>
 
-    public suspend fun syncUserMuscles(): Result<Unit>
-    public suspend fun syncPublicMuscles(): Result<Unit>
+    public suspend fun getUserMuscles(): Result<Unit>
+    public suspend fun getPublicMuscles(): Result<Unit>
 }
