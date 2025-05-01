@@ -35,6 +35,10 @@ rootProject.name = "Grippo"
 include(":androidApp")
 include(":shared")
 
+include(":design-system:preview")
+include(":design-system:core")
+include(":design-system:resources")
+
 include(":data-services:network")
 include(":data-services:database")
 
@@ -44,6 +48,7 @@ include(":data-features:user")
 include(":data-features:weight-history")
 include(":data-features:muscle")
 
+include(":presentation-features:presentation-api")
 include(":presentation-features:authorization")
 
 include(":common:platform-core")

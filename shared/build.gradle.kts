@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.cocoapods)
     alias(libs.plugins.android.library)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.jetbrains.compose)
 }
 
 apply(from = "$rootDir/gradle/common/android.gradle")
@@ -10,6 +12,8 @@ apply(from = "$rootDir/gradle/common/kotlin.gradle")
 
 kotlin {
     sourceSets.commonMain.dependencies {
+        implementation(projects.designSystem.core)
+
         implementation(projects.common.platformCore)
         implementation(projects.common.core)
 
@@ -21,6 +25,7 @@ kotlin {
         implementation(projects.dataFeatures.weightHistory)
 
         implementation(libs.koin.core)
+        implementation(compose.foundation)
     }
 
     sourceSets.androidMain.dependencies {
