@@ -38,13 +38,13 @@ include(":shared")
 include(":data-services:network")
 include(":data-services:database")
 
-include(":data-features:api")
+include(":data-features:feature-api")
 include(":data-features:authorization")
 include(":data-features:user")
 include(":data-features:weight-history")
 include(":data-features:muscle")
 
-include(":presention-features:authorization")
+include(":presentation-features:authorization")
 
 include(":common:platform-core")
 include(":common:logger")

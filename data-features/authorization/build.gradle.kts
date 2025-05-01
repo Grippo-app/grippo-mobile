@@ -8,7 +8,7 @@ apply(from = "$rootDir/gradle/common/kotlin.gradle")
 
 kotlin {
     sourceSets.commonMain.dependencies {
-        implementation(projects.dataFeatures.api)
+        implementation(projects.dataFeatures.featureApi)
         implementation(projects.dataServices.database)
         implementation(projects.dataServices.network)
 
