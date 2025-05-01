@@ -7,6 +7,7 @@ import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.arkivanov.essenty.lifecycle.doOnStart
 import com.arkivanov.essenty.lifecycle.doOnStop
 import com.grippo.core.internal.ComponentTreeLogger
+import com.grippo.core.models.BaseDirection
 import com.grippo.core.models.ComponentIdentifier
 import com.grippo.core.models.ComponentLifeCycleEvent
 import com.grippo.core.models.NoneIdentifier
@@ -14,16 +15,19 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-public abstract class BaseComponent(
+public abstract class BaseComponent<DIRECTION : BaseDirection>(
     componentContext: ComponentContext,
     private val identifier: ComponentIdentifier = NoneIdentifier,
 ) : ComponentContext by componentContext, KoinComponent {
 
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+
+    protected abstract val viewModel: BaseViewModel<*, DIRECTION>
 
     private val componentIdentifier by inject<ComponentLifecycleEmitter>()
 
@@ -41,7 +45,10 @@ public abstract class BaseComponent(
                 ComponentLifeCycleEvent.OnCreate,
                 this::class.simpleName
             )
-            coroutineScope.launch { eventListener() }
+
+            viewModel.navigator
+                .onEach(::eventListener)
+                .launchIn(coroutineScope)
         }
 
         lifecycle.doOnDestroy {
@@ -53,7 +60,7 @@ public abstract class BaseComponent(
         }
     }
 
-    protected abstract suspend fun eventListener()
+    protected abstract suspend fun eventListener(rout: DIRECTION)
 
     @Composable
     public abstract fun Render()

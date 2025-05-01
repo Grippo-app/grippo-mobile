@@ -15,9 +15,9 @@ kotlin {
 
         api(libs.decompose)
         api(libs.decompose.extensions)
-        implementation(libs.kotlinx.coroutines.core)
-        implementation(libs.koin.core)
+        api(libs.koin.core)
 
+        implementation(libs.kotlinx.coroutines.core)
         implementation(compose.foundation)
     }
 }

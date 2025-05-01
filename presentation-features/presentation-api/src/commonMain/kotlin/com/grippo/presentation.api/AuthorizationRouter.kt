@@ -9,17 +9,15 @@ public sealed class AuthRouter : BaseRouter {
     public data object Splash : AuthRouter()
 
     @Serializable
-    public data class Auth(
-        val authSubRouter: AuthSubRouter,
-    ) : AuthRouter()
+    public data object AuthProcess : AuthRouter()
 }
 
 @Serializable
-public sealed class AuthSubRouter : BaseRouter {
+public sealed class AuthProcessRouter : BaseRouter {
 
     @Serializable
-    public data object Login : AuthSubRouter()
+    public data object Login : AuthProcessRouter()
 
     @Serializable
-    public data object Registration : AuthSubRouter()
+    public data object Registration : AuthProcessRouter()
 }
