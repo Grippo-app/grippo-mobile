@@ -15,8 +15,8 @@ internal class AuthComponent(
     componentContext: ComponentContext,
 ) : BaseComponent<AuthDirection>(componentContext) {
 
-    internal sealed class AuthChild {
-        data class Splash(val component: SplashComponent) : AuthChild()
+    internal sealed class AuthChild(open val component: BaseComponent<*>) {
+        data class Splash(override val component: SplashComponent) : AuthChild(component)
     }
 
     override val viewModel = componentContext.retainedInstance {
@@ -24,7 +24,9 @@ internal class AuthComponent(
     }
 
     override suspend fun eventListener(rout: AuthDirection) {
-
+        when (rout) {
+            AuthDirection.AuthProcess -> TODO()
+        }
     }
 
     private val navigation = StackNavigation<AuthRouter>()
@@ -54,5 +56,6 @@ internal class AuthComponent(
 
     @Composable
     override fun Render() {
+        AuthScreen(this)
     }
 }
