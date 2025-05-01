@@ -1,0 +1,23 @@
+plugins {
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.jetbrains.compose)
+}
+
+apply(from = "$rootDir/gradle/common/android.gradle")
+apply(from = "$rootDir/gradle/common/kotlin.gradle")
+apply(from = "$rootDir/gradle/common/compose.gradle")
+
+kotlin {
+    sourceSets.commonMain.dependencies {
+        implementation(projects.common.logger)
+
+        api(libs.decompose)
+        api(libs.decompose.extensions)
+        implementation(libs.kotlinx.coroutines.core)
+        implementation(libs.koin.core)
+
+        implementation(compose.foundation)
+    }
+}

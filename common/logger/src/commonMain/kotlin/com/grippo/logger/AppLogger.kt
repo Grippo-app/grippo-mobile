@@ -40,6 +40,14 @@ public object AppLogger {
         }
     }
 
+    public fun navigation(msg: String) {
+        onDebug {
+            val category = LogCategory.NAVIGATION
+//            Log.d(category.name, msg)
+            logListener?.invoke(category, msg)
+        }
+    }
+
     private fun onDebug(action: () -> Unit) {
         action.invoke()
     }

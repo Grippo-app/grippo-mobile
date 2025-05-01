@@ -44,8 +44,11 @@ include(":data-features:user")
 include(":data-features:weight-history")
 include(":data-features:muscle")
 
+include(":presention-features:authorization")
+
 include(":common:platform-core")
 include(":common:logger")
+include(":common:core")
 include(":common:errors")
 
 include(":data-mappers:database-mapper")

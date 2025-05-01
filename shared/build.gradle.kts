@@ -11,6 +11,7 @@ apply(from = "$rootDir/gradle/common/kotlin.gradle")
 kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.common.platformCore)
+        implementation(projects.common.core)
 
         implementation(projects.dataServices.database)
         implementation(projects.dataServices.network)

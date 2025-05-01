@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.jetbrains.compose)
 }
 
 apply(from = "$rootDir/gradle/common/android.gradle")
@@ -33,11 +34,10 @@ android {
 dependencies {
     implementation(projects.shared)
 
-    implementation(libs.compose.ui)
-    implementation(libs.compose.ui.tooling.preview)
-    implementation(libs.compose.material3)
-    implementation(libs.androidx.activity.compose)
-    debugImplementation(libs.compose.ui.tooling)
+    implementation(compose.foundation)
+    implementation(compose.material3)
+    debugImplementation(compose.uiTooling)
 
+    implementation(libs.androidx.activity.compose)
     implementation(libs.koin.android)
 }
