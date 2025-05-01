@@ -1,23 +1,23 @@
-package com.grippo.authorization.splash
+package com.grippo.authorization.login
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 
-internal class SplashComponent(
+internal class LoginComponent(
     componentContext: ComponentContext,
-) : BaseComponent<SplashDirection>(componentContext) {
+) : BaseComponent<LoginDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        SplashViewModel()
+        LoginViewModel()
     }
 
-    override suspend fun eventListener(rout: SplashDirection) {
+    override suspend fun eventListener(rout: LoginDirection) {
     }
 
     @Composable
     override fun Render() {
-        SplashScreen()
+        LoginScreen()
     }
 }
