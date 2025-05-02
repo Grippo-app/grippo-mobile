@@ -38,6 +38,7 @@ include(":shared")
 include(":design-system:preview")
 include(":design-system:core")
 include(":design-system:resources")
+include(":design-system:components")
 
 include(":data-services:network")
 include(":data-services:database")
