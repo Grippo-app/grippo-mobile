@@ -10,7 +10,5 @@ internal fun AuthScreen(component: AuthComponent) {
     Children(
         stack = component.childStack,
         animation = stackAnimation(fade()),
-    ) { child ->
-        child.instance.component.Render()
-    }
+    ) { child -> child.instance.component.Render() }
 }

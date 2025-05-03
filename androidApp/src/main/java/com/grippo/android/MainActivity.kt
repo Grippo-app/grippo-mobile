@@ -1,14 +1,27 @@
 package com.grippo.android
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
-import com.grippo.shared.Content
+import androidx.activity.enableEdgeToEdge
+import com.arkivanov.decompose.retainedComponent
+import com.grippo.shared.root.RootComponent
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContent { Content() }
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT),
+        )
+
+        val rootComponent: RootComponent = retainedComponent("RootComponentContext") {
+            RootComponent(componentContext = it)
+        }
+
+        setContent { rootComponent.Render() }
     }
 }

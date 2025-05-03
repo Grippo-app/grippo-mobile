@@ -11,12 +11,6 @@ import com.grippo.design.resources.AppTypography
 import com.grippo.design.resources.colors.DarkColor
 import com.grippo.design.resources.colors.LightColor
 
-internal val LocalAppColors = staticCompositionLocalOf<AppColor> { error("No colors provided") }
-internal val LocalAppIcons = staticCompositionLocalOf<AppIcon> { error("No icons provided") }
-internal val LocalAppTypography =
-    staticCompositionLocalOf<AppTypography> { error("No typography provided") }
-internal val LocalAppStrings = staticCompositionLocalOf<AppString> { error("No strings provided") }
-
 @Composable
 internal fun ProvideResources(
     darkTheme: Boolean,
@@ -31,4 +25,17 @@ internal fun ProvideResources(
         *values,
         content = content,
     )
+}
+
+internal val LocalAppColors = staticCompositionLocalOf<AppColor> {
+    error("No colors provided")
+}
+internal val LocalAppIcons = staticCompositionLocalOf<AppIcon> {
+    error("No icons provided")
+}
+internal val LocalAppTypography = staticCompositionLocalOf<AppTypography> {
+    error("No typography provided")
+}
+internal val LocalAppStrings = staticCompositionLocalOf<AppString> {
+    error("No strings provided")
 }

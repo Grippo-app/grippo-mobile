@@ -30,13 +30,10 @@ kotlin {
         implementation(libs.koin.core)
 
         implementation(compose.foundation)
+        implementation(compose.ui)
     }
 
     sourceSets.androidMain.dependencies {
         implementation(libs.koin.android)
-    }
-
-    sourceSets.iosMain.dependencies {
-        implementation(compose.ui)
     }
 }

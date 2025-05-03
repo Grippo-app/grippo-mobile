@@ -33,6 +33,8 @@ android {
 
 dependencies {
     implementation(projects.shared)
+    implementation(projects.common.core)
+    implementation(projects.designSystem.core)
 
     implementation(compose.foundation)
     implementation(compose.material3)
