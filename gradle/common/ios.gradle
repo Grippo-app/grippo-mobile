@@ -1,8 +1,3 @@
-/*
-    use with custom:
-    cocoapods { project.file("../iosApp/Podfile") }
-*/
-
 kotlin.cocoapods {
     version = "1.0"
     summary = "Shared Code"
@@ -14,5 +9,8 @@ kotlin.cocoapods {
         isStatic = true
         // Required when using NativeSQLiteDriver
         linkerOpts.add("-lsqlite3")
+
+        export(libs.decompose.core.get())
+        export(libs.decompose.essenty.get())
     }
 }
