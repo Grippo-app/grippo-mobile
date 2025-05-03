@@ -36,7 +36,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.lerp
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.grippo.design.resources.AppTypography
+import com.grippo.design.core.AppTokens
 
 @Immutable
 internal sealed class InputStyle {
@@ -65,7 +65,7 @@ internal fun Input(
     enabled: Boolean = true,
     error: InputError = InputError.Non,
     inputStyle: InputStyle = InputStyle.Default,
-    textStyle: TextStyle = AppTypography.b13Semi,
+    textStyle: TextStyle = AppTokens.typography.b13Semi,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     leading: (@Composable (color: Color) -> Unit)? = null,
@@ -180,8 +180,8 @@ internal fun Input(
                                 Text(
                                     text = placeholder.value,
                                     style = lerp(
-                                        start = AppTypography.b13Semi.copy(color = placeholderColor),
-                                        stop = AppTypography.b11Semi.copy(color = placeholderColor),
+                                        start = AppTokens.typography.b13Semi.copy(color = placeholderColor),
+                                        stop = AppTokens.typography.b11Semi.copy(color = placeholderColor),
                                         fraction = textStyleAnimateFraction.value,
                                     ),
                                     overflow = TextOverflow.Ellipsis,
@@ -210,7 +210,7 @@ internal fun Input(
         if (error is InputError.Error) {
             Text(
                 text = error.msg,
-                style = AppTypography.b11Semi,
+                style = AppTokens.typography.b11Semi,
                 color = errorColor,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,

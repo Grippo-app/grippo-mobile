@@ -23,6 +23,11 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import com.grippo.design.components.internal.Input
 import com.grippo.design.components.internal.PlaceHolder
+import com.grippo.design.core.AppTokens
+import com.grippo.design.resources.Res
+import com.grippo.design.resources.icons.Eye
+import com.grippo.design.resources.icons.EyeOff
+import com.grippo.design.resources.password_placeholder
 
 @Composable
 public fun InputPassword(
@@ -37,7 +42,7 @@ public fun InputPassword(
     Input(
         modifier = modifier,
         value = value,
-        enabled = enabled,
+        enabled = true,
         maxLines = 1,
         minLines = 1,
         keyboardOptions = KeyboardOptions.Default.copy(
@@ -56,7 +61,7 @@ public fun InputPassword(
                     exit = scaleOut() + fadeOut(),
                     content = {
                         Icon(
-                            imageVector = AppTokens.icons.CrossedEye,
+                            imageVector = AppTokens.icons.EyeOff,
                             tint = color,
                             contentDescription = null,
                         )
@@ -80,6 +85,8 @@ public fun InputPassword(
         },
         onValueChange = onValueChange,
         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-        placeholder = PlaceHolder.OverInput(value = placeholder),
+        placeholder = PlaceHolder.OverInput(
+            value = AppTokens.strings.res(Res.string.password_placeholder)
+        ),
     )
 }

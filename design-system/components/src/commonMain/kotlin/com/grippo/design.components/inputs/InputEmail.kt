@@ -9,8 +9,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -21,6 +19,10 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import com.grippo.design.components.internal.Input
 import com.grippo.design.components.internal.PlaceHolder
+import com.grippo.design.core.AppTokens
+import com.grippo.design.resources.Res
+import com.grippo.design.resources.email_placeholder
+import com.grippo.design.resources.icons.X
 
 @Composable
 public fun InputEmail(
@@ -44,14 +46,16 @@ public fun InputEmail(
                     exit = scaleOut() + fadeOut(),
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Clear,
+                        imageVector = AppTokens.icons.X,
                         tint = color,
                         contentDescription = null
                     )
                 }
             }
         },
-        placeholder = PlaceHolder.OverInput("Enter Email"),
+        placeholder = PlaceHolder.OverInput(
+            value = AppTokens.strings.res(Res.string.email_placeholder)
+        ),
         keyboardActions = KeyboardActions {
             focusManager.moveFocus(FocusDirection.Next)
         },

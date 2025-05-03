@@ -16,8 +16,8 @@ compose.resources {
 
 kotlin {
     sourceSets.commonMain.dependencies {
+        api(compose.components.resources)
         implementation(compose.foundation)
-        implementation(compose.runtime)
         implementation(compose.materialIconsExtended)
     }
 }

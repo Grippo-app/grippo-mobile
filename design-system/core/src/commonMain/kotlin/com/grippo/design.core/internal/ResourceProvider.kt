@@ -4,13 +4,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.staticCompositionLocalOf
-import com.grippo.design.core.models.ColorToken
-import com.grippo.design.core.models.DarkColorToken
-import com.grippo.design.core.models.IconToken
-import com.grippo.design.core.models.LightColorToken
+import com.grippo.design.resources.AppColor
+import com.grippo.design.resources.AppIcon
+import com.grippo.design.resources.AppString
+import com.grippo.design.resources.AppTypography
+import com.grippo.design.resources.colors.DarkColor
+import com.grippo.design.resources.colors.LightColor
 
-internal val LocalAppColors = staticCompositionLocalOf<ColorToken> { error("No colors provided") }
-internal val LocalAppIcons = staticCompositionLocalOf<IconToken> { error("No icons provided") }
+internal val LocalAppColors = staticCompositionLocalOf<AppColor> { error("No colors provided") }
+internal val LocalAppIcons = staticCompositionLocalOf<AppIcon> { error("No icons provided") }
+internal val LocalAppTypography =
+    staticCompositionLocalOf<AppTypography> { error("No typography provided") }
+internal val LocalAppStrings = staticCompositionLocalOf<AppString> { error("No strings provided") }
 
 @Composable
 internal fun ProvideResources(
@@ -19,8 +24,10 @@ internal fun ProvideResources(
     content: @Composable () -> Unit,
 ) {
     CompositionLocalProvider(
-        LocalAppColors provides if (darkTheme) DarkColorToken else LightColorToken,
-        LocalAppIcons provides IconToken,
+        LocalAppColors provides if (darkTheme) DarkColor else LightColor,
+        LocalAppIcons provides AppIcon,
+        LocalAppTypography provides AppTypography,
+        LocalAppStrings provides AppString,
         *values,
         content = content,
     )

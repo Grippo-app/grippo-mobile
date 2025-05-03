@@ -15,5 +15,6 @@ kotlin {
         implementation(compose.material3)
 
         implementation(projects.designSystem.resources)
+        implementation(projects.designSystem.core)
     }
 }
