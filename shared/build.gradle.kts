@@ -11,6 +11,14 @@ apply(from = "$rootDir/gradle/common/ios.gradle")
 apply(from = "$rootDir/gradle/common/kotlin.gradle")
 
 kotlin {
+
+    cocoapods {
+        framework {
+            export(libs.decompose.core.get())
+            export(libs.decompose.essenty.get())
+        }
+    }
+
     sourceSets.commonMain.dependencies {
         implementation(projects.designSystem.core)
 

@@ -13,7 +13,7 @@ kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.common.logger)
 
-        api(libs.decompose)
+        api(libs.decompose.core)
         api(libs.decompose.extensions)
         api(libs.koin.core)
 
