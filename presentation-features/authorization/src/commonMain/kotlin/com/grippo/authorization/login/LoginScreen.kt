@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
@@ -22,11 +23,12 @@ import com.grippo.design.resources.login_title
 @Composable
 internal fun LoginScreen() {
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .padding(
                 horizontal = AppTokens.dp.paddings.screenHorizontal,
                 vertical = AppTokens.dp.paddings.screenVertical
-            ),
+            ).imePadding(),
     ) {
 
         Spacer(modifier = Modifier.size(60.dp))
@@ -37,7 +39,7 @@ internal fun LoginScreen() {
             color = AppTokens.colors.text.primary,
         )
 
-        Spacer(modifier = Modifier.size(8.dp))
+        Spacer(modifier = Modifier.size(12.dp))
 
         Text(
             text = AppTokens.strings.res(Res.string.login_description),
@@ -45,14 +47,14 @@ internal fun LoginScreen() {
             color = AppTokens.colors.text.secondary,
         )
 
-        Spacer(modifier = Modifier.size(36.dp))
+        Spacer(modifier = Modifier.size(26.dp))
 
         InputEmail(
             value = "",
             onValueChange = {}
         )
 
-        Spacer(modifier = Modifier.size(12.dp))
+        Spacer(modifier = Modifier.size(16.dp))
 
         InputPassword(
             value = "",

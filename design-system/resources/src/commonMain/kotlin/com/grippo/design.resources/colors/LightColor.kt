@@ -4,18 +4,20 @@ import androidx.compose.ui.graphics.Color
 import com.grippo.design.resources.AppColor
 
 public object LightColor : AppColor {
+    private val Transparent = Color(0x00000000)
     private val White = Color(0xFFFFFFFF)
     private val Black = Color(0xFF000000)
-    private val Neutral100 = Color(0xFFF9F9F9)
-    private val Neutral200 = Color(0xFFF0F0F0)
-    private val Neutral300 = Color(0xFFE0E0E0)
-    private val Neutral500 = Color(0xFF9E9E9E)
-    private val Neutral700 = Color(0xFF616161)
-    private val Primary = Color(0xFF4A90E2)
-    private val Error = Color(0xFFFF6B6B)
-    private val Warning = Color(0xFFFFC107)
-    private val Success = Color(0xFF4CAF50)
-    private val Transparent = Color(0x00000000)
+    private val Primary = Color(0xFF3366FF)
+    private val Error = Color(0xFFFF4D4F)
+    private val Warning = Color(0xFFFFAA2C)
+    private val Success = Color(0xFF3AC86B)
+
+    private val Neutral100 = Color(0xFFFAFAFA)
+    private val Neutral200 = Color(0xFFF2F2F2)
+    private val Neutral300 = Color(0xFFDCDCDC)
+    private val Neutral400 = Color(0xFFBFBFBF)
+    private val Neutral500 = Color(0xFF999999)
+    private val Neutral700 = Color(0xFF333333)
 
     override val button: AppColor.ButtonColors = object : AppColor.ButtonColors {
         override val backgroundPrimary = Primary
@@ -38,7 +40,7 @@ public object LightColor : AppColor {
     }
 
     override val border: AppColor.BorderColors = object : AppColor.BorderColors {
-        override val default = Neutral300
+        override val default = Neutral200
         override val focus = Primary
         override val disabled = Neutral200
         override val error = Error
@@ -58,8 +60,8 @@ public object LightColor : AppColor {
 
     override val input: AppColor.InputColors = object : AppColor.InputColors {
         override val background = White
-        override val border = Neutral300
-        override val placeholder = Neutral500
+        override val border = Neutral400
+        override val placeholder = Neutral400
         override val text = Black
 
         override val backgroundDisabled = Neutral100
@@ -81,7 +83,7 @@ public object LightColor : AppColor {
 
     override val text: AppColor.TextColors = object : AppColor.TextColors {
         override val primary = Black
-        override val secondary = Neutral700
+        override val secondary = Neutral500
         override val disabled = Neutral300
     }
 
@@ -116,5 +118,5 @@ public object LightColor : AppColor {
         override val shimmer = Neutral100
     }
 
-    override val divider: Color = Neutral200
+    override val divider: Color = Neutral300
 }

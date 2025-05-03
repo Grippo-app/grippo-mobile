@@ -7,7 +7,9 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
@@ -16,12 +18,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
 import com.grippo.design.components.internal.Input
 import com.grippo.design.components.internal.PlaceHolder
 import com.grippo.design.core.AppTokens
@@ -56,32 +61,48 @@ public fun InputPassword(
         trailing = { color ->
             Box {
                 AnimatedVisibility(
-                    modifier = Modifier.clickable { passwordVisible = true },
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .size(40.dp)
+                        .clickable { passwordVisible = true },
                     visible = !passwordVisible,
                     enter = fadeIn() + scaleIn(),
                     exit = scaleOut() + fadeOut(),
                     content = {
-                        Icon(
-                            modifier = Modifier.size(AppTokens.dp.icon.component),
-                            imageVector = AppTokens.icons.EyeOff,
-                            tint = color,
-                            contentDescription = null,
-                        )
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(AppTokens.dp.icon.component),
+                                imageVector = AppTokens.icons.EyeOff,
+                                tint = color,
+                                contentDescription = null,
+                            )
+                        }
                     },
                 )
 
                 AnimatedVisibility(
-                    modifier = Modifier.clickable { passwordVisible = false },
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .size(40.dp)
+                        .clickable { passwordVisible = false },
                     visible = passwordVisible,
                     enter = fadeIn() + scaleIn(),
                     exit = scaleOut() + fadeOut(),
                     content = {
-                        Icon(
-                            modifier = Modifier.size(AppTokens.dp.icon.component),
-                            imageVector = AppTokens.icons.Eye,
-                            tint = color,
-                            contentDescription = null,
-                        )
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(AppTokens.dp.icon.component),
+                                imageVector = AppTokens.icons.Eye,
+                                tint = color,
+                                contentDescription = null,
+                            )
+                        }
                     },
                 )
             }

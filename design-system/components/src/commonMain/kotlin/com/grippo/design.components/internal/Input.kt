@@ -12,10 +12,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -119,7 +120,6 @@ internal fun Input(
                 .background(color = backgroundColor, shape = shape)
                 .border(width = 1.dp, color = borderColor, shape = shape)
                 .heightIn(min = height)
-                .padding(horizontal = AppTokens.dp.paddings.componentHorizontal)
                 .onFocusChanged { hasFocus.value = it.hasFocus }
                 .animateContentSize(),
             value = value,
@@ -128,6 +128,7 @@ internal fun Input(
             interactionSource = interactionSource,
             minLines = minLines,
             decorationBox = { innerTextField ->
+
                 val rowModifier = Modifier
                     .fillMaxWidth()
                     .height(intrinsicSize = IntrinsicSize.Min)
@@ -138,9 +139,24 @@ internal fun Input(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
+                        Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal))
+
                         leading?.invoke(contentColor)
-                        Box(Modifier.weight(1f).animateContentSize()) { innerTextField() }
-                        trailing?.invoke(contentColor)
+
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .animateContentSize()
+                        ) {
+                            innerTextField()
+                        }
+
+                        if (trailing != null) {
+                            trailing.invoke(contentColor)
+                            Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal / 3))
+                        } else {
+                            Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal))
+                        }
                     }
 
                     is PlaceHolder.OverInput -> Row(
@@ -148,8 +164,15 @@ internal fun Input(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
+                        Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal))
+
                         leading?.invoke(contentColor)
-                        Box(Modifier.weight(1f).animateContentSize()) {
+
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .animateContentSize()
+                        ) {
                             Column {
                                 Text(
                                     text = placeholder.value,
@@ -166,7 +189,14 @@ internal fun Input(
                                 if (hasFocus.value || value.isNotBlank()) innerTextField()
                             }
                         }
-                        trailing?.invoke(contentColor)
+
+
+                        if (trailing != null) {
+                            trailing.invoke(contentColor)
+                            Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal / 3))
+                        } else {
+                            Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal))
+                        }
                     }
                 }
             },
