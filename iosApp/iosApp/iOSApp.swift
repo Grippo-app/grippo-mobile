@@ -3,13 +3,12 @@ import SwiftUI
 @main
 struct iOSApp: App {
 
-//    init() {
-//        HelperKt.doInitKoin()
-//    }
-
+    @UIApplicationDelegateAdaptor(AppDelegate.self)
+        var appDelegate: AppDelegate
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView(root: appDelegate.root)
         }
     }
 }

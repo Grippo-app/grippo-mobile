@@ -13,7 +13,7 @@ apply(from = "$rootDir/gradle/common/kotlin.gradle")
 kotlin {
     sourceSets.commonMain.dependencies {
         api(libs.decompose.core)
-        api(libs.decompose.essenty)
+        api(libs.decompose.extensions)
 
         implementation(projects.designSystem.core)
 
@@ -28,10 +28,15 @@ kotlin {
         implementation(projects.dataFeatures.weightHistory)
 
         implementation(libs.koin.core)
+
         implementation(compose.foundation)
     }
 
     sourceSets.androidMain.dependencies {
         implementation(libs.koin.android)
+    }
+
+    sourceSets.iosMain.dependencies {
+        implementation(compose.ui)
     }
 }

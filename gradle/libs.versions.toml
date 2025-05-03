@@ -9,6 +9,7 @@ datetime = "0.6.0"
 koin = "4.0.2"
 coil = "3.1.0"
 decompose = "3.4.0-alpha01"
+decompose-essently = "2.5.0"
 room = "2.7.1"
 ksp = "2.1.0-1.0.29"
 ktor = "3.0.3"
@@ -28,9 +29,8 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 
 #Decompose
 decompose-core = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
-decompose-extensions = { module = "com.arkivanov.decompose:extensions-compose", version.ref = "decompose" }
-decompose-essenty = { module = "com.arkivanov.essenty:lifecycle", version.ref = "decompose" }
-
+decompose-extensions = { module = "com.arkivanov.decompose:extensions-compose-experimental", version.ref = "decompose" }
+decompose-essenty = { module = "com.arkivanov.essenty:lifecycle", version.ref = "decompose-essently" }
 #Room
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }

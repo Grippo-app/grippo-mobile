@@ -7,9 +7,11 @@ kotlin.cocoapods {
     framework {
         baseName = "shared"
         isStatic = true
+
         // Required when using NativeSQLiteDriver
         linkerOpts.add("-lsqlite3")
 
+        // Required when using Decompose iOS Api
         export(libs.decompose.core.get())
         export(libs.decompose.essenty.get())
     }
