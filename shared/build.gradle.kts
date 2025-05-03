@@ -27,6 +27,9 @@ kotlin {
         implementation(projects.dataFeatures.user)
         implementation(projects.dataFeatures.weightHistory)
 
+        implementation(projects.presentationFeatures.presentationApi)
+        implementation(projects.presentationFeatures.authorization)
+
         implementation(libs.koin.core)
 
         implementation(compose.foundation)

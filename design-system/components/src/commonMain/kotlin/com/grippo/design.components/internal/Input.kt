@@ -65,7 +65,7 @@ internal fun Input(
     enabled: Boolean = true,
     error: InputError = InputError.Non,
     inputStyle: InputStyle = InputStyle.Default,
-    textStyle: TextStyle = AppTokens.typography.b13Semi,
+    textStyle: TextStyle = AppTokens.typography.b13Semi(),
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     leading: (@Composable (color: Color) -> Unit)? = null,
@@ -74,50 +74,39 @@ internal fun Input(
     maxLines: Int = Int.MAX_VALUE,
     minLines: Int = 1,
 ) {
+    val colors = AppTokens.colors
+    val shape = RoundedCornerShape(12.dp)
     val height = 50.dp
-    val paddings = PaddingValues(horizontal = 12.dp)
-
-    val backgroundShape = RoundedCornerShape(12.dp)
-
-    val disabledBackgroundColor = Color.LightGray
-    val activeBackgroundColor = Color.White
-    val errorColor = Color.Red
-    val focusedBorderColor = Color.Gray
-    val unfocusedBorderColor = Color.White
-    val disabledPlaceholderColor = Color.LightGray
-    val activePlaceholderColor = Color.Gray
-
-    val activeContentColor = Color.Gray
-    val disabledContentColor = Color.Black
+    val padding = PaddingValues(horizontal = 12.dp)
 
     val hasFocus = remember { mutableStateOf(false) }
-    val source = remember { MutableInteractionSource() }
-    if (source.collectIsPressedAsState().value && inputStyle is InputStyle.Clickable) {
+    val interactionSource = remember { MutableInteractionSource() }
+    if (interactionSource.collectIsPressedAsState().value && inputStyle is InputStyle.Clickable) {
         inputStyle.onClick.invoke()
     }
 
     val borderColor = when {
-        error is InputError.Error -> errorColor
-        enabled.not() -> Color.Transparent
-        hasFocus.value -> focusedBorderColor
-        else -> unfocusedBorderColor
+        error is InputError.Error -> colors.state.error
+        !enabled -> Color.Transparent
+        hasFocus.value -> colors.border.focus
+        else -> colors.border.default
     }
 
-    val backgroundColor = when {
-        enabled.not() -> disabledBackgroundColor
-        else -> activeBackgroundColor
+    val backgroundColor = when (enabled) {
+        true -> colors.input.background
+        else -> colors.input.disabledBackground
     }
 
     val placeholderColor = when {
-        error is InputError.Error -> errorColor
-        enabled.not() -> disabledPlaceholderColor
-        else -> activePlaceholderColor
+        error is InputError.Error -> colors.state.error
+        !enabled -> colors.input.disabledPlaceholder
+        else -> colors.input.placeholder
     }
 
     val contentColor = when {
-        error is InputError.Error -> errorColor
-        enabled.not() -> disabledContentColor
-        else -> activeContentColor
+        error is InputError.Error -> colors.state.error
+        !enabled -> colors.input.disabledText
+        else -> colors.input.text
     }
 
     val textStyleAnimateFraction = animateFloatAsState(
@@ -128,72 +117,57 @@ internal fun Input(
     Column(modifier = modifier.animateContentSize()) {
         BasicTextField(
             modifier = Modifier
-                .clip(backgroundShape)
-                .background(shape = backgroundShape, color = backgroundColor)
-                .border(shape = backgroundShape, width = 1.dp, color = borderColor)
+                .clip(shape)
+                .background(color = backgroundColor, shape = shape)
+                .border(width = 1.dp, color = borderColor, shape = shape)
                 .heightIn(min = height)
-                .padding(paddings)
+                .padding(padding)
                 .onFocusChanged { hasFocus.value = it.hasFocus }
                 .animateContentSize(),
             value = value,
             onValueChange = onValueChange,
             readOnly = inputStyle is InputStyle.Clickable,
-            interactionSource = source,
+            interactionSource = interactionSource,
             minLines = minLines,
             decorationBox = { innerTextField ->
+                val rowModifier = Modifier
+                    .fillMaxWidth()
+                    .height(intrinsicSize = IntrinsicSize.Min)
+
                 when (placeholder) {
                     PlaceHolder.Empty -> Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(intrinsicSize = IntrinsicSize.Min),
+                        modifier = rowModifier,
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         leading?.invoke(contentColor)
-
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .animateContentSize(),
-                        ) {
-                            innerTextField.invoke()
-                        }
-
+                        Box(Modifier.weight(1f).animateContentSize()) { innerTextField() }
                         trailing?.invoke(contentColor)
                     }
 
                     is PlaceHolder.OverInput -> Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(intrinsicSize = IntrinsicSize.Min),
+                        modifier = rowModifier,
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         leading?.invoke(contentColor)
-
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .animateContentSize(),
-                        ) {
+                        Box(Modifier.weight(1f).animateContentSize()) {
                             Column {
                                 Text(
                                     text = placeholder.value,
                                     style = lerp(
-                                        start = AppTokens.typography.b13Semi.copy(color = placeholderColor),
-                                        stop = AppTokens.typography.b11Semi.copy(color = placeholderColor),
+                                        start = AppTokens.typography.b13Semi()
+                                            .copy(color = placeholderColor),
+                                        stop = AppTokens.typography.b11Semi()
+                                            .copy(color = placeholderColor),
                                         fraction = textStyleAnimateFraction.value,
                                     ),
-                                    overflow = TextOverflow.Ellipsis,
                                     maxLines = maxLines,
+                                    overflow = TextOverflow.Ellipsis,
                                 )
-
-                                if (hasFocus.value || value.isNotBlank()) {
-                                    innerTextField.invoke()
-                                }
+                                if (hasFocus.value || value.isNotBlank()) innerTextField()
                             }
                         }
-
                         trailing?.invoke(contentColor)
                     }
                 }
@@ -210,8 +184,8 @@ internal fun Input(
         if (error is InputError.Error) {
             Text(
                 text = error.msg,
-                style = AppTokens.typography.b11Semi,
-                color = errorColor,
+                style = AppTokens.typography.b11Semi(),
+                color = colors.state.error,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
             )

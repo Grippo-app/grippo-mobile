@@ -8,7 +8,6 @@ import com.grippo.design.resources.AppColor
 import com.grippo.design.resources.AppIcon
 import com.grippo.design.resources.AppString
 import com.grippo.design.resources.AppTypography
-import com.grippo.design.resources.colors.DarkColor
 import com.grippo.design.resources.colors.LightColor
 
 @Composable
@@ -18,7 +17,7 @@ internal fun ProvideResources(
     content: @Composable () -> Unit,
 ) {
     CompositionLocalProvider(
-        LocalAppColors provides if (darkTheme) DarkColor else LightColor,
+        LocalAppColors provides if (darkTheme) LightColor else LightColor,
         LocalAppIcons provides AppIcon,
         LocalAppTypography provides AppTypography,
         LocalAppStrings provides AppString,

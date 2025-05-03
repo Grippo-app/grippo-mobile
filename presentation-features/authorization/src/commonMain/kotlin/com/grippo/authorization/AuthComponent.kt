@@ -11,15 +11,15 @@ import com.grippo.authorization.splash.SplashComponent
 import com.grippo.core.BaseComponent
 import com.grippo.presentation.api.AuthRouter
 
-internal class AuthComponent(
+public class AuthComponent(
     componentContext: ComponentContext,
 ) : BaseComponent<AuthDirection>(componentContext) {
 
-    internal sealed class AuthChild(open val component: BaseComponent<*>) {
-        data class Splash(override val component: SplashComponent) : AuthChild(component)
+    internal sealed class Child(open val component: BaseComponent<*>) {
+        data class Splash(override val component: SplashComponent) : Child(component)
     }
 
-    override val viewModel = componentContext.retainedInstance {
+    override val viewModel: AuthViewModel = componentContext.retainedInstance {
         AuthViewModel()
     }
 
@@ -31,7 +31,7 @@ internal class AuthComponent(
 
     private val navigation = StackNavigation<AuthRouter>()
 
-    internal val childStack: Value<ChildStack<AuthRouter, AuthChild>> = childStack(
+    internal val childStack: Value<ChildStack<AuthRouter, Child>> = childStack(
         source = navigation,
         serializer = AuthRouter.serializer(),
         initialStack = { listOf(AuthRouter.Splash) },
@@ -40,9 +40,9 @@ internal class AuthComponent(
         childFactory = ::createChild,
     )
 
-    private fun createChild(router: AuthRouter, context: ComponentContext): AuthChild {
+    private fun createChild(router: AuthRouter, context: ComponentContext): Child {
         return when (router) {
-            AuthRouter.Splash -> AuthChild.Splash(
+            AuthRouter.Splash -> Child.Splash(
                 SplashComponent(
                     componentContext = context,
                 ),
