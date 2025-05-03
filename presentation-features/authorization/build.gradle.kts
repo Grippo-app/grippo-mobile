@@ -11,9 +11,12 @@ apply(from = "$rootDir/gradle/common/kotlin.gradle")
 kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.common.core)
-        implementation(projects.designSystem.core)
         implementation(projects.presentationFeatures.presentationApi)
 
+        implementation(projects.designSystem.core)
+        implementation(projects.designSystem.resources)
+
         implementation(compose.foundation)
+        implementation(compose.material3)
     }
 }

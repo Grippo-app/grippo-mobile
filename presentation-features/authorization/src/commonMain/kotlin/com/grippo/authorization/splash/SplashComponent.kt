@@ -7,6 +7,7 @@ import com.grippo.core.BaseComponent
 
 internal class SplashComponent(
     componentContext: ComponentContext,
+    private val toAuthProcess: () -> Unit
 ) : BaseComponent<SplashDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
@@ -14,6 +15,9 @@ internal class SplashComponent(
     }
 
     override suspend fun eventListener(rout: SplashDirection) {
+        when (rout) {
+            SplashDirection.AuthProcess -> toAuthProcess.invoke()
+        }
     }
 
     @Composable

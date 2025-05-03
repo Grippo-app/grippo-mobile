@@ -5,8 +5,12 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.instancekeeper.retainedInstance
+import com.grippo.authorization.AuthComponent.Child.AuthProcess
+import com.grippo.authorization.AuthComponent.Child.Splash
+import com.grippo.authorization.auth.process.AuthProcessComponent
 import com.grippo.authorization.splash.SplashComponent
 import com.grippo.core.BaseComponent
 import com.grippo.presentation.api.AuthRouter
@@ -17,6 +21,7 @@ public class AuthComponent(
 
     internal sealed class Child(open val component: BaseComponent<*>) {
         data class Splash(override val component: SplashComponent) : Child(component)
+        data class AuthProcess(override val component: AuthProcessComponent) : Child(component)
     }
 
     override val viewModel: AuthViewModel = componentContext.retainedInstance {
@@ -25,7 +30,7 @@ public class AuthComponent(
 
     override suspend fun eventListener(rout: AuthDirection) {
         when (rout) {
-            AuthDirection.AuthProcess -> TODO()
+            AuthDirection.AuthProcess -> navigation.push(AuthRouter.AuthProcess)
         }
     }
 
@@ -42,15 +47,18 @@ public class AuthComponent(
 
     private fun createChild(router: AuthRouter, context: ComponentContext): Child {
         return when (router) {
-            AuthRouter.Splash -> Child.Splash(
+            AuthRouter.Splash -> Splash(
                 SplashComponent(
                     componentContext = context,
+                    toAuthProcess = { navigation.push(AuthRouter.AuthProcess) }
                 ),
             )
 
-            is AuthRouter.AuthProcess -> {
-                TODO()
-            }
+            is AuthRouter.AuthProcess -> AuthProcess(
+                AuthProcessComponent(
+                    componentContext = context,
+                ),
+            )
         }
     }
 
