@@ -20,6 +20,10 @@ public val networkModule: Module = module {
     }
 
     single {
+        Api(client = get())
+    }
+
+    single {
         Json {
             useAlternativeNames = false
             ignoreUnknownKeys = true

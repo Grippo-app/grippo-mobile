@@ -10,7 +10,7 @@ import com.grippo.database.models.EquipmentGroupWithEquipments
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-public interface EquipmentGroutDao {
+public interface EquipmentGroupDao {
 
     @Insert(onConflict = OnConflictStrategy.Companion.IGNORE)
     public suspend fun insertOrIgnore(equipmentGroup: EquipmentGroupEntity)

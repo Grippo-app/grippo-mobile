@@ -8,9 +8,9 @@ import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
 
-internal actual fun NativeContext.getDatabaseBuilder(): RoomDatabase.Builder<AppDatabase> {
+internal actual fun NativeContext.getDatabaseBuilder(): RoomDatabase.Builder<Database> {
     val dbFilePath = documentDirectory() + "/grippo_database.db"
-    return Room.databaseBuilder<AppDatabase>(
+    return Room.databaseBuilder<Database>(
         name = dbFilePath,
     )
 }
