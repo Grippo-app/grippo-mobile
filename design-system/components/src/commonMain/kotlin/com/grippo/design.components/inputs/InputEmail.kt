@@ -7,6 +7,7 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
@@ -46,6 +47,7 @@ public fun InputEmail(
                     exit = scaleOut() + fadeOut(),
                 ) {
                     Icon(
+                        modifier = Modifier.size(AppTokens.dp.icon.component),
                         imageVector = AppTokens.icons.X,
                         tint = color,
                         contentDescription = null

@@ -7,6 +7,7 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
@@ -61,6 +62,7 @@ public fun InputPassword(
                     exit = scaleOut() + fadeOut(),
                     content = {
                         Icon(
+                            modifier = Modifier.size(AppTokens.dp.icon.component),
                             imageVector = AppTokens.icons.EyeOff,
                             tint = color,
                             contentDescription = null,
@@ -75,6 +77,7 @@ public fun InputPassword(
                     exit = scaleOut() + fadeOut(),
                     content = {
                         Icon(
+                            modifier = Modifier.size(AppTokens.dp.icon.component),
                             imageVector = AppTokens.icons.Eye,
                             tint = color,
                             contentDescription = null,

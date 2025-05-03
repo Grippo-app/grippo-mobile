@@ -5,33 +5,36 @@ import androidx.compose.ui.graphics.Color
 public interface AppColor {
     public val button: ButtonColors
     public val input: InputColors
-    public val state: StateColors
     public val background: BackgroundColors
     public val bottomSheet: BottomSheetColors
     public val text: TextColors
     public val divider: Color
-
     public val semantic: SemanticColors
     public val overlay: OverlayColors
     public val border: BorderColors
     public val interaction: InteractionColors
     public val elevation: ElevationColors
     public val skeleton: SkeletonColors
+    public val icon: IconColors
 
     public interface ButtonColors {
-        public val primaryBackground: Color
-        public val primaryContent: Color
-        public val primaryDisabledBackground: Color
-        public val primaryDisabledContent: Color
+        public val backgroundPrimary: Color
+        public val contentPrimary: Color
+        public val backgroundPrimaryDisabled: Color
+        public val contentPrimaryDisabled: Color
 
-        public val secondaryBackground: Color
-        public val secondaryContent: Color
-        public val secondaryDisabledBackground: Color
-        public val secondaryDisabledContent: Color
+        public val backgroundSecondary: Color
+        public val contentSecondary: Color
+        public val backgroundSecondaryDisabled: Color
+        public val contentSecondaryDisabled: Color
 
-        public val tertiaryBackground: Color
-        public val tertiaryContent: Color
-        public val tertiaryDisabledContent: Color
+        public val backgroundTertiary: Color
+        public val contentTertiary: Color
+        public val backgroundTertiaryDisabled: Color
+        public val contentTertiaryDisabled: Color
+
+        public val contentTransparentDisabled: Color
+        public val backgroundBlur: Color
     }
 
     public interface InputColors {
@@ -40,20 +43,10 @@ public interface AppColor {
         public val placeholder: Color
         public val text: Color
 
-        public val disabledBackground: Color
-        public val disabledBorder: Color
-        public val disabledText: Color
-        public val disabledPlaceholder: Color
-    }
-
-    public interface StateColors {
-        public val error: Color
-        public val success: Color
-        public val warning: Color
-
-        public val onError: Color
-        public val onSuccess: Color
-        public val onWarning: Color
+        public val backgroundDisabled: Color
+        public val borderDisabled: Color
+        public val textDisabled: Color
+        public val placeholderDisabled: Color
     }
 
     public interface BackgroundColors {
@@ -92,6 +85,12 @@ public interface AppColor {
         public val focus: Color
         public val disabled: Color
         public val error: Color
+
+        public val defaultSecondary: Color
+        public val disabledSecondary: Color
+        public val defaultTertiary: Color
+        public val disabledTertiary: Color
+        public val blur: Color
     }
 
     public interface InteractionColors {
@@ -109,5 +108,11 @@ public interface AppColor {
     public interface SkeletonColors {
         public val background: Color
         public val shimmer: Color
+    }
+
+    public interface IconColors {
+        public val default: Color
+        public val disabled: Color
+        public val accent: Color
     }
 }

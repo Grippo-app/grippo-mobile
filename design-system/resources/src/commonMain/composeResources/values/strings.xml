@@ -2,4 +2,8 @@
 <resources>
     <string name="email_placeholder">Enter email</string>
     <string name="password_placeholder">Enter password</string>
+
+    <string name="login_title">Welcome to Grippo</string>
+    <string name="login_description">Sign in to your account</string>
+
 </resources>

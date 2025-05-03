@@ -1,7 +1,71 @@
 package com.grippo.authorization.login
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.inputs.InputEmail
+import com.grippo.design.components.inputs.InputPassword
+import com.grippo.design.core.AppTokens
+import com.grippo.design.resources.Res
+import com.grippo.design.resources.login_description
+import com.grippo.design.resources.login_title
 
 @Composable
 internal fun LoginScreen() {
+    Column(
+        modifier = Modifier.fillMaxSize()
+            .padding(
+                horizontal = AppTokens.dp.paddings.screenHorizontal,
+                vertical = AppTokens.dp.paddings.screenVertical
+            ),
+    ) {
+
+        Spacer(modifier = Modifier.size(60.dp))
+
+        Text(
+            text = AppTokens.strings.res(Res.string.login_title),
+            style = AppTokens.typography.h2(),
+            color = AppTokens.colors.text.primary,
+        )
+
+        Spacer(modifier = Modifier.size(8.dp))
+
+        Text(
+            text = AppTokens.strings.res(Res.string.login_description),
+            style = AppTokens.typography.b14Med(),
+            color = AppTokens.colors.text.secondary,
+        )
+
+        Spacer(modifier = Modifier.size(36.dp))
+
+        InputEmail(
+            value = "",
+            onValueChange = {}
+        )
+
+        Spacer(modifier = Modifier.size(12.dp))
+
+        InputPassword(
+            value = "",
+            onValueChange = {}
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            text = "SignIn",
+            style = ButtonStyle.Primary,
+            onClick = {}
+        )
+    }
 }

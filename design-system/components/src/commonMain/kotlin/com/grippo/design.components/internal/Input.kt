@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -75,9 +74,8 @@ internal fun Input(
     minLines: Int = 1,
 ) {
     val colors = AppTokens.colors
-    val shape = RoundedCornerShape(12.dp)
-    val height = 50.dp
-    val padding = PaddingValues(horizontal = 12.dp)
+    val shape = RoundedCornerShape(AppTokens.dp.shape.component)
+    val height = AppTokens.dp.size.componentHeight
 
     val hasFocus = remember { mutableStateOf(false) }
     val interactionSource = remember { MutableInteractionSource() }
@@ -86,7 +84,7 @@ internal fun Input(
     }
 
     val borderColor = when {
-        error is InputError.Error -> colors.state.error
+        error is InputError.Error -> colors.semantic.error
         !enabled -> Color.Transparent
         hasFocus.value -> colors.border.focus
         else -> colors.border.default
@@ -94,18 +92,18 @@ internal fun Input(
 
     val backgroundColor = when (enabled) {
         true -> colors.input.background
-        else -> colors.input.disabledBackground
+        else -> colors.input.backgroundDisabled
     }
 
     val placeholderColor = when {
-        error is InputError.Error -> colors.state.error
-        !enabled -> colors.input.disabledPlaceholder
+        error is InputError.Error -> colors.semantic.error
+        !enabled -> colors.input.placeholderDisabled
         else -> colors.input.placeholder
     }
 
     val contentColor = when {
-        error is InputError.Error -> colors.state.error
-        !enabled -> colors.input.disabledText
+        error is InputError.Error -> colors.semantic.error
+        !enabled -> colors.input.textDisabled
         else -> colors.input.text
     }
 
@@ -121,7 +119,7 @@ internal fun Input(
                 .background(color = backgroundColor, shape = shape)
                 .border(width = 1.dp, color = borderColor, shape = shape)
                 .heightIn(min = height)
-                .padding(padding)
+                .padding(horizontal = AppTokens.dp.paddings.componentHorizontal)
                 .onFocusChanged { hasFocus.value = it.hasFocus }
                 .animateContentSize(),
             value = value,
@@ -185,7 +183,7 @@ internal fun Input(
             Text(
                 text = error.msg,
                 style = AppTokens.typography.b11Semi(),
-                color = colors.state.error,
+                color = colors.semantic.error,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
             )
