@@ -7,6 +7,7 @@ import com.grippo.database.entity.MuscleGroupEntity
 
 public data class MuscleGroupWithMuscles(
     @Embedded val group: MuscleGroupEntity,
+
     @Relation(
         parentColumn = "id",
         entityColumn = "muscleGroupId"

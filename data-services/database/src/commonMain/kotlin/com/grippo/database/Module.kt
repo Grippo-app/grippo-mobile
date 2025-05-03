@@ -12,7 +12,6 @@ public val databaseModule: Module = module {
             .setQueryCoroutineContext(Dispatchers.IO)
             .build()
     }
-
     single {
         get<Database>().tokenDao()
     }

@@ -7,6 +7,7 @@ import com.grippo.database.entity.EquipmentGroupEntity
 
 public data class EquipmentGroupWithEquipments(
     @Embedded val group: EquipmentGroupEntity,
+
     @Relation(
         parentColumn = "id",
         entityColumn = "equipmentGroupId"
