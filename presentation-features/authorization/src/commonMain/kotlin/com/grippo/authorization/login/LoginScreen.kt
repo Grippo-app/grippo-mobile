@@ -21,7 +21,11 @@ import com.grippo.design.resources.login_description
 import com.grippo.design.resources.login_title
 
 @Composable
-internal fun LoginScreen() {
+internal fun LoginScreen(
+    state: LoginState,
+    contract: LoginContract
+) {
+
     Column(
         modifier = Modifier
             .fillMaxSize()

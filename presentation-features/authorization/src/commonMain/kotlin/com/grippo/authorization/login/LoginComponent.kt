@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
+import com.grippo.core.collectAsStateMultiplatform
 
 internal class LoginComponent(
     componentContext: ComponentContext,
@@ -18,6 +19,7 @@ internal class LoginComponent(
 
     @Composable
     override fun Render() {
-        LoginScreen()
+        val state = viewModel.state.collectAsStateMultiplatform()
+        LoginScreen(state.value, viewModel)
     }
 }
