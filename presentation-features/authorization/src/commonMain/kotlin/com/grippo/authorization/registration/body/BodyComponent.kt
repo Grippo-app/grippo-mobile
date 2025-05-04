@@ -1,10 +1,10 @@
 package com.grippo.authorization.registration.body
 
-import com.arkivanov.decompose.ComponentContext
 import androidx.compose.runtime.Composable
-import com.grippo.core.collectAsStateMultiplatform
-import com.grippo.core.BaseComponent
+import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.instancekeeper.retainedInstance
+import com.grippo.core.BaseComponent
+import com.grippo.core.collectAsStateMultiplatform
 
 internal class BodyComponent(
     componentContext: ComponentContext,
@@ -14,7 +14,7 @@ internal class BodyComponent(
         BodyViewModel()
     }
 
-    override suspend fun eventListener(rout: BodyDirection) {
+    override suspend fun eventListener(direction: BodyDirection) {
     }
 
     @Composable

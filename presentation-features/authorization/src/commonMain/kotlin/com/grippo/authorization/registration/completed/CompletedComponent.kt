@@ -1,10 +1,10 @@
 package com.grippo.authorization.registration.completed
 
-import com.arkivanov.decompose.ComponentContext
 import androidx.compose.runtime.Composable
-import com.grippo.core.collectAsStateMultiplatform
-import com.grippo.core.BaseComponent
+import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.instancekeeper.retainedInstance
+import com.grippo.core.BaseComponent
+import com.grippo.core.collectAsStateMultiplatform
 
 internal class CompletedComponent(
     componentContext: ComponentContext,
@@ -14,7 +14,7 @@ internal class CompletedComponent(
         CompletedViewModel()
     }
 
-    override suspend fun eventListener(rout: CompletedDirection) {
+    override suspend fun eventListener(direction: CompletedDirection) {
     }
 
     @Composable

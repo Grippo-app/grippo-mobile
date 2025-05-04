@@ -1,10 +1,10 @@
 package com.grippo.authorization.registration.credential
 
-import com.arkivanov.decompose.ComponentContext
 import androidx.compose.runtime.Composable
-import com.grippo.core.collectAsStateMultiplatform
-import com.grippo.core.BaseComponent
+import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.instancekeeper.retainedInstance
+import com.grippo.core.BaseComponent
+import com.grippo.core.collectAsStateMultiplatform
 
 internal class CredentialComponent(
     componentContext: ComponentContext,
@@ -14,7 +14,10 @@ internal class CredentialComponent(
         CredentialViewModel()
     }
 
-    override suspend fun eventListener(rout: CredentialDirection) {
+    override suspend fun eventListener(direction: CredentialDirection) {
+        when (direction) {
+            CredentialDirection.Name -> TODO()
+        }
     }
 
     @Composable

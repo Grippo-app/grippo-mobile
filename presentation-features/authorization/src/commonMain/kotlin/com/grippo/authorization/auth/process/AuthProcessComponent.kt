@@ -27,7 +27,7 @@ internal class AuthProcessComponent(
         AuthProcessViewModel()
     }
 
-    override suspend fun eventListener(rout: AuthProcessDirection) {
+    override suspend fun eventListener(direction: AuthProcessDirection) {
     }
 
     private val navigation = StackNavigation<AuthProcessRouter>()

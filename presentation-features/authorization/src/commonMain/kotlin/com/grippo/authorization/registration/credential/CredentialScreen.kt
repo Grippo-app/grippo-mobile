@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonState
@@ -19,9 +20,9 @@ import com.grippo.design.components.inputs.InputEmail
 import com.grippo.design.components.inputs.InputPassword
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
-import com.grippo.design.resources.login_button_login
-import com.grippo.design.resources.login_description
-import com.grippo.design.resources.login_title
+import com.grippo.design.resources.next
+import com.grippo.design.resources.registration_credential_description
+import com.grippo.design.resources.registration_credential_title
 import com.grippo.presentation.api.auth.models.Email
 import com.grippo.presentation.api.auth.models.Password
 import kotlinx.collections.immutable.ImmutableSet
@@ -44,17 +45,21 @@ internal fun CredentialScreen(
         Spacer(modifier = Modifier.size(60.dp))
 
         Text(
-            text = AppTokens.strings.res(Res.string.login_title),
+            modifier = Modifier.fillMaxWidth(),
+            text = AppTokens.strings.res(Res.string.registration_credential_title),
             style = AppTokens.typography.h2(),
             color = AppTokens.colors.text.primary,
+            textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.size(12.dp))
 
         Text(
-            text = AppTokens.strings.res(Res.string.login_description),
+            modifier = Modifier.fillMaxWidth(),
+            text = AppTokens.strings.res(Res.string.registration_credential_description),
             style = AppTokens.typography.b14Med(),
             color = AppTokens.colors.text.secondary,
+            textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.size(26.dp))
@@ -82,7 +87,7 @@ internal fun CredentialScreen(
 
         Button(
             modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.login_button_login),
+            text = AppTokens.strings.res(Res.string.next),
             state = buttonState,
             style = ButtonStyle.Primary,
             onClick = contract::next

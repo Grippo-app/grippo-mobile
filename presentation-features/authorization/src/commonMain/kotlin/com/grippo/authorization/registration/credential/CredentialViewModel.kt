@@ -16,5 +16,6 @@ internal class CredentialViewModel :
     }
 
     override fun next() {
+        navigateTo(CredentialDirection.Name)
     }
 }

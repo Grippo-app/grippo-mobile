@@ -29,8 +29,8 @@ public class AuthComponent(
         AuthViewModel()
     }
 
-    override suspend fun eventListener(rout: AuthDirection) {
-        when (rout) {
+    override suspend fun eventListener(direction: AuthDirection) {
+        when (direction) {
             AuthDirection.AuthProcess -> navigation.push(AuthRouter.AuthProcess)
         }
     }

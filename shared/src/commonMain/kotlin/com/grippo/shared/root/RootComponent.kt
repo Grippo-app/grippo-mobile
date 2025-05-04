@@ -25,7 +25,7 @@ public class RootComponent(
         RootViewModel()
     }
 
-    override suspend fun eventListener(rout: RootDirection) {
+    override suspend fun eventListener(direction: RootDirection) {
 
     }
 

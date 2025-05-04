@@ -14,7 +14,7 @@ internal class ExperienceComponent(
         ExperienceViewModel()
     }
 
-    override suspend fun eventListener(rout: ExperienceDirection) {
+    override suspend fun eventListener(direction: ExperienceDirection) {
     }
 
     @Composable

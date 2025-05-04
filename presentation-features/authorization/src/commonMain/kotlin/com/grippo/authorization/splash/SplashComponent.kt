@@ -15,8 +15,8 @@ internal class SplashComponent(
         SplashViewModel()
     }
 
-    override suspend fun eventListener(rout: SplashDirection) {
-        when (rout) {
+    override suspend fun eventListener(direction: SplashDirection) {
+        when (direction) {
             SplashDirection.AuthProcess -> toAuthProcess.invoke()
         }
     }

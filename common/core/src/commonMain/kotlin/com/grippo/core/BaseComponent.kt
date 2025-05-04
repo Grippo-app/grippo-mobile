@@ -60,7 +60,7 @@ public abstract class BaseComponent<DIRECTION : BaseDirection>(
         }
     }
 
-    protected abstract suspend fun eventListener(rout: DIRECTION)
+    protected abstract suspend fun eventListener(direction: DIRECTION)
 
     @Composable
     public abstract fun Render()

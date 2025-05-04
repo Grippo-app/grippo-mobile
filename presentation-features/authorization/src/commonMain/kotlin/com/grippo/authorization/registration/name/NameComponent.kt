@@ -1,10 +1,10 @@
 package com.grippo.authorization.registration.name
 
-import com.arkivanov.decompose.ComponentContext
 import androidx.compose.runtime.Composable
-import com.grippo.core.collectAsStateMultiplatform
-import com.grippo.core.BaseComponent
+import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.instancekeeper.retainedInstance
+import com.grippo.core.BaseComponent
+import com.grippo.core.collectAsStateMultiplatform
 
 internal class NameComponent(
     componentContext: ComponentContext,
@@ -14,7 +14,7 @@ internal class NameComponent(
         NameViewModel()
     }
 
-    override suspend fun eventListener(rout: NameDirection) {
+    override suspend fun eventListener(direction: NameDirection) {
     }
 
     @Composable

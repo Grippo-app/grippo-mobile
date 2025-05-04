@@ -15,8 +15,8 @@ internal class LoginComponent(
         LoginViewModel(getKoin().get(), getKoin().get())
     }
 
-    override suspend fun eventListener(rout: LoginDirection) {
-        when (rout) {
+    override suspend fun eventListener(direction: LoginDirection) {
+        when (direction) {
             LoginDirection.Registration -> toRegistration.invoke()
         }
     }

@@ -40,7 +40,7 @@ internal class RegistrationComponent(
         RegistrationViewModel()
     }
 
-    override suspend fun eventListener(rout: RegistrationDirection) {
+    override suspend fun eventListener(direction: RegistrationDirection) {
     }
 
     private val navigation = StackNavigation<RegistrationRouter>()

@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonState
@@ -51,17 +52,21 @@ internal fun LoginScreen(
         Spacer(modifier = Modifier.size(60.dp))
 
         Text(
+            modifier = Modifier.fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.login_title),
             style = AppTokens.typography.h2(),
             color = AppTokens.colors.text.primary,
+            textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.size(12.dp))
 
         Text(
+            modifier = Modifier.fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.login_description),
             style = AppTokens.typography.b14Med(),
             color = AppTokens.colors.text.secondary,
+            textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.size(26.dp))
