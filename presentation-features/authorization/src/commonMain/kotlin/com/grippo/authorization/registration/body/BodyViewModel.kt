@@ -1,10 +1,16 @@
 package com.grippo.authorization.registration.body
 
 import com.grippo.core.BaseViewModel
+import com.grippo.dialog.api.DialogConfig
+import com.grippo.dialog.api.DialogController
+import org.koin.core.component.inject
 
 internal class BodyViewModel : BaseViewModel<BodyState, BodyDirection, BodyLoader>(BodyState()),
     BodyContract {
-    override fun next() {
 
+    private val dialogController by inject<DialogController>()
+
+    override fun next() {
+        dialogController.show(DialogConfig.WeightPicker(state.value.weight))
     }
 }

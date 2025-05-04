@@ -25,9 +25,7 @@ public class RootComponent(
         RootViewModel()
     }
 
-    override suspend fun eventListener(direction: RootDirection) {
-
-    }
+    override suspend fun eventListener(direction: RootDirection) {}
 
     private val navigation = StackNavigation<RootRouter>()
 

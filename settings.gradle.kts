@@ -53,6 +53,8 @@ include(":presentation-features:presentation-api")
 include(":presentation-features:authorization")
 
 include(":dialog-features:dialog-api")
+include(":dialog-features:weight-picker")
+include(":dialog-features:height-picker")
 
 include(":common:platform-core")
 include(":common:logger")

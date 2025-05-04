@@ -30,11 +30,16 @@ kotlin {
         implementation(projects.presentationFeatures.presentationApi)
         implementation(projects.presentationFeatures.authorization)
 
+        implementation(projects.dialogFeatures.dialogApi)
+        implementation(projects.dialogFeatures.weightPicker)
+        implementation(projects.dialogFeatures.heightPicker)
+
         implementation(libs.koin.core)
         implementation(libs.immutable.collections)
 
-        implementation(compose.foundation)
         implementation(compose.ui)
+        implementation(compose.material3)
+        implementation(compose.foundation)
     }
 
     sourceSets.androidMain.dependencies {

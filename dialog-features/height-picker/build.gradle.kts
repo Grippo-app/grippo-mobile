@@ -11,12 +11,6 @@ apply(from = "$rootDir/gradle/common/kotlin.gradle")
 kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.common.core)
-        implementation(projects.common.validation)
-
-        implementation(projects.dialogFeatures.dialogApi)
-
-        implementation(projects.presentationFeatures.presentationApi)
-        implementation(projects.dataFeatures.featureApi)
 
         implementation(projects.designSystem.core)
         implementation(projects.designSystem.resources)
