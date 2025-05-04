@@ -10,7 +10,6 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
-import com.grippo.core.models.BaseDirection
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.height.picker.HeightPickerComponent
 import com.grippo.weight.picker.WeightPickerComponent
@@ -21,6 +20,10 @@ internal class DialogComponent(
 
     private val dialog = SlotNavigation<DialogConfig>()
 
+    internal sealed class Child(open val component: BaseComponent<*>) {
+        data class WeightPicker(override val component: WeightPickerComponent) : Child(component)
+        data class HeightPicker(override val component: HeightPickerComponent) : Child(component)
+    }
 
     override val viewModel = componentContext.retainedInstance {
         DialogViewModel()
@@ -29,7 +32,7 @@ internal class DialogComponent(
     override suspend fun eventListener(direction: DialogDirection) {
     }
 
-    internal val childSlot: Value<ChildSlot<DialogConfig, BaseComponent<out BaseDirection>>> =
+    internal val childSlot: Value<ChildSlot<DialogConfig, Child>> =
         childSlot(
             source = dialog,
             serializer = DialogConfig.serializer(),
@@ -37,14 +40,18 @@ internal class DialogComponent(
             handleBackButton = true,
         ) { config, context ->
             when (config) {
-                is DialogConfig.WeightPicker -> WeightPickerComponent(
-                    componentContext = context,
-                    onDismiss = dialog::dismiss
+                is DialogConfig.WeightPicker -> Child.WeightPicker(
+                    WeightPickerComponent(
+                        componentContext = context,
+                        onDismiss = dialog::dismiss
+                    )
                 )
 
-                is DialogConfig.HeightPicker -> HeightPickerComponent(
-                    componentContext = context,
-                    onDismiss = dialog::dismiss
+                is DialogConfig.HeightPicker -> Child.HeightPicker(
+                    HeightPickerComponent(
+                        componentContext = context,
+                        onDismiss = dialog::dismiss
+                    )
                 )
             }
         }
@@ -53,6 +60,6 @@ internal class DialogComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        DialogScreen(childSlot, state.value, loaders.value, viewModel)
+        DialogScreen(childSlot, dialog, state.value, loaders.value, viewModel)
     }
 }

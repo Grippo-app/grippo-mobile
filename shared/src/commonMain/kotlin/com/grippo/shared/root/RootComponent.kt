@@ -12,6 +12,7 @@ import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
 import com.grippo.design.core.AppTheme
 import com.grippo.presentation.api.RootRouter
+import com.grippo.shared.dialog.DialogComponent
 
 public class RootComponent(
     componentContext: ComponentContext,
@@ -20,6 +21,8 @@ public class RootComponent(
     public sealed class Child(public open val component: BaseComponent<*>) {
         public data class Authorization(override val component: AuthComponent) : Child(component)
     }
+
+    private val dialogComponent: DialogComponent = DialogComponent(componentContext)
 
     override val viewModel: RootViewModel = componentContext.retainedInstance {
         RootViewModel()
@@ -57,6 +60,7 @@ public class RootComponent(
             val state = viewModel.state.collectAsStateMultiplatform()
             val loaders = viewModel.loaders.collectAsStateMultiplatform()
             RootScreen(childStack, state.value, viewModel, loaders.value)
+            dialogComponent.Render()
         }
     }
 }
