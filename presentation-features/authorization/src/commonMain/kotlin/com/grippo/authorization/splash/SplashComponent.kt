@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
+import com.grippo.core.collectAsStateMultiplatform
 
 internal class SplashComponent(
     componentContext: ComponentContext,
@@ -22,6 +23,8 @@ internal class SplashComponent(
 
     @Composable
     override fun Render() {
+        viewModel.state.collectAsStateMultiplatform()
+        viewModel.loaders.collectAsStateMultiplatform()
         SplashScreen()
     }
 }

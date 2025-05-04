@@ -9,6 +9,7 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.authorization.AuthComponent
 import com.grippo.core.BaseComponent
+import com.grippo.core.collectAsStateMultiplatform
 import com.grippo.design.core.AppTheme
 import com.grippo.presentation.api.RootRouter
 
@@ -16,8 +17,8 @@ public class RootComponent(
     componentContext: ComponentContext,
 ) : BaseComponent<RootDirection>(componentContext) {
 
-    internal sealed class Child(open val component: BaseComponent<*>) {
-        data class Authorization(override val component: AuthComponent) : Child(component)
+    public sealed class Child(public open val component: BaseComponent<*>) {
+        public data class Authorization(override val component: AuthComponent) : Child(component)
     }
 
     override val viewModel: RootViewModel = componentContext.retainedInstance {
@@ -54,6 +55,10 @@ public class RootComponent(
 
     @Composable
     override fun Render() {
-        AppTheme { RootScreen(this) }
+        AppTheme {
+            val state = viewModel.state.collectAsStateMultiplatform()
+            val loaders = viewModel.loaders.collectAsStateMultiplatform()
+            RootScreen(childStack, state.value, viewModel, loaders.value)
+        }
     }
 }

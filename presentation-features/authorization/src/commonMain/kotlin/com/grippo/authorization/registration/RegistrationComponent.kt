@@ -7,7 +7,13 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.instancekeeper.retainedInstance
-import com.grippo.authorization.splash.SplashComponent
+import com.grippo.authorization.registration.body.BodyComponent
+import com.grippo.authorization.registration.completed.CompletedComponent
+import com.grippo.authorization.registration.credential.CredentialComponent
+import com.grippo.authorization.registration.excluded.muscles.ExcludedMusclesComponent
+import com.grippo.authorization.registration.expirience.ExpirienceComponent
+import com.grippo.authorization.registration.missing.equipment.MissingEquipmentComponent
+import com.grippo.authorization.registration.name.NameComponent
 import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
 import com.grippo.presentation.api.auth.RegistrationRouter
@@ -17,7 +23,17 @@ internal class RegistrationComponent(
 ) : BaseComponent<RegistrationDirection>(componentContext) {
 
     internal sealed class Child(open val component: BaseComponent<*>) {
-        data class Credential(override val component: SplashComponent) : Child(component)
+        data class Credential(override val component: CredentialComponent) : Child(component)
+        data class Name(override val component: NameComponent) : Child(component)
+        data class Body(override val component: BodyComponent) : Child(component)
+        data class Experience(override val component: ExpirienceComponent) : Child(component)
+        data class ExcludedMuscles(override val component: ExcludedMusclesComponent) :
+            Child(component)
+
+        data class MussingEquipment(override val component: MissingEquipmentComponent) :
+            Child(component)
+
+        data class Completed(override val component: CompletedComponent) : Child(component)
     }
 
     override val viewModel = componentContext.retainedInstance {
@@ -40,13 +56,47 @@ internal class RegistrationComponent(
 
     private fun createChild(router: RegistrationRouter, context: ComponentContext): Child {
         return when (router) {
-            RegistrationRouter.Body -> TODO()
-            RegistrationRouter.Completed -> TODO()
-            RegistrationRouter.Credentials -> TODO()
-            RegistrationRouter.ExcludedMuscles -> TODO()
-            RegistrationRouter.Experience -> TODO()
-            RegistrationRouter.MissingEquipment -> TODO()
-            RegistrationRouter.Name -> TODO()
+            RegistrationRouter.Body -> Child.Body(
+                BodyComponent(
+                    componentContext = context,
+                ),
+            )
+
+            RegistrationRouter.Completed -> Child.Completed(
+                CompletedComponent(
+                    componentContext = context,
+                ),
+            )
+
+            RegistrationRouter.Credentials -> Child.Credential(
+                CredentialComponent(
+                    componentContext = context,
+                ),
+            )
+
+            RegistrationRouter.ExcludedMuscles -> Child.ExcludedMuscles(
+                ExcludedMusclesComponent(
+                    componentContext = context,
+                ),
+            )
+
+            RegistrationRouter.Experience -> Child.Experience(
+                ExpirienceComponent(
+                    componentContext = context,
+                ),
+            )
+
+            RegistrationRouter.MissingEquipment -> Child.MussingEquipment(
+                MissingEquipmentComponent(
+                    componentContext = context,
+                ),
+            )
+
+            RegistrationRouter.Name -> Child.Name(
+                NameComponent(
+                    componentContext = context,
+                ),
+            )
         }
     }
 

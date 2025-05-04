@@ -31,6 +31,7 @@ kotlin {
         implementation(projects.presentationFeatures.authorization)
 
         implementation(libs.koin.core)
+        implementation(libs.immutable.collections)
 
         implementation(compose.foundation)
         implementation(compose.ui)
