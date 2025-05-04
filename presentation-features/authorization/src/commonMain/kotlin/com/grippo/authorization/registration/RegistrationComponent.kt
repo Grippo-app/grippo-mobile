@@ -97,6 +97,7 @@ internal class RegistrationComponent(
             RegistrationRouter.Name -> Child.Name(
                 NameComponent(
                     componentContext = context,
+                    toBody = { navigation.push(RegistrationRouter.Body) }
                 ),
             )
         }

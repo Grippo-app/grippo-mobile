@@ -6,6 +6,6 @@ import com.grippo.presentation.api.auth.models.Password
 
 @Immutable
 internal data class CredentialState(
-    val email: Email = Email.Invalid(""),
-    val password: Password = Password.Invalid(""),
+    val email: Email = Email.of(""),
+    val password: Password = Password.of(""),
 )
