@@ -1,5 +1,6 @@
 package com.grippo.database
 
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.grippo.platform.core.NativeContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -9,6 +10,7 @@ import org.koin.dsl.module
 public val databaseModule: Module = module {
     single<Database> {
         get<NativeContext>().getDatabaseBuilder()
+            .setDriver(BundledSQLiteDriver())
             .setQueryCoroutineContext(Dispatchers.IO)
             .build()
     }
