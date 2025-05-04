@@ -1,5 +1,6 @@
 package com.grippo.database
 
+import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.grippo.database.dao.EquipmentDao
@@ -46,8 +47,9 @@ import com.grippo.database.entity.WeightHistoryEntity
         WeightHistoryEntity::class
     ],
     version = 1,
-    exportSchema = false
+    exportSchema = true
 )
+@ConstructedBy(DatabaseConstructor::class)
 public abstract class Database : RoomDatabase() {
     public abstract fun userDao(): UserDao
     public abstract fun tokenDao(): TokenDao

@@ -9,7 +9,7 @@ public data class TrainingEntity(
     val duration: Int,
     val createdAt: String,
     val volume: Float,
-    val repetitions: Int?,
+    val repetitions: Int,
     val intensity: Float,
     val updatedAt: String,
 )
