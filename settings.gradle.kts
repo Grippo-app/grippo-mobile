@@ -52,6 +52,8 @@ include(":data-features:muscle")
 include(":presentation-features:presentation-api")
 include(":presentation-features:authorization")
 
+include(":dialog-features:dialog-api")
+
 include(":common:platform-core")
 include(":common:logger")
 include(":common:core")
