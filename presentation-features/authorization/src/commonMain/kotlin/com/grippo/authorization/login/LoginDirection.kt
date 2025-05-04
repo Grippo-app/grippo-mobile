@@ -2,4 +2,6 @@ package com.grippo.authorization.login
 
 import com.grippo.core.models.BaseDirection
 
-internal sealed interface LoginDirection : BaseDirection
+internal sealed interface LoginDirection : BaseDirection {
+    data object Registration : LoginDirection
+}

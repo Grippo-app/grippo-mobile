@@ -5,9 +5,11 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.authorization.login.LoginComponent
+import com.grippo.authorization.registration.RegistrationComponent
 import com.grippo.core.BaseComponent
 import com.grippo.presentation.api.auth.AuthProcessRouter
 
@@ -17,6 +19,7 @@ internal class AuthProcessComponent(
 
     internal sealed class Child(open val component: BaseComponent<*>) {
         data class Login(override val component: LoginComponent) : Child(component)
+        data class Registration(override val component: RegistrationComponent) : Child(component)
     }
 
     override val viewModel = componentContext.retainedInstance {
@@ -44,11 +47,16 @@ internal class AuthProcessComponent(
         return when (router) {
             AuthProcessRouter.Login -> Child.Login(
                 LoginComponent(
-                    componentContext = context
+                    componentContext = context,
+                    toRegistration = { navigation.push(AuthProcessRouter.Registration) }
                 )
             )
 
-            AuthProcessRouter.Registration -> TODO()
+            AuthProcessRouter.Registration -> Child.Registration(
+                RegistrationComponent(
+                    componentContext = context,
+                )
+            )
         }
     }
 
