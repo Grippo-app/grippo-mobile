@@ -19,7 +19,7 @@ import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.inputs.InputName
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
-import com.grippo.design.resources.next
+import com.grippo.design.resources.continue_btn
 import com.grippo.design.resources.registration_name_description
 import com.grippo.design.resources.registration_name_title
 import com.grippo.presentation.api.auth.models.Name
@@ -78,7 +78,7 @@ internal fun NameScreen(
 
         Button(
             modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.next),
+            text = AppTokens.strings.res(Res.string.continue_btn),
             state = buttonState,
             style = ButtonStyle.Primary,
             onClick = contract::next

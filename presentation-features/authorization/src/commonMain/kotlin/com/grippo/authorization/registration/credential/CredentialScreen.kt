@@ -20,7 +20,7 @@ import com.grippo.design.components.inputs.InputEmail
 import com.grippo.design.components.inputs.InputPassword
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
-import com.grippo.design.resources.next
+import com.grippo.design.resources.next_btn
 import com.grippo.design.resources.registration_credential_description
 import com.grippo.design.resources.registration_credential_title
 import com.grippo.presentation.api.auth.models.Email
@@ -87,7 +87,7 @@ internal fun CredentialScreen(
 
         Button(
             modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.next),
+            text = AppTokens.strings.res(Res.string.next_btn),
             state = buttonState,
             style = ButtonStyle.Primary,
             onClick = contract::next

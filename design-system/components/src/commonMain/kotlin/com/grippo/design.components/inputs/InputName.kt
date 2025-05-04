@@ -24,6 +24,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.internal.Input
+import com.grippo.design.components.internal.InputStyle
 import com.grippo.design.components.internal.PlaceHolder
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
@@ -42,7 +43,9 @@ public fun InputName(
     Input(
         modifier = modifier,
         value = value,
-        onValueChange = onValueChange,
+        inputStyle = InputStyle.Default(
+            onValueChange = onValueChange,
+        ),
         trailing = { color ->
             Box {
                 AnimatedVisibility(
@@ -76,9 +79,9 @@ public fun InputName(
             focusManager.moveFocus(FocusDirection.Enter)
         },
         keyboardOptions = KeyboardOptions(
-            capitalization = KeyboardCapitalization.None,
+            capitalization = KeyboardCapitalization.Words,
             imeAction = ImeAction.Next,
-            keyboardType = KeyboardType.Email
+            keyboardType = KeyboardType.Text
         )
     )
 }

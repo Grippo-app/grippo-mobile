@@ -40,7 +40,10 @@ import com.grippo.design.core.AppTokens
 
 @Immutable
 internal sealed class InputStyle {
-    data object Default : InputStyle()
+    data class Default(
+        val onValueChange: (String) -> Unit,
+    ) : InputStyle()
+
     data class Clickable(val onClick: () -> Unit) : InputStyle()
 }
 
@@ -60,11 +63,10 @@ internal sealed class PlaceHolder(open val value: String) {
 internal fun Input(
     modifier: Modifier = Modifier,
     value: String,
-    onValueChange: (String) -> Unit,
     placeholder: PlaceHolder,
     enabled: Boolean = true,
     error: InputError = InputError.Non,
-    inputStyle: InputStyle = InputStyle.Default,
+    inputStyle: InputStyle,
     textStyle: TextStyle = AppTokens.typography.b13Semi(),
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
@@ -123,7 +125,15 @@ internal fun Input(
                 .onFocusChanged { hasFocus.value = it.hasFocus }
                 .animateContentSize(),
             value = value,
-            onValueChange = onValueChange,
+            onValueChange = when (inputStyle) {
+                is InputStyle.Clickable -> {
+                    {}
+                }
+
+                is InputStyle.Default -> {
+                    inputStyle.onValueChange
+                }
+            },
             readOnly = inputStyle is InputStyle.Clickable,
             interactionSource = interactionSource,
             minLines = minLines,
@@ -179,7 +189,7 @@ internal fun Input(
                                     style = lerp(
                                         start = AppTokens.typography.b13Semi()
                                             .copy(color = placeholderColor),
-                                        stop = AppTokens.typography.b11Semi()
+                                        stop = AppTokens.typography.b12Semi()
                                             .copy(color = placeholderColor),
                                         fraction = textStyleAnimateFraction.value,
                                     ),

@@ -28,6 +28,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.internal.Input
+import com.grippo.design.components.internal.InputStyle
 import com.grippo.design.components.internal.PlaceHolder
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
@@ -107,7 +108,9 @@ public fun InputPassword(
                 )
             }
         },
-        onValueChange = onValueChange,
+        inputStyle = InputStyle.Default(
+            onValueChange = onValueChange,
+        ),
         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
         placeholder = PlaceHolder.OverInput(
             value = AppTokens.strings.res(Res.string.password_placeholder)

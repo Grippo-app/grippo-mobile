@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="next">Next</string>
-    <string name="skip">Skip</string>
-    <string name="continue">Continue</string>
+    <string name="kg">kg</string>
+    <string name="cm">cm</string>
+    <string name="next_btn">Next</string>
+    <string name="skip_btn">Skip</string>
+    <string name="continue_btn">Continue</string>
     <string name="email_placeholder">Enter email</string>
     <string name="password_placeholder">Enter password</string>
     <string name="name_placeholder">e.g. Alex</string>
+    <string name="weight_placeholder">Enter your weight</string>
+    <string name="height_placeholder">Enter your height</string>
 
     <string name="login_title">Welcome to Grippo</string>
     <string name="login_description">Sign in to your account</string>

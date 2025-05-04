@@ -1,3 +1,5 @@
 package com.grippo.authorization.registration.body
 
-internal interface BodyContract
+internal interface BodyContract {
+    fun next()
+}
