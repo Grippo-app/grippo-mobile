@@ -69,14 +69,20 @@ internal class RegistrationComponent(
             RegistrationRouter.Credentials -> Child.Credential(
                 CredentialComponent(
                     componentContext = context,
-                    toName = { navigation.push(RegistrationRouter.Name) }
+                    toName = { e, p ->
+                        navigation.push(RegistrationRouter.Name)
+                        viewModel.saveCredentials(e, p)
+                    }
                 ),
             )
 
             RegistrationRouter.Name -> Child.Name(
                 NameComponent(
                     componentContext = context,
-                    toBody = { navigation.push(RegistrationRouter.Body) }
+                    toBody = { n ->
+                        navigation.push(RegistrationRouter.Body)
+                        viewModel.saveName(n)
+                    }
                 ),
             )
 

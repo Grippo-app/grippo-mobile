@@ -16,6 +16,10 @@ internal class CredentialViewModel :
     }
 
     override fun next() {
-        navigateTo(CredentialDirection.Name)
+        val direction = CredentialDirection.Name(
+            email = state.value.email.value,
+            password = state.value.password.value
+        )
+        navigateTo(direction)
     }
 }

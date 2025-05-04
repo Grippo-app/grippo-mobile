@@ -10,6 +10,9 @@ internal class NameViewModel : BaseViewModel<NameState, NameDirection, NameLoade
     }
 
     override fun next() {
-        navigateTo(NameDirection.Body)
+        val direction = NameDirection.Body(
+            name = state.value.name.value
+        )
+        navigateTo(direction)
     }
 }
