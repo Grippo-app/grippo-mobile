@@ -1,14 +1,19 @@
 package com.grippo.authorization.login
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.button.Button
@@ -18,8 +23,13 @@ import com.grippo.design.components.inputs.InputEmail
 import com.grippo.design.components.inputs.InputPassword
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
+import com.grippo.design.resources.login_button_login
+import com.grippo.design.resources.login_button_registration
+import com.grippo.design.resources.login_button_registration_label
 import com.grippo.design.resources.login_description
 import com.grippo.design.resources.login_title
+import com.grippo.presentation.api.auth.models.Email
+import com.grippo.presentation.api.auth.models.Password
 import kotlinx.collections.immutable.ImmutableSet
 
 @Composable
@@ -70,12 +80,53 @@ internal fun LoginScreen(
 
         Spacer(modifier = Modifier.weight(1f))
 
+        val buttonState = remember(loaders, state.email, state.password) {
+            when {
+                loaders.contains(LoginLoader.LoginButton) -> ButtonState.Loading
+                state.email is Email.Valid && state.password is Password.Valid -> ButtonState.Enabled
+                else -> ButtonState.Disabled
+            }
+        }
+
         Button(
             modifier = Modifier.fillMaxWidth(),
-            text = "SignIn",
-            state = ButtonState.Loading,
+            text = AppTokens.strings.res(Res.string.login_button_login),
+            state = buttonState,
             style = ButtonStyle.Primary,
-            onClick = {}
+            onClick = contract::login
+        )
+
+        Spacer(modifier = Modifier.size(24.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            HorizontalDivider(
+                modifier = Modifier.weight(1f),
+                color = AppTokens.colors.divider
+            )
+
+            Text(
+                text = AppTokens.strings.res(Res.string.login_button_registration_label),
+                style = AppTokens.typography.b14Reg(),
+                color = AppTokens.colors.text.secondary,
+            )
+
+            HorizontalDivider(
+                modifier = Modifier.weight(1f),
+                color = AppTokens.colors.divider
+            )
+        }
+
+        Spacer(modifier = Modifier.size(16.dp))
+
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            text = AppTokens.strings.res(Res.string.login_button_registration),
+            style = ButtonStyle.Secondary,
+            onClick = contract::register
         )
     }
 }

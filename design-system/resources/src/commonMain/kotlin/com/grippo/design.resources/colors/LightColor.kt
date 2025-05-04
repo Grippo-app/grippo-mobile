@@ -25,7 +25,7 @@ public object LightColor : AppColor {
         override val backgroundPrimaryDisabled = Neutral200
         override val contentPrimaryDisabled = Neutral500
 
-        override val backgroundSecondary = Neutral200
+        override val backgroundSecondary = Transparent
         override val contentSecondary = Primary
         override val backgroundSecondaryDisabled = Neutral100
         override val contentSecondaryDisabled = Neutral300
@@ -36,7 +36,6 @@ public object LightColor : AppColor {
         override val contentTertiaryDisabled = Neutral300
 
         override val contentTransparentDisabled = Neutral300
-        override val backgroundBlur = Color(0x40FFFFFF)
     }
 
     override val border: AppColor.BorderColors = object : AppColor.BorderColors {
@@ -45,11 +44,10 @@ public object LightColor : AppColor {
         override val disabled = Neutral200
         override val error = Error
 
-        override val defaultSecondary = Neutral300
+        override val defaultSecondary = Primary.copy(alpha = 0.3f)
         override val disabledSecondary = Neutral200
         override val defaultTertiary = Neutral300
         override val disabledTertiary = Neutral200
-        override val blur = Color(0x33FFFFFF)
     }
 
     override val icon: AppColor.IconColors = object : AppColor.IconColors {
@@ -118,5 +116,5 @@ public object LightColor : AppColor {
         override val shimmer = Neutral100
     }
 
-    override val divider: Color = Neutral300
+    override val divider: Color = Neutral200
 }

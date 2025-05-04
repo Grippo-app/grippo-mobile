@@ -5,5 +5,8 @@
 
     <string name="login_title">Welcome to Grippo</string>
     <string name="login_description">Sign in to your account</string>
+    <string name="login_button_login">Log in</string>
+    <string name="login_button_registration_label">Don't have an account yet?</string>
+    <string name="login_button_registration">Register</string>
 
 </resources>

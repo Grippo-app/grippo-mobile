@@ -34,7 +34,6 @@ public interface AppColor {
         public val contentTertiaryDisabled: Color
 
         public val contentTransparentDisabled: Color
-        public val backgroundBlur: Color
     }
 
     public interface InputColors {
@@ -90,7 +89,6 @@ public interface AppColor {
         public val disabledSecondary: Color
         public val defaultTertiary: Color
         public val disabledTertiary: Color
-        public val blur: Color
     }
 
     public interface InteractionColors {

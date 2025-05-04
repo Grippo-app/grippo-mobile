@@ -5,6 +5,7 @@ import com.grippo.data.features.api.authorization.AuthorizationFeature
 import com.grippo.data.features.api.user.UserFeature
 import com.grippo.presentation.api.auth.models.Email
 import com.grippo.presentation.api.auth.models.Password
+import kotlinx.coroutines.delay
 
 internal class LoginViewModel(
     private val authorizationFeature: AuthorizationFeature,
@@ -20,7 +21,13 @@ internal class LoginViewModel(
         update { it.copy(password = Password.of(value)) }
     }
 
-    override fun login(value: String) {
-        TODO("Not yet implemented")
+    override fun login() {
+        safeLaunch(loader = LoginLoader.LoginButton) {
+            delay(1000)
+        }
+    }
+
+    override fun register() {
+
     }
 }

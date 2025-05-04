@@ -6,6 +6,7 @@ import com.grippo.core.models.BaseLoader
 import com.grippo.logger.AppLogger
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -60,9 +61,21 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
 
     protected fun safeLaunch(
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        loader: LOADER? = null,
         block: suspend CoroutineScope.() -> Unit,
     ) {
-        coroutineScope.launch(dispatcher + handler, block = block)
+        if (loader != null) addLoader(loader)
+        coroutineScope.launch(dispatcher + handler, block = block).invokeOnCompletion {
+            if (loader != null) removeLoader(loader)
+        }
+    }
+
+    private fun addLoader(loader: LOADER) {
+        _loaders.update { it.toMutableSet().apply { add(loader) }.toPersistentSet() }
+    }
+
+    private fun removeLoader(loader: LOADER) {
+        _loaders.update { it.toMutableSet().apply { remove(loader) }.toPersistentSet() }
     }
 
     override fun onDestroy() {
