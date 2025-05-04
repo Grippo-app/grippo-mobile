@@ -8,6 +8,7 @@ import com.grippo.core.collectAsStateMultiplatform
 
 internal class CredentialComponent(
     componentContext: ComponentContext,
+    private val toName: () -> Unit
 ) : BaseComponent<CredentialDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
@@ -16,7 +17,7 @@ internal class CredentialComponent(
 
     override suspend fun eventListener(direction: CredentialDirection) {
         when (direction) {
-            CredentialDirection.Name -> TODO()
+            CredentialDirection.Name -> toName.invoke()
         }
     }
 

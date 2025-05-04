@@ -5,6 +5,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.authorization.registration.body.BodyComponent
@@ -71,6 +72,7 @@ internal class RegistrationComponent(
             RegistrationRouter.Credentials -> Child.Credential(
                 CredentialComponent(
                     componentContext = context,
+                    toName = { navigation.push(RegistrationRouter.Name) }
                 ),
             )
 
