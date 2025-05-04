@@ -1,0 +1,3 @@
+package com.grippo.authorization.registration.experience
+
+internal interface ExperienceContract

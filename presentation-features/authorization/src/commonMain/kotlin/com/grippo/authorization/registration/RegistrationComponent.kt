@@ -11,7 +11,7 @@ import com.grippo.authorization.registration.body.BodyComponent
 import com.grippo.authorization.registration.completed.CompletedComponent
 import com.grippo.authorization.registration.credential.CredentialComponent
 import com.grippo.authorization.registration.excluded.muscles.ExcludedMusclesComponent
-import com.grippo.authorization.registration.expirience.ExpirienceComponent
+import com.grippo.authorization.registration.experience.ExperienceComponent
 import com.grippo.authorization.registration.missing.equipment.MissingEquipmentComponent
 import com.grippo.authorization.registration.name.NameComponent
 import com.grippo.core.BaseComponent
@@ -26,7 +26,7 @@ internal class RegistrationComponent(
         data class Credential(override val component: CredentialComponent) : Child(component)
         data class Name(override val component: NameComponent) : Child(component)
         data class Body(override val component: BodyComponent) : Child(component)
-        data class Experience(override val component: ExpirienceComponent) : Child(component)
+        data class Experience(override val component: ExperienceComponent) : Child(component)
         data class ExcludedMuscles(override val component: ExcludedMusclesComponent) :
             Child(component)
 
@@ -81,7 +81,7 @@ internal class RegistrationComponent(
             )
 
             RegistrationRouter.Experience -> Child.Experience(
-                ExpirienceComponent(
+                ExperienceComponent(
                     componentContext = context,
                 ),
             )
@@ -104,6 +104,6 @@ internal class RegistrationComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        RegistrationScreen(state.value, loaders.value, viewModel)
+        RegistrationScreen(childStack, state.value, loaders.value, viewModel)
     }
 }
