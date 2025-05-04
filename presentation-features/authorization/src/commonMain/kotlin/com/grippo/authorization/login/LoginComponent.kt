@@ -20,6 +20,7 @@ internal class LoginComponent(
     @Composable
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
-        LoginScreen(state.value, viewModel)
+        val loaders = viewModel.loaders.collectAsStateMultiplatform()
+        LoginScreen(state.value, loaders.value, viewModel)
     }
 }

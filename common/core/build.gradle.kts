@@ -20,6 +20,7 @@ kotlin {
         api(libs.koin.core)
 
         implementation(libs.kotlinx.coroutines.core)
+        implementation(libs.immutable.collections)
         implementation(compose.foundation)
     }
 }

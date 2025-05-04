@@ -56,6 +56,7 @@ include(":common:platform-core")
 include(":common:logger")
 include(":common:core")
 include(":common:errors")
+include(":common:validation")
 
 include(":data-mappers:database-mapper")
 include(":data-mappers:network-mapper")

@@ -9,7 +9,7 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.authorization.login.LoginComponent
 import com.grippo.core.BaseComponent
-import com.grippo.presentation.api.AuthProcessRouter
+import com.grippo.presentation.api.auth.AuthProcessRouter
 
 internal class AuthProcessComponent(
     componentContext: ComponentContext,

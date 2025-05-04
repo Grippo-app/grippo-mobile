@@ -2,7 +2,10 @@ package com.grippo.core
 
 import com.arkivanov.essenty.instancekeeper.InstanceKeeper
 import com.grippo.core.models.BaseDirection
+import com.grippo.core.models.BaseLoader
 import com.grippo.logger.AppLogger
+import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -20,7 +23,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 
-public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection>(
+public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : BaseLoader>(
     state: STATE,
 ) : InstanceKeeper.Instance, KoinComponent {
 
@@ -36,6 +39,9 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection>(
     protected fun navigateTo(destination: DIRECTION) {
         coroutineScope.launch { _navigator.send(destination) }
     }
+
+    private val _loaders = MutableStateFlow<ImmutableSet<LOADER>>(persistentSetOf())
+    public val loaders: StateFlow<ImmutableSet<LOADER>> = _loaders.asStateFlow()
 
     private val handler = CoroutineExceptionHandler { _, exception -> sendError(exception) }
 

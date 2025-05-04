@@ -27,7 +27,7 @@ public abstract class BaseComponent<DIRECTION : BaseDirection>(
 
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
-    protected abstract val viewModel: BaseViewModel<*, DIRECTION>
+    protected abstract val viewModel: BaseViewModel<*, DIRECTION, *>
 
     private val componentIdentifier by inject<ComponentLifecycleEmitter>()
 

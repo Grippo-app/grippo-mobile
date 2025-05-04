@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.inputs.InputEmail
 import com.grippo.design.components.inputs.InputPassword
@@ -19,10 +20,12 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.login_description
 import com.grippo.design.resources.login_title
+import kotlinx.collections.immutable.ImmutableSet
 
 @Composable
 internal fun LoginScreen(
     state: LoginState,
+    loaders: ImmutableSet<LoginLoader>,
     contract: LoginContract
 ) {
 
@@ -54,15 +57,15 @@ internal fun LoginScreen(
         Spacer(modifier = Modifier.size(26.dp))
 
         InputEmail(
-            value = "",
-            onValueChange = {}
+            value = state.email.value,
+            onValueChange = contract::setEmail
         )
 
         Spacer(modifier = Modifier.size(16.dp))
 
         InputPassword(
-            value = "",
-            onValueChange = {}
+            value = state.password.value,
+            onValueChange = contract::setPassword
         )
 
         Spacer(modifier = Modifier.weight(1f))
@@ -70,6 +73,7 @@ internal fun LoginScreen(
         Button(
             modifier = Modifier.fillMaxWidth(),
             text = "SignIn",
+            state = ButtonState.Loading,
             style = ButtonStyle.Primary,
             onClick = {}
         )

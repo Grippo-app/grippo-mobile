@@ -1,4 +1,4 @@
-package com.grippo.presentation.api
+package com.grippo.presentation.api.auth
 
 import com.grippo.core.models.BaseRouter
 import kotlinx.serialization.Serializable
