@@ -1,0 +1,3 @@
+package com.grippo.authorization.registration.completed
+
+internal interface CompletedContract

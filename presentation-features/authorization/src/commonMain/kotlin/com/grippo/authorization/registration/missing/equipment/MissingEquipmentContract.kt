@@ -1,0 +1,3 @@
+package com.grippo.authorization.registration.missing.equipment
+
+internal interface MissingEquipmentContract

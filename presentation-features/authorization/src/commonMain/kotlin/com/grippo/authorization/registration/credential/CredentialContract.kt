@@ -1,0 +1,3 @@
+package com.grippo.authorization.registration.credential
+
+internal interface CredentialContract
