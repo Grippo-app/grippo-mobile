@@ -63,8 +63,8 @@ internal class AuthProcessComponent(
 
     @Composable
     override fun Render() {
-        viewModel.state.collectAsStateMultiplatform()
-        viewModel.loaders.collectAsStateMultiplatform()
-        AuthProcessScreen(childStack)
+        val state = viewModel.state.collectAsStateMultiplatform()
+        val loaders = viewModel.loaders.collectAsStateMultiplatform()
+        AuthProcessScreen(childStack, state.value, loaders.value, viewModel)
     }
 }

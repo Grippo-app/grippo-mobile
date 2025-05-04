@@ -9,9 +9,14 @@ import androidx.compose.ui.Modifier
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.password_placeholder
+import kotlinx.collections.immutable.ImmutableSet
 
 @Composable
-internal fun SplashScreen() {
+internal fun SplashScreen(
+    state: SplashState,
+    loaders: ImmutableSet<SplashLoader>,
+    contract: SplashContract
+) {
     Box(
         Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center

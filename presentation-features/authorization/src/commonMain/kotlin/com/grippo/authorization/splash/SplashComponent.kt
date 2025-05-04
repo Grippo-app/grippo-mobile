@@ -23,8 +23,8 @@ internal class SplashComponent(
 
     @Composable
     override fun Render() {
-        viewModel.state.collectAsStateMultiplatform()
-        viewModel.loaders.collectAsStateMultiplatform()
-        SplashScreen()
+        val state = viewModel.state.collectAsStateMultiplatform()
+        val loaders = viewModel.loaders.collectAsStateMultiplatform()
+        SplashScreen(state.value, loaders.value, viewModel)
     }
 }
