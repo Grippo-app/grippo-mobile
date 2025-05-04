@@ -24,17 +24,26 @@ internal class RegistrationComponent(
 ) : BaseComponent<RegistrationDirection>(componentContext) {
 
     internal sealed class Child(open val component: BaseComponent<*>) {
-        data class Credential(override val component: CredentialComponent) : Child(component)
-        data class Name(override val component: NameComponent) : Child(component)
-        data class Body(override val component: BodyComponent) : Child(component)
-        data class Experience(override val component: ExperienceComponent) : Child(component)
+        data class Credential(override val component: CredentialComponent) :
+            Child(component)
+
+        data class Name(override val component: NameComponent) :
+            Child(component)
+
+        data class Body(override val component: BodyComponent) :
+            Child(component)
+
+        data class Experience(override val component: ExperienceComponent) :
+            Child(component)
+
         data class ExcludedMuscles(override val component: ExcludedMusclesComponent) :
             Child(component)
 
         data class MussingEquipment(override val component: MissingEquipmentComponent) :
             Child(component)
 
-        data class Completed(override val component: CompletedComponent) : Child(component)
+        data class Completed(override val component: CompletedComponent) :
+            Child(component)
     }
 
     override val viewModel = componentContext.retainedInstance {
@@ -57,18 +66,6 @@ internal class RegistrationComponent(
 
     private fun createChild(router: RegistrationRouter, context: ComponentContext): Child {
         return when (router) {
-            RegistrationRouter.Body -> Child.Body(
-                BodyComponent(
-                    componentContext = context,
-                ),
-            )
-
-            RegistrationRouter.Completed -> Child.Completed(
-                CompletedComponent(
-                    componentContext = context,
-                ),
-            )
-
             RegistrationRouter.Credentials -> Child.Credential(
                 CredentialComponent(
                     componentContext = context,
@@ -76,28 +73,45 @@ internal class RegistrationComponent(
                 ),
             )
 
-            RegistrationRouter.ExcludedMuscles -> Child.ExcludedMuscles(
-                ExcludedMusclesComponent(
+            RegistrationRouter.Name -> Child.Name(
+                NameComponent(
                     componentContext = context,
+                    toBody = { navigation.push(RegistrationRouter.Body) }
+                ),
+            )
+
+            RegistrationRouter.Body -> Child.Body(
+                BodyComponent(
+                    componentContext = context,
+                    toExperience = { navigation.push(RegistrationRouter.Experience) }
                 ),
             )
 
             RegistrationRouter.Experience -> Child.Experience(
                 ExperienceComponent(
                     componentContext = context,
+                    toExcludedMuscles = { navigation.push(RegistrationRouter.ExcludedMuscles) }
+                ),
+            )
+
+            RegistrationRouter.ExcludedMuscles -> Child.ExcludedMuscles(
+                ExcludedMusclesComponent(
+                    componentContext = context,
+                    toMissingEquipment = { navigation.push(RegistrationRouter.MissingEquipment) }
                 ),
             )
 
             RegistrationRouter.MissingEquipment -> Child.MussingEquipment(
                 MissingEquipmentComponent(
                     componentContext = context,
+                    toCompleted = { navigation.push(RegistrationRouter.Completed) }
                 ),
             )
 
-            RegistrationRouter.Name -> Child.Name(
-                NameComponent(
+            RegistrationRouter.Completed -> Child.Completed(
+                CompletedComponent(
                     componentContext = context,
-                    toBody = { navigation.push(RegistrationRouter.Body) }
+                    toHome = TODO()
                 ),
             )
         }

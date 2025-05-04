@@ -8,6 +8,7 @@ import com.grippo.core.collectAsStateMultiplatform
 
 internal class ExperienceComponent(
     componentContext: ComponentContext,
+    private val toExcludedMuscles: () -> Unit
 ) : BaseComponent<ExperienceDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
@@ -15,6 +16,9 @@ internal class ExperienceComponent(
     }
 
     override suspend fun eventListener(direction: ExperienceDirection) {
+        when (direction) {
+            ExperienceDirection.ExcludedMuscles -> toExcludedMuscles.invoke()
+        }
     }
 
     @Composable

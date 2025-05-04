@@ -8,6 +8,7 @@ import com.grippo.core.collectAsStateMultiplatform
 
 internal class CompletedComponent(
     componentContext: ComponentContext,
+    private val toHome: () -> Unit
 ) : BaseComponent<CompletedDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
@@ -15,6 +16,9 @@ internal class CompletedComponent(
     }
 
     override suspend fun eventListener(direction: CompletedDirection) {
+        when (direction) {
+            CompletedDirection.Home -> toHome.invoke()
+        }
     }
 
     @Composable
