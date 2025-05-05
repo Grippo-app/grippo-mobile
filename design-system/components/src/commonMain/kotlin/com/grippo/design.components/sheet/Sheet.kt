@@ -14,7 +14,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -34,7 +33,6 @@ public fun Sheet(
         {
             coroutineScope.launch {
                 modalBottomSheetState.hide()
-                delay(300)
                 onDismiss.invoke()
             }
         }
