@@ -13,13 +13,12 @@ internal class DialogViewModel :
     private val dialogController by inject<DialogController>()
 
     init {
-        dialogController.dialog
-            .onEach {
-                when (it) {
-                    DialogEvent.Dismiss -> navigateTo(DialogDirection.Dismiss)
-                    is DialogEvent.Show -> navigateTo(DialogDirection.Show(it.config))
-                }
-            }.launchIn(coroutineScope)
+        dialogController.dialog.onEach {
+            when (it) {
+                DialogEvent.Dismiss -> navigateTo(DialogDirection.Dismiss)
+                is DialogEvent.Show -> navigateTo(DialogDirection.Show(it.config))
+            }
+        }.launchIn(coroutineScope)
     }
 
     fun dismiss() {
