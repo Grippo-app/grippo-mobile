@@ -18,11 +18,11 @@ public class RootComponent(
     componentContext: ComponentContext,
 ) : BaseComponent<RootDirection>(componentContext) {
 
+    private val dialogComponent = DialogComponent(componentContext)
+
     public sealed class Child(public open val component: BaseComponent<*>) {
         public data class Authorization(override val component: AuthComponent) : Child(component)
     }
-
-    private val dialogComponent: DialogComponent = DialogComponent(componentContext)
 
     override val viewModel: RootViewModel = componentContext.retainedInstance {
         RootViewModel()
@@ -31,7 +31,6 @@ public class RootComponent(
     override suspend fun eventListener(direction: RootDirection) {}
 
     private val navigation = StackNavigation<RootRouter>()
-
     internal val childStack: Value<ChildStack<RootRouter, Child>> = childStack(
         source = navigation,
         serializer = RootRouter.serializer(),
@@ -60,6 +59,7 @@ public class RootComponent(
             val state = viewModel.state.collectAsStateMultiplatform()
             val loaders = viewModel.loaders.collectAsStateMultiplatform()
             RootScreen(childStack, state.value, viewModel, loaders.value)
+
             dialogComponent.Render()
         }
     }

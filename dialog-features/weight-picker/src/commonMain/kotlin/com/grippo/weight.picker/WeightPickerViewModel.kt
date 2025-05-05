@@ -4,4 +4,9 @@ import com.grippo.core.BaseViewModel
 
 public class WeightPickerViewModel :
     BaseViewModel<WeightPickerState, WeightPickerDirection, WeightPickerLoader>(WeightPickerState),
-    WeightPickerContract
+    WeightPickerContract {
+
+    override fun dismiss() {
+        navigateTo(WeightPickerDirection.Dismiss)
+    }
+}

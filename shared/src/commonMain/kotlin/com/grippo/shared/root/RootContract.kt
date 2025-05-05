@@ -1,6 +1,3 @@
 package com.grippo.shared.root
 
-public interface RootContract {
-
-    public companion object Empty : RootContract
-}
+public interface RootContract

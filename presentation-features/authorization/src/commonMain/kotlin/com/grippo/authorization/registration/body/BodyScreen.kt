@@ -62,14 +62,14 @@ internal fun BodyScreen(
 
         InputWeight(
             value = state.weight,
-            onClick = {}
+            onClick = contract::openWeightPicker
         )
 
         Spacer(modifier = Modifier.size(16.dp))
 
         InputHeight(
             value = state.height,
-            onClick = {}
+            onClick = contract::openHeightPicker
         )
 
         Spacer(modifier = Modifier.weight(1f))

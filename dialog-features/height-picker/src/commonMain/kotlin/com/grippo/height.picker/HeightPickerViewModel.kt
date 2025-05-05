@@ -4,4 +4,9 @@ import com.grippo.core.BaseViewModel
 
 public class HeightPickerViewModel :
     BaseViewModel<HeightPickerState, HeightPickerDirection, HeightPickerLoader>(HeightPickerState),
-    HeightPickerContract
+    HeightPickerContract {
+
+    override fun dismiss() {
+        navigateTo(HeightPickerDirection.Dismiss)
+    }
+}

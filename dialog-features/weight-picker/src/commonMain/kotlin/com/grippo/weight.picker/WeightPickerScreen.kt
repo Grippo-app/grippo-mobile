@@ -1,6 +1,7 @@
 package com.grippo.weight.picker
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -15,5 +16,8 @@ internal fun WeightPickerScreen(
     loaders: ImmutableSet<WeightPickerLoader>,
     contract: WeightPickerContract
 ) {
-    Box(modifier = Modifier.size(300.dp).background(Color.Red))
+    Box(
+        modifier = Modifier.size(300.dp).background(Color.Green)
+            .clickable { contract.dismiss() }
+    )
 }
