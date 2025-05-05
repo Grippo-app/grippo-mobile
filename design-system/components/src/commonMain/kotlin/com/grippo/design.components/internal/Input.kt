@@ -5,7 +5,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -80,7 +79,6 @@ internal fun Input(
     val height = AppTokens.dp.size.componentHeight
 
     val hasFocus = remember { mutableStateOf(false) }
-    val interactionSource = remember { MutableInteractionSource() }
 
     val borderColor = when {
         error is InputError.Error -> colors.semantic.error
@@ -131,7 +129,6 @@ internal fun Input(
                 }
             },
             readOnly = inputStyle is InputStyle.Clickable,
-            interactionSource = interactionSource,
             minLines = minLines,
             decorationBox = { innerTextField ->
 
