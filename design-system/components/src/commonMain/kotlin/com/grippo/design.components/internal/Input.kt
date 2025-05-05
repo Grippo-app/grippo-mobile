@@ -6,7 +6,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -82,9 +81,6 @@ internal fun Input(
 
     val hasFocus = remember { mutableStateOf(false) }
     val interactionSource = remember { MutableInteractionSource() }
-    if (interactionSource.collectIsPressedAsState().value && inputStyle is InputStyle.Clickable) {
-        inputStyle.onClick.invoke()
-    }
 
     val borderColor = when {
         error is InputError.Error -> colors.semantic.error
