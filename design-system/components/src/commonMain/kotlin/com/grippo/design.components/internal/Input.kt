@@ -5,6 +5,9 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -110,6 +113,13 @@ internal fun Input(
     )
 
     Column(modifier = modifier.animateContentSize()) {
+
+        val interactionSource = remember { MutableInteractionSource() }
+
+        if (interactionSource.collectIsPressedAsState().value) {
+            (inputStyle as? InputStyle.Clickable)?.onClick?.invoke()
+        }
+
         BasicTextField(
             modifier = Modifier
                 .clip(shape)
@@ -117,7 +127,8 @@ internal fun Input(
                 .border(width = 1.dp, color = borderColor, shape = shape)
                 .heightIn(min = height)
                 .onFocusChanged { hasFocus.value = it.hasFocus }
-                .animateContentSize(),
+                .animateContentSize()
+                .clickable(interactionSource = interactionSource, indication = null, onClick = {}),
             value = value,
             onValueChange = when (inputStyle) {
                 is InputStyle.Clickable -> {
@@ -130,6 +141,13 @@ internal fun Input(
             },
             readOnly = inputStyle is InputStyle.Clickable,
             minLines = minLines,
+            textStyle = textStyle.copy(color = contentColor),
+            enabled = enabled,
+            visualTransformation = visualTransformation,
+            keyboardOptions = keyboardOptions,
+            keyboardActions = keyboardActions,
+            maxLines = maxLines,
+            singleLine = maxLines == 1,
             decorationBox = { innerTextField ->
 
                 val rowModifier = Modifier
@@ -203,13 +221,6 @@ internal fun Input(
                     }
                 }
             },
-            textStyle = textStyle.copy(color = contentColor),
-            enabled = enabled,
-            visualTransformation = visualTransformation,
-            keyboardOptions = keyboardOptions,
-            keyboardActions = keyboardActions,
-            maxLines = maxLines,
-            singleLine = maxLines == 1,
         )
 
         if (error is InputError.Error) {
