@@ -41,10 +41,7 @@ internal class AuthProcessComponent(
         childFactory = ::createChild,
     )
 
-    private fun createChild(
-        router: AuthProcessRouter,
-        context: ComponentContext
-    ): Child {
+    private fun createChild(router: AuthProcessRouter, context: ComponentContext): Child {
         return when (router) {
             AuthProcessRouter.Login -> Child.Login(
                 LoginComponent(

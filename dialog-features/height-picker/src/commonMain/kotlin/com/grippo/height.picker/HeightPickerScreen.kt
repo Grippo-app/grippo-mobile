@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.grippo.design.components.sheet.Sheet
 import kotlinx.collections.immutable.ImmutableSet
 
 @Composable
@@ -16,8 +17,13 @@ internal fun HeightPickerScreen(
     loaders: ImmutableSet<HeightPickerLoader>,
     contract: HeightPickerContract
 ) {
-    Box(
-        modifier = Modifier.size(300.dp).background(Color.Red)
-            .clickable { contract.dismiss() }
+    Sheet(
+        onDismiss = contract::dismiss,
+        content = { hide ->
+            Box(
+                modifier = Modifier.size(300.dp).background(Color.Red)
+                    .clickable(onClick = hide)
+            )
+        }
     )
 }

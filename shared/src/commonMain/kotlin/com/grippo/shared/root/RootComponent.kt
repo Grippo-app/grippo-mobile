@@ -40,10 +40,7 @@ public class RootComponent(
         childFactory = ::createChild,
     )
 
-    private fun createChild(
-        router: RootRouter,
-        context: ComponentContext
-    ): Child {
+    private fun createChild(router: RootRouter, context: ComponentContext): Child {
         return when (router) {
             RootRouter.Auth -> Child.Authorization(
                 AuthComponent(
