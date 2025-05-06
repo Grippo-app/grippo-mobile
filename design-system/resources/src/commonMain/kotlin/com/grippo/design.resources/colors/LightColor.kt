@@ -73,7 +73,7 @@ public object LightColor : AppColor {
         override val secondary = Neutral100
     }
 
-    override val bottomSheet: AppColor.BottomSheetColors = object : AppColor.BottomSheetColors {
+    override val dialog: AppColor.DialogColors = object : AppColor.DialogColors {
         override val background = White
         override val handle = Neutral300
         override val scrim = Color(0x80000000)

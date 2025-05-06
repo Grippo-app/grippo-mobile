@@ -46,13 +46,13 @@ internal fun DialogScreen(
         ModalBottomSheet(
             onDismissRequest = contract::release,
             sheetState = modalBottomSheetState,
-            scrimColor = AppTokens.colors.bottomSheet.scrim,
+            scrimColor = AppTokens.colors.dialog.scrim,
             properties = ModalBottomSheetProperties(shouldDismissOnBackPress = true),
-            containerColor = AppTokens.colors.bottomSheet.background,
+            containerColor = AppTokens.colors.dialog.background,
             shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
             dragHandle = {
                 BottomSheetDefaults.DragHandle(
-                    color = AppTokens.colors.bottomSheet.handle
+                    color = AppTokens.colors.dialog.handle
                 )
             },
             content = {

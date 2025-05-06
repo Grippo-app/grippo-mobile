@@ -6,7 +6,7 @@ public interface AppColor {
     public val button: ButtonColors
     public val input: InputColors
     public val background: BackgroundColors
-    public val bottomSheet: BottomSheetColors
+    public val dialog: DialogColors
     public val text: TextColors
     public val divider: Color
     public val semantic: SemanticColors
@@ -53,7 +53,7 @@ public interface AppColor {
         public val secondary: Color
     }
 
-    public interface BottomSheetColors {
+    public interface DialogColors {
         public val background: Color
         public val handle: Color
         public val scrim: Color
