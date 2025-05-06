@@ -8,7 +8,7 @@ import com.grippo.core.collectAsStateMultiplatform
 
 internal class BodyComponent(
     componentContext: ComponentContext,
-    private val toExperience: () -> Unit
+    private val toExperience: (weight: Float, height: Int) -> Unit
 ) : BaseComponent<BodyDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
@@ -17,7 +17,7 @@ internal class BodyComponent(
 
     override suspend fun eventListener(direction: BodyDirection) {
         when (direction) {
-            BodyDirection.Experience -> toExperience.invoke()
+            is BodyDirection.Experience -> toExperience.invoke(direction.weight, direction.height)
         }
     }
 

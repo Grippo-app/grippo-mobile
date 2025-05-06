@@ -27,6 +27,10 @@ internal class BodyViewModel : BaseViewModel<BodyState, BodyDirection, BodyLoade
     }
 
     override fun next() {
-
+        val direction = BodyDirection.Experience(
+            weight = state.value.weight,
+            height = state.value.height
+        )
+        navigateTo(direction)
     }
 }

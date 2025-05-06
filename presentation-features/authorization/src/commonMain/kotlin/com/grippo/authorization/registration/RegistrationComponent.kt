@@ -89,7 +89,9 @@ internal class RegistrationComponent(
             RegistrationRouter.Body -> Child.Body(
                 BodyComponent(
                     componentContext = context,
-                    toExperience = { navigation.push(RegistrationRouter.Experience) }
+                    toExperience = { w, h ->
+                        navigation.push(RegistrationRouter.Experience)
+                    }
                 ),
             )
 

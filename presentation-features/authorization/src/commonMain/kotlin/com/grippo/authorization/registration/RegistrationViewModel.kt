@@ -13,4 +13,8 @@ internal class RegistrationViewModel :
     override fun saveName(name: String) {
         update { it.copy(name = name) }
     }
+
+    override fun saveWeightHeight(weight: Float, height: Int) {
+        update { it.copy(weight = weight, height = height) }
+    }
 }
