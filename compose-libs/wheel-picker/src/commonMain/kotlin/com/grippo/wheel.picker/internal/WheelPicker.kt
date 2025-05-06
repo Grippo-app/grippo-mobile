@@ -18,12 +18,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.util.lerp
 import com.grippo.wheel.picker.SelectorProperties
+import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
 // https://github.com/commandiron/WheelPickerCompose
@@ -34,24 +36,34 @@ internal fun WheelPicker(
     count: Int,
     rowCount: Int,
     selectorProperties: SelectorProperties,
-    onScrollFinished: (snappedIndex: Int) -> Int? = { null },
+    onValueChange: (snappedIndex: Int) -> Int? = { _ -> null },
     content: @Composable LazyItemScope.(index: Int) -> Unit,
 ) {
     val lazyListState = rememberLazyListState(startIndex)
     val flingBehavior = rememberSnapFlingBehavior(lazyListState)
 
     val layoutInfo by remember { derivedStateOf { lazyListState.layoutInfo } }
-    val isScrollInProgress = lazyListState.isScrollInProgress
 
     val shape = selectorProperties.shape().value
     val border = selectorProperties.border().value
     val enabled = selectorProperties.enabled().value
     val color = selectorProperties.color().value
 
-    LaunchedEffect(isScrollInProgress, layoutInfo.totalItemsCount) {
-        if (!isScrollInProgress) {
-            val centerIndex = layoutInfo.closestItemToCenter()?.index ?: return@LaunchedEffect
-            onScrollFinished(centerIndex)?.let { lazyListState.scrollToItem(it) }
+    val coroutineScope = rememberCoroutineScope()
+
+    val centerIndex by remember {
+        derivedStateOf {
+            layoutInfo.closestItemToCenter()?.index ?: startIndex
+        }
+    }
+
+    LaunchedEffect(centerIndex) {
+        onValueChange(centerIndex)?.let { targetIndex ->
+            if (targetIndex != centerIndex) {
+                coroutineScope.launch {
+                    lazyListState.scrollToItem(targetIndex)
+                }
+            }
         }
     }
 

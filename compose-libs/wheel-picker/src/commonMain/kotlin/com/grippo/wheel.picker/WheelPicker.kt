@@ -27,7 +27,7 @@ public fun <T> WheelPicker(
         count = items.size,
         rowCount = rowCount,
         selectorProperties = selectorProperties,
-        onScrollFinished = { snappedIndex ->
+        onValueChange = { snappedIndex ->
             onValueChange(items[snappedIndex])
             null // no forced scroll
         },
