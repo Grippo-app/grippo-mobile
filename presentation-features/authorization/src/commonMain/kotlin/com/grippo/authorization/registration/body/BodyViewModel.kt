@@ -11,14 +11,26 @@ internal class BodyViewModel : BaseViewModel<BodyState, BodyDirection, BodyLoade
     private val dialogController by inject<DialogController>()
 
     override fun openWeightPicker() {
-        dialogController.show(DialogConfig.WeightPicker(state.value.weight))
+        val dialog = DialogConfig.WeightPicker(
+            initial = state.value.weight,
+            onResult = {}
+        )
+        dialogController.show(dialog)
     }
 
     override fun openHeightPicker() {
-        dialogController.show(DialogConfig.HeightPicker(state.value.height))
+        val dialog = DialogConfig.HeightPicker(
+            initial = state.value.height,
+            onResult = {}
+        )
+        dialogController.show(dialog)
     }
 
     override fun next() {
-        dialogController.show(DialogConfig.HeightPicker(state.value.height))
+        val dialog = DialogConfig.HeightPicker(
+            initial = state.value.height,
+            onResult = {}
+        )
+        dialogController.show(dialog)
     }
 }

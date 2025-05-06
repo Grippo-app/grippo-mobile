@@ -16,6 +16,7 @@ kotlin {
         api(libs.decompose.extensions)
 
         implementation(projects.designSystem.core)
+        implementation(projects.designSystem.resources)
 
         implementation(projects.common.platformCore)
         implementation(projects.common.core)

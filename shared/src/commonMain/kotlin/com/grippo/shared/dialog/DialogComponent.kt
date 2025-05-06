@@ -30,8 +30,8 @@ internal class DialogComponent(
 
     override suspend fun eventListener(direction: DialogDirection) {
         when (direction) {
+            is DialogDirection.Activate -> dialog.activate(direction.config)
             DialogDirection.Dismiss -> dialog.dismiss()
-            is DialogDirection.Show -> dialog.activate(direction.config)
         }
     }
 
@@ -46,18 +46,27 @@ internal class DialogComponent(
     )
 
     private fun createChild(router: DialogConfig, context: ComponentContext): Dialog {
+        println("new child")
         return when (router) {
             is DialogConfig.WeightPicker -> Dialog.WeightPicker(
                 WeightPickerComponent(
                     componentContext = context,
-                    onDismiss = viewModel::dismiss
+                    onDismiss = viewModel::dismiss,
+                    onResult = {
+                        viewModel.dismiss()
+                        router.onResult.invoke(it)
+                    }
                 )
             )
 
             is DialogConfig.HeightPicker -> Dialog.HeightPicker(
                 HeightPickerComponent(
                     componentContext = context,
-                    onDismiss = viewModel::dismiss
+                    onDismiss = viewModel::dismiss,
+                    onResult = {
+                        viewModel.dismiss()
+                        router.onResult.invoke(it)
+                    }
                 )
             )
         }

@@ -1,9 +1,20 @@
 package com.grippo.shared.dialog
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetProperties
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.value.Value
+import com.grippo.design.core.AppTokens
 import com.grippo.dialog.api.DialogConfig
 import kotlinx.collections.immutable.ImmutableSet
 
@@ -14,6 +25,42 @@ internal fun DialogScreen(
     loaders: ImmutableSet<DialogLoader>,
     contract: DialogContract
 ) {
-    val state = slot.subscribeAsState()
-    state.value.child?.instance?.component?.Render()
+    val slotState = slot.subscribeAsState()
+
+    val component = slotState.value.child?.instance?.component
+
+    if (component != null) {
+
+        val modalBottomSheetState = rememberModalBottomSheetState(
+            skipPartiallyExpanded = true,
+            confirmValueChange = { true },
+        )
+
+        LaunchedEffect(state.process) {
+            if (state.process == Process.DISMISS) {
+                modalBottomSheetState.hide()
+                contract.release()
+            }
+        }
+
+        ModalBottomSheet(
+            onDismissRequest = contract::release,
+            sheetState = modalBottomSheetState,
+            scrimColor = AppTokens.colors.bottomSheet.scrim,
+            properties = ModalBottomSheetProperties(shouldDismissOnBackPress = true),
+            containerColor = AppTokens.colors.bottomSheet.background,
+            shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+            dragHandle = {
+                BottomSheetDefaults.DragHandle(
+                    color = AppTokens.colors.bottomSheet.handle
+                )
+            },
+            content = {
+                Column(
+                    modifier = Modifier.navigationBarsPadding(),
+                    content = { component.Render() }
+                )
+            },
+        )
+    }
 }

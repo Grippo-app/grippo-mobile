@@ -16,7 +16,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.sheet.Sheet
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.height_picker_description
@@ -33,78 +32,65 @@ internal fun HeightPickerScreen(
     loaders: ImmutableSet<HeightPickerLoader>,
     contract: HeightPickerContract
 ) {
-    Sheet(
-        onDismiss = contract::dismiss,
-        content = { hide ->
+    val list = remember { persistentListOf(1, 2, 3, 4, 5, 6, 7) }
 
-            val list = remember { persistentListOf(1, 2, 3, 4, 5, 6, 7) }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                horizontal = AppTokens.dp.paddings.screenHorizontal,
+                vertical = AppTokens.dp.paddings.screenVertical
+            ),
+    ) {
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = AppTokens.dp.paddings.screenHorizontal,
-                        vertical = AppTokens.dp.paddings.screenVertical
-                    ),
-            ) {
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = AppTokens.strings.res(Res.string.height_picker_title),
+            style = AppTokens.typography.h2(),
+            color = AppTokens.colors.text.primary,
+            textAlign = TextAlign.Center
+        )
 
+        Spacer(modifier = Modifier.size(12.dp))
+
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = AppTokens.strings.res(Res.string.height_picker_description),
+            style = AppTokens.typography.b14Med(),
+            color = AppTokens.colors.text.secondary,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.size(26.dp))
+
+        WheelPicker(
+            modifier = Modifier.fillMaxWidth()
+                .height(AppTokens.dp.size.componentHeight * 3),
+            startIndex = 0,
+            items = list,
+            rowCount = 3,
+            selectorProperties = DefaultSelectorProperties(
+                enabled = true,
+                shape = RoundedCornerShape(AppTokens.dp.shape.component),
+                color = AppTokens.colors.background.secondary,
+                border = BorderStroke(1.dp, AppTokens.colors.border.default)
+            ),
+            content = {
                 Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = AppTokens.strings.res(Res.string.height_picker_title),
-                    style = AppTokens.typography.h2(),
-                    color = AppTokens.colors.text.primary,
-                    textAlign = TextAlign.Center
-                )
-
-                Spacer(modifier = Modifier.size(12.dp))
-
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = AppTokens.strings.res(Res.string.height_picker_description),
-                    style = AppTokens.typography.b14Med(),
-                    color = AppTokens.colors.text.secondary,
-                    textAlign = TextAlign.Center
-                )
-
-                Spacer(modifier = Modifier.size(26.dp))
-
-                WheelPicker(
-                    modifier = Modifier.fillMaxWidth()
-                        .height(AppTokens.dp.size.componentHeight * 3),
-                    startIndex = 0,
-                    items = list,
-                    rowCount = 3,
-                    selectorProperties = DefaultSelectorProperties(
-                        enabled = true,
-                        shape = RoundedCornerShape(AppTokens.dp.shape.component),
-                        color = AppTokens.colors.background.secondary,
-                        border = BorderStroke(1.dp, AppTokens.colors.border.default)
-                    ),
-                    content = {
-                        Text(
-                            modifier = Modifier,
-                            text = it.toString(),
-                            style = AppTokens.typography.b15Bold()
-                        )
-                    }
-                )
-
-                Spacer(modifier = Modifier.size(26.dp))
-
-                val submitProvider = remember {
-                    {
-                        contract.submit()
-                        hide()
-                    }
-                }
-
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = AppTokens.strings.res(Res.string.submit_btn),
-                    style = ButtonStyle.Primary,
-                    onClick = submitProvider
+                    modifier = Modifier,
+                    text = it.toString(),
+                    style = AppTokens.typography.b15Bold()
                 )
             }
-        }
-    )
+        )
+
+        Spacer(modifier = Modifier.size(26.dp))
+
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            text = AppTokens.strings.res(Res.string.submit_btn),
+            style = ButtonStyle.Primary,
+            onClick = contract::submit
+        )
+    }
 }

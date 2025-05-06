@@ -8,7 +8,8 @@ import com.grippo.core.collectAsStateMultiplatform
 
 public class HeightPickerComponent(
     componentContext: ComponentContext,
-    private val onDismiss: () -> Unit
+    private val onDismiss: () -> Unit,
+    private val onResult: (value: Int) -> Unit,
 ) : BaseComponent<HeightPickerDirection>(componentContext) {
 
     override val viewModel: HeightPickerViewModel = componentContext.retainedInstance {
@@ -18,6 +19,7 @@ public class HeightPickerComponent(
     override suspend fun eventListener(direction: HeightPickerDirection) {
         when (direction) {
             HeightPickerDirection.Dismiss -> onDismiss.invoke()
+            is HeightPickerDirection.DismissWithResult -> onResult.invoke(direction.value)
         }
     }
 

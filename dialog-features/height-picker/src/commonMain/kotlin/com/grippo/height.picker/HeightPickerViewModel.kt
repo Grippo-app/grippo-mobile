@@ -11,6 +11,6 @@ public class HeightPickerViewModel :
     }
 
     override fun submit() {
-        navigateTo(HeightPickerDirection.Dismiss)
+        navigateTo(HeightPickerDirection.DismissWithResult(123))
     }
 }

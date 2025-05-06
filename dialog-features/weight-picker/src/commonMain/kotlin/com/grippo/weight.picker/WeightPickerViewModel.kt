@@ -11,6 +11,6 @@ public class WeightPickerViewModel :
     }
 
     override fun submit() {
-        navigateTo(WeightPickerDirection.Dismiss)
+        navigateTo(WeightPickerDirection.DismissWithResult(123F))
     }
 }
