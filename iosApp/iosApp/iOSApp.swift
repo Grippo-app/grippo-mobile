@@ -14,6 +14,7 @@ struct iOSApp: App {
     var body: some Scene {
         WindowGroup {
             RootView(root: appDelegate.root)
+                .ignoresSafeArea(edges: .all)
                 .ignoresSafeArea(.keyboard) // Solving issue: https://youtrack.jetbrains.com/issue/CMP-3621
         }
     }
