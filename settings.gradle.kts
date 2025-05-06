@@ -62,6 +62,8 @@ include(":common:core")
 include(":common:errors")
 include(":common:validation")
 
+include(":compose-libs:wheel-picker")
+
 include(":data-mappers:database-mapper")
 include(":data-mappers:network-mapper")
 include(":data-mappers:domain-mapper")

@@ -146,6 +146,7 @@ internal fun Input(
             visualTransformation = visualTransformation,
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
+            interactionSource = interactionSource,
             maxLines = maxLines,
             singleLine = maxLines == 1,
             decorationBox = { innerTextField ->

@@ -51,9 +51,10 @@ public fun Sheet(
             )
         },
         content = {
-            Column(modifier = modifier.navigationBarsPadding()) {
-                content.invoke(this, dismissProvider)
-            }
+            Column(
+                modifier = modifier.navigationBarsPadding(),
+                content = { content.invoke(this, dismissProvider) }
+            )
         },
     )
 }

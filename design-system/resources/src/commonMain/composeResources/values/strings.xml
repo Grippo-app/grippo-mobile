@@ -3,6 +3,7 @@
     <string name="kg">kg</string>
     <string name="cm">cm</string>
     <string name="next_btn">Next</string>
+    <string name="submit_btn">Submit</string>
     <string name="skip_btn">Skip</string>
     <string name="continue_btn">Continue</string>
     <string name="email_placeholder">Enter email</string>
@@ -37,4 +38,10 @@
 
     <string name="registration_completed_title">You’re all set!</string>
     <string name="registration_completed_description">Let’s hit the ground lifting 💪</string>
+
+    <string name="height_picker_title">Select your height</string>
+    <string name="height_picker_description">This will help us personalize your workout recommendations.</string>
+
+    <string name="weight_picker_title">Select your weight</string>
+    <string name="weight_picker_description">Used for calculating stats like BMI and optimizing your workouts.</string>
 </resources>
