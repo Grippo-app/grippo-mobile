@@ -51,7 +51,7 @@ internal class DialogComponent(
             is DialogConfig.WeightPicker -> Dialog.WeightPicker(
                 WeightPickerComponent(
                     componentContext = context,
-                    onDismiss = viewModel::dismiss,
+                    initial = router.initial,
                     onResult = {
                         viewModel.dismiss()
                         router.onResult.invoke(it)
@@ -62,7 +62,7 @@ internal class DialogComponent(
             is DialogConfig.HeightPicker -> Dialog.HeightPicker(
                 HeightPickerComponent(
                     componentContext = context,
-                    onDismiss = viewModel::dismiss,
+                    initial = router.initial,
                     onResult = {
                         viewModel.dismiss()
                         router.onResult.invoke(it)

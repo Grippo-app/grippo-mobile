@@ -8,17 +8,16 @@ import com.grippo.core.collectAsStateMultiplatform
 
 public class WeightPickerComponent(
     componentContext: ComponentContext,
-    private val onDismiss: () -> Unit,
+    private val initial: Float,
     private val onResult: (value: Float) -> Unit,
 ) : BaseComponent<WeightPickerDirection>(componentContext) {
 
     override val viewModel: WeightPickerViewModel = componentContext.retainedInstance {
-        WeightPickerViewModel()
+        WeightPickerViewModel(initial)
     }
 
     override suspend fun eventListener(direction: WeightPickerDirection) {
         when (direction) {
-            WeightPickerDirection.Dismiss -> onDismiss.invoke()
             is WeightPickerDirection.DismissWithResult -> onResult.invoke(direction.value)
         }
     }

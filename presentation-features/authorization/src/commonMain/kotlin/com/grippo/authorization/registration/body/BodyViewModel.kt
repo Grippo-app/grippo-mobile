@@ -13,7 +13,7 @@ internal class BodyViewModel : BaseViewModel<BodyState, BodyDirection, BodyLoade
     override fun openWeightPicker() {
         val dialog = DialogConfig.WeightPicker(
             initial = state.value.weight,
-            onResult = {}
+            onResult = { value -> update { it.copy(weight = value) } }
         )
         dialogController.show(dialog)
     }
@@ -21,16 +21,12 @@ internal class BodyViewModel : BaseViewModel<BodyState, BodyDirection, BodyLoade
     override fun openHeightPicker() {
         val dialog = DialogConfig.HeightPicker(
             initial = state.value.height,
-            onResult = {}
+            onResult = { value -> update { it.copy(height = value) } }
         )
         dialogController.show(dialog)
     }
 
     override fun next() {
-        val dialog = DialogConfig.HeightPicker(
-            initial = state.value.height,
-            onResult = {}
-        )
-        dialogController.show(dialog)
+
     }
 }

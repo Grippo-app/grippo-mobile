@@ -2,15 +2,17 @@ package com.grippo.height.picker
 
 import com.grippo.core.BaseViewModel
 
-public class HeightPickerViewModel :
-    BaseViewModel<HeightPickerState, HeightPickerDirection, HeightPickerLoader>(HeightPickerState),
-    HeightPickerContract {
+public class HeightPickerViewModel(
+    initial: Int
+) : BaseViewModel<HeightPickerState, HeightPickerDirection, HeightPickerLoader>(
+    HeightPickerState(initial = initial)
+), HeightPickerContract {
 
-    override fun dismiss() {
-        navigateTo(HeightPickerDirection.Dismiss)
+    override fun select(value: Int) {
+        update { it.copy(initial = value) }
     }
 
     override fun submit() {
-        navigateTo(HeightPickerDirection.DismissWithResult(123))
+        navigateTo(HeightPickerDirection.DismissWithResult(state.value.initial))
     }
 }

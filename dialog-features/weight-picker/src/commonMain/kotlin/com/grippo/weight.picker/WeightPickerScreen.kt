@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -24,7 +23,6 @@ import com.grippo.design.resources.weight_picker_title
 import com.grippo.wheel.picker.DefaultSelectorProperties
 import com.grippo.wheel.picker.WheelPicker
 import kotlinx.collections.immutable.ImmutableSet
-import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun WeightPickerScreen(
@@ -32,7 +30,6 @@ internal fun WeightPickerScreen(
     loaders: ImmutableSet<WeightPickerLoader>,
     contract: WeightPickerContract
 ) {
-    val list = remember { persistentListOf(1, 2, 3, 4, 5, 6, 7) }
 
     Column(
         modifier = Modifier
@@ -66,8 +63,9 @@ internal fun WeightPickerScreen(
         WheelPicker(
             modifier = Modifier.fillMaxWidth()
                 .height(AppTokens.dp.size.componentHeight * 3),
-            startIndex = 0,
-            items = list,
+            items = state.suggestions,
+            initial = state.initial,
+            onValueChange = contract::select,
             rowCount = 3,
             selectorProperties = DefaultSelectorProperties(
                 enabled = true,

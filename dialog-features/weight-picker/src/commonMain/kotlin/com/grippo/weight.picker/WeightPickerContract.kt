@@ -2,11 +2,11 @@ package com.grippo.weight.picker
 
 internal interface WeightPickerContract {
 
-    fun dismiss()
+    fun select(value: Float)
     fun submit()
 
     companion object Empty : WeightPickerContract {
-        override fun dismiss() {}
+        override fun select(value: Float) {}
         override fun submit() {}
     }
 }

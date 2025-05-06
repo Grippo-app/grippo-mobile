@@ -1,6 +1,11 @@
 package com.grippo.height.picker
 
 import androidx.compose.runtime.Immutable
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.toPersistentList
 
 @Immutable
-public data object HeightPickerState
+public data class HeightPickerState(
+    public val suggestions: PersistentList<Int> = (100..250).toPersistentList(),
+    val initial: Int
+)
