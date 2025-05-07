@@ -7,5 +7,6 @@ import kotlinx.collections.immutable.toPersistentList
 
 @Immutable
 internal data class ExperienceState(
-    val suggestions: ImmutableList<Experience> = Experience.entries.toPersistentList()
+    val suggestions: ImmutableList<Experience> = Experience.entries.toPersistentList(),
+    val selected: Experience? = null
 )

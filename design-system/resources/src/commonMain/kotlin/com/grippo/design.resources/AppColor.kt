@@ -72,10 +72,8 @@ public interface AppColor {
     }
 
     public interface OverlayColors {
-        public val level1: Color
-        public val level2: Color
-        public val level3: Color
-        public val level4: Color
+        public val defaultShadow: Color
+        public val accentShadow: Color
     }
 
     public interface BorderColors {

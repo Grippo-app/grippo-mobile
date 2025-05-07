@@ -1,5 +1,6 @@
 package com.grippo.design.components.internal
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -37,6 +38,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.lerp
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.grippo.design.components.modifiers.ShadowElevation
+import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.core.AppTokens
 
 @Immutable
@@ -130,126 +133,127 @@ internal fun Input(
         animationSpec = tween(durationMillis = 100),
     )
 
-    Column(modifier = modifier.animateContentSize()) {
+    val shadowColor = animateColorAsState(
+        targetValue = if (hasFocus.value) {
+            AppTokens.colors.overlay.accentShadow
+        } else {
+            AppTokens.colors.overlay.defaultShadow
+        },
+        label = "shadowColor"
+    )
 
-        val interactionSource = remember { MutableInteractionSource() }
+    val interactionSource = remember { MutableInteractionSource() }
 
-        if (interactionSource.collectIsPressedAsState().value) {
-            (inputStyle as? InputStyle.Clickable)?.onClick?.invoke()
-        }
-
-        BasicTextField(
-            modifier = Modifier
-                .clip(shape)
-                .background(color = backgroundColor, shape = shape)
-                .border(width = 1.dp, color = borderColor, shape = shape)
-                .heightIn(min = height)
-                .onFocusChanged { hasFocus.value = it.hasFocus }
-                .animateContentSize()
-                .clickable(interactionSource = interactionSource, indication = null, onClick = {}),
-            value = value,
-            onValueChange = when (inputStyle) {
-                is InputStyle.Clickable -> {
-                    {}
-                }
-
-                is InputStyle.Default -> {
-                    inputStyle.onValueChange
-                }
-            },
-            readOnly = inputStyle is InputStyle.Clickable,
-            minLines = minLines,
-            textStyle = textStyle.copy(color = contentColor),
-            enabled = enabled,
-            visualTransformation = visualTransformation,
-            keyboardOptions = keyboardOptions,
-            keyboardActions = keyboardActions,
-            interactionSource = interactionSource,
-            maxLines = maxLines,
-            singleLine = maxLines == 1,
-            decorationBox = { innerTextField ->
-
-                val rowModifier = Modifier
-                    .fillMaxWidth()
-                    .height(intrinsicSize = IntrinsicSize.Min)
-
-                when (placeholder) {
-                    PlaceHolder.Empty -> Row(
-                        modifier = rowModifier,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal))
-
-                        leading?.invoke(leadingColor)
-
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .animateContentSize()
-                        ) {
-                            innerTextField()
-                        }
-
-                        if (trailing != null) {
-                            trailing.invoke(trailingColor)
-                            Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal / 3))
-                        } else {
-                            Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal))
-                        }
-                    }
-
-                    is PlaceHolder.OverInput -> Row(
-                        modifier = rowModifier,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal))
-
-                        leading?.invoke(leadingColor)
-
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .animateContentSize()
-                        ) {
-                            Column {
-                                Text(
-                                    text = placeholder.value,
-                                    style = lerp(
-                                        start = AppTokens.typography.b13Semi()
-                                            .copy(color = placeholderColor),
-                                        stop = AppTokens.typography.b12Semi()
-                                            .copy(color = labelColor),
-                                        fraction = textStyleAnimateFraction.value,
-                                    ),
-                                    maxLines = maxLines,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-                                if (hasFocus.value || value.isNotBlank()) innerTextField()
-                            }
-                        }
-
-
-                        if (trailing != null) {
-                            trailing.invoke(trailingColor)
-                            Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal / 3))
-                        } else {
-                            Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal))
-                        }
-                    }
-                }
-            },
-        )
-
-        if (error is InputError.Error) {
-            Text(
-                text = error.msg,
-                style = AppTokens.typography.b11Semi(),
-                color = colors.semantic.error,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1,
-            )
-        }
+    if (interactionSource.collectIsPressedAsState().value) {
+        (inputStyle as? InputStyle.Clickable)?.onClick?.invoke()
     }
+
+    BasicTextField(
+        modifier = modifier
+            .shadowDefault(
+                elevation = ShadowElevation.Container,
+                shape = shape,
+                color = shadowColor.value
+            )
+            .clip(shape)
+            .background(color = backgroundColor, shape = shape)
+            .border(width = 1.dp, color = borderColor, shape = shape)
+            .heightIn(min = height)
+            .onFocusChanged { hasFocus.value = it.hasFocus }
+            .animateContentSize()
+            .clickable(interactionSource = interactionSource, indication = null, onClick = {}),
+        value = value,
+        onValueChange = when (inputStyle) {
+            is InputStyle.Clickable -> {
+                {}
+            }
+
+            is InputStyle.Default -> {
+                inputStyle.onValueChange
+            }
+        },
+        readOnly = inputStyle is InputStyle.Clickable,
+        minLines = minLines,
+        textStyle = textStyle.copy(color = contentColor),
+        enabled = enabled,
+        visualTransformation = visualTransformation,
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions,
+        interactionSource = interactionSource,
+        maxLines = maxLines,
+        singleLine = maxLines == 1,
+        decorationBox = { innerTextField ->
+
+            val rowModifier = Modifier
+                .fillMaxWidth()
+                .height(intrinsicSize = IntrinsicSize.Min)
+
+            when (placeholder) {
+                PlaceHolder.Empty -> Row(
+                    modifier = rowModifier,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal))
+
+                    leading?.invoke(leadingColor)
+
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .animateContentSize()
+                    ) {
+                        innerTextField()
+                    }
+
+                    if (trailing != null) {
+                        trailing.invoke(trailingColor)
+                        Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal / 3))
+                    } else {
+                        Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal))
+                    }
+                }
+
+                is PlaceHolder.OverInput -> Row(
+                    modifier = rowModifier,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal))
+
+                    leading?.invoke(leadingColor)
+
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .animateContentSize()
+                    ) {
+                        Column {
+                            Text(
+                                text = placeholder.value,
+                                style = lerp(
+                                    start = AppTokens.typography.b13Semi()
+                                        .copy(color = placeholderColor),
+                                    stop = AppTokens.typography.b12Semi()
+                                        .copy(color = labelColor),
+                                    fraction = textStyleAnimateFraction.value,
+                                ),
+                                maxLines = maxLines,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                            if (hasFocus.value || value.isNotBlank()) innerTextField()
+                        }
+                    }
+
+
+                    if (trailing != null) {
+                        trailing.invoke(trailingColor)
+                        Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal / 3))
+                    } else {
+                        Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal))
+                    }
+                }
+            }
+        },
+    )
 }

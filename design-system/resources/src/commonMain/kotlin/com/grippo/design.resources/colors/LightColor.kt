@@ -76,8 +76,8 @@ public object LightColor : AppColor {
     }
 
     override val background: AppColor.BackgroundColors = object : AppColor.BackgroundColors {
-        override val primary = White
-        override val secondary = Neutral100
+        override val primary = Neutral100
+        override val secondary = White
     }
 
     override val dialog: AppColor.DialogColors = object : AppColor.DialogColors {
@@ -100,10 +100,8 @@ public object LightColor : AppColor {
     }
 
     override val overlay: AppColor.OverlayColors = object : AppColor.OverlayColors {
-        override val level1 = Color(0x0D000000)
-        override val level2 = Color(0x1A000000)
-        override val level3 = Color(0x33000000)
-        override val level4 = Color(0x4D000000)
+        override val defaultShadow: Color = Color(0x1A000000)
+        override val accentShadow: Color = Primary500.copy(alpha = 0.35f)
     }
 
     override val interaction: AppColor.InteractionColors = object : AppColor.InteractionColors {
