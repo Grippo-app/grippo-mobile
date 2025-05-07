@@ -7,31 +7,41 @@ public object LightColor : AppColor {
     private val Transparent = Color(0x00000000)
     private val White = Color(0xFFFFFFFF)
     private val Black = Color(0xFF000000)
-    private val Primary = Color(0xFF3366FF)
     private val Error = Color(0xFFFF4D4F)
     private val Warning = Color(0xFFFFAA2C)
     private val Success = Color(0xFF3AC86B)
+
+    private val Primary100 = Color(0xFFE6ECFF)
+    private val Primary200 = Color(0xFFC2D1FF)
+    private val Primary300 = Color(0xFF99B2FF)
+    private val Primary400 = Color(0xFF7090FF)
+    private val Primary500 = Color(0xFF3366FF)
+    private val Primary600 = Color(0xFF2B57E6)
+    private val Primary700 = Color(0xFF244ACC)
+    private val Primary800 = Color(0xFF1C3DAF)
+    private val Primary900 = Color(0xFF152F94)
 
     private val Neutral100 = Color(0xFFFAFAFA)
     private val Neutral200 = Color(0xFFF2F2F2)
     private val Neutral300 = Color(0xFFDCDCDC)
     private val Neutral400 = Color(0xFFBFBFBF)
     private val Neutral500 = Color(0xFF999999)
+    private val Neutral600 = Color(0xFF666666)
     private val Neutral700 = Color(0xFF333333)
 
     override val button: AppColor.ButtonColors = object : AppColor.ButtonColors {
-        override val backgroundPrimary = Primary
+        override val backgroundPrimary = Primary500
         override val contentPrimary = White
         override val backgroundPrimaryDisabled = Neutral200
         override val contentPrimaryDisabled = Neutral500
 
         override val backgroundSecondary = Transparent
-        override val contentSecondary = Primary
+        override val contentSecondary = Primary500
         override val backgroundSecondaryDisabled = Neutral100
         override val contentSecondaryDisabled = Neutral300
 
         override val backgroundTertiary = Transparent
-        override val contentTertiary = Primary
+        override val contentTertiary = Primary500
         override val backgroundTertiaryDisabled = Transparent
         override val contentTertiaryDisabled = Neutral300
 
@@ -40,11 +50,11 @@ public object LightColor : AppColor {
 
     override val border: AppColor.BorderColors = object : AppColor.BorderColors {
         override val default = Neutral200
-        override val focus = Primary
+        override val focus = Primary500
         override val disabled = Neutral200
         override val error = Error
 
-        override val defaultSecondary = Primary.copy(alpha = 0.3f)
+        override val defaultSecondary = Primary200
         override val disabledSecondary = Neutral200
         override val defaultTertiary = Neutral300
         override val disabledTertiary = Neutral200
@@ -53,13 +63,14 @@ public object LightColor : AppColor {
     override val icon: AppColor.IconColors = object : AppColor.IconColors {
         override val default = Neutral700
         override val disabled = Neutral300
-        override val accent = Primary
+        override val accent = Primary500
     }
 
     override val input: AppColor.InputColors = object : AppColor.InputColors {
         override val background = White
         override val border = Neutral400
         override val placeholder = Neutral400
+        override val label = Neutral500
         override val text = Black
 
         override val leading: Color = Neutral700
@@ -92,7 +103,7 @@ public object LightColor : AppColor {
         override val success = Success
         override val error = Error
         override val warning = Warning
-        override val info = Primary
+        override val info = Primary500
     }
 
     override val overlay: AppColor.OverlayColors = object : AppColor.OverlayColors {
@@ -105,7 +116,7 @@ public object LightColor : AppColor {
     override val interaction: AppColor.InteractionColors = object : AppColor.InteractionColors {
         override val pressed = Neutral200
         override val hovered = Neutral100
-        override val focused = Primary
+        override val focused = Primary500
     }
 
     override val elevation: AppColor.ElevationColors = object : AppColor.ElevationColors {

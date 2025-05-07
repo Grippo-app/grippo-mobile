@@ -101,6 +101,12 @@ internal fun Input(
         else -> colors.input.placeholder
     }
 
+    val labelColor = when {
+        error is InputError.Error -> colors.semantic.error
+        !enabled -> colors.input.placeholderDisabled
+        else -> colors.input.label
+    }
+
     val contentColor = when {
         error is InputError.Error -> colors.semantic.error
         !enabled -> colors.input.textDisabled
@@ -214,7 +220,7 @@ internal fun Input(
                                         start = AppTokens.typography.b13Semi()
                                             .copy(color = placeholderColor),
                                         stop = AppTokens.typography.b12Semi()
-                                            .copy(color = placeholderColor),
+                                            .copy(color = labelColor),
                                         fraction = textStyleAnimateFraction.value,
                                     ),
                                     maxLines = maxLines,

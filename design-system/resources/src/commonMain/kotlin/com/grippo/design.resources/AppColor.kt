@@ -40,6 +40,7 @@ public interface AppColor {
         public val background: Color
         public val border: Color
         public val placeholder: Color
+        public val label: Color
         public val text: Color
 
         public val leading: Color
