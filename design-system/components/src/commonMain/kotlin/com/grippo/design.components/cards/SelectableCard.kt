@@ -3,8 +3,8 @@ package com.grippo.design.components.cards
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -64,19 +64,22 @@ public fun SelectableCard(
             )
         }
 
-        Text(
-            text = title,
-            style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.primary,
-        )
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = title,
+                style = AppTokens.typography.b14Bold(),
+                color = AppTokens.colors.text.primary,
+            )
 
-        Spacer(modifier = Modifier.size(12.dp))
-
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = description,
-            style = AppTokens.typography.b12Semi(),
-            color = AppTokens.colors.text.secondary,
-        )
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = description,
+                style = AppTokens.typography.b13Semi(),
+                color = AppTokens.colors.text.secondary,
+            )
+        }
     }
 }

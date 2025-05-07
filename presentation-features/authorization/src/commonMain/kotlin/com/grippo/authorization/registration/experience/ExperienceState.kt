@@ -1,6 +1,11 @@
 package com.grippo.authorization.registration.experience
 
 import androidx.compose.runtime.Immutable
+import com.grippo.presentation.api.auth.models.Experience
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toPersistentList
 
 @Immutable
-internal data object ExperienceState
+internal data class ExperienceState(
+    val suggestions: ImmutableList<Experience> = Experience.entries.toPersistentList()
+)

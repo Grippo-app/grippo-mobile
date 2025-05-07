@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,9 +21,8 @@ import com.grippo.design.components.cards.SelectableCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.continue_btn
-import com.grippo.design.resources.icons.UserX
-import com.grippo.design.resources.registration_body_description
-import com.grippo.design.resources.registration_body_title
+import com.grippo.design.resources.registration_experience_description
+import com.grippo.design.resources.registration_experience_title
 import kotlinx.collections.immutable.ImmutableSet
 import kotlin.random.Random
 
@@ -45,7 +45,7 @@ internal fun ExperienceScreen(
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.registration_body_title),
+            text = AppTokens.strings.res(Res.string.registration_experience_title),
             style = AppTokens.typography.h2(),
             color = AppTokens.colors.text.primary,
             textAlign = TextAlign.Center
@@ -55,14 +55,13 @@ internal fun ExperienceScreen(
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.registration_body_description),
+            text = AppTokens.strings.res(Res.string.registration_experience_description),
             style = AppTokens.typography.b14Med(),
             color = AppTokens.colors.text.secondary,
             textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.size(26.dp))
-
 
         LazyColumn(
             modifier = Modifier
@@ -71,14 +70,14 @@ internal fun ExperienceScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
-            items(2) {
+            items(state.suggestions, key = { it.ordinal }) { item ->
                 SelectableCard(
                     modifier = Modifier.fillMaxWidth(),
                     select = {},
                     isSelected = Random.nextBoolean(),
-                    title = "Test title",
-                    description = "Test description more text to see how is it!",
-                    icon = AppTokens.icons.UserX
+                    title = item.title(),
+                    description = item.description(),
+                    icon = item.icon()
                 )
             }
         }

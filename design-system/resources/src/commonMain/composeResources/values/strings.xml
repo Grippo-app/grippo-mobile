@@ -45,4 +45,13 @@
 
     <string name="weight_picker_title">Select your weight</string>
     <string name="weight_picker_description">Used for calculating stats like BMI and optimizing your workouts.</string>
+
+    <string name="experience_beginner_title">Beginner</string>
+    <string name="experience_intermediate_title">Intermediate</string>
+    <string name="experience_advanced_title">Advanced</string>
+    <string name="experience_pro_title">Pro</string>
+    <string name="experience_beginner_description">You've been working out for less than 1 year and are currently getting familiar with the exercises.</string>
+    <string name="experience_intermediate_description">You've been working out for over 1 year, are familiar with most exercises, and have developed a solid base.</string>
+    <string name="experience_advanced_description">You've been working out for over 2 years, have good exercise form, and show consistent physical progress.</string>
+    <string name="experience_pro_description">You've been working out for over 5 years, have excellent exercise form, and maintain a high level of muscular development.</string>
 </resources>
