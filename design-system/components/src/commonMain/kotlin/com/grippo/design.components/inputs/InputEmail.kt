@@ -80,8 +80,8 @@ public fun InputEmail(
         },
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.None,
+            keyboardType = KeyboardType.Email,
             imeAction = ImeAction.Next,
-            keyboardType = KeyboardType.Email
         )
     )
 }

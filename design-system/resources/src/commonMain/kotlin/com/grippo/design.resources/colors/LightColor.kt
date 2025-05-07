@@ -62,6 +62,9 @@ public object LightColor : AppColor {
         override val placeholder = Neutral400
         override val text = Black
 
+        override val leading: Color = Neutral700
+        override val trailing: Color = Neutral700
+
         override val backgroundDisabled = Neutral100
         override val borderDisabled = Neutral200
         override val textDisabled = Neutral300

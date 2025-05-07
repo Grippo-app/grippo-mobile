@@ -107,6 +107,18 @@ internal fun Input(
         else -> colors.input.text
     }
 
+    val leadingColor = when {
+        error is InputError.Error -> colors.semantic.error
+        !enabled -> colors.input.textDisabled
+        else -> colors.input.leading
+    }
+
+    val trailingColor = when {
+        error is InputError.Error -> colors.semantic.error
+        !enabled -> colors.input.textDisabled
+        else -> colors.input.trailing
+    }
+
     val textStyleAnimateFraction = animateFloatAsState(
         targetValue = if (hasFocus.value || value.isNotBlank()) 1f else 0f,
         animationSpec = tween(durationMillis = 100),
@@ -163,7 +175,7 @@ internal fun Input(
                     ) {
                         Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal))
 
-                        leading?.invoke(contentColor)
+                        leading?.invoke(leadingColor)
 
                         Box(
                             modifier = Modifier
@@ -174,7 +186,7 @@ internal fun Input(
                         }
 
                         if (trailing != null) {
-                            trailing.invoke(contentColor)
+                            trailing.invoke(trailingColor)
                             Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal / 3))
                         } else {
                             Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal))
@@ -188,7 +200,7 @@ internal fun Input(
                     ) {
                         Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal))
 
-                        leading?.invoke(contentColor)
+                        leading?.invoke(leadingColor)
 
                         Box(
                             modifier = Modifier
@@ -214,7 +226,7 @@ internal fun Input(
 
 
                         if (trailing != null) {
-                            trailing.invoke(contentColor)
+                            trailing.invoke(trailingColor)
                             Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal / 3))
                         } else {
                             Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal))

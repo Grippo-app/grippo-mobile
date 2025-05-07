@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -55,11 +56,13 @@ public fun InputPassword(
         keyboardOptions = KeyboardOptions.Default.copy(
             keyboardType = KeyboardType.Text,
             capitalization = KeyboardCapitalization.Sentences,
+            imeAction = ImeAction.Done
         ),
         keyboardActions = KeyboardActions {
             focusManager.clearFocus(force = true)
         },
         trailing = { color ->
+            if (value.isEmpty()) return@Input
             Box {
                 AnimatedVisibility(
                     modifier = Modifier

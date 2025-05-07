@@ -42,6 +42,9 @@ public interface AppColor {
         public val placeholder: Color
         public val text: Color
 
+        public val leading: Color
+        public val trailing: Color
+
         public val backgroundDisabled: Color
         public val borderDisabled: Color
         public val textDisabled: Color
