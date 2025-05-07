@@ -27,6 +27,7 @@ public data object AppDp {
     }
 
     public data object Icon {
-        val component: Dp = 20.dp
+        val component: Dp = 18.dp
+        val card: Dp = 32.dp
     }
 }

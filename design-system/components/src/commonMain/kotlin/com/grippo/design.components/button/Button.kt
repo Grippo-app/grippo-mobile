@@ -38,7 +38,7 @@ import com.grippo.design.resources.icons.Loader
 public enum class ButtonSize { Small, Medium, Large }
 
 @Immutable
-public enum class ButtonStyle { Primary, Secondary, Tertiary, Transparent }
+public enum class ButtonStyle { Primary, Secondary, Transparent }
 
 @Immutable
 public enum class ButtonState { Enabled, Loading, Disabled; }

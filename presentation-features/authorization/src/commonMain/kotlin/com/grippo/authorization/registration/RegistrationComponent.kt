@@ -91,6 +91,7 @@ internal class RegistrationComponent(
                     componentContext = context,
                     toExperience = { w, h ->
                         navigation.push(RegistrationRouter.Experience)
+                        viewModel.saveWeightHeight(w, h)
                     }
                 ),
             )

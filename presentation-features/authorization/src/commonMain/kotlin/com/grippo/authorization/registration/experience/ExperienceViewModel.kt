@@ -4,4 +4,8 @@ import com.grippo.core.BaseViewModel
 
 internal class ExperienceViewModel :
     BaseViewModel<ExperienceState, ExperienceDirection, ExperienceLoader>(ExperienceState),
-    ExperienceContract
+    ExperienceContract {
+    override fun next() {
+
+    }
+}

@@ -28,11 +28,6 @@ public interface AppColor {
         public val backgroundSecondaryDisabled: Color
         public val contentSecondaryDisabled: Color
 
-        public val backgroundTertiary: Color
-        public val contentTertiary: Color
-        public val backgroundTertiaryDisabled: Color
-        public val contentTertiaryDisabled: Color
-
         public val contentTransparentDisabled: Color
     }
 
@@ -84,15 +79,12 @@ public interface AppColor {
     }
 
     public interface BorderColors {
-        public val default: Color
-        public val focus: Color
-        public val disabled: Color
-        public val error: Color
-
+        public val defaultPrimary: Color
+        public val disabledPrimary: Color
         public val defaultSecondary: Color
         public val disabledSecondary: Color
-        public val defaultTertiary: Color
-        public val disabledTertiary: Color
+        public val focus: Color
+        public val error: Color
     }
 
     public interface InteractionColors {

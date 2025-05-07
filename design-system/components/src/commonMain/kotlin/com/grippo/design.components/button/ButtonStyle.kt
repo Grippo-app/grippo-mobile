@@ -35,13 +35,6 @@ internal fun resolveButtonColors(
                 icon = colors.contentSecondaryDisabled
             )
 
-            ButtonStyle.Tertiary -> ButtonColorTokens(
-                background = colors.backgroundTertiaryDisabled,
-                content = colors.contentTertiaryDisabled,
-                border = borders.disabledTertiary,
-                icon = colors.contentTertiaryDisabled
-            )
-
             ButtonStyle.Transparent -> ButtonColorTokens(
                 background = Color.Transparent,
                 content = colors.contentTransparentDisabled,
@@ -63,13 +56,6 @@ internal fun resolveButtonColors(
                 content = colors.contentSecondary,
                 border = borders.defaultSecondary,
                 icon = colors.contentSecondary,
-            )
-
-            ButtonStyle.Tertiary -> ButtonColorTokens(
-                background = colors.backgroundTertiary,
-                content = colors.contentTertiary,
-                border = borders.defaultTertiary,
-                icon = colors.contentTertiary,
             )
 
             ButtonStyle.Transparent -> ButtonColorTokens(
