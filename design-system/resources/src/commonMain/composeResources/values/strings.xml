@@ -6,6 +6,7 @@
     <string name="submit_btn">Submit</string>
     <string name="skip_btn">Skip</string>
     <string name="continue_btn">Continue</string>
+    <string name="or">OR</string>
     <string name="email_placeholder">Enter email</string>
     <string name="password_placeholder">Enter password</string>
     <string name="name_placeholder">e.g. Alex</string>
@@ -14,9 +15,9 @@
 
     <string name="login_title">Welcome to Grippo</string>
     <string name="login_description">Sign in to your account</string>
-    <string name="login_button_login">Log in</string>
+    <string name="login_button_login">Sign in</string>
     <string name="login_button_registration_label">Don't have an account yet?</string>
-    <string name="login_button_registration">Create account</string>
+    <string name="login_button_registration">Sign up</string>
 
     <string name="registration_credential_title">Let’s get you signed up</string>
     <string name="registration_credential_description">Just your email and a password — quick and easy.</string>

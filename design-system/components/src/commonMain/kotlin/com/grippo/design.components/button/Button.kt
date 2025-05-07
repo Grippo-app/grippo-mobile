@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.icons.Loader
@@ -59,18 +60,24 @@ public fun Button(
 
     val shape = RoundedCornerShape(AppTokens.dp.shape.component)
 
+    val height = when (style) {
+        ButtonStyle.Transparent -> Dp.Unspecified
+        else -> AppTokens.dp.size.componentHeight
+    }
+
+    val horizontalPadding = when (style) {
+        ButtonStyle.Transparent -> 4.dp
+        else -> AppTokens.dp.paddings.componentHorizontal
+    }
+
     Box(
         modifier = modifier
             .clip(shape)
             .background(colorTokens.background)
             .border(1.dp, colorTokens.border, shape)
-            .clickable(
-                enabled = state == ButtonState.Enabled,
-                onClick = onClick,
-            ).padding(horizontal = AppTokens.dp.paddings.componentHorizontal)
-            .height(
-                height = AppTokens.dp.size.componentHeight
-            ),
+            .clickable(enabled = state == ButtonState.Enabled, onClick = onClick)
+            .padding(horizontal = horizontalPadding)
+            .height(height = height),
         contentAlignment = Alignment.Center
     ) {
         Row(

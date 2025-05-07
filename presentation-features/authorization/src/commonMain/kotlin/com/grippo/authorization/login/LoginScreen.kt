@@ -29,6 +29,7 @@ import com.grippo.design.resources.login_button_registration
 import com.grippo.design.resources.login_button_registration_label
 import com.grippo.design.resources.login_description
 import com.grippo.design.resources.login_title
+import com.grippo.design.resources.or
 import com.grippo.presentation.api.auth.models.Email
 import com.grippo.presentation.api.auth.models.Password
 import kotlinx.collections.immutable.ImmutableSet
@@ -114,7 +115,7 @@ internal fun LoginScreen(
             )
 
             Text(
-                text = AppTokens.strings.res(Res.string.login_button_registration_label),
+                text = AppTokens.strings.res(Res.string.or),
                 style = AppTokens.typography.b14Reg(),
                 color = AppTokens.colors.text.secondary,
             )
@@ -127,11 +128,22 @@ internal fun LoginScreen(
 
         Spacer(modifier = Modifier.size(16.dp))
 
-        Button(
+        Row(
             modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.login_button_registration),
-            style = ButtonStyle.Secondary,
-            onClick = contract::register
-        )
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = AppTokens.strings.res(Res.string.login_button_registration_label),
+                style = AppTokens.typography.b14Reg(),
+                color = AppTokens.colors.text.secondary,
+            )
+
+            Button(
+                text = AppTokens.strings.res(Res.string.login_button_registration),
+                style = ButtonStyle.Transparent,
+                onClick = contract::register
+            )
+        }
     }
 }
