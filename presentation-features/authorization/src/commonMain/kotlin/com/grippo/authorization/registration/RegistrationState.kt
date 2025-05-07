@@ -1,7 +1,7 @@
 package com.grippo.authorization.registration
 
 import androidx.compose.runtime.Immutable
-import com.grippo.presentation.api.auth.models.Experience
+import com.grippo.presentation.api.user.models.Experience
 
 @Immutable
 internal data class RegistrationState(

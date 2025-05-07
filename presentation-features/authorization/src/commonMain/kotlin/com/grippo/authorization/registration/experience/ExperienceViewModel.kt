@@ -1,7 +1,7 @@
 package com.grippo.authorization.registration.experience
 
 import com.grippo.core.BaseViewModel
-import com.grippo.presentation.api.auth.models.Experience
+import com.grippo.presentation.api.user.models.Experience
 
 internal class ExperienceViewModel :
     BaseViewModel<ExperienceState, ExperienceDirection, ExperienceLoader>(ExperienceState()),
