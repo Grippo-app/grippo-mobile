@@ -61,7 +61,7 @@ public fun Button(
         state = state,
     )
 
-    val shape = RoundedCornerShape(AppTokens.dp.shape.component)
+    val shape = RoundedCornerShape(AppTokens.dp.shape.medium)
 
     val height = when (style) {
         ButtonStyle.Transparent -> Dp.Unspecified
@@ -70,7 +70,7 @@ public fun Button(
 
     val horizontalPadding = when (style) {
         ButtonStyle.Transparent -> 4.dp
-        else -> AppTokens.dp.paddings.componentHorizontal
+        else -> AppTokens.dp.paddings.mediumHorizontal
     }
 
     val interactionSource = remember { MutableInteractionSource() }

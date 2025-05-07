@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -21,6 +22,7 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.cards.SelectableCard
+import com.grippo.design.components.cards.SelectableCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.continue_btn
@@ -72,6 +74,30 @@ internal fun ExperienceScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(vertical = 6.dp)
         ) {
+            item {
+                val value = remember {
+                    mutableStateOf(false)
+                }
+                SelectableCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    select = { value.value = value.value.not() },
+                    isSelected = value.value,
+                    style = SelectableCardStyle.Small(
+                        title = "Hello world"
+                    ),
+                )
+            }
+
+            item {
+                SelectableCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    select = {},
+                    isSelected = true,
+                    style = SelectableCardStyle.Small(
+                        title = "Hello world"
+                    ),
+                )
+            }
 
             items(state.suggestions, key = { it.ordinal }) { item ->
                 val selectProvider = remember { { contract.select(item) } }
@@ -81,9 +107,11 @@ internal fun ExperienceScreen(
                     modifier = Modifier.fillMaxWidth(),
                     select = selectProvider,
                     isSelected = isSelected,
-                    title = item.title(),
-                    description = item.description(),
-                    icon = item.icon()
+                    style = SelectableCardStyle.Medium(
+                        title = item.title(),
+                        description = item.description(),
+                        icon = item.icon()
+                    ),
                 )
             }
         }

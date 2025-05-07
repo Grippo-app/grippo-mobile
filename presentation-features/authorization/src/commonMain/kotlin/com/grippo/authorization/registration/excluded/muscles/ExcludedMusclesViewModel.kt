@@ -4,7 +4,7 @@ import com.grippo.core.BaseViewModel
 
 internal class ExcludedMusclesViewModel :
     BaseViewModel<ExcludedMusclesState, ExcludedMusclesDirection, ExcludedMusclesLoader>(
-        ExcludedMusclesState
+        ExcludedMusclesState()
     ), ExcludedMusclesContract {
 
     override fun next() {

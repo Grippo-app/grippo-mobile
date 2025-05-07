@@ -16,6 +16,7 @@ public interface AppColor {
     public val elevation: ElevationColors
     public val skeleton: SkeletonColors
     public val icon: IconColors
+    public val toggle: ToggleColors
 
     public interface ButtonColors {
         public val backgroundPrimary: Color
@@ -29,6 +30,21 @@ public interface AppColor {
         public val contentSecondaryDisabled: Color
 
         public val contentTransparentDisabled: Color
+    }
+
+    public interface ToggleColors {
+        public val checkedThumb: Color
+        public val checkedTrack: Color
+
+        public val uncheckedThumb: Color
+        public val uncheckedTrack: Color
+
+        public val disabledCheckedThumb: Color
+        public val disabledCheckedTrack: Color
+
+        public val disabledUncheckedThumb: Color
+        public val disabledUncheckedTrack: Color
+        public val disabledUncheckedBorder: Color
     }
 
     public interface InputColors {

@@ -59,6 +59,21 @@ public object LightColor : AppColor {
         override val accent = Primary500
     }
 
+    override val toggle: AppColor.ToggleColors = object : AppColor.ToggleColors {
+        override val checkedThumb = White
+        override val checkedTrack = Primary500
+
+        override val uncheckedThumb = White
+        override val uncheckedTrack = Neutral200
+
+        override val disabledCheckedThumb = Neutral500
+        override val disabledCheckedTrack = Neutral200
+
+        override val disabledUncheckedThumb = Neutral300
+        override val disabledUncheckedTrack = Neutral200
+        override val disabledUncheckedBorder = Neutral200
+    }
+
     override val input: AppColor.InputColors = object : AppColor.InputColors {
         override val background = White
         override val border = Neutral400

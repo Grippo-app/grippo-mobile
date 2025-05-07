@@ -18,6 +18,7 @@ kotlin {
         implementation(projects.designSystem.resources)
 
         implementation(libs.kotlinx.serialization.json)
+        implementation(libs.immutable.collections)
 
         implementation(compose.foundation)
     }

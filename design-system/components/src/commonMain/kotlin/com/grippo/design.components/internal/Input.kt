@@ -81,7 +81,7 @@ internal fun Input(
     minLines: Int = 1,
 ) {
     val colors = AppTokens.colors
-    val shape = RoundedCornerShape(AppTokens.dp.shape.component)
+    val shape = RoundedCornerShape(AppTokens.dp.shape.medium)
     val height = AppTokens.dp.size.componentHeight
 
     val hasFocus = remember { mutableStateOf(false) }
@@ -194,7 +194,7 @@ internal fun Input(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal))
+                    Spacer(modifier = Modifier.width(AppTokens.dp.paddings.mediumHorizontal))
 
                     leading?.invoke(leadingColor)
 
@@ -208,9 +208,9 @@ internal fun Input(
 
                     if (trailing != null) {
                         trailing.invoke(trailingColor)
-                        Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal / 3))
+                        Spacer(modifier = Modifier.width(AppTokens.dp.paddings.mediumHorizontal / 3))
                     } else {
-                        Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal))
+                        Spacer(modifier = Modifier.width(AppTokens.dp.paddings.mediumHorizontal))
                     }
                 }
 
@@ -219,7 +219,7 @@ internal fun Input(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal))
+                    Spacer(modifier = Modifier.width(AppTokens.dp.paddings.mediumHorizontal))
 
                     leading?.invoke(leadingColor)
 
@@ -248,9 +248,9 @@ internal fun Input(
 
                     if (trailing != null) {
                         trailing.invoke(trailingColor)
-                        Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal / 3))
+                        Spacer(modifier = Modifier.width(AppTokens.dp.paddings.mediumHorizontal / 3))
                     } else {
-                        Spacer(modifier = Modifier.width(AppTokens.dp.paddings.componentHorizontal))
+                        Spacer(modifier = Modifier.width(AppTokens.dp.paddings.mediumHorizontal))
                     }
                 }
             }

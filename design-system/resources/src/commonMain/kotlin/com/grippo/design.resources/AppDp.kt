@@ -12,9 +12,10 @@ public data object AppDp {
     public data object Paddings {
         val screenHorizontal: Dp = 20.dp
         val screenVertical: Dp = 20.dp
-
-        val componentHorizontal: Dp = 16.dp
-        val componentVertical: Dp = 16.dp
+        val mediumHorizontal: Dp = 16.dp
+        val mediumVertical: Dp = 16.dp
+        val smallHorizontal: Dp = 12.dp
+        val smallVertical: Dp = 8.dp
     }
 
     public data object Size {
@@ -22,8 +23,8 @@ public data object AppDp {
     }
 
     public data object Shape {
-        val screen: Dp = 24.dp
-        val component: Dp = 16.dp
+        val small: Dp = 12.dp
+        val medium: Dp = 16.dp
     }
 
     public data object Icon {
