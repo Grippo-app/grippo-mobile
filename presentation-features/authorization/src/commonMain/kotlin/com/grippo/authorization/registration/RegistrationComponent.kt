@@ -99,7 +99,10 @@ internal class RegistrationComponent(
             RegistrationRouter.Experience -> Child.Experience(
                 ExperienceComponent(
                     componentContext = context,
-                    toExcludedMuscles = { navigation.push(RegistrationRouter.ExcludedMuscles) }
+                    toExcludedMuscles = { e ->
+                        navigation.push(RegistrationRouter.ExcludedMuscles)
+                        viewModel.saveExperience(e)
+                    }
                 ),
             )
 
