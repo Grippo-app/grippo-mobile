@@ -11,10 +11,6 @@ public data class EquipmentGroupDto(
     val id: String? = null,
     @SerialName("name")
     val name: String? = null,
-    @SerialName("nameUa")
-    val nameUa: String? = null,
-    @SerialName("nameRu")
-    val nameRu: String? = null,
     @SerialName("type")
     val type: String? = null,
     @SerialName("updatedAt")

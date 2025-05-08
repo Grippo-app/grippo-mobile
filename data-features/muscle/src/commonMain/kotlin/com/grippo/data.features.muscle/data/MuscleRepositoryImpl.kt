@@ -42,6 +42,8 @@ internal class MuscleRepositoryImpl(
         response.onSuccess { r ->
             val groups = r.mapNotNull { it.toEntityOrNull() }
             val muscles = r.mapNotNull { it.muscles?.toEntities() }.flatten()
+            println("groups = ${groups.size}")
+            println("muscles = ${muscles.size}")
             muscleDao.insertAllGroupsWithMuscles(groups, muscles)
         }
 
