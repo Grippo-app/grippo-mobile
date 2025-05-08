@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
 public fun bodySplit(
-    colors: DefaultMuscleColorProperties
+    colors: MuscleColorProperties
 ): ImageVector {
 
     val outlineColor: Color = colors.outline
