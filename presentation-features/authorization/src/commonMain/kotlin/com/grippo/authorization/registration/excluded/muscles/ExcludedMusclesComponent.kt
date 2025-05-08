@@ -12,7 +12,7 @@ internal class ExcludedMusclesComponent(
 ) : BaseComponent<ExcludedMusclesDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        ExcludedMusclesViewModel()
+        ExcludedMusclesViewModel(getKoin().get())
     }
 
     override suspend fun eventListener(direction: ExcludedMusclesDirection) {

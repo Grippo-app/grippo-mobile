@@ -3,7 +3,7 @@ package com.grippo.presentation.api.muscles.models
 import androidx.compose.runtime.Immutable
 
 @Immutable
-public enum class MuscleEnum {
+public enum class MuscleEnumState {
     // Chest
     PECTORALIS_MAJOR_CLAVICULAR,
     PECTORALIS_MAJOR_STERNOCOSTAL,

@@ -12,8 +12,6 @@ public fun MuscleDto.toEntityOrNull(): MuscleEntity? {
         id = id ?: return null,
         muscleGroupId = muscleGroupId ?: return null,
         name = name ?: return null,
-        status = status,
-        load = load,
         type = type ?: return null,
         createdAt = createdAt ?: return null,
         updatedAt = updatedAt ?: return null,

@@ -1,18 +1,23 @@
 package com.grippo.database
 
 import androidx.room.Room
-import androidx.room.RoomDatabase
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.grippo.platform.core.NativeContext
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
 
-internal actual fun NativeContext.getDatabaseBuilder(): RoomDatabase.Builder<Database> {
+internal actual fun NativeContext.getDatabaseBuilder(): Database {
     val dbFilePath = documentDirectory() + "/grippo_database.db"
     return Room.databaseBuilder<Database>(
         name = dbFilePath,
     )
+        .setDriver(BundledSQLiteDriver())
+        .setQueryCoroutineContext(Dispatchers.IO)
+        .build()
 }
 
 @OptIn(ExperimentalForeignApi::class)

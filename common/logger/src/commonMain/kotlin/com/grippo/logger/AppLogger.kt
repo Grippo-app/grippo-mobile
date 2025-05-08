@@ -11,7 +11,7 @@ public object AppLogger {
     public fun debug(msg: String) {
         onDebug {
             val category = LogCategory.GENERAL
-//            Log.d(category.name, msg)
+            println(category.name + " " + msg)
             logListener?.invoke(category, msg)
         }
     }
@@ -19,7 +19,7 @@ public object AppLogger {
     public fun error(msg: String) {
         onDebug {
             val category = LogCategory.GENERAL
-//            Log.e(category.name, "🔴 $msg")
+            println(category.name + " " + "🔴 $msg")
             logListener?.invoke(category, "🔴 $msg")
         }
     }
@@ -27,7 +27,7 @@ public object AppLogger {
     public fun success(msg: String) {
         onDebug {
             val category = LogCategory.GENERAL
-//            Log.d(category.name, "🟢 $msg")
+            println(category.name + " " + "🟢 $msg")
             logListener?.invoke(category, "🟢 $msg")
         }
     }
@@ -35,7 +35,7 @@ public object AppLogger {
     public fun network(msg: String) {
         onDebug {
             val category = LogCategory.NETWORK
-//            Log.d(category.name, msg)
+            println(category.name + " " + msg)
             logListener?.invoke(category, msg)
         }
     }
@@ -43,7 +43,7 @@ public object AppLogger {
     public fun navigation(msg: String) {
         onDebug {
             val category = LogCategory.NAVIGATION
-//            Log.d(category.name, msg)
+            println(category.name + " " + msg)
             logListener?.invoke(category, msg)
         }
     }

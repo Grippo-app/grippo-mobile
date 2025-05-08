@@ -5,10 +5,10 @@ import com.grippo.data.features.api.muscle.models.MuscleGroupEnum
 import com.grippo.database.models.MuscleGroupWithMuscles
 
 public fun List<MuscleGroupWithMuscles>.toDomain(): List<MuscleGroup> {
-    return mapNotNull { it.daoToDomain() }
+    return mapNotNull { it.toDomain() }
 }
 
-public fun MuscleGroupWithMuscles.daoToDomain(): MuscleGroup {
+public fun MuscleGroupWithMuscles.toDomain(): MuscleGroup {
     return MuscleGroup(
         id = group.id,
         name = group.name,

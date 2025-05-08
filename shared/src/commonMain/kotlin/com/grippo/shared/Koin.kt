@@ -2,6 +2,7 @@ package com.grippo.shared
 
 import com.grippo.core.coreModule
 import com.grippo.data.features.authorization.authorizationFeatureModule
+import com.grippo.data.features.muscle.musclesFeatureModule
 import com.grippo.data.features.user.userFeatureModule
 import com.grippo.data.features.weight.history.weightHistoryFeatureModule
 import com.grippo.database.databaseModule
@@ -24,7 +25,8 @@ public object Koin {
             userFeatureModule,
             weightHistoryFeatureModule,
             coreModule,
-            dialogModule
+            dialogModule,
+            musclesFeatureModule
         )
     }
 }

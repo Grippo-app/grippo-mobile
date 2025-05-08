@@ -27,6 +27,7 @@ kotlin {
         implementation(projects.dataFeatures.authorization)
         implementation(projects.dataFeatures.user)
         implementation(projects.dataFeatures.weightHistory)
+        implementation(projects.dataFeatures.muscle)
 
         implementation(projects.presentationFeatures.presentationApi)
         implementation(projects.presentationFeatures.authorization)

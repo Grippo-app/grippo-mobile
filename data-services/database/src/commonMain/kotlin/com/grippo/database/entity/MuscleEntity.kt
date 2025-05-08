@@ -19,8 +19,6 @@ public data class MuscleEntity(
     @PrimaryKey val id: String,
     val muscleGroupId: String,
     val name: String,
-    val status: String?,
-    val load: String?,
     val type: String,
     val createdAt: String,
     val updatedAt: String,

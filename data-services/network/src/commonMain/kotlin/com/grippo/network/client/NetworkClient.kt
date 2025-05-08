@@ -35,8 +35,9 @@ public class NetworkClient(
         }
 
         defaultRequest {
-            host = "192.168.0.101:3010"
-            url { protocol = URLProtocol.HTTPS }
+            host = "192.168.0.105:3010"
+            url { protocol = URLProtocol.HTTP }
+//            url { protocol = URLProtocol.HTTPS }
             contentType(ContentType.Application.Json)
         }
     }
