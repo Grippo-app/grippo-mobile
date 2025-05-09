@@ -13,9 +13,9 @@ decompose-essently = "2.5.0"
 room = "2.7.1"
 ksp = "2.1.20-2.0.1"
 ktor = "3.0.3"
-data-store = "1.1.5"
+data-store = "1.1.6"
 immutable-collections = "0.3.8"
-sqlite = "2.5.0"
+sqlite = "2.5.1"
 
 [libraries]
 #Compose
