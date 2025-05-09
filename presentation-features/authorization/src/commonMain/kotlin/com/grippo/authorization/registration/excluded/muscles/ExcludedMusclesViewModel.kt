@@ -30,7 +30,8 @@ internal class ExcludedMusclesViewModel(
 
     private fun provideMuscles(list: List<MuscleGroup>) {
         val suggestions = list.toState()
-        update { it.copy(suggestions = suggestions) }
+        val selectedIds = suggestions.flatMap { it.muscles }.map { it.value.id }.toPersistentList()
+        update { it.copy(suggestions = suggestions, selectedMuscleIds = selectedIds) }
     }
 
     override fun select(id: String) {
@@ -45,7 +46,9 @@ internal class ExcludedMusclesViewModel(
     }
 
     override fun next() {
-        val direction = ExcludedMusclesDirection.MissingEquipment
+        val direction = ExcludedMusclesDirection.MissingEquipment(
+            muscleIds = state.value.selectedMuscleIds
+        )
         navigateTo(direction)
     }
 }

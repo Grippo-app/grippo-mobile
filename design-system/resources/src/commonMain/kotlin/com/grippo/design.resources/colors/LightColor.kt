@@ -140,7 +140,7 @@ public object LightColor : AppColor {
         override val selected = Primary500
         override val active = Primary300
         override val inactive = Neutral300
-        override val background = White
+        override val background = Neutral200
         override val outline = Neutral200
     }
 

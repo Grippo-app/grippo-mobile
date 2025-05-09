@@ -7,11 +7,13 @@ internal interface RegistrationContract {
     fun saveName(name: String)
     fun saveWeightHeight(weight: Float, height: Int)
     fun saveExperience(experience: Experience)
+    fun saveExcludedMuscleIds(ids: List<String>)
 
     companion object Empty : RegistrationContract {
         override fun saveCredentials(email: String, password: String) {}
         override fun saveName(name: String) {}
         override fun saveWeightHeight(weight: Float, height: Int) {}
         override fun saveExperience(experience: Experience) {}
+        override fun saveExcludedMuscleIds(ids: List<String>) {}
     }
 }

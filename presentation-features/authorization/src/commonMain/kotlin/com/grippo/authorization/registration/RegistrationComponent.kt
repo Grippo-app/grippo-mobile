@@ -109,7 +109,10 @@ internal class RegistrationComponent(
             RegistrationRouter.ExcludedMuscles -> Child.ExcludedMuscles(
                 ExcludedMusclesComponent(
                     componentContext = context,
-                    toMissingEquipment = { navigation.push(RegistrationRouter.MissingEquipment) }
+                    toMissingEquipment = { ids ->
+                        navigation.push(RegistrationRouter.MissingEquipment)
+                        viewModel.saveExcludedMuscleIds(ids)
+                    }
                 ),
             )
 

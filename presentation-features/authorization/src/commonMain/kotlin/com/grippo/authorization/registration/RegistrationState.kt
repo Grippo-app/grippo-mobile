@@ -2,6 +2,8 @@ package com.grippo.authorization.registration
 
 import androidx.compose.runtime.Immutable
 import com.grippo.presentation.api.user.models.Experience
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 internal data class RegistrationState(
@@ -10,5 +12,6 @@ internal data class RegistrationState(
     val name: String = "",
     val weight: Float = 0F,
     val height: Int = 0,
-    val experience: Experience? = null
+    val experience: Experience? = null,
+    val excludedMuscleIds: ImmutableList<String> = persistentListOf()
 )
