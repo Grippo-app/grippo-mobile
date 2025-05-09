@@ -31,10 +31,20 @@ internal class MissingEquipmentViewModel(
     private fun provideEquipments(list: List<EquipmentGroup>) {
         val suggestions = list.toState()
         val selectedIds = suggestions.flatMap { it.equipments }.map { it.id }.toPersistentList()
-        update { it.copy(suggestions = suggestions, selectedEquipmentIds = selectedIds) }
+        update {
+            it.copy(
+                suggestions = suggestions,
+                selectedEquipmentIds = selectedIds,
+                selectedGroupId = suggestions.firstOrNull()?.id
+            )
+        }
     }
 
-    override fun select(id: String) {
+    override fun selectGroup(id: String) {
+        update { it.copy(selectedGroupId = id) }
+    }
+
+    override fun selectEquipment(id: String) {
         update {
             val newList: PersistentList<String> = it.selectedEquipmentIds
                 .toMutableList()

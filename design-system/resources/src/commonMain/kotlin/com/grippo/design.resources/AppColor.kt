@@ -8,7 +8,7 @@ public interface AppColor {
     public val background: BackgroundColors
     public val dialog: DialogColors
     public val text: TextColors
-    public val divider: Color
+    public val divider: DividerColors
     public val semantic: SemanticColors
     public val overlay: OverlayColors
     public val border: BorderColors
@@ -19,6 +19,12 @@ public interface AppColor {
     public val toggle: ToggleColors
     public val muscle: MuscleColors
     public val equipment: EquipmentColors
+    public val segment: SegmentColors
+
+    public interface DividerColors {
+        public val default: Color
+        public val accent: Color
+    }
 
     public interface ButtonColors {
         public val backgroundPrimary: Color
@@ -131,10 +137,14 @@ public interface AppColor {
     }
 
     public interface MuscleColors {
-        public val selected: Color
         public val active: Color
         public val inactive: Color
         public val background: Color
         public val outline: Color
+    }
+
+    public interface SegmentColors {
+        public val active: Color
+        public val inactive: Color
     }
 }

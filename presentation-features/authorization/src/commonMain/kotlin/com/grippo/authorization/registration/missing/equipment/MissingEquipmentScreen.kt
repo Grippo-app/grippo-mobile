@@ -1,29 +1,38 @@
 package com.grippo.authorization.registration.missing.equipment
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.cards.SelectableCard
+import com.grippo.design.components.cards.SelectableCardStyle
+import com.grippo.design.components.segment.Segment
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.continue_btn
 import com.grippo.design.resources.registration_equipment_description
 import com.grippo.design.resources.registration_equipment_title
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun MissingEquipmentScreen(
@@ -62,31 +71,65 @@ internal fun MissingEquipmentScreen(
 
         Spacer(modifier = Modifier.size(20.dp))
 
+        val segmentItems = remember(state.suggestions) {
+            state.suggestions.map { it.id to it.name }.toPersistentList()
+        }
+
+        Segment(
+            modifier = Modifier
+                .horizontalScroll(rememberScrollState())
+                .fillMaxWidth(),
+            items = segmentItems,
+            selected = state.selectedGroupId,
+            onSelect = contract::selectGroup
+        )
+
+        Spacer(modifier = Modifier.size(10.dp))
+
+        val equipments = remember(state.selectedGroupId, state.suggestions) {
+            state.suggestions.find { it.id == state.selectedGroupId }?.equipments.orEmpty()
+        }
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(vertical = 6.dp),
         ) {
-            items(state.suggestions, key = { it.id }) { group ->
+            items(equipments, key = { it.id }) { equipment ->
+                val selectProvider = remember(equipment.id) {
+                    { contract.selectEquipment(equipment.id) }
+                }
 
-                Text(
+                val isSelected = remember(equipment.id, state.selectedEquipmentIds) {
+                    state.selectedEquipmentIds.contains(equipment.id)
+                }
+
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    text = group.name,
-                    style = AppTokens.typography.h4(),
-                    textAlign = TextAlign.Center,
-                    color = AppTokens.colors.text.primary,
-                )
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
 
-                Spacer(modifier = Modifier.height(16.dp))
+                    Image(
+                        modifier = Modifier.size(AppTokens.dp.size.componentHeight),
+                        imageVector = equipment.image(),
+                        contentDescription = null,
+                        colorFilter = when (isSelected) {
+                            true -> null
+                            false -> ColorFilter.tint(color = AppTokens.colors.equipment.inactive)
+                        },
+                    )
 
-                EquipmentsColumn(
-                    modifier = Modifier.fillMaxWidth(),
-                    item = group,
-                    selectedIds = state.selectedEquipmentIds,
-                    onSelect = contract::select
-                )
+                    SelectableCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        style = SelectableCardStyle.Small(
+                            title = equipment.name
+                        ),
+                        isSelected = isSelected,
+                        onSelect = selectProvider
+                    )
+                }
             }
         }
 

@@ -9,5 +9,6 @@ import kotlinx.collections.immutable.persistentListOf
 @Immutable
 internal data class MissingEquipmentState(
     val suggestions: ImmutableList<EquipmentGroupState> = persistentListOf(),
+    val selectedGroupId: String? = null,
     val selectedEquipmentIds: PersistentList<String> = persistentListOf()
 )

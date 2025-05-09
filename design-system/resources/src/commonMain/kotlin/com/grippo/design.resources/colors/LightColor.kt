@@ -2,6 +2,7 @@ package com.grippo.design.resources.colors
 
 import androidx.compose.ui.graphics.Color
 import com.grippo.design.resources.AppColor
+import com.grippo.design.resources.AppColor.DividerColors
 
 public object LightColor : AppColor {
     private val Transparent = Color(0x00000000)
@@ -140,13 +141,20 @@ public object LightColor : AppColor {
         override val inactive: Color = Neutral300
     }
 
+    override val segment: AppColor.SegmentColors = object : AppColor.SegmentColors {
+        override val active = Black
+        override val inactive: Color = Neutral500
+    }
+
     override val muscle: AppColor.MuscleColors = object : AppColor.MuscleColors {
-        override val selected = Primary500
         override val active = Primary300
         override val inactive = Neutral300
         override val background = Neutral200
         override val outline = Neutral200
     }
 
-    override val divider: Color = Neutral200
+    override val divider: DividerColors = object : DividerColors {
+        override val default: Color = Neutral200
+        override val accent: Color = Primary500
+    }
 }

@@ -76,7 +76,7 @@ public object MuscleColorPresetFactory {
         muscles: ImmutableSet<MuscleState>,
         selectedIds: ImmutableSet<String>
     ): Map<MuscleEnumState, Color> {
-        val selectedColor = AppTokens.colors.muscle.selected
+        val selectedColor = AppTokens.colors.muscle.active
         val inactiveColor = AppTokens.colors.muscle.inactive
 
         return remember(muscles, selectedIds) {

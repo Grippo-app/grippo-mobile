@@ -111,7 +111,7 @@ internal fun LoginScreen(
         ) {
             HorizontalDivider(
                 modifier = Modifier.weight(1f),
-                color = AppTokens.colors.divider
+                color = AppTokens.colors.divider.default
             )
 
             Text(
@@ -122,7 +122,7 @@ internal fun LoginScreen(
 
             HorizontalDivider(
                 modifier = Modifier.weight(1f),
-                color = AppTokens.colors.divider
+                color = AppTokens.colors.divider.default
             )
         }
 
