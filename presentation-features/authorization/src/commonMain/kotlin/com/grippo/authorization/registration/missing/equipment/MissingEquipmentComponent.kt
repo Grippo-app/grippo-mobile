@@ -12,7 +12,7 @@ internal class MissingEquipmentComponent(
 ) : BaseComponent<MissingEquipmentDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        MissingEquipmentViewModel()
+        MissingEquipmentViewModel(getKoin().get())
     }
 
     override suspend fun eventListener(direction: MissingEquipmentDirection) {
