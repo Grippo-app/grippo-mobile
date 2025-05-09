@@ -14,25 +14,19 @@ import kotlinx.coroutines.flow.Flow
 public interface MuscleDao {
 
     @Transaction
-    public suspend fun insertAllGroupsWithMuscles(
+    public suspend fun insertGroupsWithMuscles(
         groups: List<MuscleGroupEntity>,
         muscles: List<MuscleEntity>
     ) {
-        insertOrIgnore(groups)
-        insertOrUpdate(muscles)
+        insertMuscleGroups(groups)
+        insertMuscles(muscles)
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public suspend fun insertOrUpdate(muscle: MuscleEntity)
+    public suspend fun insertMuscles(muscles: List<MuscleEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public suspend fun insertOrUpdate(muscles: List<MuscleEntity>)
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    public suspend fun insertOrIgnore(muscleGroup: MuscleGroupEntity)
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    public suspend fun insertOrIgnore(muscleGroups: List<MuscleGroupEntity>)
+    public suspend fun insertMuscleGroups(muscleGroups: List<MuscleGroupEntity>)
 
     @Transaction
     @Query("SELECT * FROM muscle WHERE id IN (:ids)")

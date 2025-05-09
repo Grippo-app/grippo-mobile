@@ -21,9 +21,6 @@ public val databaseModule: Module = module {
         get<Database>().equipmentDao()
     }
     single {
-        get<Database>().equipmentGroupDao()
-    }
-    single {
         get<Database>().exerciseExampleDao()
     }
     single {

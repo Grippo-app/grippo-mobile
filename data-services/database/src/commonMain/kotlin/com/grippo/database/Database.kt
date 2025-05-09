@@ -4,7 +4,6 @@ import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.grippo.database.dao.EquipmentDao
-import com.grippo.database.dao.EquipmentGroupDao
 import com.grippo.database.dao.ExerciseEquipmentDao
 import com.grippo.database.dao.ExerciseExampleBundleDao
 import com.grippo.database.dao.ExerciseExampleDao
@@ -56,7 +55,6 @@ public abstract class Database : RoomDatabase() {
     public abstract fun weightHistoryDao(): WeightHistoryDao
 
     public abstract fun equipmentDao(): EquipmentDao
-    public abstract fun equipmentGroupDao(): EquipmentGroupDao
 
     public abstract fun exerciseExampleDao(): ExerciseExampleDao
     public abstract fun exerciseExampleBundleDao(): ExerciseExampleBundleDao

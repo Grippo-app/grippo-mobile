@@ -6,18 +6,39 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.grippo.database.entity.EquipmentEntity
+import com.grippo.database.entity.EquipmentGroupEntity
+import com.grippo.database.models.EquipmentGroupWithEquipments
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 public interface EquipmentDao {
 
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
-    public suspend fun insertOrUpdate(equipment: EquipmentEntity)
+    @Transaction
+    public suspend fun insertGroupsWithEquipments(
+        groups: List<EquipmentGroupEntity>,
+        equipments: List<EquipmentEntity>
+    ) {
+        insertEquipmentGroups(groups)
+        insertEquipments(equipments)
+    }
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public suspend fun insertEquipments(equipments: List<EquipmentEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public suspend fun insertEquipmentGroups(groups: List<EquipmentGroupEntity>)
+
+    @Transaction
+    @Query("SELECT * FROM equipment_group")
+    public fun getGroups(): Flow<List<EquipmentGroupWithEquipments>>
 
     @Transaction
     @Query("SELECT * FROM equipment WHERE id IN (:ids)")
-    public fun getById(ids: List<String>): Flow<List<EquipmentEntity>>
+    public fun getByIds(ids: List<String>): Flow<List<EquipmentEntity>>
 
     @Query("DELETE FROM equipment")
     public suspend fun delete()
+
+    @Query("DELETE FROM equipment_group")
+    public suspend fun deleteGroups()
 }

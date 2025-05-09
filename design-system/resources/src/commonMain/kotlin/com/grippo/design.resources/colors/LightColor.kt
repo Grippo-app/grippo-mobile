@@ -136,6 +136,10 @@ public object LightColor : AppColor {
         override val shimmer = Neutral100
     }
 
+    override val equipment: AppColor.EquipmentColors = object : AppColor.EquipmentColors {
+        override val inactive: Color = Neutral300
+    }
+
     override val muscle: AppColor.MuscleColors = object : AppColor.MuscleColors {
         override val selected = Primary500
         override val active = Primary300

@@ -6,10 +6,11 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,8 +21,8 @@ import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.continue_btn
-import com.grippo.design.resources.registration_muscles_description
-import com.grippo.design.resources.registration_muscles_title
+import com.grippo.design.resources.registration_equipment_description
+import com.grippo.design.resources.registration_equipment_title
 import kotlinx.collections.immutable.ImmutableSet
 
 @Composable
@@ -36,14 +37,14 @@ internal fun MissingEquipmentScreen(
             .padding(
                 horizontal = AppTokens.dp.paddings.screenHorizontal,
                 vertical = AppTokens.dp.paddings.screenVertical
-            ).imePadding(),
+            ),
     ) {
 
         Spacer(modifier = Modifier.size(60.dp))
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.registration_muscles_title),
+            text = AppTokens.strings.res(Res.string.registration_equipment_title),
             style = AppTokens.typography.h2(),
             color = AppTokens.colors.text.primary,
             textAlign = TextAlign.Center
@@ -53,7 +54,7 @@ internal fun MissingEquipmentScreen(
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.registration_muscles_description),
+            text = AppTokens.strings.res(Res.string.registration_equipment_description),
             style = AppTokens.typography.b14Med(),
             color = AppTokens.colors.text.secondary,
             textAlign = TextAlign.Center
@@ -68,7 +69,25 @@ internal fun MissingEquipmentScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(vertical = 6.dp),
         ) {
+            items(state.suggestions, key = { it.id }) { group ->
 
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = group.name,
+                    style = AppTokens.typography.h4(),
+                    textAlign = TextAlign.Center,
+                    color = AppTokens.colors.text.primary,
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                EquipmentsColumn(
+                    modifier = Modifier.fillMaxWidth(),
+                    item = group,
+                    selectedIds = state.selectedEquipmentIds,
+                    onSelect = contract::select
+                )
+            }
         }
 
         Spacer(modifier = Modifier.size(20.dp))

@@ -5,6 +5,5 @@ import kotlinx.coroutines.flow.Flow
 
 public interface EquipmentFeature {
     public fun observeEquipments(): Flow<List<EquipmentGroup>>
-    public suspend fun getUserEquipments(): Result<Unit>
     public suspend fun getPublicEquipments(): Result<Unit>
 }

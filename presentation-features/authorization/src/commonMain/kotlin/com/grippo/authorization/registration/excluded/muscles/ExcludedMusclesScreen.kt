@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -41,7 +40,7 @@ internal fun ExcludedMusclesScreen(
             .padding(
                 horizontal = AppTokens.dp.paddings.screenHorizontal,
                 vertical = AppTokens.dp.paddings.screenVertical
-            ).imePadding(),
+            ),
     ) {
 
         Spacer(modifier = Modifier.size(60.dp))
@@ -90,7 +89,6 @@ internal fun ExcludedMusclesScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-
                     if (isEven) {
                         MusclesColumn(
                             modifier = Modifier.weight(1f),
