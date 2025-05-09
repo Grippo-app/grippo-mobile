@@ -9,8 +9,6 @@ public data class EquipmentDto(
     val id: String? = null,
     @SerialName("equipmentGroupId")
     val equipmentGroupId: String? = null,
-    @SerialName("status")
-    val status: String? = null,
     @SerialName("name")
     val name: String? = null,
     @SerialName("type")

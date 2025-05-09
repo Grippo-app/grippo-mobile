@@ -136,5 +136,13 @@ public object LightColor : AppColor {
         override val shimmer = Neutral100
     }
 
+    override val muscle: AppColor.MuscleColors = object : AppColor.MuscleColors {
+        override val selected = Primary500
+        override val active = Primary300
+        override val inactive = Neutral300
+        override val background = White
+        override val outline = Neutral200
+    }
+
     override val divider: Color = Neutral200
 }

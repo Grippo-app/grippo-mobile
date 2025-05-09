@@ -7,29 +7,25 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
 public fun fullBack(
-    colors: MuscleColorProperties
+    colors: MuscleColorPreset
 ): ImageVector {
 
     val outlineColor: Color = colors.outline
     val backgroundBack: Color = colors.backgroundBack
+    val rhomboids: Color = colors.rhomboids
+    val latissimus: Color = colors.latissimus
+    val triceps: Color = colors.triceps
+    val trapezius: Color = colors.trapezius
+    val forearm: Color = colors.forearm
+    val teresMajor: Color = colors.teresMajor
+    val posteriorDeltoid: Color = colors.posteriorDeltoid
+    val gluteal: Color = colors.gluteal
+    val hamstrings: Color = colors.hamstrings
+    val calf: Color = colors.calf
+    val adductors: Color = colors.adductors
+    val abductors: Color = colors.abductors
 
-    val rhomboids: Color = colors.defaultBack
-    val latissimus: Color = colors.defaultBack
-    val triceps: Color = colors.defaultBack
-    val trapezius: Color = colors.defaultBack
-    val forearm: Color = colors.defaultBack
-
-    val teresMajor: Color = colors.defaultBack
-    val posteriorDeltoid: Color = colors.defaultBack
-
-    val gluteal: Color = colors.defaultBack
-    val hamstrings: Color = colors.defaultBack
-    val calf: Color = colors.defaultBack
-
-    val adductors: Color = colors.defaultBack
-    val abductors: Color = colors.defaultBack
-
-    val other: Color = colors.defaultBack
+    val other: Color = colors.other
 
     return ImageVector.Builder(
         name = "Fullback",

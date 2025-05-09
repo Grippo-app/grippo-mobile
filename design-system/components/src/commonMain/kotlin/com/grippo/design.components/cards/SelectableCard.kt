@@ -29,21 +29,21 @@ public fun SelectableCard(
     modifier: Modifier = Modifier,
     style: SelectableCardStyle,
     isSelected: Boolean,
-    select: () -> Unit
+    onSelect: () -> Unit
 ) {
     when (style) {
         is SelectableCardStyle.Small -> SelectableCardSmall(
             modifier = modifier,
             style = style,
             isSelected = isSelected,
-            onClick = select
+            onClick = onSelect
         )
 
         is SelectableCardStyle.Medium -> SelectableCardMedium(
             modifier = modifier,
             style = style,
             isSelected = isSelected,
-            onClick = select
+            onClick = onSelect
         )
     }
 }

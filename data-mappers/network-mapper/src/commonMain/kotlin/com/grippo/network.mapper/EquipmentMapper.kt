@@ -12,7 +12,6 @@ public fun EquipmentDto.toEntityOrNull(): EquipmentEntity? {
         id = id ?: return null,
         equipmentGroupId = equipmentGroupId ?: return null,
         name = name ?: return null,
-        status = status,
         type = type ?: return null,
         createdAt = createdAt ?: return null,
         updatedAt = updatedAt ?: return null,

@@ -17,6 +17,7 @@ public interface AppColor {
     public val skeleton: SkeletonColors
     public val icon: IconColors
     public val toggle: ToggleColors
+    public val muscle: MuscleColors
 
     public interface ButtonColors {
         public val backgroundPrimary: Color
@@ -122,5 +123,13 @@ public interface AppColor {
         public val default: Color
         public val disabled: Color
         public val accent: Color
+    }
+
+    public interface MuscleColors {
+        public val selected: Color
+        public val active: Color
+        public val inactive: Color
+        public val background: Color
+        public val outline: Color
     }
 }

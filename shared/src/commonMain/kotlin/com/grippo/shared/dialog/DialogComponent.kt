@@ -46,7 +46,6 @@ internal class DialogComponent(
     )
 
     private fun createChild(router: DialogConfig, context: ComponentContext): Dialog {
-        println("new child")
         return when (router) {
             is DialogConfig.WeightPicker -> Dialog.WeightPicker(
                 WeightPickerComponent(

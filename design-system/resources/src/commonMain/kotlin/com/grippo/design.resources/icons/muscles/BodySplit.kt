@@ -7,36 +7,29 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
 public fun bodySplit(
-    colors: MuscleColorProperties
+    colors: MuscleColorPreset
 ): ImageVector {
 
     val outlineColor: Color = colors.outline
     val backgroundFront: Color = colors.backgroundFront
     val backgroundBack: Color = colors.backgroundBack
-
-
-    val teresMajor: Color = colors.defaultBack
-    val rhomboids: Color = colors.defaultBack
-    val latissimus: Color = colors.defaultBack
-    val trapezius: Color = colors.defaultBack
-
-    val triceps: Color = colors.defaultBack
-    val biceps: Color = colors.defaultFront
-    val forearmFront: Color = colors.defaultFront
-    val forearmBack: Color = colors.defaultBack
-
-    val posteriorDeltoid: Color = colors.defaultBack
-    val lateralDeltoidFront: Color = colors.defaultFront
-    val anteriorDeltoid: Color = colors.defaultFront
-
-    val rectusAbdominis: Color = colors.defaultFront
-    val obliquesAbdominis: Color = colors.defaultFront
-
-    val pectoralisMajorAbdominal: Color = colors.defaultFront
-    val pectoralisMajorClavicular: Color = colors.defaultFront
-    val pectoralisMajorSternocostal: Color = colors.defaultFront
-
-    val other: Color = colors.defaultFront
+    val teresMajor: Color = colors.teresMajor
+    val rhomboids: Color = colors.rhomboids
+    val latissimus: Color = colors.latissimus
+    val trapezius: Color = colors.trapezius
+    val triceps: Color = colors.triceps
+    val biceps: Color = colors.biceps
+    val forearmFront: Color = colors.forearmFront
+    val forearmBack: Color = colors.forearmBack
+    val posteriorDeltoid: Color = colors.posteriorDeltoid
+    val lateralDeltoidFront: Color = colors.lateralDeltoid
+    val anteriorDeltoid: Color = colors.anteriorDeltoid
+    val rectusAbdominis: Color = colors.rectusAbdominis
+    val obliquesAbdominis: Color = colors.obliquesAbdominis
+    val pectoralisMajorAbdominal: Color = colors.pectoralisMajorAbdominal
+    val pectoralisMajorClavicular: Color = colors.pectoralisMajorClavicular
+    val pectoralisMajorSternocostal: Color = colors.pectoralisMajorSternocostal
+    val other: Color = colors.other
 
     return ImageVector.Builder(
         name = "Bodysplit",

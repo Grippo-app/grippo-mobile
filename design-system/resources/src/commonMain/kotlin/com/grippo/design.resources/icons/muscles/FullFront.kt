@@ -7,28 +7,24 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
 public fun fullFront(
-    colors: MuscleColorProperties
+    colors: MuscleColorPreset
 ): ImageVector {
 
     val outlineColor: Color = colors.outline
     val backgroundFront: Color = colors.backgroundFront
+    val biceps: Color = colors.biceps
+    val forearm: Color = colors.forearm
+    val lateralDeltoid: Color = colors.lateralDeltoid
+    val anteriorDeltoid: Color = colors.anteriorDeltoid
+    val rectusAbdominis: Color = colors.rectusAbdominis
+    val obliquesAbdominis: Color = colors.obliquesAbdominis
+    val pectoralisMajorAbdominal: Color = colors.pectoralisMajorAbdominal
+    val pectoralisMajorClavicular: Color = colors.pectoralisMajorClavicular
+    val pectoralisMajorSternocostal: Color = colors.pectoralisMajorSternocostal
 
-    val biceps: Color = colors.defaultFront
-    val forearm: Color = colors.defaultFront
+    val quadriceps: Color = colors.quadriceps
 
-    val lateralDeltoid: Color = colors.defaultFront
-    val anteriorDeltoid: Color = colors.defaultFront
-
-    val rectusAbdominis: Color = colors.defaultFront
-    val obliquesAbdominis: Color = colors.defaultFront
-
-    val pectoralisMajorAbdominal: Color = colors.defaultFront
-    val pectoralisMajorClavicular: Color = colors.defaultFront
-    val pectoralisMajorSternocostal: Color = colors.defaultFront
-
-    val quadriceps: Color = colors.defaultFront
-
-    val other: Color = colors.defaultFront
+    val other: Color = colors.other
 
     return ImageVector.Builder(
         name = "Fullfront",

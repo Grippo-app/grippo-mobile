@@ -80,7 +80,7 @@ internal fun ExperienceScreen(
                 }
                 SelectableCard(
                     modifier = Modifier.fillMaxWidth(),
-                    select = { value.value = value.value.not() },
+                    onSelect = { value.value = value.value.not() },
                     isSelected = value.value,
                     style = SelectableCardStyle.Small(
                         title = "Hello world"
@@ -91,7 +91,7 @@ internal fun ExperienceScreen(
             item {
                 SelectableCard(
                     modifier = Modifier.fillMaxWidth(),
-                    select = {},
+                    onSelect = {},
                     isSelected = true,
                     style = SelectableCardStyle.Small(
                         title = "Hello world"
@@ -105,7 +105,7 @@ internal fun ExperienceScreen(
 
                 SelectableCard(
                     modifier = Modifier.fillMaxWidth(),
-                    select = selectProvider,
+                    onSelect = selectProvider,
                     isSelected = isSelected,
                     style = SelectableCardStyle.Medium(
                         title = item.title(),

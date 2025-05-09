@@ -7,19 +7,17 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
 public fun legsSplit(
-    colors: MuscleColorProperties
+    colors: MuscleColorPreset
 ): ImageVector {
     val outlineColor: Color = colors.outline
-    colors.backgroundBack
     val backgroundFront: Color = colors.backgroundFront
-
-    val quadriceps: Color = colors.defaultFront
-    val gluteal: Color = colors.defaultBack
-    val hamstrings: Color = colors.defaultBack
-    val calf: Color = colors.defaultBack
-    val adductors: Color = colors.defaultBack
-    val abductors: Color = colors.defaultBack
-    val other: Color = colors.defaultFront
+    val quadriceps: Color = colors.quadriceps
+    val gluteal: Color = colors.gluteal
+    val hamstrings: Color = colors.hamstrings
+    val calf: Color = colors.calf
+    val adductors: Color = colors.adductors
+    val abductors: Color = colors.abductors
+    val other: Color = colors.other
 
     return ImageVector.Builder(
         name = "Legssplit",

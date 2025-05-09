@@ -19,7 +19,6 @@ public data class EquipmentEntity(
     @PrimaryKey val id: String,
     val equipmentGroupId: String,
     val name: String,
-    val status: String?,
     val type: String,
     val createdAt: String,
     val updatedAt: String,

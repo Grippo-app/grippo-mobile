@@ -7,21 +7,19 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
 public fun bodyBack(
-    colors: MuscleColorProperties
+    colors: MuscleColorPreset
 ): ImageVector {
+
     val outlineColor: Color = colors.outline
     val backgroundBack: Color = colors.backgroundBack
-
-    val rhomboids: Color = colors.defaultBack
-    val latissimus: Color = colors.defaultBack
-    val trapezius: Color = colors.defaultBack
-    val triceps: Color = colors.defaultBack
-    val forearm: Color = colors.defaultBack
-
-    val teresMajor: Color = colors.defaultBack
-    val posteriorDeltoid: Color = colors.defaultBack
-
-    val other: Color = colors.defaultBack
+    val rhomboids: Color = colors.rhomboids
+    val latissimus: Color = colors.latissimus
+    val trapezius: Color = colors.trapezius
+    val triceps: Color = colors.triceps
+    val forearm: Color = colors.forearm
+    val teresMajor: Color = colors.teresMajor
+    val posteriorDeltoid: Color = colors.posteriorDeltoid
+    val other: Color = colors.other
 
     return ImageVector.Builder(
         name = "Bodyback",
