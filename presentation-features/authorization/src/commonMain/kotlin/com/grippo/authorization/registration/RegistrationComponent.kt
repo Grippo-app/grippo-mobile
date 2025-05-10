@@ -119,7 +119,10 @@ internal class RegistrationComponent(
             RegistrationRouter.MissingEquipment -> Child.MussingEquipment(
                 MissingEquipmentComponent(
                     componentContext = context,
-                    toCompleted = { navigation.push(RegistrationRouter.Completed) }
+                    toCompleted = { ids ->
+                        navigation.push(RegistrationRouter.Completed)
+                        viewModel.saveMissingEquipmentsIds(ids)
+                    }
                 ),
             )
 

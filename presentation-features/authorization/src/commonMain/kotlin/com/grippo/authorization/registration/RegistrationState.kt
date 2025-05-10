@@ -13,5 +13,6 @@ internal data class RegistrationState(
     val weight: Float = 0F,
     val height: Int = 0,
     val experience: Experience? = null,
-    val excludedMuscleIds: ImmutableList<String> = persistentListOf()
+    val excludedMuscleIds: ImmutableList<String> = persistentListOf(),
+    val mussingEquipmentIds: ImmutableList<String> = persistentListOf()
 )

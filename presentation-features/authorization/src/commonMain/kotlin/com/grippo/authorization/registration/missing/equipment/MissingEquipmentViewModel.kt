@@ -56,6 +56,9 @@ internal class MissingEquipmentViewModel(
     }
 
     override fun next() {
-
+        val direction = MissingEquipmentDirection.Completed(
+            equipmentIds = state.value.selectedEquipmentIds
+        )
+        navigateTo(direction)
     }
 }

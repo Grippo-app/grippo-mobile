@@ -8,7 +8,7 @@ import com.grippo.core.collectAsStateMultiplatform
 
 internal class MissingEquipmentComponent(
     componentContext: ComponentContext,
-    private val toCompleted: () -> Unit
+    private val toCompleted: (equipmentIds: List<String>) -> Unit
 ) : BaseComponent<MissingEquipmentDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
@@ -17,7 +17,7 @@ internal class MissingEquipmentComponent(
 
     override suspend fun eventListener(direction: MissingEquipmentDirection) {
         when (direction) {
-            MissingEquipmentDirection.Completed -> toCompleted.invoke()
+            is MissingEquipmentDirection.Completed -> toCompleted.invoke(direction.equipmentIds)
         }
     }
 
