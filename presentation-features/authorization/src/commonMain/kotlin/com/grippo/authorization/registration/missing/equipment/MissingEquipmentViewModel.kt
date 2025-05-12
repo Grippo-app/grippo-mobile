@@ -7,7 +7,6 @@ import com.grippo.data.features.api.equipment.EquipmentFeature
 import com.grippo.data.features.api.equipment.models.EquipmentGroup
 import com.grippo.domain.mapper.toDomain
 import com.grippo.domain.mapper.toState
-import com.grippo.metrics.kgToGr
 import com.grippo.presentation.api.user.models.ExperienceEnumState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentList
@@ -82,10 +81,10 @@ internal class MissingEquipmentViewModel(
                 password = password,
                 name = name,
                 weight = weight,
-                height = height.toFloat(),
+                height = height,
                 experience = formattedExperience,
-                excludeEquipmentIds = state.value.selectedEquipmentIds,
-                excludeMuscleIds = formattedMissingEquipments
+                excludeEquipmentIds = formattedMissingEquipments,
+                excludeMuscleIds = excludedMuscleIds
             )
             authorizationFeature.register(registration)
         }

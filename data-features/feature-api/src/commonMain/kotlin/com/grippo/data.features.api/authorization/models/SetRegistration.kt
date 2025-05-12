@@ -8,7 +8,7 @@ public data class SetRegistration(
     val name: String,
     val weight: Float,
     val experience: ExperienceEnumEnum,
-    val height: Float,
+    val height: Int,
     val excludeMuscleIds: List<String>,
     val excludeEquipmentIds: List<String>
 )

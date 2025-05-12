@@ -16,7 +16,7 @@ public data class RegisterDto(
     @SerialName("experience")
     val experience: String? = null,
     @SerialName("height")
-    val height: Double? = null,
+    val height: Int? = null,
     @SerialName("excludeMuscleIds")
     val excludeMuscleIds: List<String>? = null,
     @SerialName("excludeEquipmentIds")

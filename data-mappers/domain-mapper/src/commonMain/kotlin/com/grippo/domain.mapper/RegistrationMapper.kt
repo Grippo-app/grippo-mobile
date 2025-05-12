@@ -10,7 +10,7 @@ public fun SetRegistration.toDto(): RegisterDto {
         name = name,
         weight = weight.toDouble(),
         experience = experience.key,
-        height = height.toDouble(),
+        height = height,
         excludeMuscleIds = excludeMuscleIds,
         excludeEquipmentIds = excludeEquipmentIds
     )
