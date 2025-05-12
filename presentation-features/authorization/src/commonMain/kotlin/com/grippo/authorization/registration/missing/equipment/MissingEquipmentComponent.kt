@@ -5,19 +5,38 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
+import com.grippo.presentation.api.user.models.ExperienceEnumState
+import kotlinx.collections.immutable.ImmutableList
 
 internal class MissingEquipmentComponent(
     componentContext: ComponentContext,
-    private val toCompleted: (equipmentIds: List<String>) -> Unit
+    val email: String,
+    val password: String,
+    val name: String,
+    val weight: Float,
+    val height: Int,
+    val experience: ExperienceEnumState?,
+    val excludedMuscleIds: ImmutableList<String>,
+    private val toCompleted: () -> Unit
 ) : BaseComponent<MissingEquipmentDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        MissingEquipmentViewModel(getKoin().get())
+        MissingEquipmentViewModel(
+            email = email,
+            password = password,
+            name = name,
+            weight = weight,
+            height = height,
+            experience = experience,
+            excludedMuscleIds = excludedMuscleIds,
+            equipmentFeature = getKoin().get(),
+            authorizationFeature = getKoin().get()
+        )
     }
 
     override suspend fun eventListener(direction: MissingEquipmentDirection) {
         when (direction) {
-            is MissingEquipmentDirection.Completed -> toCompleted.invoke(direction.equipmentIds)
+            MissingEquipmentDirection.Completed -> toCompleted.invoke()
         }
     }
 

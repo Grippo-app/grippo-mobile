@@ -1,13 +1,13 @@
 package com.grippo.authorization.registration.experience
 
 import com.grippo.core.BaseViewModel
-import com.grippo.presentation.api.user.models.Experience
+import com.grippo.presentation.api.user.models.ExperienceEnumState
 
 internal class ExperienceViewModel :
     BaseViewModel<ExperienceState, ExperienceDirection, ExperienceLoader>(ExperienceState()),
     ExperienceContract {
 
-    override fun select(value: Experience) {
+    override fun select(value: ExperienceEnumState) {
         update { it.copy(selected = value) }
     }
 

@@ -1,7 +1,7 @@
 package com.grippo.authorization.registration
 
 import com.grippo.core.BaseViewModel
-import com.grippo.presentation.api.user.models.Experience
+import com.grippo.presentation.api.user.models.ExperienceEnumState
 import kotlinx.collections.immutable.toPersistentList
 
 internal class RegistrationViewModel :
@@ -20,17 +20,12 @@ internal class RegistrationViewModel :
         update { it.copy(weight = weight, height = height) }
     }
 
-    override fun saveExperience(experience: Experience) {
+    override fun saveExperience(experience: ExperienceEnumState) {
         update { it.copy(experience = experience) }
     }
 
     override fun saveExcludedMuscleIds(ids: List<String>) {
         val list = ids.toPersistentList()
         update { it.copy(excludedMuscleIds = list) }
-    }
-
-    override fun saveMissingEquipmentsIds(ids: List<String>) {
-        val list = ids.toPersistentList()
-        update { it.copy(mussingEquipmentIds = list) }
     }
 }

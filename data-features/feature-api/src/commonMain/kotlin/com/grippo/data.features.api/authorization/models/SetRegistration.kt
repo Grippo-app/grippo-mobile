@@ -1,12 +1,14 @@
 package com.grippo.data.features.api.authorization.models
 
+import com.grippo.data.features.api.exercise.example.models.ExperienceEnumEnum
+
 public data class SetRegistration(
     val email: String,
     val password: String,
     val name: String,
-    val weight: Double,
-    val experience: String,
-    val height: Double,
+    val weight: Float,
+    val experience: ExperienceEnumEnum,
+    val height: Float,
     val excludeMuscleIds: List<String>,
     val excludeEquipmentIds: List<String>
 )

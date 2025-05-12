@@ -119,14 +119,20 @@ internal class RegistrationComponent(
             RegistrationRouter.MissingEquipment -> Child.MussingEquipment(
                 MissingEquipmentComponent(
                     componentContext = context,
-                    toCompleted = { ids ->
-                        navigation.push(RegistrationRouter.Completed)
-                        viewModel.saveMissingEquipmentsIds(ids)
+                    name = viewModel.state.value.name,
+                    experience = viewModel.state.value.experience,
+                    excludedMuscleIds = viewModel.state.value.excludedMuscleIds,
+                    height = viewModel.state.value.height,
+                    weight = viewModel.state.value.weight,
+                    email = viewModel.state.value.email,
+                    password = viewModel.state.value.password,
+                    toCompleted = {
+                        navigation.push(RegistrationRouter.Completed(name = viewModel.state.value.name))
                     }
                 ),
             )
 
-            RegistrationRouter.Completed -> Child.Completed(
+            is RegistrationRouter.Completed -> Child.Completed(
                 CompletedComponent(
                     componentContext = context,
                     toHome = TODO()

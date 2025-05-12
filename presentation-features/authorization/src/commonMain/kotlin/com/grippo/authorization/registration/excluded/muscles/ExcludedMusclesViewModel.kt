@@ -46,8 +46,11 @@ internal class ExcludedMusclesViewModel(
     }
 
     override fun next() {
+        val formattedList = state.value.suggestions.flatMap { it.muscles }
+            .map { it.value.id } - state.value.selectedMuscleIds
+
         val direction = ExcludedMusclesDirection.MissingEquipment(
-            muscleIds = state.value.selectedMuscleIds
+            excludedMuscleIds = formattedList
         )
         navigateTo(direction)
     }

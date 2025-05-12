@@ -61,6 +61,7 @@ include(":common:platform-core")
 include(":common:logger")
 include(":common:core")
 include(":common:errors")
+include(":common:metrics")
 include(":common:validation")
 
 include(":compose-libs:wheel-picker")

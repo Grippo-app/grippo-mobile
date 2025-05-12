@@ -8,9 +8,9 @@ public fun SetRegistration.toDto(): RegisterDto {
         email = email,
         password = password,
         name = name,
-        weight = weight,
-        experience = experience,
-        height = height,
+        weight = weight.toDouble(),
+        experience = experience.key,
+        height = height.toDouble(),
         excludeMuscleIds = excludeMuscleIds,
         excludeEquipmentIds = excludeEquipmentIds
     )

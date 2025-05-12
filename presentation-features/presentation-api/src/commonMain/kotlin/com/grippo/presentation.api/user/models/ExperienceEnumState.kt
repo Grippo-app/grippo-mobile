@@ -19,7 +19,7 @@ import com.grippo.design.resources.icons.Star
 import com.grippo.design.resources.icons.User
 
 @Immutable
-public enum class Experience {
+public enum class ExperienceEnumState {
     BEGINNER,
     INTERMEDIATE,
     ADVANCED,

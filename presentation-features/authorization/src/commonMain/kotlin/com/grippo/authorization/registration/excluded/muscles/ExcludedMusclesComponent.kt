@@ -8,7 +8,7 @@ import com.grippo.core.collectAsStateMultiplatform
 
 internal class ExcludedMusclesComponent(
     componentContext: ComponentContext,
-    private val toMissingEquipment: (muscleIds: List<String>) -> Unit
+    private val toMissingEquipment: (excludedMuscleIds: List<String>) -> Unit
 ) : BaseComponent<ExcludedMusclesDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
@@ -17,7 +17,7 @@ internal class ExcludedMusclesComponent(
 
     override suspend fun eventListener(direction: ExcludedMusclesDirection) {
         when (direction) {
-            is ExcludedMusclesDirection.MissingEquipment -> toMissingEquipment.invoke(direction.muscleIds)
+            is ExcludedMusclesDirection.MissingEquipment -> toMissingEquipment.invoke(direction.excludedMuscleIds)
         }
     }
 

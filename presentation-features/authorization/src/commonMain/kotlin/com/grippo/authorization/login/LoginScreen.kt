@@ -48,6 +48,7 @@ internal fun LoginScreen(
                 horizontal = AppTokens.dp.paddings.screenHorizontal,
                 vertical = AppTokens.dp.paddings.screenVertical
             ).imePadding(),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
         Spacer(modifier = Modifier.size(60.dp))

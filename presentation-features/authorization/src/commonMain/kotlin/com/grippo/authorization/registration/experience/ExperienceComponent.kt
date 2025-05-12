@@ -5,11 +5,11 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
-import com.grippo.presentation.api.user.models.Experience
+import com.grippo.presentation.api.user.models.ExperienceEnumState
 
 internal class ExperienceComponent(
     componentContext: ComponentContext,
-    private val toExcludedMuscles: (experience: Experience) -> Unit
+    private val toExcludedMuscles: (experience: ExperienceEnumState) -> Unit
 ) : BaseComponent<ExperienceDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {

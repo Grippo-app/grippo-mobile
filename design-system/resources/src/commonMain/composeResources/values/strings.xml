@@ -38,8 +38,8 @@
     <string name="registration_equipment_title">What’s not in your gym?</string>
     <string name="registration_equipment_description">We’ll leave out exercises that need that equipment.</string>
 
-    <string name="registration_completed_title">You’re all set!</string>
-    <string name="registration_completed_description">Let’s hit the ground lifting 💪</string>
+    <string name="registration_completed_title">You're all set, %1$s!</string>
+    <string name="registration_completed_description">We’ve prepared your plan. Time to get stronger 💪</string>
 
     <string name="height_picker_title">Select your height</string>
     <string name="height_picker_description">This will help us personalize your workout recommendations.</string>
