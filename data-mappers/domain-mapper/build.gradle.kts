@@ -11,6 +11,7 @@ kotlin {
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.presentationFeatures.presentationApi)
         implementation(projects.dataServices.network)
+        implementation(projects.common.logger)
 
         implementation(libs.immutable.collections)
     }

@@ -23,7 +23,10 @@ internal class LoginViewModel(
 
     override fun login() {
         safeLaunch(loader = LoginLoader.LoginButton) {
-            delay(1000)
+            authorizationFeature.login(
+                email = state.value.email.value,
+                password = state.value.password.value
+            ).getOrThrow()
         }
     }
 

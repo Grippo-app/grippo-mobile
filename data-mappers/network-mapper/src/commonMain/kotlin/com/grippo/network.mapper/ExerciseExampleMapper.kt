@@ -4,6 +4,7 @@ import com.grippo.database.entity.ExerciseEquipmentEntity
 import com.grippo.database.entity.ExerciseExampleBundleEntity
 import com.grippo.database.entity.ExerciseExampleEntity
 import com.grippo.database.entity.ExerciseTutorialEntity
+import com.grippo.logger.AppLogger
 import com.grippo.network.dto.ExerciseExampleDto
 
 public fun List<ExerciseExampleDto>.toEntities(): List<ExerciseExampleEntity> {
@@ -23,16 +24,25 @@ public fun ExerciseExampleDto.toEquipmentRefs(): List<ExerciseEquipmentEntity> {
 }
 
 public fun ExerciseExampleDto.toEntityOrNull(): ExerciseExampleEntity? {
+    val entityId = AppLogger.mapping(id, { "ExerciseExampleDto.id is null" }) ?: return null
+    val entityName = AppLogger.mapping(name, { "ExerciseExampleDto.name is null" }) ?: return null
+    val entityCreatedAt = AppLogger.mapping(createdAt, { "ExerciseExampleDto.createdAt is null" }) ?: return null
+    val entityUpdatedAt = AppLogger.mapping(updatedAt, { "ExerciseExampleDto.updatedAt is null" }) ?: return null
+    val entityForceType = AppLogger.mapping(forceType, { "ExerciseExampleDto.forceType is null" }) ?: return null
+    val entityWeightType = AppLogger.mapping(weightType, { "ExerciseExampleDto.weightType is null" }) ?: return null
+    val entityCategory = AppLogger.mapping(category, { "ExerciseExampleDto.category is null" }) ?: return null
+    val entityExperience = AppLogger.mapping(experience, { "ExerciseExampleDto.experience is null" }) ?: return null
+
     return ExerciseExampleEntity(
-        id = id ?: return null,
-        name = name ?: return null,
+        id = entityId,
+        name = entityName,
         description = description,
-        createdAt = createdAt ?: return null,
-        updatedAt = updatedAt ?: return null,
-        forceType = forceType ?: return null,
-        weightType = weightType ?: return null,
-        category = category ?: return null,
-        experience = experience ?: return null,
+        createdAt = entityCreatedAt,
+        updatedAt = entityUpdatedAt,
+        forceType = entityForceType,
+        weightType = entityWeightType,
+        category = entityCategory,
+        experience = entityExperience,
         imageUrl = imageUrl,
     )
 }

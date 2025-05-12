@@ -8,5 +8,5 @@ public data class User(
     val email: String,
     val experience: ExperienceEnumEnum,
     val weight: Float,
-    val height: Float
+    val height: Int
 )

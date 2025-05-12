@@ -2,6 +2,7 @@ package com.grippo.network.mapper
 
 import com.grippo.database.entity.EquipmentEntity
 import com.grippo.database.entity.EquipmentGroupEntity
+import com.grippo.logger.AppLogger
 import com.grippo.network.dto.EquipmentGroupDto
 
 public fun EquipmentGroupDto.toEquipments(): List<EquipmentEntity> {
@@ -9,11 +10,17 @@ public fun EquipmentGroupDto.toEquipments(): List<EquipmentEntity> {
 }
 
 public fun EquipmentGroupDto.toEntityOrNull(): EquipmentGroupEntity? {
+    val entityId = AppLogger.mapping(id, { "EquipmentGroupDto.id is null" }) ?: return null
+    val entityName = AppLogger.mapping(name, { "EquipmentGroupDto.name is null" }) ?: return null
+    val entityType = AppLogger.mapping(type, { "EquipmentGroupDto.type is null" }) ?: return null
+    val entityCreatedAt = AppLogger.mapping(createdAt, { "EquipmentGroupDto.createdAt is null" }) ?: return null
+    val entityUpdatedAt = AppLogger.mapping(updatedAt, { "EquipmentGroupDto.updatedAt is null" }) ?: return null
+
     return EquipmentGroupEntity(
-        id = id ?: return null,
-        name = name ?: return null,
-        type = type ?: return null,
-        createdAt = createdAt ?: return null,
-        updatedAt = updatedAt ?: return null,
+        id = entityId,
+        name = entityName,
+        type = entityType,
+        createdAt = entityCreatedAt,
+        updatedAt = entityUpdatedAt,
     )
 }

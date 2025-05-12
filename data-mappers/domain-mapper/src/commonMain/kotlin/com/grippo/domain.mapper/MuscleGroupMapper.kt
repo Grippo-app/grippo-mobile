@@ -2,6 +2,7 @@ package com.grippo.domain.mapper
 
 import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.data.features.api.muscle.models.MuscleGroupEnum
+import com.grippo.logger.AppLogger
 import com.grippo.presentation.api.muscles.models.MuscleGroupEnumState
 import com.grippo.presentation.api.muscles.models.MuscleGroupState
 import com.grippo.presentation.api.muscles.models.MuscleRepresentation
@@ -13,11 +14,16 @@ public fun List<MuscleGroup>.toState(): PersistentList<MuscleGroupState<MuscleRe
 }
 
 public fun MuscleGroup.toState(): MuscleGroupState<MuscleRepresentation.Plain>? {
-    return MuscleGroupState<MuscleRepresentation.Plain>(
+    val mappedType = AppLogger.mapping(
+        value = type.toState(),
+        lazyMessage = { "MuscleGroup $id has an unrecognized type: $type" }
+    ) ?: return null
+
+    return MuscleGroupState(
         id = id,
         name = name,
         muscles = muscles.toState(),
-        type = type.toState() ?: return null
+        type = mappedType
     )
 }
 
@@ -29,6 +35,9 @@ public fun MuscleGroupEnum.toState(): MuscleGroupEnumState? {
         MuscleGroupEnum.LEGS -> MuscleGroupEnumState.LEGS
         MuscleGroupEnum.ARMS_AND_FOREARMS -> MuscleGroupEnumState.ARMS_AND_FOREARMS
         MuscleGroupEnum.SHOULDER_MUSCLES -> MuscleGroupEnumState.SHOULDER_MUSCLES
-        MuscleGroupEnum.UNIDENTIFIED -> null
+        MuscleGroupEnum.UNIDENTIFIED -> AppLogger.mapping(
+            value = null,
+            lazyMessage = { "MuscleGroupEnum.UNIDENTIFIED cannot be mapped to state" }
+        )
     }
 }

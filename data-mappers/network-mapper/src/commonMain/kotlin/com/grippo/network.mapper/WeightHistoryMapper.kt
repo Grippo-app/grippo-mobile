@@ -1,6 +1,7 @@
 package com.grippo.network.mapper
 
 import com.grippo.database.entity.WeightHistoryEntity
+import com.grippo.logger.AppLogger
 import com.grippo.network.dto.WeightHistoryDto
 
 public fun List<WeightHistoryDto>.toEntities(): List<WeightHistoryEntity> {
@@ -8,10 +9,19 @@ public fun List<WeightHistoryDto>.toEntities(): List<WeightHistoryEntity> {
 }
 
 public fun WeightHistoryDto.toEntityOrNull(): WeightHistoryEntity? {
+    val entityId = AppLogger
+        .mapping(id, { "WeightHistoryDto.id is null" }) ?: return null
+    val entityWeight =
+        AppLogger.mapping(weight?.toFloat(), { "WeightHistoryDto.weight is null" }) ?: return null
+    val created =
+        AppLogger.mapping(createdAt, { "WeightHistoryDto.createdAt is null" }) ?: return null
+    val updated =
+        AppLogger.mapping(updatedAt, { "WeightHistoryDto.updatedAt is null" }) ?: return null
+
     return WeightHistoryEntity(
-        id = id ?: return null,
-        weight = weight?.toFloat() ?: return null,
-        createdAt = createdAt ?: return null,
-        updatedAt = updatedAt ?: return null,
+        id = entityId,
+        weight = entityWeight,
+        createdAt = created,
+        updatedAt = updated,
     )
 }

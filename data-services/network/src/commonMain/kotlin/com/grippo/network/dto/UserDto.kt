@@ -10,7 +10,7 @@ public data class UserDto(
     @SerialName("email")
     val email: String? = null,
     @SerialName("height")
-    val height: Double? = null,
+    val height: Int? = null,
     @SerialName("id")
     val id: String? = null,
     @SerialName("experience")
@@ -20,5 +20,5 @@ public data class UserDto(
     @SerialName("updatedAt")
     val updatedAt: String? = null,
     @SerialName("weight")
-    val weight: Double? = null
+    val weight: Float? = null
 )

@@ -1,6 +1,7 @@
 package com.grippo.network.mapper
 
 import com.grippo.database.entity.UserEntity
+import com.grippo.logger.AppLogger
 import com.grippo.network.dto.UserDto
 
 public fun List<UserDto>.toEntities(): List<UserEntity> {
@@ -8,14 +9,23 @@ public fun List<UserDto>.toEntities(): List<UserEntity> {
 }
 
 public fun UserDto.toEntityOrNull(): UserEntity? {
+    val entityId = AppLogger.mapping(id, { "UserDto.id is null" }) ?: return null
+    val entityWeight = AppLogger.mapping(weight, { "UserDto.weight is null" }) ?: return null
+    val entityHeight = AppLogger.mapping(height, { "UserDto.height is null" }) ?: return null
+    val entityEmail = AppLogger.mapping(email, { "UserDto.email is null" }) ?: return null
+    val entityExperience = AppLogger.mapping(experience, { "UserDto.experience is null" }) ?: return null
+    val entityName = AppLogger.mapping(name, { "UserDto.name is null" }) ?: return null
+    val entityCreatedAt = AppLogger.mapping(createdAt, { "UserDto.createdAt is null" }) ?: return null
+    val entityUpdatedAt = AppLogger.mapping(updatedAt, { "UserDto.updatedAt is null" }) ?: return null
+
     return UserEntity(
-        id = id ?: return null,
-        weight = weight?.toFloat() ?: return null,
-        height = height?.toFloat() ?: return null,
-        email = email ?: return null,
-        experience = experience ?: return null,
-        name = name ?: return null,
-        createdAt = createdAt ?: return null,
-        updatedAt = updatedAt ?: return null,
+        id = entityId,
+        weight = entityWeight,
+        height = entityHeight,
+        email = entityEmail,
+        experience = entityExperience,
+        name = entityName,
+        createdAt = entityCreatedAt,
+        updatedAt = entityUpdatedAt,
     )
 }

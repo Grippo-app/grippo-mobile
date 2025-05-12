@@ -2,6 +2,7 @@ package com.grippo.domain.mapper
 
 import com.grippo.data.features.api.muscle.models.Muscle
 import com.grippo.data.features.api.muscle.models.MuscleEnum
+import com.grippo.logger.AppLogger
 import com.grippo.presentation.api.muscles.models.MuscleEnumState
 import com.grippo.presentation.api.muscles.models.MuscleRepresentation
 import com.grippo.presentation.api.muscles.models.MuscleState
@@ -13,10 +14,15 @@ public fun List<Muscle>.toState(): ImmutableList<MuscleRepresentation.Plain> {
 }
 
 public fun Muscle.toState(): MuscleRepresentation.Plain? {
+    val mappedType = AppLogger.mapping(
+        value = type.toState(),
+        lazyMessage = { "Muscle $id has unrecognized type: $type" }
+    ) ?: return null
+
     val muscle = MuscleState(
         id = id,
         name = name,
-        type = type.toState() ?: return null,
+        type = mappedType,
     )
 
     return MuscleRepresentation.Plain(muscle)
@@ -45,6 +51,9 @@ public fun MuscleEnum.toState(): MuscleEnumState? {
         MuscleEnum.FOREARM -> MuscleEnumState.FOREARM
         MuscleEnum.ADDUCTORS -> MuscleEnumState.ADDUCTORS
         MuscleEnum.ABDUCTORS -> MuscleEnumState.ABDUCTORS
-        MuscleEnum.UNIDENTIFIED -> null
+        MuscleEnum.UNIDENTIFIED -> AppLogger.mapping(
+            value = null,
+            lazyMessage = { "MuscleEnum.UNIDENTIFIED cannot be mapped to state" }
+        )
     }
 }
