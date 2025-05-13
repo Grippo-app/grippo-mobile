@@ -1,5 +1,6 @@
 package com.grippo.authorization.registration.missing.equipment
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -70,44 +71,55 @@ internal fun MissingEquipmentScreen(
 
         Spacer(modifier = Modifier.size(20.dp))
 
-        if (state.suggestions.isEmpty() && loaders.contains(MissingEquipmentLoader.EquipmentList)) {
-            EquipmentsSkeleton(
-                modifier = Modifier.fillMaxWidth().weight(1f)
-            )
-        } else {
-
-            val segmentItems = remember(state.suggestions) {
-                state.suggestions.map { it.id to it.name }.toPersistentList()
-            }
-
-            Segment(
-                modifier = Modifier
-                    .horizontalScroll(rememberScrollState())
-                    .fillMaxWidth(),
-                items = segmentItems,
-                selected = state.selectedGroupId,
-                onSelect = contract::selectGroup
-            )
-
-            Spacer(modifier = Modifier.size(10.dp))
-
-            val equipments = remember(state.selectedGroupId, state.suggestions) {
-                state.suggestions.find { it.id == state.selectedGroupId }?.equipments.orEmpty()
-            }
-
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(vertical = 6.dp),
-            ) {
-                items(equipments, key = { it.id }) { equipment ->
-                    EquipmentRow(
-                        equipment = equipment,
-                        selectedEquipmentIds = state.selectedEquipmentIds,
-                        selectEquipment = contract::selectEquipment,
+        Crossfade(
+            targetState = state.suggestions.isEmpty() && loaders.contains(MissingEquipmentLoader.EquipmentList),
+            modifier = Modifier.fillMaxWidth().weight(1f)
+        ) { loading ->
+            when (loading) {
+                true -> {
+                    EquipmentsSkeleton(
+                        modifier = Modifier.fillMaxWidth().weight(1f)
                     )
+                }
+
+                false -> {
+                    Column(modifier = Modifier.fillMaxWidth().weight(1f)) {
+
+                        val segmentItems = remember(state.suggestions) {
+                            state.suggestions.map { it.id to it.name }.toPersistentList()
+                        }
+
+                        Segment(
+                            modifier = Modifier
+                                .horizontalScroll(rememberScrollState())
+                                .fillMaxWidth(),
+                            items = segmentItems,
+                            selected = state.selectedGroupId,
+                            onSelect = contract::selectGroup
+                        )
+
+                        Spacer(modifier = Modifier.size(10.dp))
+
+                        val equipments = remember(state.selectedGroupId, state.suggestions) {
+                            state.suggestions.find { it.id == state.selectedGroupId }?.equipments.orEmpty()
+                        }
+
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            contentPadding = PaddingValues(vertical = 6.dp),
+                        ) {
+                            items(equipments, key = { it.id }) { equipment ->
+                                EquipmentRow(
+                                    equipment = equipment,
+                                    selectedEquipmentIds = state.selectedEquipmentIds,
+                                    selectEquipment = contract::selectEquipment,
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
