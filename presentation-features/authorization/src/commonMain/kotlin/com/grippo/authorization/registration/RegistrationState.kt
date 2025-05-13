@@ -14,5 +14,5 @@ internal data class RegistrationState(
     val height: Int = 0,
     val experience: ExperienceEnumState? = null,
     val excludedMuscleIds: ImmutableList<String> = persistentListOf(),
-    val mussingEquipmentIds: ImmutableList<String> = persistentListOf()
+    val missingEquipmentIds: ImmutableList<String> = persistentListOf()
 )

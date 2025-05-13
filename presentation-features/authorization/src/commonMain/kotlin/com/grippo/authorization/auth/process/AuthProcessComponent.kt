@@ -16,6 +16,7 @@ import com.grippo.presentation.api.auth.AuthProcessRouter
 
 internal class AuthProcessComponent(
     componentContext: ComponentContext,
+    private val toHome: ()-> Unit
 ) : BaseComponent<AuthProcessDirection>(componentContext) {
 
     internal sealed class Child(open val component: BaseComponent<*>) {
@@ -46,13 +47,15 @@ internal class AuthProcessComponent(
             AuthProcessRouter.Login -> Child.Login(
                 LoginComponent(
                     componentContext = context,
-                    toRegistration = { navigation.push(AuthProcessRouter.Registration) }
+                    toRegistration = { navigation.push(AuthProcessRouter.Registration) },
+                    toHome = toHome
                 )
             )
 
             AuthProcessRouter.Registration -> Child.Registration(
                 RegistrationComponent(
                     componentContext = context,
+                    toHome = toHome
                 )
             )
         }

@@ -8,16 +8,18 @@ import com.grippo.core.collectAsStateMultiplatform
 
 internal class LoginComponent(
     componentContext: ComponentContext,
-    private val toRegistration: () -> Unit
+    private val toRegistration: () -> Unit,
+    private val toHome: () -> Unit,
 ) : BaseComponent<LoginDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        LoginViewModel(getKoin().get(), getKoin().get())
+        LoginViewModel(getKoin().get())
     }
 
     override suspend fun eventListener(direction: LoginDirection) {
         when (direction) {
             LoginDirection.Registration -> toRegistration.invoke()
+            LoginDirection.Home -> toHome.invoke()
         }
     }
 

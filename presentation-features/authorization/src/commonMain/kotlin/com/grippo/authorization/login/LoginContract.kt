@@ -1,7 +1,6 @@
 package com.grippo.authorization.login
 
 internal interface LoginContract {
-
     fun setEmail(value: String)
     fun setPassword(value: String)
     fun login()

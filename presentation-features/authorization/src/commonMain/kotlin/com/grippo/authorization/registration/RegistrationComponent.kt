@@ -21,6 +21,7 @@ import com.grippo.presentation.api.auth.RegistrationRouter
 
 internal class RegistrationComponent(
     componentContext: ComponentContext,
+    private val toHome: () -> Unit
 ) : BaseComponent<RegistrationDirection>(componentContext) {
 
     internal sealed class Child(open val component: BaseComponent<*>) {
@@ -70,8 +71,8 @@ internal class RegistrationComponent(
                 CredentialComponent(
                     componentContext = context,
                     toName = { e, p ->
-                        navigation.push(RegistrationRouter.Name)
                         viewModel.saveCredentials(e, p)
+                        navigation.push(RegistrationRouter.Name)
                     }
                 ),
             )
@@ -80,8 +81,8 @@ internal class RegistrationComponent(
                 NameComponent(
                     componentContext = context,
                     toBody = { n ->
-                        navigation.push(RegistrationRouter.Body)
                         viewModel.saveName(n)
+                        navigation.push(RegistrationRouter.Body)
                     }
                 ),
             )
@@ -90,8 +91,8 @@ internal class RegistrationComponent(
                 BodyComponent(
                     componentContext = context,
                     toExperience = { w, h ->
-                        navigation.push(RegistrationRouter.Experience)
                         viewModel.saveWeightHeight(w, h)
+                        navigation.push(RegistrationRouter.Experience)
                     }
                 ),
             )
@@ -100,8 +101,8 @@ internal class RegistrationComponent(
                 ExperienceComponent(
                     componentContext = context,
                     toExcludedMuscles = { e ->
-                        navigation.push(RegistrationRouter.ExcludedMuscles)
                         viewModel.saveExperience(e)
+                        navigation.push(RegistrationRouter.ExcludedMuscles)
                     }
                 ),
             )
@@ -110,8 +111,8 @@ internal class RegistrationComponent(
                 ExcludedMusclesComponent(
                     componentContext = context,
                     toMissingEquipment = { ids ->
-                        navigation.push(RegistrationRouter.MissingEquipment)
                         viewModel.saveExcludedMuscleIds(ids)
+                        navigation.push(RegistrationRouter.MissingEquipment)
                     }
                 ),
             )
@@ -119,20 +120,14 @@ internal class RegistrationComponent(
             RegistrationRouter.MissingEquipment -> Child.MussingEquipment(
                 MissingEquipmentComponent(
                     componentContext = context,
-                    name = viewModel.state.value.name,
-                    experience = viewModel.state.value.experience,
-                    excludedMuscleIds = viewModel.state.value.excludedMuscleIds,
-                    height = viewModel.state.value.height,
-                    weight = viewModel.state.value.weight,
-                    email = viewModel.state.value.email,
-                    password = viewModel.state.value.password,
-                    toCompleted = {
-                        navigation.push(RegistrationRouter.Completed(name = viewModel.state.value.name))
+                    toCompleted = { ids ->
+                        viewModel.saveMissingEquipmentIds(ids)
+                        navigation.push(RegistrationRouter.Completed)
                     }
                 ),
             )
 
-            is RegistrationRouter.Completed -> Child.Completed(
+            RegistrationRouter.Completed -> Child.Completed(
                 CompletedComponent(
                     componentContext = context,
                     toHome = TODO()

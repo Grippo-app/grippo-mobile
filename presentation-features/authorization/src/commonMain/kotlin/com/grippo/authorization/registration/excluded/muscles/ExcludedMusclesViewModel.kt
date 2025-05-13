@@ -6,6 +6,7 @@ import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.domain.mapper.toState
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -23,7 +24,8 @@ internal class ExcludedMusclesViewModel(
             .catch { sendError(it) }
             .launchIn(coroutineScope)
 
-        safeLaunch {
+        safeLaunch(loader = ExcludedMusclesLoader.MuscleList) {
+            delay(1500)
             muscleFeature.getPublicMuscles().getOrThrow()
         }
     }

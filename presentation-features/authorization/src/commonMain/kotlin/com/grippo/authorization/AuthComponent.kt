@@ -58,6 +58,7 @@ public class AuthComponent(
             is AuthRouter.AuthProcess -> AuthProcess(
                 AuthProcessComponent(
                     componentContext = context,
+                    toHome = {}
                 ),
             )
         }

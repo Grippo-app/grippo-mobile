@@ -28,4 +28,9 @@ internal class RegistrationViewModel :
         val list = ids.toPersistentList()
         update { it.copy(excludedMuscleIds = list) }
     }
+
+    override fun saveMissingEquipmentIds(ids: List<String>) {
+        val list = ids.toPersistentList()
+        update { it.copy(missingEquipmentIds = list) }
+    }
 }

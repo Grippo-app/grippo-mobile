@@ -25,5 +25,5 @@ public sealed class RegistrationRouter : BaseRouter {
     public data object MissingEquipment : RegistrationRouter()
 
     @Serializable
-    public data class Completed(val name: String) : RegistrationRouter()
+    public data object Completed : RegistrationRouter()
 }
