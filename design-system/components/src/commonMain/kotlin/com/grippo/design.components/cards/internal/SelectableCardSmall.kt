@@ -3,6 +3,7 @@ package com.grippo.design.components.cards.internal
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,6 +19,7 @@ import com.grippo.design.components.cards.SelectableCardStyle
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.nonRippleClick
 import com.grippo.design.components.modifiers.shadowDefault
+import com.grippo.design.components.modifiers.shimmerAnimation
 import com.grippo.design.components.toggle.Toggle
 import com.grippo.design.core.AppTokens
 
@@ -60,4 +62,27 @@ internal fun SelectableCardSmall(
             onCheckedChange = onClick
         )
     }
+}
+
+@Composable
+internal fun SelectableCardSmallSkeleton(modifier: Modifier) {
+    val radius = AppTokens.dp.shape.small
+
+    Box(
+        modifier = modifier
+            .shimmerAnimation(
+                visible = true,
+                radius = AppTokens.dp.shape.small
+            )
+            .shadowDefault(
+                elevation = ShadowElevation.Card,
+                shape = RoundedCornerShape(radius),
+                color = AppTokens.colors.overlay.defaultShadow
+            )
+            .clip(RoundedCornerShape(radius))
+            .background(AppTokens.colors.background.secondary)
+            .border(1.dp, AppTokens.colors.border.defaultPrimary, RoundedCornerShape(radius))
+            .padding(horizontal = AppTokens.dp.paddings.smallHorizontal)
+            .height(AppTokens.dp.size.componentHeight),
+    )
 }

@@ -26,17 +26,7 @@ internal class MuscleRepositoryImpl(
             .map { it.toDomain() }
     }
 
-    override suspend fun getUserMuscles(): Result<Unit> {
-        val response = api.getUserMuscles()
-
-        response.onSuccess {
-            // todo save in database
-        }
-
-        return response.map { }
-    }
-
-    override suspend fun getPublicMuscles(): Result<Unit> {
+    override suspend fun getMuscles(): Result<Unit> {
         val response = api.getPublicMuscles()
 
         response.onSuccess { r ->

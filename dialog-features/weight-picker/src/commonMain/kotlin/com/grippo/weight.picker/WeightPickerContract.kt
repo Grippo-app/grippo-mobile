@@ -1,7 +1,6 @@
 package com.grippo.weight.picker
 
 internal interface WeightPickerContract {
-
     fun select(value: Float)
     fun submit()
 

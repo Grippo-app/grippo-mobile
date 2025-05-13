@@ -26,7 +26,7 @@ internal class ExcludedMusclesViewModel(
 
         safeLaunch(loader = ExcludedMusclesLoader.MuscleList) {
             delay(1500)
-            muscleFeature.getPublicMuscles().getOrThrow()
+            muscleFeature.getMuscles().getOrThrow()
         }
     }
 

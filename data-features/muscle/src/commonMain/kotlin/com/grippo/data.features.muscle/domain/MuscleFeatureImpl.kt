@@ -17,11 +17,7 @@ internal class MuscleFeatureImpl(
         return repository.observeMusclesById(ids)
     }
 
-    override suspend fun getUserMuscles(): Result<Unit> {
-        return repository.getUserMuscles()
-    }
-
-    override suspend fun getPublicMuscles(): Result<Unit> {
-        return repository.getPublicMuscles()
+    override suspend fun getMuscles(): Result<Unit> {
+        return repository.getMuscles()
     }
 }

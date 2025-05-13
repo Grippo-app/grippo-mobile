@@ -22,6 +22,10 @@ import io.ktor.http.HttpMethod
 
 public class Api(private val client: NetworkClient) {
 
+    /* * * * * * * * * * * * * * * * *
+     * Auth service
+     * * * * * * * * * * * * * * * * */
+
     public suspend fun login(body: AuthDto): Result<TokenDto> {
         return request(
             method = HttpMethod.Post,
@@ -37,6 +41,43 @@ public class Api(private val client: NetworkClient) {
             body = body
         )
     }
+
+    /* * * * * * * * * * * * * * * * *
+     * User service
+     * * * * * * * * * * * * * * * * */
+
+    public suspend fun getUser(): Result<UserDto> {
+        return request(
+            method = HttpMethod.Get,
+            path = "/users"
+        )
+    }
+
+    /* * * * * * * * * * * * * * * * *
+     * Muscle service
+     * * * * * * * * * * * * * * * * */
+
+    public suspend fun getPublicMuscles(): Result<List<MuscleGroupDto>> {
+        return request(
+            method = HttpMethod.Get,
+            path = "/muscles"
+        )
+    }
+
+    /* * * * * * * * * * * * * * * * *
+     * Equipment service
+     * * * * * * * * * * * * * * * * */
+
+    public suspend fun getPublicEquipments(): Result<List<EquipmentGroupDto>> {
+        return request(
+            method = HttpMethod.Get,
+            path = "/equipments"
+        )
+    }
+
+    /* * * * * * * * * * * * * * * * *
+     *
+     * * * * * * * * * * * * * * * * */
 
     public suspend fun getTrainings(startDate: String, endDate: String): Result<List<TrainingDto>> {
         return request(
@@ -157,24 +198,10 @@ public class Api(private val client: NetworkClient) {
         )
     }
 
-    public suspend fun getPublicMuscles(): Result<List<MuscleGroupDto>> {
-        return request(
-            method = HttpMethod.Get,
-            path = "/public-muscles"
-        )
-    }
-
     public suspend fun getUserEquipments(): Result<List<EquipmentGroupDto>> {
         return request(
             method = HttpMethod.Get,
             path = "/user-equipments"
-        )
-    }
-
-    public suspend fun getPublicEquipments(): Result<List<EquipmentGroupDto>> {
-        return request(
-            method = HttpMethod.Get,
-            path = "/public-equipments"
         )
     }
 
@@ -185,12 +212,6 @@ public class Api(private val client: NetworkClient) {
         )
     }
 
-    public suspend fun getUser(): Result<UserDto> {
-        return request(
-            method = HttpMethod.Get,
-            path = "/users/profile"
-        )
-    }
 
     public suspend fun deleteExcludedMuscle(id: String): Result<ExcludedMuscleDto> {
         return request(

@@ -69,7 +69,7 @@ internal fun HeightPickerScreen(
             selectorProperties = DefaultSelectorProperties(
                 enabled = true,
                 shape = RoundedCornerShape(AppTokens.dp.shape.medium),
-                color = AppTokens.colors.background.secondary,
+                color = AppTokens.colors.background.primary,
                 border = BorderStroke(1.dp, AppTokens.colors.border.defaultPrimary)
             ),
             content = {

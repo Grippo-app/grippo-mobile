@@ -8,6 +8,5 @@ internal interface MuscleRepository {
     fun observeMuscles(): Flow<List<MuscleGroup>>
     fun observeMusclesById(ids: List<String>): Flow<List<Muscle>>
 
-    suspend fun getUserMuscles(): Result<Unit>
-    suspend fun getPublicMuscles(): Result<Unit>
+    suspend fun getMuscles(): Result<Unit>
 }

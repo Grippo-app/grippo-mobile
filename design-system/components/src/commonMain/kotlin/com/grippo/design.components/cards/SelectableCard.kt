@@ -5,7 +5,9 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.components.cards.internal.SelectableCardMedium
+import com.grippo.design.components.cards.internal.SelectableCardMediumSkeleton
 import com.grippo.design.components.cards.internal.SelectableCardSmall
+import com.grippo.design.components.cards.internal.SelectableCardSmallSkeleton
 
 @Immutable
 public sealed class SelectableCardStyle(
@@ -44,6 +46,22 @@ public fun SelectableCard(
             style = style,
             isSelected = isSelected,
             onClick = onSelect
+        )
+    }
+}
+
+@Composable
+public fun SelectableCardSkeleton(
+    modifier: Modifier = Modifier,
+    style: SelectableCardStyle,
+) {
+    when (style) {
+        is SelectableCardStyle.Small -> SelectableCardSmallSkeleton(
+            modifier = modifier,
+        )
+
+        is SelectableCardStyle.Medium -> SelectableCardMediumSkeleton(
+            modifier = modifier,
         )
     }
 }

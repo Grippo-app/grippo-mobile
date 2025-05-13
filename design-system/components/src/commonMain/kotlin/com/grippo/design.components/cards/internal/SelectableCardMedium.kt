@@ -7,6 +7,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -25,6 +26,7 @@ import com.grippo.design.components.cards.SelectableCardStyle
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.nonRippleClick
 import com.grippo.design.components.modifiers.shadowDefault
+import com.grippo.design.components.modifiers.shimmerAnimation
 import com.grippo.design.core.AppTokens
 
 @Composable
@@ -101,4 +103,29 @@ internal fun SelectableCardMedium(
             )
         }
     }
+}
+
+@Composable
+internal fun SelectableCardMediumSkeleton(modifier: Modifier) {
+    val shape = RoundedCornerShape(AppTokens.dp.shape.medium)
+
+    Box(
+        modifier = modifier
+            .shimmerAnimation(
+                visible = true,
+                radius = AppTokens.dp.shape.medium
+            )
+            .shadowDefault(
+                elevation = ShadowElevation.Card,
+                shape = shape,
+                color = AppTokens.colors.overlay.defaultShadow,
+            )
+            .clip(shape)
+            .background(AppTokens.colors.background.secondary)
+            .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
+            .padding(
+                horizontal = AppTokens.dp.paddings.mediumHorizontal,
+                vertical = AppTokens.dp.paddings.mediumVertical
+            ),
+    )
 }
