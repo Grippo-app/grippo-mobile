@@ -130,7 +130,15 @@ internal class RegistrationComponent(
             RegistrationRouter.Completed -> Child.Completed(
                 CompletedComponent(
                     componentContext = context,
-                    toHome = TODO()
+                    email = viewModel.state.value.email,
+                    password = viewModel.state.value.password,
+                    name = viewModel.state.value.name,
+                    experience = viewModel.state.value.experience,
+                    height = viewModel.state.value.height,
+                    weight = viewModel.state.value.weight,
+                    excludedMuscleIds = viewModel.state.value.excludedMuscleIds,
+                    missingEquipmentIds = viewModel.state.value.missingEquipmentIds,
+                    toHome = toHome
                 ),
             )
         }
