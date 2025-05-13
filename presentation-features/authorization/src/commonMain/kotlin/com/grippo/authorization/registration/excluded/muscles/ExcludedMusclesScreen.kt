@@ -19,9 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.authorization.registration.excluded.muscles.internal.MusclesColumn
-import com.grippo.authorization.registration.excluded.muscles.internal.MusclesColumnSkeleton
 import com.grippo.authorization.registration.excluded.muscles.internal.MusclesImage
-import com.grippo.authorization.registration.excluded.muscles.internal.MusclesImageSkeleton
+import com.grippo.authorization.registration.excluded.muscles.internal.MusclesSkeleton
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
@@ -70,30 +69,11 @@ internal fun ExcludedMusclesScreen(
         Spacer(modifier = Modifier.size(20.dp))
 
         if (state.suggestions.isEmpty() && loaders.contains(ExcludedMusclesLoader.MuscleList)) {
-            Column(
+            MusclesSkeleton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .padding(vertical = 6.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                repeat(2) { index ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        val isEven = index % 2 == 0
-
-                        if (isEven) {
-                            MusclesColumnSkeleton(modifier = Modifier.weight(1f))
-                            MusclesImageSkeleton(modifier = Modifier.weight(1f))
-                        } else {
-                            MusclesImageSkeleton(modifier = Modifier.weight(1f))
-                            MusclesColumnSkeleton(modifier = Modifier.weight(1f))
-                        }
-                    }
-                }
-            }
+            )
         } else {
             LazyColumn(
                 modifier = Modifier

@@ -25,7 +25,7 @@ internal class MissingEquipmentViewModel(
             .launchIn(coroutineScope)
 
         safeLaunch(loader = MissingEquipmentLoader.EquipmentList) {
-            delay(1500)
+            delay(1500) // TODO REMOVE
             equipmentFeature.getPublicEquipments().getOrThrow()
         }
     }

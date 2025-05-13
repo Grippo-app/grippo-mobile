@@ -25,7 +25,7 @@ internal class ExcludedMusclesViewModel(
             .launchIn(coroutineScope)
 
         safeLaunch(loader = ExcludedMusclesLoader.MuscleList) {
-            delay(1500)
+            delay(1500) // TODO REMOVE
             muscleFeature.getMuscles().getOrThrow()
         }
     }

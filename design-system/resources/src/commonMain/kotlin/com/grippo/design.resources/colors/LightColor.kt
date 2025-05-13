@@ -133,8 +133,8 @@ public object LightColor : AppColor {
     }
 
     override val skeleton: AppColor.SkeletonColors = object : AppColor.SkeletonColors {
-        override val background = Neutral200
-        override val shimmer = Neutral100
+        override val background = Neutral300
+        override val shimmer = Neutral400
     }
 
     override val equipment: AppColor.EquipmentColors = object : AppColor.EquipmentColors {

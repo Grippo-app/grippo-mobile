@@ -28,8 +28,8 @@ public fun Modifier.shimmerAnimation(
 ): Modifier {
     return if (visible) {
         composed {
-            val color1 = AppTokens.colors.skeleton.shimmer
-            val color2 = AppTokens.colors.skeleton.shimmer.copy(alpha = 0.5f)
+            val color1 = AppTokens.colors.skeleton.background
+            val color2 = AppTokens.colors.skeleton.shimmer
 
             val shimmerColors = persistentListOf(
                 color1,

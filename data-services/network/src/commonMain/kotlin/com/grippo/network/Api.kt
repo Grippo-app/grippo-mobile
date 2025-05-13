@@ -57,7 +57,7 @@ public class Api(private val client: NetworkClient) {
      * Muscle service
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun getPublicMuscles(): Result<List<MuscleGroupDto>> {
+    public suspend fun getMuscles(): Result<List<MuscleGroupDto>> {
         return request(
             method = HttpMethod.Get,
             path = "/muscles"
@@ -68,7 +68,7 @@ public class Api(private val client: NetworkClient) {
      * Equipment service
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun getPublicEquipments(): Result<List<EquipmentGroupDto>> {
+    public suspend fun getEquipments(): Result<List<EquipmentGroupDto>> {
         return request(
             method = HttpMethod.Get,
             path = "/equipments"

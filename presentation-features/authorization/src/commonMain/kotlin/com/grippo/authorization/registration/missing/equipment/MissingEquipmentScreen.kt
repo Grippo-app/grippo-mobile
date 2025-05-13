@@ -1,11 +1,9 @@
 package com.grippo.authorization.registration.missing.equipment
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,13 +17,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.grippo.authorization.registration.missing.equipment.internal.EquipmentRow
+import com.grippo.authorization.registration.missing.equipment.internal.EquipmentsSkeleton
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.cards.SelectableCard
-import com.grippo.design.components.cards.SelectableCardStyle
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
@@ -73,63 +70,43 @@ internal fun MissingEquipmentScreen(
 
         Spacer(modifier = Modifier.size(20.dp))
 
-        val segmentItems = remember(state.suggestions) {
-            state.suggestions.map { it.id to it.name }.toPersistentList()
-        }
+        if (state.suggestions.isEmpty() && loaders.contains(MissingEquipmentLoader.EquipmentList)) {
+            EquipmentsSkeleton(
+                modifier = Modifier.fillMaxWidth().weight(1f)
+            )
+        } else {
 
-        Segment(
-            modifier = Modifier
-                .horizontalScroll(rememberScrollState())
-                .fillMaxWidth(),
-            items = segmentItems,
-            selected = state.selectedGroupId,
-            onSelect = contract::selectGroup
-        )
+            val segmentItems = remember(state.suggestions) {
+                state.suggestions.map { it.id to it.name }.toPersistentList()
+            }
 
-        Spacer(modifier = Modifier.size(10.dp))
+            Segment(
+                modifier = Modifier
+                    .horizontalScroll(rememberScrollState())
+                    .fillMaxWidth(),
+                items = segmentItems,
+                selected = state.selectedGroupId,
+                onSelect = contract::selectGroup
+            )
 
-        val equipments = remember(state.selectedGroupId, state.suggestions) {
-            state.suggestions.find { it.id == state.selectedGroupId }?.equipments.orEmpty()
-        }
+            Spacer(modifier = Modifier.size(10.dp))
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(vertical = 6.dp),
-        ) {
-            items(equipments, key = { it.id }) { equipment ->
-                val selectProvider = remember(equipment.id) {
-                    { contract.selectEquipment(equipment.id) }
-                }
+            val equipments = remember(state.selectedGroupId, state.suggestions) {
+                state.suggestions.find { it.id == state.selectedGroupId }?.equipments.orEmpty()
+            }
 
-                val isSelected = remember(equipment.id, state.selectedEquipmentIds) {
-                    state.selectedEquipmentIds.contains(equipment.id)
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-
-                    Image(
-                        modifier = Modifier.size(AppTokens.dp.size.componentHeight),
-                        imageVector = equipment.image(),
-                        contentDescription = null,
-                        colorFilter = when (isSelected) {
-                            true -> null
-                            false -> ColorFilter.tint(color = AppTokens.colors.equipment.inactive)
-                        },
-                    )
-
-                    SelectableCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        style = SelectableCardStyle.Small(
-                            title = equipment.name
-                        ),
-                        isSelected = isSelected,
-                        onSelect = selectProvider
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(vertical = 6.dp),
+            ) {
+                items(equipments, key = { it.id }) { equipment ->
+                    EquipmentRow(
+                        equipment = equipment,
+                        selectedEquipmentIds = state.selectedEquipmentIds,
+                        selectEquipment = contract::selectEquipment,
                     )
                 }
             }

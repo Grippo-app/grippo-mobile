@@ -27,7 +27,7 @@ internal class MuscleRepositoryImpl(
     }
 
     override suspend fun getMuscles(): Result<Unit> {
-        val response = api.getPublicMuscles()
+        val response = api.getMuscles()
 
         response.onSuccess { r ->
             val groups = r.mapNotNull { it.toEntityOrNull() }

@@ -21,7 +21,7 @@ internal class EquipmentRepositoryImpl(
     }
 
     override suspend fun getPublicEquipments(): Result<Unit> {
-        val response = api.getPublicEquipments()
+        val response = api.getEquipments()
 
         response.onSuccess { r ->
             val groups = r.mapNotNull { it.toEntityOrNull() }
