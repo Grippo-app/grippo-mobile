@@ -4,17 +4,19 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class MuscleGroupDto(
-    @SerialName("createdAt")
-    val createdAt: String? = null,
+public data class MuscleResponse(
     @SerialName("id")
     val id: String? = null,
+    @SerialName("muscleGroupId")
+    val muscleGroupId: String? = null,
     @SerialName("name")
     val name: String? = null,
+    @SerialName("recoveryTimeHours")
+    val recoveryTimeHours: Int? = null,
     @SerialName("type")
     val type: String? = null,
     @SerialName("updatedAt")
     val updatedAt: String? = null,
-    @SerialName("muscles")
-    val muscles: List<MuscleDto>? = null
+    @SerialName("createdAt")
+    val createdAt: String? = null
 )

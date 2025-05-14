@@ -2,13 +2,13 @@ package com.grippo.network.mapper
 
 import com.grippo.database.entity.WeightHistoryEntity
 import com.grippo.logger.AppLogger
-import com.grippo.network.dto.WeightHistoryDto
+import com.grippo.network.dto.WeightHistoryResponse
 
-public fun List<WeightHistoryDto>.toEntities(): List<WeightHistoryEntity> {
+public fun List<WeightHistoryResponse>.toEntities(): List<WeightHistoryEntity> {
     return mapNotNull { it.toEntityOrNull() }
 }
 
-public fun WeightHistoryDto.toEntityOrNull(): WeightHistoryEntity? {
+public fun WeightHistoryResponse.toEntityOrNull(): WeightHistoryEntity? {
     val entityId = AppLogger
         .mapping(id, { "WeightHistoryDto.id is null" }) ?: return null
     val entityWeight =

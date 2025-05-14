@@ -12,7 +12,7 @@ public data class ExerciseExampleBundleDto(
     @SerialName("id")
     val id: String? = null,
     @SerialName("muscle")
-    val muscle: MuscleDto? = null,
+    val muscle: MuscleResponse? = null,
     @SerialName("muscleId")
     val muscleId: String? = null,
     @SerialName("updatedAt")

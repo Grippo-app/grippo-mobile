@@ -6,6 +6,6 @@ import com.grippo.presentation.api.auth.models.Password
 
 @Immutable
 internal data class LoginState(
-    val email: Email = Email.of("user@mail.com"),
-    val password: Password = Password.of("password"),
+    val email: Email = Email.of("grippo@mail.com"),
+    val password: Password = Password.of("qwerty123"),
 )

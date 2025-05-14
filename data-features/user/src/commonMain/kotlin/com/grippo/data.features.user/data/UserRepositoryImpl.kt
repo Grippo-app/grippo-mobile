@@ -30,40 +30,44 @@ internal class UserRepositoryImpl(
         return response.map { }
     }
 
-    override suspend fun setExcludedMuscle(id: String): Result<Unit> {
-        val response = api.setExcludedMuscle(id)
+    override suspend fun setMuscle(id: String): Result<Unit> {
+        val response = api.setUserMuscle(id)
 
         response.onSuccess {
+            api.getUserMuscles().getOrNull()
             // todo save in database
         }
 
         return response.map { }
     }
 
-    override suspend fun deleteExcludedMuscle(id: String): Result<Unit> {
-        val response = api.deleteExcludedMuscle(id)
+    override suspend fun deleteMuscle(id: String): Result<Unit> {
+        val response = api.deleteUserMuscle(id)
 
         response.onSuccess {
+            api.getUserMuscles().getOrNull()
             // todo save in database
         }
 
         return response.map { }
     }
 
-    override suspend fun setExcludedEquipment(id: String): Result<Unit> {
-        val response = api.setExcludedEquipment(id)
+    override suspend fun setEquipment(id: String): Result<Unit> {
+        val response = api.setUserEquipment(id)
 
         response.onSuccess {
+            api.getUserEquipments().getOrNull()
             // todo save in database
         }
 
         return response.map { }
     }
 
-    override suspend fun deleteExcludedEquipment(id: String): Result<Unit> {
-        val response = api.deleteExcludedEquipment(id)
+    override suspend fun deleteEquipment(id: String): Result<Unit> {
+        val response = api.deleteUserEquipment(id)
 
         response.onSuccess {
+            api.getUserEquipments().getOrNull()
             // todo save in database
         }
 

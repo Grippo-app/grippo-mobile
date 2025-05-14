@@ -6,7 +6,7 @@ import com.grippo.database.dao.TokenDao
 import com.grippo.database.entity.TokenEntity
 import com.grippo.domain.mapper.toDto
 import com.grippo.network.Api
-import com.grippo.network.dto.AuthDto
+import com.grippo.network.dto.AuthBody
 import com.grippo.network.mapper.toEntityOrNull
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -17,7 +17,7 @@ internal class AuthorizationRepositoryImpl(
 ) : AuthorizationRepository {
 
     override suspend fun login(email: String, password: String): Result<Unit> {
-        val response = api.login(AuthDto(email, password))
+        val response = api.login(AuthBody(email, password))
 
         response.onSuccess { r ->
             val entity = r.toEntityOrNull() ?: return@onSuccess
@@ -31,6 +31,9 @@ internal class AuthorizationRepositoryImpl(
         val response = api.register(registration.toDto())
 
         response.onSuccess { r ->
+            api.getUser().getOrNull()
+            api.getUserMuscles().getOrNull()
+
             tokenDao.insert(TokenEntity(access = r.accessToken))
         }
 

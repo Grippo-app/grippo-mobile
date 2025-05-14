@@ -8,7 +8,7 @@ public data class ExerciseExampleEquipmentRefDto(
     @SerialName("createdAt")
     val createdAt: String? = null,
     @SerialName("equipment")
-    val equipment: EquipmentDto? = null,
+    val equipment: EquipmentResponse? = null,
     @SerialName("equipmentId")
     val equipmentId: String? = null,
     @SerialName("exerciseExampleId")

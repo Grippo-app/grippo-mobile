@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class AuthDto(
+public data class AuthBody(
     @SerialName("email")
     val email: String? = null,
     @SerialName("password")

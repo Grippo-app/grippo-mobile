@@ -1,22 +1,15 @@
 package com.grippo.network
 
 import com.grippo.network.client.NetworkClient
-import com.grippo.network.dto.AuthDto
-import com.grippo.network.dto.EquipmentGroupDto
-import com.grippo.network.dto.ExcludedEquipmentDto
-import com.grippo.network.dto.ExcludedMuscleDto
-import com.grippo.network.dto.ExerciseExampleAchievementsDto
-import com.grippo.network.dto.ExerciseExampleCriteriaBody
-import com.grippo.network.dto.ExerciseExampleDto
-import com.grippo.network.dto.ExerciseExampleFiltersBody
-import com.grippo.network.dto.ExerciseExampleFiltersDto
-import com.grippo.network.dto.MuscleDto
-import com.grippo.network.dto.MuscleGroupDto
-import com.grippo.network.dto.RegisterDto
-import com.grippo.network.dto.TokenDto
-import com.grippo.network.dto.TrainingDto
-import com.grippo.network.dto.UserDto
-import com.grippo.network.dto.WeightHistoryDto
+import com.grippo.network.dto.AuthBody
+import com.grippo.network.dto.EquipmentGroupResponse
+import com.grippo.network.dto.EquipmentResponse
+import com.grippo.network.dto.MuscleGroupResponse
+import com.grippo.network.dto.MuscleResponse
+import com.grippo.network.dto.RegisterBody
+import com.grippo.network.dto.TokenResponse
+import com.grippo.network.dto.UserResponse
+import com.grippo.network.dto.WeightHistoryResponse
 import io.ktor.client.call.body
 import io.ktor.http.HttpMethod
 
@@ -26,7 +19,7 @@ public class Api(private val client: NetworkClient) {
      * Auth service
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun login(body: AuthDto): Result<TokenDto> {
+    public suspend fun login(body: AuthBody): Result<TokenResponse> {
         return request(
             method = HttpMethod.Post,
             path = "/auth/login",
@@ -34,7 +27,7 @@ public class Api(private val client: NetworkClient) {
         )
     }
 
-    public suspend fun register(body: RegisterDto): Result<TokenDto> {
+    public suspend fun register(body: RegisterBody): Result<TokenResponse> {
         return request(
             method = HttpMethod.Post,
             path = "/auth/register",
@@ -46,10 +39,52 @@ public class Api(private val client: NetworkClient) {
      * User service
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun getUser(): Result<UserDto> {
+    public suspend fun getUser(): Result<UserResponse> {
         return request(
             method = HttpMethod.Get,
             path = "/users"
+        )
+    }
+
+    public suspend fun getUserMuscles(): Result<List<MuscleResponse>> {
+        return request(
+            method = HttpMethod.Get,
+            path = "/users/muscles"
+        )
+    }
+
+    public suspend fun getUserEquipments(): Result<List<EquipmentResponse>> {
+        return request(
+            method = HttpMethod.Get,
+            path = "/users/equipments"
+        )
+    }
+
+    public suspend fun deleteUserEquipment(id: String): Result<Unit> {
+        return request(
+            method = HttpMethod.Delete,
+            path = "user/equipments/$id"
+        )
+    }
+
+    public suspend fun setUserEquipment(id: String): Result<Unit> {
+        return request(
+            method = HttpMethod.Post,
+            path = "users/equipments/$id"
+        )
+    }
+
+    public suspend fun deleteUserMuscle(id: String): Result<Unit> {
+        return request(
+            method = HttpMethod.Delete,
+            path = "users/muscles/$id"
+        )
+    }
+
+    public suspend fun setUserMuscle(id: String): Result<Unit> {
+        return request(
+            method = HttpMethod.Post,
+            path = "users/muscles/$id"
         )
     }
 
@@ -57,7 +92,7 @@ public class Api(private val client: NetworkClient) {
      * Muscle service
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun getMuscles(): Result<List<MuscleGroupDto>> {
+    public suspend fun getMuscles(): Result<List<MuscleGroupResponse>> {
         return request(
             method = HttpMethod.Get,
             path = "/muscles"
@@ -68,7 +103,7 @@ public class Api(private val client: NetworkClient) {
      * Equipment service
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun getEquipments(): Result<List<EquipmentGroupDto>> {
+    public suspend fun getEquipments(): Result<List<EquipmentGroupResponse>> {
         return request(
             method = HttpMethod.Get,
             path = "/equipments"
@@ -76,176 +111,14 @@ public class Api(private val client: NetworkClient) {
     }
 
     /* * * * * * * * * * * * * * * * *
-     *
+     * Weight history
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun getTrainings(startDate: String, endDate: String): Result<List<TrainingDto>> {
-        return request(
-            method = HttpMethod.Get,
-            path = "/trainings",
-            queryParams = mapOf(
-                "start" to startDate, "end" to endDate
-            )
-        )
-    }
-
-    public suspend fun setTraining(body: TrainingDto): Result<TrainingDto> {
-        return request(
-            method = HttpMethod.Post,
-            path = "/trainings",
-            body = body
-        )
-    }
-
-    public suspend fun getTraining(trainingId: String): Result<TrainingDto> {
-        return request(
-            method = HttpMethod.Get,
-            path = "/trainings/$trainingId"
-        )
-    }
-
-    public suspend fun getExerciseExamples(
-        page: Int,
-        size: Int,
-        query: String?,
-        weightType: String?,
-        forceType: String?,
-        experience: String?,
-        category: String?,
-        muscleIds: List<String>,
-        equipmentIds: List<String>
-    ): Result<List<ExerciseExampleDto>> {
-        return request(
-            method = HttpMethod.Post,
-            path = "/exercise-examples/all",
-            queryParams = buildMap {
-                put("page", page.toString())
-                put("size", size.toString())
-            },
-            body = ExerciseExampleFiltersBody(
-                category = category,
-                equipmentIds = equipmentIds,
-                experience = experience,
-                forceType = forceType,
-                muscleIds = muscleIds,
-                query = query,
-                weightType = weightType
-            )
-        )
-    }
-
-    public suspend fun getRecommendedExerciseExamples(
-        page: Int,
-        size: Int,
-        exerciseCount: Int?,
-        targetMuscleId: String?,
-        exerciseExampleIds: List<String>
-    ): Result<List<ExerciseExampleDto>> {
-        return request(
-            method = HttpMethod.Post,
-            path = "/exercise-examples/recommended",
-            queryParams = buildMap {
-                put("page", page.toString())
-                put("size", size.toString())
-            },
-            body = ExerciseExampleCriteriaBody(
-                exerciseCount = exerciseCount,
-                exerciseExampleIds = exerciseExampleIds,
-                targetMuscleId = targetMuscleId
-            )
-        )
-    }
-
-    public suspend fun getExerciseExampleFilters(): Result<ExerciseExampleFiltersDto> {
-        return request(
-            method = HttpMethod.Get,
-            path = "/filters"
-        )
-    }
-
-    public suspend fun setExerciseExample(body: ExerciseExampleDto): Result<ExerciseExampleDto> {
-        return request(
-            method = HttpMethod.Post,
-            path = "/exercise-examples",
-            body = body
-        )
-    }
-
-    public suspend fun getExerciseExample(exerciseExampleId: String): Result<ExerciseExampleDto> {
-        return request(
-            method = HttpMethod.Get,
-            path = "/exercise-examples/$exerciseExampleId"
-        )
-    }
-
-    public suspend fun getExerciseExampleAchievements(
-        exerciseExampleId: String,
-        size: Int
-    ): Result<ExerciseExampleAchievementsDto> {
-        return request(
-            method = HttpMethod.Get,
-            path = "/statistics/achievements/exercise-example",
-            queryParams = mapOf(
-                "id" to exerciseExampleId, "size" to size.toString()
-            ),
-        )
-    }
-
-    public suspend fun getUserMuscles(): Result<List<MuscleGroupDto>> {
-        return request(
-            method = HttpMethod.Get,
-            path = "/user-muscles"
-        )
-    }
-
-    public suspend fun getUserEquipments(): Result<List<EquipmentGroupDto>> {
-        return request(
-            method = HttpMethod.Get,
-            path = "/user-equipments"
-        )
-    }
-
-    public suspend fun getUserMuscleById(id: String): Result<MuscleDto> {
-        return request(
-            method = HttpMethod.Get,
-            path = "/user-muscles/$id"
-        )
-    }
-
-
-    public suspend fun deleteExcludedMuscle(id: String): Result<ExcludedMuscleDto> {
-        return request(
-            method = HttpMethod.Delete,
-            path = "/excluded-muscles/$id"
-        )
-    }
-
-    public suspend fun setExcludedMuscle(id: String): Result<ExcludedMuscleDto> {
-        return request(
-            method = HttpMethod.Post,
-            path = "/excluded-muscles/$id"
-        )
-    }
-
-    public suspend fun deleteExcludedEquipment(id: String): Result<ExcludedEquipmentDto> {
-        return request(
-            method = HttpMethod.Delete,
-            path = "/excluded-equipments/$id"
-        )
-    }
-
-    public suspend fun setExcludedEquipment(id: String): Result<ExcludedEquipmentDto> {
-        return request(
-            method = HttpMethod.Post,
-            path = "/excluded-equipments/$id"
-        )
-    }
-
-    public suspend fun updateWeightHistory(value: Double): Result<WeightHistoryDto> {
+    public suspend fun updateWeightHistory(value: Double): Result<WeightHistoryResponse> {
         return request(
             method = HttpMethod.Post,
             path = "/weight-history",
-            body = WeightHistoryDto(weight = value)
+            body = WeightHistoryResponse(weight = value)
         )
     }
 
@@ -256,12 +129,137 @@ public class Api(private val client: NetworkClient) {
         )
     }
 
-    public suspend fun getWeightHistory(): Result<List<WeightHistoryDto>> {
+    public suspend fun getWeightHistory(): Result<List<WeightHistoryResponse>> {
         return request(
             method = HttpMethod.Get,
             path = "/weight-history"
         )
     }
+
+    /* * * * * * * * * * * * * * * * *
+     *
+     * * * * * * * * * * * * * * * * */
+
+//    public suspend fun getTrainings(startDate: String, endDate: String): Result<List<TrainingDto>> {
+//        return request(
+//            method = HttpMethod.Get,
+//            path = "/trainings",
+//            queryParams = mapOf(
+//                "start" to startDate, "end" to endDate
+//            )
+//        )
+//    }
+//
+//    public suspend fun setTraining(body: TrainingDto): Result<TrainingDto> {
+//        return request(
+//            method = HttpMethod.Post,
+//            path = "/trainings",
+//            body = body
+//        )
+//    }
+//
+//    public suspend fun getTraining(trainingId: String): Result<TrainingDto> {
+//        return request(
+//            method = HttpMethod.Get,
+//            path = "/trainings/$trainingId"
+//        )
+//    }
+//
+//    public suspend fun getExerciseExamples(
+//        page: Int,
+//        size: Int,
+//        query: String?,
+//        weightType: String?,
+//        forceType: String?,
+//        experience: String?,
+//        category: String?,
+//        muscleIds: List<String>,
+//        equipmentIds: List<String>
+//    ): Result<List<ExerciseExampleDto>> {
+//        return request(
+//            method = HttpMethod.Post,
+//            path = "/exercise-examples/all",
+//            queryParams = buildMap {
+//                put("page", page.toString())
+//                put("size", size.toString())
+//            },
+//            body = ExerciseExampleFiltersBody(
+//                category = category,
+//                equipmentIds = equipmentIds,
+//                experience = experience,
+//                forceType = forceType,
+//                muscleIds = muscleIds,
+//                query = query,
+//                weightType = weightType
+//            )
+//        )
+//    }
+//
+//    public suspend fun getRecommendedExerciseExamples(
+//        page: Int,
+//        size: Int,
+//        exerciseCount: Int?,
+//        targetMuscleId: String?,
+//        exerciseExampleIds: List<String>
+//    ): Result<List<ExerciseExampleDto>> {
+//        return request(
+//            method = HttpMethod.Post,
+//            path = "/exercise-examples/recommended",
+//            queryParams = buildMap {
+//                put("page", page.toString())
+//                put("size", size.toString())
+//            },
+//            body = ExerciseExampleCriteriaBody(
+//                exerciseCount = exerciseCount,
+//                exerciseExampleIds = exerciseExampleIds,
+//                targetMuscleId = targetMuscleId
+//            )
+//        )
+//    }
+//
+//    public suspend fun getExerciseExampleFilters(): Result<ExerciseExampleFiltersDto> {
+//        return request(
+//            method = HttpMethod.Get,
+//            path = "/filters"
+//        )
+//    }
+//
+//    public suspend fun setExerciseExample(body: ExerciseExampleDto): Result<ExerciseExampleDto> {
+//        return request(
+//            method = HttpMethod.Post,
+//            path = "/exercise-examples",
+//            body = body
+//        )
+//    }
+//
+//    public suspend fun getExerciseExample(exerciseExampleId: String): Result<ExerciseExampleDto> {
+//        return request(
+//            method = HttpMethod.Get,
+//            path = "/exercise-examples/$exerciseExampleId"
+//        )
+//    }
+//
+//    public suspend fun getExerciseExampleAchievements(
+//        exerciseExampleId: String,
+//        size: Int
+//    ): Result<ExerciseExampleAchievementsDto> {
+//        return request(
+//            method = HttpMethod.Get,
+//            path = "/statistics/achievements/exercise-example",
+//            queryParams = mapOf(
+//                "id" to exerciseExampleId, "size" to size.toString()
+//            ),
+//        )
+//    }
+//
+//    public suspend fun getUserMuscleById(id: String): Result<MuscleResponse> {
+//        return request(
+//            method = HttpMethod.Get,
+//            path = "/user-muscles/$id"
+//        )
+//    }
+//
+//
 
     private suspend inline fun <reified T> request(
         method: HttpMethod,

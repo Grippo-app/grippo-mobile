@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class RegisterDto(
+public data class RegisterBody(
     @SerialName("email")
     val email: String? = null,
     @SerialName("password")

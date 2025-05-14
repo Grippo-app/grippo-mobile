@@ -24,15 +24,6 @@ public val databaseModule: Module = module {
         get<Database>().exerciseExampleDao()
     }
     single {
-        get<Database>().exerciseExampleBundleDao()
-    }
-    single {
-        get<Database>().exerciseEquipmentDao()
-    }
-    single {
-        get<Database>().exerciseTutorialDao()
-    }
-    single {
         get<Database>().muscleDao()
     }
     single {

@@ -4,10 +4,7 @@ import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.grippo.database.dao.EquipmentDao
-import com.grippo.database.dao.ExerciseEquipmentDao
-import com.grippo.database.dao.ExerciseExampleBundleDao
 import com.grippo.database.dao.ExerciseExampleDao
-import com.grippo.database.dao.ExerciseTutorialDao
 import com.grippo.database.dao.MuscleDao
 import com.grippo.database.dao.TokenDao
 import com.grippo.database.dao.TrainingDao
@@ -16,10 +13,10 @@ import com.grippo.database.dao.WeightHistoryDao
 import com.grippo.database.entity.EquipmentEntity
 import com.grippo.database.entity.EquipmentGroupEntity
 import com.grippo.database.entity.ExerciseEntity
-import com.grippo.database.entity.ExerciseEquipmentEntity
 import com.grippo.database.entity.ExerciseExampleBundleEntity
 import com.grippo.database.entity.ExerciseExampleEntity
-import com.grippo.database.entity.ExerciseTutorialEntity
+import com.grippo.database.entity.ExerciseExampleEquipmentEntity
+import com.grippo.database.entity.ExerciseExampleTutorialEntity
 import com.grippo.database.entity.IterationEntity
 import com.grippo.database.entity.MuscleEntity
 import com.grippo.database.entity.MuscleGroupEntity
@@ -36,8 +33,8 @@ import com.grippo.database.entity.WeightHistoryEntity
         MuscleGroupEntity::class,
         ExerciseExampleEntity::class,
         ExerciseExampleBundleEntity::class,
-        ExerciseEquipmentEntity::class,
-        ExerciseTutorialEntity::class,
+        ExerciseExampleEquipmentEntity::class,
+        ExerciseExampleTutorialEntity::class,
         TrainingEntity::class,
         ExerciseEntity::class,
         IterationEntity::class,
@@ -57,9 +54,6 @@ public abstract class Database : RoomDatabase() {
     public abstract fun equipmentDao(): EquipmentDao
 
     public abstract fun exerciseExampleDao(): ExerciseExampleDao
-    public abstract fun exerciseExampleBundleDao(): ExerciseExampleBundleDao
-    public abstract fun exerciseEquipmentDao(): ExerciseEquipmentDao
-    public abstract fun exerciseTutorialDao(): ExerciseTutorialDao
 
     public abstract fun muscleDao(): MuscleDao
     public abstract fun trainingDao(): TrainingDao

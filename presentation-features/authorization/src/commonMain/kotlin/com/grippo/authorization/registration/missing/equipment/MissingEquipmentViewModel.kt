@@ -58,11 +58,12 @@ internal class MissingEquipmentViewModel(
     }
 
     override fun next() {
-        val formattedMissingEquipments = state.value.suggestions
+        val formattedList = state.value.suggestions
+            .flatMap { it.equipments }
             .map { it.id } - state.value.selectedEquipmentIds
 
         val direction = MissingEquipmentDirection.Completed(
-            missingEquipmentIds = formattedMissingEquipments
+            missingEquipmentIds = formattedList
         )
         navigateTo(direction)
     }

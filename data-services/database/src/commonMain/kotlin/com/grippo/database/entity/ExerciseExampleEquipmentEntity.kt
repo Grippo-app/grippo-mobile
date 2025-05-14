@@ -5,8 +5,14 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "exercise_tutorial",
+    tableName = "exercise_example_equipment",
     foreignKeys = [
+        ForeignKey(
+            entity = EquipmentEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["equipmentId"],
+            onDelete = ForeignKey.CASCADE
+        ),
         ForeignKey(
             entity = ExerciseExampleEntity::class,
             parentColumns = ["id"],
@@ -15,14 +21,10 @@ import androidx.room.PrimaryKey
         )
     ]
 )
-public data class ExerciseTutorialEntity(
+public data class ExerciseExampleEquipmentEntity(
     @PrimaryKey val id: String,
+    val equipmentId: String,
     val exerciseExampleId: String,
-    val title: String,
-    val language: String,
-    val author: String?,
-    val value: String,
-    val resourceType: String,
     val createdAt: String,
     val updatedAt: String,
 )
