@@ -14,5 +14,5 @@ public data class WeightHistoryResponse(
     @SerialName("userId")
     val userId: String? = null,
     @SerialName("weight")
-    val weight: Double? = null
+    val weight: Float? = null
 )

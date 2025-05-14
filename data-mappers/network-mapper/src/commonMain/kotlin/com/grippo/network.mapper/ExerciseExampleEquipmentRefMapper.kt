@@ -9,20 +9,25 @@ public fun List<ExerciseExampleEquipmentRefDto>.toEntities(): List<ExerciseExamp
 }
 
 public fun ExerciseExampleEquipmentRefDto.toEntityOrNull(): ExerciseExampleEquipmentEntity? {
-    val entityId =
-        AppLogger.mapping(id, { "ExerciseExampleEquipmentRefDto.id is null" }) ?: return null
-    val entityEquipmentId =
-        AppLogger.mapping(equipmentId, { "ExerciseExampleEquipmentRefDto.equipmentId is null" })
-            ?: return null
-    val entityExerciseExampleId = AppLogger.mapping(
-        exerciseExampleId,
-        { "ExerciseExampleEquipmentRefDto.exerciseExampleId is null" }) ?: return null
-    val entityCreatedAt =
-        AppLogger.mapping(createdAt, { "ExerciseExampleEquipmentRefDto.createdAt is null" })
-            ?: return null
-    val entityUpdatedAt =
-        AppLogger.mapping(updatedAt, { "ExerciseExampleEquipmentRefDto.updatedAt is null" })
-            ?: return null
+    val entityId = AppLogger.checkOrLog(id) {
+        "ExerciseExampleEquipmentRefDto.id is null"
+    } ?: return null
+
+    val entityEquipmentId = AppLogger.checkOrLog(equipmentId) {
+        "ExerciseExampleEquipmentRefDto.equipmentId is null"
+    } ?: return null
+
+    val entityExerciseExampleId = AppLogger.checkOrLog(exerciseExampleId) {
+        "ExerciseExampleEquipmentRefDto.exerciseExampleId is null"
+    } ?: return null
+
+    val entityCreatedAt = AppLogger.checkOrLog(createdAt) {
+        "ExerciseExampleEquipmentRefDto.createdAt is null"
+    } ?: return null
+
+    val entityUpdatedAt = AppLogger.checkOrLog(updatedAt) {
+        "ExerciseExampleEquipmentRefDto.updatedAt is null"
+    } ?: return null
 
     return ExerciseExampleEquipmentEntity(
         id = entityId,

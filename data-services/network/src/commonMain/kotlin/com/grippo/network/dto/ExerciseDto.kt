@@ -12,13 +12,13 @@ public data class ExerciseDto(
     @SerialName("id")
     val id: String? = null,
     @SerialName("intensity")
-    val intensity: Double? = null,
+    val intensity: Float? = null,
     @SerialName("iterations")
     val iterations: List<IterationDto> = emptyList(),
     @SerialName("name")
     val name: String? = null,
     @SerialName("volume")
-    val volume: Double? = null,
+    val volume: Float? = null,
     @SerialName("trainingId")
     val trainingId: String? = null,
     @SerialName("exerciseExampleId")

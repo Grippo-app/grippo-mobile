@@ -46,45 +46,45 @@ public class Api(private val client: NetworkClient) {
         )
     }
 
-    public suspend fun getUserMuscles(): Result<List<MuscleResponse>> {
+    public suspend fun getExcludedEquipments(): Result<List<EquipmentResponse>> {
         return request(
             method = HttpMethod.Get,
-            path = "/users/muscles"
+            path = "/users/excluded-equipments"
         )
     }
 
-    public suspend fun getUserEquipments(): Result<List<EquipmentResponse>> {
+    public suspend fun deleteExcludedEquipment(id: String): Result<Unit> {
+        return request(
+            method = HttpMethod.Delete,
+            path = "users/excluded-equipments/$id"
+        )
+    }
+
+    public suspend fun setExcludedEquipment(id: String): Result<Unit> {
+        return request(
+            method = HttpMethod.Post,
+            path = "users/excluded-equipments/$id"
+        )
+    }
+
+    public suspend fun getExcludedMuscles(): Result<List<MuscleResponse>> {
         return request(
             method = HttpMethod.Get,
-            path = "/users/equipments"
+            path = "/users/excluded-muscles"
         )
     }
 
-    public suspend fun deleteUserEquipment(id: String): Result<Unit> {
+    public suspend fun deleteExcludedMuscle(id: String): Result<Unit> {
         return request(
             method = HttpMethod.Delete,
-            path = "user/equipments/$id"
+            path = "users/excluded-muscles/$id"
         )
     }
 
-    public suspend fun setUserEquipment(id: String): Result<Unit> {
+    public suspend fun setExcludedMuscle(id: String): Result<Unit> {
         return request(
             method = HttpMethod.Post,
-            path = "users/equipments/$id"
-        )
-    }
-
-    public suspend fun deleteUserMuscle(id: String): Result<Unit> {
-        return request(
-            method = HttpMethod.Delete,
-            path = "users/muscles/$id"
-        )
-    }
-
-    public suspend fun setUserMuscle(id: String): Result<Unit> {
-        return request(
-            method = HttpMethod.Post,
-            path = "users/muscles/$id"
+            path = "users/excluded-muscles/$id"
         )
     }
 
@@ -114,7 +114,7 @@ public class Api(private val client: NetworkClient) {
      * Weight history
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun updateWeightHistory(value: Double): Result<WeightHistoryResponse> {
+    public suspend fun updateWeightHistory(value: Float): Result<WeightHistoryResponse> {
         return request(
             method = HttpMethod.Post,
             path = "/weight-history",

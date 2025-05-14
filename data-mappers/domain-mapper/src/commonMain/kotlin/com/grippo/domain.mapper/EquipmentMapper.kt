@@ -2,6 +2,7 @@ package com.grippo.domain.mapper
 
 import com.grippo.data.features.api.equipment.models.Equipment
 import com.grippo.data.features.api.equipment.models.EquipmentEnum
+import com.grippo.logger.AppLogger
 import com.grippo.presentation.api.equipment.models.EquipmentEnumState
 import com.grippo.presentation.api.equipment.models.EquipmentState
 import kotlinx.collections.immutable.ImmutableList
@@ -71,6 +72,8 @@ public fun EquipmentEnum.toState(): EquipmentEnumState? {
         EquipmentEnum.PREACHER_CURL_BENCH -> EquipmentEnumState.PREACHER_CURL_BENCH
         EquipmentEnum.ROW_BENCH -> EquipmentEnumState.ROW_BENCH
 
-        EquipmentEnum.UNIDENTIFIED -> null
+        EquipmentEnum.UNIDENTIFIED -> AppLogger.checkOrLog(null) {
+            "EquipmentEnum.UNIDENTIFIED cannot be mapped to state"
+        }
     }
 }

@@ -16,18 +16,18 @@ internal class UserFeatureImpl(
     }
 
     override suspend fun setExcludedMuscle(id: String): Result<Unit> {
-        return repository.setMuscle(id)
+        return repository.setExcludedMuscle(id)
     }
 
     override suspend fun deleteExcludedMuscle(id: String): Result<Unit> {
-        return repository.deleteMuscle(id)
+        return repository.deleteExcludedMuscle(id)
     }
 
     override suspend fun setExcludedEquipment(id: String): Result<Unit> {
-        return repository.setEquipment(id)
+        return repository.setExcludedEquipment(id)
     }
 
     override suspend fun deleteExcludedEquipment(id: String): Result<Unit> {
-        return repository.deleteEquipment(id)
+        return repository.deleteExcludedEquipment(id)
     }
 }

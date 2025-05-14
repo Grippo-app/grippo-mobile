@@ -12,7 +12,10 @@ internal class SplashComponent(
 ) : BaseComponent<SplashDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        SplashViewModel()
+        SplashViewModel(
+            equipmentFeature = getKoin().get(),
+            muscleFeature = getKoin().get()
+        )
     }
 
     override suspend fun eventListener(direction: SplashDirection) {

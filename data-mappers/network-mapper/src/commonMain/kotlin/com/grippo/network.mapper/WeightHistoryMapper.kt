@@ -9,14 +9,21 @@ public fun List<WeightHistoryResponse>.toEntities(): List<WeightHistoryEntity> {
 }
 
 public fun WeightHistoryResponse.toEntityOrNull(): WeightHistoryEntity? {
-    val entityId = AppLogger
-        .mapping(id, { "WeightHistoryDto.id is null" }) ?: return null
-    val entityWeight =
-        AppLogger.mapping(weight?.toFloat(), { "WeightHistoryDto.weight is null" }) ?: return null
-    val created =
-        AppLogger.mapping(createdAt, { "WeightHistoryDto.createdAt is null" }) ?: return null
-    val updated =
-        AppLogger.mapping(updatedAt, { "WeightHistoryDto.updatedAt is null" }) ?: return null
+    val entityId = AppLogger.checkOrLog(id) {
+        "WeightHistoryDto.id is null"
+    } ?: return null
+
+    val entityWeight = AppLogger.checkOrLog(weight) {
+        "WeightHistoryDto.weight is null"
+    } ?: return null
+
+    val created = AppLogger.checkOrLog(createdAt) {
+        "WeightHistoryDto.createdAt is null"
+    } ?: return null
+
+    val updated = AppLogger.checkOrLog(updatedAt) {
+        "WeightHistoryDto.updatedAt is null"
+    } ?: return null
 
     return WeightHistoryEntity(
         id = entityId,

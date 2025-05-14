@@ -50,7 +50,7 @@ public object AppLogger {
         }
     }
 
-    public fun <T> mapping(value: T?, lazyMessage: () -> String, throwable: Throwable? = null): T? {
+    public fun <T> checkOrLog(value: T?, lazyMessage: () -> String): T? {
         if (value != null) return value
 
         val category = LogCategory.MAPPING
@@ -58,8 +58,8 @@ public object AppLogger {
 
         val fullMessage = "🧩 [Mapping] ${lazyMessage()} $location"
         onDebug {
-            println(category.name + " " + fullMessage + " " + throwable)
-            logListener?.invoke(category, "$fullMessage $throwable")
+            println(category.name + " " + fullMessage)
+            logListener?.invoke(category, fullMessage)
         }
 
         return null

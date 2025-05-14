@@ -9,12 +9,29 @@ public fun List<IterationDto>.toEntities(): List<IterationEntity> {
 }
 
 public fun IterationDto.toEntityOrNull(): IterationEntity? {
-    val entityId = AppLogger.mapping(id, { "IterationDto.id is null" }) ?: return null
-    val entityExerciseId = AppLogger.mapping(exerciseId, { "IterationDto.exerciseId is null" }) ?: return null
-    val entityWeight = AppLogger.mapping(weight?.toFloat(), { "IterationDto.weight is null" }) ?: return null
-    val entityRepetitions = AppLogger.mapping(repetitions, { "IterationDto.repetitions is null" }) ?: return null
-    val entityCreatedAt = AppLogger.mapping(createdAt, { "IterationDto.createdAt is null" }) ?: return null
-    val entityUpdatedAt = AppLogger.mapping(updatedAt, { "IterationDto.updatedAt is null" }) ?: return null
+    val entityId = AppLogger.checkOrLog(id) {
+        "IterationDto.id is null"
+    } ?: return null
+
+    val entityExerciseId = AppLogger.checkOrLog(exerciseId) {
+        "IterationDto.exerciseId is null"
+    } ?: return null
+
+    val entityWeight = AppLogger.checkOrLog(weight) {
+        "IterationDto.weight is null"
+    } ?: return null
+
+    val entityRepetitions = AppLogger.checkOrLog(repetitions) {
+        "IterationDto.repetitions is null"
+    } ?: return null
+
+    val entityCreatedAt = AppLogger.checkOrLog(createdAt) {
+        "IterationDto.createdAt is null"
+    } ?: return null
+
+    val entityUpdatedAt = AppLogger.checkOrLog(updatedAt) {
+        "IterationDto.updatedAt is null"
+    } ?: return null
 
     return IterationEntity(
         id = entityId,

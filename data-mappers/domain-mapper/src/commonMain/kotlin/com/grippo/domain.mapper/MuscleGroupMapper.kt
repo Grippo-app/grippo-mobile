@@ -14,10 +14,9 @@ public fun List<MuscleGroup>.toState(): PersistentList<MuscleGroupState<MuscleRe
 }
 
 public fun MuscleGroup.toState(): MuscleGroupState<MuscleRepresentation.Plain>? {
-    val mappedType = AppLogger.mapping(
-        value = type.toState(),
-        lazyMessage = { "MuscleGroup $id has an unrecognized type: $type" }
-    ) ?: return null
+    val mappedType = AppLogger.checkOrLog(type.toState()) {
+        "MuscleGroup $id has an unrecognized type: $type"
+    } ?: return null
 
     return MuscleGroupState(
         id = id,
@@ -35,9 +34,8 @@ public fun MuscleGroupEnum.toState(): MuscleGroupEnumState? {
         MuscleGroupEnum.LEGS -> MuscleGroupEnumState.LEGS
         MuscleGroupEnum.ARMS_AND_FOREARMS -> MuscleGroupEnumState.ARMS_AND_FOREARMS
         MuscleGroupEnum.SHOULDER_MUSCLES -> MuscleGroupEnumState.SHOULDER_MUSCLES
-        MuscleGroupEnum.UNIDENTIFIED -> AppLogger.mapping(
-            value = null,
-            lazyMessage = { "MuscleGroupEnum.UNIDENTIFIED cannot be mapped to state" }
-        )
+        MuscleGroupEnum.UNIDENTIFIED -> AppLogger.checkOrLog(null) {
+            "MuscleGroupEnum.UNIDENTIFIED cannot be mapped to state"
+        }
     }
 }

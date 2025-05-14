@@ -9,12 +9,29 @@ public fun List<ExerciseExampleBundleDto>.toEntities(): List<ExerciseExampleBund
 }
 
 public fun ExerciseExampleBundleDto.toEntityOrNull(): ExerciseExampleBundleEntity? {
-    val entityId = AppLogger.mapping(id, { "ExerciseExampleBundleDto.id is null" }) ?: return null
-    val entityExerciseExampleId = AppLogger.mapping(exerciseExampleId, { "ExerciseExampleBundleDto.exerciseExampleId is null" }) ?: return null
-    val entityMuscleId = AppLogger.mapping(muscleId, { "ExerciseExampleBundleDto.muscleId is null" }) ?: return null
-    val entityPercentage = AppLogger.mapping(percentage, { "ExerciseExampleBundleDto.percentage is null" }) ?: return null
-    val entityCreatedAt = AppLogger.mapping(createdAt, { "ExerciseExampleBundleDto.createdAt is null" }) ?: return null
-    val entityUpdatedAt = AppLogger.mapping(updatedAt, { "ExerciseExampleBundleDto.updatedAt is null" }) ?: return null
+    val entityId = AppLogger.checkOrLog(id) {
+        "ExerciseExampleBundleDto.id is null"
+    } ?: return null
+
+    val entityExerciseExampleId = AppLogger.checkOrLog(exerciseExampleId) {
+        "ExerciseExampleBundleDto.exerciseExampleId is null"
+    } ?: return null
+
+    val entityMuscleId = AppLogger.checkOrLog(muscleId) {
+        "ExerciseExampleBundleDto.muscleId is null"
+    } ?: return null
+
+    val entityPercentage = AppLogger.checkOrLog(percentage) {
+        "ExerciseExampleBundleDto.percentage is null"
+    } ?: return null
+
+    val entityCreatedAt = AppLogger.checkOrLog(createdAt) {
+        "ExerciseExampleBundleDto.createdAt is null"
+    } ?: return null
+
+    val entityUpdatedAt = AppLogger.checkOrLog(updatedAt) {
+        "ExerciseExampleBundleDto.updatedAt is null"
+    } ?: return null
 
     return ExerciseExampleBundleEntity(
         id = entityId,

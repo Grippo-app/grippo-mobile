@@ -34,7 +34,7 @@ internal class WeightHistoryRepositoryImpl(
         return response.map { }
     }
 
-    override suspend fun updateWeight(value: Double): Result<Unit> {
+    override suspend fun updateWeight(value: Float): Result<Unit> {
         val response = api.updateWeightHistory(value)
 
         response.onSuccess {

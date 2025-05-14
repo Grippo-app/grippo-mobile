@@ -5,8 +5,9 @@ import com.grippo.logger.AppLogger
 import com.grippo.network.dto.TokenResponse
 
 public fun TokenResponse.toEntityOrNull(): TokenEntity? {
-    val entityAccess =
-        AppLogger.mapping(accessToken, { "TokenDto.accessToken is null" }) ?: return null
+    val entityAccess = AppLogger.checkOrLog(accessToken) {
+        "TokenDto.accessToken is null"
+    } ?: return null
 
     return TokenEntity(
         access = entityAccess

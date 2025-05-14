@@ -14,10 +14,9 @@ public fun List<Muscle>.toState(): ImmutableList<MuscleRepresentation.Plain> {
 }
 
 public fun Muscle.toState(): MuscleRepresentation.Plain? {
-    val mappedType = AppLogger.mapping(
-        value = type.toState(),
-        lazyMessage = { "Muscle $id has unrecognized type: $type" }
-    ) ?: return null
+    val mappedType = AppLogger.checkOrLog(type.toState()) {
+        "Muscle $id has unrecognized type: $type"
+    } ?: return null
 
     val muscle = MuscleState(
         id = id,
@@ -51,9 +50,8 @@ public fun MuscleEnum.toState(): MuscleEnumState? {
         MuscleEnum.FOREARM -> MuscleEnumState.FOREARM
         MuscleEnum.ADDUCTORS -> MuscleEnumState.ADDUCTORS
         MuscleEnum.ABDUCTORS -> MuscleEnumState.ABDUCTORS
-        MuscleEnum.UNIDENTIFIED -> AppLogger.mapping(
-            value = null,
-            lazyMessage = { "MuscleEnum.UNIDENTIFIED cannot be mapped to state" }
-        )
+        MuscleEnum.UNIDENTIFIED -> AppLogger.checkOrLog(null) {
+            "MuscleEnum.UNIDENTIFIED cannot be mapped to state"
+        }
     }
 }

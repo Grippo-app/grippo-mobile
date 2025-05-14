@@ -6,13 +6,12 @@ import com.grippo.data.features.api.equipment.models.EquipmentGroup
 import com.grippo.domain.mapper.toState
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 internal class MissingEquipmentViewModel(
-    private val equipmentFeature: EquipmentFeature,
+    equipmentFeature: EquipmentFeature,
 ) : BaseViewModel<MissingEquipmentState, MissingEquipmentDirection, MissingEquipmentLoader>(
     MissingEquipmentState()
 ), MissingEquipmentContract {
@@ -23,11 +22,6 @@ internal class MissingEquipmentViewModel(
             .onEach(::provideEquipments)
             .catch { sendError(it) }
             .launchIn(coroutineScope)
-
-        safeLaunch(loader = MissingEquipmentLoader.EquipmentList) {
-            delay(1500) // TODO REMOVE
-            equipmentFeature.getPublicEquipments().getOrThrow()
-        }
     }
 
     private fun provideEquipments(list: List<EquipmentGroup>) {

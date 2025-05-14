@@ -1,15 +1,18 @@
 package com.grippo.authorization.splash
 
 import com.grippo.core.BaseViewModel
-import kotlinx.coroutines.delay
+import com.grippo.data.features.api.equipment.EquipmentFeature
+import com.grippo.data.features.api.muscle.MuscleFeature
 
-internal class SplashViewModel :
-    BaseViewModel<SplashState, SplashDirection, SplashLoader>(SplashState),
-    SplashContract {
+internal class SplashViewModel(
+    private val muscleFeature: MuscleFeature,
+    private val equipmentFeature: EquipmentFeature,
+) : BaseViewModel<SplashState, SplashDirection, SplashLoader>(SplashState), SplashContract {
 
     init {
         safeLaunch {
-            delay(1000)
+            muscleFeature.getMuscles().getOrThrow()
+            equipmentFeature.getPublicEquipments().getOrThrow()
             navigateTo(SplashDirection.AuthProcess)
         }
     }

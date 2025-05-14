@@ -24,20 +24,37 @@ public fun ExerciseExampleDto.toEquipmentRefs(): List<ExerciseExampleEquipmentEn
 }
 
 public fun ExerciseExampleDto.toEntityOrNull(): ExerciseExampleEntity? {
-    val entityId = AppLogger.mapping(id, { "ExerciseExampleDto.id is null" }) ?: return null
-    val entityName = AppLogger.mapping(name, { "ExerciseExampleDto.name is null" }) ?: return null
-    val entityCreatedAt =
-        AppLogger.mapping(createdAt, { "ExerciseExampleDto.createdAt is null" }) ?: return null
-    val entityUpdatedAt =
-        AppLogger.mapping(updatedAt, { "ExerciseExampleDto.updatedAt is null" }) ?: return null
-    val entityForceType =
-        AppLogger.mapping(forceType, { "ExerciseExampleDto.forceType is null" }) ?: return null
-    val entityWeightType =
-        AppLogger.mapping(weightType, { "ExerciseExampleDto.weightType is null" }) ?: return null
-    val entityCategory =
-        AppLogger.mapping(category, { "ExerciseExampleDto.category is null" }) ?: return null
-    val entityExperience =
-        AppLogger.mapping(experience, { "ExerciseExampleDto.experience is null" }) ?: return null
+    val entityId = AppLogger.checkOrLog(id) {
+        "ExerciseExampleDto.id is null"
+    } ?: return null
+
+    val entityName = AppLogger.checkOrLog(name) {
+        "ExerciseExampleDto.name is null"
+    } ?: return null
+
+    val entityCreatedAt = AppLogger.checkOrLog(createdAt) {
+        "ExerciseExampleDto.createdAt is null"
+    } ?: return null
+
+    val entityUpdatedAt = AppLogger.checkOrLog(updatedAt) {
+        "ExerciseExampleDto.updatedAt is null"
+    } ?: return null
+
+    val entityForceType = AppLogger.checkOrLog(forceType) {
+        "ExerciseExampleDto.forceType is null"
+    } ?: return null
+
+    val entityWeightType = AppLogger.checkOrLog(weightType) {
+        "ExerciseExampleDto.weightType is null"
+    } ?: return null
+
+    val entityCategory = AppLogger.checkOrLog(category) {
+        "ExerciseExampleDto.category is null"
+    } ?: return null
+
+    val entityExperience = AppLogger.checkOrLog(experience) {
+        "ExerciseExampleDto.experience is null"
+    } ?: return null
 
     return ExerciseExampleEntity(
         id = entityId,

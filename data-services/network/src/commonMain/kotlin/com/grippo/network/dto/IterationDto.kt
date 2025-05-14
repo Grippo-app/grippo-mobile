@@ -16,5 +16,5 @@ public data class IterationDto(
     @SerialName("updatedAt")
     val updatedAt: String? = null,
     @SerialName("weight")
-    val weight: Double? = null
+    val weight: Float? = null
 )

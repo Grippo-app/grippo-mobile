@@ -23,23 +23,32 @@ import com.grippo.database.entity.MuscleGroupEntity
 import com.grippo.database.entity.TokenEntity
 import com.grippo.database.entity.TrainingEntity
 import com.grippo.database.entity.UserEntity
+import com.grippo.database.entity.UserExcludedEquipmentEntity
+import com.grippo.database.entity.UserExcludedMuscleEntity
 import com.grippo.database.entity.WeightHistoryEntity
 
 @Database(
     entities = [
+        TokenEntity::class,
+
         EquipmentEntity::class,
         EquipmentGroupEntity::class,
+
         MuscleEntity::class,
         MuscleGroupEntity::class,
+
         ExerciseExampleEntity::class,
         ExerciseExampleBundleEntity::class,
         ExerciseExampleEquipmentEntity::class,
         ExerciseExampleTutorialEntity::class,
+
         TrainingEntity::class,
         ExerciseEntity::class,
         IterationEntity::class,
+
         UserEntity::class,
-        TokenEntity::class,
+        UserExcludedMuscleEntity::class,
+        UserExcludedEquipmentEntity::class,
         WeightHistoryEntity::class
     ],
     version = 1,
@@ -47,14 +56,14 @@ import com.grippo.database.entity.WeightHistoryEntity
 )
 @ConstructedBy(DatabaseConstructor::class)
 public abstract class Database : RoomDatabase() {
-    public abstract fun userDao(): UserDao
     public abstract fun tokenDao(): TokenDao
+    public abstract fun userDao(): UserDao
     public abstract fun weightHistoryDao(): WeightHistoryDao
 
     public abstract fun equipmentDao(): EquipmentDao
+    public abstract fun trainingDao(): TrainingDao
 
     public abstract fun exerciseExampleDao(): ExerciseExampleDao
 
     public abstract fun muscleDao(): MuscleDao
-    public abstract fun trainingDao(): TrainingDao
 }

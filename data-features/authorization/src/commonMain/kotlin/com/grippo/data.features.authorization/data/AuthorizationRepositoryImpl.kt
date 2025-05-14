@@ -7,7 +7,6 @@ import com.grippo.database.entity.TokenEntity
 import com.grippo.domain.mapper.toDto
 import com.grippo.network.Api
 import com.grippo.network.dto.AuthBody
-import com.grippo.network.mapper.toEntityOrNull
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -20,8 +19,7 @@ internal class AuthorizationRepositoryImpl(
         val response = api.login(AuthBody(email, password))
 
         response.onSuccess { r ->
-            val entity = r.toEntityOrNull() ?: return@onSuccess
-            tokenDao.insert(entity)
+            tokenDao.insert(TokenEntity(access = r.accessToken))
         }
 
         return response.map { }
@@ -31,9 +29,6 @@ internal class AuthorizationRepositoryImpl(
         val response = api.register(registration.toDto())
 
         response.onSuccess { r ->
-            api.getUser().getOrNull()
-            api.getUserMuscles().getOrNull()
-
             tokenDao.insert(TokenEntity(access = r.accessToken))
         }
 

@@ -8,6 +8,6 @@ public interface WeightHistoryFeature {
     public fun observeLastWeight(): Flow<WeightHistory?>
 
     public suspend fun getWeightHistory(): Result<Unit>
-    public suspend fun updateWeight(value: Double): Result<Unit>
+    public suspend fun updateWeight(value: Float): Result<Unit>
     public suspend fun removeWeight(id: String): Result<Unit>
 }

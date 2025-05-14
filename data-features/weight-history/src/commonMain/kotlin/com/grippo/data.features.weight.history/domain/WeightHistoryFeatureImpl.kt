@@ -20,7 +20,7 @@ internal class WeightHistoryFeatureImpl(
         return repository.getWeightHistory()
     }
 
-    override suspend fun updateWeight(value: Double): Result<Unit> {
+    override suspend fun updateWeight(value: Float): Result<Unit> {
         return repository.updateWeight(value)
     }
 
