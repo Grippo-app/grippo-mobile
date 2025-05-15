@@ -24,6 +24,7 @@ kotlin {
         implementation(projects.dataServices.database)
         implementation(projects.dataServices.network)
 
+        implementation(projects.dataFeatures.featureApi)
         implementation(projects.dataFeatures.authorization)
         implementation(projects.dataFeatures.user)
         implementation(projects.dataFeatures.weightHistory)

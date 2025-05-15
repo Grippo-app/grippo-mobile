@@ -13,7 +13,9 @@ internal class LoginComponent(
 ) : BaseComponent<LoginDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        LoginViewModel(getKoin().get())
+        LoginViewModel(
+            loginUseCase = getKoin().get()
+        )
     }
 
     override suspend fun eventListener(direction: LoginDirection) {

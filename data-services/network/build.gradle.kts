@@ -22,6 +22,7 @@ kotlin {
             implementation(projects.common.platformCore)
             implementation(projects.common.logger)
             implementation(projects.common.errors)
+            implementation(projects.dataServices.database)
         }
 
         androidMain.dependencies {

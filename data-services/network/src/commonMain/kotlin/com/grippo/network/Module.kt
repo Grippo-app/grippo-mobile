@@ -1,6 +1,7 @@
 package com.grippo.network
 
 import com.grippo.network.client.NetworkClient
+import com.grippo.network.client.TokenProvider
 import com.grippo.network.client.configure
 import com.grippo.platform.core.NativeContext
 import kotlinx.serialization.json.Json
@@ -9,7 +10,7 @@ import org.koin.dsl.module
 
 public val networkModule: Module = module {
     single {
-        get<NativeContext>().driver().configure()
+        get<NativeContext>().driver().configure(get())
     }
 
     single {
@@ -21,6 +22,10 @@ public val networkModule: Module = module {
 
     single {
         Api(client = get())
+    }
+
+    single {
+        TokenProvider(tokenDao = get())
     }
 
     single {

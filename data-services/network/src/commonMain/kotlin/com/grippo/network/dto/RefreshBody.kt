@@ -4,11 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class TokenResponse(
-    @SerialName("accessToken")
-    val accessToken: String? = null,
+public data class RefreshBody(
     @SerialName("refreshToken")
     val refreshToken: String? = null,
-    @SerialName("id")
-    val id: String? = null
 )

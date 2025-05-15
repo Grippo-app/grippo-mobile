@@ -1,7 +1,7 @@
 package com.grippo.authorization.registration.completed
 
 import com.grippo.core.BaseViewModel
-import com.grippo.data.features.api.authorization.AuthorizationFeature
+import com.grippo.data.features.api.authorization.RegisterUseCase
 import com.grippo.data.features.api.authorization.models.SetRegistration
 import com.grippo.domain.mapper.toDomain
 import com.grippo.presentation.api.user.models.ExperienceEnumState
@@ -16,7 +16,7 @@ internal class CompletedViewModel(
     experience: ExperienceEnumState?,
     excludedMuscleIds: ImmutableList<String>,
     missingEquipmentIds: ImmutableList<String>,
-    private val authorizationFeature: AuthorizationFeature
+    private val registerUseCase: RegisterUseCase
 ) : BaseViewModel<CompletedState, CompletedDirection, CompletedLoader>(
     CompletedState(name = name)
 ), CompletedContract {
@@ -34,7 +34,7 @@ internal class CompletedViewModel(
                 excludeMuscleIds = excludedMuscleIds
             )
 
-            authorizationFeature.register(registration).getOrThrow()
+            registerUseCase.execute(registration)
         }
     }
 

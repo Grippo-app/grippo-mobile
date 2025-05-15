@@ -31,7 +31,7 @@ internal class CompletedComponent(
             experience = experience,
             excludedMuscleIds = excludedMuscleIds,
             missingEquipmentIds = missingEquipmentIds,
-            authorizationFeature = getKoin().get()
+            registerUseCase = getKoin().get()
         )
     }
 

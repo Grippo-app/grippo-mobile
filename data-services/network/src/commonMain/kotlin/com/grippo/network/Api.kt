@@ -6,6 +6,7 @@ import com.grippo.network.dto.EquipmentGroupResponse
 import com.grippo.network.dto.EquipmentResponse
 import com.grippo.network.dto.MuscleGroupResponse
 import com.grippo.network.dto.MuscleResponse
+import com.grippo.network.dto.RefreshBody
 import com.grippo.network.dto.RegisterBody
 import com.grippo.network.dto.TokenResponse
 import com.grippo.network.dto.UserResponse
@@ -31,6 +32,14 @@ public class Api(private val client: NetworkClient) {
         return request(
             method = HttpMethod.Post,
             path = "/auth/register",
+            body = body
+        )
+    }
+
+    public suspend fun refresh(body: RefreshBody): Result<TokenResponse> {
+        return request(
+            method = HttpMethod.Post,
+            path = "/auth/refresh",
             body = body
         )
     }

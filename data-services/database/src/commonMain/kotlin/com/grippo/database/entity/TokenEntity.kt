@@ -7,4 +7,5 @@ import androidx.room.PrimaryKey
 public data class TokenEntity(
     @PrimaryKey val id: Int = 0,
     val access: String? = null,
+    val refresh: String? = null,
 )
