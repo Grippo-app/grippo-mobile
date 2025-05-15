@@ -56,4 +56,7 @@
     <string name="experience_intermediate_description">You've been working out for over 1 year, are familiar with most exercises, and have developed a solid base.</string>
     <string name="experience_advanced_description">You've been working out for over 2 years, have good exercise form, and show consistent physical progress.</string>
     <string name="experience_pro_description">You've been working out for over 5 years, have excellent exercise form, and maintain a high level of muscular development.</string>
+
+    <string name="user_card_preferences">preferences</string>
+    <string name="user_card_overview">overview</string>
 </resources>

@@ -44,7 +44,7 @@ public fun Loader(modifier: Modifier = Modifier) {
     ) {
         Icon(
             modifier = Modifier
-                .size(AppTokens.dp.icon.card)
+                .size(AppTokens.dp.icon.medium)
                 .graphicsLayer { rotationZ = rotation },
             imageVector = AppTokens.icons.Loader,
             tint = AppTokens.colors.skeleton.shimmer,

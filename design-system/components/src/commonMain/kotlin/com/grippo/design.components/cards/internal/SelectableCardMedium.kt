@@ -83,7 +83,7 @@ internal fun SelectableCardMedium(
         Icon(
             imageVector = style.icon,
             contentDescription = null,
-            modifier = Modifier.size(AppTokens.dp.icon.card),
+            modifier = Modifier.size(AppTokens.dp.icon.medium),
             tint = iconTint
         )
 

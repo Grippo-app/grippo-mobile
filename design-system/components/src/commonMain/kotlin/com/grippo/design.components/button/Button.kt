@@ -111,7 +111,7 @@ public fun Button(
                 )
                 Icon(
                     modifier = Modifier
-                        .size(AppTokens.dp.icon.component)
+                        .size(AppTokens.dp.icon.small)
                         .graphicsLayer { rotationZ = angle.value },
                     imageVector = AppTokens.icons.Loader,
                     tint = colorTokens.icon,
@@ -120,7 +120,7 @@ public fun Button(
             } else {
                 if (icon != null) {
                     Icon(
-                        modifier = Modifier.size(AppTokens.dp.icon.component),
+                        modifier = Modifier.size(AppTokens.dp.icon.small),
                         imageVector = icon,
                         tint = colorTokens.icon,
                         contentDescription = null
