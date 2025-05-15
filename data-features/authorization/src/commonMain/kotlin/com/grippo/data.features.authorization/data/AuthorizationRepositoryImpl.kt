@@ -40,6 +40,6 @@ internal class AuthorizationRepositoryImpl(
     }
 
     override suspend fun logout() {
-        // todo implement remove all tables
+
     }
 }

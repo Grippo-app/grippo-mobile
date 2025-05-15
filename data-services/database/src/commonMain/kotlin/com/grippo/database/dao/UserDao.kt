@@ -5,10 +5,11 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import com.grippo.database.entity.EquipmentEntity
+import com.grippo.database.entity.MuscleEntity
 import com.grippo.database.entity.UserEntity
 import com.grippo.database.entity.UserExcludedEquipmentEntity
 import com.grippo.database.entity.UserExcludedMuscleEntity
-import com.grippo.database.models.UserFull
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -16,21 +17,6 @@ public interface UserDao {
 
     @Query("SELECT * FROM user LIMIT 1")
     public fun get(): Flow<UserEntity?>
-
-    @Transaction
-    @Query("SELECT * FROM user LIMIT 1")
-    public fun getFull(): Flow<UserFull?>
-
-    @Transaction
-    public suspend fun insertUserFull(userFull: UserFull) {
-        insertOrUpdateUser(userFull.user)
-
-        clearExcludedMuscles(userFull.user.id)
-        insertExcludedMuscles(userFull.excludedMuscles)
-
-        clearExcludedEquipments(userFull.user.id)
-        insertExcludedEquipments(userFull.excludedEquipments)
-    }
 
     @Transaction
     public suspend fun replaceExcludedEquipments(
@@ -49,6 +35,24 @@ public interface UserDao {
         clearExcludedMuscles(userId)
         insertExcludedMuscles(muscles)
     }
+
+    @Query(
+        """
+        SELECT m.* FROM muscle AS m
+        INNER JOIN user_excluded_muscle AS uem ON m.id = uem.muscleId
+        WHERE uem.userId = :userId
+    """
+    )
+    public fun getExcludedMuscles(userId: String): Flow<List<MuscleEntity>>
+
+    @Query(
+        """
+        SELECT e.* FROM equipment AS e
+        INNER JOIN user_excluded_equipment AS uee ON e.id = uee.equipmentId
+        WHERE uee.userId = :userId
+    """
+    )
+    public fun getExcludedEquipments(userId: String): Flow<List<EquipmentEntity>>
 
     // Supportive methods
 

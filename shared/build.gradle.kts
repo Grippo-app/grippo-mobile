@@ -30,6 +30,8 @@ kotlin {
         implementation(projects.dataFeatures.weightHistory)
         implementation(projects.dataFeatures.muscle)
         implementation(projects.dataFeatures.equipment)
+        implementation(projects.dataFeatures.excludedMuscles)
+        implementation(projects.dataFeatures.excludedEquipments)
 
         implementation(projects.presentationFeatures.presentationApi)
         implementation(projects.presentationFeatures.authorization)

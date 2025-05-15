@@ -4,6 +4,8 @@ import com.grippo.core.coreModule
 import com.grippo.data.features.api.featureApiModule
 import com.grippo.data.features.authorization.authorizationFeatureModule
 import com.grippo.data.features.equipment.equipmentFeatureModule
+import com.grippo.data.features.excluded.equipments.excludedEquipmentsFeatureModule
+import com.grippo.data.features.excluded.muscles.excludedMusclesFeatureModule
 import com.grippo.data.features.muscle.musclesFeatureModule
 import com.grippo.data.features.user.userFeatureModule
 import com.grippo.data.features.weight.history.weightHistoryFeatureModule
@@ -31,6 +33,8 @@ public object Koin {
             musclesFeatureModule,
             equipmentFeatureModule,
             featureApiModule,
+            excludedMusclesFeatureModule,
+            excludedEquipmentsFeatureModule
         )
     }
 }

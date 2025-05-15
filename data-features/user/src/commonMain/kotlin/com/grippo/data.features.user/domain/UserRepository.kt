@@ -7,8 +7,4 @@ internal interface UserRepository {
     fun observeUser(): Flow<User?>
 
     suspend fun getUser(): Result<Unit>
-    suspend fun setExcludedMuscle(id: String): Result<Unit>
-    suspend fun deleteExcludedMuscle(id: String): Result<Unit>
-    suspend fun setExcludedEquipment(id: String): Result<Unit>
-    suspend fun deleteExcludedEquipment(id: String): Result<Unit>
 }

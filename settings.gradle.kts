@@ -49,6 +49,8 @@ include(":data-features:user")
 include(":data-features:weight-history")
 include(":data-features:muscle")
 include(":data-features:equipment")
+include(":data-features:excluded-muscles")
+include(":data-features:excluded-equipments")
 
 include(":presentation-features:presentation-api")
 include(":presentation-features:authorization")
