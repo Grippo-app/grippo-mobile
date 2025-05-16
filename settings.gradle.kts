@@ -68,6 +68,7 @@ include(":common:validation")
 
 include(":compose-libs:wheel-picker")
 include(":compose-libs:segment-control")
+include(":compose-libs:konfetti")
 
 include(":data-mappers:database-mapper")
 include(":data-mappers:network-mapper")

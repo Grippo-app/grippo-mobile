@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -31,6 +32,9 @@ import com.grippo.design.resources.Res
 import com.grippo.design.resources.get_started_btn
 import com.grippo.design.resources.registration_completed_description
 import com.grippo.design.resources.registration_completed_title
+import com.grippo.konfetti.compose.Konfetti
+import com.grippo.konfetti.core.Party
+import com.grippo.konfetti.presets.parade
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.delay
 
@@ -113,6 +117,22 @@ internal fun CompletedScreen(
             text = AppTokens.strings.res(Res.string.get_started_btn),
             style = ButtonStyle.Primary,
             onClick = contract::complete
+        )
+    }
+
+    val konfetti = remember { mutableStateOf<List<Party>>(emptyList()) }
+
+    LaunchedEffect(Unit) {
+        delay(1000)
+        konfetti.value = parade()
+    }
+
+    if (konfetti.value.isNotEmpty()) {
+        Konfetti(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.7f),
+            parties = konfetti.value,
         )
     }
 }

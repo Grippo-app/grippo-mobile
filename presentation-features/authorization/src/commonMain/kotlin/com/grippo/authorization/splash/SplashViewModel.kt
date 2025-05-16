@@ -11,8 +11,8 @@ internal class SplashViewModel(
 
     init {
         safeLaunch {
-            muscleFeature.getMuscles().getOrThrow()
-            equipmentFeature.getPublicEquipments().getOrThrow()
+            muscleFeature.getMuscles()
+            equipmentFeature.getPublicEquipments()
             navigateTo(SplashDirection.AuthProcess)
         }
     }
