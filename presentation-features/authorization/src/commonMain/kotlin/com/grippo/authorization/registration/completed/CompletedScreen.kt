@@ -1,15 +1,25 @@
 package com.grippo.authorization.registration.completed
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.button.Button
@@ -22,6 +32,7 @@ import com.grippo.design.resources.get_started_btn
 import com.grippo.design.resources.registration_completed_description
 import com.grippo.design.resources.registration_completed_title
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.coroutines.delay
 
 @Composable
 internal fun CompletedScreen(
@@ -33,6 +44,25 @@ internal fun CompletedScreen(
         Loader(modifier = Modifier.fillMaxSize())
         return
     }
+
+    val cardVisible = remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        delay(200)
+        cardVisible.value = true
+    }
+
+    val alpha by animateFloatAsState(
+        targetValue = if (cardVisible.value) 1f else 0f,
+        animationSpec = tween(durationMillis = 400),
+        label = "alpha"
+    )
+
+    val offsetY by animateDpAsState(
+        targetValue = if (cardVisible.value) 0.dp else 40.dp,
+        animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing),
+        label = "offsetY"
+    )
 
     Column(
         modifier = Modifier
@@ -67,10 +97,13 @@ internal fun CompletedScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(26.dp))
+        Spacer(modifier = Modifier.weight(0.5f))
 
         UserCard(
-            modifier = Modifier.fillMaxWidth(0.8f)
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .offset(y = offsetY)
+                .alpha(alpha)
         )
 
         Spacer(modifier = Modifier.weight(1f))
