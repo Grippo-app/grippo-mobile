@@ -1,11 +1,11 @@
 package com.grippo.authorization.login
 
 import androidx.compose.runtime.Immutable
-import com.grippo.presentation.api.auth.models.EmailState
-import com.grippo.presentation.api.auth.models.PasswordState
+import com.grippo.presentation.api.auth.models.EmailFormatState
+import com.grippo.presentation.api.auth.models.PasswordFormatState
 
 @Immutable
 internal data class LoginState(
-    val email: EmailState = EmailState.of("grippo@mail.com"),
-    val password: PasswordState = PasswordState.of("qwerty123"),
+    val email: EmailFormatState = EmailFormatState.of("grippo@mail.com"),
+    val password: PasswordFormatState = PasswordFormatState.of("qwerty123"),
 )

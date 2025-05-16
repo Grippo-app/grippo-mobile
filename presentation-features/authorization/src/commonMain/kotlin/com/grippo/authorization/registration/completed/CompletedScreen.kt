@@ -100,13 +100,15 @@ internal fun CompletedScreen(
 
         Spacer(modifier = Modifier.weight(0.5f))
 
-        UserCard(
-            modifier = Modifier
-                .fillMaxWidth(0.8f)
-                .offset(y = offsetY)
-                .alpha(alpha),
-
-        )
+        if (state.user != null) {
+            UserCard(
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .offset(y = offsetY)
+                    .alpha(alpha),
+                value = state.user
+            )
+        }
 
         Spacer(modifier = Modifier.weight(1f))
 

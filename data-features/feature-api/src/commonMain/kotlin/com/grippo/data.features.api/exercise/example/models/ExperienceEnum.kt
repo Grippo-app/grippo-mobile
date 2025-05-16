@@ -1,6 +1,6 @@
 package com.grippo.data.features.api.exercise.example.models
 
-public enum class ExperienceEnumEnum(public val key: String) {
+public enum class ExperienceEnum(public val key: String) {
     BEGINNER(key = "beginner"),
     INTERMEDIATE(key = "intermediate"),
     ADVANCED(key = "advanced"),
@@ -13,7 +13,7 @@ public enum class ExperienceEnumEnum(public val key: String) {
     }
 
     public companion object {
-        public fun of(key: String?): ExperienceEnumEnum {
+        public fun of(key: String?): ExperienceEnum {
             return entries.firstOrNull { it.key == key } ?: UNIDENTIFIED
         }
     }

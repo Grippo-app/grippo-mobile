@@ -10,7 +10,7 @@ public data class ExerciseExample(
     val name: String,
     val description: String?,
     val imageUrl: String?,
-    val experience: ExperienceEnumEnum,
+    val experience: ExperienceEnum,
     val forceType: ForceTypeEnum,
     val weightType: WeightTypeEnum,
     val category: CategoryEnum

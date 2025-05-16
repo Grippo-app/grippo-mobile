@@ -10,5 +10,8 @@ kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.dataServices.database)
         implementation(projects.dataFeatures.featureApi)
+        implementation(projects.common.dateUtils)
+
+        implementation(libs.datetime)
     }
 }

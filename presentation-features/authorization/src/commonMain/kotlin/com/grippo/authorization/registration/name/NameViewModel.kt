@@ -1,12 +1,12 @@
 package com.grippo.authorization.registration.name
 
 import com.grippo.core.BaseViewModel
-import com.grippo.presentation.api.auth.models.NameState
+import com.grippo.presentation.api.auth.models.NameFormatState
 
 internal class NameViewModel : BaseViewModel<NameState, NameDirection, NameLoader>(NameState()),
     NameContract {
     override fun setName(value: String) {
-        update { it.copy(name = NameState.of(value)) }
+        update { it.copy(name = NameFormatState.of(value)) }
     }
 
     override fun next() {

@@ -3,10 +3,13 @@ package com.grippo.authorization.registration.completed
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.authorization.RegisterUseCase
 import com.grippo.data.features.api.authorization.models.SetRegistration
+import com.grippo.data.features.api.user.UserFeature
 import com.grippo.domain.mapper.toDomain
+import com.grippo.domain.mapper.toState
 import com.grippo.presentation.api.user.models.ExperienceEnumState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.onEach
 
 internal class CompletedViewModel(
     email: String,
@@ -17,12 +20,17 @@ internal class CompletedViewModel(
     experience: ExperienceEnumState?,
     excludedMuscleIds: ImmutableList<String>,
     missingEquipmentIds: ImmutableList<String>,
-    private val registerUseCase: RegisterUseCase
+    private val registerUseCase: RegisterUseCase,
+    private val userFeature: UserFeature,
 ) : BaseViewModel<CompletedState, CompletedDirection, CompletedLoader>(
-    CompletedState(name = name)
+    CompletedState()
 ), CompletedContract {
 
     init {
+        userFeature
+            .observeUser()
+            .onEach { update { s -> s.copy(user = it?.toState()) } }
+
         safeLaunch(loader = CompletedLoader.Registration) {
             delay(1500) // TODO REMOVE IT
             val registration = SetRegistration(

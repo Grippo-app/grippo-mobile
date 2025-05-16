@@ -10,4 +10,5 @@ public data class UserState(
     val createdAt: LocalDateTime,
     val records: Int,
     val workouts: Int,
+    val experience: ExperienceEnumState
 )

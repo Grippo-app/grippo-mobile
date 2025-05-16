@@ -14,5 +14,6 @@ kotlin {
         implementation(projects.common.logger)
 
         implementation(libs.immutable.collections)
+        implementation(libs.datetime)
     }
 }
