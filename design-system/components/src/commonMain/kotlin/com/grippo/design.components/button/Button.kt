@@ -61,7 +61,7 @@ public fun Button(
         state = state,
     )
 
-    val shape = RoundedCornerShape(AppTokens.dp.shape.medium)
+    val shape = RoundedCornerShape(AppTokens.dp.shape.large)
 
     val height = when (style) {
         ButtonStyle.Transparent -> Dp.Unspecified

@@ -86,7 +86,7 @@ public fun SegmentSkeleton(modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .shimmerAnimation(
                         visible = true,
-                        radius = AppTokens.dp.shape.small
+                        radius = AppTokens.dp.shape.medium
                     )
                     .height(AppTokens.dp.size.componentHeight)
                     .width(140.dp)

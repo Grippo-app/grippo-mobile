@@ -23,8 +23,9 @@ public data object AppDp {
     }
 
     public data object Shape {
-        val small: Dp = 12.dp
-        val medium: Dp = 16.dp
+        val small: Dp = 8.dp
+        val medium: Dp = 12.dp
+        val large: Dp = 16.dp
     }
 
     public data object Icon {

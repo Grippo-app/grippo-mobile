@@ -81,7 +81,7 @@ internal fun Input(
     minLines: Int = 1,
 ) {
     val colors = AppTokens.colors
-    val shape = RoundedCornerShape(AppTokens.dp.shape.medium)
+    val shape = RoundedCornerShape(AppTokens.dp.shape.large)
     val height = AppTokens.dp.size.componentHeight
 
     val hasFocus = remember { mutableStateOf(false) }

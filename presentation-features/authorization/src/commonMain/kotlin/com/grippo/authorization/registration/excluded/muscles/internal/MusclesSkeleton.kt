@@ -66,7 +66,7 @@ private fun MusclesImageSkeleton(modifier: Modifier = Modifier) {
         modifier = modifier
             .shimmerAnimation(
                 visible = true,
-                radius = AppTokens.dp.shape.medium
+                radius = AppTokens.dp.shape.large
             )
             .aspectRatio(1f),
     )

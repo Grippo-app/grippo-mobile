@@ -30,7 +30,7 @@ internal fun SelectableCardSmall(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val shape = RoundedCornerShape(AppTokens.dp.shape.small)
+    val shape = RoundedCornerShape(AppTokens.dp.shape.medium)
 
     Row(
         modifier = modifier
@@ -66,13 +66,13 @@ internal fun SelectableCardSmall(
 
 @Composable
 internal fun SelectableCardSmallSkeleton(modifier: Modifier) {
-    val radius = AppTokens.dp.shape.small
+    val radius = AppTokens.dp.shape.medium
 
     Box(
         modifier = modifier
             .shimmerAnimation(
                 visible = true,
-                radius = AppTokens.dp.shape.small
+                radius = AppTokens.dp.shape.medium
             )
             .shadowDefault(
                 elevation = ShadowElevation.Card,

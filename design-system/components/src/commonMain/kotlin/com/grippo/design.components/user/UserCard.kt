@@ -38,7 +38,7 @@ import com.grippo.design.resources.user_card_preferences
 public fun UserCard(
     modifier: Modifier = Modifier
 ) {
-    val shape = RoundedCornerShape(AppTokens.dp.shape.medium)
+    val shape = RoundedCornerShape(AppTokens.dp.shape.large)
 
     Column(
         modifier = modifier
@@ -154,7 +154,7 @@ public fun UserCard(
             )
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         OverviewItem(
             modifier = Modifier.fillMaxWidth(0.7f),
@@ -198,7 +198,7 @@ private fun OverviewItem(
                 .border(
                     1.dp,
                     color = AppTokens.colors.border.defaultPrimary,
-                    shape = RoundedCornerShape(AppTokens.dp.shape.small)
+                    shape = RoundedCornerShape(AppTokens.dp.shape.medium)
                 )
                 .padding(8.dp)
                 .size(AppTokens.dp.icon.medium),

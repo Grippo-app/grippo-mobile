@@ -5,9 +5,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.loading.Loader
@@ -15,6 +19,8 @@ import com.grippo.design.components.user.UserCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.get_started_btn
+import com.grippo.design.resources.registration_completed_description
+import com.grippo.design.resources.registration_completed_title
 import kotlinx.collections.immutable.ImmutableSet
 
 @Composable
@@ -38,7 +44,30 @@ internal fun CompletedScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.size(60.dp))
+
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = AppTokens.strings.res(
+                Res.string.registration_completed_title,
+                state.name
+            ),
+            style = AppTokens.typography.h2(),
+            color = AppTokens.colors.text.primary,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.size(12.dp))
+
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = AppTokens.strings.res(Res.string.registration_completed_description),
+            style = AppTokens.typography.b14Med(),
+            color = AppTokens.colors.text.secondary,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.size(26.dp))
 
         UserCard(
             modifier = Modifier.fillMaxWidth(0.8f)

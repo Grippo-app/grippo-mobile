@@ -47,7 +47,7 @@ internal fun EquipmentsSkeleton(modifier: Modifier = Modifier) {
                     Box(
                         modifier = Modifier.shimmerAnimation(
                             visible = true,
-                            radius = AppTokens.dp.shape.small
+                            radius = AppTokens.dp.shape.medium
                         ).size(AppTokens.dp.size.componentHeight)
                     )
 

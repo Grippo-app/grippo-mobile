@@ -36,7 +36,7 @@ internal fun SelectableCardMedium(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val shape = RoundedCornerShape(AppTokens.dp.shape.medium)
+    val shape = RoundedCornerShape(AppTokens.dp.shape.large)
     val scale by animateFloatAsState(
         targetValue = if (isSelected) 1.02f else 1f,
         animationSpec = tween(durationMillis = 200, easing = FastOutSlowInEasing),
@@ -107,13 +107,13 @@ internal fun SelectableCardMedium(
 
 @Composable
 internal fun SelectableCardMediumSkeleton(modifier: Modifier) {
-    val shape = RoundedCornerShape(AppTokens.dp.shape.medium)
+    val shape = RoundedCornerShape(AppTokens.dp.shape.large)
 
     Box(
         modifier = modifier
             .shimmerAnimation(
                 visible = true,
-                radius = AppTokens.dp.shape.medium
+                radius = AppTokens.dp.shape.large
             )
             .shadowDefault(
                 elevation = ShadowElevation.Card,
