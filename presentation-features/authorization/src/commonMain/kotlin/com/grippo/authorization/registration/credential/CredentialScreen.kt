@@ -24,8 +24,8 @@ import com.grippo.design.resources.Res
 import com.grippo.design.resources.next_btn
 import com.grippo.design.resources.registration_credential_description
 import com.grippo.design.resources.registration_credential_title
-import com.grippo.presentation.api.auth.models.Email
-import com.grippo.presentation.api.auth.models.Password
+import com.grippo.presentation.api.auth.models.EmailState
+import com.grippo.presentation.api.auth.models.PasswordState
 import kotlinx.collections.immutable.ImmutableSet
 
 @Composable
@@ -82,7 +82,7 @@ internal fun CredentialScreen(
 
         val buttonState = remember(loaders, state.email, state.password) {
             when {
-                state.email is Email.Valid && state.password is Password.Valid -> ButtonState.Enabled
+                state.email is EmailState.Valid && state.password is PasswordState.Valid -> ButtonState.Enabled
                 else -> ButtonState.Disabled
             }
         }

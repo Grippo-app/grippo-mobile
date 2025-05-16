@@ -2,8 +2,8 @@ package com.grippo.authorization.login
 
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.authorization.LoginUseCase
-import com.grippo.presentation.api.auth.models.Email
-import com.grippo.presentation.api.auth.models.Password
+import com.grippo.presentation.api.auth.models.EmailState
+import com.grippo.presentation.api.auth.models.PasswordState
 import kotlinx.coroutines.delay
 
 internal class LoginViewModel(
@@ -12,11 +12,11 @@ internal class LoginViewModel(
     LoginContract {
 
     override fun setEmail(value: String) {
-        update { it.copy(email = Email.of(value)) }
+        update { it.copy(email = EmailState.of(value)) }
     }
 
     override fun setPassword(value: String) {
-        update { it.copy(password = Password.of(value)) }
+        update { it.copy(password = PasswordState.of(value)) }
     }
 
     override fun login() {

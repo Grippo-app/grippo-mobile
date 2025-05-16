@@ -9,9 +9,14 @@ apply(from = "$rootDir/gradle/common/android.gradle")
 apply(from = "$rootDir/gradle/common/kotlin.gradle")
 
 kotlin {
-    sourceSets.commonMain.dependencies {
-        implementation(projects.designSystem.core)
+    sourceSets {
+        commonMain.dependencies {
+            implementation(projects.designSystem.resources)
+            implementation(projects.designSystem.core)
 
-        implementation(compose.components.uiToolingPreview)
+            implementation(compose.foundation)
+
+            implementation(libs.datetime)
+        }
     }
 }

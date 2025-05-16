@@ -4,16 +4,16 @@ import com.grippo.data.features.api.muscle.models.Muscle
 import com.grippo.data.features.api.muscle.models.MuscleEnum
 import com.grippo.logger.AppLogger
 import com.grippo.presentation.api.muscles.models.MuscleEnumState
-import com.grippo.presentation.api.muscles.models.MuscleRepresentation
+import com.grippo.presentation.api.muscles.models.MuscleRepresentationState
 import com.grippo.presentation.api.muscles.models.MuscleState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 
-public fun List<Muscle>.toState(): ImmutableList<MuscleRepresentation.Plain> {
+public fun List<Muscle>.toState(): ImmutableList<MuscleRepresentationState.Plain> {
     return mapNotNull { it.toState() }.toPersistentList()
 }
 
-public fun Muscle.toState(): MuscleRepresentation.Plain? {
+public fun Muscle.toState(): MuscleRepresentationState.Plain? {
     val mappedType = AppLogger.checkOrLog(type.toState()) {
         "Muscle $id has unrecognized type: $type"
     } ?: return null
@@ -24,7 +24,7 @@ public fun Muscle.toState(): MuscleRepresentation.Plain? {
         type = mappedType,
     )
 
-    return MuscleRepresentation.Plain(muscle)
+    return MuscleRepresentationState.Plain(muscle)
 }
 
 public fun MuscleEnum.toState(): MuscleEnumState? {

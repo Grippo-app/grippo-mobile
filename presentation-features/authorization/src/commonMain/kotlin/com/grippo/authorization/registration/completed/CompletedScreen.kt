@@ -82,10 +82,7 @@ internal fun CompletedScreen(
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(
-                Res.string.registration_completed_title,
-                state.name
-            ),
+            text = AppTokens.strings.res(Res.string.registration_completed_title),
             style = AppTokens.typography.h2(),
             color = AppTokens.colors.text.primary,
             textAlign = TextAlign.Center
@@ -107,7 +104,8 @@ internal fun CompletedScreen(
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .offset(y = offsetY)
-                .alpha(alpha)
+                .alpha(alpha),
+
         )
 
         Spacer(modifier = Modifier.weight(1f))
@@ -123,7 +121,7 @@ internal fun CompletedScreen(
     val konfetti = remember { mutableStateOf<List<Party>>(emptyList()) }
 
     LaunchedEffect(Unit) {
-        delay(1000)
+        delay(300)
         konfetti.value = parade()
     }
 

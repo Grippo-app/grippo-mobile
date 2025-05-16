@@ -5,13 +5,13 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.grippo.presentation.api.muscles.models.MuscleGroupState
-import com.grippo.presentation.api.muscles.models.MuscleRepresentation
+import com.grippo.presentation.api.muscles.models.MuscleRepresentationState
 import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 internal fun MusclesImage(
     modifier: Modifier = Modifier,
-    item: MuscleGroupState<MuscleRepresentation.Plain>,
+    item: MuscleGroupState<MuscleRepresentationState.Plain>,
     selectedIds: ImmutableList<String>
 ) {
     Image(

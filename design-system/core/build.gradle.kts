@@ -10,9 +10,9 @@ apply(from = "$rootDir/gradle/common/kotlin.gradle")
 
 kotlin {
     sourceSets.commonMain.dependencies {
+        implementation(projects.designSystem.resources)
+
         implementation(compose.foundation)
         implementation(compose.runtime)
-
-        implementation(projects.designSystem.resources)
     }
 }

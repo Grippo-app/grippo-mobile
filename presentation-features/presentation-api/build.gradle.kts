@@ -13,11 +13,11 @@ kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.common.core)
         implementation(projects.common.validation)
-
         implementation(projects.designSystem.core)
         implementation(projects.designSystem.resources)
 
         implementation(libs.kotlinx.serialization.json)
+        implementation(libs.datetime)
         implementation(libs.immutable.collections)
 
         implementation(compose.foundation)

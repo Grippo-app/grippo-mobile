@@ -12,7 +12,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableSet
 
 @Immutable
-public data class MuscleGroupState<T : MuscleRepresentation>(
+public data class MuscleGroupState<T : MuscleRepresentationState>(
     val id: String,
     val name: String,
     val muscles: ImmutableList<T>,

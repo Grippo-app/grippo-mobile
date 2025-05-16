@@ -23,7 +23,7 @@ import com.grippo.design.resources.Res
 import com.grippo.design.resources.continue_btn
 import com.grippo.design.resources.registration_name_description
 import com.grippo.design.resources.registration_name_title
-import com.grippo.presentation.api.auth.models.Name
+import com.grippo.presentation.api.auth.models.NameState
 import kotlinx.collections.immutable.ImmutableSet
 
 @Composable
@@ -73,7 +73,7 @@ internal fun NameScreen(
 
         val buttonState = remember(loaders, state.name) {
             when {
-                state.name is Name.Valid -> ButtonState.Enabled
+                state.name is NameState.Valid -> ButtonState.Enabled
                 else -> ButtonState.Disabled
             }
         }

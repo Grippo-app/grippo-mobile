@@ -15,6 +15,13 @@
     <string name="weight_placeholder">Enter your weight</string>
     <string name="height_placeholder">Enter your height</string>
 
+    <string name="time_ago_day">%d day</string>
+    <string name="time_ago_days">%d days</string>
+    <string name="time_ago_month">%d month</string>
+    <string name="time_ago_months">%d months</string>
+    <string name="time_ago_year">%d year</string>
+    <string name="time_ago_years">%d years</string>
+
     <string name="login_title">Welcome to Grippo</string>
     <string name="login_description">Sign in to your account</string>
     <string name="login_button_login">Sign in</string>
@@ -59,4 +66,7 @@
 
     <string name="user_card_preferences">preferences</string>
     <string name="user_card_overview">overview</string>
+    <string name="user_card_value_in_a_row">%1$s in a Row</string>
+    <string name="user_card_value_workouts">%1$s Workouts</string>
+    <string name="user_card_value_personal_records">%1$s Personal Records</string>
 </resources>

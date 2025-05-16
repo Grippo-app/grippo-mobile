@@ -10,13 +10,13 @@ import androidx.compose.ui.unit.dp
 import com.grippo.design.components.cards.SelectableCard
 import com.grippo.design.components.cards.SelectableCardStyle
 import com.grippo.presentation.api.muscles.models.MuscleGroupState
-import com.grippo.presentation.api.muscles.models.MuscleRepresentation
+import com.grippo.presentation.api.muscles.models.MuscleRepresentationState
 import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 internal fun MusclesColumn(
     modifier: Modifier = Modifier,
-    item: MuscleGroupState<MuscleRepresentation.Plain>,
+    item: MuscleGroupState<MuscleRepresentationState.Plain>,
     selectedIds: ImmutableList<String>,
     onSelect: (id: String) -> Unit
 ) {

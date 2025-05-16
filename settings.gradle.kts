@@ -65,6 +65,7 @@ include(":common:core")
 include(":common:errors")
 include(":common:metrics")
 include(":common:validation")
+include(":common:date-utils")
 
 include(":compose-libs:wheel-picker")
 include(":compose-libs:segment-control")

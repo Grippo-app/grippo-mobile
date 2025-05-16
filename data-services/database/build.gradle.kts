@@ -17,15 +17,14 @@ room {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.androidx.room.runtime)
-            implementation(libs.sqlite.bundled)
-            implementation(libs.sqlite)
-
-            implementation(libs.koin.core)
-
             implementation(projects.common.platformCore)
             implementation(projects.common.logger)
             implementation(projects.common.errors)
+
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.sqlite.bundled)
+            implementation(libs.sqlite)
+            implementation(libs.koin.core)
         }
     }
 }

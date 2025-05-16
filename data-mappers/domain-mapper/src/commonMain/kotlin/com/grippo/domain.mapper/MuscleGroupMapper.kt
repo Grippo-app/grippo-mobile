@@ -5,15 +5,15 @@ import com.grippo.data.features.api.muscle.models.MuscleGroupEnum
 import com.grippo.logger.AppLogger
 import com.grippo.presentation.api.muscles.models.MuscleGroupEnumState
 import com.grippo.presentation.api.muscles.models.MuscleGroupState
-import com.grippo.presentation.api.muscles.models.MuscleRepresentation
+import com.grippo.presentation.api.muscles.models.MuscleRepresentationState
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 
-public fun List<MuscleGroup>.toState(): PersistentList<MuscleGroupState<MuscleRepresentation.Plain>> {
+public fun List<MuscleGroup>.toState(): PersistentList<MuscleGroupState<MuscleRepresentationState.Plain>> {
     return mapNotNull { it.toState() }.toPersistentList()
 }
 
-public fun MuscleGroup.toState(): MuscleGroupState<MuscleRepresentation.Plain>? {
+public fun MuscleGroup.toState(): MuscleGroupState<MuscleRepresentationState.Plain>? {
     val mappedType = AppLogger.checkOrLog(type.toState()) {
         "MuscleGroup $id has an unrecognized type: $type"
     } ?: return null

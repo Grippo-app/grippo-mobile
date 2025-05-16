@@ -11,7 +11,6 @@ kotlin {
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.dataServices.database)
         implementation(projects.dataServices.network)
-
         implementation(projects.dataMappers.domainMapper)
         implementation(projects.dataMappers.databaseMapper)
         implementation(projects.dataMappers.networkMapper)

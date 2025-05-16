@@ -30,8 +30,8 @@ import com.grippo.design.resources.login_button_registration_label
 import com.grippo.design.resources.login_description
 import com.grippo.design.resources.login_title
 import com.grippo.design.resources.or
-import com.grippo.presentation.api.auth.models.Email
-import com.grippo.presentation.api.auth.models.Password
+import com.grippo.presentation.api.auth.models.EmailState
+import com.grippo.presentation.api.auth.models.PasswordState
 import kotlinx.collections.immutable.ImmutableSet
 
 @Composable
@@ -90,7 +90,7 @@ internal fun LoginScreen(
         val buttonState = remember(loaders, state.email, state.password) {
             when {
                 loaders.contains(LoginLoader.LoginButton) -> ButtonState.Loading
-                state.email is Email.Valid && state.password is Password.Valid -> ButtonState.Enabled
+                state.email is EmailState.Valid && state.password is PasswordState.Valid -> ButtonState.Enabled
                 else -> ButtonState.Disabled
             }
         }

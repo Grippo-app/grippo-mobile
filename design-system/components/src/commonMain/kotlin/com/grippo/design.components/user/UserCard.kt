@@ -24,6 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.grippo.date.utils.DateCompose
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.core.AppTokens
@@ -33,10 +34,14 @@ import com.grippo.design.resources.icons.Calendar
 import com.grippo.design.resources.icons.Heart
 import com.grippo.design.resources.user_card_overview
 import com.grippo.design.resources.user_card_preferences
+import com.grippo.design.resources.user_card_value_in_a_row
+import com.grippo.design.resources.user_card_value_personal_records
+import com.grippo.presentation.api.user.models.UserState
 
 @Composable
 public fun UserCard(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    value: UserState
 ) {
     val shape = RoundedCornerShape(AppTokens.dp.shape.large)
 
@@ -61,7 +66,7 @@ public fun UserCard(
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = "Max Voitenko",
+            text = value.name,
             style = AppTokens.typography.h1(),
             color = AppTokens.colors.text.primary,
             textAlign = TextAlign.Center
@@ -158,15 +163,23 @@ public fun UserCard(
 
         OverviewItem(
             modifier = Modifier.fillMaxWidth(0.7f),
-            title = "125 Workouts",
+            title = AppTokens.strings.res(
+                Res.string.user_card_value_in_a_row,
+                value.workouts
+            ),
             icon = AppTokens.icons.Heart
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
+        val ago = DateCompose.rememberAgo(value.createdAt)
+
         OverviewItem(
             modifier = Modifier.fillMaxWidth(0.7f),
-            title = "16 Days in a Row",
+            title = AppTokens.strings.res(
+                Res.string.user_card_value_in_a_row,
+                ago
+            ),
             icon = AppTokens.icons.Calendar
         )
 
@@ -174,7 +187,10 @@ public fun UserCard(
 
         OverviewItem(
             modifier = Modifier.fillMaxWidth(0.7f),
-            title = "8 Personal Records",
+            title = AppTokens.strings.res(
+                Res.string.user_card_value_personal_records,
+                value.records.toString()
+            ),
             icon = AppTokens.icons.Award
         )
 
