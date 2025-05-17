@@ -7,7 +7,7 @@ public data class Exercise(
     val name: String,
     val iterations: List<Iteration> = emptyList(),
     val exerciseExample: ExerciseExample?,
-    val volume: Double,
+    val volume: Float,
     val repetitions: Int,
-    val intensity: Double
+    val intensity: Float
 )

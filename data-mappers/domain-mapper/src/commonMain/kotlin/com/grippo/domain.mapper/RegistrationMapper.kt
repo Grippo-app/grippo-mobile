@@ -8,7 +8,7 @@ public fun SetRegistration.toDto(): RegisterBody {
         email = email,
         password = password,
         name = name,
-        weight = weight.toDouble(),
+        weight = weight,
         experience = experience.key,
         height = height,
         excludeMuscleIds = excludeMuscleIds,

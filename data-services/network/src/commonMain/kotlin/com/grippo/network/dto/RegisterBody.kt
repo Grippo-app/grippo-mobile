@@ -12,7 +12,7 @@ public data class RegisterBody(
     @SerialName("name")
     val name: String? = null,
     @SerialName("weight")
-    val weight: Double? = null,
+    val weight: Float? = null,
     @SerialName("experience")
     val experience: String? = null,
     @SerialName("height")

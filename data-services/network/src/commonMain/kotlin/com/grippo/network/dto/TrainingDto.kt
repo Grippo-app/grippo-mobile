@@ -16,9 +16,9 @@ public data class TrainingDto(
     @SerialName("id")
     val id: String? = null,
     @SerialName("intensity")
-    val intensity: Double? = null,
+    val intensity: Float? = null,
     @SerialName("volume")
-    val volume: Double? = null,
+    val volume: Float? = null,
     @SerialName("updatedAt")
     val updatedAt: String? = null,
     @SerialName("userId")

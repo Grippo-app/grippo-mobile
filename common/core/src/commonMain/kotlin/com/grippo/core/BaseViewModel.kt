@@ -56,10 +56,7 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
         AppLogger.error("│ cause: ${exception.cause?.message}")
         AppLogger.error("└───────── ViewModel error ─────────")
 
-        errorProvider.display(
-            title = exception.message.toString(),
-            description = exception.stackTraceToString()
-        )
+        errorProvider.provide(exception)
     }
 
     protected fun update(updateFunc: (STATE) -> STATE) {

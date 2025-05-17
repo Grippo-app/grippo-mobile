@@ -14,5 +14,5 @@ public data class MaxWeightDto(
     @SerialName("id")
     val id: String? = null,
     @SerialName("weight")
-    val weight: Double? = null
+    val weight: Float? = null
 )

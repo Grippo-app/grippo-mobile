@@ -5,19 +5,19 @@ import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.auth.Auth
 
 internal fun HttpClient.configure(
-    tokenProvider: TokenProvider
+    tokenProvider: TokenProvider,
+    apiErrorParser: ApiErrorParser
 ) = this.config {
 
     install(HttpTimeout) {
-        requestTimeoutMillis = 35_000
-        connectTimeoutMillis = 35_000
-        socketTimeoutMillis = 35_000
+        requestTimeoutMillis = 10_000
+        connectTimeoutMillis = 10_000
+        socketTimeoutMillis = 10_000
     }
-
 
     install(Auth) {
         providers.add(tokenProvider)
     }
 
-    responseValidator()
+    responseValidator(apiErrorParser)
 }

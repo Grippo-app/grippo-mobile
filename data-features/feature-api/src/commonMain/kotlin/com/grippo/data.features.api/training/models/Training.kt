@@ -5,7 +5,7 @@ public data class Training(
     val exercises: List<Exercise> = emptyList(),
     val duration: Long,
     val createdAt: String?,
-    val volume: Double,
+    val volume: Float,
     val repetitions: Int,
-    val intensity: Double
+    val intensity: Float
 )

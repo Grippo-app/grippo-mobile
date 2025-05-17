@@ -2,15 +2,56 @@ package com.grippo.error.provider.impl
 
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
+import com.grippo.error.provider.AppError
 import com.grippo.error.provider.ErrorProvider
 
 internal class ErrorProviderImpl(val dialogController: DialogController) : ErrorProvider {
-    override fun display(title: String, description: String) {
-        val config = DialogConfig.ErrorDisplay(
-            title = title,
-            description = description,
-            onResult = {}
-        )
+
+    override fun provide(exception: Throwable) {
+        val config = when (exception) {
+            is AppError.Network.NoInternet -> DialogConfig.ErrorDisplay(
+                title = "No Internet",
+                description = exception.message,
+                onResult = {}
+            )
+
+            is AppError.Network.Timeout -> DialogConfig.ErrorDisplay(
+                title = "Request Timeout",
+                description = exception.message,
+                onResult = {}
+            )
+
+            is AppError.Network.ConnectionLost -> DialogConfig.ErrorDisplay(
+                title = "Connection Lost",
+                description = exception.message,
+                onResult = {}
+            )
+
+            is AppError.Network.Expected -> DialogConfig.ErrorDisplay(
+                title = "Oops",
+                description = exception.message,
+                onResult = {}
+            )
+
+            is AppError.Network.Unexpected -> DialogConfig.ErrorDisplay(
+                title = "Server Error",
+                description = exception.message,
+                onResult = {}
+            )
+
+            is AppError.Unknown -> DialogConfig.ErrorDisplay(
+                title = "Unknown Error",
+                description = exception.message,
+                onResult = {}
+            )
+
+            else -> DialogConfig.ErrorDisplay(
+                title = "Unexpected Error",
+                description = exception.message ?: "Something went wrong.",
+                onResult = {}
+            )
+        }
+
         dialogController.show(config)
     }
 }
