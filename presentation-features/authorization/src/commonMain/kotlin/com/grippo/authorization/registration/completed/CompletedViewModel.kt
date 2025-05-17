@@ -9,6 +9,8 @@ import com.grippo.domain.mapper.toState
 import com.grippo.presentation.api.user.models.ExperienceEnumState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 internal class CompletedViewModel(
@@ -30,6 +32,8 @@ internal class CompletedViewModel(
         userFeature
             .observeUser()
             .onEach { update { s -> s.copy(user = it?.toState()) } }
+            .catch { sendError(it) }
+            .launchIn(coroutineScope)
 
         safeLaunch(loader = CompletedLoader.Registration) {
             delay(1500) // TODO REMOVE IT

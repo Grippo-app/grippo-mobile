@@ -7,6 +7,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.time_ago_day
 import com.grippo.design.resources.time_ago_days
+import com.grippo.design.resources.time_ago_less_than_day
 import com.grippo.design.resources.time_ago_month
 import com.grippo.design.resources.time_ago_months
 import com.grippo.design.resources.time_ago_year
@@ -26,6 +27,7 @@ public object DateCompose {
         val monthRes = AppTokens.strings.res(Res.string.time_ago_month)
         val yearsRes = AppTokens.strings.res(Res.string.time_ago_years)
         val yearRes = AppTokens.strings.res(Res.string.time_ago_year)
+        val lessThanDayRes = AppTokens.strings.res(Res.string.time_ago_less_than_day)
 
         return remember(value) {
             val duration = dateUtils.ago(value)
@@ -50,7 +52,7 @@ public object DateCompose {
                     res.replace("%d", days.toString())
                 }
 
-                else -> dayRes.replace("%d", 0.toString())
+                else -> lessThanDayRes
             }
         }
     }

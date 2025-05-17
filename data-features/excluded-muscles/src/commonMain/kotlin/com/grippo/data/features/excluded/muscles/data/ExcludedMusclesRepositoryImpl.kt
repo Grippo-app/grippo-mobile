@@ -9,9 +9,7 @@ import com.grippo.network.Api
 import com.grippo.network.mapper.toEntities
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 
 internal class ExcludedMusclesRepositoryImpl(
     private val api: Api,
@@ -19,9 +17,7 @@ internal class ExcludedMusclesRepositoryImpl(
 ) : ExcludedMusclesRepository {
 
     override fun observeExcludedMuscles(): Flow<List<Muscle>> {
-        return userDao.get()
-            .mapNotNull { it?.id }
-            .flatMapLatest { userDao.getExcludedMuscles(it) }
+        return userDao.getExcludedMuscles()
             .map { it.toDomain() }
     }
 
@@ -34,7 +30,7 @@ internal class ExcludedMusclesRepositoryImpl(
                 .mapNotNull { it.id }
                 .map { id -> UserExcludedMuscleEntity(userId, id) }
 
-            userDao.replaceExcludedMuscles(userId, entities)
+            userDao.replaceExcludedMuscles(entities)
         }
 
         return response.map { }
@@ -47,7 +43,7 @@ internal class ExcludedMusclesRepositoryImpl(
             val muscles = api.getExcludedMuscles().getOrNull()?.toEntities() ?: return@onSuccess
             val userId = userDao.get().firstOrNull()?.id ?: return@onSuccess
             val entities = muscles.map { UserExcludedMuscleEntity(userId, it.id) }
-            userDao.replaceExcludedMuscles(userId, entities)
+            userDao.replaceExcludedMuscles(entities)
         }
 
         return response.map { }
@@ -60,7 +56,7 @@ internal class ExcludedMusclesRepositoryImpl(
             val muscles = api.getExcludedMuscles().getOrNull()?.toEntities() ?: return@onSuccess
             val userId = userDao.get().firstOrNull()?.id ?: return@onSuccess
             val entities = muscles.map { UserExcludedMuscleEntity(userId, it.id) }
-            userDao.replaceExcludedMuscles(userId, entities)
+            userDao.replaceExcludedMuscles(entities)
         }
 
         return response.map { }

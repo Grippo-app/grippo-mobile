@@ -32,10 +32,13 @@ import com.grippo.design.resources.Res
 import com.grippo.design.resources.icons.Award
 import com.grippo.design.resources.icons.Calendar
 import com.grippo.design.resources.icons.Heart
+import com.grippo.design.resources.user_card_no_records_yet
+import com.grippo.design.resources.user_card_no_workouts_yet
 import com.grippo.design.resources.user_card_overview
 import com.grippo.design.resources.user_card_preferences
 import com.grippo.design.resources.user_card_value_in_a_row
 import com.grippo.design.resources.user_card_value_personal_records
+import com.grippo.design.resources.user_card_value_workouts
 import com.grippo.presentation.api.user.models.UserState
 
 @Composable
@@ -161,12 +164,18 @@ public fun UserCard(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        val workoutsStr = if (value.records > 0) {
+            AppTokens.strings.res(
+                Res.string.user_card_value_workouts,
+                value.records.toString()
+            )
+        } else {
+            AppTokens.strings.res(Res.string.user_card_no_workouts_yet)
+        }
+
         OverviewItem(
             modifier = Modifier.fillMaxWidth(0.7f),
-            title = AppTokens.strings.res(
-                Res.string.user_card_value_in_a_row,
-                value.workouts
-            ),
+            title = workoutsStr,
             icon = AppTokens.icons.Heart
         )
 
@@ -185,12 +194,18 @@ public fun UserCard(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        OverviewItem(
-            modifier = Modifier.fillMaxWidth(0.7f),
-            title = AppTokens.strings.res(
+        val recordsStr = if (value.records > 0) {
+            AppTokens.strings.res(
                 Res.string.user_card_value_personal_records,
                 value.records.toString()
-            ),
+            )
+        } else {
+            AppTokens.strings.res(Res.string.user_card_no_records_yet)
+        }
+
+        OverviewItem(
+            modifier = Modifier.fillMaxWidth(0.7f),
+            title = recordsStr,
             icon = AppTokens.icons.Award
         )
 

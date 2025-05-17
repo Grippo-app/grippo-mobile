@@ -9,9 +9,7 @@ import com.grippo.network.Api
 import com.grippo.network.mapper.toEntities
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 
 internal class ExcludedEquipmentsRepositoryImpl(
     private val api: Api,
@@ -19,9 +17,7 @@ internal class ExcludedEquipmentsRepositoryImpl(
 ) : ExcludedEquipmentsRepository {
 
     override fun observeExcludedEquipments(): Flow<List<Equipment>> {
-        return userDao.get()
-            .mapNotNull { it?.id }
-            .flatMapLatest { userDao.getExcludedEquipments(it) }
+        return userDao.getExcludedEquipments()
             .map { it.toDomain() }
     }
 
@@ -34,7 +30,7 @@ internal class ExcludedEquipmentsRepositoryImpl(
                 .mapNotNull { it.id }
                 .map { id -> UserExcludedEquipmentEntity(userId, id) }
 
-            userDao.replaceExcludedEquipments(userId, entities)
+            userDao.replaceExcludedEquipments(entities)
         }
 
         return response.map { }
@@ -48,7 +44,7 @@ internal class ExcludedEquipmentsRepositoryImpl(
                 api.getExcludedEquipments().getOrNull()?.toEntities() ?: return@onSuccess
             val userId = userDao.get().firstOrNull()?.id ?: return@onSuccess
             val entities = equipments.map { UserExcludedEquipmentEntity(userId, it.id) }
-            userDao.replaceExcludedEquipments(userId, entities)
+            userDao.replaceExcludedEquipments(entities)
         }
 
         return response.map { }
@@ -62,7 +58,7 @@ internal class ExcludedEquipmentsRepositoryImpl(
                 api.getExcludedEquipments().getOrNull()?.toEntities() ?: return@onSuccess
             val userId = userDao.get().firstOrNull()?.id ?: return@onSuccess
             val entities = equipments.map { UserExcludedEquipmentEntity(userId, it.id) }
-            userDao.replaceExcludedEquipments(userId, entities)
+            userDao.replaceExcludedEquipments(entities)
         }
 
         return response.map { }
