@@ -20,6 +20,7 @@ public interface AppColor {
     public val muscle: MuscleColors
     public val equipment: EquipmentColors
     public val segment: SegmentColors
+    public val konfetti: Konfetti
 
     public interface DividerColors {
         public val default: Color
@@ -146,5 +147,18 @@ public interface AppColor {
     public interface SegmentColors {
         public val active: Color
         public val inactive: Color
+    }
+
+    public interface Konfetti {
+        public val confettiColor1: Color
+        public val confettiColor2: Color
+        public val confettiColor3: Color
+        public val confettiColor4: Color
+        public val confettiColor5: Color
+        public val confettiColor6: Color
+        public val confettiColor7: Color
+        public val confettiColor8: Color
+        public val confettiColor9: Color
+        public val confettiColor10: Color
     }
 }

@@ -6,7 +6,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -26,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.konfetti.KonfettiParade
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.user.UserCard
 import com.grippo.design.core.AppTokens
@@ -33,9 +33,6 @@ import com.grippo.design.resources.Res
 import com.grippo.design.resources.get_started_btn
 import com.grippo.design.resources.registration_completed_description
 import com.grippo.design.resources.registration_completed_title
-import com.grippo.konfetti.compose.Konfetti
-import com.grippo.konfetti.core.Party
-import com.grippo.konfetti.presets.parade
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.coroutines.delay
 
@@ -121,19 +118,7 @@ internal fun CompletedScreen(
         )
     }
 
-    val konfetti = remember { mutableStateOf<List<Party>>(emptyList()) }
-
-    LaunchedEffect(Unit) {
-        delay(300)
-        konfetti.value = parade()
-    }
-
-    if (konfetti.value.isNotEmpty()) {
-        Konfetti(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.7f),
-            parties = konfetti.value,
-        )
+    if (state.user != null) {
+        KonfettiParade()
     }
 }

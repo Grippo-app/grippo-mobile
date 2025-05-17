@@ -157,4 +157,17 @@ public object LightColor : AppColor {
         override val default: Color = Neutral200
         override val accent: Color = Primary500
     }
+
+    override val konfetti: AppColor.Konfetti = object : AppColor.Konfetti {
+        override val confettiColor1 = Success
+        override val confettiColor2 = Warning
+        override val confettiColor3 = Error
+        override val confettiColor4 = Primary500
+        override val confettiColor5 = Primary300
+        override val confettiColor6 = Primary400
+        override val confettiColor7 = Primary500
+        override val confettiColor8 = Neutral300
+        override val confettiColor9 = Neutral400
+        override val confettiColor10 = Neutral500
+    }
 }

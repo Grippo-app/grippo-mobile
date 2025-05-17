@@ -20,7 +20,6 @@ kotlin {
         implementation(projects.designSystem.core)
         implementation(projects.designSystem.resources)
         implementation(projects.designSystem.components)
-        implementation(projects.composeLibs.konfetti)
 
         implementation(compose.foundation)
         implementation(compose.material3)
