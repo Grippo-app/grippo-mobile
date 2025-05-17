@@ -3,7 +3,6 @@ package com.grippo.shared.dialog
 import com.grippo.core.BaseViewModel
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogProvider
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.core.component.inject
 
@@ -15,7 +14,7 @@ internal class DialogViewModel :
     init {
         dialogController.dialog
             .onEach(::show)
-            .launchIn(coroutineScope)
+            .safeLaunch()
     }
 
     private fun show(config: DialogConfig) {

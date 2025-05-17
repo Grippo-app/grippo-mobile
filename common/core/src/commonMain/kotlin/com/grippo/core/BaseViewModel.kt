@@ -20,6 +20,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -48,38 +53,95 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
     private val _loaders = MutableStateFlow<ImmutableSet<LOADER>>(persistentSetOf())
     public val loaders: StateFlow<ImmutableSet<LOADER>> = _loaders.asStateFlow()
 
-    private val handler = CoroutineExceptionHandler { _, exception -> sendError(exception) }
+    protected fun update(updateFunc: (STATE) -> STATE) {
+        _state.update { currentState -> updateFunc.invoke(currentState) }
+    }
 
-    protected fun sendError(exception: Throwable) {
+//    protected fun safeLaunch(
+//        dispatcher: CoroutineDispatcher = Dispatchers.IO,
+//        loader: LOADER? = null,
+//        onError: (() -> Unit) = {},
+//        block: suspend CoroutineScope.() -> Unit,
+//    ): Job {
+//        if (loader != null) {
+//            _loaders.update { it.toMutableSet().apply { add(loader) }.toPersistentSet() }
+//        }
+//
+//        val handler = buildExceptionHandler(onError)
+//
+//        return coroutineScope.launch(dispatcher + handler) {
+//            runCatching {
+//                block.invoke(this)
+//            }.onFailure { exception ->
+//                sendError(
+//                    exception = exception,
+//                    onError = onError,
+//                )
+//            }.also {
+//                if (loader != null) {
+//                    _loaders.update { it.toMutableSet().apply { remove(loader) }.toPersistentSet() }
+//                }
+//            }
+//        }
+//    }
+
+    protected fun safeLaunch(
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        loader: LOADER? = null,
+        onError: (() -> Unit) = {},
+        block: suspend CoroutineScope.() -> Unit,
+    ) {
+        if (loader != null) {
+            _loaders.update { it.toMutableSet().apply { add(loader) }.toPersistentSet() }
+        }
+
+        val handler = buildExceptionHandler(onError)
+
+        coroutineScope.launch(dispatcher + handler) {
+            block.invoke(this)
+        }.invokeOnCompletion {
+            if (loader != null) {
+                _loaders.update { it.toMutableSet().apply { remove(loader) }.toPersistentSet() }
+            }
+        }
+    }
+
+    protected fun <T> Flow<T>.safeLaunch(
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        loader: LOADER? = null,
+        onError: (() -> Unit) = {},
+    ) {
+        this.onStart {
+            if (loader != null) {
+                _loaders.update { it.toMutableSet().apply { add(loader) }.toPersistentSet() }
+            }
+        }.catch { exception ->
+            sendError(
+                exception = exception,
+                onError = onError,
+            )
+        }.onCompletion {
+            _loaders.update { it.toMutableSet().apply { remove(loader) }.toPersistentSet() }
+        }.flowOn(
+            context = dispatcher
+        ).launchIn(
+            scope = coroutineScope
+        )
+    }
+
+    private fun buildExceptionHandler(onError: (() -> Unit)): CoroutineExceptionHandler {
+        return CoroutineExceptionHandler { _, throwable ->
+            sendError(throwable, onError)
+        }
+    }
+
+    private fun sendError(exception: Throwable, onError: (() -> Unit)) {
         AppLogger.error("┌───────── ViewModel error ─────────")
         AppLogger.error("│ message: ${exception.message}")
         AppLogger.error("│ cause: ${exception.cause?.message}")
         AppLogger.error("└───────── ViewModel error ─────────")
 
-        errorProvider.provide(exception)
-    }
-
-    protected fun update(updateFunc: (STATE) -> STATE) {
-        _state.update { currentState -> updateFunc.invoke(currentState) }
-    }
-
-    protected fun safeLaunch(
-        dispatcher: CoroutineDispatcher = Dispatchers.IO,
-        loader: LOADER? = null,
-        block: suspend CoroutineScope.() -> Unit,
-    ) {
-        if (loader != null) addLoader(loader)
-        coroutineScope.launch(dispatcher + handler, block = block).invokeOnCompletion {
-            if (loader != null) removeLoader(loader)
-        }
-    }
-
-    private fun addLoader(loader: LOADER) {
-        _loaders.update { it.toMutableSet().apply { add(loader) }.toPersistentSet() }
-    }
-
-    private fun removeLoader(loader: LOADER) {
-        _loaders.update { it.toMutableSet().apply { remove(loader) }.toPersistentSet() }
+        errorProvider.provide(exception, callback = onError)
     }
 
     override fun onDestroy() {

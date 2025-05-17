@@ -12,7 +12,11 @@ internal class SplashViewModel(
 ) : BaseViewModel<SplashState, SplashDirection, SplashLoader>(SplashState), SplashContract {
 
     init {
-        safeLaunch {
+        safeLaunch(
+            onError = {
+                navigateTo(SplashDirection.AuthProcess)
+            }
+        ) {
             val muscleJob = launch { muscleFeature.getMuscles().getOrThrow() }
             val equipmentJob = launch { equipmentFeature.getPublicEquipments().getOrThrow() }
 

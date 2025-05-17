@@ -54,6 +54,7 @@ include(":data-features:excluded-equipments")
 
 include(":presentation-features:presentation-api")
 include(":presentation-features:authorization")
+include(":presentation-features:home")
 
 include(":dialog-features:dialog-api")
 include(":dialog-features:weight-picker")
