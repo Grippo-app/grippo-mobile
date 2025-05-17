@@ -5,6 +5,13 @@ import kotlinx.serialization.Serializable
 @Serializable
 public sealed interface DialogConfig {
     @Serializable
+    public data class ErrorDisplay(
+        val title: String,
+        val description: String,
+        val onResult: () -> Unit
+    ) : DialogConfig
+
+    @Serializable
     public data class WeightPicker(
         val initial: Float,
         val onResult: (value: Float) -> Unit

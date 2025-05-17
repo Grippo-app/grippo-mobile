@@ -1,6 +1,6 @@
 package com.grippo.network.client
 
-import com.grippo.error.AppError
+import com.grippo.error.provider.AppError
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.statement.HttpResponse

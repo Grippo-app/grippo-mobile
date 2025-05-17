@@ -1,4 +1,4 @@
-package com.grippo.error
+package com.grippo.error.provider
 
 public sealed class AppError(
     override val message: String,
@@ -20,6 +20,5 @@ public sealed class AppError(
     public data class Unknown(
         override val message: String,
         override val cause: Throwable? = null
-    ) :
-        AppError(message, cause)
+    ) : AppError(message, cause)
 }

@@ -13,8 +13,8 @@ internal class SplashViewModel(
 
     init {
         safeLaunch {
-            val muscleJob = launch { muscleFeature.getMuscles() }
-            val equipmentJob = launch { equipmentFeature.getPublicEquipments() }
+            val muscleJob = launch { muscleFeature.getMuscles().getOrThrow() }
+            val equipmentJob = launch { equipmentFeature.getPublicEquipments().getOrThrow() }
 
             joinAll(muscleJob, equipmentJob)
             navigateTo(SplashDirection.AuthProcess)

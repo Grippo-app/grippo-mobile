@@ -11,6 +11,7 @@ import com.grippo.data.features.user.userFeatureModule
 import com.grippo.data.features.weight.history.weightHistoryFeatureModule
 import com.grippo.database.databaseModule
 import com.grippo.dialog.api.dialogModule
+import com.grippo.error.provider.impl.errorModule
 import com.grippo.network.networkModule
 import org.koin.core.KoinApplication
 import org.koin.dsl.KoinAppDeclaration
@@ -23,6 +24,7 @@ public object Koin {
         appDeclaration()
         modules(
             platformModule,
+            errorModule,
             networkModule,
             databaseModule,
             authorizationFeatureModule,

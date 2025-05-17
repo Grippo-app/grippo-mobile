@@ -3,6 +3,7 @@ package com.grippo.core
 import com.arkivanov.essenty.instancekeeper.InstanceKeeper
 import com.grippo.core.models.BaseDirection
 import com.grippo.core.models.BaseLoader
+import com.grippo.error.provider.ErrorProvider
 import com.grippo.logger.AppLogger
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : BaseLoader>(
     state: STATE,
@@ -41,18 +43,23 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
         coroutineScope.launch { _navigator.send(destination) }
     }
 
+    private val errorProvider by inject<ErrorProvider>()
+
     private val _loaders = MutableStateFlow<ImmutableSet<LOADER>>(persistentSetOf())
     public val loaders: StateFlow<ImmutableSet<LOADER>> = _loaders.asStateFlow()
 
     private val handler = CoroutineExceptionHandler { _, exception -> sendError(exception) }
 
     protected fun sendError(exception: Throwable) {
-        exception.message ?: exception.message ?: "Error"
         AppLogger.error("┌───────── ViewModel error ─────────")
         AppLogger.error("│ message: ${exception.message}")
         AppLogger.error("│ cause: ${exception.cause?.message}")
         AppLogger.error("└───────── ViewModel error ─────────")
-        // send error
+
+        errorProvider.display(
+            title = exception.message.toString(),
+            description = exception.stackTraceToString()
+        )
     }
 
     protected fun update(updateFunc: (STATE) -> STATE) {

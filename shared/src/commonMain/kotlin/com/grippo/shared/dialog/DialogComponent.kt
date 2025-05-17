@@ -12,7 +12,11 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
 import com.grippo.dialog.api.DialogConfig
+import com.grippo.error.display.ErrorDisplayComponent
 import com.grippo.height.picker.HeightPickerComponent
+import com.grippo.shared.dialog.DialogComponent.Dialog.ErrorDisplay
+import com.grippo.shared.dialog.DialogComponent.Dialog.HeightPicker
+import com.grippo.shared.dialog.DialogComponent.Dialog.WeightPicker
 import com.grippo.weight.picker.WeightPickerComponent
 
 internal class DialogComponent(
@@ -22,6 +26,7 @@ internal class DialogComponent(
     internal sealed class Dialog(open val component: BaseComponent<*>) {
         data class WeightPicker(override val component: WeightPickerComponent) : Dialog(component)
         data class HeightPicker(override val component: HeightPickerComponent) : Dialog(component)
+        data class ErrorDisplay(override val component: ErrorDisplayComponent) : Dialog(component)
     }
 
     override val viewModel = componentContext.retainedInstance {
@@ -47,7 +52,7 @@ internal class DialogComponent(
 
     private fun createChild(router: DialogConfig, context: ComponentContext): Dialog {
         return when (router) {
-            is DialogConfig.WeightPicker -> Dialog.WeightPicker(
+            is DialogConfig.WeightPicker -> WeightPicker(
                 WeightPickerComponent(
                     componentContext = context,
                     initial = router.initial,
@@ -58,13 +63,25 @@ internal class DialogComponent(
                 )
             )
 
-            is DialogConfig.HeightPicker -> Dialog.HeightPicker(
+            is DialogConfig.HeightPicker -> HeightPicker(
                 HeightPickerComponent(
                     componentContext = context,
                     initial = router.initial,
                     onResult = {
                         viewModel.dismiss()
                         router.onResult.invoke(it)
+                    }
+                )
+            )
+
+            is DialogConfig.ErrorDisplay -> ErrorDisplay(
+                ErrorDisplayComponent(
+                    componentContext = context,
+                    title = router.title,
+                    description = router.description,
+                    onResult = {
+                        viewModel.dismiss()
+                        router.onResult.invoke()
                     }
                 )
             )

@@ -14,6 +14,7 @@ apply(from = "$rootDir/gradle/common/ios.gradle")
 kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.common.logger)
+        implementation(projects.common.error.errorProvider)
 
         api(libs.decompose.core)
         api(libs.decompose.extensions)

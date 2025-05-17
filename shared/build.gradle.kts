@@ -20,6 +20,7 @@ kotlin {
 
         implementation(projects.common.platformCore)
         implementation(projects.common.core)
+        implementation(projects.common.error.errorProviderImpl)
 
         implementation(projects.dataServices.database)
         implementation(projects.dataServices.network)
@@ -39,6 +40,7 @@ kotlin {
         implementation(projects.dialogFeatures.dialogApi)
         implementation(projects.dialogFeatures.weightPicker)
         implementation(projects.dialogFeatures.heightPicker)
+        implementation(projects.dialogFeatures.errorDisplay)
 
         implementation(libs.koin.core)
         implementation(libs.immutable.collections)

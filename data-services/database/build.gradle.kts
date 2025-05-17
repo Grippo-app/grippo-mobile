@@ -19,7 +19,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.common.platformCore)
             implementation(projects.common.logger)
-            implementation(projects.common.errors)
+            implementation(projects.common.error.errorProvider)
 
             implementation(libs.androidx.room.runtime)
             implementation(libs.sqlite.bundled)

@@ -131,6 +131,7 @@ public interface AppColor {
         public val default: Color
         public val disabled: Color
         public val accent: Color
+        public val invert: Color
     }
 
     public interface EquipmentColors {
