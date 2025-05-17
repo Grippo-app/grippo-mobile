@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.grippo.authorization.registration.excluded.muscles.internal.MusclesColumn
 import com.grippo.authorization.registration.excluded.muscles.internal.MusclesImage
 import com.grippo.authorization.registration.excluded.muscles.internal.MusclesSkeleton
+import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
@@ -36,7 +37,7 @@ internal fun ExcludedMusclesScreen(
     state: ExcludedMusclesState,
     loaders: ImmutableSet<ExcludedMusclesLoader>,
     contract: ExcludedMusclesContract
-) {
+) = BaseComposeScreen {
     Column(
         modifier = Modifier
             .fillMaxSize()

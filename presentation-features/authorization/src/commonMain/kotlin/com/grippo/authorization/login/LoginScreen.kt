@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
@@ -39,7 +40,7 @@ internal fun LoginScreen(
     state: LoginState,
     loaders: ImmutableSet<LoginLoader>,
     contract: LoginContract
-) {
+) = BaseComposeScreen {
 
     Column(
         modifier = Modifier

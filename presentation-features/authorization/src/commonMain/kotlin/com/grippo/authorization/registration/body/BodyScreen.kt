@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.inputs.InputHeight
@@ -28,7 +29,7 @@ internal fun BodyScreen(
     state: BodyState,
     loaders: ImmutableSet<BodyLoader>,
     contract: BodyContract
-) {
+) = BaseComposeScreen {
     Column(
         modifier = Modifier
             .fillMaxSize()

@@ -9,6 +9,7 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.fade
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.value.Value
+import com.grippo.core.BaseComposeScreen
 import com.grippo.design.core.AppTokens
 import com.grippo.presentation.api.RootRouter
 import com.grippo.shared.root.RootComponent.Child
@@ -20,7 +21,7 @@ public fun RootScreen(
     state: RootState,
     contract: RootContract,
     loaders: ImmutableSet<RootLoader>,
-) {
+): Unit = BaseComposeScreen {
     Children(
         modifier = Modifier
             .background(AppTokens.colors.background.primary)

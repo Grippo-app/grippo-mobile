@@ -7,6 +7,7 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.value.Value
 import com.grippo.authorization.registration.RegistrationComponent.Child
+import com.grippo.core.BaseComposeScreen
 import com.grippo.presentation.api.auth.RegistrationRouter
 import kotlinx.collections.immutable.ImmutableSet
 
@@ -16,7 +17,7 @@ internal fun RegistrationScreen(
     state: RegistrationState,
     loaders: ImmutableSet<RegistrationLoader>,
     contract: RegistrationContract
-) {
+) = BaseComposeScreen {
     Children(
         stack = stack,
         animation = stackAnimation(fade()),

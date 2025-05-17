@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.authorization.registration.missing.equipment.internal.EquipmentRow
 import com.grippo.authorization.registration.missing.equipment.internal.EquipmentsSkeleton
+import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.segment.Segment
@@ -38,7 +39,7 @@ internal fun MissingEquipmentScreen(
     state: MissingEquipmentState,
     loaders: ImmutableSet<MissingEquipmentLoader>,
     contract: MissingEquipmentContract
-) {
+) = BaseComposeScreen {
     Column(
         modifier = Modifier
             .fillMaxSize()

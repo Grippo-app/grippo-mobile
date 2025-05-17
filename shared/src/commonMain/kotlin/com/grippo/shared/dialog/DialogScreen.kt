@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.value.Value
+import com.grippo.core.BaseComposeScreen
 import com.grippo.design.core.AppTokens
 import com.grippo.dialog.api.DialogConfig
 import kotlinx.collections.immutable.ImmutableSet
@@ -24,7 +25,7 @@ internal fun DialogScreen(
     state: DialogState,
     loaders: ImmutableSet<DialogLoader>,
     contract: DialogContract
-) {
+) = BaseComposeScreen {
     val slotState = slot.subscribeAsState()
 
     val component = slotState.value.child?.instance?.component
