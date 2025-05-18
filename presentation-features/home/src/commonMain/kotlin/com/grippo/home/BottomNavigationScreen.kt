@@ -6,13 +6,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.pages.ChildPages
 import com.arkivanov.decompose.extensions.compose.pages.PagesScrollAnimation
 import com.arkivanov.decompose.router.pages.ChildPages
 import com.arkivanov.decompose.value.Value
 import com.grippo.core.BaseComposeScreen
+import com.grippo.design.components.modifiers.ShadowElevation
+import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentWidth
 import com.grippo.design.components.segment.ThumbPosition
@@ -43,6 +47,10 @@ internal fun BottomNavigationScreen(
 
         Segment(
             modifier = Modifier
+                .shadowDefault(
+                    shape = RoundedCornerShape(0.dp),
+                    elevation = ShadowElevation.Container
+                )
                 .background(AppTokens.colors.background.secondary)
                 .navigationBarsPadding()
                 .fillMaxWidth(),
