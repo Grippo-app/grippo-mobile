@@ -28,5 +28,6 @@ public fun RootScreen(
             .systemBarsPadding(),
         stack = stack,
         animation = stackAnimation(fade()),
-    ) { child -> child.instance.component.Render() }
+        content = { child -> child.instance.component.Render() }
+    )
 }

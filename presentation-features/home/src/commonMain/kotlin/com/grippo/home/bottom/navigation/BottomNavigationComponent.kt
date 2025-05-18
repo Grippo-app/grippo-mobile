@@ -2,16 +2,17 @@ package com.grippo.home.bottom.navigation
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.stack.ChildStack
-import com.arkivanov.decompose.router.stack.StackNavigation
-import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.pages.ChildPages
+import com.arkivanov.decompose.router.pages.Pages
+import com.arkivanov.decompose.router.pages.PagesNavigation
+import com.arkivanov.decompose.router.pages.childPages
+import com.arkivanov.decompose.router.pages.select
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
 import com.grippo.home.profile.ProfileComponent
 import com.grippo.home.trainings.TrainingsComponent
-import com.grippo.presentation.api.auth.AuthRouter
 import com.grippo.presentation.api.bottom.navigation.BottomNavigationRouter
 
 internal class BottomNavigationComponent(
@@ -23,27 +24,34 @@ internal class BottomNavigationComponent(
         data class Trainings(override val component: TrainingsComponent) : Child(component)
     }
 
-
     override val viewModel = componentContext.retainedInstance {
         BottomNavigationViewModel()
     }
 
     override suspend fun eventListener(direction: BottomNavigationDirection) {
         when (direction) {
-            BottomNavigationDirection.Profile -> TODO()
-            BottomNavigationDirection.Trainings -> TODO()
+            BottomNavigationDirection.Profile -> navigation.select(0)
+            BottomNavigationDirection.Trainings -> navigation.select(1)
         }
     }
 
-    private val navigation = StackNavigation<AuthRouter>()
+    private val navigation = PagesNavigation<BottomNavigationRouter>()
 
-    internal val childStack: Value<ChildStack<BottomNavigationRouter, Child>> = childStack(
+    internal val childPages: Value<ChildPages<BottomNavigationRouter, Child>> = childPages(
         source = navigation,
         serializer = BottomNavigationRouter.serializer(),
-        initialStack = { listOf(BottomNavigationRouter.Profile) },
-        key = "AuthComponent",
+        initialPages = {
+            Pages<BottomNavigationRouter>(
+                items = listOf(
+                    BottomNavigationRouter.Trainings,
+                    BottomNavigationRouter.Profile,
+                ),
+                selectedIndex = 0
+            )
+        },
+        key = "BottomNavigationComponent",
         handleBackButton = true,
-        childFactory = ::createChild,
+        childFactory = ::createChild
     )
 
     private fun createChild(router: BottomNavigationRouter, context: ComponentContext): Child {
@@ -66,6 +74,6 @@ internal class BottomNavigationComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        BottomNavigationScreen(state.value, loaders.value, viewModel)
+        BottomNavigationScreen(childPages, state.value, loaders.value, viewModel)
     }
 }
