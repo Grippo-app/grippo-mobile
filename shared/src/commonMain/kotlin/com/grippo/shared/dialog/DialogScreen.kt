@@ -28,9 +28,11 @@ internal fun DialogScreen(
 ) = BaseComposeScreen {
     val slotState = slot.subscribeAsState()
 
-    val component = slotState.value.child?.instance?.component
+    val child = slotState.value.child
+    val component = child?.instance?.component
 
     if (component != null) {
+        val config = child.configuration
 
         val modalBottomSheetState = rememberModalBottomSheetState(
             skipPartiallyExpanded = true,
@@ -40,12 +42,12 @@ internal fun DialogScreen(
         LaunchedEffect(state.process) {
             if (state.process == Process.DISMISS) {
                 modalBottomSheetState.hide()
-                contract.release()
+                contract.release(config)
             }
         }
 
         ModalBottomSheet(
-            onDismissRequest = contract::release,
+            onDismissRequest = { contract.release(config) },
             sheetState = modalBottomSheetState,
             scrimColor = AppTokens.colors.dialog.scrim,
             properties = ModalBottomSheetProperties(shouldDismissOnBackPress = true),

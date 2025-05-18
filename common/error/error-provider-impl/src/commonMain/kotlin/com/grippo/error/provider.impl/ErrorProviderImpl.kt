@@ -12,43 +12,43 @@ internal class ErrorProviderImpl(val dialogController: DialogController) : Error
             is AppError.Network.NoInternet -> DialogConfig.ErrorDisplay(
                 title = "No Internet",
                 description = exception.message,
-                onResult = callback
+                onClose = callback
             )
 
             is AppError.Network.Timeout -> DialogConfig.ErrorDisplay(
                 title = "Request Timeout",
                 description = exception.message,
-                onResult = callback
+                onClose = callback
             )
 
             is AppError.Network.ConnectionLost -> DialogConfig.ErrorDisplay(
                 title = "Connection Lost",
                 description = exception.message,
-                onResult = callback
+                onClose = callback
             )
 
             is AppError.Network.Expected -> DialogConfig.ErrorDisplay(
                 title = "Oops",
                 description = exception.message,
-                onResult = callback
+                onClose = callback
             )
 
             is AppError.Network.Unexpected -> DialogConfig.ErrorDisplay(
                 title = "Server Error",
                 description = exception.message,
-                onResult = callback
+                onClose = callback
             )
 
             is AppError.Unknown -> DialogConfig.ErrorDisplay(
                 title = "Unknown Error",
                 description = exception.message,
-                onResult = callback
+                onClose = callback
             )
 
             else -> DialogConfig.ErrorDisplay(
                 title = "Unexpected Error",
                 description = exception.message ?: "Something went wrong.",
-                onResult = callback
+                onClose = callback
             )
         }
 

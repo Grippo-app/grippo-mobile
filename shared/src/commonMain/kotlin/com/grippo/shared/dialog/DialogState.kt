@@ -4,7 +4,8 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 internal data class DialogState(
-    val process: Process = Process.RELEASE
+    val process: Process = Process.RELEASE,
+    val pendingResult: (() -> Unit)? = null
 )
 
 @Immutable

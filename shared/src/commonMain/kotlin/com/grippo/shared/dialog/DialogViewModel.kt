@@ -24,13 +24,15 @@ internal class DialogViewModel :
     }
 
     // Hide bottom-sheet inside of component
-    override fun dismiss() {
-        update { it.copy(process = Process.DISMISS) }
+    override fun dismiss(pendingResult: (() -> Unit)?) {
+        update { it.copy(process = Process.DISMISS, pendingResult = pendingResult) }
     }
 
     // Release dialog component from the graph
-    override fun release() {
-        update { it.copy(process = Process.RELEASE) }
-        navigateTo(DialogDirection.Dismiss)
+    override fun release(config: DialogConfig) {
+        state.value.pendingResult?.invoke()
+        config.onDismiss?.invoke()
+        update { it.copy(process = Process.RELEASE, pendingResult = null) }
+        navigateTo(DialogDirection.Dismiss(config))
     }
 }

@@ -36,7 +36,7 @@ internal class DialogComponent(
     override suspend fun eventListener(direction: DialogDirection) {
         when (direction) {
             is DialogDirection.Activate -> dialog.activate(direction.config)
-            DialogDirection.Dismiss -> dialog.dismiss()
+            is DialogDirection.Dismiss -> dialog.dismiss()
         }
     }
 
@@ -57,8 +57,9 @@ internal class DialogComponent(
                     componentContext = context,
                     initial = router.initial,
                     onResult = {
-                        viewModel.dismiss()
-                        router.onResult.invoke(it)
+                        viewModel.dismiss {
+                            router.onResult.invoke(it)
+                        }
                     }
                 )
             )
@@ -68,8 +69,9 @@ internal class DialogComponent(
                     componentContext = context,
                     initial = router.initial,
                     onResult = {
-                        viewModel.dismiss()
-                        router.onResult.invoke(it)
+                        viewModel.dismiss {
+                            router.onResult.invoke(it)
+                        }
                     }
                 )
             )
@@ -80,8 +82,7 @@ internal class DialogComponent(
                     title = router.title,
                     description = router.description,
                     onResult = {
-                        viewModel.dismiss()
-                        router.onResult.invoke()
+                        viewModel.dismiss(null)
                     }
                 )
             )
