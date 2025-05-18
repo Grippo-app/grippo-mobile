@@ -3,6 +3,7 @@ package com.grippo.shared.dialog
 import com.grippo.core.BaseViewModel
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogProvider
+import com.grippo.logger.AppLogger
 import kotlinx.coroutines.flow.onEach
 import org.koin.core.component.inject
 
@@ -19,6 +20,11 @@ internal class DialogViewModel :
 
     // Show component and bottom-sheet
     private fun show(config: DialogConfig) {
+        if (state.value.process != Process.RELEASE) {
+            AppLogger.warning("🚫 Dialog already active. Skipping: $config")
+            return
+        }
+
         update { it.copy(process = Process.SHOW) }
         navigateTo(DialogDirection.Activate(config))
     }

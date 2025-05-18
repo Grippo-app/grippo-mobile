@@ -10,14 +10,6 @@ public object AppLogger {
         logListener = listener
     }
 
-    public fun debug(msg: String) {
-        onDebug {
-            val category = LogCategory.GENERAL
-            println(category.name + " " + msg)
-            logListener?.invoke(category, msg)
-        }
-    }
-
     public fun error(msg: String) {
         onDebug {
             val category = LogCategory.GENERAL
@@ -26,11 +18,11 @@ public object AppLogger {
         }
     }
 
-    public fun success(msg: String) {
+    public fun warning(msg: String) {
         onDebug {
             val category = LogCategory.GENERAL
-            println(category.name + " " + "🟢 $msg")
-            logListener?.invoke(category, "🟢 $msg")
+            println(category.name + " " + "⚠\uFE0F $msg")
+            logListener?.invoke(category, "⚠\uFE0F $msg")
         }
     }
 
@@ -50,13 +42,13 @@ public object AppLogger {
         }
     }
 
-    public fun <T> checkOrLog(value: T?, lazyMessage: () -> String): T? {
+    public fun <T> checkOrLog(value: T?, msg: () -> String): T? {
         if (value != null) return value
 
         val category = LogCategory.MAPPING
         val location = getCallerLocation()
 
-        val fullMessage = "🧩 [Mapping] ${lazyMessage()} $location"
+        val fullMessage = "${msg()} $location"
         onDebug {
             println(category.name + " " + fullMessage)
             logListener?.invoke(category, fullMessage)

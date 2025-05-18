@@ -20,6 +20,7 @@ kotlin {
 
         implementation(projects.common.platformCore)
         implementation(projects.common.core)
+        implementation(projects.common.logger)
         implementation(projects.common.error.errorProviderImpl)
 
         implementation(projects.dataServices.database)
