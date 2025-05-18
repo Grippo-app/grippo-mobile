@@ -17,17 +17,20 @@ internal class DialogViewModel :
             .safeLaunch()
     }
 
+    // Show component and bottom-sheet
     private fun show(config: DialogConfig) {
         update { it.copy(process = Process.SHOW) }
         navigateTo(DialogDirection.Activate(config))
     }
 
+    // Hide bottom-sheet inside of component
+    override fun dismiss() {
+        update { it.copy(process = Process.DISMISS) }
+    }
+
+    // Release dialog component from the graph
     override fun release() {
         update { it.copy(process = Process.RELEASE) }
         navigateTo(DialogDirection.Dismiss)
-    }
-
-    override fun dismiss() {
-        update { it.copy(process = Process.DISMISS) }
     }
 }

@@ -13,9 +13,7 @@ internal class SplashViewModel(
 
     init {
         safeLaunch(
-            onError = {
-                navigateTo(SplashDirection.AuthProcess)
-            }
+            onError = { navigateTo(SplashDirection.AuthProcess) }
         ) {
             val muscleJob = launch { muscleFeature.getMuscles().getOrThrow() }
             val equipmentJob = launch { equipmentFeature.getPublicEquipments().getOrThrow() }

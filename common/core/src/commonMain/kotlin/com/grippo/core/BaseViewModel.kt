@@ -12,7 +12,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
@@ -38,17 +37,13 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
     public val coroutineScope: CoroutineScope =
         CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
+    private val errorProvider by inject<ErrorProvider>()
+
     private val _state: MutableStateFlow<STATE> = MutableStateFlow(state)
     public val state: StateFlow<STATE> = _state.asStateFlow()
 
     private val _navigator = Channel<DIRECTION>(Channel.CONFLATED)
     public val navigator: Flow<DIRECTION> = _navigator.receiveAsFlow()
-
-    protected fun navigateTo(destination: DIRECTION) {
-        coroutineScope.launch { _navigator.send(destination) }
-    }
-
-    private val errorProvider by inject<ErrorProvider>()
 
     private val _loaders = MutableStateFlow<ImmutableSet<LOADER>>(persistentSetOf())
     public val loaders: StateFlow<ImmutableSet<LOADER>> = _loaders.asStateFlow()
@@ -57,36 +52,12 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
         _state.update { currentState -> updateFunc.invoke(currentState) }
     }
 
-//    protected fun safeLaunch(
-//        dispatcher: CoroutineDispatcher = Dispatchers.IO,
-//        loader: LOADER? = null,
-//        onError: (() -> Unit) = {},
-//        block: suspend CoroutineScope.() -> Unit,
-//    ): Job {
-//        if (loader != null) {
-//            _loaders.update { it.toMutableSet().apply { add(loader) }.toPersistentSet() }
-//        }
-//
-//        val handler = buildExceptionHandler(onError)
-//
-//        return coroutineScope.launch(dispatcher + handler) {
-//            runCatching {
-//                block.invoke(this)
-//            }.onFailure { exception ->
-//                sendError(
-//                    exception = exception,
-//                    onError = onError,
-//                )
-//            }.also {
-//                if (loader != null) {
-//                    _loaders.update { it.toMutableSet().apply { remove(loader) }.toPersistentSet() }
-//                }
-//            }
-//        }
-//    }
+    protected fun navigateTo(destination: DIRECTION) {
+        coroutineScope.launch { _navigator.send(destination) }
+    }
 
     protected fun safeLaunch(
-        dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        dispatcher: CoroutineDispatcher = Dispatchers.Default,
         loader: LOADER? = null,
         onError: (() -> Unit) = {},
         block: suspend CoroutineScope.() -> Unit,
@@ -95,7 +66,9 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
             _loaders.update { it.toMutableSet().apply { add(loader) }.toPersistentSet() }
         }
 
-        val handler = buildExceptionHandler(onError)
+        val handler = CoroutineExceptionHandler { _, throwable ->
+            sendError(throwable, onError)
+        }
 
         coroutineScope.launch(dispatcher + handler) {
             block.invoke(this)
@@ -107,7 +80,7 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
     }
 
     protected fun <T> Flow<T>.safeLaunch(
-        dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        dispatcher: CoroutineDispatcher = Dispatchers.Default,
         loader: LOADER? = null,
         onError: (() -> Unit) = {},
     ) {
@@ -127,12 +100,6 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
         ).launchIn(
             scope = coroutineScope
         )
-    }
-
-    private fun buildExceptionHandler(onError: (() -> Unit)): CoroutineExceptionHandler {
-        return CoroutineExceptionHandler { _, throwable ->
-            sendError(throwable, onError)
-        }
     }
 
     private fun sendError(exception: Throwable, onError: (() -> Unit)) {
