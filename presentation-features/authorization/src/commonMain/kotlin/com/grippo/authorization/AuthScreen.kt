@@ -1,6 +1,8 @@
 package com.grippo.authorization
 
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.stack.animation.fade
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
@@ -19,6 +21,7 @@ internal fun AuthScreen(
     contract: AuthContract
 ) = BaseComposeScreen {
     Children(
+        modifier = Modifier.systemBarsPadding(),
         stack = stack,
         animation = stackAnimation(fade()),
         content = { child -> child.instance.component.Render() }

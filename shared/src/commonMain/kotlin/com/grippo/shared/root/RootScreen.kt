@@ -1,7 +1,6 @@
 package com.grippo.shared.root
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.stack.Children
@@ -23,9 +22,7 @@ public fun RootScreen(
     loaders: ImmutableSet<RootLoader>,
 ): Unit = BaseComposeScreen {
     Children(
-        modifier = Modifier
-            .background(AppTokens.colors.background.primary)
-            .systemBarsPadding(),
+        modifier = Modifier.background(AppTokens.colors.background.primary),
         stack = stack,
         animation = stackAnimation(fade()),
         content = { child -> child.instance.component.Render() }

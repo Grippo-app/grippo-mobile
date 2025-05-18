@@ -4,5 +4,10 @@ import com.grippo.core.BaseViewModel
 
 public class BottomNavigationViewModel :
     BaseViewModel<BottomNavigationState, BottomNavigationDirection, BottomNavigationLoader>(
-        BottomNavigationState
-    ), BottomNavigationContract
+        BottomNavigationState()
+    ), BottomNavigationContract {
+
+    override fun selectPage(index: Int) {
+        update { it.copy(selectedIndex = index) }
+    }
+}
