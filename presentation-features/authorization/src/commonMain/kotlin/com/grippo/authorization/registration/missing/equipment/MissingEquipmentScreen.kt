@@ -26,6 +26,8 @@ import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.segment.Segment
+import com.grippo.design.components.segment.SegmentWidth
+import com.grippo.design.components.segment.ThumbPosition
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.continue_btn
@@ -96,7 +98,9 @@ internal fun MissingEquipmentScreen(
                                 .fillMaxWidth(),
                             items = segmentItems,
                             selected = state.selectedGroupId,
-                            onSelect = contract::selectGroup
+                            onSelect = contract::selectGroup,
+                            segmentWidth = SegmentWidth.Unspecified,
+                            thumbPosition = ThumbPosition.Bottom
                         )
 
                         Spacer(modifier = Modifier.size(10.dp))

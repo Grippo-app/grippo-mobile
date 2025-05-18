@@ -92,7 +92,6 @@ public fun SegmentedFrame(
                 0
             }
 
-            // Измеряем фон для выбранной кнопки.
             val selectedBackgroundMeasurable =
                 measurables.first { it.layoutId == SelectedBackgroundId }
             val selectedBackgroundPlaceable = if (selectedButtonIndex >= 0) {
@@ -103,7 +102,6 @@ public fun SegmentedFrame(
                 null
             }
 
-            // Располагаем фон и кнопки.
             layout(totalWidth, maxHeight) {
                 selectedBackgroundPlaceable?.placeRelative(x = selectedButtonX, y = 0)
 

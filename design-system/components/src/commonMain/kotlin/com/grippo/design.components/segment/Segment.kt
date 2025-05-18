@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,20 +24,42 @@ import com.grippo.segment.control.SegmentSizing
 import com.grippo.segment.control.SegmentedFrame
 import kotlinx.collections.immutable.ImmutableList
 
+@Immutable
+public enum class SegmentWidth {
+    Unspecified,
+    EqualFill,
+}
+
+@Immutable
+public enum class ThumbPosition {
+    Bottom,
+    Top,
+}
+
 @Composable
 public fun <KEY> Segment(
     modifier: Modifier = Modifier,
     items: ImmutableList<Pair<KEY, String>>,
     selected: KEY?,
-    onSelect: (KEY) -> Unit
+    onSelect: (KEY) -> Unit,
+    segmentWidth: SegmentWidth = SegmentWidth.Unspecified,
+    thumbPosition: ThumbPosition = ThumbPosition.Bottom,
 ) {
     SegmentedFrame(
         modifier = modifier,
-        segmentSizing = SegmentSizing.Unspecified,
+        segmentSizing = when (segmentWidth) {
+            SegmentWidth.Unspecified -> SegmentSizing.Unspecified
+            SegmentWidth.EqualFill -> SegmentSizing.EqualFill
+        },
         thumb = {
             HorizontalDivider(
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
+                    .align(
+                        when (thumbPosition) {
+                            ThumbPosition.Bottom -> Alignment.BottomCenter
+                            ThumbPosition.Top -> Alignment.TopCenter
+                        }
+                    )
                     .fillMaxWidth(),
                 color = AppTokens.colors.divider.accent,
                 thickness = 2.dp,

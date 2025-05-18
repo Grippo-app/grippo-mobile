@@ -2,7 +2,7 @@ package com.grippo.authorization.registration
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.extensions.compose.stack.Children
-import com.arkivanov.decompose.extensions.compose.stack.animation.fade
+import com.arkivanov.decompose.extensions.compose.stack.animation.slide
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.value.Value
@@ -20,7 +20,7 @@ internal fun RegistrationScreen(
 ) = BaseComposeScreen {
     Children(
         stack = stack,
-        animation = stackAnimation(fade()),
+        animation = stackAnimation(slide()),
         content = { child -> child.instance.component.Render() }
     )
 }
