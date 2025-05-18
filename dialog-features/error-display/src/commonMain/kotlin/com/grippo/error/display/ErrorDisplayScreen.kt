@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -18,7 +20,8 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
-import com.grippo.design.resources.continue_btn
+import com.grippo.design.resources.got_it_btn
+import com.grippo.design.resources.icons.AlertTriangle
 import kotlinx.collections.immutable.ImmutableSet
 
 @Composable
@@ -34,7 +37,18 @@ internal fun ErrorDisplayScreen(
                 horizontal = AppTokens.dp.paddings.screenHorizontal,
                 vertical = AppTokens.dp.paddings.screenVertical
             ),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        Icon(
+            modifier = Modifier.size(AppTokens.dp.icon.large),
+            imageVector = AppTokens.icons.AlertTriangle,
+            tint = AppTokens.colors.semantic.error,
+            contentDescription = null
+        )
+
+        Spacer(modifier = Modifier.size(20.dp))
+
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = state.title,
@@ -60,7 +74,7 @@ internal fun ErrorDisplayScreen(
 
         Button(
             modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.continue_btn),
+            text = AppTokens.strings.res(Res.string.got_it_btn),
             style = ButtonStyle.Primary,
             onClick = contract::next
         )
