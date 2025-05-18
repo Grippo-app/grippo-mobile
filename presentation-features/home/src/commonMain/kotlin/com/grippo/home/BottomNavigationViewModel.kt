@@ -1,8 +1,8 @@
-package com.grippo.home.bottom.navigation
+package com.grippo.home
 
 import com.grippo.core.BaseViewModel
 
-internal class BottomNavigationViewModel :
+public class BottomNavigationViewModel :
     BaseViewModel<BottomNavigationState, BottomNavigationDirection, BottomNavigationLoader>(
         BottomNavigationState
     ), BottomNavigationContract

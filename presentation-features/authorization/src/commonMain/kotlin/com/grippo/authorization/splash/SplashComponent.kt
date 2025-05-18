@@ -8,19 +8,22 @@ import com.grippo.core.collectAsStateMultiplatform
 
 internal class SplashComponent(
     componentContext: ComponentContext,
-    private val toAuthProcess: () -> Unit
+    private val toAuthProcess: () -> Unit,
+    private val toHome: () -> Unit
 ) : BaseComponent<SplashDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
         SplashViewModel(
             equipmentFeature = getKoin().get(),
-            muscleFeature = getKoin().get()
+            muscleFeature = getKoin().get(),
+            authorizationFeature = getKoin().get()
         )
     }
 
     override suspend fun eventListener(direction: SplashDirection) {
         when (direction) {
             SplashDirection.AuthProcess -> toAuthProcess.invoke()
+            SplashDirection.Home -> toHome.invoke()
         }
     }
 

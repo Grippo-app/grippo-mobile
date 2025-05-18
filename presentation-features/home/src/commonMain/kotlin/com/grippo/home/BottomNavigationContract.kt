@@ -1,4 +1,4 @@
-package com.grippo.home.bottom.navigation
+package com.grippo.home
 
 internal interface BottomNavigationContract {
 

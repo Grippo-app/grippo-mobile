@@ -18,6 +18,7 @@ import com.grippo.presentation.api.auth.AuthRouter
 
 public class AuthComponent(
     componentContext: ComponentContext,
+    private val toHome: () -> Unit
 ) : BaseComponent<AuthDirection>(componentContext) {
 
     internal sealed class Child(open val component: BaseComponent<*>) {
@@ -51,14 +52,15 @@ public class AuthComponent(
             AuthRouter.Splash -> Splash(
                 SplashComponent(
                     componentContext = context,
-                    toAuthProcess = { navigation.push(AuthRouter.AuthProcess) }
+                    toAuthProcess = { navigation.push(AuthRouter.AuthProcess) },
+                    toHome = toHome
                 ),
             )
 
             is AuthRouter.AuthProcess -> AuthProcess(
                 AuthProcessComponent(
                     componentContext = context,
-                    toHome = {}
+                    toHome = toHome
                 ),
             )
         }

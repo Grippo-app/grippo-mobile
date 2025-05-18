@@ -1,4 +1,4 @@
-package com.grippo.home.bottom.navigation
+package com.grippo.home
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
@@ -15,7 +15,7 @@ import com.grippo.home.profile.ProfileComponent
 import com.grippo.home.trainings.TrainingsComponent
 import com.grippo.presentation.api.bottom.navigation.BottomNavigationRouter
 
-internal class BottomNavigationComponent(
+public class BottomNavigationComponent(
     componentContext: ComponentContext,
 ) : BaseComponent<BottomNavigationDirection>(componentContext) {
 
@@ -24,7 +24,7 @@ internal class BottomNavigationComponent(
         data class Trainings(override val component: TrainingsComponent) : Child(component)
     }
 
-    override val viewModel = componentContext.retainedInstance {
+    override val viewModel: BottomNavigationViewModel = componentContext.retainedInstance {
         BottomNavigationViewModel()
     }
 

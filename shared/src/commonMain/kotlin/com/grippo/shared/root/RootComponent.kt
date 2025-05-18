@@ -5,14 +5,18 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.authorization.AuthComponent
 import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
 import com.grippo.design.core.AppTheme
+import com.grippo.home.BottomNavigationComponent
 import com.grippo.presentation.api.RootRouter
 import com.grippo.shared.dialog.DialogComponent
+import com.grippo.shared.root.RootComponent.Child.Authorization
+import com.grippo.shared.root.RootComponent.Child.Home
 
 public class RootComponent(
     componentContext: ComponentContext,
@@ -22,6 +26,7 @@ public class RootComponent(
 
     public sealed class Child(public open val component: BaseComponent<*>) {
         public data class Authorization(override val component: AuthComponent) : Child(component)
+        public data class Home(override val component: BottomNavigationComponent) : Child(component)
     }
 
     override val viewModel: RootViewModel = componentContext.retainedInstance {
@@ -42,10 +47,17 @@ public class RootComponent(
 
     private fun createChild(router: RootRouter, context: ComponentContext): Child {
         return when (router) {
-            RootRouter.Auth -> Child.Authorization(
+            RootRouter.Auth -> Authorization(
                 AuthComponent(
                     componentContext = context,
+                    toHome = { navigation.replaceAll(RootRouter.Home) }
                 ),
+            )
+
+            RootRouter.Home -> Home(
+                BottomNavigationComponent(
+                    componentContext = context,
+                )
             )
         }
     }
