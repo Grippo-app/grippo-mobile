@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 public data class RefreshBody(
     @SerialName("refreshToken")
-    val refreshToken: String? = null,
+    val refreshToken: String,
 )

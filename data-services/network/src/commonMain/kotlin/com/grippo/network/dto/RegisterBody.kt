@@ -6,19 +6,19 @@ import kotlinx.serialization.Serializable
 @Serializable
 public data class RegisterBody(
     @SerialName("email")
-    val email: String? = null,
+    val email: String,
     @SerialName("password")
-    val password: String? = null,
+    val password: String,
     @SerialName("name")
-    val name: String? = null,
+    val name: String,
     @SerialName("weight")
-    val weight: Float? = null,
+    val weight: Float,
     @SerialName("experience")
-    val experience: String? = null,
+    val experience: String,
     @SerialName("height")
-    val height: Int? = null,
+    val height: Int,
     @SerialName("excludeMuscleIds")
-    val excludeMuscleIds: List<String>? = null,
+    val excludeMuscleIds: List<String>,
     @SerialName("excludeEquipmentIds")
-    val excludeEquipmentIds: List<String>? = null
+    val excludeEquipmentIds: List<String>
 )

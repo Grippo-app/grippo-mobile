@@ -10,4 +10,5 @@ internal fun TrainingsScreen(
     loaders: ImmutableSet<TrainingsLoader>,
     contract: TrainingsContract
 ) = BaseComposeScreen {
+
 }

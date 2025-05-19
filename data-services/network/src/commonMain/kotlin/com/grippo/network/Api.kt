@@ -9,6 +9,7 @@ import com.grippo.network.dto.MuscleResponse
 import com.grippo.network.dto.RefreshBody
 import com.grippo.network.dto.RegisterBody
 import com.grippo.network.dto.TokenResponse
+import com.grippo.network.dto.TrainingResponse
 import com.grippo.network.dto.UserResponse
 import com.grippo.network.dto.WeightHistoryResponse
 import io.ktor.client.call.body
@@ -146,34 +147,35 @@ public class Api(private val client: NetworkClient) {
     }
 
     /* * * * * * * * * * * * * * * * *
-     *
+     * Trainings
      * * * * * * * * * * * * * * * * */
 
-//    public suspend fun getTrainings(startDate: String, endDate: String): Result<List<TrainingDto>> {
-//        return request(
-//            method = HttpMethod.Get,
-//            path = "/trainings",
-//            queryParams = mapOf(
-//                "start" to startDate, "end" to endDate
-//            )
-//        )
-//    }
-//
-//    public suspend fun setTraining(body: TrainingDto): Result<TrainingDto> {
-//        return request(
-//            method = HttpMethod.Post,
-//            path = "/trainings",
-//            body = body
-//        )
-//    }
-//
-//    public suspend fun getTraining(trainingId: String): Result<TrainingDto> {
-//        return request(
-//            method = HttpMethod.Get,
-//            path = "/trainings/$trainingId"
-//        )
-//    }
-//
+    public suspend fun getTrainings(
+        startDate: String,
+        endDate: String
+    ): Result<List<TrainingResponse>> {
+        return request(
+            method = HttpMethod.Get,
+            path = "/trainings",
+            queryParams = mapOf("start" to startDate, "end" to endDate)
+        )
+    }
+
+    public suspend fun setTraining(body: TrainingResponse): Result<TrainingResponse> {
+        return request(
+            method = HttpMethod.Post,
+            path = "/trainings",
+            body = body
+        )
+    }
+
+    public suspend fun getTraining(trainingId: String): Result<TrainingResponse> {
+        return request(
+            method = HttpMethod.Get,
+            path = "/trainings/$trainingId"
+        )
+    }
+
 //    public suspend fun getExerciseExamples(
 //        page: Int,
 //        size: Int,

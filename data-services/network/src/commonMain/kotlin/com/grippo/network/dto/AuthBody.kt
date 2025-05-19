@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 public data class AuthBody(
     @SerialName("email")
-    val email: String? = null,
+    val email: String,
     @SerialName("password")
-    val password: String? = null
+    val password: String
 )

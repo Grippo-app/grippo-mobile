@@ -3,17 +3,17 @@ package com.grippo.network.mapper
 import com.grippo.database.entity.ExerciseEntity
 import com.grippo.database.entity.IterationEntity
 import com.grippo.logger.AppLogger
-import com.grippo.network.dto.ExerciseDto
+import com.grippo.network.dto.ExerciseResponse
 
-public fun ExerciseDto.toIterations(): List<IterationEntity> {
+public fun ExerciseResponse.toIterations(): List<IterationEntity> {
     return iterations.mapNotNull { it.toEntityOrNull() }
 }
 
-public fun List<ExerciseDto>.toEntities(): List<ExerciseEntity> {
+public fun List<ExerciseResponse>.toEntities(): List<ExerciseEntity> {
     return mapNotNull { it.toEntityOrNull() }
 }
 
-public fun ExerciseDto.toEntityOrNull(): ExerciseEntity? {
+public fun ExerciseResponse.toEntityOrNull(): ExerciseEntity? {
     val entityId = AppLogger.checkOrLog(id) {
         "ExerciseDto.id is null"
     } ?: return null

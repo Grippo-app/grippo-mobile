@@ -2,13 +2,13 @@ package com.grippo.network.mapper
 
 import com.grippo.database.entity.IterationEntity
 import com.grippo.logger.AppLogger
-import com.grippo.network.dto.IterationDto
+import com.grippo.network.dto.IterationResponse
 
-public fun List<IterationDto>.toEntities(): List<IterationEntity> {
+public fun List<IterationResponse>.toEntities(): List<IterationEntity> {
     return mapNotNull { it.toEntityOrNull() }
 }
 
-public fun IterationDto.toEntityOrNull(): IterationEntity? {
+public fun IterationResponse.toEntityOrNull(): IterationEntity? {
     val entityId = AppLogger.checkOrLog(id) {
         "IterationDto.id is null"
     } ?: return null
