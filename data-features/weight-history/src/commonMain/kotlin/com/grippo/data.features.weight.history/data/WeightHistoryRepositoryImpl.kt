@@ -45,8 +45,8 @@ internal class WeightHistoryRepositoryImpl(
         return response.map { }
     }
 
-    override suspend fun removeWeight(id: String): Result<Unit> {
-        val response = api.removeWeight(id)
+    override suspend fun deleteWeight(id: String): Result<Unit> {
+        val response = api.deleteWeight(id)
 
         response.onSuccess {
             val list = api.getWeightHistory().getOrNull() ?: return@onSuccess

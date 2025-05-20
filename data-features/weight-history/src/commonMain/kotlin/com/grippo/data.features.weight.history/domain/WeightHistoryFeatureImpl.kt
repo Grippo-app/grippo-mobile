@@ -24,7 +24,7 @@ internal class WeightHistoryFeatureImpl(
         return repository.updateWeight(value)
     }
 
-    override suspend fun removeWeight(id: String): Result<Unit> {
-        return repository.removeWeight(id)
+    override suspend fun deleteWeight(id: String): Result<Unit> {
+        return repository.deleteWeight(id)
     }
 }

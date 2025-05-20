@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "training")
 public data class TrainingEntity(
     @PrimaryKey val id: String,
-    val duration: Int,
+    val duration: Long,
     val createdAt: String,
     val volume: Float,
     val repetitions: Int,

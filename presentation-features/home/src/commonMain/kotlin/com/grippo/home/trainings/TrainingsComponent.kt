@@ -11,7 +11,9 @@ internal class TrainingsComponent(
 ) : BaseComponent<TrainingsDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        TrainingsViewModel()
+        TrainingsViewModel(
+            trainingFeature = getKoin().get()
+        )
     }
 
     override suspend fun eventListener(direction: TrainingsDirection) {

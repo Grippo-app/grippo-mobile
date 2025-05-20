@@ -9,9 +9,23 @@ import com.grippo.database.entity.ExerciseEntity
 import com.grippo.database.entity.IterationEntity
 import com.grippo.database.entity.TrainingEntity
 import com.grippo.database.models.TrainingFull
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 public interface TrainingDao {
+
+    @Transaction
+    public suspend fun insertOrUpdateTrainingFull(trainingFull: TrainingFull) {
+        insertOrUpdateTraining(trainingFull.training)
+
+        for (exerciseFull in trainingFull.exercises) {
+            insertOrUpdateExercise(exerciseFull.exercise)
+
+            for (iteration in exerciseFull.iterations) {
+                insertOrUpdateIteration(iteration)
+            }
+        }
+    }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public suspend fun insertOrUpdateTraining(training: TrainingEntity)
@@ -30,7 +44,7 @@ public interface TrainingDao {
         ORDER BY id DESC
         """
     )
-    public suspend fun getTrainings(from: String, to: String): List<TrainingFull>
+    public suspend fun getTrainings(from: String, to: String): Flow<List<TrainingFull>>
 
     @Transaction
     @Query(
@@ -40,18 +54,7 @@ public interface TrainingDao {
         LIMIT 1
         """
     )
-    public suspend fun getTrainingById(id: String): TrainingFull?
-
-    @Transaction
-    @Query(
-        """
-        SELECT * FROM training
-        WHERE createdAt = (SELECT MAX(createdAt) FROM Training)
-        ORDER BY createdAt DESC
-        LIMIT 1
-        """
-    )
-    public suspend fun getLastTraining(): TrainingFull?
+    public fun getTrainingById(id: String): Flow<TrainingFull?>
 
     @Query("DELETE FROM training")
     public suspend fun deleteTableTraining()

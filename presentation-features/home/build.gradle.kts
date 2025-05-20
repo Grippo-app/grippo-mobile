@@ -26,5 +26,6 @@ kotlin {
         implementation(compose.animation)
 
         implementation(libs.immutable.collections)
+        implementation(libs.datetime)
     }
 }

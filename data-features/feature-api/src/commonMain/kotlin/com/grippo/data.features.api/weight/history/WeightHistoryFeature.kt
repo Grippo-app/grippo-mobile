@@ -9,5 +9,5 @@ public interface WeightHistoryFeature {
 
     public suspend fun getWeightHistory(): Result<Unit>
     public suspend fun updateWeight(value: Float): Result<Unit>
-    public suspend fun removeWeight(id: String): Result<Unit>
+    public suspend fun deleteWeight(id: String): Result<Unit>
 }

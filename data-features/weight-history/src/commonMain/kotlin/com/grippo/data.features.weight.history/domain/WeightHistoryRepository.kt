@@ -9,5 +9,5 @@ internal interface WeightHistoryRepository {
 
     suspend fun getWeightHistory(): Result<Unit>
     suspend fun updateWeight(value: Float): Result<Unit>
-    suspend fun removeWeight(id: String): Result<Unit>
+    suspend fun deleteWeight(id: String): Result<Unit>
 }

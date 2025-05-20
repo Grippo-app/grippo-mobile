@@ -132,7 +132,7 @@ public class Api(private val client: NetworkClient) {
         )
     }
 
-    public suspend fun removeWeight(id: String): Result<Unit> {
+    public suspend fun deleteWeight(id: String): Result<Unit> {
         return request(
             method = HttpMethod.Delete,
             path = "/weight-history/${id}",

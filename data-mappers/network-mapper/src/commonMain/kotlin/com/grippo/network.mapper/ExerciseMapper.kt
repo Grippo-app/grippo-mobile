@@ -1,13 +1,8 @@
 package com.grippo.network.mapper
 
 import com.grippo.database.entity.ExerciseEntity
-import com.grippo.database.entity.IterationEntity
 import com.grippo.logger.AppLogger
 import com.grippo.network.dto.ExerciseResponse
-
-public fun ExerciseResponse.toIterations(): List<IterationEntity> {
-    return iterations.mapNotNull { it.toEntityOrNull() }
-}
 
 public fun List<ExerciseResponse>.toEntities(): List<ExerciseEntity> {
     return mapNotNull { it.toEntityOrNull() }
