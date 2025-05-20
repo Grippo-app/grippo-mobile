@@ -2,10 +2,14 @@ package com.grippo.database.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "muscle",
+    indices = [
+        Index(value = ["muscleGroupId"])
+    ],
     foreignKeys = [
         ForeignKey(
             entity = MuscleGroupEntity::class,

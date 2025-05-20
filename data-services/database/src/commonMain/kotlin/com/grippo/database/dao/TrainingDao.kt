@@ -44,7 +44,7 @@ public interface TrainingDao {
         ORDER BY id DESC
         """
     )
-    public suspend fun getTrainings(from: String, to: String): Flow<List<TrainingFull>>
+    public fun getTrainings(from: String, to: String): Flow<List<TrainingFull>>
 
     @Transaction
     @Query(

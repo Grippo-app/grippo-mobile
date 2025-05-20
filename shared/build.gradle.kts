@@ -34,6 +34,7 @@ kotlin {
         implementation(projects.dataFeatures.equipment)
         implementation(projects.dataFeatures.excludedMuscles)
         implementation(projects.dataFeatures.excludedEquipments)
+        implementation(projects.dataFeatures.trainings)
 
         implementation(projects.presentationFeatures.presentationApi)
         implementation(projects.presentationFeatures.authorization)

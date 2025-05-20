@@ -14,8 +14,10 @@ kotlin {
         implementation(projects.dataMappers.domainMapper)
         implementation(projects.dataMappers.databaseMapper)
         implementation(projects.dataMappers.networkMapper)
+        implementation(projects.common.dateUtils)
 
         implementation(libs.koin.core)
         implementation(libs.kotlinx.coroutines.core)
+        implementation(libs.datetime)
     }
 }
