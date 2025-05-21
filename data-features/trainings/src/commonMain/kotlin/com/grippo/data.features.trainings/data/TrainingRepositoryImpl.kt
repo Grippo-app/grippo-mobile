@@ -17,9 +17,9 @@ internal class TrainingRepositoryImpl(
 ) : TrainingRepository {
 
     override fun observeTraining(id: String): Flow<Training?> {
-        TODO("Not yet implemented")
+        return trainingDao.getTrainingById(id)
+            .map { it?.toDomain() }
     }
-
 
     override fun observeTrainings(
         start: LocalDateTime,
