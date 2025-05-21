@@ -5,10 +5,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDateTime
 
 internal interface TrainingRepository {
-    fun observeTrainings(startDate: LocalDateTime, endDate: LocalDateTime): Flow<List<Training>>
+    fun observeTrainings(start: LocalDateTime, end: LocalDateTime): Flow<List<Training>>
     fun observeTraining(id: String): Flow<Training?>
 
-    suspend fun getTrainings(start: LocalDateTime, endDate: LocalDateTime): Result<Unit>
+    suspend fun getTrainings(start: LocalDateTime, end: LocalDateTime): Result<Unit>
     suspend fun setTraining(training: Training): Result<String?>
     suspend fun deleteTraining(id: String): Result<Unit>
 }

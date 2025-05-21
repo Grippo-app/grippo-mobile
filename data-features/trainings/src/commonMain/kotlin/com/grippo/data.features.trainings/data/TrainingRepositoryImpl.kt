@@ -3,10 +3,12 @@ package com.grippo.data.features.trainings.data
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.data.features.trainings.domain.TrainingRepository
 import com.grippo.database.dao.TrainingDao
+import com.grippo.database.mapper.toDomain
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.network.Api
 import com.grippo.network.mapper.toTrainingFullList
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDateTime
 
 internal class TrainingRepositoryImpl(
@@ -20,16 +22,19 @@ internal class TrainingRepositoryImpl(
 
 
     override fun observeTrainings(
-        startDate: LocalDateTime,
-        endDate: LocalDateTime
+        start: LocalDateTime,
+        end: LocalDateTime
     ): Flow<List<Training>> {
-        TODO("Not yet implemented")
+        return trainingDao.getTrainings(
+            from = DateTimeUtils.toUtcIso(start),
+            to = DateTimeUtils.toUtcIso(end)
+        ).map { it.toDomain() }
     }
 
-    override suspend fun getTrainings(start: LocalDateTime, endDate: LocalDateTime): Result<Unit> {
+    override suspend fun getTrainings(start: LocalDateTime, end: LocalDateTime): Result<Unit> {
         val response = api.getTrainings(
             startDate = DateTimeUtils.toUtcIso(start),
-            endDate = DateTimeUtils.toUtcIso(endDate),
+            endDate = DateTimeUtils.toUtcIso(end),
         )
 
         response.onSuccess {
