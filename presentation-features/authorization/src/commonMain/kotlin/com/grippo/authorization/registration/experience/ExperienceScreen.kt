@@ -84,7 +84,7 @@ internal fun ExperienceScreen(
                     modifier = Modifier.fillMaxWidth(),
                     onSelect = selectProvider,
                     isSelected = isSelected,
-                    style = SelectableCardStyle.Medium(
+                    style = SelectableCardStyle.Large(
                         title = item.title(),
                         description = item.description(),
                         icon = item.icon()

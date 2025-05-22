@@ -6,6 +6,7 @@ import com.grippo.data.features.api.exercise.example.models.SetExerciseExample
 import kotlinx.coroutines.flow.Flow
 
 public interface ExerciseExampleFeature {
+
     public fun observeExerciseExamples(): Flow<List<ExerciseExample>>
 
     public fun observeExerciseExample(id: String): Flow<ExerciseExample>

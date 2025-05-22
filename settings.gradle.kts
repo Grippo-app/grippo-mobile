@@ -52,6 +52,7 @@ include(":data-features:equipment")
 include(":data-features:excluded-muscles")
 include(":data-features:excluded-equipments")
 include(":data-features:trainings")
+include(":data-features:exercise-examples")
 
 include(":presentation-features:presentation-api")
 include(":presentation-features:authorization")

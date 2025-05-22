@@ -12,6 +12,7 @@ kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.designSystem.resources)
         implementation(projects.designSystem.core)
+        implementation(projects.designSystem.preview)
         implementation(projects.composeLibs.segmentControl)
         implementation(projects.composeLibs.konfetti)
         implementation(projects.presentationFeatures.presentationApi)

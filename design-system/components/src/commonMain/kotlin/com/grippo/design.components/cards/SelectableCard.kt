@@ -1,13 +1,19 @@
 package com.grippo.design.components.cards
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.grippo.design.components.cards.internal.SelectableCardLarge
+import com.grippo.design.components.cards.internal.SelectableCardLargeSkeleton
 import com.grippo.design.components.cards.internal.SelectableCardMedium
 import com.grippo.design.components.cards.internal.SelectableCardMediumSkeleton
 import com.grippo.design.components.cards.internal.SelectableCardSmall
 import com.grippo.design.components.cards.internal.SelectableCardSmallSkeleton
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 
 @Immutable
 public sealed class SelectableCardStyle(
@@ -20,6 +26,13 @@ public sealed class SelectableCardStyle(
 
     @Immutable
     public data class Medium(
+        override val title: String,
+        val description: String,
+        val icon: ImageVector,
+    ) : SelectableCardStyle(title)
+
+    @Immutable
+    public data class Large(
         override val title: String,
         val description: String,
         val icon: ImageVector,
@@ -47,6 +60,13 @@ public fun SelectableCard(
             isSelected = isSelected,
             onClick = onSelect
         )
+
+        is SelectableCardStyle.Large -> SelectableCardLarge(
+            modifier = modifier,
+            style = style,
+            isSelected = isSelected,
+            onClick = onSelect
+        )
     }
 }
 
@@ -60,8 +80,86 @@ public fun SelectableCardSkeleton(
             modifier = modifier,
         )
 
-        is SelectableCardStyle.Medium -> SelectableCardMediumSkeleton(
+        is SelectableCardStyle.Large -> SelectableCardLargeSkeleton(
             modifier = modifier,
+        )
+
+        is SelectableCardStyle.Medium -> SelectableCardMediumSkeleton(
+            modifier = modifier
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun SelectableCardLargePreview() {
+    PreviewContainer {
+        SelectableCard(
+            style = SelectableCardStyle.Large(
+                title = "Test Title",
+                description = "Test Description",
+                icon = Icons.Filled.Done
+            ),
+            isSelected = true,
+            onSelect = {}
+        )
+
+        SelectableCard(
+            style = SelectableCardStyle.Large(
+                title = "Test Title",
+                description = "Test Description",
+                icon = Icons.Filled.Done
+            ),
+            isSelected = false,
+            onSelect = {}
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun SelectableCardMediumPreview() {
+    PreviewContainer {
+        SelectableCard(
+            style = SelectableCardStyle.Medium(
+                title = "Test Title",
+                description = "Test Description",
+                icon = Icons.Filled.Done
+            ),
+            isSelected = true,
+            onSelect = {}
+        )
+
+        SelectableCard(
+            style = SelectableCardStyle.Medium(
+                title = "Test Title",
+                description = "Test Description",
+                icon = Icons.Filled.Done
+            ),
+            isSelected = false,
+            onSelect = {}
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun SelectableCardSmallPreview() {
+    PreviewContainer {
+        SelectableCard(
+            style = SelectableCardStyle.Small(
+                title = "Test Title",
+            ),
+            isSelected = true,
+            onSelect = {}
+        )
+
+        SelectableCard(
+            style = SelectableCardStyle.Small(
+                title = "Test Title",
+            ),
+            isSelected = false,
+            onSelect = {}
         )
     }
 }
