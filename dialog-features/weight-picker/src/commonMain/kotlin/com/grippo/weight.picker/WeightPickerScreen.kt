@@ -18,6 +18,8 @@ import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.submit_btn
 import com.grippo.design.resources.weight_picker_description
@@ -25,6 +27,7 @@ import com.grippo.design.resources.weight_picker_title
 import com.grippo.wheel.picker.DefaultSelectorProperties
 import com.grippo.wheel.picker.WheelPicker
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
 internal fun WeightPickerScreen(
@@ -92,6 +95,20 @@ internal fun WeightPickerScreen(
             text = AppTokens.strings.res(Res.string.submit_btn),
             style = ButtonStyle.Primary,
             onClick = contract::submit
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreview() {
+    PreviewContainer {
+        WeightPickerScreen(
+            state = WeightPickerState(
+                initial = 55.4F
+            ),
+            contract = WeightPickerContract.Empty,
+            loaders = persistentSetOf()
         )
     }
 }

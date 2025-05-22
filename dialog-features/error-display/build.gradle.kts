@@ -13,6 +13,7 @@ kotlin {
         implementation(projects.common.core)
         implementation(projects.designSystem.core)
         implementation(projects.designSystem.resources)
+        implementation(projects.designSystem.preview)
         implementation(projects.designSystem.components)
 
         implementation(compose.foundation)

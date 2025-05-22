@@ -19,10 +19,13 @@ import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.got_it_btn
 import com.grippo.design.resources.icons.AlertTriangle
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
 internal fun ErrorDisplayScreen(
@@ -77,6 +80,21 @@ internal fun ErrorDisplayScreen(
             text = AppTokens.strings.res(Res.string.got_it_btn),
             style = ButtonStyle.Primary,
             onClick = contract::next
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreview() {
+    PreviewContainer {
+        ErrorDisplayScreen(
+            state = ErrorDisplayState(
+                title = "Something went wrong",
+                description = "Try again after few minutes."
+            ),
+            contract = ErrorDisplayContract.Empty,
+            loaders = persistentSetOf()
         )
     }
 }

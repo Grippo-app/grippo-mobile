@@ -18,6 +18,8 @@ import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.height_picker_description
 import com.grippo.design.resources.height_picker_title
@@ -25,6 +27,7 @@ import com.grippo.design.resources.submit_btn
 import com.grippo.wheel.picker.DefaultSelectorProperties
 import com.grippo.wheel.picker.WheelPicker
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
 internal fun HeightPickerScreen(
@@ -91,6 +94,20 @@ internal fun HeightPickerScreen(
             text = AppTokens.strings.res(Res.string.submit_btn),
             style = ButtonStyle.Primary,
             onClick = contract::submit
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreview() {
+    PreviewContainer {
+        HeightPickerScreen(
+            state = HeightPickerState(
+                initial = 155
+            ),
+            contract = HeightPickerContract.Empty,
+            loaders = persistentSetOf()
         )
     }
 }

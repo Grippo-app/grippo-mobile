@@ -14,6 +14,7 @@ kotlin {
         implementation(projects.designSystem.core)
         implementation(projects.designSystem.resources)
         implementation(projects.designSystem.components)
+        implementation(projects.designSystem.preview)
         implementation(projects.composeLibs.wheelPicker)
 
         implementation(compose.foundation)
