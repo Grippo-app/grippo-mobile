@@ -27,6 +27,8 @@ import com.grippo.design.components.internal.Input
 import com.grippo.design.components.internal.InputStyle
 import com.grippo.design.components.internal.PlaceHolder
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.email_placeholder
 import com.grippo.design.resources.icons.X
@@ -84,4 +86,20 @@ public fun InputEmail(
             imeAction = ImeAction.Next,
         )
     )
+}
+
+@AppPreview
+@Composable
+private fun InputEmailPreview() {
+    PreviewContainer {
+        InputEmail(
+            value = "user@mail.com",
+            onValueChange = {}
+        )
+
+        InputEmail(
+            value = "",
+            onValueChange = {}
+        )
+    }
 }

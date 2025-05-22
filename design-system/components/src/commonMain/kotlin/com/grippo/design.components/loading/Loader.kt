@@ -19,6 +19,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.icons.Loader
 import com.grippo.design.resources.loading
@@ -58,5 +60,13 @@ public fun Loader(modifier: Modifier = Modifier) {
             color = AppTokens.colors.text.secondary,
             textAlign = TextAlign.Center
         )
+    }
+}
+
+@AppPreview
+@Composable
+private fun LoaderPreview() {
+    PreviewContainer {
+        Loader()
     }
 }

@@ -32,6 +32,8 @@ import com.grippo.design.components.internal.Input
 import com.grippo.design.components.internal.InputStyle
 import com.grippo.design.components.internal.PlaceHolder
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.icons.Eye
 import com.grippo.design.resources.icons.EyeOff
@@ -119,4 +121,20 @@ public fun InputPassword(
             value = AppTokens.strings.res(Res.string.password_placeholder)
         ),
     )
+}
+
+@AppPreview
+@Composable
+private fun InputPasswordPreview() {
+    PreviewContainer {
+        InputPassword(
+            value = "qwerty123",
+            onValueChange = {}
+        )
+
+        InputPassword(
+            value = "",
+            onValueChange = {}
+        )
+    }
 }

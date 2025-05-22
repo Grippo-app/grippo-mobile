@@ -13,6 +13,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -20,6 +21,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +38,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.icons.Loader
 
 @Immutable
@@ -138,4 +143,53 @@ public fun Button(
             }
         }
     }
+}
+
+@AppPreview
+@Composable
+private fun ButtonPrimaryPreviews() {
+    PreviewContainer {
+        ButtonVariantsWithIcon(ButtonStyle.Primary)
+    }
+}
+
+@AppPreview
+@Composable
+private fun ButtonSecondaryPreviews() {
+    PreviewContainer {
+        ButtonVariantsWithIcon(ButtonStyle.Secondary)
+    }
+}
+
+@AppPreview
+@Composable
+private fun ButtonTransparentPreviews() {
+    PreviewContainer {
+        ButtonVariantsWithIcon(ButtonStyle.Transparent)
+    }
+}
+
+@Composable
+private fun ColumnScope.ButtonVariantsWithIcon(style: ButtonStyle) {
+    Button(
+        text = "Enabled",
+        style = style,
+        state = ButtonState.Enabled,
+        onClick = {},
+        icon = Icons.Default.Check
+    )
+    Button(
+        text = "Loading",
+        style = style,
+        state = ButtonState.Loading,
+        onClick = {},
+        icon = Icons.Default.Check
+    )
+    Button(
+        text = "Disabled",
+        style = style,
+        state = ButtonState.Disabled,
+        onClick = {},
+        icon = Icons.Default.Check
+    )
 }

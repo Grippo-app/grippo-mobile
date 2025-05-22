@@ -1,5 +1,6 @@
 package com.grippo.design.components.cards
 
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
@@ -94,24 +95,12 @@ public fun SelectableCardSkeleton(
 @Composable
 private fun SelectableCardLargePreview() {
     PreviewContainer {
-        SelectableCard(
-            style = SelectableCardStyle.Large(
+        SelectableCardVariants(
+            SelectableCardStyle.Large(
                 title = "Test Title",
                 description = "Test Description",
                 icon = Icons.Filled.Done
-            ),
-            isSelected = true,
-            onSelect = {}
-        )
-
-        SelectableCard(
-            style = SelectableCardStyle.Large(
-                title = "Test Title",
-                description = "Test Description",
-                icon = Icons.Filled.Done
-            ),
-            isSelected = false,
-            onSelect = {}
+            )
         )
     }
 }
@@ -120,24 +109,12 @@ private fun SelectableCardLargePreview() {
 @Composable
 private fun SelectableCardMediumPreview() {
     PreviewContainer {
-        SelectableCard(
-            style = SelectableCardStyle.Medium(
+        SelectableCardVariants(
+            SelectableCardStyle.Medium(
                 title = "Test Title",
                 description = "Test Description",
                 icon = Icons.Filled.Done
-            ),
-            isSelected = true,
-            onSelect = {}
-        )
-
-        SelectableCard(
-            style = SelectableCardStyle.Medium(
-                title = "Test Title",
-                description = "Test Description",
-                icon = Icons.Filled.Done
-            ),
-            isSelected = false,
-            onSelect = {}
+            )
         )
     }
 }
@@ -146,20 +123,24 @@ private fun SelectableCardMediumPreview() {
 @Composable
 private fun SelectableCardSmallPreview() {
     PreviewContainer {
-        SelectableCard(
-            style = SelectableCardStyle.Small(
-                title = "Test Title",
-            ),
-            isSelected = true,
-            onSelect = {}
-        )
-
-        SelectableCard(
-            style = SelectableCardStyle.Small(
-                title = "Test Title",
-            ),
-            isSelected = false,
-            onSelect = {}
+        SelectableCardVariants(
+            SelectableCardStyle.Small(
+                title = "Test Title"
+            )
         )
     }
+}
+
+@Composable
+private fun ColumnScope.SelectableCardVariants(style: SelectableCardStyle) {
+    SelectableCard(
+        style = style,
+        isSelected = true,
+        onSelect = {}
+    )
+    SelectableCard(
+        style = style,
+        isSelected = false,
+        onSelect = {}
+    )
 }

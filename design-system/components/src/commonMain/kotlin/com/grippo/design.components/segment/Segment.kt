@@ -19,10 +19,13 @@ import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.nonRippleClick
 import com.grippo.design.components.modifiers.shimmerAnimation
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.segment.control.SegmentBox
 import com.grippo.segment.control.SegmentSizing
 import com.grippo.segment.control.SegmentedFrame
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 public enum class SegmentWidth {
@@ -115,5 +118,34 @@ public fun SegmentSkeleton(modifier: Modifier = Modifier) {
                     .width(140.dp)
             )
         }
+    }
+}
+
+
+@AppPreview
+@Composable
+private fun SegmentPreview() {
+    PreviewContainer {
+        Segment(
+            modifier = Modifier,
+            items = persistentListOf<Pair<String, String>>(
+                "Profile" to "Profile",
+                "Home" to "Home",
+                "Dashboard" to "Dashboard",
+            ),
+            selected = "Profile",
+            onSelect = {}
+        )
+
+        Segment(
+            modifier = Modifier,
+            items = persistentListOf<Pair<String, String>>(
+                "Profile" to "Profile",
+                "Home" to "Home",
+                "Dashboard" to "Dashboard",
+            ),
+            selected = "Home",
+            onSelect = {}
+        )
     }
 }

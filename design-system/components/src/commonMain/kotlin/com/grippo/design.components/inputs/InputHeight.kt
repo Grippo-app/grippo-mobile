@@ -17,6 +17,8 @@ import com.grippo.design.components.internal.Input
 import com.grippo.design.components.internal.InputStyle
 import com.grippo.design.components.internal.PlaceHolder
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.cm
 import com.grippo.design.resources.height_placeholder
@@ -60,4 +62,20 @@ public fun InputHeight(
             keyboardType = KeyboardType.Number
         )
     )
+}
+
+@AppPreview
+@Composable
+private fun InputHeightPreview() {
+    PreviewContainer {
+        InputHeight(
+            value = 12,
+            onClick = {}
+        )
+
+        InputHeight(
+            value = 123,
+            onClick = {}
+        )
+    }
 }

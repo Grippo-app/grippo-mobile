@@ -16,6 +16,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.nonRippleClick
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 
 @Composable
 public fun Toggle(
@@ -66,3 +68,19 @@ private fun calculateThumbOffset(
     stop: Float,
     fraction: Float
 ): Float = start + (stop - start) * fraction
+
+@AppPreview
+@Composable
+private fun TogglePreview() {
+    PreviewContainer {
+        Toggle(
+            checked = true,
+            onCheckedChange = {}
+        )
+
+        Toggle(
+            checked = false,
+            onCheckedChange = {}
+        )
+    }
+}

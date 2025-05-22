@@ -25,9 +25,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.date.utils.DateCompose
+import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.icons.Award
 import com.grippo.design.resources.icons.Calendar
@@ -39,6 +42,7 @@ import com.grippo.design.resources.user_card_preferences
 import com.grippo.design.resources.user_card_value_in_a_row
 import com.grippo.design.resources.user_card_value_personal_records
 import com.grippo.design.resources.user_card_value_workouts
+import com.grippo.presentation.api.user.models.ExperienceEnumState
 import com.grippo.presentation.api.user.models.UserState
 
 @Composable
@@ -243,6 +247,38 @@ private fun OverviewItem(
             style = AppTokens.typography.b15Bold(),
             color = AppTokens.colors.text.primary,
             textAlign = TextAlign.Center
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun UserCardPreview() {
+    PreviewContainer {
+        UserCard(
+            value = UserState(
+                id = "",
+                name = "Mark Test",
+                height = 180,
+                weight = 80.5F,
+                createdAt = DateTimeUtils.thisDay(),
+                records = 0,
+                workouts = 0,
+                experience = ExperienceEnumState.INTERMEDIATE
+            )
+        )
+
+        UserCard(
+            value = UserState(
+                id = "",
+                name = "Mark Test",
+                height = 180,
+                weight = 80.5F,
+                createdAt = DateTimeUtils.thisDay(),
+                records = 12,
+                workouts = 15,
+                experience = ExperienceEnumState.INTERMEDIATE
+            )
         )
     }
 }

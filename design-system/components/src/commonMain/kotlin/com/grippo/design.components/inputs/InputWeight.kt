@@ -17,6 +17,8 @@ import com.grippo.design.components.internal.Input
 import com.grippo.design.components.internal.InputStyle
 import com.grippo.design.components.internal.PlaceHolder
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.kg
 import com.grippo.design.resources.weight_placeholder
@@ -60,4 +62,20 @@ public fun InputWeight(
             keyboardType = KeyboardType.Number
         )
     )
+}
+
+@AppPreview
+@Composable
+private fun InputWeightPreview() {
+    PreviewContainer {
+        InputWeight(
+            value = 12.5F,
+            onClick = {}
+        )
+
+        InputWeight(
+            value = 123.2F,
+            onClick = {}
+        )
+    }
 }

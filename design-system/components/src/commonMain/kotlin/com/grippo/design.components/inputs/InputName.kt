@@ -26,6 +26,8 @@ import com.grippo.design.components.internal.Input
 import com.grippo.design.components.internal.InputStyle
 import com.grippo.design.components.internal.PlaceHolder
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.icons.X
 import com.grippo.design.resources.name_placeholder
@@ -83,4 +85,20 @@ public fun InputName(
             imeAction = ImeAction.Done,
         )
     )
+}
+
+@AppPreview
+@Composable
+private fun InputNamePreview() {
+    PreviewContainer {
+        InputName(
+            value = "Mark B.",
+            onValueChange = {}
+        )
+
+        InputName(
+            value = "",
+            onValueChange = {}
+        )
+    }
 }
