@@ -1,0 +1,80 @@
+package com.grippo.home.components
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.grippo.design.components.modifiers.ShadowElevation
+import com.grippo.design.components.modifiers.shadowDefault
+import com.grippo.design.components.segment.Segment
+import com.grippo.design.components.segment.SegmentWidth
+import com.grippo.design.components.segment.ThumbPosition
+import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
+import com.grippo.home.BottomBarMenu
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toPersistentList
+
+@Composable
+internal fun BottomNavigationMenu(
+    items: ImmutableList<Pair<Int, String>>,
+    selected: Int?,
+    onSelect: (Int) -> Unit,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+    ) {
+
+        content.invoke(this)
+
+        Segment(
+            modifier = Modifier
+                .shadowDefault(
+                    shape = RoundedCornerShape(0.dp),
+                    elevation = ShadowElevation.Container
+                )
+                .background(AppTokens.colors.background.secondary)
+                .navigationBarsPadding()
+                .fillMaxWidth(),
+            items = items,
+            selected = selected,
+            onSelect = onSelect,
+            segmentWidth = SegmentWidth.EqualFill,
+            thumbPosition = ThumbPosition.Top
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreview() {
+    PreviewContainer {
+        BottomNavigationMenu(
+            items = BottomBarMenu.entries
+                .map { it.ordinal to it.name }
+                .toPersistentList(),
+            selected = 0,
+            onSelect = { },
+            content = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .background(AppTokens.colors.background.primary)
+                )
+            }
+        )
+    }
+}
