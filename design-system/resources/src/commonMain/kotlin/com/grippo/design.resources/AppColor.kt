@@ -18,7 +18,6 @@ public interface AppColor {
     public val icon: IconColors
     public val toggle: ToggleColors
     public val muscle: MuscleColors
-    public val equipment: EquipmentColors
     public val segment: SegmentColors
     public val konfetti: Konfetti
 

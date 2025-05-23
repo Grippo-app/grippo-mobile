@@ -1,6 +1,7 @@
 package com.grippo.design.components.cards
 
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
@@ -28,7 +29,6 @@ public sealed class SelectableCardStyle(
     @Immutable
     public data class Medium(
         override val title: String,
-        val description: String,
         val icon: ImageVector,
     ) : SelectableCardStyle(title)
 
@@ -102,6 +102,10 @@ private fun SelectableCardLargePreview() {
                 icon = Icons.Filled.Done
             )
         )
+
+        SelectableCardLargeSkeleton(
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
@@ -112,9 +116,12 @@ private fun SelectableCardMediumPreview() {
         SelectableCardVariants(
             SelectableCardStyle.Medium(
                 title = "Test Title",
-                description = "Test Description",
                 icon = Icons.Filled.Done
             )
+        )
+
+        SelectableCardMediumSkeleton(
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
@@ -127,6 +134,10 @@ private fun SelectableCardSmallPreview() {
             SelectableCardStyle.Small(
                 title = "Test Title"
             )
+        )
+
+        SelectableCardSmallSkeleton(
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }

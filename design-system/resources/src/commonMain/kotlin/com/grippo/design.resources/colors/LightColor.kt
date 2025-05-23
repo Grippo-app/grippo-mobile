@@ -138,10 +138,6 @@ public object LightColor : AppColor {
         override val shimmer = Neutral400
     }
 
-    override val equipment: AppColor.EquipmentColors = object : AppColor.EquipmentColors {
-        override val inactive: Color = Neutral300
-    }
-
     override val segment: AppColor.SegmentColors = object : AppColor.SegmentColors {
         override val active = Black
         override val inactive: Color = Neutral500
