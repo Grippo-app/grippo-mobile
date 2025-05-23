@@ -6,10 +6,13 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,12 +22,15 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.cards.SelectableCardStyle
+import com.grippo.design.components.cards.SelectableCardVariants
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.nonRippleClick
 import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.components.modifiers.shimmerAnimation
 import com.grippo.design.components.toggle.Toggle
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 
 @Composable
 internal fun SelectableCardMedium(
@@ -103,4 +109,21 @@ internal fun SelectableCardMediumSkeleton(modifier: Modifier) {
                 vertical = AppTokens.dp.paddings.smallVertical
             ).height(AppTokens.dp.size.componentHeight),
     )
+}
+
+@AppPreview
+@Composable
+private fun SelectableCardMediumPreview() {
+    PreviewContainer {
+        SelectableCardVariants(
+            SelectableCardStyle.Medium(
+                title = "Test Title",
+                icon = Icons.Filled.Done
+            )
+        )
+
+        SelectableCardMediumSkeleton(
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
 }

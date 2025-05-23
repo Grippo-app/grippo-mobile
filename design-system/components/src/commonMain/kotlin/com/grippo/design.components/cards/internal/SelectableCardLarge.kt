@@ -10,9 +10,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,11 +27,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.cards.SelectableCardStyle
+import com.grippo.design.components.cards.SelectableCardVariants
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.nonRippleClick
 import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.components.modifiers.shimmerAnimation
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 
 @Composable
 internal fun SelectableCardLarge(
@@ -126,6 +133,24 @@ internal fun SelectableCardLargeSkeleton(modifier: Modifier) {
             .padding(
                 horizontal = AppTokens.dp.paddings.mediumHorizontal,
                 vertical = AppTokens.dp.paddings.mediumVertical
-            ),
+            ).height(AppTokens.dp.icon.medium),
     )
+}
+
+@AppPreview
+@Composable
+private fun SelectableCardLargePreview() {
+    PreviewContainer {
+        SelectableCardVariants(
+            SelectableCardStyle.Large(
+                title = "Test Title",
+                description = "Test Description",
+                icon = Icons.Filled.Done
+            )
+        )
+
+        SelectableCardLargeSkeleton(
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
 }

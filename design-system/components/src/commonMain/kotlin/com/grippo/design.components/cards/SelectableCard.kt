@@ -143,7 +143,7 @@ private fun SelectableCardSmallPreview() {
 }
 
 @Composable
-private fun ColumnScope.SelectableCardVariants(style: SelectableCardStyle) {
+internal fun ColumnScope.SelectableCardVariants(style: SelectableCardStyle) {
     SelectableCard(
         style = style,
         isSelected = true,

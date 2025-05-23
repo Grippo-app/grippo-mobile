@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,12 +17,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.cards.SelectableCardStyle
+import com.grippo.design.components.cards.SelectableCardVariants
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.nonRippleClick
 import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.components.modifiers.shimmerAnimation
 import com.grippo.design.components.toggle.Toggle
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 
 @Composable
 internal fun SelectableCardSmall(
@@ -85,4 +89,20 @@ internal fun SelectableCardSmallSkeleton(modifier: Modifier) {
             .padding(horizontal = AppTokens.dp.paddings.smallHorizontal)
             .height(AppTokens.dp.size.componentHeight),
     )
+}
+
+@AppPreview
+@Composable
+private fun SelectableCardSmallPreview() {
+    PreviewContainer {
+        SelectableCardVariants(
+            SelectableCardStyle.Small(
+                title = "Test Title"
+            )
+        )
+
+        SelectableCardSmallSkeleton(
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
 }
