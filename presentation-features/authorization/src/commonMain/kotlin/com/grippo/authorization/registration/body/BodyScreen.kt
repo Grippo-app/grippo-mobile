@@ -18,11 +18,14 @@ import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.inputs.InputHeight
 import com.grippo.design.components.inputs.InputWeight
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.continue_btn
 import com.grippo.design.resources.registration_body_description
 import com.grippo.design.resources.registration_body_title
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
 internal fun BodyScreen(
@@ -81,6 +84,21 @@ internal fun BodyScreen(
             text = AppTokens.strings.res(Res.string.continue_btn),
             style = ButtonStyle.Primary,
             onClick = contract::next
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreview() {
+    PreviewContainer {
+        BodyScreen(
+            state = BodyState(
+                weight = 65f,
+                height = 144
+            ),
+            loaders = persistentSetOf(),
+            contract = BodyContract.Empty
         )
     }
 }

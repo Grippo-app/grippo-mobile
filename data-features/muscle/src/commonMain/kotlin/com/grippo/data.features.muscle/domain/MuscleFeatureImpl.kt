@@ -1,7 +1,6 @@
 package com.grippo.data.features.muscle.domain
 
 import com.grippo.data.features.api.muscle.MuscleFeature
-import com.grippo.data.features.api.muscle.models.Muscle
 import com.grippo.data.features.api.muscle.models.MuscleGroup
 import kotlinx.coroutines.flow.Flow
 
@@ -11,10 +10,6 @@ internal class MuscleFeatureImpl(
 
     override fun observeMuscles(): Flow<List<MuscleGroup>> {
         return repository.observeMuscles()
-    }
-
-    override fun observeMusclesById(ids: List<String>): Flow<List<Muscle>> {
-        return repository.observeMusclesById(ids)
     }
 
     override suspend fun getMuscles(): Result<Unit> {

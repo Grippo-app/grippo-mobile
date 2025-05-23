@@ -21,6 +21,8 @@ import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.inputs.InputEmail
 import com.grippo.design.components.inputs.InputPassword
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.next_btn
 import com.grippo.design.resources.registration_credential_description
@@ -28,6 +30,7 @@ import com.grippo.design.resources.registration_credential_title
 import com.grippo.presentation.api.auth.models.EmailFormatState
 import com.grippo.presentation.api.auth.models.PasswordFormatState
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
 internal fun CredentialScreen(
@@ -94,6 +97,36 @@ internal fun CredentialScreen(
             state = buttonState,
             style = ButtonStyle.Primary,
             onClick = contract::next
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewEmpty() {
+    PreviewContainer {
+        CredentialScreen(
+            state = CredentialState(
+                email = EmailFormatState.of(""),
+                password = PasswordFormatState.of("")
+            ),
+            loaders = persistentSetOf(),
+            contract = CredentialContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewFilled() {
+    PreviewContainer {
+        CredentialScreen(
+            state = CredentialState(
+                email = EmailFormatState.of("user@email.com"),
+                password = PasswordFormatState.of("qwerty123")
+            ),
+            loaders = persistentSetOf(),
+            contract = CredentialContract.Empty
         )
     }
 }

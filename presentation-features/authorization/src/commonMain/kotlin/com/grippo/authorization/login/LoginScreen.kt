@@ -24,6 +24,8 @@ import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.inputs.InputEmail
 import com.grippo.design.components.inputs.InputPassword
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.login_button_login
 import com.grippo.design.resources.login_button_registration
@@ -34,6 +36,7 @@ import com.grippo.design.resources.or
 import com.grippo.presentation.api.auth.models.EmailFormatState
 import com.grippo.presentation.api.auth.models.PasswordFormatState
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
 internal fun LoginScreen(
@@ -147,5 +150,50 @@ internal fun LoginScreen(
                 onClick = contract::register
             )
         }
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewEmpty() {
+    PreviewContainer {
+        LoginScreen(
+            state = LoginState(
+                email = EmailFormatState.of(""),
+                password = PasswordFormatState.of("")
+            ),
+            loaders = persistentSetOf(LoginLoader.LoginButton),
+            contract = LoginContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewFilled() {
+    PreviewContainer {
+        LoginScreen(
+            state = LoginState(
+                email = EmailFormatState.of("user@email.com"),
+                password = PasswordFormatState.of("qwerty123")
+            ),
+            loaders = persistentSetOf(),
+            contract = LoginContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewLoading() {
+    PreviewContainer {
+        LoginScreen(
+            state = LoginState(
+                email = EmailFormatState.of("user@email.com"),
+                password = PasswordFormatState.of("qwerty123")
+            ),
+            loaders = persistentSetOf(LoginLoader.LoginButton),
+            contract = LoginContract.Empty
+        )
     }
 }

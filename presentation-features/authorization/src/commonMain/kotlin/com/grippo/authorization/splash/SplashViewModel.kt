@@ -19,7 +19,7 @@ internal class SplashViewModel(
             onError = { navigateTo(SplashDirection.AuthProcess) }
         ) {
             val muscleJob = launch { muscleFeature.getMuscles().getOrThrow() }
-            val equipmentJob = launch { equipmentFeature.getPublicEquipments().getOrThrow() }
+            val equipmentJob = launch { equipmentFeature.getEquipments().getOrThrow() }
             joinAll(muscleJob, equipmentJob)
 
             val token = authorizationFeature.getToken().firstOrNull()

@@ -26,11 +26,17 @@ import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.continue_btn
 import com.grippo.design.resources.registration_muscles_description
 import com.grippo.design.resources.registration_muscles_title
+import com.grippo.presentation.api.muscles.models.stubMuscles
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun ExcludedMusclesScreen(
@@ -149,6 +155,54 @@ internal fun ExcludedMusclesScreen(
             text = AppTokens.strings.res(Res.string.continue_btn),
             style = ButtonStyle.Primary,
             onClick = contract::next
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewSelected() {
+    PreviewContainer {
+        ExcludedMusclesScreen(
+            state = ExcludedMusclesState(
+                suggestions = stubMuscles(),
+                selectedMuscleIds = stubMuscles()
+                    .map { it.muscles.map { it.value.id } }
+                    .flatten()
+                    .take(3).toPersistentList()
+            ),
+            loaders = persistentSetOf(),
+            contract = ExcludedMusclesContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewUnselected() {
+    PreviewContainer {
+        ExcludedMusclesScreen(
+            state = ExcludedMusclesState(
+                suggestions = stubMuscles(),
+                selectedMuscleIds = persistentListOf()
+            ),
+            loaders = persistentSetOf(),
+            contract = ExcludedMusclesContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewLoading() {
+    PreviewContainer {
+        ExcludedMusclesScreen(
+            state = ExcludedMusclesState(
+                suggestions = persistentListOf(),
+                selectedMuscleIds = persistentListOf()
+            ),
+            loaders = persistentSetOf(ExcludedMusclesLoader.MuscleList),
+            contract = ExcludedMusclesContract.Empty
         )
     }
 }

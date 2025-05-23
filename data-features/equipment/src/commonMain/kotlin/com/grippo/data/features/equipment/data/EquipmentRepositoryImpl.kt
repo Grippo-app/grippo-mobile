@@ -20,7 +20,7 @@ internal class EquipmentRepositoryImpl(
             .map { it.toDomain() }
     }
 
-    override suspend fun getPublicEquipments(): Result<Unit> {
+    override suspend fun getEquipments(): Result<Unit> {
         val response = api.getEquipments()
 
         response.onSuccess { r ->

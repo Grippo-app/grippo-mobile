@@ -40,10 +40,12 @@ internal class ExcludedEquipmentsRepositoryImpl(
         val response = api.setExcludedEquipment(id)
 
         response.onSuccess {
-            val equipments =
-                api.getExcludedEquipments().getOrNull()?.toEntities() ?: return@onSuccess
             val userId = userDao.get().firstOrNull()?.id ?: return@onSuccess
-            val entities = equipments.map { UserExcludedEquipmentEntity(userId, it.id) }
+            val entities = api.getExcludedEquipments()
+                .getOrNull()
+                ?.toEntities()
+                ?.map { UserExcludedEquipmentEntity(userId, it.id) } ?: return@onSuccess
+
             userDao.replaceExcludedEquipments(entities)
         }
 
@@ -54,10 +56,12 @@ internal class ExcludedEquipmentsRepositoryImpl(
         val response = api.deleteExcludedEquipment(id)
 
         response.onSuccess {
-            val equipments =
-                api.getExcludedEquipments().getOrNull()?.toEntities() ?: return@onSuccess
             val userId = userDao.get().firstOrNull()?.id ?: return@onSuccess
-            val entities = equipments.map { UserExcludedEquipmentEntity(userId, it.id) }
+            val entities = api.getExcludedEquipments()
+                .getOrNull()
+                ?.toEntities()
+                ?.map { UserExcludedEquipmentEntity(userId, it.id) } ?: return@onSuccess
+
             userDao.replaceExcludedEquipments(entities)
         }
 

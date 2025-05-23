@@ -12,7 +12,7 @@ internal class EquipmentFeatureImpl(
         return repository.observeEquipments()
     }
 
-    override suspend fun getPublicEquipments(): Result<Unit> {
+    override suspend fun getEquipments(): Result<Unit> {
         return repository.getPublicEquipments()
     }
 }

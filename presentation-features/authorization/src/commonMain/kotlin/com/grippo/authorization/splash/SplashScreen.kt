@@ -5,7 +5,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
 internal fun SplashScreen(
@@ -14,4 +17,16 @@ internal fun SplashScreen(
     contract: SplashContract
 ) = BaseComposeScreen {
     Box(Modifier.fillMaxSize())
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreview() {
+    PreviewContainer {
+        SplashScreen(
+            state = SplashState,
+            loaders = persistentSetOf(),
+            contract = SplashContract.Empty
+        )
+    }
 }

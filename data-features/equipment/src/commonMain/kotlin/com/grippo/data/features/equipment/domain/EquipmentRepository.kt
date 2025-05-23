@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.Flow
 internal interface EquipmentRepository {
     fun observeEquipments(): Flow<List<EquipmentGroup>>
 
-    suspend fun getPublicEquipments(): Result<Unit>
+    suspend fun getEquipments(): Result<Unit>
 }

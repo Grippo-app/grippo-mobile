@@ -1,6 +1,5 @@
 package com.grippo.data.features.muscle.data
 
-import com.grippo.data.features.api.muscle.models.Muscle
 import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.data.features.muscle.domain.MuscleRepository
 import com.grippo.database.dao.MuscleDao
@@ -18,11 +17,6 @@ internal class MuscleRepositoryImpl(
 
     override fun observeMuscles(): Flow<List<MuscleGroup>> {
         return muscleDao.getGroups()
-            .map { it.toDomain() }
-    }
-
-    override fun observeMusclesById(ids: List<String>): Flow<List<Muscle>> {
-        return muscleDao.getByIds(ids)
             .map { it.toDomain() }
     }
 

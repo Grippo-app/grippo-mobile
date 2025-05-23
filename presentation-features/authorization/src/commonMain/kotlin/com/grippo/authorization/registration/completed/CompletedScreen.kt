@@ -23,17 +23,23 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
+import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.konfetti.KonfettiParade
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.user.UserCard
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.get_started_btn
 import com.grippo.design.resources.registration_completed_description
 import com.grippo.design.resources.registration_completed_title
+import com.grippo.presentation.api.user.models.ExperienceEnumState
+import com.grippo.presentation.api.user.models.UserState
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.delay
 
 @Composable
@@ -120,5 +126,51 @@ internal fun CompletedScreen(
 
     if (state.user != null) {
         KonfettiParade()
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreview() {
+    PreviewContainer {
+        CompletedScreen(
+            state = CompletedState(
+                user = UserState(
+                    id = "",
+                    name = "Mark Test",
+                    height = 180,
+                    weight = 80.5F,
+                    createdAt = DateTimeUtils.thisDay(),
+                    records = 12,
+                    workouts = 15,
+                    experience = ExperienceEnumState.INTERMEDIATE
+                )
+            ),
+            loaders = persistentSetOf(),
+            contract = CompletedContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewLoading() {
+    PreviewContainer {
+        CompletedScreen(
+            state = CompletedState(
+                user = UserState(
+                    id = "",
+                    name = "Mark Test",
+                    height = 180,
+                    weight = 80.5F,
+                    createdAt = DateTimeUtils.thisDay(),
+                    records = 12,
+                    workouts = 15,
+                    experience = ExperienceEnumState.INTERMEDIATE
+                )
+            ),
+            loaders = persistentSetOf(CompletedLoader.Registration),
+            contract = CompletedContract.Empty
+        )
     }
 }

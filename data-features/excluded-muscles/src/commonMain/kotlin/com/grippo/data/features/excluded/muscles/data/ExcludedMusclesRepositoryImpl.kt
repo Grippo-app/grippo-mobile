@@ -40,9 +40,12 @@ internal class ExcludedMusclesRepositoryImpl(
         val response = api.setExcludedMuscle(id)
 
         response.onSuccess {
-            val muscles = api.getExcludedMuscles().getOrNull()?.toEntities() ?: return@onSuccess
             val userId = userDao.get().firstOrNull()?.id ?: return@onSuccess
-            val entities = muscles.map { UserExcludedMuscleEntity(userId, it.id) }
+            val entities = api.getExcludedMuscles()
+                .getOrNull()
+                ?.toEntities()
+                ?.map { UserExcludedMuscleEntity(userId, it.id) } ?: return@onSuccess
+
             userDao.replaceExcludedMuscles(entities)
         }
 
@@ -53,9 +56,12 @@ internal class ExcludedMusclesRepositoryImpl(
         val response = api.deleteExcludedMuscle(id)
 
         response.onSuccess {
-            val muscles = api.getExcludedMuscles().getOrNull()?.toEntities() ?: return@onSuccess
             val userId = userDao.get().firstOrNull()?.id ?: return@onSuccess
-            val entities = muscles.map { UserExcludedMuscleEntity(userId, it.id) }
+            val entities = api.getExcludedMuscles()
+                .getOrNull()
+                ?.toEntities()
+                ?.map { UserExcludedMuscleEntity(userId, it.id) } ?: return@onSuccess
+
             userDao.replaceExcludedMuscles(entities)
         }
 

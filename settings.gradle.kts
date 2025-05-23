@@ -68,7 +68,6 @@ include(":common:logger")
 include(":common:core")
 include(":common:error:error-provider-impl")
 include(":common:error:error-provider")
-include(":common:metrics")
 include(":common:validation")
 include(":common:date-utils")
 
