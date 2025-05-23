@@ -64,9 +64,9 @@ public data class EquipmentState(
             EquipmentEnumState.STRAIGHT_BAR -> StraightBar
             EquipmentEnumState.BARBELL -> Barbell
             EquipmentEnumState.EZ_BAR -> EzBar
-            EquipmentEnumState.VBar -> VBar
-            EquipmentEnumState.CloseGripHandle -> CloseGripHandle
-            EquipmentEnumState.WideGripHandle -> WideGripHandle
+            EquipmentEnumState.V_BAR -> VBar
+            EquipmentEnumState.CLOSE_GRIP_HANDLE -> CloseGripHandle
+            EquipmentEnumState.WIDE_GRIP_HANDLE -> WideGripHandle
             EquipmentEnumState.TRAP_BAR -> TrapBar
             EquipmentEnumState.AB_MACHINES -> AbMachine
             EquipmentEnumState.BUTTERFLY -> Butterfly

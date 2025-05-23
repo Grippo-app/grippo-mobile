@@ -24,9 +24,9 @@ public fun EquipmentEnum.toState(): EquipmentEnumState? {
     return when (this) {
         EquipmentEnum.DUMBBELLS -> EquipmentEnumState.DUMBBELLS
         EquipmentEnum.BARBELL -> EquipmentEnumState.BARBELL
-        EquipmentEnum.VBar -> EquipmentEnumState.VBar
-        EquipmentEnum.WideGripHandle -> EquipmentEnumState.WideGripHandle
-        EquipmentEnum.CloseGripHandle -> EquipmentEnumState.CloseGripHandle
+        EquipmentEnum.VBar -> EquipmentEnumState.V_BAR
+        EquipmentEnum.WideGripHandle -> EquipmentEnumState.WIDE_GRIP_HANDLE
+        EquipmentEnum.CloseGripHandle -> EquipmentEnumState.CLOSE_GRIP_HANDLE
         EquipmentEnum.EZ_BAR -> EquipmentEnumState.EZ_BAR
         EquipmentEnum.TRAP_BAR -> EquipmentEnumState.TRAP_BAR
         EquipmentEnum.ROPE -> EquipmentEnumState.ROPE

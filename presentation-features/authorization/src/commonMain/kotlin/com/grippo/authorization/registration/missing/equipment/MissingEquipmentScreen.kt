@@ -29,11 +29,16 @@ import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentWidth
 import com.grippo.design.components.segment.ThumbPosition
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.continue_btn
 import com.grippo.design.resources.registration_equipment_description
 import com.grippo.design.resources.registration_equipment_title
+import com.grippo.presentation.api.equipment.models.stubEquipments
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 
 @Composable
@@ -136,6 +141,56 @@ internal fun MissingEquipmentScreen(
             text = AppTokens.strings.res(Res.string.continue_btn),
             style = ButtonStyle.Primary,
             onClick = contract::next
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewSelected() {
+    PreviewContainer {
+        MissingEquipmentScreen(
+            state = MissingEquipmentState(
+                suggestions = stubEquipments(),
+                selectedEquipmentIds = stubEquipments()
+                    .map { it.equipments.map { it.id } }
+                    .flatten()
+                    .take(3).toPersistentList(),
+                selectedGroupId = stubEquipments().firstOrNull()?.id
+            ),
+            loaders = persistentSetOf(),
+            contract = MissingEquipmentContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewUnselected() {
+    PreviewContainer {
+        MissingEquipmentScreen(
+            state = MissingEquipmentState(
+                suggestions = stubEquipments(),
+                selectedEquipmentIds = persistentListOf(),
+                selectedGroupId = stubEquipments().firstOrNull()?.id
+            ),
+            loaders = persistentSetOf(),
+            contract = MissingEquipmentContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewLoading() {
+    PreviewContainer {
+        MissingEquipmentScreen(
+            state = MissingEquipmentState(
+                suggestions = persistentListOf(),
+                selectedEquipmentIds = persistentListOf()
+            ),
+            loaders = persistentSetOf(MissingEquipmentLoader.EquipmentList),
+            contract = MissingEquipmentContract.Empty
         )
     }
 }

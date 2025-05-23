@@ -3,9 +3,9 @@ package com.grippo.presentation.api.equipment.models
 public enum class EquipmentEnumState {
     DUMBBELLS,
     BARBELL,
-    VBar,
-    WideGripHandle,
-    CloseGripHandle,
+    V_BAR,
+    WIDE_GRIP_HANDLE,
+    CLOSE_GRIP_HANDLE,
     EZ_BAR,
     TRAP_BAR,
     ROPE,
