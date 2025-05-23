@@ -23,7 +23,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
-import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.konfetti.KonfettiParade
@@ -36,8 +35,7 @@ import com.grippo.design.resources.Res
 import com.grippo.design.resources.get_started_btn
 import com.grippo.design.resources.registration_completed_description
 import com.grippo.design.resources.registration_completed_title
-import com.grippo.presentation.api.user.models.ExperienceEnumState
-import com.grippo.presentation.api.user.models.UserState
+import com.grippo.presentation.api.user.models.stubUser
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.delay
@@ -135,16 +133,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         CompletedScreen(
             state = CompletedState(
-                user = UserState(
-                    id = "",
-                    name = "Mark Test",
-                    height = 180,
-                    weight = 80.5F,
-                    createdAt = DateTimeUtils.thisDay(),
-                    records = 12,
-                    workouts = 15,
-                    experience = ExperienceEnumState.INTERMEDIATE
-                )
+                user = stubUser()
             ),
             loaders = persistentSetOf(),
             contract = CompletedContract.Empty
@@ -158,16 +147,7 @@ private fun ScreenPreviewLoading() {
     PreviewContainer {
         CompletedScreen(
             state = CompletedState(
-                user = UserState(
-                    id = "",
-                    name = "Mark Test",
-                    height = 180,
-                    weight = 80.5F,
-                    createdAt = DateTimeUtils.thisDay(),
-                    records = 12,
-                    workouts = 15,
-                    experience = ExperienceEnumState.INTERMEDIATE
-                )
+                user = stubUser()
             ),
             loaders = persistentSetOf(CompletedLoader.Registration),
             contract = CompletedContract.Empty

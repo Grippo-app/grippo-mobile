@@ -13,7 +13,7 @@ import com.grippo.core.BaseComposeScreen
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.home.components.BottomNavigationMenu
+import com.grippo.home.internal.BottomNavigationMenu
 import com.grippo.presentation.api.bottom.navigation.BottomNavigationRouter
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.toPersistentList

@@ -1,4 +1,4 @@
-package com.grippo.home.components
+package com.grippo.home.internal
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
