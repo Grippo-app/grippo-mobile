@@ -79,7 +79,7 @@ public fun <KEY> Segment(
                         Text(
                             modifier = Modifier
                                 .padding(horizontal = 15.dp)
-                                .height(AppTokens.dp.size.componentHeight)
+                                .height(AppTokens.dp.size.mediumComponentHeight)
                                 .wrapContentHeight()
                                 .nonRippleClick(onClick = clickProvider),
                             text = item.second,
@@ -114,7 +114,7 @@ public fun SegmentSkeleton(modifier: Modifier = Modifier) {
                         visible = true,
                         radius = AppTokens.dp.shape.medium
                     )
-                    .height(AppTokens.dp.size.componentHeight)
+                    .height(AppTokens.dp.size.mediumComponentHeight)
                     .width(140.dp)
             )
         }

@@ -133,7 +133,7 @@ internal fun SelectableCardLargeSkeleton(modifier: Modifier) {
             .padding(
                 horizontal = AppTokens.dp.paddings.mediumHorizontal,
                 vertical = AppTokens.dp.paddings.mediumVertical
-            ).height(AppTokens.dp.size.componentHeight)
+            ).height(AppTokens.dp.size.mediumComponentHeight)
     )
 }
 

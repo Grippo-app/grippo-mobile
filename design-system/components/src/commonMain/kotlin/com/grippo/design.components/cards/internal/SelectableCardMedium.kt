@@ -56,7 +56,7 @@ internal fun SelectableCardMedium(
                 horizontal = AppTokens.dp.paddings.smallHorizontal,
                 vertical = AppTokens.dp.paddings.smallVertical,
             )
-            .height(AppTokens.dp.size.componentHeight),
+            .height(AppTokens.dp.size.mediumComponentHeight),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -107,7 +107,7 @@ internal fun SelectableCardMediumSkeleton(modifier: Modifier) {
             .padding(
                 horizontal = AppTokens.dp.paddings.smallHorizontal,
                 vertical = AppTokens.dp.paddings.smallVertical
-            ).height(AppTokens.dp.size.componentHeight),
+            ).height(AppTokens.dp.size.mediumComponentHeight),
     )
 }
 

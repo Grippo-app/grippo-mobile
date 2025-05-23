@@ -48,7 +48,7 @@ internal fun EquipmentsSkeleton(modifier: Modifier = Modifier) {
                         modifier = Modifier.shimmerAnimation(
                             visible = true,
                             radius = AppTokens.dp.shape.medium
-                        ).size(AppTokens.dp.size.componentHeight)
+                        ).size(AppTokens.dp.size.mediumComponentHeight)
                     )
 
                     SelectableCardSkeleton(

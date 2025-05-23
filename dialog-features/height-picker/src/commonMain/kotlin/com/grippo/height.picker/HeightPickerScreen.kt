@@ -67,7 +67,7 @@ internal fun HeightPickerScreen(
 
         WheelPicker(
             modifier = Modifier.fillMaxWidth()
-                .height(AppTokens.dp.size.componentHeight * 3),
+                .height(AppTokens.dp.size.mediumComponentHeight * 3),
             items = state.suggestions,
             initial = state.initial,
             onValueChange = contract::select,
@@ -82,7 +82,7 @@ internal fun HeightPickerScreen(
                 Text(
                     modifier = Modifier,
                     text = it.toString(),
-                    style = AppTokens.typography.b15Bold()
+                    style = AppTokens.typography.b16Bold()
                 )
             }
         )

@@ -105,7 +105,7 @@ internal fun ExcludedMusclesScreen(
                             Text(
                                 modifier = Modifier.fillMaxWidth(),
                                 text = group.name,
-                                style = AppTokens.typography.h4(),
+                                style = AppTokens.typography.h3(),
                                 textAlign = TextAlign.Center,
                                 color = AppTokens.colors.text.primary,
                             )

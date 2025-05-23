@@ -57,7 +57,7 @@ public fun UserCard(
                 elevation = ShadowElevation.Card,
                 shape = shape,
                 color = AppTokens.colors.overlay.defaultShadow
-            ).clip(shape = shape)
+            )
             .clip(shape = shape)
             .background(AppTokens.colors.background.secondary)
             .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
@@ -122,7 +122,7 @@ public fun UserCard(
             Text(
                 modifier = Modifier.weight(1f),
                 text = "80 kg",
-                style = AppTokens.typography.b15Bold(),
+                style = AppTokens.typography.b16Bold(),
                 color = AppTokens.colors.text.primary,
                 textAlign = TextAlign.Center
             )
@@ -135,7 +135,7 @@ public fun UserCard(
             Text(
                 modifier = Modifier.weight(1f),
                 text = "175 cm",
-                style = AppTokens.typography.b15Bold(),
+                style = AppTokens.typography.b16Bold(),
                 color = AppTokens.colors.text.primary,
                 textAlign = TextAlign.Center
             )
@@ -243,7 +243,7 @@ private fun OverviewItem(
 
         Text(
             text = title,
-            style = AppTokens.typography.b15Bold(),
+            style = AppTokens.typography.b16Bold(),
             color = AppTokens.colors.text.primary,
             textAlign = TextAlign.Center
         )

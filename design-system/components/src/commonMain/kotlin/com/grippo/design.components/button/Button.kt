@@ -70,7 +70,7 @@ public fun Button(
 
     val height = when (style) {
         ButtonStyle.Transparent -> Dp.Unspecified
-        else -> AppTokens.dp.size.componentHeight
+        else -> AppTokens.dp.size.mediumComponentHeight
     }
 
     val horizontalPadding = when (style) {

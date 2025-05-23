@@ -48,7 +48,7 @@ internal fun SelectableCardSmall(
             .background(AppTokens.colors.background.secondary)
             .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
             .padding(horizontal = AppTokens.dp.paddings.smallHorizontal)
-            .height(AppTokens.dp.size.componentHeight),
+            .height(AppTokens.dp.size.mediumComponentHeight),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -87,7 +87,7 @@ internal fun SelectableCardSmallSkeleton(modifier: Modifier) {
             .background(AppTokens.colors.background.secondary)
             .border(1.dp, AppTokens.colors.border.defaultPrimary, RoundedCornerShape(radius))
             .padding(horizontal = AppTokens.dp.paddings.smallHorizontal)
-            .height(AppTokens.dp.size.componentHeight),
+            .height(AppTokens.dp.size.mediumComponentHeight),
     )
 }
 
