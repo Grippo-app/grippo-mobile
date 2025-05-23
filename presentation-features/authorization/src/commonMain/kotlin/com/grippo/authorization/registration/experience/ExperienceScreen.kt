@@ -24,11 +24,15 @@ import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.cards.SelectableCard
 import com.grippo.design.components.cards.SelectableCardStyle
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.continue_btn
 import com.grippo.design.resources.registration_experience_description
 import com.grippo.design.resources.registration_experience_title
+import com.grippo.presentation.api.user.models.ExperienceEnumState
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
 internal fun ExperienceScreen(
@@ -108,6 +112,32 @@ internal fun ExperienceScreen(
             state = buttonState,
             style = ButtonStyle.Primary,
             onClick = contract::next
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewSelected() {
+    PreviewContainer {
+        ExperienceScreen(
+            state = ExperienceState(
+                selected = ExperienceEnumState.INTERMEDIATE
+            ),
+            loaders = persistentSetOf(),
+            contract = ExperienceContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewEmpty() {
+    PreviewContainer {
+        ExperienceScreen(
+            state = ExperienceState(),
+            loaders = persistentSetOf(),
+            contract = ExperienceContract.Empty
         )
     }
 }

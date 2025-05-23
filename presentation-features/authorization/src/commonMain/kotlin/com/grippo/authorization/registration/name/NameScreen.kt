@@ -20,12 +20,15 @@ import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.inputs.InputName
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.continue_btn
 import com.grippo.design.resources.registration_name_description
 import com.grippo.design.resources.registration_name_title
 import com.grippo.presentation.api.auth.models.NameFormatState
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
 internal fun NameScreen(
@@ -85,6 +88,34 @@ internal fun NameScreen(
             state = buttonState,
             style = ButtonStyle.Primary,
             onClick = contract::next
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreview() {
+    PreviewContainer {
+        NameScreen(
+            state = NameState(
+                name = NameFormatState.of("Mark S.")
+            ),
+            loaders = persistentSetOf(),
+            contract = NameContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewEmpty() {
+    PreviewContainer {
+        NameScreen(
+            state = NameState(
+                name = NameFormatState.of("")
+            ),
+            loaders = persistentSetOf(),
+            contract = NameContract.Empty
         )
     }
 }
