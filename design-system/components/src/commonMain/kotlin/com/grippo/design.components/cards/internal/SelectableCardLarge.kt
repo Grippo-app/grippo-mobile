@@ -133,7 +133,7 @@ internal fun SelectableCardLargeSkeleton(modifier: Modifier) {
             .padding(
                 horizontal = AppTokens.dp.paddings.mediumHorizontal,
                 vertical = AppTokens.dp.paddings.mediumVertical
-            ).height(AppTokens.dp.icon.medium),
+            ).height(AppTokens.dp.size.componentHeight)
     )
 }
 
@@ -144,7 +144,7 @@ private fun SelectableCardLargePreview() {
         SelectableCardVariants(
             SelectableCardStyle.Large(
                 title = "Test Title",
-                description = "Test Description",
+                description = "Test Description with big text for all cases and more options to do somethig!",
                 icon = Icons.Filled.Done
             )
         )
