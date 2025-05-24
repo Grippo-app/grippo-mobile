@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -53,7 +54,7 @@ internal fun MissingEquipmentScreen(
             .padding(
                 horizontal = AppTokens.dp.paddings.screenHorizontal,
                 vertical = AppTokens.dp.paddings.screenVertical
-            ),
+            ).imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 

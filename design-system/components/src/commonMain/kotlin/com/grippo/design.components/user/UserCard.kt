@@ -106,7 +106,7 @@ public fun UserCard(
 
         Row(
             modifier = Modifier
-                .fillMaxWidth(0.5f)
+                .fillMaxWidth(0.7f)
                 .border(
                     1.dp,
                     color = AppTokens.colors.border.defaultPrimary,
