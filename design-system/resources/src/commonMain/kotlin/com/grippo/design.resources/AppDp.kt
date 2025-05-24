@@ -19,7 +19,7 @@ public data object AppDp {
     }
 
     public data object Size {
-        val smallComponentHeight: Dp = 32.dp
+        val smallComponentHeight: Dp = 24.dp
         val mediumComponentHeight: Dp = 50.dp
     }
 

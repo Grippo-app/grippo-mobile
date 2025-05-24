@@ -61,7 +61,7 @@ public fun ExerciseCard(
         }
 
         Column(
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             value.iterations.forEachIndexed { index, iteration ->
                 IterationCard(
