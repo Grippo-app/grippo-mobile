@@ -5,7 +5,7 @@ import com.grippo.database.models.TrainingFull
 import com.grippo.date.utils.DateTimeUtils
 
 public fun List<TrainingFull>.toDomain(): List<Training> {
-    return mapNotNull { it.toDomain() }
+    return map { it.toDomain() }
 }
 
 public fun TrainingFull.toDomain(): Training {

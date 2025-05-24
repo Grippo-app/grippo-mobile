@@ -5,7 +5,7 @@ import com.grippo.data.features.api.equipment.models.EquipmentEnum
 import com.grippo.database.entity.EquipmentEntity
 
 public fun List<EquipmentEntity>.toDomain(): List<Equipment> {
-    return mapNotNull { it.toDomain() }
+    return map { it.toDomain() }
 }
 
 public fun EquipmentEntity.toDomain(): Equipment {

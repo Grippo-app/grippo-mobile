@@ -4,7 +4,7 @@ import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.database.models.ExerciseFull
 
 public fun List<ExerciseFull>.toDomain(): List<Exercise> {
-    return mapNotNull { it.toDomain() }
+    return map { it.toDomain() }
 }
 
 public fun ExerciseFull.toDomain(): Exercise {

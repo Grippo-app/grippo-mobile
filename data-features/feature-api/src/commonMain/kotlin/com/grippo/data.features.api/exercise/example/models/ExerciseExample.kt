@@ -4,7 +4,7 @@ import com.grippo.data.features.api.equipment.models.Equipment
 
 public data class ExerciseExample(
     val id: String,
-    val exerciseExampleBundles: List<ExerciseExampleBundle>,
+    val bundles: List<ExerciseExampleBundle>,
     val equipments: List<Equipment>,
     val tutorials: List<Tutorial>,
     val name: String,

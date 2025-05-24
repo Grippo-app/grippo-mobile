@@ -4,7 +4,7 @@ import com.grippo.data.features.api.training.models.Iteration
 import com.grippo.database.entity.IterationEntity
 
 public fun List<IterationEntity>.toDomain(): List<Iteration> {
-    return mapNotNull { it.toDomain() }
+    return map { it.toDomain() }
 }
 
 public fun IterationEntity.toDomain(): Iteration {
