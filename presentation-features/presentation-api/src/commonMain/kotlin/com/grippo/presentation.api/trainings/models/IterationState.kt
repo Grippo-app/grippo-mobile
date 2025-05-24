@@ -13,6 +13,6 @@ public data class IterationState(
 
 public fun stubIteration(): IterationState = IterationState(
     id = Uuid.random().toString(),
-    weight = Random.nextInt(40, 100).toFloat(),
+    weight = Random.nextInt(40, 250).toFloat(),
     repetitions = Random.nextInt(2, 16)
 )

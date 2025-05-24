@@ -2,13 +2,18 @@ package com.grippo.design.components.training
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,10 +40,9 @@ public fun IterationCard(
     val shape = RoundedCornerShape(AppTokens.dp.shape.small)
 
     Row(
-        modifier = modifier,
+        modifier = modifier.height(intrinsicSize = IntrinsicSize.Max),
         verticalAlignment = Alignment.CenterVertically
     ) {
-
         Text(
             modifier = Modifier
                 .shadowDefault(
@@ -52,41 +56,56 @@ public fun IterationCard(
                 .size(AppTokens.dp.size.smallComponentHeight)
                 .wrapContentSize(),
             text = (index + 1).toString(),
-            style = AppTokens.typography.b13Semi(),
+            style = AppTokens.typography.b12Bold(),
             color = AppTokens.colors.text.primary,
-        )
-
-        Spacer(modifier = Modifier.width(8.dp))
-
-        Text(
-            text = value.weight.toString(),
-            style = AppTokens.typography.b14Bold(),
-            color = AppTokens.colors.text.primary
-        )
-
-        Spacer(modifier = Modifier.width(4.dp))
-
-        Text(
-            text = AppTokens.strings.res(Res.string.kg),
-            style = AppTokens.typography.b14Semi(),
-            color = AppTokens.colors.text.secondary
         )
 
         Spacer(modifier = Modifier.width(12.dp))
 
-        Text(
-            text = value.repetitions.toString(),
-            style = AppTokens.typography.b14Bold(),
-            color = AppTokens.colors.text.primary
+        Row(
+            modifier = Modifier.width(58.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(2.dp)
+        ) {
+            Text(
+                text = value.weight.toString(),
+                style = AppTokens.typography.b14Bold(),
+                color = AppTokens.colors.text.primary
+            )
+
+            Text(
+                text = AppTokens.strings.res(Res.string.kg),
+                style = AppTokens.typography.b14Semi(),
+                color = AppTokens.colors.text.secondary
+            )
+        }
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        VerticalDivider(
+            modifier = Modifier.fillMaxHeight(),
+            color = AppTokens.colors.divider.default
         )
 
-        Spacer(modifier = Modifier.width(4.dp))
+        Spacer(modifier = Modifier.width(12.dp))
 
-        Text(
-            text = AppTokens.strings.res(Res.string.reps),
-            style = AppTokens.typography.b14Semi(),
-            color = AppTokens.colors.text.secondary
-        )
+        Row(
+            modifier = Modifier.width(52.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(2.dp)
+        ) {
+            Text(
+                text = value.repetitions.toString(),
+                style = AppTokens.typography.b14Bold(),
+                color = AppTokens.colors.text.primary
+            )
+
+            Text(
+                text = AppTokens.strings.res(Res.string.reps),
+                style = AppTokens.typography.b14Semi(),
+                color = AppTokens.colors.text.secondary
+            )
+        }
     }
 }
 

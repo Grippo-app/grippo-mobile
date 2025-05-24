@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.shadowDefault
@@ -28,7 +30,7 @@ public fun ExerciseCard(
 
     val shape = RoundedCornerShape(AppTokens.dp.shape.large)
 
-    Column(
+    Row(
         modifier = modifier
             .shadowDefault(
                 elevation = ShadowElevation.Card,
@@ -42,20 +44,32 @@ public fun ExerciseCard(
                 horizontal = AppTokens.dp.paddings.mediumHorizontal,
                 vertical = AppTokens.dp.paddings.mediumVertical
             ),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Text(
-            text = value.name,
-            style = AppTokens.typography.h3(),
-            color = AppTokens.colors.text.primary
-        )
-
-        value.iterations.forEachIndexed { index, iteration ->
-            IterationCard(
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Text(
                 modifier = Modifier.fillMaxWidth(),
-                value = iteration,
-                index = index,
+                text = value.name,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
+                style = AppTokens.typography.h3(),
+                color = AppTokens.colors.text.primary
             )
+        }
+
+        Column(
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            value.iterations.forEachIndexed { index, iteration ->
+                IterationCard(
+                    modifier = Modifier,
+                    value = iteration,
+                    index = index,
+                )
+            }
         }
     }
 }

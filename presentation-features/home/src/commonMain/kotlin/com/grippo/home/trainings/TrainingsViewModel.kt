@@ -2,22 +2,24 @@ package com.grippo.home.trainings
 
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.training.TrainingFeature
+import com.grippo.data.features.api.training.models.Training
+import com.grippo.domain.mapper.toState
 import kotlinx.coroutines.flow.onEach
 import kotlinx.datetime.LocalDateTime
 
 internal class TrainingsViewModel(
     private val trainingFeature: TrainingFeature
 ) : BaseViewModel<TrainingsState, TrainingsDirection, TrainingsLoader>(
-    TrainingsState
+    TrainingsState()
 ), TrainingsContract {
 
     init {
         trainingFeature.observeTrainings(
             start = LocalDateTime(2024, 1, 1, 11, 11, 11, 11),
             end = LocalDateTime(2026, 1, 1, 11, 11, 11, 11)
-        ).onEach {
-            println("TRAININGS = $it")
-        }.safeLaunch()
+        )
+            .onEach(::provideTrainings)
+            .safeLaunch()
 
         safeLaunch(loader = TrainingsLoader.Trainings) {
             trainingFeature.getTrainings(
@@ -25,5 +27,10 @@ internal class TrainingsViewModel(
                 end = LocalDateTime(2026, 1, 1, 11, 11, 11, 11)
             ).getOrThrow()
         }
+    }
+
+    private fun provideTrainings(list: List<Training>) {
+        val trainings = list.toState()
+        update { it.copy(trainings = trainings) }
     }
 }
