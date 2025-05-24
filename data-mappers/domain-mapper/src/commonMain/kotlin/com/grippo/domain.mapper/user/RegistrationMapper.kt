@@ -1,4 +1,4 @@
-package com.grippo.domain.mapper
+package com.grippo.domain.mapper.user
 
 import com.grippo.data.features.api.authorization.models.SetRegistration
 import com.grippo.network.dto.RegisterBody

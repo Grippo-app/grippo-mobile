@@ -1,4 +1,4 @@
-package com.grippo.domain.mapper
+package com.grippo.domain.mapper.equipment
 
 import com.grippo.data.features.api.equipment.models.EquipmentGroup
 import com.grippo.presentation.api.equipment.models.EquipmentGroupState

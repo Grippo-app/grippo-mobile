@@ -1,4 +1,4 @@
-package com.grippo.domain.mapper
+package com.grippo.domain.mapper.user
 
 import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
 import com.grippo.logger.AppLogger

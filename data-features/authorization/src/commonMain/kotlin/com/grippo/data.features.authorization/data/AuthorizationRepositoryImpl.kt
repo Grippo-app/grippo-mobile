@@ -3,7 +3,7 @@ package com.grippo.data.features.authorization.data
 import com.grippo.data.features.api.authorization.models.SetRegistration
 import com.grippo.data.features.authorization.domain.AuthorizationRepository
 import com.grippo.database.dao.TokenDao
-import com.grippo.domain.mapper.toDto
+import com.grippo.domain.mapper.user.toDto
 import com.grippo.network.Api
 import com.grippo.network.dto.AuthBody
 import com.grippo.network.mapper.user.toEntityOrNull

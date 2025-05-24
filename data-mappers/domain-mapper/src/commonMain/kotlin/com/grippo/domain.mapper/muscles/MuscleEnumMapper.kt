@@ -1,4 +1,4 @@
-package com.grippo.domain.mapper
+package com.grippo.domain.mapper.muscles
 
 import com.grippo.data.features.api.muscle.models.MuscleEnum
 import com.grippo.logger.AppLogger

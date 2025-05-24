@@ -1,4 +1,4 @@
-package com.grippo.domain.mapper
+package com.grippo.domain.mapper.training
 
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.presentation.api.trainings.models.TrainingState

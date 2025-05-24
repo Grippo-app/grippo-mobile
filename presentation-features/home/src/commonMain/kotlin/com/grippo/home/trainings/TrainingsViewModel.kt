@@ -3,7 +3,7 @@ package com.grippo.home.trainings
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
-import com.grippo.domain.mapper.toState
+import com.grippo.domain.mapper.training.toState
 import kotlinx.coroutines.flow.onEach
 import kotlinx.datetime.LocalDateTime
 

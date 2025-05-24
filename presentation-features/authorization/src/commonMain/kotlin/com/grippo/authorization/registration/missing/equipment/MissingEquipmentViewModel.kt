@@ -3,7 +3,7 @@ package com.grippo.authorization.registration.missing.equipment
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.equipment.EquipmentFeature
 import com.grippo.data.features.api.equipment.models.EquipmentGroup
-import com.grippo.domain.mapper.toState
+import com.grippo.domain.mapper.equipment.toState
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.onEach
