@@ -46,7 +46,7 @@ public data class ExerciseResponse(
     @SerialName("exerciseExampleId")
     val exerciseExampleId: String? = null,
     @SerialName("exerciseExample")
-    val exerciseExample: ExerciseExampleDto? = null,
+    val exerciseExample: ExerciseExampleResponse? = null,
     @SerialName("updatedAt")
     val updatedAt: String? = null
 )

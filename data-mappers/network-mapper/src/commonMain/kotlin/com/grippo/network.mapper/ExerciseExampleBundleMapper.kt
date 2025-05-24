@@ -2,13 +2,13 @@ package com.grippo.network.mapper
 
 import com.grippo.database.entity.ExerciseExampleBundleEntity
 import com.grippo.logger.AppLogger
-import com.grippo.network.dto.ExerciseExampleBundleDto
+import com.grippo.network.dto.ExerciseExampleBundleResponse
 
-public fun List<ExerciseExampleBundleDto>.toEntities(): List<ExerciseExampleBundleEntity> {
+public fun List<ExerciseExampleBundleResponse>.toEntities(): List<ExerciseExampleBundleEntity> {
     return mapNotNull { it.toEntityOrNull() }
 }
 
-public fun ExerciseExampleBundleDto.toEntityOrNull(): ExerciseExampleBundleEntity? {
+public fun ExerciseExampleBundleResponse.toEntityOrNull(): ExerciseExampleBundleEntity? {
     val entityId = AppLogger.checkOrLog(id) {
         "ExerciseExampleBundleDto.id is null"
     } ?: return null

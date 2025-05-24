@@ -6,7 +6,10 @@ import com.grippo.data.features.api.exercise.example.models.SetExerciseExample
 import com.grippo.data.features.exercise.examples.domain.ExerciseExampleRepository
 import com.grippo.database.dao.ExerciseExampleDao
 import com.grippo.network.Api
+import com.grippo.network.mapper.toExerciseExample
+import com.grippo.network.mapper.toExerciseExampleEntities
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 internal class ExerciseExampleRepositoryImpl(
     private val api: Api,
@@ -14,7 +17,9 @@ internal class ExerciseExampleRepositoryImpl(
 ) : ExerciseExampleRepository {
 
     override fun observeExerciseExamples(): Flow<List<ExerciseExample>> {
-        TODO("Not yet implemented")
+        return exerciseExampleDao
+            .getAll()
+            .map { }
     }
 
     override fun observeExerciseExample(id: String): Flow<ExerciseExample> {
@@ -26,7 +31,26 @@ internal class ExerciseExampleRepositoryImpl(
         size: Int,
         filter: ExerciseExampleFilter
     ): Result<List<ExerciseExample>> {
-        TODO("Not yet implemented")
+        val response = api.getExerciseExamples(
+            page = page,
+            size = size,
+            forceType = filter.forceType,
+            experience = filter.experience,
+            category = filter.category,
+            muscleIds = filter.muscleIds,
+            equipmentIds = filter.equipmentIds,
+            query = filter.query,
+            weightType = filter.weightType
+        )
+
+        response.onSuccess {
+            it.toExerciseExampleEntities()
+            it.forEach { r ->
+                r.toExerciseExample()
+
+                exerciseExampleDao.insertOrUpdate(exerciseExample)
+            }
+        }
     }
 
     override suspend fun getExerciseExampleById(id: String): Result<Unit> {

@@ -1,29 +1,10 @@
 package com.grippo.network.mapper
 
-import com.grippo.database.entity.ExerciseExampleBundleEntity
 import com.grippo.database.entity.ExerciseExampleEntity
-import com.grippo.database.entity.ExerciseExampleEquipmentEntity
-import com.grippo.database.entity.ExerciseExampleTutorialEntity
 import com.grippo.logger.AppLogger
-import com.grippo.network.dto.ExerciseExampleDto
+import com.grippo.network.dto.ExerciseExampleResponse
 
-public fun List<ExerciseExampleDto>.toEntities(): List<ExerciseExampleEntity> {
-    return mapNotNull { it.toEntityOrNull() }
-}
-
-public fun ExerciseExampleDto.toExerciseExampleBundles(): List<ExerciseExampleBundleEntity> {
-    return exerciseExampleBundles.mapNotNull { it.toEntityOrNull() }
-}
-
-public fun ExerciseExampleDto.toTutorials(): List<ExerciseExampleTutorialEntity> {
-    return tutorials.mapNotNull { it.toEntityOrNull() }
-}
-
-public fun ExerciseExampleDto.toEquipmentRefs(): List<ExerciseExampleEquipmentEntity> {
-    return equipmentRefs.mapNotNull { it.toEntityOrNull() }
-}
-
-public fun ExerciseExampleDto.toEntityOrNull(): ExerciseExampleEntity? {
+public fun ExerciseExampleResponse.toExerciseExample(): ExerciseExampleEntity? {
     val entityId = AppLogger.checkOrLog(id) {
         "ExerciseExampleDto.id is null"
     } ?: return null

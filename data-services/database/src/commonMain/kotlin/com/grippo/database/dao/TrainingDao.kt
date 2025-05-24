@@ -15,15 +15,19 @@ import kotlinx.coroutines.flow.Flow
 public interface TrainingDao {
 
     @Transaction
-    public suspend fun insertOrUpdateTrainingFull(trainingFull: TrainingFull) {
-        insertOrUpdateTraining(trainingFull.training)
+    public suspend fun insertOrUpdate(
+        training: TrainingEntity,
+        exercises: List<ExerciseEntity>,
+        iterations: List<IterationEntity>
+    ) {
+        insertOrUpdateTraining(training)
 
-        for (exerciseFull in trainingFull.exercises) {
-            insertOrUpdateExercise(exerciseFull.exercise)
+        for (exercise in exercises) {
+            insertOrUpdateExercise(exercise)
+        }
 
-            for (iteration in exerciseFull.iterations) {
-                insertOrUpdateIteration(iteration)
-            }
+        for (iteration in iterations) {
+            insertOrUpdateIteration(iteration)
         }
     }
 

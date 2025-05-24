@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class ExerciseExampleEquipmentRefDto(
+public data class ExerciseExampleEquipmentRefResponse(
     @SerialName("createdAt")
     val createdAt: String? = null,
     @SerialName("equipment")

@@ -6,7 +6,8 @@ import com.grippo.database.dao.TrainingDao
 import com.grippo.database.mapper.toDomain
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.network.Api
-import com.grippo.network.mapper.toTrainingFullList
+import com.grippo.network.mapper.toEntities
+import com.grippo.network.mapper.toEntityOrNull
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDateTime
@@ -38,8 +39,11 @@ internal class TrainingRepositoryImpl(
         )
 
         response.onSuccess {
-            it.toTrainingFullList().forEach {
-                trainingDao.insertOrUpdateTrainingFull(it)
+            it.forEach { r ->
+                val training = r.toEntityOrNull() ?: return@onSuccess
+                val exercises = r.exercises.toEntities()
+                val iterations = r.exercises.flatMap { it.iterations }.toEntities()
+                trainingDao.insertOrUpdate(training, exercises, iterations)
             }
         }
 

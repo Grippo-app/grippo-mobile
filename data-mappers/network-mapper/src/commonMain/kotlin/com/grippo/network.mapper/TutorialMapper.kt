@@ -2,9 +2,9 @@ package com.grippo.network.mapper
 
 import com.grippo.database.entity.ExerciseExampleTutorialEntity
 import com.grippo.logger.AppLogger
-import com.grippo.network.dto.TutorialDto
+import com.grippo.network.dto.TutorialResponse
 
-public fun TutorialDto.toEntityOrNull(): ExerciseExampleTutorialEntity? {
+public fun TutorialResponse.toEntityOrNull(): ExerciseExampleTutorialEntity? {
     val entityId = AppLogger.checkOrLog(id) {
         "TutorialDto.id is null"
     } ?: return null

@@ -4,15 +4,15 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class ExerciseExampleDto(
+public data class ExerciseExampleResponse(
     @SerialName("createdAt")
     val createdAt: String? = null,
     @SerialName("id")
     val id: String? = null,
     @SerialName("exerciseExampleBundles")
-    val exerciseExampleBundles: List<ExerciseExampleBundleDto> = emptyList(),
+    val exerciseExampleBundles: List<ExerciseExampleBundleResponse> = emptyList(),
     @SerialName("tutorials")
-    val tutorials: List<TutorialDto> = emptyList(),
+    val tutorials: List<TutorialResponse> = emptyList(),
     @SerialName("name")
     val name: String? = null,
     @SerialName("forceType")
@@ -32,5 +32,5 @@ public data class ExerciseExampleDto(
     @SerialName("imageUrl")
     val imageUrl: String? = null,
     @SerialName("equipmentRefs")
-    val equipmentRefs: List<ExerciseExampleEquipmentRefDto> = emptyList()
+    val equipmentRefs: List<ExerciseExampleEquipmentRefResponse> = emptyList()
 )

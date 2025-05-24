@@ -4,6 +4,9 @@ import com.grippo.network.client.NetworkClient
 import com.grippo.network.dto.AuthBody
 import com.grippo.network.dto.EquipmentGroupResponse
 import com.grippo.network.dto.EquipmentResponse
+import com.grippo.network.dto.ExerciseExampleCriteriaBody
+import com.grippo.network.dto.ExerciseExampleFiltersBody
+import com.grippo.network.dto.ExerciseExampleResponse
 import com.grippo.network.dto.MuscleGroupResponse
 import com.grippo.network.dto.MuscleResponse
 import com.grippo.network.dto.RefreshBody
@@ -176,77 +179,81 @@ public class Api(private val client: NetworkClient) {
         )
     }
 
-//    public suspend fun getExerciseExamples(
-//        page: Int,
-//        size: Int,
-//        query: String?,
-//        weightType: String?,
-//        forceType: String?,
-//        experience: String?,
-//        category: String?,
-//        muscleIds: List<String>,
-//        equipmentIds: List<String>
-//    ): Result<List<ExerciseExampleDto>> {
-//        return request(
-//            method = HttpMethod.Post,
-//            path = "/exercise-examples/all",
-//            queryParams = buildMap {
-//                put("page", page.toString())
-//                put("size", size.toString())
-//            },
-//            body = ExerciseExampleFiltersBody(
-//                category = category,
-//                equipmentIds = equipmentIds,
-//                experience = experience,
-//                forceType = forceType,
-//                muscleIds = muscleIds,
-//                query = query,
-//                weightType = weightType
-//            )
-//        )
-//    }
-//
-//    public suspend fun getRecommendedExerciseExamples(
-//        page: Int,
-//        size: Int,
-//        exerciseCount: Int?,
-//        targetMuscleId: String?,
-//        exerciseExampleIds: List<String>
-//    ): Result<List<ExerciseExampleDto>> {
-//        return request(
-//            method = HttpMethod.Post,
-//            path = "/exercise-examples/recommended",
-//            queryParams = buildMap {
-//                put("page", page.toString())
-//                put("size", size.toString())
-//            },
-//            body = ExerciseExampleCriteriaBody(
-//                exerciseCount = exerciseCount,
-//                exerciseExampleIds = exerciseExampleIds,
-//                targetMuscleId = targetMuscleId
-//            )
-//        )
-//    }
-//
+    /* * * * * * * * * * * * * * * * *
+     * Exercise examples
+     * * * * * * * * * * * * * * * * */
+
+    public suspend fun getExerciseExamples(
+        page: Int,
+        size: Int,
+        query: String?,
+        weightType: String?,
+        forceType: String?,
+        experience: String?,
+        category: String?,
+        muscleIds: List<String>,
+        equipmentIds: List<String>
+    ): Result<List<ExerciseExampleResponse>> {
+        return request(
+            method = HttpMethod.Post,
+            path = "/exercise-examples/all",
+            queryParams = buildMap {
+                put("page", page.toString())
+                put("size", size.toString())
+            },
+            body = ExerciseExampleFiltersBody(
+                category = category,
+                equipmentIds = equipmentIds,
+                experience = experience,
+                forceType = forceType,
+                muscleIds = muscleIds,
+                query = query,
+                weightType = weightType
+            )
+        )
+    }
+
+    public suspend fun getRecommendedExerciseExamples(
+        page: Int,
+        size: Int,
+        exerciseCount: Int?,
+        targetMuscleId: String?,
+        exerciseExampleIds: List<String>
+    ): Result<List<ExerciseExampleResponse>> {
+        return request(
+            method = HttpMethod.Post,
+            path = "/exercise-examples/recommended",
+            queryParams = buildMap {
+                put("page", page.toString())
+                put("size", size.toString())
+            },
+            body = ExerciseExampleCriteriaBody(
+                exerciseCount = exerciseCount,
+                exerciseExampleIds = exerciseExampleIds,
+                targetMuscleId = targetMuscleId
+            )
+        )
+    }
+
+    public suspend fun setExerciseExample(body: ExerciseExampleResponse): Result<ExerciseExampleResponse> {
+        return request(
+            method = HttpMethod.Post,
+            path = "/exercise-examples",
+            body = body
+        )
+    }
+
+    public suspend fun getExerciseExample(exerciseExampleId: String): Result<ExerciseExampleResponse> {
+        return request(
+            method = HttpMethod.Get,
+            path = "/exercise-examples/$exerciseExampleId"
+        )
+    }
+
 //    public suspend fun getExerciseExampleFilters(): Result<ExerciseExampleFiltersDto> {
 //        return request(
 //            method = HttpMethod.Get,
 //            path = "/filters"
-//        )
-//    }
-//
-//    public suspend fun setExerciseExample(body: ExerciseExampleDto): Result<ExerciseExampleDto> {
-//        return request(
-//            method = HttpMethod.Post,
-//            path = "/exercise-examples",
-//            body = body
-//        )
-//    }
-//
-//    public suspend fun getExerciseExample(exerciseExampleId: String): Result<ExerciseExampleDto> {
-//        return request(
-//            method = HttpMethod.Get,
-//            path = "/exercise-examples/$exerciseExampleId"
 //        )
 //    }
 //

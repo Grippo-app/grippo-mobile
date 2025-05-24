@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class TutorialDto(
+public data class TutorialResponse(
     @SerialName("createdAt")
     val createdAt: String? = null,
     @SerialName("exerciseExampleId")
