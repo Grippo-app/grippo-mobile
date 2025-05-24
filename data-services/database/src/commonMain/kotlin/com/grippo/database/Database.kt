@@ -59,11 +59,8 @@ public abstract class Database : RoomDatabase() {
     public abstract fun tokenDao(): TokenDao
     public abstract fun userDao(): UserDao
     public abstract fun weightHistoryDao(): WeightHistoryDao
-
     public abstract fun equipmentDao(): EquipmentDao
     public abstract fun trainingDao(): TrainingDao
-
     public abstract fun exerciseExampleDao(): ExerciseExampleDao
-
     public abstract fun muscleDao(): MuscleDao
 }
