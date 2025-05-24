@@ -3,7 +3,7 @@ package com.grippo.data.features.trainings.data
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.data.features.trainings.domain.TrainingRepository
 import com.grippo.database.dao.TrainingDao
-import com.grippo.database.mapper.toDomain
+import com.grippo.database.mapper.training.toDomain
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.network.Api
 import com.grippo.network.mapper.toEntities

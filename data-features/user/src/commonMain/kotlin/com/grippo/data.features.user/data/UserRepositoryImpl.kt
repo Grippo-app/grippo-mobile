@@ -3,7 +3,7 @@ package com.grippo.data.features.user.data
 import com.grippo.data.features.api.user.models.User
 import com.grippo.data.features.user.domain.UserRepository
 import com.grippo.database.dao.UserDao
-import com.grippo.database.mapper.toDomain
+import com.grippo.database.mapper.user.toDomain
 import com.grippo.network.Api
 import com.grippo.network.mapper.toEntityOrNull
 import kotlinx.coroutines.flow.Flow

@@ -4,7 +4,7 @@ import com.grippo.data.features.api.equipment.models.Equipment
 import com.grippo.data.features.excluded.equipments.domain.ExcludedEquipmentsRepository
 import com.grippo.database.dao.UserDao
 import com.grippo.database.entity.UserExcludedEquipmentEntity
-import com.grippo.database.mapper.toDomain
+import com.grippo.database.mapper.equipment.toDomain
 import com.grippo.network.Api
 import com.grippo.network.mapper.toEntities
 import kotlinx.coroutines.flow.Flow

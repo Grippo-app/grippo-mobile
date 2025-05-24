@@ -1,4 +1,4 @@
-package com.grippo.database.mapper
+package com.grippo.database.mapper.equipment
 
 import com.grippo.data.features.api.equipment.models.Equipment
 import com.grippo.data.features.api.equipment.models.EquipmentEnum

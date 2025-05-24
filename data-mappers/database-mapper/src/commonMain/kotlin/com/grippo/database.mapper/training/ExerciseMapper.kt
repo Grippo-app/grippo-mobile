@@ -1,4 +1,4 @@
-package com.grippo.database.mapper
+package com.grippo.database.mapper.training
 
 import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.database.models.ExerciseFull
