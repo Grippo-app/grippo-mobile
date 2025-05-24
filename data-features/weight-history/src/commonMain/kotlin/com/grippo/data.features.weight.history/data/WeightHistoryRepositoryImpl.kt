@@ -27,8 +27,9 @@ internal class WeightHistoryRepositoryImpl(
     override suspend fun getWeightHistory(): Result<Unit> {
         val response = api.getWeightHistory()
 
-        response.onSuccess {
-            weightHistoryDao.insertOrUpdate(it.toEntities())
+        response.onSuccess { r ->
+            val entitles = r.toEntities()
+            entitles.forEach { weightHistoryDao.insertOrUpdate(it) }
         }
 
         return response.map { }
@@ -39,7 +40,8 @@ internal class WeightHistoryRepositoryImpl(
 
         response.onSuccess {
             val list = api.getWeightHistory().getOrNull() ?: return@onSuccess
-            weightHistoryDao.insertOrUpdate(list.toEntities())
+            val entitles = list.toEntities()
+            entitles.forEach { weightHistoryDao.insertOrUpdate(it) }
         }
 
         return response.map { }
@@ -50,7 +52,8 @@ internal class WeightHistoryRepositoryImpl(
 
         response.onSuccess {
             val list = api.getWeightHistory().getOrNull() ?: return@onSuccess
-            weightHistoryDao.insertOrUpdate(list.toEntities())
+            val entitles = list.toEntities()
+            entitles.forEach { weightHistoryDao.insertOrUpdate(it) }
         }
 
         return response.map { }

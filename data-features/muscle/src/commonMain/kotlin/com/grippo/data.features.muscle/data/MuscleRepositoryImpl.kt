@@ -6,7 +6,6 @@ import com.grippo.database.dao.MuscleDao
 import com.grippo.database.mapper.toDomain
 import com.grippo.network.Api
 import com.grippo.network.mapper.toEntities
-import com.grippo.network.mapper.toEntityOrNull
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -16,7 +15,7 @@ internal class MuscleRepositoryImpl(
 ) : MuscleRepository {
 
     override fun observeMuscles(): Flow<List<MuscleGroup>> {
-        return muscleDao.getGroups()
+        return muscleDao.get()
             .map { it.toDomain() }
     }
 
@@ -24,9 +23,9 @@ internal class MuscleRepositoryImpl(
         val response = api.getMuscles()
 
         response.onSuccess { r ->
-            val groups = r.mapNotNull { it.toEntityOrNull() }
+            val groups = r.toEntities()
             val muscles = r.mapNotNull { it.muscles?.toEntities() }.flatten()
-            muscleDao.insertGroupsWithMuscles(groups, muscles)
+            muscleDao.insertOrReplace(groups, muscles)
         }
 
         return response.map { }

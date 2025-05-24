@@ -16,27 +16,30 @@ import kotlinx.coroutines.flow.Flow
 public interface ExerciseExampleDao {
 
     @Transaction
-    public suspend fun insertOrUpdateTrainingFull(
+    @Query("SELECT * FROM exercise_example WHERE id = :id")
+    public fun getById(id: String): Flow<ExerciseExampleFull>
+
+    @Transaction
+    @Query("SELECT * FROM exercise_example")
+    public fun get(): Flow<List<ExerciseExampleFull>>
+
+    // ────────────── INSERT ──────────────
+
+    @Transaction
+    public suspend fun insertOrReplace(
         example: ExerciseExampleEntity,
         bundles: List<ExerciseExampleBundleEntity>,
         equipments: List<ExerciseExampleEquipmentEntity>,
         tutorials: List<ExerciseExampleTutorialEntity>
     ) {
-        insertOrUpdate(example)
-
-        deleteBundlesByExampleId(example.id)
-        deleteEquipmentsByExampleId(example.id)
-        deleteTutorialsByExampleId(example.id)
-
+        insertExerciseExample(example)
         insertBundles(bundles)
         insertEquipments(equipments)
         insertTutorials(tutorials)
     }
 
-    // ────────────── INSERT ──────────────
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public suspend fun insertOrUpdate(example: ExerciseExampleEntity)
+    public suspend fun insertExerciseExample(example: ExerciseExampleEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public suspend fun insertBundles(bundles: List<ExerciseExampleBundleEntity>)
@@ -47,31 +50,7 @@ public interface ExerciseExampleDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public suspend fun insertTutorials(tutorials: List<ExerciseExampleTutorialEntity>)
 
-    // ────────────── DELETE OLD RELATIONS ──────────────
-
-    @Query("DELETE FROM exercise_example_bundle WHERE exerciseExampleId = :exampleId")
-    public suspend fun deleteBundlesByExampleId(exampleId: String)
-
-    @Query("DELETE FROM exercise_example_equipment WHERE exerciseExampleId = :exampleId")
-    public suspend fun deleteEquipmentsByExampleId(exampleId: String)
-
-    @Query("DELETE FROM exercise_example_tutorial WHERE exerciseExampleId = :exampleId")
-    public suspend fun deleteTutorialsByExampleId(exampleId: String)
-
-    // ────────────── READ ──────────────
-
-    @Transaction
-    @Query("SELECT * FROM exercise_example WHERE id = :id")
-    public fun getById(id: String): Flow<ExerciseExampleFull>
-
-    @Transaction
-    @Query("SELECT * FROM exercise_example")
-    public fun getAll(): Flow<List<ExerciseExampleFull>>
-
     // ────────────── DELETE ──────────────
-
-    @Query("DELETE FROM exercise_example WHERE id = :id")
-    public suspend fun deleteById(id: String)
 
     @Query("DELETE FROM exercise_example")
     public suspend fun delete()

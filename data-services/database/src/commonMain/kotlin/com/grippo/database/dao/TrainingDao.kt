@@ -15,32 +15,6 @@ import kotlinx.coroutines.flow.Flow
 public interface TrainingDao {
 
     @Transaction
-    public suspend fun insertOrUpdate(
-        training: TrainingEntity,
-        exercises: List<ExerciseEntity>,
-        iterations: List<IterationEntity>
-    ) {
-        insertOrUpdateTraining(training)
-
-        for (exercise in exercises) {
-            insertOrUpdateExercise(exercise)
-        }
-
-        for (iteration in iterations) {
-            insertOrUpdateIteration(iteration)
-        }
-    }
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public suspend fun insertOrUpdateTraining(training: TrainingEntity)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public suspend fun insertOrUpdateExercise(exercise: ExerciseEntity)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public suspend fun insertOrUpdateIteration(iteration: IterationEntity)
-
-    @Transaction
     @Query(
         """
         SELECT * FROM training
@@ -48,7 +22,7 @@ public interface TrainingDao {
         ORDER BY id DESC
         """
     )
-    public fun getTrainings(from: String, to: String): Flow<List<TrainingFull>>
+    public fun get(from: String, to: String): Flow<List<TrainingFull>>
 
     @Transaction
     @Query(
@@ -58,11 +32,41 @@ public interface TrainingDao {
         LIMIT 1
         """
     )
-    public fun getTrainingById(id: String): Flow<TrainingFull?>
+    public fun getById(id: String): Flow<TrainingFull?>
+
+    // ────────────── INSERT ──────────────
+
+    @Transaction
+    public suspend fun insertOrReplace(
+        training: TrainingEntity,
+        exercises: List<ExerciseEntity>,
+        iterations: List<IterationEntity>
+    ) {
+        insertTraining(training)
+
+        for (exercise in exercises) {
+            insertExercise(exercise)
+        }
+
+        for (iteration in iterations) {
+            insertIteration(iteration)
+        }
+    }
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public suspend fun insertTraining(training: TrainingEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public suspend fun insertExercise(exercise: ExerciseEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public suspend fun insertIteration(iteration: IterationEntity)
+
+    // ────────────── DELETE ──────────────
 
     @Query("DELETE FROM training")
-    public suspend fun deleteTableTraining()
+    public suspend fun delete()
 
     @Query("DELETE FROM training WHERE id = :id")
-    public suspend fun deleteTrainingById(id: String)
+    public suspend fun deleteById(id: String)
 }

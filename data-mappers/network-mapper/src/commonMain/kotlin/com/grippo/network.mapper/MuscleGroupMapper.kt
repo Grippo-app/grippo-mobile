@@ -1,12 +1,11 @@
 package com.grippo.network.mapper
 
-import com.grippo.database.entity.MuscleEntity
 import com.grippo.database.entity.MuscleGroupEntity
 import com.grippo.logger.AppLogger
 import com.grippo.network.dto.MuscleGroupResponse
 
-public fun MuscleGroupResponse.toMuscles(): List<MuscleEntity> {
-    return muscles.orEmpty().mapNotNull { it.toEntityOrNull() }
+public fun List<MuscleGroupResponse>.toEntities(): List<MuscleGroupEntity> {
+    return mapNotNull { it.toEntityOrNull() }
 }
 
 public fun MuscleGroupResponse.toEntityOrNull(): MuscleGroupEntity? {

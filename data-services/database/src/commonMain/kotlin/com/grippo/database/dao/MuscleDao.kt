@@ -14,7 +14,13 @@ import kotlinx.coroutines.flow.Flow
 public interface MuscleDao {
 
     @Transaction
-    public suspend fun insertGroupsWithMuscles(
+    @Query("SELECT * FROM muscle_group")
+    public fun get(): Flow<List<MuscleGroupWithMuscles>>
+
+    // ────────────── INSERT ──────────────
+
+    @Transaction
+    public suspend fun insertOrReplace(
         groups: List<MuscleGroupEntity>,
         muscles: List<MuscleEntity>
     ) {
@@ -28,17 +34,8 @@ public interface MuscleDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public suspend fun insertMuscleGroups(muscleGroups: List<MuscleGroupEntity>)
 
-    @Transaction
-    @Query("SELECT * FROM muscle WHERE id IN (:ids)")
-    public fun getByIds(ids: List<String>): Flow<List<MuscleEntity>>
-
-    @Transaction
-    @Query("SELECT * FROM muscle_group")
-    public fun getGroups(): Flow<List<MuscleGroupWithMuscles>>
-
-    @Query("DELETE FROM muscle")
-    public suspend fun delete()
+    // ────────────── DELETE ──────────────
 
     @Query("DELETE FROM muscle_group")
-    public suspend fun deleteGroups()
+    public suspend fun delete()
 }

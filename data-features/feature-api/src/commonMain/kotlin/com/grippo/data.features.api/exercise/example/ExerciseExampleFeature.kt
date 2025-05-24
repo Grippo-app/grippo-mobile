@@ -15,7 +15,7 @@ public interface ExerciseExampleFeature {
         page: Int,
         size: Int,
         filter: ExerciseExampleFilter
-    ): Result<List<ExerciseExample>>
+    ): Result<Unit>
 
     public suspend fun getExerciseExampleById(id: String): Result<Unit>
 

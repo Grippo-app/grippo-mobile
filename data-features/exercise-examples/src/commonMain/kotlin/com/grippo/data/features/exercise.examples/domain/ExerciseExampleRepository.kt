@@ -14,7 +14,7 @@ internal interface ExerciseExampleRepository {
         page: Int,
         size: Int,
         filter: ExerciseExampleFilter
-    ): Result<List<ExerciseExample>>
+    ): Result<Unit>
 
     suspend fun getExerciseExampleById(id: String): Result<Unit>
 

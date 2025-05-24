@@ -14,7 +14,13 @@ import kotlinx.coroutines.flow.Flow
 public interface EquipmentDao {
 
     @Transaction
-    public suspend fun insertGroupsWithEquipments(
+    @Query("SELECT * FROM equipment_group")
+    public fun get(): Flow<List<EquipmentGroupWithEquipments>>
+
+    // ────────────── INSERT ──────────────
+
+    @Transaction
+    public suspend fun insertOrReplace(
         groups: List<EquipmentGroupEntity>,
         equipments: List<EquipmentEntity>
     ) {
@@ -28,17 +34,8 @@ public interface EquipmentDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public suspend fun insertEquipmentGroups(groups: List<EquipmentGroupEntity>)
 
-    @Transaction
-    @Query("SELECT * FROM equipment_group")
-    public fun getGroups(): Flow<List<EquipmentGroupWithEquipments>>
-
-    @Transaction
-    @Query("SELECT * FROM equipment WHERE id IN (:ids)")
-    public fun getByIds(ids: List<String>): Flow<List<EquipmentEntity>>
-
-    @Query("DELETE FROM equipment")
-    public suspend fun delete()
+    // ────────────── DELETE ──────────────
 
     @Query("DELETE FROM equipment_group")
-    public suspend fun deleteGroups()
+    public suspend fun delete()
 }

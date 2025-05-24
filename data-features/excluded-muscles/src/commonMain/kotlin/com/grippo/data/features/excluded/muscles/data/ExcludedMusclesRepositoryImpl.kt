@@ -30,7 +30,7 @@ internal class ExcludedMusclesRepositoryImpl(
                 .mapNotNull { it.id }
                 .map { id -> UserExcludedMuscleEntity(userId, id) }
 
-            userDao.replaceExcludedMuscles(entities)
+            userDao.insertOrReplaceExcludedMuscles(entities)
         }
 
         return response.map { }
@@ -46,7 +46,7 @@ internal class ExcludedMusclesRepositoryImpl(
                 ?.toEntities()
                 ?.map { UserExcludedMuscleEntity(userId, it.id) } ?: return@onSuccess
 
-            userDao.replaceExcludedMuscles(entities)
+            userDao.insertOrReplaceExcludedMuscles(entities)
         }
 
         return response.map { }
@@ -62,7 +62,7 @@ internal class ExcludedMusclesRepositoryImpl(
                 ?.toEntities()
                 ?.map { UserExcludedMuscleEntity(userId, it.id) } ?: return@onSuccess
 
-            userDao.replaceExcludedMuscles(entities)
+            userDao.insertOrReplaceExcludedMuscles(entities)
         }
 
         return response.map { }

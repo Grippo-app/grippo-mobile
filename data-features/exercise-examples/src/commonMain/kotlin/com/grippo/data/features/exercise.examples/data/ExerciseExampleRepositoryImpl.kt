@@ -6,8 +6,8 @@ import com.grippo.data.features.api.exercise.example.models.SetExerciseExample
 import com.grippo.data.features.exercise.examples.domain.ExerciseExampleRepository
 import com.grippo.database.dao.ExerciseExampleDao
 import com.grippo.network.Api
-import com.grippo.network.mapper.toExerciseExample
-import com.grippo.network.mapper.toExerciseExampleEntities
+import com.grippo.network.mapper.toEntities
+import com.grippo.network.mapper.toEntityOrNull
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -18,7 +18,7 @@ internal class ExerciseExampleRepositoryImpl(
 
     override fun observeExerciseExamples(): Flow<List<ExerciseExample>> {
         return exerciseExampleDao
-            .getAll()
+            .get()
             .map { }
     }
 
@@ -30,7 +30,7 @@ internal class ExerciseExampleRepositoryImpl(
         page: Int,
         size: Int,
         filter: ExerciseExampleFilter
-    ): Result<List<ExerciseExample>> {
+    ): Result<Unit> {
         val response = api.getExerciseExamples(
             page = page,
             size = size,
@@ -44,17 +44,30 @@ internal class ExerciseExampleRepositoryImpl(
         )
 
         response.onSuccess {
-            it.toExerciseExampleEntities()
             it.forEach { r ->
-                r.toExerciseExample()
-
-                exerciseExampleDao.insertOrUpdate(exerciseExample)
+                val example = r.toEntityOrNull() ?: return@onSuccess
+                val bundles = r.exerciseExampleBundles.toEntities()
+                val equipments = r.equipmentRefs.toEntities()
+                val tutorials = r.tutorials.toEntities()
+                exerciseExampleDao.insertOrReplace(example, bundles, equipments, tutorials)
             }
         }
+
+        return response.map { }
     }
 
     override suspend fun getExerciseExampleById(id: String): Result<Unit> {
-        TODO("Not yet implemented")
+        val response = api.getExerciseExample(id)
+
+        response.onSuccess { r ->
+            val example = r.toEntityOrNull() ?: return@onSuccess
+            val bundles = r.exerciseExampleBundles.toEntities()
+            val equipments = r.equipmentRefs.toEntities()
+            val tutorials = r.tutorials.toEntities()
+            exerciseExampleDao.insertOrReplace(example, bundles, equipments, tutorials)
+        }
+
+        return response.map { }
     }
 
     override suspend fun setExerciseExample(exerciseExample: SetExerciseExample): Result<Unit> {

@@ -18,7 +18,7 @@ internal class TrainingRepositoryImpl(
 ) : TrainingRepository {
 
     override fun observeTraining(id: String): Flow<Training?> {
-        return trainingDao.getTrainingById(id)
+        return trainingDao.getById(id)
             .map { it?.toDomain() }
     }
 
@@ -26,7 +26,7 @@ internal class TrainingRepositoryImpl(
         start: LocalDateTime,
         end: LocalDateTime
     ): Flow<List<Training>> {
-        return trainingDao.getTrainings(
+        return trainingDao.get(
             from = DateTimeUtils.toUtcIso(start),
             to = DateTimeUtils.toUtcIso(end)
         ).map { it.toDomain() }
@@ -43,7 +43,7 @@ internal class TrainingRepositoryImpl(
                 val training = r.toEntityOrNull() ?: return@onSuccess
                 val exercises = r.exercises.toEntities()
                 val iterations = r.exercises.flatMap { it.iterations }.toEntities()
-                trainingDao.insertOrUpdate(training, exercises, iterations)
+                trainingDao.insertOrReplace(training, exercises, iterations)
             }
         }
 

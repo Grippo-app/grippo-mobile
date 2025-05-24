@@ -1,12 +1,11 @@
 package com.grippo.network.mapper
 
-import com.grippo.database.entity.EquipmentEntity
 import com.grippo.database.entity.EquipmentGroupEntity
 import com.grippo.logger.AppLogger
 import com.grippo.network.dto.EquipmentGroupResponse
 
-public fun EquipmentGroupResponse.toEquipments(): List<EquipmentEntity> {
-    return equipments.orEmpty().mapNotNull { it.toEntityOrNull() }
+public fun List<EquipmentGroupResponse>.toEntities(): List<EquipmentGroupEntity> {
+    return mapNotNull { it.toEntityOrNull() }
 }
 
 public fun EquipmentGroupResponse.toEntityOrNull(): EquipmentGroupEntity? {

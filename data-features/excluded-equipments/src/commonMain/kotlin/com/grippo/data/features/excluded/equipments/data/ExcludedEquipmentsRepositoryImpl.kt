@@ -30,7 +30,7 @@ internal class ExcludedEquipmentsRepositoryImpl(
                 .mapNotNull { it.id }
                 .map { id -> UserExcludedEquipmentEntity(userId, id) }
 
-            userDao.replaceExcludedEquipments(entities)
+            userDao.insertOrReplaceExcludedEquipments(entities)
         }
 
         return response.map { }
@@ -46,7 +46,7 @@ internal class ExcludedEquipmentsRepositoryImpl(
                 ?.toEntities()
                 ?.map { UserExcludedEquipmentEntity(userId, it.id) } ?: return@onSuccess
 
-            userDao.replaceExcludedEquipments(entities)
+            userDao.insertOrReplaceExcludedEquipments(entities)
         }
 
         return response.map { }
@@ -62,7 +62,7 @@ internal class ExcludedEquipmentsRepositoryImpl(
                 ?.toEntities()
                 ?.map { UserExcludedEquipmentEntity(userId, it.id) } ?: return@onSuccess
 
-            userDao.replaceExcludedEquipments(entities)
+            userDao.insertOrReplaceExcludedEquipments(entities)
         }
 
         return response.map { }

@@ -15,21 +15,6 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 public interface UserDao {
 
-    @Query("SELECT * FROM user LIMIT 1")
-    public fun get(): Flow<UserEntity?>
-
-    @Transaction
-    public suspend fun replaceExcludedEquipments(equipments: List<UserExcludedEquipmentEntity>) {
-        clearExcludedEquipments()
-        insertExcludedEquipments(equipments)
-    }
-
-    @Transaction
-    public suspend fun replaceExcludedMuscles(muscles: List<UserExcludedMuscleEntity>) {
-        clearExcludedMuscles()
-        insertExcludedMuscles(muscles)
-    }
-
     @Query(
         """
         SELECT m.* FROM muscle AS m
@@ -46,7 +31,22 @@ public interface UserDao {
     )
     public fun getExcludedEquipments(): Flow<List<EquipmentEntity>>
 
-    // Supportive methods
+    @Query("SELECT * FROM user LIMIT 1")
+    public fun get(): Flow<UserEntity?>
+
+    // ────────────── INSERT ──────────────
+
+    @Transaction
+    public suspend fun insertOrReplaceExcludedEquipments(equipments: List<UserExcludedEquipmentEntity>) {
+        clearExcludedEquipments()
+        insertExcludedEquipments(equipments)
+    }
+
+    @Transaction
+    public suspend fun insertOrReplaceExcludedMuscles(muscles: List<UserExcludedMuscleEntity>) {
+        clearExcludedMuscles()
+        insertExcludedMuscles(muscles)
+    }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public suspend fun insertOrReplaceUser(user: UserEntity)
@@ -56,6 +56,8 @@ public interface UserDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public suspend fun insertExcludedMuscles(muscles: List<UserExcludedMuscleEntity>)
+
+    // ────────────── DELETE ──────────────
 
     @Query("DELETE FROM user_excluded_equipment")
     public suspend fun clearExcludedEquipments()

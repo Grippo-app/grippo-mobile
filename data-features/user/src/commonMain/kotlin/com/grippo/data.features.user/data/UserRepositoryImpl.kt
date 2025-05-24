@@ -24,7 +24,6 @@ internal class UserRepositoryImpl(
 
         response.onSuccess {
             val user = it.toEntityOrNull() ?: return@onSuccess
-
             userDao.insertOrReplaceUser(user)
         }
 

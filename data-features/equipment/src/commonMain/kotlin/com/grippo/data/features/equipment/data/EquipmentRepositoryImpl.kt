@@ -6,7 +6,6 @@ import com.grippo.database.dao.EquipmentDao
 import com.grippo.database.mapper.toDomain
 import com.grippo.network.Api
 import com.grippo.network.mapper.toEntities
-import com.grippo.network.mapper.toEntityOrNull
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -16,7 +15,7 @@ internal class EquipmentRepositoryImpl(
 ) : EquipmentRepository {
 
     override fun observeEquipments(): Flow<List<EquipmentGroup>> {
-        return equipmentDao.getGroups()
+        return equipmentDao.get()
             .map { it.toDomain() }
     }
 
@@ -24,9 +23,9 @@ internal class EquipmentRepositoryImpl(
         val response = api.getEquipments()
 
         response.onSuccess { r ->
-            val groups = r.mapNotNull { it.toEntityOrNull() }
+            val groups = r.toEntities()
             val equipments = r.mapNotNull { it.equipments?.toEntities() }.flatten()
-            equipmentDao.insertGroupsWithEquipments(groups, equipments)
+            equipmentDao.insertOrReplace(groups, equipments)
         }
 
         return response.map { }

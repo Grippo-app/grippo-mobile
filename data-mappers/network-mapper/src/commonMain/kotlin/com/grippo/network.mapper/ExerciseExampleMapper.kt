@@ -4,7 +4,11 @@ import com.grippo.database.entity.ExerciseExampleEntity
 import com.grippo.logger.AppLogger
 import com.grippo.network.dto.ExerciseExampleResponse
 
-public fun ExerciseExampleResponse.toExerciseExample(): ExerciseExampleEntity? {
+public fun List<ExerciseExampleResponse>.toEntities(): List<ExerciseExampleEntity> {
+    return mapNotNull { it.toEntityOrNull() }
+}
+
+public fun ExerciseExampleResponse.toEntityOrNull(): ExerciseExampleEntity? {
     val entityId = AppLogger.checkOrLog(id) {
         "ExerciseExampleDto.id is null"
     } ?: return null

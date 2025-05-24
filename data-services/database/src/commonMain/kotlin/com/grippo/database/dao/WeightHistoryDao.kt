@@ -10,17 +10,18 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 public interface WeightHistoryDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public suspend fun insertOrUpdate(histories: List<WeightHistoryEntity>)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public suspend fun insertOrUpdate(history: WeightHistoryEntity)
-
     @Query("SELECT * FROM weight_history ORDER BY createdAt")
     public fun get(): Flow<List<WeightHistoryEntity>>
 
     @Query("SELECT * FROM weight_history ORDER BY createdAt DESC LIMIT 1")
     public fun getLast(): Flow<WeightHistoryEntity?>
+
+    // ────────────── INSERT ──────────────
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public suspend fun insertOrUpdate(history: WeightHistoryEntity)
+
+    // ────────────── DELETE ──────────────
 
     @Query("DELETE FROM weight_history")
     public suspend fun delete()

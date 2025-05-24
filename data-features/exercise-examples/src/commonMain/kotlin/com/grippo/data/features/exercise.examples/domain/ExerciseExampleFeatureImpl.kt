@@ -22,7 +22,7 @@ internal class ExerciseExampleFeatureImpl(
         page: Int,
         size: Int,
         filter: ExerciseExampleFilter
-    ): Result<List<ExerciseExample>> {
+    ): Result<Unit> {
         return repository.getExerciseExamples(page, size, filter)
     }
 

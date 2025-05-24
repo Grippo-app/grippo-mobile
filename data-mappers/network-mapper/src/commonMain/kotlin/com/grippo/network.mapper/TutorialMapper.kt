@@ -4,6 +4,10 @@ import com.grippo.database.entity.ExerciseExampleTutorialEntity
 import com.grippo.logger.AppLogger
 import com.grippo.network.dto.TutorialResponse
 
+public fun List<TutorialResponse>.toEntities(): List<ExerciseExampleTutorialEntity> {
+    return mapNotNull { it.toEntityOrNull() }
+}
+
 public fun TutorialResponse.toEntityOrNull(): ExerciseExampleTutorialEntity? {
     val entityId = AppLogger.checkOrLog(id) {
         "TutorialDto.id is null"
