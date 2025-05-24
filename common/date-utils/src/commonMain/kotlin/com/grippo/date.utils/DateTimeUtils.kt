@@ -62,7 +62,6 @@ public object DateTimeUtils {
         return value.format(LocalDateTime.Format { byUnicodePattern(format.value) })
     }
 
-
     public fun ago(value: LocalDateTime): Duration {
         val now = Clock.System.now()
         val fromInstant = value.toInstant(timeZone)
