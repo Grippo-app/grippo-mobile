@@ -1,4 +1,4 @@
-package com.grippo.network.mapper
+package com.grippo.network.mapper.user
 
 import com.grippo.database.entity.TokenEntity
 import com.grippo.logger.AppLogger

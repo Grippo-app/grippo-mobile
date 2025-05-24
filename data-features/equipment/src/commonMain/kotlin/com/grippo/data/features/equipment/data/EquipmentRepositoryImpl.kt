@@ -5,7 +5,7 @@ import com.grippo.data.features.equipment.domain.EquipmentRepository
 import com.grippo.database.dao.EquipmentDao
 import com.grippo.database.mapper.equipment.toDomain
 import com.grippo.network.Api
-import com.grippo.network.mapper.toEntities
+import com.grippo.network.mapper.equipment.toEntities
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

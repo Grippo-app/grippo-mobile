@@ -6,8 +6,8 @@ import com.grippo.data.features.api.exercise.example.models.SetExerciseExample
 import com.grippo.data.features.exercise.examples.domain.ExerciseExampleRepository
 import com.grippo.database.dao.ExerciseExampleDao
 import com.grippo.network.Api
-import com.grippo.network.mapper.toEntities
-import com.grippo.network.mapper.toEntityOrNull
+import com.grippo.network.mapper.muscles.toEntities
+import com.grippo.network.mapper.muscles.toEntityOrNull
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

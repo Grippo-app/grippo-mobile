@@ -1,4 +1,4 @@
-package com.grippo.network.mapper
+package com.grippo.network.mapper.muscles
 
 import com.grippo.database.entity.MuscleEntity
 import com.grippo.logger.AppLogger

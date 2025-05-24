@@ -6,8 +6,8 @@ import com.grippo.database.dao.TrainingDao
 import com.grippo.database.mapper.training.toDomain
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.network.Api
-import com.grippo.network.mapper.toEntities
-import com.grippo.network.mapper.toEntityOrNull
+import com.grippo.network.mapper.training.toEntities
+import com.grippo.network.mapper.training.toEntityOrNull
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDateTime

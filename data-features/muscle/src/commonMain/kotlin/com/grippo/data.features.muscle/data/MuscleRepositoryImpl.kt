@@ -5,7 +5,7 @@ import com.grippo.data.features.muscle.domain.MuscleRepository
 import com.grippo.database.dao.MuscleDao
 import com.grippo.database.mapper.muscles.toDomain
 import com.grippo.network.Api
-import com.grippo.network.mapper.toEntities
+import com.grippo.network.mapper.muscles.toEntities
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

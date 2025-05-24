@@ -5,7 +5,7 @@ import com.grippo.data.features.weight.history.domain.WeightHistoryRepository
 import com.grippo.database.dao.WeightHistoryDao
 import com.grippo.database.mapper.user.toDomain
 import com.grippo.network.Api
-import com.grippo.network.mapper.toEntities
+import com.grippo.network.mapper.user.toEntities
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

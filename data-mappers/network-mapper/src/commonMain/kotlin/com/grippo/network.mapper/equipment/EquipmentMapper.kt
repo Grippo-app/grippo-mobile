@@ -1,4 +1,4 @@
-package com.grippo.network.mapper
+package com.grippo.network.mapper.equipment
 
 import com.grippo.database.entity.EquipmentEntity
 import com.grippo.logger.AppLogger
