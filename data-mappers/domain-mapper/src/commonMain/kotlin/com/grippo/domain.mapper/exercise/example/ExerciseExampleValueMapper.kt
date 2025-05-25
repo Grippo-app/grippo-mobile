@@ -14,21 +14,13 @@ public fun ExerciseExampleValue.toState(): ExerciseExampleValueState? {
         "ExerciseExample $id has an unrecognized forceType: $forceType"
     } ?: return null
 
-    val mappedWeightType = AppLogger.checkOrLog(weightType.toState()) {
-        "ExerciseExample $id has an unrecognized weightType: $weightType"
-    } ?: return null
-
-    val mappedExperience = AppLogger.checkOrLog(experience.toState()) {
-        "ExerciseExample $id has an unrecognized experience: $experience"
-    } ?: return null
-
     return ExerciseExampleValueState(
         id = id,
         name = name,
         imageUrl = imageUrl,
         description = description,
-        experience = mappedExperience,
-        weightType = mappedWeightType,
+        experience = experience.toState(),
+        weightType = weightType.toState(),
         forceType = mappedForceType,
         category = mappedCategory
     )

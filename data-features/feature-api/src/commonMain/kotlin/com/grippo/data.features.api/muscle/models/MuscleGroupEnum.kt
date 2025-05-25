@@ -6,12 +6,11 @@ public enum class MuscleGroupEnum(private val key: String) {
     ABDOMINAL_MUSCLES("abdominal_muscles"),
     LEGS("legs"),
     ARMS_AND_FOREARMS("arms_and_forearms"),
-    SHOULDER_MUSCLES("shoulder_muscles"),
-    UNIDENTIFIED("unidentified");
+    SHOULDER_MUSCLES("shoulder_muscles");
 
     public companion object {
-        public fun of(key: String): MuscleGroupEnum {
-            return entries.firstOrNull { it.key == key } ?: UNIDENTIFIED
+        public fun of(key: String): MuscleGroupEnum? {
+            return entries.firstOrNull { it.key == key }
         }
     }
 }
