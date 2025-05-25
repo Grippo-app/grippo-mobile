@@ -5,9 +5,10 @@ import com.grippo.data.features.api.exercise.example.models.ExerciseExampleFilte
 import com.grippo.data.features.api.exercise.example.models.SetExerciseExample
 import com.grippo.data.features.exercise.examples.domain.ExerciseExampleRepository
 import com.grippo.database.dao.ExerciseExampleDao
+import com.grippo.database.mapper.exercise.equipment.toDomain
 import com.grippo.network.Api
-import com.grippo.network.mapper.muscles.toEntities
-import com.grippo.network.mapper.muscles.toEntityOrNull
+import com.grippo.network.mapper.exercise.example.toEntities
+import com.grippo.network.mapper.exercise.example.toEntityOrNull
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -19,7 +20,7 @@ internal class ExerciseExampleRepositoryImpl(
     override fun observeExerciseExamples(): Flow<List<ExerciseExample>> {
         return exerciseExampleDao
             .get()
-            .map { }
+            .map { it.toDomain() }
     }
 
     override fun observeExerciseExample(id: String): Flow<ExerciseExample> {

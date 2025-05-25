@@ -1,6 +1,7 @@
 package com.grippo.database.mapper.training
 
 import com.grippo.data.features.api.training.models.Exercise
+import com.grippo.database.mapper.exercise.equipment.toDomain
 import com.grippo.database.models.ExerciseFull
 
 public fun List<ExerciseFull>.toDomain(): List<Exercise> {
@@ -15,6 +16,6 @@ public fun ExerciseFull.toDomain(): Exercise {
         volume = exercise.volume,
         repetitions = exercise.repetitions,
         intensity = exercise.intensity,
-        exerciseExample = null // example todo add mapper and model
+        exerciseExample = example?.toDomain()
     )
 }
