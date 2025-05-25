@@ -1,10 +1,9 @@
 package com.grippo.domain.mapper.muscles
 
 import com.grippo.data.features.api.muscle.models.MuscleEnum
-import com.grippo.logger.AppLogger
 import com.grippo.presentation.api.muscles.models.MuscleEnumState
 
-public fun MuscleEnum.toState(): MuscleEnumState? {
+public fun MuscleEnum.toState(): MuscleEnumState {
     return when (this) {
         MuscleEnum.PECTORALIS_MAJOR_ABDOMINAL -> MuscleEnumState.PECTORALIS_MAJOR_ABDOMINAL
         MuscleEnum.PECTORALIS_MAJOR_CLAVICULAR -> MuscleEnumState.PECTORALIS_MAJOR_CLAVICULAR
@@ -27,8 +26,5 @@ public fun MuscleEnum.toState(): MuscleEnumState? {
         MuscleEnum.FOREARM -> MuscleEnumState.FOREARM
         MuscleEnum.ADDUCTORS -> MuscleEnumState.ADDUCTORS
         MuscleEnum.ABDUCTORS -> MuscleEnumState.ABDUCTORS
-        MuscleEnum.UNIDENTIFIED -> AppLogger.checkOrLog(null) {
-            "MuscleEnum.UNIDENTIFIED cannot be mapped to state"
-        }
     }
 }

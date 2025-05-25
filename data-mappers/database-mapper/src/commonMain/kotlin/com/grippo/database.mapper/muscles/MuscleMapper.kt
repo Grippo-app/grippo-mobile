@@ -3,15 +3,20 @@ package com.grippo.database.mapper.muscles
 import com.grippo.data.features.api.muscle.models.Muscle
 import com.grippo.data.features.api.muscle.models.MuscleEnum
 import com.grippo.database.entity.MuscleEntity
+import com.grippo.logger.AppLogger
 
 public fun List<MuscleEntity>.toDomain(): List<Muscle> {
-    return map { it.toDomain() }
+    return mapNotNull { it.toDomain() }
 }
 
-public fun MuscleEntity.toDomain(): Muscle {
+public fun MuscleEntity.toDomain(): Muscle? {
+    val mappedType = AppLogger.checkOrLog(MuscleEnum.of(type)) {
+        "MuscleEntity $id has unrecognized type: $type"
+    } ?: return null
+
     return Muscle(
         id = id,
         name = name,
-        type = MuscleEnum.of(type),
+        type = mappedType
     )
 }

@@ -32,13 +32,11 @@ public enum class MuscleEnum(private val key: String) {
     // Arms
     BICEPS("biceps"),
     TRICEPS("triceps"),
-    FOREARM("forearm"),
-
-    UNIDENTIFIED("unidentified");
+    FOREARM("forearm");
 
     public companion object {
-        public fun of(key: String): MuscleEnum {
-            return entries.firstOrNull { it.key == key } ?: UNIDENTIFIED
+        public fun of(key: String): MuscleEnum? {
+            return entries.firstOrNull { it.key == key }
         }
     }
 }
