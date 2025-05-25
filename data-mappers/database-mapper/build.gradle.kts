@@ -11,6 +11,7 @@ kotlin {
         implementation(projects.dataServices.database)
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.common.dateUtils)
+        implementation(projects.common.logger)
 
         implementation(libs.datetime)
     }
