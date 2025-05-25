@@ -17,14 +17,22 @@ public fun ExerciseExampleEntity.toDomain(): ExerciseExampleValue? {
         "ExerciseExampleEntity $id has unrecognized experience: $experience"
     } ?: return null
 
+    val mappedForceType = AppLogger.checkOrLog(ForceTypeEnum.of(forceType)) {
+        "ExerciseExampleEntity $id has unrecognized forceType: $forceType"
+    } ?: return null
+
+    val mappedCategory = AppLogger.checkOrLog(CategoryEnum.of(category)) {
+        "ExerciseExampleEntity $id has unrecognized category: $category"
+    } ?: return null
+
     return ExerciseExampleValue(
         id = id,
         name = name,
         description = description,
         imageUrl = imageUrl,
         experience = mappedExperience,
-        forceType = ForceTypeEnum.of(forceType),
+        forceType = mappedForceType,
         weightType = mappedWeightType,
-        category = CategoryEnum.of(category)
+        category = mappedCategory
     )
 }
