@@ -10,23 +10,23 @@ public fun List<ExerciseExampleEquipmentRefResponse>.toEntities(): List<Exercise
 
 public fun ExerciseExampleEquipmentRefResponse.toEntityOrNull(): ExerciseExampleEquipmentEntity? {
     val entityId = AppLogger.checkOrLog(id) {
-        "ExerciseExampleEquipmentRefDto.id is null"
+        "ExerciseExampleEquipmentRefResponse.id is null"
     } ?: return null
 
     val entityEquipmentId = AppLogger.checkOrLog(equipmentId) {
-        "ExerciseExampleEquipmentRefDto.equipmentId is null"
+        "ExerciseExampleEquipmentRefResponse.equipmentId is null"
     } ?: return null
 
     val entityExerciseExampleId = AppLogger.checkOrLog(exerciseExampleId) {
-        "ExerciseExampleEquipmentRefDto.exerciseExampleId is null"
+        "ExerciseExampleEquipmentRefResponse.exerciseExampleId is null"
     } ?: return null
 
     val entityCreatedAt = AppLogger.checkOrLog(createdAt) {
-        "ExerciseExampleEquipmentRefDto.createdAt is null"
+        "ExerciseExampleEquipmentRefResponse.createdAt is null"
     } ?: return null
 
     val entityUpdatedAt = AppLogger.checkOrLog(updatedAt) {
-        "ExerciseExampleEquipmentRefDto.updatedAt is null"
+        "ExerciseExampleEquipmentRefResponse.updatedAt is null"
     } ?: return null
 
     return ExerciseExampleEquipmentEntity(

@@ -6,7 +6,7 @@ import com.grippo.presentation.api.user.models.ExperienceEnumState
 import kotlinx.collections.immutable.ImmutableList
 
 @Immutable
-public data class ExerciseExample(
+public data class ExerciseExampleState(
     val id: String,
     val bundles: ImmutableList<ExerciseExampleBundleState>,
     val name: String,

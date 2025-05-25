@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 public data class ExerciseExampleEntity(
     @PrimaryKey val id: String,
     val name: String,
-    val description: String?,
+    val description: String,
     val createdAt: String,
     val updatedAt: String,
     val forceType: String,

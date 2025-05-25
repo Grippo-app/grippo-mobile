@@ -10,35 +10,35 @@ public fun List<TutorialResponse>.toEntities(): List<ExerciseExampleTutorialEnti
 
 public fun TutorialResponse.toEntityOrNull(): ExerciseExampleTutorialEntity? {
     val entityId = AppLogger.checkOrLog(id) {
-        "TutorialDto.id is null"
+        "TutorialResponse.id is null"
     } ?: return null
 
     val entityExerciseExampleId = AppLogger.checkOrLog(exerciseExampleId) {
-        "TutorialDto.exerciseExampleId is null"
+        "TutorialResponse.exerciseExampleId is null"
     } ?: return null
 
     val entityTitle = AppLogger.checkOrLog(title) {
-        "TutorialDto.title is null"
+        "TutorialResponse.title is null"
     } ?: return null
 
     val entityLanguage = AppLogger.checkOrLog(language) {
-        "TutorialDto.language is null"
+        "TutorialResponse.language is null"
     } ?: return null
 
     val entityValue = AppLogger.checkOrLog(value) {
-        "TutorialDto.value is null"
+        "TutorialResponse.value is null"
     } ?: return null
 
     val entityResourceType = AppLogger.checkOrLog(resourceType) {
-        "TutorialDto.resourceType is null"
+        "TutorialResponse.resourceType is null"
     } ?: return null
 
     val entityCreatedAt = AppLogger.checkOrLog(createdAt) {
-        "TutorialDto.createdAt is null"
+        "TutorialResponse.createdAt is null"
     } ?: return null
 
     val entityUpdatedAt = AppLogger.checkOrLog(updatedAt) {
-        "TutorialDto.updatedAt is null"
+        "TutorialResponse.updatedAt is null"
     } ?: return null
 
     return ExerciseExampleTutorialEntity(

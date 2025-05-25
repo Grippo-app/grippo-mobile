@@ -10,31 +10,31 @@ public fun List<TrainingResponse>.toEntities(): List<TrainingEntity> {
 
 public fun TrainingResponse.toEntityOrNull(): TrainingEntity? {
     val entityId = AppLogger.checkOrLog(id) {
-        "TrainingDto.id is null"
+        "TrainingResponse.id is null"
     } ?: return null
 
     val entityDuration = AppLogger.checkOrLog(duration) {
-        "TrainingDto.duration is null"
+        "TrainingResponse.duration is null"
     } ?: return null
 
     val entityCreatedAt = AppLogger.checkOrLog(createdAt) {
-        "TrainingDto.createdAt is null"
+        "TrainingResponse.createdAt is null"
     } ?: return null
 
     val entityVolume = AppLogger.checkOrLog(volume) {
-        "TrainingDto.volume is null"
+        "TrainingResponse.volume is null"
     } ?: return null
 
     val entityRepetitions = AppLogger.checkOrLog(repetitions) {
-        "TrainingDto.repetitions is null"
+        "TrainingResponse.repetitions is null"
     } ?: return null
 
     val entityIntensity = AppLogger.checkOrLog(intensity) {
-        "TrainingDto.intensity is null"
+        "TrainingResponse.intensity is null"
     } ?: return null
 
     val entityUpdatedAt = AppLogger.checkOrLog(updatedAt) {
-        "TrainingDto.updatedAt is null"
+        "TrainingResponse.updatedAt is null"
     } ?: return null
 
     return TrainingEntity(

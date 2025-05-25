@@ -8,7 +8,7 @@ public data class ExerciseExample(
     val equipments: List<Equipment>,
     val tutorials: List<Tutorial>,
     val name: String,
-    val description: String?,
+    val description: String,
     val imageUrl: String?,
     val experience: ExperienceEnum,
     val forceType: ForceTypeEnum,
