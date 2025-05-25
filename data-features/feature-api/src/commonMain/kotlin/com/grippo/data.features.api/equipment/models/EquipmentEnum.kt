@@ -52,10 +52,6 @@ public enum class EquipmentEnum(private val key: String) {
     ROW_BENCH("row_bench"),
     UNIDENTIFIED("unidentified");
 
-    override fun toString(): String {
-        return key
-    }
-
     public companion object {
         public fun of(key: String?): EquipmentEnum {
             return entries.firstOrNull { it.key == key } ?: UNIDENTIFIED

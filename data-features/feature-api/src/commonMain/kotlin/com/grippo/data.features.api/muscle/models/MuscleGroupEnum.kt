@@ -9,10 +9,6 @@ public enum class MuscleGroupEnum(private val key: String) {
     SHOULDER_MUSCLES("shoulder_muscles"),
     UNIDENTIFIED("unidentified");
 
-    override fun toString(): String {
-        return key
-    }
-
     public companion object {
         public fun of(key: String): MuscleGroupEnum {
             return entries.firstOrNull { it.key == key } ?: UNIDENTIFIED

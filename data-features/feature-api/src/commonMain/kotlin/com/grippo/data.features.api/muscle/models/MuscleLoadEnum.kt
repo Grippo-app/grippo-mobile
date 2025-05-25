@@ -6,10 +6,6 @@ public enum class MuscleLoadEnum(private val key: String) {
     LOW("low"),
     UNIDENTIFIED("unidentified");
 
-    override fun toString(): String {
-        return key
-    }
-
     public companion object {
         public fun of(key: String?): MuscleLoadEnum {
             return entries.firstOrNull { it.key == key } ?: UNIDENTIFIED

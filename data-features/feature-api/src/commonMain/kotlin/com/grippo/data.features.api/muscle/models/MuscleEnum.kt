@@ -36,10 +36,6 @@ public enum class MuscleEnum(private val key: String) {
 
     UNIDENTIFIED("unidentified");
 
-    override fun toString(): String {
-        return key
-    }
-
     public companion object {
         public fun of(key: String): MuscleEnum {
             return entries.firstOrNull { it.key == key } ?: UNIDENTIFIED
