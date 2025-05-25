@@ -7,7 +7,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 
 public fun List<ExerciseExampleBundle>.toState(): ImmutableList<ExerciseExampleBundleState> {
-    return mapNotNull { it.toState() }.toPersistentList()
+    return map { it.toState() }.toPersistentList()
 }
 
 public fun ExerciseExampleBundle.toState(): ExerciseExampleBundleState {
