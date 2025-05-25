@@ -1,10 +1,9 @@
 package com.grippo.domain.mapper.equipment
 
 import com.grippo.data.features.api.equipment.models.EquipmentEnum
-import com.grippo.logger.AppLogger
 import com.grippo.presentation.api.equipment.models.EquipmentEnumState
 
-public fun EquipmentEnum.toState(): EquipmentEnumState? {
+public fun EquipmentEnum.toState(): EquipmentEnumState {
     return when (this) {
         EquipmentEnum.DUMBBELLS -> EquipmentEnumState.DUMBBELLS
         EquipmentEnum.BARBELL -> EquipmentEnumState.BARBELL
@@ -55,9 +54,5 @@ public fun EquipmentEnum.toState(): EquipmentEnumState? {
         EquipmentEnum.SQUAT_RACK -> EquipmentEnumState.SQUAT_RACK
         EquipmentEnum.PREACHER_CURL_BENCH -> EquipmentEnumState.PREACHER_CURL_BENCH
         EquipmentEnum.ROW_BENCH -> EquipmentEnumState.ROW_BENCH
-
-        EquipmentEnum.UNIDENTIFIED -> AppLogger.checkOrLog(null) {
-            "EquipmentEnum.UNIDENTIFIED cannot be mapped to state"
-        }
     }
 }

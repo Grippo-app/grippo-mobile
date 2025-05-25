@@ -49,12 +49,11 @@ public enum class EquipmentEnum(private val key: String) {
     DECLINE_BENCH_WITH_RACK("decline_bench_with_rack"),
     SQUAT_RACK("squat_rack"),
     PREACHER_CURL_BENCH("preacher_curl_bench"),
-    ROW_BENCH("row_bench"),
-    UNIDENTIFIED("unidentified");
+    ROW_BENCH("row_bench");
 
     public companion object {
-        public fun of(key: String?): EquipmentEnum {
-            return entries.firstOrNull { it.key == key } ?: UNIDENTIFIED
+        public fun of(key: String?): EquipmentEnum? {
+            return entries.firstOrNull { it.key == key }
         }
     }
 }

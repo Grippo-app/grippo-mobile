@@ -6,10 +6,10 @@ import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 
 public fun List<EquipmentGroup>.toState(): PersistentList<EquipmentGroupState> {
-    return mapNotNull { it.toState() }.toPersistentList()
+    return map { it.toState() }.toPersistentList()
 }
 
-public fun EquipmentGroup.toState(): EquipmentGroupState? {
+public fun EquipmentGroup.toState(): EquipmentGroupState {
     return EquipmentGroupState(
         id = id,
         name = name,
