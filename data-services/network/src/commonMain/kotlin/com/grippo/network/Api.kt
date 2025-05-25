@@ -250,13 +250,6 @@ public class Api(private val client: NetworkClient) {
         )
     }
 
-//    public suspend fun getExerciseExampleFilters(): Result<ExerciseExampleFiltersDto> {
-//        return request(
-//            method = HttpMethod.Get,
-//            path = "/filters"
-//        )
-//    }
-//
 //    public suspend fun getExerciseExampleAchievements(
 //        exerciseExampleId: String,
 //        size: Int
@@ -269,15 +262,6 @@ public class Api(private val client: NetworkClient) {
 //            ),
 //        )
 //    }
-//
-//    public suspend fun getUserMuscleById(id: String): Result<MuscleResponse> {
-//        return request(
-//            method = HttpMethod.Get,
-//            path = "/user-muscles/$id"
-//        )
-//    }
-//
-//
 
     private suspend inline fun <reified T> request(
         method: HttpMethod,

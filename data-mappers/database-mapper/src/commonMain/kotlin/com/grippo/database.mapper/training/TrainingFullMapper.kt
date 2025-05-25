@@ -1,14 +1,14 @@
 package com.grippo.database.mapper.training
 
 import com.grippo.data.features.api.training.models.Training
-import com.grippo.database.models.TrainingFull
+import com.grippo.database.models.TrainingPack
 import com.grippo.date.utils.DateTimeUtils
 
-public fun List<TrainingFull>.toDomain(): List<Training> {
+public fun List<TrainingPack>.toDomain(): List<Training> {
     return map { it.toDomain() }
 }
 
-public fun TrainingFull.toDomain(): Training {
+public fun TrainingPack.toDomain(): Training {
     return Training(
         id = training.id,
         exercises = exercises.toDomain(),

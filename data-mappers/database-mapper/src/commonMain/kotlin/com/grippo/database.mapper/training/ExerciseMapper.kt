@@ -2,13 +2,13 @@ package com.grippo.database.mapper.training
 
 import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.database.mapper.exercise.equipment.toDomain
-import com.grippo.database.models.ExerciseFull
+import com.grippo.database.models.ExercisePack
 
-public fun List<ExerciseFull>.toDomain(): List<Exercise> {
+public fun List<ExercisePack>.toDomain(): List<Exercise> {
     return map { it.toDomain() }
 }
 
-public fun ExerciseFull.toDomain(): Exercise {
+public fun ExercisePack.toDomain(): Exercise {
     return Exercise(
         id = exercise.id,
         name = exercise.name,

@@ -7,7 +7,7 @@ import com.grippo.database.entity.ExerciseExampleEntity
 import com.grippo.database.entity.IterationEntity
 import com.grippo.database.entity.TrainingEntity
 
-public data class TrainingFull(
+public data class TrainingPack(
     @Embedded val training: TrainingEntity,
 
     @Relation(
@@ -15,10 +15,10 @@ public data class TrainingFull(
         entityColumn = "trainingId",
         entity = ExerciseEntity::class
     )
-    val exercises: List<ExerciseFull> = emptyList()
+    val exercises: List<ExercisePack> = emptyList()
 )
 
-public data class ExerciseFull(
+public data class ExercisePack(
     @Embedded val exercise: ExerciseEntity,
 
     @Relation(

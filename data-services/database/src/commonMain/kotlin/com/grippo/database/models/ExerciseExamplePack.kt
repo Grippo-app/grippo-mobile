@@ -9,7 +9,7 @@ import com.grippo.database.entity.ExerciseExampleEquipmentEntity
 import com.grippo.database.entity.ExerciseExampleTutorialEntity
 import com.grippo.database.entity.MuscleEntity
 
-public data class ExerciseExampleFull(
+public data class ExerciseExamplePack(
     @Embedded val example: ExerciseExampleEntity,
 
     @Relation(

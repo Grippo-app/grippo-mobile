@@ -2,7 +2,6 @@ package com.grippo.data.features.exercise.examples.data
 
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.exercise.example.models.ExerciseExampleFilter
-import com.grippo.data.features.api.exercise.example.models.SetExerciseExample
 import com.grippo.data.features.exercise.examples.domain.ExerciseExampleRepository
 import com.grippo.database.dao.ExerciseExampleDao
 import com.grippo.database.mapper.exercise.equipment.toDomain
@@ -24,7 +23,9 @@ internal class ExerciseExampleRepositoryImpl(
     }
 
     override fun observeExerciseExample(id: String): Flow<ExerciseExample> {
-        TODO("Not yet implemented")
+        return exerciseExampleDao
+            .getById(id)
+            .map { it.toDomain() }
     }
 
     override suspend fun getExerciseExamples(
@@ -71,10 +72,6 @@ internal class ExerciseExampleRepositoryImpl(
         return response.map { }
     }
 
-    override suspend fun setExerciseExample(exerciseExample: SetExerciseExample): Result<Unit> {
-        TODO("Not yet implemented")
-    }
-
     override suspend fun getRecommendedExerciseExamples(
         page: Int,
         size: Int,
@@ -82,6 +79,6 @@ internal class ExerciseExampleRepositoryImpl(
         exerciseCount: Int?,
         exerciseExampleIds: List<String>
     ): Result<List<ExerciseExample>> {
-        TODO("Not yet implemented")
+        api
     }
 }

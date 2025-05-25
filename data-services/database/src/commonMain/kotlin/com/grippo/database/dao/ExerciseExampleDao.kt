@@ -9,7 +9,7 @@ import com.grippo.database.entity.ExerciseExampleBundleEntity
 import com.grippo.database.entity.ExerciseExampleEntity
 import com.grippo.database.entity.ExerciseExampleEquipmentEntity
 import com.grippo.database.entity.ExerciseExampleTutorialEntity
-import com.grippo.database.models.ExerciseExampleFull
+import com.grippo.database.models.ExerciseExamplePack
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -17,11 +17,11 @@ public interface ExerciseExampleDao {
 
     @Transaction
     @Query("SELECT * FROM exercise_example WHERE id = :id")
-    public fun getById(id: String): Flow<ExerciseExampleFull>
+    public fun getById(id: String): Flow<ExerciseExamplePack>
 
     @Transaction
     @Query("SELECT * FROM exercise_example")
-    public fun get(): Flow<List<ExerciseExampleFull>>
+    public fun get(): Flow<List<ExerciseExamplePack>>
 
     // ────────────── INSERT ──────────────
 

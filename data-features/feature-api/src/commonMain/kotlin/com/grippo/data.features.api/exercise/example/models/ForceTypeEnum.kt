@@ -6,11 +6,6 @@ public enum class ForceTypeEnum(private val key: String) {
     HINGE(key = "hinge"),
     UNIDENTIFIED(key = "unidentified");
 
-
-    override fun toString(): String {
-        return key
-    }
-
     public companion object {
         public fun of(key: String?): ForceTypeEnum {
             return entries.firstOrNull { it.key == key } ?: UNIDENTIFIED

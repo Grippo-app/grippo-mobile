@@ -2,7 +2,6 @@ package com.grippo.data.features.exercise.examples.domain
 
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.exercise.example.models.ExerciseExampleFilter
-import com.grippo.data.features.api.exercise.example.models.SetExerciseExample
 import kotlinx.coroutines.flow.Flow
 
 internal interface ExerciseExampleRepository {
@@ -17,10 +16,6 @@ internal interface ExerciseExampleRepository {
     ): Result<Unit>
 
     suspend fun getExerciseExampleById(id: String): Result<Unit>
-
-    suspend fun setExerciseExample(
-        exerciseExample: SetExerciseExample
-    ): Result<Unit>
 
     suspend fun getRecommendedExerciseExamples(
         page: Int,
