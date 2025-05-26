@@ -63,17 +63,17 @@ public fun ExerciseCard(
             )
             .clip(shape = shape)
             .background(AppTokens.colors.background.secondary)
-            .border(1.dp, AppTokens.colors.border.defaultPrimary, shape),
-        verticalArrangement = Arrangement.spacedBy(6.dp)
+            .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
+            .padding(
+                horizontal = AppTokens.dp.paddings.mediumHorizontal,
+                vertical = AppTokens.dp.paddings.mediumVertical
+            ),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .nonRippleClick(onClick = { expanded.value = expanded.value.not() })
-                .padding(
-                    horizontal = AppTokens.dp.paddings.mediumHorizontal,
-                    vertical = AppTokens.dp.paddings.mediumVertical
-                ),
+                .nonRippleClick(onClick = { expanded.value = expanded.value.not() }),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
@@ -98,10 +98,6 @@ public fun ExerciseCard(
 
         Column(
             modifier = Modifier
-                .padding(
-                    horizontal = AppTokens.dp.paddings.mediumHorizontal,
-                    vertical = AppTokens.dp.paddings.mediumVertical
-                )
                 .fillMaxWidth()
                 .clip(shape = shape)
                 .background(AppTokens.colors.background.primary)
@@ -142,7 +138,11 @@ public fun ExerciseCard(
                             modifier = Modifier.fillMaxWidth(),
                             label = AppTokens.strings.res(Res.string.tonnage),
                             value = {
-
+                                Text(
+                                    text = "${value.volume}",
+                                    style = AppTokens.typography.b14Bold(),
+                                    color = AppTokens.colors.text.primary
+                                )
                             }
                         )
 
@@ -155,7 +155,11 @@ public fun ExerciseCard(
                             modifier = Modifier.fillMaxWidth(),
                             label = AppTokens.strings.res(Res.string.intensity),
                             value = {
-
+                                Text(
+                                    text = "${value.intensity}",
+                                    style = AppTokens.typography.b14Bold(),
+                                    color = AppTokens.colors.text.primary
+                                )
                             }
                         )
                     }
