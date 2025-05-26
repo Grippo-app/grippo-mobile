@@ -4,7 +4,6 @@ import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.authorization.LoginUseCase
 import com.grippo.presentation.api.auth.models.EmailFormatState
 import com.grippo.presentation.api.auth.models.PasswordFormatState
-import kotlinx.coroutines.delay
 
 internal class LoginViewModel(
     private val loginUseCase: LoginUseCase
@@ -21,7 +20,6 @@ internal class LoginViewModel(
 
     override fun login() {
         safeLaunch(loader = LoginLoader.LoginButton) {
-            delay(1500) // TODO REMOVE IT
             loginUseCase.execute(
                 email = state.value.email.value,
                 password = state.value.password.value

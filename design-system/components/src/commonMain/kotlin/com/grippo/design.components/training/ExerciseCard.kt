@@ -50,14 +50,36 @@ public fun ExerciseCard(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = value.name,
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis,
-                style = AppTokens.typography.h3(),
-                color = AppTokens.colors.text.primary
-            )
+            val exerciseExample = value.exerciseExample
+
+            if (exerciseExample == null) {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = value.name,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
+                    style = AppTokens.typography.h3(),
+                    color = AppTokens.colors.text.primary
+                )
+            } else {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = exerciseExample.name,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
+                    style = AppTokens.typography.h3(),
+                    color = AppTokens.colors.text.primary
+                )
+
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = exerciseExample.weightType.name,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
+                    style = AppTokens.typography.h3(),
+                    color = AppTokens.colors.text.primary
+                )
+            }
         }
 
         Column(

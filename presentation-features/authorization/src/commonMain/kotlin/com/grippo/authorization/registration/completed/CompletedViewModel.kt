@@ -9,7 +9,6 @@ import com.grippo.domain.mapper.user.toDomain
 import com.grippo.domain.mapper.user.toState
 import com.grippo.presentation.api.user.models.ExperienceEnumState
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.onEach
 
 internal class CompletedViewModel(
@@ -34,7 +33,6 @@ internal class CompletedViewModel(
             .safeLaunch()
 
         safeLaunch(loader = CompletedLoader.Registration) {
-            delay(1500) // TODO REMOVE IT
             val registration = SetRegistration(
                 email = email,
                 password = password,

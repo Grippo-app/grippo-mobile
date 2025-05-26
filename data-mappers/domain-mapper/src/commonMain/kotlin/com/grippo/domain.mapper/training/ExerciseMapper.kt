@@ -1,6 +1,7 @@
 package com.grippo.domain.mapper.training
 
 import com.grippo.data.features.api.training.models.Exercise
+import com.grippo.domain.mapper.exercise.example.toState
 import com.grippo.presentation.api.trainings.models.ExerciseState
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
@@ -16,6 +17,7 @@ public fun Exercise.toState(): ExerciseState {
         iterations = iterations.toState(),
         volume = volume,
         repetitions = repetitions,
-        intensity = intensity
+        intensity = intensity,
+        exerciseExample = exerciseExample?.toState()
     )
 }
