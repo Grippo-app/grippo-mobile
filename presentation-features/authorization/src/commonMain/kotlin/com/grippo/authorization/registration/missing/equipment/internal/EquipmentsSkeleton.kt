@@ -14,8 +14,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.grippo.design.components.cards.SelectableCardSkeleton
-import com.grippo.design.components.cards.SelectableCardStyle
+import com.grippo.design.components.cards.selectable.SelectableCardSkeleton
+import com.grippo.design.components.cards.selectable.SelectableCardStyle
 import com.grippo.design.components.modifiers.shimmerAnimation
 import com.grippo.design.components.segment.SegmentSkeleton
 import com.grippo.design.core.AppTokens
@@ -48,7 +48,7 @@ internal fun EquipmentsSkeleton(modifier: Modifier = Modifier) {
                         modifier = Modifier.shimmerAnimation(
                             visible = true,
                             radius = AppTokens.dp.shape.medium
-                        ).size(AppTokens.dp.size.mediumComponentHeight)
+                        ).size(AppTokens.dp.size.componentHeight)
                     )
 
                     SelectableCardSkeleton(

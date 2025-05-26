@@ -1,4 +1,4 @@
-package com.grippo.design.components.cards
+package com.grippo.design.components.cards.selectable
 
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,12 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.grippo.design.components.cards.internal.SelectableCardLarge
-import com.grippo.design.components.cards.internal.SelectableCardLargeSkeleton
-import com.grippo.design.components.cards.internal.SelectableCardMedium
-import com.grippo.design.components.cards.internal.SelectableCardMediumSkeleton
-import com.grippo.design.components.cards.internal.SelectableCardSmall
-import com.grippo.design.components.cards.internal.SelectableCardSmallSkeleton
+import com.grippo.design.components.cards.selectable.internal.SelectableCardLarge
+import com.grippo.design.components.cards.selectable.internal.SelectableCardLargeSkeleton
+import com.grippo.design.components.cards.selectable.internal.SelectableCardMedium
+import com.grippo.design.components.cards.selectable.internal.SelectableCardMediumSkeleton
+import com.grippo.design.components.cards.selectable.internal.SelectableCardSmall
+import com.grippo.design.components.cards.selectable.internal.SelectableCardSmallSkeleton
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 

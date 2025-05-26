@@ -74,4 +74,8 @@
     <string name="user_card_no_workouts_yet">No workouts yet</string>
     <string name="user_card_value_personal_records">%1$s Personal Records</string>
     <string name="user_card_no_records_yet">No records yet</string>
+
+    <string name="tonnage">Tonnage</string>
+    <string name="intensity">Intensity</string>
+    <string name="set_value">Set %1$s</string>
 </resources>

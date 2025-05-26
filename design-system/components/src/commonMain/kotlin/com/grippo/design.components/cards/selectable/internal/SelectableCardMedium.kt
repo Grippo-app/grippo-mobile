@@ -1,4 +1,4 @@
-package com.grippo.design.components.cards.internal
+package com.grippo.design.components.cards.selectable.internal
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,8 +21,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.grippo.design.components.cards.SelectableCardStyle
-import com.grippo.design.components.cards.SelectableCardVariants
+import com.grippo.design.components.cards.selectable.SelectableCardStyle
+import com.grippo.design.components.cards.selectable.SelectableCardVariants
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.nonRippleClick
 import com.grippo.design.components.modifiers.shadowDefault
@@ -56,7 +56,7 @@ internal fun SelectableCardMedium(
                 horizontal = AppTokens.dp.paddings.smallHorizontal,
                 vertical = AppTokens.dp.paddings.smallVertical,
             )
-            .height(AppTokens.dp.size.mediumComponentHeight),
+            .height(AppTokens.dp.size.componentHeight),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -107,7 +107,7 @@ internal fun SelectableCardMediumSkeleton(modifier: Modifier) {
             .padding(
                 horizontal = AppTokens.dp.paddings.smallHorizontal,
                 vertical = AppTokens.dp.paddings.smallVertical
-            ).height(AppTokens.dp.size.mediumComponentHeight),
+            ).height(AppTokens.dp.size.componentHeight),
     )
 }
 

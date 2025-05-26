@@ -68,7 +68,7 @@ internal fun WeightPickerScreen(
 
         WheelPicker(
             modifier = Modifier.fillMaxWidth()
-                .height(AppTokens.dp.size.mediumComponentHeight * 3),
+                .height(AppTokens.dp.size.componentHeight * 3),
             items = state.suggestions,
             initial = state.initial,
             onValueChange = contract::select,

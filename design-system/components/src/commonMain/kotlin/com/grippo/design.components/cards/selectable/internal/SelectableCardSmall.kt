@@ -1,4 +1,4 @@
-package com.grippo.design.components.cards.internal
+package com.grippo.design.components.cards.selectable.internal
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,8 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.grippo.design.components.cards.SelectableCardStyle
-import com.grippo.design.components.cards.SelectableCardVariants
+import com.grippo.design.components.cards.selectable.SelectableCardStyle
+import com.grippo.design.components.cards.selectable.SelectableCardVariants
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.nonRippleClick
 import com.grippo.design.components.modifiers.shadowDefault
@@ -48,7 +48,7 @@ internal fun SelectableCardSmall(
             .background(AppTokens.colors.background.secondary)
             .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
             .padding(horizontal = AppTokens.dp.paddings.smallHorizontal)
-            .height(AppTokens.dp.size.mediumComponentHeight),
+            .height(AppTokens.dp.size.componentHeight),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -87,7 +87,7 @@ internal fun SelectableCardSmallSkeleton(modifier: Modifier) {
             .background(AppTokens.colors.background.secondary)
             .border(1.dp, AppTokens.colors.border.defaultPrimary, RoundedCornerShape(radius))
             .padding(horizontal = AppTokens.dp.paddings.smallHorizontal)
-            .height(AppTokens.dp.size.mediumComponentHeight),
+            .height(AppTokens.dp.size.componentHeight),
     )
 }
 

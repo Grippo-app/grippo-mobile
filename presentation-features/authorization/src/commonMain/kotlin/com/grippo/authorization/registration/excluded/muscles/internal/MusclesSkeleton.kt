@@ -12,8 +12,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.grippo.design.components.cards.SelectableCardSkeleton
-import com.grippo.design.components.cards.SelectableCardStyle
+import com.grippo.design.components.cards.selectable.SelectableCardSkeleton
+import com.grippo.design.components.cards.selectable.SelectableCardStyle
 import com.grippo.design.components.modifiers.shimmerAnimation
 import com.grippo.design.core.AppTokens
 

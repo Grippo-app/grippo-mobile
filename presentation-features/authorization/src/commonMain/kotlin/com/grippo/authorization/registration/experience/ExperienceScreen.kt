@@ -21,8 +21,8 @@ import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.cards.SelectableCard
-import com.grippo.design.components.cards.SelectableCardStyle
+import com.grippo.design.components.cards.selectable.SelectableCard
+import com.grippo.design.components.cards.selectable.SelectableCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer

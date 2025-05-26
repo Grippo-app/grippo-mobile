@@ -4,8 +4,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.grippo.design.components.cards.SelectableCard
-import com.grippo.design.components.cards.SelectableCardStyle
+import com.grippo.design.components.cards.selectable.SelectableCard
+import com.grippo.design.components.cards.selectable.SelectableCardStyle
 import com.grippo.presentation.api.equipment.models.EquipmentState
 import kotlinx.collections.immutable.ImmutableList
 

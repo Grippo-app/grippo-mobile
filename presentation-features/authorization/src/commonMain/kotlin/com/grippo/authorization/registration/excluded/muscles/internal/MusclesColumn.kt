@@ -7,8 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.grippo.design.components.cards.SelectableCard
-import com.grippo.design.components.cards.SelectableCardStyle
+import com.grippo.design.components.cards.selectable.SelectableCard
+import com.grippo.design.components.cards.selectable.SelectableCardStyle
 import com.grippo.presentation.api.muscles.models.MuscleGroupState
 import com.grippo.presentation.api.muscles.models.MuscleRepresentationState
 import kotlinx.collections.immutable.ImmutableList

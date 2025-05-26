@@ -1,20 +1,12 @@
 package com.grippo.design.components.training
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -29,68 +21,45 @@ import com.grippo.presentation.api.trainings.models.stubIteration
 public fun IterationCard(
     modifier: Modifier = Modifier,
     value: IterationState,
-    index: Int
 ) {
-
-    val shape = RoundedCornerShape(AppTokens.dp.shape.small)
-
     Row(
-        modifier = modifier
-            .height(intrinsicSize = IntrinsicSize.Max),
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Text(
-            modifier = Modifier
-                .clip(shape = shape)
-                .background(AppTokens.colors.background.primary)
-                .height(AppTokens.dp.size.smallComponentHeight)
-                .weight(1f)
-                .wrapContentSize(),
-            text = "SET " + (index + 1).toString(),
-            style = AppTokens.typography.b12Bold(),
-            color = AppTokens.colors.text.secondary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
 
         Row(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.width(64.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             Text(
                 text = value.weight.toString(),
-                style = AppTokens.typography.b13Bold(),
+                style = AppTokens.typography.b14Bold(),
                 color = AppTokens.colors.text.primary
             )
 
             Text(
                 text = AppTokens.strings.res(Res.string.kg),
-                style = AppTokens.typography.b13Semi(),
+                style = AppTokens.typography.b14Semi(),
                 color = AppTokens.colors.text.secondary
             )
         }
 
-        VerticalDivider(
-            modifier = Modifier.fillMaxHeight(),
-            color = AppTokens.colors.divider.default
-        )
-
         Row(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.width(50.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             Text(
                 text = value.repetitions.toString(),
-                style = AppTokens.typography.b13Bold(),
+                style = AppTokens.typography.b14Bold(),
                 color = AppTokens.colors.text.primary
             )
 
             Text(
                 text = AppTokens.strings.res(Res.string.reps),
-                style = AppTokens.typography.b13Semi(),
+                style = AppTokens.typography.b14Semi(),
                 color = AppTokens.colors.text.secondary
             )
         }
@@ -103,19 +72,15 @@ private fun IterationCardPreview() {
     PreviewContainer {
         IterationCard(
             value = stubIteration(),
-            index = 0
         )
         IterationCard(
             value = stubIteration(),
-            index = 12
         )
         IterationCard(
             value = stubIteration(),
-            index = 55
         )
         IterationCard(
             value = stubIteration(),
-            index = 150
         )
     }
 }
