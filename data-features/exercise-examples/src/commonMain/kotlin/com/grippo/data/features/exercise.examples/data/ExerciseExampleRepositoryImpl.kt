@@ -22,7 +22,7 @@ internal class ExerciseExampleRepositoryImpl(
             .map { it.toDomain() }
     }
 
-    override fun observeExerciseExample(id: String): Flow<ExerciseExample> {
+    override fun observeExerciseExample(id: String): Flow<ExerciseExample?> {
         return exerciseExampleDao
             .getById(id)
             .map { it.toDomain() }
@@ -79,6 +79,6 @@ internal class ExerciseExampleRepositoryImpl(
         exerciseCount: Int?,
         exerciseExampleIds: List<String>
     ): Result<List<ExerciseExample>> {
-        api
+        TODO()
     }
 }

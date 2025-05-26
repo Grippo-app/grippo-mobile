@@ -13,7 +13,7 @@ internal class ExerciseExampleFeatureImpl(
         return repository.observeExerciseExamples()
     }
 
-    override fun observeExerciseExample(id: String): Flow<ExerciseExample> {
+    override fun observeExerciseExample(id: String): Flow<ExerciseExample?> {
         return repository.observeExerciseExample(id)
     }
 

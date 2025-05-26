@@ -73,10 +73,19 @@ public fun ExerciseCard(
 
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = exerciseExample.weightType.name,
+                    text = exerciseExample.experience.title(),
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
-                    style = AppTokens.typography.h3(),
+                    style = AppTokens.typography.b12Semi(),
+                    color = AppTokens.colors.text.primary
+                )
+
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = exerciseExample.experience.title(),
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
+                    style = AppTokens.typography.b12Semi(),
                     color = AppTokens.colors.text.primary
                 )
             }
