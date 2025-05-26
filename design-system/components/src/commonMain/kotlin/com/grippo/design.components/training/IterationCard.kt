@@ -4,11 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -38,16 +35,17 @@ public fun IterationCard(
     val shape = RoundedCornerShape(AppTokens.dp.shape.small)
 
     Row(
-        modifier = modifier.height(intrinsicSize = IntrinsicSize.Max),
-        verticalAlignment = Alignment.CenterVertically
+        modifier = modifier
+            .height(intrinsicSize = IntrinsicSize.Max),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
             modifier = Modifier
                 .clip(shape = shape)
                 .background(AppTokens.colors.background.primary)
                 .height(AppTokens.dp.size.smallComponentHeight)
-                .width(52.dp)
-                .padding(horizontal = 4.dp)
+                .weight(1f)
                 .wrapContentSize(),
             text = "SET " + (index + 1).toString(),
             style = AppTokens.typography.b12Bold(),
@@ -56,10 +54,8 @@ public fun IterationCard(
             overflow = TextOverflow.Ellipsis
         )
 
-        Spacer(modifier = Modifier.width(12.dp))
-
         Row(
-            modifier = Modifier.width(54.dp),
+            modifier = Modifier.weight(1f),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(2.dp)
         ) {
@@ -76,17 +72,13 @@ public fun IterationCard(
             )
         }
 
-        Spacer(modifier = Modifier.width(12.dp))
-
         VerticalDivider(
             modifier = Modifier.fillMaxHeight(),
             color = AppTokens.colors.divider.default
         )
 
-        Spacer(modifier = Modifier.width(12.dp))
-
         Row(
-            modifier = Modifier.width(48.dp),
+            modifier = Modifier.weight(1f),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(2.dp)
         ) {
