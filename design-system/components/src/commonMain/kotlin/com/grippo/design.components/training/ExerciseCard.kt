@@ -2,6 +2,10 @@ package com.grippo.design.components.training
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -34,6 +38,8 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.icons.ChevronDown
 import com.grippo.design.resources.intensity
+import com.grippo.design.resources.kg
+import com.grippo.design.resources.percent
 import com.grippo.design.resources.set_value
 import com.grippo.design.resources.tonnage
 import com.grippo.presentation.api.trainings.models.ExerciseState
@@ -107,6 +113,10 @@ public fun ExerciseCard(
             AnimatedContent(
                 modifier = Modifier.fillMaxWidth(),
                 targetState = expanded.value,
+                transitionSpec = {
+                    fadeIn(animationSpec = tween(320, delayMillis = 90))
+                        .togetherWith(fadeOut(animationSpec = tween(320)))
+                }
             ) { ex ->
                 when (ex) {
                     true -> Column(modifier = Modifier.fillMaxWidth()) {
@@ -138,11 +148,22 @@ public fun ExerciseCard(
                             modifier = Modifier.fillMaxWidth(),
                             label = AppTokens.strings.res(Res.string.tonnage),
                             value = {
-                                Text(
-                                    text = "${value.volume}",
-                                    style = AppTokens.typography.b14Bold(),
-                                    color = AppTokens.colors.text.primary
-                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                                ) {
+                                    Text(
+                                        text = value.volume.toString(),
+                                        style = AppTokens.typography.b14Bold(),
+                                        color = AppTokens.colors.text.primary
+                                    )
+
+                                    Text(
+                                        text = AppTokens.strings.res(Res.string.kg),
+                                        style = AppTokens.typography.b14Semi(),
+                                        color = AppTokens.colors.text.secondary
+                                    )
+                                }
                             }
                         )
 
@@ -155,11 +176,22 @@ public fun ExerciseCard(
                             modifier = Modifier.fillMaxWidth(),
                             label = AppTokens.strings.res(Res.string.intensity),
                             value = {
-                                Text(
-                                    text = "${value.intensity}",
-                                    style = AppTokens.typography.b14Bold(),
-                                    color = AppTokens.colors.text.primary
-                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                                ) {
+                                    Text(
+                                        text = value.intensity.toString(),
+                                        style = AppTokens.typography.b14Bold(),
+                                        color = AppTokens.colors.text.primary
+                                    )
+
+                                    Text(
+                                        text = AppTokens.strings.res(Res.string.percent),
+                                        style = AppTokens.typography.b14Semi(),
+                                        color = AppTokens.colors.text.secondary
+                                    )
+                                }
                             }
                         )
                     }
