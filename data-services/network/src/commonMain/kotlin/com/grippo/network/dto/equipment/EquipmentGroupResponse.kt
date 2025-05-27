@@ -1,18 +1,20 @@
-package com.grippo.network.dto
+package com.grippo.network.dto.equipment
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class ExcludedMuscleDto(
+public data class EquipmentGroupResponse(
     @SerialName("createdAt")
     val createdAt: String? = null,
     @SerialName("id")
     val id: String? = null,
-    @SerialName("muscleId")
-    val muscleId: String? = null,
+    @SerialName("name")
+    val name: String? = null,
+    @SerialName("type")
+    val type: String? = null,
     @SerialName("updatedAt")
     val updatedAt: String? = null,
-    @SerialName("userId")
-    val userId: String? = null
+    @SerialName("equipments")
+    val equipments: List<EquipmentResponse>? = null
 )

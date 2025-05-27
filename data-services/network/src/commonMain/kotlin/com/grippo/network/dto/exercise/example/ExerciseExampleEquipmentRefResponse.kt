@@ -1,5 +1,6 @@
-package com.grippo.network.dto
+package com.grippo.network.dto.exercise.example
 
+import com.grippo.network.dto.equipment.EquipmentResponse
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

@@ -2,7 +2,7 @@ package com.grippo.network.mapper.user
 
 import com.grippo.database.entity.UserEntity
 import com.grippo.logger.AppLogger
-import com.grippo.network.dto.UserResponse
+import com.grippo.network.user.UserResponse
 
 public fun List<UserResponse>.toEntities(): List<UserEntity> {
     return mapNotNull { it.toEntityOrNull() }

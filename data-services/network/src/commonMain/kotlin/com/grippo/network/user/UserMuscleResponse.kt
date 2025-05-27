@@ -1,12 +1,12 @@
-package com.grippo.network.dto
+package com.grippo.network.user
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class UserEquipmentResponse(
+public data class UserMuscleResponse(
     @SerialName("id")
     val id: String? = null,
-    @SerialName("equipmentId")
-    val equipmentId: String? = null,
+    @SerialName("muscleId")
+    val muscleId: String? = null,
 )

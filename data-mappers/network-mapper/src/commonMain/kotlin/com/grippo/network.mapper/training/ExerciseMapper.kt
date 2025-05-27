@@ -2,7 +2,7 @@ package com.grippo.network.mapper.training
 
 import com.grippo.database.entity.ExerciseEntity
 import com.grippo.logger.AppLogger
-import com.grippo.network.dto.ExerciseResponse
+import com.grippo.network.dto.training.ExerciseResponse
 
 public fun List<ExerciseResponse>.toEntities(): List<ExerciseEntity> {
     return mapNotNull { it.toEntityOrNull() }

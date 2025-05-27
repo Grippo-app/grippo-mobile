@@ -1,18 +1,18 @@
 package com.grippo.network
 
 import com.grippo.network.client.NetworkClient
-import com.grippo.network.dto.EquipmentGroupResponse
-import com.grippo.network.dto.EquipmentResponse
-import com.grippo.network.dto.ExerciseExampleResponse
-import com.grippo.network.dto.MuscleGroupResponse
-import com.grippo.network.dto.MuscleResponse
-import com.grippo.network.dto.TrainingResponse
-import com.grippo.network.dto.UserResponse
-import com.grippo.network.dto.WeightHistoryResponse
 import com.grippo.network.dto.auth.AuthBody
 import com.grippo.network.dto.auth.RefreshBody
 import com.grippo.network.dto.auth.RegisterBody
 import com.grippo.network.dto.auth.TokenResponse
+import com.grippo.network.dto.equipment.EquipmentGroupResponse
+import com.grippo.network.dto.equipment.EquipmentResponse
+import com.grippo.network.dto.exercise.example.ExerciseExampleResponse
+import com.grippo.network.dto.muscle.MuscleGroupResponse
+import com.grippo.network.dto.muscle.MuscleResponse
+import com.grippo.network.dto.training.TrainingResponse
+import com.grippo.network.user.UserResponse
+import com.grippo.network.user.WeightHistoryResponse
 import io.ktor.client.call.body
 import io.ktor.http.HttpMethod
 
@@ -200,19 +200,6 @@ public class Api(private val client: NetworkClient) {
             body = body
         )
     }
-
-//    public suspend fun getExerciseExampleAchievements(
-//        exerciseExampleId: String,
-//        size: Int
-//    ): Result<ExerciseExampleAchievementsDto> {
-//        return request(
-//            method = HttpMethod.Get,
-//            path = "/statistics/achievements/exercise-example",
-//            queryParams = mapOf(
-//                "id" to exerciseExampleId, "size" to size.toString()
-//            ),
-//        )
-//    }
 
     private suspend inline fun <reified T> request(
         method: HttpMethod,
