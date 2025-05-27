@@ -5,7 +5,7 @@ import com.grippo.data.features.authorization.domain.AuthorizationRepository
 import com.grippo.database.dao.TokenDao
 import com.grippo.domain.mapper.user.toDto
 import com.grippo.network.Api
-import com.grippo.network.dto.AuthBody
+import com.grippo.network.dto.auth.AuthBody
 import com.grippo.network.mapper.user.toEntityOrNull
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

@@ -2,7 +2,7 @@ package com.grippo.network.mapper.user
 
 import com.grippo.database.entity.TokenEntity
 import com.grippo.logger.AppLogger
-import com.grippo.network.dto.TokenResponse
+import com.grippo.network.dto.auth.TokenResponse
 
 public fun TokenResponse.toEntityOrNull(): TokenEntity? {
     val entityAccess = AppLogger.checkOrLog(accessToken) {

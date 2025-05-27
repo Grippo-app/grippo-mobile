@@ -1,7 +1,6 @@
 package com.grippo.data.features.exercise.examples.data
 
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
-import com.grippo.data.features.api.exercise.example.models.ExerciseExampleFilter
 import com.grippo.data.features.exercise.examples.domain.ExerciseExampleRepository
 import com.grippo.database.dao.ExerciseExampleDao
 import com.grippo.database.mapper.exercise.equipment.toDomain
@@ -28,18 +27,8 @@ internal class ExerciseExampleRepositoryImpl(
             .map { it.toDomain() }
     }
 
-    override suspend fun getExerciseExamples(
-        filter: ExerciseExampleFilter
-    ): Result<Unit> {
-        val response = api.getExerciseExamples(
-            forceType = filter.forceType,
-            experience = filter.experience,
-            category = filter.category,
-            muscleIds = filter.muscleIds,
-            equipmentIds = filter.equipmentIds,
-            query = filter.query,
-            weightType = filter.weightType
-        )
+    override suspend fun getExerciseExamples(): Result<Unit> {
+        val response = api.getExerciseExamples()
 
         response.onSuccess {
             it.forEach { r ->

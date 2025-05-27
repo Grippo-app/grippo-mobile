@@ -34,8 +34,8 @@ internal class TrainingRepositoryImpl(
 
     override suspend fun getTrainings(start: LocalDateTime, end: LocalDateTime): Result<Unit> {
         val response = api.getTrainings(
-            startDate = DateTimeUtils.toUtcIso(start),
-            endDate = DateTimeUtils.toUtcIso(end),
+            start = DateTimeUtils.toUtcIso(start),
+            end = DateTimeUtils.toUtcIso(end),
         )
 
         response.onSuccess {

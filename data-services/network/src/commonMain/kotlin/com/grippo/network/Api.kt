@@ -1,20 +1,18 @@
 package com.grippo.network
 
 import com.grippo.network.client.NetworkClient
-import com.grippo.network.dto.AuthBody
 import com.grippo.network.dto.EquipmentGroupResponse
 import com.grippo.network.dto.EquipmentResponse
-import com.grippo.network.dto.ExerciseExampleCriteriaBody
-import com.grippo.network.dto.ExerciseExampleFiltersBody
 import com.grippo.network.dto.ExerciseExampleResponse
 import com.grippo.network.dto.MuscleGroupResponse
 import com.grippo.network.dto.MuscleResponse
-import com.grippo.network.dto.RefreshBody
-import com.grippo.network.dto.RegisterBody
-import com.grippo.network.dto.TokenResponse
 import com.grippo.network.dto.TrainingResponse
 import com.grippo.network.dto.UserResponse
 import com.grippo.network.dto.WeightHistoryResponse
+import com.grippo.network.dto.auth.AuthBody
+import com.grippo.network.dto.auth.RefreshBody
+import com.grippo.network.dto.auth.RegisterBody
+import com.grippo.network.dto.auth.TokenResponse
 import io.ktor.client.call.body
 import io.ktor.http.HttpMethod
 
@@ -153,14 +151,11 @@ public class Api(private val client: NetworkClient) {
      * Trainings
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun getTrainings(
-        startDate: String,
-        endDate: String
-    ): Result<List<TrainingResponse>> {
+    public suspend fun getTrainings(start: String, end: String): Result<List<TrainingResponse>> {
         return request(
             method = HttpMethod.Get,
             path = "/trainings",
-            queryParams = mapOf("start" to startDate, "end" to endDate)
+            queryParams = mapOf("start" to start, "end" to end)
         )
     }
 
@@ -183,64 +178,26 @@ public class Api(private val client: NetworkClient) {
      * Exercise examples
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun getExerciseExamples(
-        query: String?,
-        weightType: String?,
-        forceType: String?,
-        experience: String?,
-        category: String?,
-        muscleIds: List<String>,
-        equipmentIds: List<String>
-    ): Result<List<ExerciseExampleResponse>> {
+    public suspend fun getExerciseExamples(): Result<List<ExerciseExampleResponse>> {
         return request(
-            method = HttpMethod.Post,
-            path = "/exercise-examples/all",
-            body = ExerciseExampleFiltersBody(
-                category = category,
-                equipmentIds = equipmentIds,
-                experience = experience,
-                forceType = forceType,
-                muscleIds = muscleIds,
-                query = query,
-                weightType = weightType
-            )
+            method = HttpMethod.Get,
+            path = "/exercise-examples",
         )
     }
 
-    public suspend fun getRecommendedExerciseExamples(
-        page: Int,
-        size: Int,
-        exerciseCount: Int?,
-        targetMuscleId: String?,
-        exerciseExampleIds: List<String>
-    ): Result<List<ExerciseExampleResponse>> {
+    public suspend fun getExerciseExample(id: String): Result<ExerciseExampleResponse> {
         return request(
-            method = HttpMethod.Post,
-            path = "/exercise-examples/recommended",
-            queryParams = buildMap {
-                put("page", page.toString())
-                put("size", size.toString())
-            },
-            body = ExerciseExampleCriteriaBody(
-                exerciseCount = exerciseCount,
-                exerciseExampleIds = exerciseExampleIds,
-                targetMuscleId = targetMuscleId
-            )
+            method = HttpMethod.Get,
+            path = "/exercise-examples/$id"
         )
     }
 
+    // Only for admin user
     public suspend fun setExerciseExample(body: ExerciseExampleResponse): Result<ExerciseExampleResponse> {
         return request(
             method = HttpMethod.Post,
             path = "/exercise-examples",
             body = body
-        )
-    }
-
-    public suspend fun getExerciseExample(exerciseExampleId: String): Result<ExerciseExampleResponse> {
-        return request(
-            method = HttpMethod.Get,
-            path = "/exercise-examples/$exerciseExampleId"
         )
     }
 

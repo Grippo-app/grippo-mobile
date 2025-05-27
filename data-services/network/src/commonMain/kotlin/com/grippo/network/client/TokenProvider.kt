@@ -3,8 +3,8 @@ package com.grippo.network.client
 import com.grippo.database.dao.TokenDao
 import com.grippo.database.entity.TokenEntity
 import com.grippo.logger.AppLogger
-import com.grippo.network.dto.RefreshBody
-import com.grippo.network.dto.TokenResponse
+import com.grippo.network.dto.auth.RefreshBody
+import com.grippo.network.dto.auth.TokenResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.auth.AuthProvider

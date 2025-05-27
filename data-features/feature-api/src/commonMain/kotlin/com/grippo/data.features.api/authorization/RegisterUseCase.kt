@@ -4,7 +4,6 @@ import com.grippo.data.features.api.authorization.models.SetRegistration
 import com.grippo.data.features.api.excluded.equipments.ExcludedEquipmentsFeature
 import com.grippo.data.features.api.excluded.muscles.ExcludedMusclesFeature
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
-import com.grippo.data.features.api.exercise.example.models.ExerciseExampleFilter
 import com.grippo.data.features.api.user.UserFeature
 
 public class RegisterUseCase(
@@ -19,6 +18,6 @@ public class RegisterUseCase(
         userFeature.getUser().getOrThrow()
         excludedMusclesFeature.getExcludedMuscles().getOrThrow()
         excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
-        exerciseExampleFeature.getExerciseExamples(ExerciseExampleFilter()).getOrThrow()
+        exerciseExampleFeature.getExerciseExamples().getOrThrow()
     }
 }
