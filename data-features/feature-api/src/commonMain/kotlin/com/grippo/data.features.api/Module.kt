@@ -8,10 +8,10 @@ import org.koin.dsl.module
 
 public val featureApiModule: Module = module {
     factory {
-        LoginUseCase(get(), get(), get(), get())
+        LoginUseCase(get(), get(), get(), get(), get())
     }
     factory {
-        RegisterUseCase(get(), get(), get(), get())
+        RegisterUseCase(get(), get(), get(), get(), get())
     }
     factory {
         GetUserUseCase(get(), get(), get())

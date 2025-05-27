@@ -9,11 +9,7 @@ internal interface ExerciseExampleRepository {
 
     fun observeExerciseExample(id: String): Flow<ExerciseExample?>
 
-    suspend fun getExerciseExamples(
-        page: Int,
-        size: Int,
-        filter: ExerciseExampleFilter
-    ): Result<Unit>
+    suspend fun getExerciseExamples(filter: ExerciseExampleFilter): Result<Unit>
 
     suspend fun getExerciseExampleById(id: String): Result<Unit>
 

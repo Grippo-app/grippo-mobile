@@ -184,8 +184,6 @@ public class Api(private val client: NetworkClient) {
      * * * * * * * * * * * * * * * * */
 
     public suspend fun getExerciseExamples(
-        page: Int,
-        size: Int,
         query: String?,
         weightType: String?,
         forceType: String?,
@@ -197,10 +195,6 @@ public class Api(private val client: NetworkClient) {
         return request(
             method = HttpMethod.Post,
             path = "/exercise-examples/all",
-            queryParams = buildMap {
-                put("page", page.toString())
-                put("size", size.toString())
-            },
             body = ExerciseExampleFiltersBody(
                 category = category,
                 equipmentIds = equipmentIds,

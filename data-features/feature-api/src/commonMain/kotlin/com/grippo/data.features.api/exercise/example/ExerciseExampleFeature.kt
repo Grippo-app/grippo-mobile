@@ -11,8 +11,6 @@ public interface ExerciseExampleFeature {
     public fun observeExerciseExample(id: String): Flow<ExerciseExample?>
 
     public suspend fun getExerciseExamples(
-        page: Int,
-        size: Int,
         filter: ExerciseExampleFilter
     ): Result<Unit>
 

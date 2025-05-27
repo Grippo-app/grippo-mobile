@@ -17,12 +17,8 @@ internal class ExerciseExampleFeatureImpl(
         return repository.observeExerciseExample(id)
     }
 
-    override suspend fun getExerciseExamples(
-        page: Int,
-        size: Int,
-        filter: ExerciseExampleFilter
-    ): Result<Unit> {
-        return repository.getExerciseExamples(page, size, filter)
+    override suspend fun getExerciseExamples(filter: ExerciseExampleFilter): Result<Unit> {
+        return repository.getExerciseExamples(filter)
     }
 
     override suspend fun getExerciseExampleById(id: String): Result<Unit> {

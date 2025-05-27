@@ -29,13 +29,9 @@ internal class ExerciseExampleRepositoryImpl(
     }
 
     override suspend fun getExerciseExamples(
-        page: Int,
-        size: Int,
         filter: ExerciseExampleFilter
     ): Result<Unit> {
         val response = api.getExerciseExamples(
-            page = page,
-            size = size,
             forceType = filter.forceType,
             experience = filter.experience,
             category = filter.category,
