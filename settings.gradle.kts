@@ -61,6 +61,7 @@ include(":presentation-features:home")
 include(":dialog-features:dialog-api")
 include(":dialog-features:weight-picker")
 include(":dialog-features:height-picker")
+include(":dialog-features:exercise-example")
 include(":dialog-features:error-display")
 
 include(":common:platform-core")
