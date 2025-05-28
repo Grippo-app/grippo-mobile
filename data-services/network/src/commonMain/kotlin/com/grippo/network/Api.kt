@@ -122,7 +122,7 @@ public class Api(private val client: NetworkClient) {
     }
 
     /* * * * * * * * * * * * * * * * *
-     * Weight history
+     * Weight history service
      * * * * * * * * * * * * * * * * */
 
     public suspend fun updateWeightHistory(value: Float): Result<WeightHistoryResponse> {
@@ -148,7 +148,7 @@ public class Api(private val client: NetworkClient) {
     }
 
     /* * * * * * * * * * * * * * * * *
-     * Trainings
+     * Trainings service
      * * * * * * * * * * * * * * * * */
 
     public suspend fun getTrainings(start: String, end: String): Result<List<TrainingResponse>> {
