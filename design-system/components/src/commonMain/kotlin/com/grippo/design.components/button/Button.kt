@@ -58,7 +58,8 @@ public fun Button(
     style: ButtonStyle = ButtonStyle.Primary,
     state: ButtonState = ButtonState.Enabled,
     onClick: () -> Unit,
-    icon: ImageVector? = null,
+    startIcon: ImageVector? = null,
+    endIcon: ImageVector? = null,
     textStyle: TextStyle = AppTokens.typography.b14Bold(),
 ) {
     val colorTokens = resolveButtonColors(
@@ -123,23 +124,35 @@ public fun Button(
                     contentDescription = null,
                 )
             } else {
-                if (icon != null) {
+                if (startIcon != null) {
                     Icon(
                         modifier = Modifier.size(AppTokens.dp.icon.small),
-                        imageVector = icon,
+                        imageVector = startIcon,
                         tint = colorTokens.icon,
                         contentDescription = null
                     )
 
                     Spacer(modifier = Modifier.width(8.dp))
                 }
+
                 Text(
                     text = text,
                     color = colorTokens.content,
                     style = textStyle,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
+
+                if (endIcon != null) {
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Icon(
+                        modifier = Modifier.size(AppTokens.dp.icon.small),
+                        imageVector = endIcon,
+                        tint = colorTokens.icon,
+                        contentDescription = null
+                    )
+                }
             }
         }
     }
@@ -176,20 +189,20 @@ private fun ColumnScope.ButtonVariantsWithIcon(style: ButtonStyle) {
         style = style,
         state = ButtonState.Enabled,
         onClick = {},
-        icon = Icons.Default.Check
+        startIcon = Icons.Default.Check
     )
     Button(
         text = "Loading",
         style = style,
         state = ButtonState.Loading,
         onClick = {},
-        icon = Icons.Default.Check
+        startIcon = Icons.Default.Check
     )
     Button(
         text = "Disabled",
         style = style,
         state = ButtonState.Disabled,
         onClick = {},
-        icon = Icons.Default.Check
+        startIcon = Icons.Default.Check
     )
 }

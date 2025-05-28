@@ -28,6 +28,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.cards.information.InformationCard
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.nonRippleClick
@@ -37,10 +39,12 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.icons.ChevronDown
+import com.grippo.design.resources.icons.ChevronRight
 import com.grippo.design.resources.intensity
 import com.grippo.design.resources.kg
 import com.grippo.design.resources.percent
 import com.grippo.design.resources.set_value
+import com.grippo.design.resources.source
 import com.grippo.design.resources.tonnage
 import com.grippo.presentation.api.trainings.models.ExerciseState
 import com.grippo.presentation.api.trainings.models.stubExercise
@@ -144,6 +148,7 @@ public fun ExerciseCard(
                     }
 
                     false -> Column(modifier = Modifier.fillMaxWidth()) {
+
                         InformationCard(
                             modifier = Modifier.fillMaxWidth(),
                             label = AppTokens.strings.res(Res.string.tonnage),
@@ -194,6 +199,26 @@ public fun ExerciseCard(
                                 }
                             }
                         )
+
+                        value.exerciseExample?.let { example ->
+                            HorizontalDivider(
+                                modifier = Modifier.fillMaxWidth(),
+                                color = AppTokens.colors.divider.default
+                            )
+
+                            InformationCard(
+                                modifier = Modifier.fillMaxWidth(),
+                                label = AppTokens.strings.res(Res.string.source),
+                                value = {
+                                    Button(
+                                        text = example.name,
+                                        endIcon = AppTokens.icons.ChevronRight,
+                                        style = ButtonStyle.Transparent,
+                                        onClick = {}
+                                    )
+                                }
+                            )
+                        }
                     }
                 }
             }
