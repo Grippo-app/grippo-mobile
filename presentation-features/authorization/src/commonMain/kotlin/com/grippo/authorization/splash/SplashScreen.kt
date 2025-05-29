@@ -1,5 +1,6 @@
 package com.grippo.authorization.splash
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,8 +17,10 @@ internal fun SplashScreen(
     loaders: ImmutableSet<SplashLoader>,
     contract: SplashContract
 ) = BaseComposeScreen {
-    if (loaders.contains(SplashLoader.AppContent)) {
-        Loader(modifier = Modifier.fillMaxSize())
+    Box(Modifier.fillMaxSize()) {
+        if (loaders.contains(SplashLoader.AppContent)) {
+            Loader(modifier = Modifier.fillMaxSize())
+        }
     }
 }
 
