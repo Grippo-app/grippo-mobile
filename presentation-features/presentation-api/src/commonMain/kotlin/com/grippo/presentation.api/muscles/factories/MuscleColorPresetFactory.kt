@@ -11,10 +11,10 @@ import com.grippo.presentation.api.muscles.models.MuscleState
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.toImmutableSet
 
-public object MuscleColorPresetFactory {
+internal object MuscleColorPresetFactory {
 
     @Composable
-    public fun fromSelected(
+    fun fromSelected(
         selected: ImmutableSet<MuscleEnumState>
     ): MuscleColorPreset {
         val selectedColor = AppTokens.colors.muscle.active
@@ -67,7 +67,7 @@ public object MuscleColorPresetFactory {
     }
 
     @Composable
-    public fun fromSelected(
+    fun fromSelected(
         group: MuscleGroupState<*>,
         selected: ImmutableSet<String>
     ): MuscleColorPreset {

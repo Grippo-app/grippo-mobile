@@ -2,13 +2,13 @@ package com.grippo.presentation.api.muscles.factories
 
 import com.grippo.presentation.api.muscles.models.MuscleEnumState
 
-public enum class BodySide {
+internal enum class BodySide {
     Front, Back, Both
 }
 
-public object MuscleSideFactory {
+internal object MuscleSideFactory {
 
-    public fun side(muscle: MuscleEnumState): BodySide = when (muscle) {
+    fun side(muscle: MuscleEnumState): BodySide = when (muscle) {
         MuscleEnumState.PECTORALIS_MAJOR_CLAVICULAR,
         MuscleEnumState.PECTORALIS_MAJOR_STERNOCOSTAL,
         MuscleEnumState.PECTORALIS_MAJOR_ABDOMINAL,
