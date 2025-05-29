@@ -80,4 +80,7 @@
     <string name="tonnage">Tonnage</string>
     <string name="intensity">Intensity</string>
     <string name="set_value">Set %1$s</string>
+
+    <string name="exercise_example_equipments">Equipments</string>
+    <string name="exercise_example_muscles">Muscles</string>
 </resources>

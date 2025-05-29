@@ -26,6 +26,6 @@ public sealed class DialogConfig(public open val onDismiss: (() -> Unit)?) {
     @Serializable
     public data class ExerciseExample(
         val id: String,
-        val onResult: (value: Int) -> Unit,
+        val onResult: (id: String) -> Unit,
     ) : DialogConfig(null)
 }

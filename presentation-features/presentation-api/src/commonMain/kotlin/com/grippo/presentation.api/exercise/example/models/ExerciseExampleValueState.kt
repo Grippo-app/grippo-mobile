@@ -17,9 +17,9 @@ public data class ExerciseExampleValueState(
 public fun stubExerciseExampleValueState(): ExerciseExampleValueState {
     return ExerciseExampleValueState(
         id = Uuid.random().toString(),
-        name = "Bench press",
+        name = "Dumbbell Bench press",
         imageUrl = null,
-        description = "Nothing to say",
+        description = "The dumbbell bench press is a variation of the barbell bench press and an exercise used to build the muscles of the chest. It is recommended after reaching a certain point of strength on the barbell bench press to avoid pec and shoulder injuries. The exercise requires maintaining shoulder stability throughout, making it a great test of strength and control.",
         experience = ExperienceEnumState.INTERMEDIATE,
         forceType = ForceTypeEnumState.PUSH,
         weightType = WeightTypeEnumState.BODY_WEIGHT,
