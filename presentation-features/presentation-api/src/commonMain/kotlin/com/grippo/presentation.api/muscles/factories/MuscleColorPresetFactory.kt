@@ -15,6 +15,59 @@ public object MuscleColorPresetFactory {
 
     @Composable
     public fun fromSelected(
+        selected: ImmutableSet<MuscleEnumState>
+    ): MuscleColorPreset {
+        val selectedColor = AppTokens.colors.muscle.active
+        val inactiveColor = AppTokens.colors.muscle.inactive
+
+        val colorMap = remember(selected) {
+            MuscleEnumState.entries.associateWith { muscle ->
+                if (muscle in selected) selectedColor else inactiveColor
+            }
+        }
+
+        return MuscleColorPreset(
+            biceps = colorMap[MuscleEnumState.BICEPS] ?: inactiveColor,
+            triceps = colorMap[MuscleEnumState.TRICEPS] ?: inactiveColor,
+            forearm = colorMap[MuscleEnumState.FOREARM] ?: inactiveColor,
+            forearmFront = colorMap[MuscleEnumState.FOREARM] ?: inactiveColor,
+            forearmBack = colorMap[MuscleEnumState.FOREARM] ?: inactiveColor,
+
+            lateralDeltoid = colorMap[MuscleEnumState.LATERAL_DELTOID] ?: inactiveColor,
+            anteriorDeltoid = colorMap[MuscleEnumState.ANTERIOR_DELTOID] ?: inactiveColor,
+            posteriorDeltoid = colorMap[MuscleEnumState.POSTERIOR_DELTOID] ?: inactiveColor,
+
+            pectoralisMajorAbdominal = colorMap[MuscleEnumState.PECTORALIS_MAJOR_ABDOMINAL]
+                ?: inactiveColor,
+            pectoralisMajorClavicular = colorMap[MuscleEnumState.PECTORALIS_MAJOR_CLAVICULAR]
+                ?: inactiveColor,
+            pectoralisMajorSternocostal = colorMap[MuscleEnumState.PECTORALIS_MAJOR_STERNOCOSTAL]
+                ?: inactiveColor,
+
+            rectusAbdominis = colorMap[MuscleEnumState.RECTUS_ABDOMINIS] ?: inactiveColor,
+            obliquesAbdominis = colorMap[MuscleEnumState.OBLIQUES] ?: inactiveColor,
+
+            rhomboids = colorMap[MuscleEnumState.RHOMBOIDS] ?: inactiveColor,
+            latissimus = colorMap[MuscleEnumState.LATISSIMUS_DORSI] ?: inactiveColor,
+            trapezius = colorMap[MuscleEnumState.TRAPEZIUS] ?: inactiveColor,
+            teresMajor = colorMap[MuscleEnumState.TERES_MAJOR] ?: inactiveColor,
+
+            gluteal = colorMap[MuscleEnumState.GLUTEAL] ?: inactiveColor,
+            hamstrings = colorMap[MuscleEnumState.HAMSTRINGS] ?: inactiveColor,
+            calf = colorMap[MuscleEnumState.CALF] ?: inactiveColor,
+            quadriceps = colorMap[MuscleEnumState.QUADRICEPS] ?: inactiveColor,
+            adductors = colorMap[MuscleEnumState.ADDUCTORS] ?: inactiveColor,
+            abductors = colorMap[MuscleEnumState.ABDUCTORS] ?: inactiveColor,
+
+            other = inactiveColor,
+            outline = AppTokens.colors.muscle.outline,
+            backgroundFront = AppTokens.colors.muscle.background,
+            backgroundBack = AppTokens.colors.muscle.background
+        )
+    }
+
+    @Composable
+    public fun fromSelected(
         group: MuscleGroupState<*>,
         selected: ImmutableSet<String>
     ): MuscleColorPreset {

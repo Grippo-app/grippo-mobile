@@ -35,5 +35,5 @@ public enum class MuscleEnumState {
     // Arms
     BICEPS,
     TRICEPS,
-    FOREARM
+    FOREARM;
 }

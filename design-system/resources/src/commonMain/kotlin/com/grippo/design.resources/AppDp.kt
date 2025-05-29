@@ -32,6 +32,6 @@ public data object AppDp {
         val small: Dp = 18.dp
         val medium: Dp = 32.dp
         val large: Dp = 48.dp
-        val extraLarge: Dp = 64.dp
+        val extraLarge: Dp = 72.dp
     }
 }
