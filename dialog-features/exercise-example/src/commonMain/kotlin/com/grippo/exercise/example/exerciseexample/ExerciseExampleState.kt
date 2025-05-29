@@ -1,6 +1,9 @@
 package com.grippo.exercise.example.exerciseexample
 
 import androidx.compose.runtime.Immutable
+import com.grippo.presentation.api.exercise.example.models.ExerciseExampleState
 
 @Immutable
-internal data object ExerciseExampleState
+public data class ExerciseExampleState(
+    val example: ExerciseExampleState? = null,
+)

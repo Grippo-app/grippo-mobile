@@ -52,7 +52,8 @@ import com.grippo.presentation.api.trainings.models.stubExercise
 @Composable
 public fun ExerciseCard(
     modifier: Modifier = Modifier,
-    value: ExerciseState
+    value: ExerciseState,
+    onExerciseExampleClick: (id: String) -> Unit
 ) {
 
     val expanded = remember { mutableStateOf(false) }
@@ -210,11 +211,15 @@ public fun ExerciseCard(
                                 modifier = Modifier.fillMaxWidth(),
                                 label = AppTokens.strings.res(Res.string.source),
                                 value = {
+                                    val clickProvider = remember(example) {
+                                        { onExerciseExampleClick.invoke(example.id) }
+                                    }
+
                                     Button(
                                         text = example.name,
                                         endIcon = AppTokens.icons.ChevronRight,
                                         style = ButtonStyle.Transparent,
-                                        onClick = {}
+                                        onClick = clickProvider
                                     )
                                 }
                             )
@@ -231,7 +236,8 @@ public fun ExerciseCard(
 private fun ExerciseCardPreview() {
     PreviewContainer {
         ExerciseCard(
-            value = stubExercise()
+            value = stubExercise(),
+            onExerciseExampleClick = {}
         )
     }
 }

@@ -22,4 +22,10 @@ public sealed class DialogConfig(public open val onDismiss: (() -> Unit)?) {
         val initial: Int,
         val onResult: (value: Int) -> Unit,
     ) : DialogConfig(null)
+
+    @Serializable
+    public data class ExerciseExample(
+        val id: String,
+        val onResult: (value: Int) -> Unit,
+    ) : DialogConfig(null)
 }

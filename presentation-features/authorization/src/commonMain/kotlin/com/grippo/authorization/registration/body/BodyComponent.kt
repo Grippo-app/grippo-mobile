@@ -12,7 +12,7 @@ internal class BodyComponent(
 ) : BaseComponent<BodyDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        BodyViewModel()
+        BodyViewModel(dialogController = getKoin().get())
     }
 
     override suspend fun eventListener(direction: BodyDirection) {

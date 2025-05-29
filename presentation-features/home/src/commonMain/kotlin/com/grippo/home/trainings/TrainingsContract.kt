@@ -2,5 +2,9 @@ package com.grippo.home.trainings
 
 internal interface TrainingsContract {
 
-    companion object Empty : TrainingsContract
+    fun openExerciseExample(id: String)
+
+    companion object Empty : TrainingsContract {
+        override fun openExerciseExample(id: String) {}
+    }
 }

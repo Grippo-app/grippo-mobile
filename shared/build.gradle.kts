@@ -45,6 +45,7 @@ kotlin {
         implementation(projects.dialogFeatures.weightPicker)
         implementation(projects.dialogFeatures.heightPicker)
         implementation(projects.dialogFeatures.errorDisplay)
+        implementation(projects.dialogFeatures.exerciseExample)
 
         implementation(libs.koin.core)
         implementation(libs.immutable.collections)

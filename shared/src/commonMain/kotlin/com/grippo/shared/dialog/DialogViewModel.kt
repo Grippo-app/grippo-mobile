@@ -5,15 +5,13 @@ import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogProvider
 import com.grippo.logger.AppLogger
 import kotlinx.coroutines.flow.onEach
-import org.koin.core.component.inject
 
-internal class DialogViewModel :
-    BaseViewModel<DialogState, DialogDirection, DialogLoader>(DialogState()), DialogContract {
-
-    private val dialogController by inject<DialogProvider>()
+internal class DialogViewModel(
+    dialogProvider: DialogProvider
+) : BaseViewModel<DialogState, DialogDirection, DialogLoader>(DialogState()), DialogContract {
 
     init {
-        dialogController.dialog
+        dialogProvider.dialog
             .onEach(::show)
             .safeLaunch()
     }

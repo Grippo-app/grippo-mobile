@@ -6,15 +6,23 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
 
-internal class ExerciseExampleComponent(
+public class ExerciseExampleComponent(
     componentContext: ComponentContext,
+    id: String,
+    private val onResult: (id: String) -> Unit,
 ) : BaseComponent<ExerciseExampleDirection>(componentContext) {
 
-    override val viewModel = componentContext.retainedInstance {
-        ExerciseExampleViewModel()
+    override val viewModel: ExerciseExampleViewModel = componentContext.retainedInstance {
+        ExerciseExampleViewModel(
+            id = id,
+            exerciseExampleFeature = getKoin().get()
+        )
     }
 
     override suspend fun eventListener(direction: ExerciseExampleDirection) {
+        when (direction) {
+            is ExerciseExampleDirection.DismissWithResult -> onResult.invoke(direction.id)
+        }
     }
 
     @Composable

@@ -43,7 +43,8 @@ internal fun TrainingsScreen(
         items(list, key = { it.id }) { exercise ->
             ExerciseCard(
                 modifier = Modifier.fillMaxWidth(),
-                value = exercise
+                value = exercise,
+                onExerciseExampleClick = contract::openExerciseExample
             )
         }
     }

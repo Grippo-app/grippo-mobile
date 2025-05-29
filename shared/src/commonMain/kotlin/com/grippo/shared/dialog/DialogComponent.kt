@@ -13,6 +13,7 @@ import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.error.display.ErrorDisplayComponent
+import com.grippo.exercise.example.exerciseexample.ExerciseExampleComponent
 import com.grippo.height.picker.HeightPickerComponent
 import com.grippo.shared.dialog.DialogComponent.Dialog.ErrorDisplay
 import com.grippo.shared.dialog.DialogComponent.Dialog.HeightPicker
@@ -27,10 +28,12 @@ internal class DialogComponent(
         data class WeightPicker(override val component: WeightPickerComponent) : Dialog(component)
         data class HeightPicker(override val component: HeightPickerComponent) : Dialog(component)
         data class ErrorDisplay(override val component: ErrorDisplayComponent) : Dialog(component)
+        data class ExerciseExample(override val component: ExerciseExampleComponent) :
+            Dialog(component)
     }
 
     override val viewModel = componentContext.retainedInstance {
-        DialogViewModel()
+        DialogViewModel(dialogProvider = getKoin().get())
     }
 
     override suspend fun eventListener(direction: DialogDirection) {
@@ -81,6 +84,16 @@ internal class DialogComponent(
                     componentContext = context,
                     title = router.title,
                     description = router.description,
+                    onResult = {
+                        viewModel.dismiss(null)
+                    }
+                )
+            )
+
+            is DialogConfig.ExerciseExample -> Dialog.ExerciseExample(
+                ExerciseExampleComponent(
+                    componentContext = context,
+                    id = router.id,
                     onResult = {
                         viewModel.dismiss(null)
                     }
