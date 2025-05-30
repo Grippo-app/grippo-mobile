@@ -42,8 +42,8 @@ public data class MuscleGroupState<T : MuscleRepresentationState>(
     }
 }
 
-public fun stubMuscles(): PersistentList<MuscleGroupState<Plain>> =
-    persistentListOf(
+public fun stubMuscles(): PersistentList<MuscleGroupState<Plain>> {
+    return persistentListOf(
         MuscleGroupState(
             id = "4289bf91-51d8-40b0-9aca-66780584a4eb",
             name = "Back Muscles",
@@ -192,3 +192,4 @@ public fun stubMuscles(): PersistentList<MuscleGroupState<Plain>> =
             ).map { Plain(it) }.toPersistentList()
         ),
     )
+}

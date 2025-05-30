@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public sealed class RootRouter : BaseRouter {
+
     @Serializable
     public data object Auth : RootRouter()
 

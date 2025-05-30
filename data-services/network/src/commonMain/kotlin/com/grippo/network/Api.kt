@@ -192,7 +192,10 @@ public class Api(private val client: NetworkClient) {
         )
     }
 
-    // Only for admin user
+    /* * * * * * * * * * * * * * * * *
+     * Only admin
+     * * * * * * * * * * * * * * * * */
+
     public suspend fun setExerciseExample(body: ExerciseExampleResponse): Result<ExerciseExampleResponse> {
         return request(
             method = HttpMethod.Post,
