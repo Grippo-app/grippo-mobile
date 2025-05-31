@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -24,9 +23,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.grippo.date.utils.DateCompose
 import com.grippo.design.components.modifiers.ShadowElevation
+import com.grippo.design.components.modifiers.nonRippleClick
 import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -35,11 +36,11 @@ import com.grippo.design.resources.Res
 import com.grippo.design.resources.icons.Award
 import com.grippo.design.resources.icons.Box
 import com.grippo.design.resources.icons.Calendar
+import com.grippo.design.resources.icons.Edit
 import com.grippo.design.resources.icons.Heart
 import com.grippo.design.resources.user_card_no_records_yet
 import com.grippo.design.resources.user_card_no_workouts_yet
 import com.grippo.design.resources.user_card_overview
-import com.grippo.design.resources.user_card_preferences
 import com.grippo.design.resources.user_card_value_in_a_row
 import com.grippo.design.resources.user_card_value_personal_records
 import com.grippo.design.resources.user_card_value_workouts
@@ -49,7 +50,8 @@ import com.grippo.presentation.api.user.models.stubUser
 @Composable
 public fun UserCard(
     modifier: Modifier = Modifier,
-    value: UserState
+    value: UserState,
+    onEditClick: (() -> Unit)? = null
 ) {
     val shape = RoundedCornerShape(AppTokens.dp.shape.large)
 
@@ -67,48 +69,38 @@ public fun UserCard(
                 horizontal = AppTokens.dp.paddings.mediumHorizontal,
                 vertical = AppTokens.dp.paddings.mediumVertical
             ),
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = value.name,
-            style = AppTokens.typography.h1(),
-            color = AppTokens.colors.text.primary,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            HorizontalDivider(
-                modifier = Modifier.weight(1f),
-                color = AppTokens.colors.divider.default
-            )
-
             Text(
-                text = AppTokens.strings.res(Res.string.user_card_preferences),
-                style = AppTokens.typography.b14Reg(),
-                color = AppTokens.colors.text.secondary,
+                modifier = Modifier.weight(1f),
+                text = value.name,
+                style = AppTokens.typography.h2(),
+                color = AppTokens.colors.text.primary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
 
-            HorizontalDivider(
-                modifier = Modifier.weight(1f),
-                color = AppTokens.colors.divider.default
-            )
+            if (onEditClick != null) {
+                Icon(
+                    modifier = Modifier
+                        .size(AppTokens.dp.icon.m)
+                        .nonRippleClick(onClick = onEditClick),
+                    imageVector = AppTokens.icons.Edit,
+                    contentDescription = null,
+                    tint = AppTokens.colors.icon.default
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
         Row(
             modifier = Modifier
-                .fillMaxWidth(0.7f)
+                .clip(shape = RoundedCornerShape(AppTokens.dp.shape.medium))
+                .background(AppTokens.colors.background.primary)
                 .border(
                     1.dp,
                     color = AppTokens.colors.border.defaultPrimary,
@@ -119,7 +111,8 @@ public fun UserCard(
                     vertical = AppTokens.dp.paddings.smallVertical,
                     horizontal = AppTokens.dp.paddings.smallHorizontal
                 ),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.paddings.smallHorizontal)
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.paddings.smallHorizontal),
+            verticalAlignment = Alignment.CenterVertically
         ) {
 
             Icon(
@@ -189,7 +182,7 @@ public fun UserCard(
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         val workoutsStr = if (value.records > 0) {
             AppTokens.strings.res(
@@ -200,43 +193,44 @@ public fun UserCard(
             AppTokens.strings.res(Res.string.user_card_no_workouts_yet)
         }
 
-        OverviewItem(
-            modifier = Modifier.fillMaxWidth(0.7f),
-            title = workoutsStr,
-            icon = AppTokens.icons.Heart
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth().height(intrinsicSize = IntrinsicSize.Max),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        val ago = DateCompose.rememberAgo(value.createdAt)
-
-        OverviewItem(
-            modifier = Modifier.fillMaxWidth(0.7f),
-            title = AppTokens.strings.res(
-                Res.string.user_card_value_in_a_row,
-                ago
-            ),
-            icon = AppTokens.icons.Calendar
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        val recordsStr = if (value.records > 0) {
-            AppTokens.strings.res(
-                Res.string.user_card_value_personal_records,
-                value.records.toString()
+            OverviewItem(
+                modifier = Modifier.weight(1f).fillMaxHeight(),
+                title = workoutsStr,
+                icon = AppTokens.icons.Heart
             )
-        } else {
-            AppTokens.strings.res(Res.string.user_card_no_records_yet)
+
+            val ago = DateCompose.rememberAgo(value.createdAt)
+
+            OverviewItem(
+                modifier = Modifier.weight(1f).fillMaxHeight(),
+                title = AppTokens.strings.res(
+                    Res.string.user_card_value_in_a_row,
+                    ago
+                ),
+                icon = AppTokens.icons.Calendar
+            )
+
+            val recordsStr = if (value.records > 0) {
+                AppTokens.strings.res(
+                    Res.string.user_card_value_personal_records,
+                    value.records.toString()
+                )
+            } else {
+                AppTokens.strings.res(Res.string.user_card_no_records_yet)
+            }
+
+            OverviewItem(
+                modifier = Modifier.weight(1f).fillMaxHeight(),
+                title = recordsStr,
+                icon = AppTokens.icons.Award
+            )
         }
-
-        OverviewItem(
-            modifier = Modifier.fillMaxWidth(0.7f),
-            title = recordsStr,
-            icon = AppTokens.icons.Award
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
     }
 }
 
@@ -246,20 +240,20 @@ private fun OverviewItem(
     title: String,
     icon: ImageVector
 ) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalAlignment = Alignment.CenterVertically
+    Column(
+        modifier = modifier
+            .clip(RoundedCornerShape(AppTokens.dp.shape.medium))
+            .background(AppTokens.colors.background.primary)
+            .border(
+                1.dp,
+                color = AppTokens.colors.border.defaultPrimary,
+                shape = RoundedCornerShape(AppTokens.dp.shape.medium)
+            ).padding(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
-            modifier = Modifier
-                .border(
-                    1.dp,
-                    color = AppTokens.colors.border.defaultPrimary,
-                    shape = RoundedCornerShape(AppTokens.dp.shape.medium)
-                )
-                .padding(8.dp)
-                .size(AppTokens.dp.icon.m),
+            modifier = Modifier.size(AppTokens.dp.icon.m),
             imageVector = icon,
             tint = AppTokens.colors.icon.accent,
             contentDescription = null
@@ -267,9 +261,11 @@ private fun OverviewItem(
 
         Text(
             text = title,
-            style = AppTokens.typography.b16Bold(),
+            style = AppTokens.typography.b14Med(),
             color = AppTokens.colors.text.primary,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }
@@ -280,6 +276,11 @@ private fun UserCardPreview() {
     PreviewContainer {
         UserCard(
             value = stubUser()
+        )
+
+        UserCard(
+            value = stubUser(),
+            onEditClick = {}
         )
     }
 }
