@@ -7,6 +7,9 @@ public data object AppDp {
     val screen: Screen = Screen
     val input: Input = Input
     val button: Button = Button
+    val selectableCard: SelectableCard = SelectableCard
+    val userCard: UserCard = UserCard
+    val bodyDetails: BodyDetails = BodyDetails
 
     val paddings: Paddings = Paddings
     val size: Size = Size
@@ -22,6 +25,7 @@ public data object AppDp {
         val height: Dp = 50.dp
         val horizontalPadding: Dp = 16.dp
         val radius: Dp = 16.dp
+        val icon: Dp = 18.dp
     }
 
     public data object Button {
@@ -30,6 +34,47 @@ public data object AppDp {
         val radius: Dp = 16.dp
         val icon: Dp = 18.dp
         val space: Dp = 8.dp
+    }
+
+    public data object UserCard {
+        val horizontalPadding: Dp = 16.dp
+        val verticalPadding: Dp = 16.dp
+        val radius: Dp = 16.dp
+        val icon: Dp = 24.dp
+    }
+
+    public data object BodyDetails {
+        val horizontalPadding: Dp = 4.dp
+        val verticalPadding: Dp = 4.dp
+        val radius: Dp = 12.dp
+        val icon: Dp = 18.dp
+    }
+
+    public data object SelectableCard {
+        val large: Large = Large
+        val medium: Medium = Medium
+        val small: Small = Small
+
+        public data object Large {
+            val horizontalPadding: Dp = 16.dp
+            val verticalPadding: Dp = 16.dp
+            val radius: Dp = 16.dp
+            val icon: Dp = 32.dp
+        }
+
+        public data object Medium {
+            val height: Dp = 50.dp
+            val horizontalPadding: Dp = 12.dp
+            val verticalPadding: Dp = 4.dp
+            val radius: Dp = 12.dp
+            val icon: Dp = 48.dp
+        }
+
+        public data object Small {
+            val height: Dp = 50.dp
+            val horizontalPadding: Dp = 12.dp
+            val radius: Dp = 12.dp
+        }
     }
 
     public data object Paddings {
@@ -50,7 +95,6 @@ public data object AppDp {
     }
 
     public data object Icon {
-        val xs: Dp = 18.dp
         val s: Dp = 22.dp
         val m: Dp = 32.dp
         val l: Dp = 48.dp

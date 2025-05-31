@@ -43,7 +43,7 @@ internal fun SelectableCardLarge(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val shape = RoundedCornerShape(AppTokens.dp.shape.large)
+    val shape = RoundedCornerShape(AppTokens.dp.selectableCard.large.radius)
     val scale by animateFloatAsState(
         targetValue = if (isSelected) 1.02f else 1f,
         animationSpec = tween(durationMillis = 200, easing = FastOutSlowInEasing),
@@ -81,16 +81,16 @@ internal fun SelectableCardLarge(
             .background(AppTokens.colors.background.secondary)
             .border(1.dp, borderColor, shape)
             .padding(
-                horizontal = AppTokens.dp.paddings.mediumHorizontal,
-                vertical = AppTokens.dp.paddings.mediumVertical
+                horizontal = AppTokens.dp.selectableCard.large.horizontalPadding,
+                vertical = AppTokens.dp.selectableCard.large.verticalPadding
             ),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.selectableCard.large.horizontalPadding),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             imageVector = style.icon,
             contentDescription = null,
-            modifier = Modifier.size(AppTokens.dp.icon.m),
+            modifier = Modifier.size(AppTokens.dp.selectableCard.large.icon),
             tint = iconTint
         )
 
@@ -114,26 +114,23 @@ internal fun SelectableCardLarge(
 
 @Composable
 internal fun SelectableCardLargeSkeleton(modifier: Modifier) {
-    val shape = RoundedCornerShape(AppTokens.dp.shape.large)
+    val shape = AppTokens.dp.selectableCard.large.radius
 
     Box(
         modifier = modifier
-            .shimmerAnimation(
-                visible = true,
-                radius = AppTokens.dp.shape.large
-            )
+            .shimmerAnimation(visible = true, radius = shape)
             .shadowDefault(
                 elevation = ShadowElevation.Card,
-                shape = shape,
+                shape = RoundedCornerShape(shape),
                 color = AppTokens.colors.overlay.defaultShadow,
             )
-            .clip(shape)
+            .clip(RoundedCornerShape(shape))
             .background(AppTokens.colors.background.secondary)
-            .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
+            .border(1.dp, AppTokens.colors.border.defaultPrimary, RoundedCornerShape(shape))
             .padding(
-                horizontal = AppTokens.dp.paddings.mediumHorizontal,
-                vertical = AppTokens.dp.paddings.mediumVertical
-            ).height(AppTokens.dp.size.componentHeight)
+                horizontal = AppTokens.dp.selectableCard.large.horizontalPadding,
+                vertical = AppTokens.dp.selectableCard.large.verticalPadding
+            ).height(AppTokens.dp.selectableCard.large.icon),
     )
 }
 

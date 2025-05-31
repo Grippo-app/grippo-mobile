@@ -80,7 +80,7 @@ public fun InputPassword(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                modifier = Modifier.size(AppTokens.dp.icon.xs),
+                                modifier = Modifier.size(AppTokens.dp.input.icon),
                                 imageVector = AppTokens.icons.EyeOff,
                                 tint = color,
                                 contentDescription = null,
@@ -103,7 +103,7 @@ public fun InputPassword(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                modifier = Modifier.size(AppTokens.dp.icon.xs),
+                                modifier = Modifier.size(AppTokens.dp.input.icon),
                                 imageVector = AppTokens.icons.Eye,
                                 tint = color,
                                 contentDescription = null,

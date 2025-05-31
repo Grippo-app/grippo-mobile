@@ -39,7 +39,7 @@ internal fun SelectableCardMedium(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val shape = RoundedCornerShape(AppTokens.dp.shape.medium)
+    val shape = RoundedCornerShape(AppTokens.dp.selectableCard.medium.radius)
 
     Row(
         modifier = modifier
@@ -53,17 +53,17 @@ internal fun SelectableCardMedium(
             .background(AppTokens.colors.background.secondary)
             .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
             .padding(
-                horizontal = AppTokens.dp.paddings.smallHorizontal,
-                vertical = AppTokens.dp.paddings.smallVertical,
+                horizontal = AppTokens.dp.selectableCard.medium.horizontalPadding,
+                vertical = AppTokens.dp.selectableCard.medium.verticalPadding,
             )
-            .height(AppTokens.dp.size.componentHeight),
+            .height(AppTokens.dp.selectableCard.medium.height),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Image(
             imageVector = style.icon,
             contentDescription = null,
-            modifier = Modifier.size(AppTokens.dp.icon.l),
+            modifier = Modifier.size(AppTokens.dp.selectableCard.medium.icon),
             colorFilter = when (isSelected) {
                 true -> null
                 false -> ColorFilter.tint(color = AppTokens.colors.icon.disabled)
@@ -88,14 +88,11 @@ internal fun SelectableCardMedium(
 
 @Composable
 internal fun SelectableCardMediumSkeleton(modifier: Modifier) {
-    val radius = AppTokens.dp.shape.medium
+    val radius = AppTokens.dp.selectableCard.medium.radius
 
     Box(
         modifier = modifier
-            .shimmerAnimation(
-                visible = true,
-                radius = AppTokens.dp.shape.medium
-            )
+            .shimmerAnimation(visible = true, radius = radius)
             .shadowDefault(
                 elevation = ShadowElevation.Card,
                 shape = RoundedCornerShape(radius),
@@ -105,9 +102,10 @@ internal fun SelectableCardMediumSkeleton(modifier: Modifier) {
             .background(AppTokens.colors.background.secondary)
             .border(1.dp, AppTokens.colors.border.defaultPrimary, RoundedCornerShape(radius))
             .padding(
-                horizontal = AppTokens.dp.paddings.smallHorizontal,
-                vertical = AppTokens.dp.paddings.smallVertical
-            ).height(AppTokens.dp.size.componentHeight),
+                horizontal = AppTokens.dp.selectableCard.medium.horizontalPadding,
+                vertical = AppTokens.dp.selectableCard.medium.verticalPadding,
+            )
+            .height(AppTokens.dp.selectableCard.medium.height),
     )
 }
 

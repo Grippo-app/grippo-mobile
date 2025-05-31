@@ -16,26 +16,23 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.grippo.date.utils.DateCompose
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.nonRippleClick
 import com.grippo.design.components.modifiers.shadowDefault
+import com.grippo.design.components.user.internal.OverviewItem
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.icons.Award
-import com.grippo.design.resources.icons.Box
 import com.grippo.design.resources.icons.Calendar
 import com.grippo.design.resources.icons.Edit
 import com.grippo.design.resources.icons.Heart
@@ -65,7 +62,7 @@ public fun UserCard(
     value: UserState,
     style: UserCardStyle = UserCardStyle.Preview
 ) {
-    val shape = RoundedCornerShape(AppTokens.dp.shape.large)
+    val shape = RoundedCornerShape(AppTokens.dp.userCard.radius)
 
     Column(
         modifier = modifier
@@ -78,8 +75,8 @@ public fun UserCard(
             .background(AppTokens.colors.background.secondary)
             .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
             .padding(
-                horizontal = AppTokens.dp.paddings.mediumHorizontal,
-                vertical = AppTokens.dp.paddings.mediumVertical
+                horizontal = AppTokens.dp.userCard.horizontalPadding,
+                vertical = AppTokens.dp.userCard.verticalPadding
             ),
     ) {
 
@@ -96,9 +93,10 @@ public fun UserCard(
             )
 
             if (style is UserCardStyle.Interactive) {
+                // todo change in button
                 Icon(
                     modifier = Modifier
-                        .size(AppTokens.dp.icon.m)
+                        .size(AppTokens.dp.userCard.icon)
                         .nonRippleClick(onClick = style.onEditClick),
                     imageVector = AppTokens.icons.Edit,
                     contentDescription = null,
@@ -109,66 +107,10 @@ public fun UserCard(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        Row(
-            modifier = Modifier
-                .clip(shape = RoundedCornerShape(AppTokens.dp.shape.medium))
-                .background(AppTokens.colors.background.primary)
-                .border(
-                    1.dp,
-                    color = AppTokens.colors.border.defaultPrimary,
-                    shape = RoundedCornerShape(AppTokens.dp.shape.medium)
-                )
-                .height(intrinsicSize = IntrinsicSize.Min)
-                .padding(
-                    vertical = AppTokens.dp.paddings.smallVertical,
-                    horizontal = AppTokens.dp.paddings.smallHorizontal
-                ),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.paddings.smallHorizontal),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            Icon(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(AppTokens.dp.shape.small))
-                    .background(AppTokens.colors.background.accent)
-                    .padding(4.dp)
-                    .size(AppTokens.dp.icon.xs),
-                imageVector = AppTokens.icons.Box,
-                tint = AppTokens.colors.icon.invert,
-                contentDescription = null
-            )
-
-            Text(
-                text = "80 kg",
-                style = AppTokens.typography.b16Bold(),
-                color = AppTokens.colors.text.primary,
-                textAlign = TextAlign.Center
-            )
-
-            VerticalDivider(
-                modifier = Modifier.fillMaxHeight(),
-                color = AppTokens.colors.divider.default
-            )
-
-            Icon(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(AppTokens.dp.shape.small))
-                    .background(AppTokens.colors.background.accent)
-                    .padding(4.dp)
-                    .size(AppTokens.dp.icon.xs),
-                imageVector = AppTokens.icons.Box,
-                tint = AppTokens.colors.icon.invert,
-                contentDescription = null
-            )
-
-            Text(
-                modifier = Modifier,
-                text = "175 cm",
-                style = AppTokens.typography.b16Bold(),
-                color = AppTokens.colors.text.primary,
-                textAlign = TextAlign.Center
-            )
-        }
+        BodyItem(
+            weight = value.weight,
+            height = value.height
+        )
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -243,42 +185,6 @@ public fun UserCard(
                 icon = AppTokens.icons.Award
             )
         }
-    }
-}
-
-@Composable
-private fun OverviewItem(
-    modifier: Modifier = Modifier,
-    title: String,
-    icon: ImageVector
-) {
-    Column(
-        modifier = modifier
-            .clip(RoundedCornerShape(AppTokens.dp.shape.medium))
-            .background(AppTokens.colors.background.primary)
-            .border(
-                1.dp,
-                color = AppTokens.colors.border.defaultPrimary,
-                shape = RoundedCornerShape(AppTokens.dp.shape.medium)
-            ).padding(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Icon(
-            modifier = Modifier.size(AppTokens.dp.icon.m),
-            imageVector = icon,
-            tint = AppTokens.colors.icon.accent,
-            contentDescription = null
-        )
-
-        Text(
-            text = title,
-            style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.primary,
-            textAlign = TextAlign.Center,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
-        )
     }
 }
 

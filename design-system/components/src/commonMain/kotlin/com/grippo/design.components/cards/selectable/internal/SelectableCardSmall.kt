@@ -34,7 +34,7 @@ internal fun SelectableCardSmall(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val shape = RoundedCornerShape(AppTokens.dp.shape.medium)
+    val shape = RoundedCornerShape(AppTokens.dp.selectableCard.small.radius)
 
     Row(
         modifier = modifier
@@ -47,8 +47,8 @@ internal fun SelectableCardSmall(
             .nonRippleClick(onClick = onClick)
             .background(AppTokens.colors.background.secondary)
             .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
-            .padding(horizontal = AppTokens.dp.paddings.smallHorizontal)
-            .height(AppTokens.dp.size.componentHeight),
+            .padding(horizontal = AppTokens.dp.selectableCard.small.horizontalPadding)
+            .height(AppTokens.dp.selectableCard.small.height),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -70,14 +70,11 @@ internal fun SelectableCardSmall(
 
 @Composable
 internal fun SelectableCardSmallSkeleton(modifier: Modifier) {
-    val radius = AppTokens.dp.shape.medium
+    val radius = AppTokens.dp.selectableCard.small.radius
 
     Box(
         modifier = modifier
-            .shimmerAnimation(
-                visible = true,
-                radius = AppTokens.dp.shape.medium
-            )
+            .shimmerAnimation(visible = true, radius = radius)
             .shadowDefault(
                 elevation = ShadowElevation.Card,
                 shape = RoundedCornerShape(radius),
@@ -86,8 +83,7 @@ internal fun SelectableCardSmallSkeleton(modifier: Modifier) {
             .clip(RoundedCornerShape(radius))
             .background(AppTokens.colors.background.secondary)
             .border(1.dp, AppTokens.colors.border.defaultPrimary, RoundedCornerShape(radius))
-            .padding(horizontal = AppTokens.dp.paddings.smallHorizontal)
-            .height(AppTokens.dp.size.componentHeight),
+            .height(AppTokens.dp.selectableCard.small.height),
     )
 }
 
