@@ -18,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,11 +48,22 @@ import com.grippo.design.resources.user_card_value_workouts
 import com.grippo.presentation.api.user.models.UserState
 import com.grippo.presentation.api.user.models.stubUser
 
+@Immutable
+public sealed interface UserCardStyle {
+    @Immutable
+    public data object Preview : UserCardStyle
+
+    @Immutable
+    public data class Interactive(
+        val onEditClick: () -> Unit
+    ) : UserCardStyle
+}
+
 @Composable
 public fun UserCard(
     modifier: Modifier = Modifier,
     value: UserState,
-    onEditClick: (() -> Unit)? = null
+    style: UserCardStyle = UserCardStyle.Preview
 ) {
     val shape = RoundedCornerShape(AppTokens.dp.shape.large)
 
@@ -83,11 +95,11 @@ public fun UserCard(
                 overflow = TextOverflow.Ellipsis
             )
 
-            if (onEditClick != null) {
+            if (style is UserCardStyle.Interactive) {
                 Icon(
                     modifier = Modifier
                         .size(AppTokens.dp.icon.m)
-                        .nonRippleClick(onClick = onEditClick),
+                        .nonRippleClick(onClick = style.onEditClick),
                     imageVector = AppTokens.icons.Edit,
                     contentDescription = null,
                     tint = AppTokens.colors.icon.default
@@ -275,12 +287,13 @@ private fun OverviewItem(
 private fun UserCardPreview() {
     PreviewContainer {
         UserCard(
-            value = stubUser()
+            value = stubUser(),
+            style = UserCardStyle.Preview
         )
 
         UserCard(
             value = stubUser(),
-            onEditClick = {}
+            style = UserCardStyle.Interactive(onEditClick = {})
         )
     }
 }
