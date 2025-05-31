@@ -13,8 +13,13 @@ public fun TokenResponse.toEntityOrNull(): TokenEntity? {
         "TokenResponse.id is null"
     } ?: return null
 
+    val refresh = AppLogger.checkOrLog(refreshToken) {
+        "TokenResponse.refreshToken is null"
+    } ?: return null
+
     return TokenEntity(
         id = id,
-        access = entityAccess
+        access = entityAccess,
+        refresh = refresh
     )
 }
