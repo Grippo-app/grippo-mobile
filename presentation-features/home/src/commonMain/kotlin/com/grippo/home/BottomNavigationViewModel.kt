@@ -8,6 +8,10 @@ public class BottomNavigationViewModel :
     ), BottomNavigationContract {
 
     override fun selectPage(index: Int) {
+        when (index) {
+            0 -> navigateTo(BottomNavigationDirection.Profile)
+            1 -> navigateTo(BottomNavigationDirection.Trainings)
+        }
         update { it.copy(selectedIndex = index) }
     }
 }

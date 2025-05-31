@@ -37,6 +37,10 @@ public fun TrainingResponse.toEntityOrNull(): TrainingEntity? {
         "TrainingResponse.updatedAt is null"
     } ?: return null
 
+    val entityUserId = AppLogger.checkOrLog(userId) {
+        "TrainingResponse.userId is null"
+    } ?: return null
+
     return TrainingEntity(
         id = entityId,
         duration = entityDuration,
@@ -45,5 +49,6 @@ public fun TrainingResponse.toEntityOrNull(): TrainingEntity? {
         repetitions = entityRepetitions,
         intensity = entityIntensity,
         updatedAt = entityUpdatedAt,
+        userId = entityUserId
     )
 }

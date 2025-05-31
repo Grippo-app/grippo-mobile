@@ -11,7 +11,10 @@ internal class ProfileComponent(
 ) : BaseComponent<ProfileDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        ProfileViewModel()
+        ProfileViewModel(
+            userFeature = getKoin().get(),
+            authorizationFeature = getKoin().get()
+        )
     }
 
     override suspend fun eventListener(direction: ProfileDirection) {

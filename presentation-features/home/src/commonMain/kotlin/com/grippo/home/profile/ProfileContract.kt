@@ -2,5 +2,9 @@ package com.grippo.home.profile
 
 internal interface ProfileContract {
 
-    companion object Empty : ProfileContract
+    fun onLogoutClick()
+
+    companion object Empty : ProfileContract {
+        override fun onLogoutClick() {}
+    }
 }

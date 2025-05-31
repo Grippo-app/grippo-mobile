@@ -42,6 +42,6 @@ internal class AuthorizationRepositoryImpl(
     }
 
     override suspend fun logout() {
-
+        tokenDao.delete()
     }
 }
