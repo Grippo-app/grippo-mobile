@@ -50,7 +50,10 @@ public data class ExerciseExampleState(
 public fun stubExerciseExample(): ExerciseExampleState {
     return ExerciseExampleState(
         value = stubExerciseExampleValueState(),
-        bundles = persistentListOf(),
+        bundles = persistentListOf(
+            stubExerciseExampleBundle(),
+            stubExerciseExampleBundle()
+        ),
         equipments = stubEquipments().random().equipments.take(2).toPersistentList(),
         tutorials = persistentListOf(stubTutorial())
     )

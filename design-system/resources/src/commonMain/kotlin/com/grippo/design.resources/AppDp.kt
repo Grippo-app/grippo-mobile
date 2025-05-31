@@ -29,9 +29,10 @@ public data object AppDp {
     }
 
     public data object Icon {
-        val small: Dp = 18.dp
-        val medium: Dp = 32.dp
-        val large: Dp = 48.dp
-        val extraLarge: Dp = 72.dp
+        val xs: Dp = 18.dp
+        val s: Dp = 22.dp
+        val m: Dp = 32.dp
+        val l: Dp = 48.dp
+        val xl: Dp = 72.dp
     }
 }

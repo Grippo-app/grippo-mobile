@@ -235,7 +235,7 @@ private fun OverviewItem(
                     shape = RoundedCornerShape(AppTokens.dp.shape.medium)
                 )
                 .padding(8.dp)
-                .size(AppTokens.dp.icon.medium),
+                .size(AppTokens.dp.icon.m),
             imageVector = icon,
             tint = AppTokens.colors.icon.accent,
             contentDescription = null

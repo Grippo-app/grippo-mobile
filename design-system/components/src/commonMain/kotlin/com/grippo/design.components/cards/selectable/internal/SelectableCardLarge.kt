@@ -90,7 +90,7 @@ internal fun SelectableCardLarge(
         Icon(
             imageVector = style.icon,
             contentDescription = null,
-            modifier = Modifier.size(AppTokens.dp.icon.medium),
+            modifier = Modifier.size(AppTokens.dp.icon.m),
             tint = iconTint
         )
 

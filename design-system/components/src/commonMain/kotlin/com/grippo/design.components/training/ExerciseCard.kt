@@ -100,7 +100,7 @@ public fun ExerciseCard(
             Icon(
                 modifier = Modifier
                     .graphicsLayer { rotationZ = rotation }
-                    .size(AppTokens.dp.icon.medium),
+                    .size(AppTokens.dp.icon.m),
                 imageVector = AppTokens.icons.ChevronDown,
                 tint = AppTokens.colors.icon.default,
                 contentDescription = null

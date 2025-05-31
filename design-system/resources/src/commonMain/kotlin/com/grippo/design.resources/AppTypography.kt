@@ -44,6 +44,14 @@ public data object AppTypography {
     )
 
     @Composable
+    public fun b15Med(): TextStyle = TextStyle(
+        fontSize = 15.sp,
+        fontFamily = manrope(),
+        lineHeight = 18.sp,
+        fontWeight = FontWeight.Medium,
+    )
+
+    @Composable
     public fun b14Bold(): TextStyle = TextStyle(
         fontSize = 14.sp,
         fontFamily = manrope(),

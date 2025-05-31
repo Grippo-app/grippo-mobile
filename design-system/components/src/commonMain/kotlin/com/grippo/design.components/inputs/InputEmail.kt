@@ -65,7 +65,7 @@ public fun InputEmail(
                     ) {
                         Icon(
                             modifier = Modifier
-                                .size(AppTokens.dp.icon.small),
+                                .size(AppTokens.dp.icon.xs),
                             imageVector = AppTokens.icons.X,
                             tint = color,
                             contentDescription = null

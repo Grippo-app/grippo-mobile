@@ -63,7 +63,7 @@ internal fun SelectableCardMedium(
         Image(
             imageVector = style.icon,
             contentDescription = null,
-            modifier = Modifier.size(AppTokens.dp.icon.large),
+            modifier = Modifier.size(AppTokens.dp.icon.l),
             colorFilter = when (isSelected) {
                 true -> null
                 false -> ColorFilter.tint(color = AppTokens.colors.icon.disabled)

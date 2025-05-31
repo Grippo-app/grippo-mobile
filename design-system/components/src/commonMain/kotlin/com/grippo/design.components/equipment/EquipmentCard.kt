@@ -31,7 +31,7 @@ public fun EquipmentCard(
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Image(
-            modifier = Modifier.size(AppTokens.dp.icon.extraLarge),
+            modifier = Modifier.size(AppTokens.dp.icon.xl),
             imageVector = value.image(),
             contentDescription = null
         )

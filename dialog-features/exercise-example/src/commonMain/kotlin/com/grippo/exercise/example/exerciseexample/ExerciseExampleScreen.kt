@@ -190,7 +190,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         ExerciseExampleScreen(
             state = ExerciseExampleState(
-                example = stubExerciseExample()
+                example = stubExerciseExample(),
             ),
             contract = ExerciseExampleContract.Empty,
             loaders = persistentSetOf()

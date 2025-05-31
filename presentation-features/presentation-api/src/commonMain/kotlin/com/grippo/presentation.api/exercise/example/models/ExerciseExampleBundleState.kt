@@ -13,8 +13,8 @@ public data class ExerciseExampleBundleState(
     val percentage: Int
 )
 
-public fun stubExerciseExampleBundle() {
-    ExerciseExampleBundleState(
+public fun stubExerciseExampleBundle(): ExerciseExampleBundleState {
+    return ExerciseExampleBundleState(
         id = Uuid.random().toString(),
         muscle = stubMuscles().random().muscles.random().value,
         percentage = Random.nextInt(5, 60)
