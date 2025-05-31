@@ -6,9 +6,9 @@ import kotlinx.collections.immutable.toPersistentList
 
 @Immutable
 public data class BottomNavigationState(
-    val segments: ImmutableList<Pair<Int, String>> = BottomBarMenu.entries.map {
-        it.ordinal to it.name
-    }.toPersistentList(),
+    val segments: ImmutableList<Pair<Int, String>> = BottomBarMenu
+        .entries.map { it.ordinal to it.name }
+        .toPersistentList(),
     val selectedIndex: Int = 0,
 )
 

@@ -30,10 +30,10 @@ public class RootComponent(
     }
 
     override val viewModel: RootViewModel = componentContext.retainedInstance {
-        RootViewModel()
+        RootViewModel(
+            authorizationFeature = getKoin().get()
+        )
     }
-
-    override suspend fun eventListener(direction: RootDirection) {}
 
     private val navigation = StackNavigation<RootRouter>()
     internal val childStack: Value<ChildStack<RootRouter, Child>> = childStack(
@@ -44,6 +44,14 @@ public class RootComponent(
         key = "RootComponent",
         childFactory = ::createChild,
     )
+
+    override suspend fun eventListener(direction: RootDirection) {
+        when (direction) {
+            RootDirection.Login -> if (childStack.value.active.instance !is Authorization) {
+                navigation.replaceAll(RootRouter.Auth)
+            }
+        }
+    }
 
     private fun createChild(router: RootRouter, context: ComponentContext): Child {
         return when (router) {
