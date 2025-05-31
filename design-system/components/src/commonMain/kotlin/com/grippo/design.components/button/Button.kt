@@ -67,16 +67,16 @@ public fun Button(
         state = state,
     )
 
-    val shape = RoundedCornerShape(AppTokens.dp.shape.large)
+    val shape = RoundedCornerShape(AppTokens.dp.button.radius)
 
     val height = when (style) {
         ButtonStyle.Transparent -> Dp.Unspecified
-        else -> AppTokens.dp.size.componentHeight
+        else -> AppTokens.dp.button.height
     }
 
     val horizontalPadding = when (style) {
-        ButtonStyle.Transparent -> 4.dp
-        else -> AppTokens.dp.paddings.mediumHorizontal
+        ButtonStyle.Transparent -> Dp.Unspecified
+        else -> AppTokens.dp.button.horizontalPadding
     }
 
     val interactionSource = remember { MutableInteractionSource() }
@@ -117,7 +117,7 @@ public fun Button(
                 )
                 Icon(
                     modifier = Modifier
-                        .size(AppTokens.dp.icon.xs)
+                        .size(AppTokens.dp.button.icon)
                         .graphicsLayer { rotationZ = angle.value },
                     imageVector = AppTokens.icons.Loader,
                     tint = colorTokens.icon,
@@ -126,13 +126,13 @@ public fun Button(
             } else {
                 if (startIcon != null) {
                     Icon(
-                        modifier = Modifier.size(AppTokens.dp.icon.xs),
+                        modifier = Modifier.size(AppTokens.dp.button.icon),
                         imageVector = startIcon,
                         tint = colorTokens.icon,
                         contentDescription = null
                     )
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(AppTokens.dp.button.space))
                 }
 
                 Text(
@@ -144,10 +144,10 @@ public fun Button(
                 )
 
                 if (endIcon != null) {
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(AppTokens.dp.button.space))
 
                     Icon(
-                        modifier = Modifier.size(AppTokens.dp.icon.xs),
+                        modifier = Modifier.size(AppTokens.dp.button.icon),
                         imageVector = endIcon,
                         tint = colorTokens.icon,
                         contentDescription = null

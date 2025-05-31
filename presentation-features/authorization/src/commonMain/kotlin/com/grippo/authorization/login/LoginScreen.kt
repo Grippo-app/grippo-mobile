@@ -49,8 +49,8 @@ internal fun LoginScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(
-                horizontal = AppTokens.dp.paddings.screenHorizontal,
-                vertical = AppTokens.dp.paddings.screenVertical
+                horizontal = AppTokens.dp.screen.horizontalPadding,
+                vertical = AppTokens.dp.screen.verticalPadding
             ).imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -136,7 +136,7 @@ internal fun LoginScreen(
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
         ) {
             Text(
                 text = AppTokens.strings.res(Res.string.login_button_registration_label),

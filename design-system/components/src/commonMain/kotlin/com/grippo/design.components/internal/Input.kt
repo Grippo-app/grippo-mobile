@@ -9,7 +9,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -81,8 +80,8 @@ internal fun Input(
     minLines: Int = 1,
 ) {
     val colors = AppTokens.colors
-    val shape = RoundedCornerShape(AppTokens.dp.shape.large)
-    val height = AppTokens.dp.size.componentHeight
+    val shape = RoundedCornerShape(AppTokens.dp.input.radius)
+    val height = AppTokens.dp.input.height
 
     val hasFocus = remember { mutableStateOf(false) }
 
@@ -191,10 +190,10 @@ internal fun Input(
             when (placeholder) {
                 PlaceHolder.Empty -> Row(
                     modifier = rowModifier,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Spacer(modifier = Modifier.width(AppTokens.dp.paddings.mediumHorizontal))
+
+                    Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding))
 
                     leading?.invoke(leadingColor)
 
@@ -208,18 +207,17 @@ internal fun Input(
 
                     if (trailing != null) {
                         trailing.invoke(trailingColor)
-                        Spacer(modifier = Modifier.width(AppTokens.dp.paddings.mediumHorizontal / 3))
+                        Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding / 3))
                     } else {
-                        Spacer(modifier = Modifier.width(AppTokens.dp.paddings.mediumHorizontal))
+                        Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding))
                     }
                 }
 
                 is PlaceHolder.OverInput -> Row(
                     modifier = rowModifier,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Spacer(modifier = Modifier.width(AppTokens.dp.paddings.mediumHorizontal))
+                    Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding))
 
                     leading?.invoke(leadingColor)
 
@@ -248,9 +246,9 @@ internal fun Input(
 
                     if (trailing != null) {
                         trailing.invoke(trailingColor)
-                        Spacer(modifier = Modifier.width(AppTokens.dp.paddings.mediumHorizontal / 3))
+                        Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding / 3))
                     } else {
-                        Spacer(modifier = Modifier.width(AppTokens.dp.paddings.mediumHorizontal))
+                        Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding))
                     }
                 }
             }

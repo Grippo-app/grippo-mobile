@@ -44,8 +44,8 @@ internal fun ExperienceScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(
-                horizontal = AppTokens.dp.paddings.screenHorizontal,
-                vertical = AppTokens.dp.paddings.screenVertical
+                horizontal = AppTokens.dp.screen.horizontalPadding,
+                vertical = AppTokens.dp.screen.verticalPadding
             ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

@@ -40,8 +40,8 @@ internal fun NameScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(
-                horizontal = AppTokens.dp.paddings.screenHorizontal,
-                vertical = AppTokens.dp.paddings.screenVertical
+                horizontal = AppTokens.dp.screen.horizontalPadding,
+                vertical = AppTokens.dp.screen.verticalPadding
             ).imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

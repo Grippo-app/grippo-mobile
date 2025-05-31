@@ -4,14 +4,35 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 public data object AppDp {
+    val screen: Screen = Screen
+    val input: Input = Input
+    val button: Button = Button
+
     val paddings: Paddings = Paddings
     val size: Size = Size
     val shape: Shape = Shape
     val icon: Icon = Icon
 
+    public data object Screen {
+        val horizontalPadding: Dp = 20.dp
+        val verticalPadding: Dp = 20.dp
+    }
+
+    public data object Input {
+        val height: Dp = 50.dp
+        val horizontalPadding: Dp = 16.dp
+        val radius: Dp = 16.dp
+    }
+
+    public data object Button {
+        val height: Dp = 50.dp
+        val horizontalPadding: Dp = 16.dp
+        val radius: Dp = 16.dp
+        val icon: Dp = 18.dp
+        val space: Dp = 8.dp
+    }
+
     public data object Paddings {
-        val screenHorizontal: Dp = 20.dp
-        val screenVertical: Dp = 20.dp
         val mediumHorizontal: Dp = 16.dp
         val mediumVertical: Dp = 16.dp
         val smallHorizontal: Dp = 12.dp

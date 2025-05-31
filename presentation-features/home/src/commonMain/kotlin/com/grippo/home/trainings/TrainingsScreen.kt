@@ -34,8 +34,8 @@ internal fun TrainingsScreen(
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(
-            horizontal = AppTokens.dp.paddings.screenHorizontal,
-            vertical = AppTokens.dp.paddings.screenVertical
+            horizontal = AppTokens.dp.screen.horizontalPadding,
+            vertical = AppTokens.dp.screen.verticalPadding
         ),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
