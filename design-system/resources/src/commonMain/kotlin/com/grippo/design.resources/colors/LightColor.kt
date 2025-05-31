@@ -95,6 +95,7 @@ public object LightColor : AppColor {
     override val background: AppColor.BackgroundColors = object : AppColor.BackgroundColors {
         override val primary = Neutral100
         override val secondary = White
+        override val accent = Primary500
     }
 
     override val dialog: AppColor.DialogColors = object : AppColor.DialogColors {

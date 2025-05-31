@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -32,6 +33,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.icons.Award
+import com.grippo.design.resources.icons.Box
 import com.grippo.design.resources.icons.Calendar
 import com.grippo.design.resources.icons.Heart
 import com.grippo.design.resources.user_card_no_records_yet
@@ -119,8 +121,19 @@ public fun UserCard(
                 ),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.paddings.smallHorizontal)
         ) {
+
+            Icon(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(AppTokens.dp.shape.small))
+                    .background(AppTokens.colors.background.accent)
+                    .padding(4.dp)
+                    .size(AppTokens.dp.icon.xs),
+                imageVector = AppTokens.icons.Box,
+                tint = AppTokens.colors.icon.invert,
+                contentDescription = null
+            )
+
             Text(
-                modifier = Modifier.weight(1f),
                 text = "80 kg",
                 style = AppTokens.typography.b16Bold(),
                 color = AppTokens.colors.text.primary,
@@ -132,8 +145,19 @@ public fun UserCard(
                 color = AppTokens.colors.divider.default
             )
 
+            Icon(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(AppTokens.dp.shape.small))
+                    .background(AppTokens.colors.background.accent)
+                    .padding(4.dp)
+                    .size(AppTokens.dp.icon.xs),
+                imageVector = AppTokens.icons.Box,
+                tint = AppTokens.colors.icon.invert,
+                contentDescription = null
+            )
+
             Text(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier,
                 text = "175 cm",
                 style = AppTokens.typography.b16Bold(),
                 color = AppTokens.colors.text.primary,
