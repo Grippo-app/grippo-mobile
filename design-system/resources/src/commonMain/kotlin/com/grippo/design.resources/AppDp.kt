@@ -49,24 +49,31 @@ public data object AppDp {
     val error: Error = Error
     val loader: Loader = Loader
     val segment: Segment = Segment
+    val menu: Menu = Menu
     val selectableCard: SelectableCard = SelectableCard
     val informationCard: InformationCard = InformationCard
     val wheelPicker: WheelPicker = WheelPicker
-
     val userCard: UserCard = UserCard
     val bodyDetails: BodyDetails = BodyDetails
     val overviewCard: OverviewCard = OverviewCard
     val equipmentCard: EquipmentCard = EquipmentCard
-
     val exerciseCard: ExerciseCard = ExerciseCard
     val exerciseIterations: ExerciseIterations = ExerciseIterations
     val exerciseDetails: ExerciseDetails = ExerciseDetails
 
-    val menu: Menu = Menu
-
     public data object Screen {
+        val toolbar: Toolbar = Toolbar
         val horizontalPadding: Dp = padding.extraLarge
         val verticalPadding: Dp = padding.extraLarge
+
+        public data object Toolbar {
+            val height: Dp = size.medium
+        }
+
+        public data object Content {
+            val horizontalPadding: Dp = padding.extraLarge
+            val verticalPadding: Dp = padding.medium
+        }
     }
 
     public data object Input {
