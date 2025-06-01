@@ -84,4 +84,7 @@
 
     <string name="exercise_example_equipments">Equipments</string>
     <string name="exercise_example_muscles">Muscles</string>
+
+    <string name="profile_menu_weight_history">Weight History</string>
+    <string name="profile_menu_exercise_library">Exercise Library</string>
 </resources>

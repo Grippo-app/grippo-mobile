@@ -29,4 +29,8 @@ internal class ProfileViewModel(
     override fun onLogoutClick() {
         safeLaunch { authorizationFeature.logout() }
     }
+
+    override fun onMenuClick(menu: ProfileMenu) {
+
+    }
 }

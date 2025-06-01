@@ -1,8 +1,6 @@
 package com.grippo.exercise.example.exerciseexample
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,14 +12,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
@@ -78,43 +74,28 @@ internal fun ExerciseExampleScreen(
 
         Spacer(modifier = Modifier.size(24.dp))
 
-        val shape = RoundedCornerShape(AppTokens.dp.shape.large)
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = AppTokens.strings.res(Res.string.exercise_example_equipments),
+            style = AppTokens.typography.h3(),
+            textAlign = TextAlign.Center,
+            color = AppTokens.colors.text.primary,
+        )
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(shape = shape)
-                .background(AppTokens.colors.background.primary)
-                .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
-                .padding(
-                    horizontal = AppTokens.dp.paddings.mediumHorizontal,
-                    vertical = AppTokens.dp.paddings.mediumVertical,
-                )
+        Spacer(modifier = Modifier.size(12.dp))
+
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
         ) {
-
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = AppTokens.strings.res(Res.string.exercise_example_equipments),
-                style = AppTokens.typography.h3(),
-                textAlign = TextAlign.Center,
-                color = AppTokens.colors.text.primary,
-            )
-
-            Spacer(modifier = Modifier.size(16.dp))
-
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
-            ) {
-                items(example.equipments, key = { it.id }) { item ->
-                    EquipmentCard(
-                        value = item
-                    )
-                }
+            items(example.equipments, key = { it.id }) { item ->
+                EquipmentCard(
+                    value = item
+                )
             }
         }
 
-        Spacer(modifier = Modifier.size(24.dp))
+        Spacer(modifier = Modifier.size(16.dp))
 
         Text(
             modifier = Modifier.fillMaxWidth(),

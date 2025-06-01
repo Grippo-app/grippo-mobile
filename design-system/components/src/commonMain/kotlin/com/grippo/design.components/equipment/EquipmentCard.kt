@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
@@ -26,12 +27,17 @@ public fun EquipmentCard(
     value: EquipmentState
 ) {
     Column(
-        modifier = modifier.width(intrinsicSize = IntrinsicSize.Max),
+        modifier = modifier
+            .width(intrinsicSize = IntrinsicSize.Max)
+            .padding(
+                horizontal = AppTokens.dp.equipmentCard.horizontalPadding,
+                vertical = AppTokens.dp.equipmentCard.verticalPadding
+            ),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Image(
-            modifier = Modifier.size(AppTokens.dp.icon.xl),
+            modifier = Modifier.size(AppTokens.dp.equipmentCard.icon),
             imageVector = value.image(),
             contentDescription = null
         )

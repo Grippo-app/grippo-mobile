@@ -75,7 +75,7 @@ internal fun WeightPickerScreen(
             rowCount = 3,
             selectorProperties = DefaultSelectorProperties(
                 enabled = true,
-                shape = RoundedCornerShape(AppTokens.dp.shape.large),
+                shape = RoundedCornerShape(AppTokens.dp.wheelPicker.radius),
                 color = AppTokens.colors.background.primary,
                 border = BorderStroke(1.dp, AppTokens.colors.border.defaultPrimary)
             ),

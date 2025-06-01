@@ -1,6 +1,5 @@
 package com.grippo.authorization.registration.excluded.muscles
 
-import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -22,7 +21,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.authorization.registration.excluded.muscles.internal.MusclesColumn
 import com.grippo.authorization.registration.excluded.muscles.internal.MusclesImage
-import com.grippo.authorization.registration.excluded.muscles.internal.MusclesSkeleton
 import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
@@ -77,73 +75,56 @@ internal fun ExcludedMusclesScreen(
 
         Spacer(modifier = Modifier.size(20.dp))
 
-        Crossfade(
-            targetState = state.suggestions.isEmpty() && loaders.contains(ExcludedMusclesLoader.MuscleList),
-            modifier = Modifier.fillMaxWidth().weight(1f)
-        ) { loading ->
-            when (loading) {
-                true -> {
-                    MusclesSkeleton(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    )
-                }
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(vertical = 6.dp),
+        ) {
+            itemsIndexed(
+                state.suggestions,
+                key = { _, item -> item.id }) { index, group ->
+                val isEven = index % 2 == 0
 
-                false -> {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        contentPadding = PaddingValues(vertical = 6.dp),
-                    ) {
-                        itemsIndexed(
-                            state.suggestions,
-                            key = { _, item -> item.id }) { index, group ->
-                            val isEven = index % 2 == 0
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = group.name,
+                    style = AppTokens.typography.h3(),
+                    textAlign = TextAlign.Center,
+                    color = AppTokens.colors.text.primary,
+                )
 
-                            Text(
-                                modifier = Modifier.fillMaxWidth(),
-                                text = group.name,
-                                style = AppTokens.typography.h3(),
-                                textAlign = TextAlign.Center,
-                                color = AppTokens.colors.text.primary,
-                            )
+                Spacer(modifier = Modifier.height(16.dp))
 
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                if (isEven) {
-                                    MusclesColumn(
-                                        modifier = Modifier.weight(1f),
-                                        item = group,
-                                        selectedIds = state.selectedMuscleIds,
-                                        onSelect = contract::select
-                                    )
-                                    MusclesImage(
-                                        modifier = Modifier.weight(1f),
-                                        item = group,
-                                        selectedIds = state.selectedMuscleIds
-                                    )
-                                } else {
-                                    MusclesImage(
-                                        modifier = Modifier.weight(1f),
-                                        item = group,
-                                        selectedIds = state.selectedMuscleIds
-                                    )
-                                    MusclesColumn(
-                                        modifier = Modifier.weight(1f),
-                                        item = group,
-                                        selectedIds = state.selectedMuscleIds,
-                                        onSelect = contract::select
-                                    )
-                                }
-                            }
-                        }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    if (isEven) {
+                        MusclesColumn(
+                            modifier = Modifier.weight(1f),
+                            item = group,
+                            selectedIds = state.selectedMuscleIds,
+                            onSelect = contract::select
+                        )
+                        MusclesImage(
+                            modifier = Modifier.weight(1f),
+                            item = group,
+                            selectedIds = state.selectedMuscleIds
+                        )
+                    } else {
+                        MusclesImage(
+                            modifier = Modifier.weight(1f),
+                            item = group,
+                            selectedIds = state.selectedMuscleIds
+                        )
+                        MusclesColumn(
+                            modifier = Modifier.weight(1f),
+                            item = group,
+                            selectedIds = state.selectedMuscleIds,
+                            onSelect = contract::select
+                        )
                     }
                 }
             }
@@ -188,21 +169,6 @@ private fun ScreenPreviewUnselected() {
                 selectedMuscleIds = persistentListOf()
             ),
             loaders = persistentSetOf(),
-            contract = ExcludedMusclesContract.Empty
-        )
-    }
-}
-
-@AppPreview
-@Composable
-private fun ScreenPreviewLoading() {
-    PreviewContainer {
-        ExcludedMusclesScreen(
-            state = ExcludedMusclesState(
-                suggestions = persistentListOf(),
-                selectedMuscleIds = persistentListOf()
-            ),
-            loaders = persistentSetOf(ExcludedMusclesLoader.MuscleList),
             contract = ExcludedMusclesContract.Empty
         )
     }

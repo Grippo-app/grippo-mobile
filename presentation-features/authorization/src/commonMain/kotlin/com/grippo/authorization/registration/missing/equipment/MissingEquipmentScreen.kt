@@ -1,6 +1,5 @@
 package com.grippo.authorization.registration.missing.equipment
 
-import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.authorization.registration.missing.equipment.internal.EquipmentRow
-import com.grippo.authorization.registration.missing.equipment.internal.EquipmentsSkeleton
 import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
@@ -80,57 +78,42 @@ internal fun MissingEquipmentScreen(
 
         Spacer(modifier = Modifier.size(20.dp))
 
-        Crossfade(
-            targetState = state.suggestions.isEmpty() && loaders.contains(MissingEquipmentLoader.EquipmentList),
-            modifier = Modifier.fillMaxWidth().weight(1f)
-        ) { loading ->
-            when (loading) {
-                true -> {
-                    EquipmentsSkeleton(
-                        modifier = Modifier.fillMaxWidth().weight(1f)
+        Column(modifier = Modifier.fillMaxWidth().weight(1f)) {
+
+            val segmentItems = remember(state.suggestions) {
+                state.suggestions.map { it.id to it.name }.toPersistentList()
+            }
+
+            Segment(
+                modifier = Modifier
+                    .horizontalScroll(rememberScrollState())
+                    .fillMaxWidth(),
+                items = segmentItems,
+                selected = state.selectedGroupId,
+                onSelect = contract::selectGroup,
+                segmentWidth = SegmentWidth.Unspecified,
+                thumbPosition = ThumbPosition.Bottom
+            )
+
+            Spacer(modifier = Modifier.size(10.dp))
+
+            val equipments = remember(state.selectedGroupId, state.suggestions) {
+                state.suggestions.find { it.id == state.selectedGroupId }?.equipments.orEmpty()
+            }
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(vertical = 6.dp),
+            ) {
+                items(equipments, key = { it.id }) { equipment ->
+                    EquipmentRow(
+                        equipment = equipment,
+                        selectedEquipmentIds = state.selectedEquipmentIds,
+                        selectEquipment = contract::selectEquipment,
                     )
-                }
-
-                false -> {
-                    Column(modifier = Modifier.fillMaxWidth().weight(1f)) {
-
-                        val segmentItems = remember(state.suggestions) {
-                            state.suggestions.map { it.id to it.name }.toPersistentList()
-                        }
-
-                        Segment(
-                            modifier = Modifier
-                                .horizontalScroll(rememberScrollState())
-                                .fillMaxWidth(),
-                            items = segmentItems,
-                            selected = state.selectedGroupId,
-                            onSelect = contract::selectGroup,
-                            segmentWidth = SegmentWidth.Unspecified,
-                            thumbPosition = ThumbPosition.Bottom
-                        )
-
-                        Spacer(modifier = Modifier.size(10.dp))
-
-                        val equipments = remember(state.selectedGroupId, state.suggestions) {
-                            state.suggestions.find { it.id == state.selectedGroupId }?.equipments.orEmpty()
-                        }
-
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f),
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                            contentPadding = PaddingValues(vertical = 6.dp),
-                        ) {
-                            items(equipments, key = { it.id }) { equipment ->
-                                EquipmentRow(
-                                    equipment = equipment,
-                                    selectedEquipmentIds = state.selectedEquipmentIds,
-                                    selectEquipment = contract::selectEquipment,
-                                )
-                            }
-                        }
-                    }
                 }
             }
         }
@@ -176,21 +159,6 @@ private fun ScreenPreviewUnselected() {
                 selectedGroupId = stubEquipments().firstOrNull()?.id
             ),
             loaders = persistentSetOf(),
-            contract = MissingEquipmentContract.Empty
-        )
-    }
-}
-
-@AppPreview
-@Composable
-private fun ScreenPreviewLoading() {
-    PreviewContainer {
-        MissingEquipmentScreen(
-            state = MissingEquipmentState(
-                suggestions = persistentListOf(),
-                selectedEquipmentIds = persistentListOf()
-            ),
-            loaders = persistentSetOf(MissingEquipmentLoader.EquipmentList),
             contract = MissingEquipmentContract.Empty
         )
     }
