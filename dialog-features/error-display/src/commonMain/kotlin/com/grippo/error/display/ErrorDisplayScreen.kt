@@ -44,7 +44,7 @@ internal fun ErrorDisplayScreen(
     ) {
 
         Icon(
-            modifier = Modifier.size(AppTokens.dp.icon.l),
+            modifier = Modifier.size(AppTokens.dp.error.icon),
             imageVector = AppTokens.icons.AlertTriangle,
             tint = AppTokens.colors.semantic.error,
             contentDescription = null

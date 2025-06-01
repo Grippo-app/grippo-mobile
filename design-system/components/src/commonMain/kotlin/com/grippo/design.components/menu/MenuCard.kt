@@ -29,14 +29,14 @@ public fun MenuCard(
         modifier = modifier
             .clickable(onClick = onClick)
             .padding(
-                vertical = AppTokens.dp.paddings.mediumVertical,
-                horizontal = AppTokens.dp.paddings.mediumHorizontal
+                vertical = AppTokens.dp.menu.item.verticalPadding,
+                horizontal = AppTokens.dp.menu.item.horizontalPadding
             ),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            modifier = Modifier.size(AppTokens.dp.icon.s),
+            modifier = Modifier.size(AppTokens.dp.menu.item.icon),
             imageVector = icon,
             tint = AppTokens.colors.icon.default,
             contentDescription = null
@@ -50,7 +50,7 @@ public fun MenuCard(
         )
 
         Icon(
-            modifier = Modifier.size(AppTokens.dp.icon.s),
+            modifier = Modifier.size(AppTokens.dp.menu.item.icon),
             imageVector = AppTokens.icons.ChevronRight,
             tint = AppTokens.colors.icon.default,
             contentDescription = null

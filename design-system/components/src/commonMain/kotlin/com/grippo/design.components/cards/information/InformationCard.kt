@@ -24,7 +24,7 @@ public fun InformationCard(
     value: @Composable RowScope.() -> Unit
 ) {
     Row(
-        modifier = modifier.height(AppTokens.dp.size.componentHeight),
+        modifier = modifier.height(AppTokens.dp.informationCard.height),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(

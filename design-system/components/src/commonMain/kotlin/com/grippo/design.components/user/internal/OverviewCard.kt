@@ -23,25 +23,31 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.icons.User
 
 @Composable
-internal fun OverviewItem(
+internal fun OverviewCard(
     modifier: Modifier = Modifier,
     title: String,
     icon: ImageVector
 ) {
+
+    val radius = AppTokens.dp.overviewCard.radius
+
     Column(
         modifier = modifier
-            .clip(RoundedCornerShape(AppTokens.dp.shape.medium))
+            .clip(RoundedCornerShape(radius))
             .background(AppTokens.colors.background.primary)
             .border(
-                1.dp,
+                width = 1.dp,
                 color = AppTokens.colors.border.defaultPrimary,
-                shape = RoundedCornerShape(AppTokens.dp.shape.medium)
-            ).padding(8.dp),
+                shape = RoundedCornerShape(radius)
+            ).padding(
+                horizontal = AppTokens.dp.overviewCard.horizontalPadding,
+                vertical = AppTokens.dp.overviewCard.verticalPadding
+            ),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
-            modifier = Modifier.size(AppTokens.dp.icon.m),
+            modifier = Modifier.size(AppTokens.dp.overviewCard.icon),
             imageVector = icon,
             tint = AppTokens.colors.icon.accent,
             contentDescription = null
@@ -62,7 +68,7 @@ internal fun OverviewItem(
 @Composable
 private fun OverviewItemPreview() {
     PreviewContainer {
-        OverviewItem(
+        OverviewCard(
             title = "Hello World",
             icon = AppTokens.icons.User
         )

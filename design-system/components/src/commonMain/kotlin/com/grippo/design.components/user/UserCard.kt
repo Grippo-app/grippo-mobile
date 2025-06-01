@@ -27,7 +27,7 @@ import com.grippo.date.utils.DateCompose
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.nonRippleClick
 import com.grippo.design.components.modifiers.shadowDefault
-import com.grippo.design.components.user.internal.OverviewItem
+import com.grippo.design.components.user.internal.OverviewCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -153,7 +153,7 @@ public fun UserCard(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
-            OverviewItem(
+            OverviewCard(
                 modifier = Modifier.weight(1f).fillMaxHeight(),
                 title = workoutsStr,
                 icon = AppTokens.icons.Heart
@@ -161,7 +161,7 @@ public fun UserCard(
 
             val ago = DateCompose.rememberAgo(value.createdAt)
 
-            OverviewItem(
+            OverviewCard(
                 modifier = Modifier.weight(1f).fillMaxHeight(),
                 title = AppTokens.strings.res(
                     Res.string.user_card_value_in_a_row,
@@ -179,7 +179,7 @@ public fun UserCard(
                 AppTokens.strings.res(Res.string.user_card_no_records_yet)
             }
 
-            OverviewItem(
+            OverviewCard(
                 modifier = Modifier.weight(1f).fillMaxHeight(),
                 title = recordsStr,
                 icon = AppTokens.icons.Award

@@ -78,8 +78,8 @@ public fun <KEY> Segment(
                     content = {
                         Text(
                             modifier = Modifier
-                                .padding(horizontal = 15.dp)
-                                .height(AppTokens.dp.size.componentHeight)
+                                .padding(horizontal = AppTokens.dp.segment.horizontalPadding)
+                                .height(AppTokens.dp.segment.height)
                                 .wrapContentHeight()
                                 .nonRippleClick(onClick = clickProvider),
                             text = item.second,
@@ -112,9 +112,9 @@ public fun SegmentSkeleton(modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .shimmerAnimation(
                         visible = true,
-                        radius = AppTokens.dp.shape.medium
+                        radius = AppTokens.dp.segment.radius
                     )
-                    .height(AppTokens.dp.size.componentHeight)
+                    .height(AppTokens.dp.segment.height)
                     .width(140.dp)
             )
         }
