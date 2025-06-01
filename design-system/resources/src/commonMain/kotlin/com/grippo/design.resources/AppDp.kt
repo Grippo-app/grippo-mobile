@@ -8,8 +8,13 @@ public data object AppDp {
     val input: Input = Input
     val button: Button = Button
     val selectableCard: SelectableCard = SelectableCard
+
     val userCard: UserCard = UserCard
     val bodyDetails: BodyDetails = BodyDetails
+
+    val exerciseCard: ExerciseCard = ExerciseCard
+    val exerciseIterations: ExerciseIterations = ExerciseIterations
+    val exerciseDetails: ExerciseDetails = ExerciseDetails
 
     val paddings: Paddings = Paddings
     val size: Size = Size
@@ -36,7 +41,22 @@ public data object AppDp {
         val space: Dp = 8.dp
     }
 
+    public data object ExerciseDetails {
+        val horizontalPadding: Dp = 16.dp
+    }
+
+    public data object ExerciseIterations {
+        val horizontalPadding: Dp = 16.dp
+    }
+
     public data object UserCard {
+        val horizontalPadding: Dp = 16.dp
+        val verticalPadding: Dp = 16.dp
+        val radius: Dp = 16.dp
+        val icon: Dp = 24.dp
+    }
+
+    public data object ExerciseCard {
         val horizontalPadding: Dp = 16.dp
         val verticalPadding: Dp = 16.dp
         val radius: Dp = 16.dp

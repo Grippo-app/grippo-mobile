@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,24 +27,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.cards.information.InformationCard
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.nonRippleClick
 import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.Res
 import com.grippo.design.resources.icons.ChevronDown
-import com.grippo.design.resources.icons.ChevronRight
-import com.grippo.design.resources.intensity
-import com.grippo.design.resources.kg
-import com.grippo.design.resources.percent
-import com.grippo.design.resources.set_value
-import com.grippo.design.resources.source
-import com.grippo.design.resources.tonnage
 import com.grippo.presentation.api.trainings.models.ExerciseState
 import com.grippo.presentation.api.trainings.models.stubExercise
 
@@ -63,7 +51,7 @@ public fun ExerciseCard(
         label = "rotation"
     )
 
-    val shape = RoundedCornerShape(AppTokens.dp.shape.large)
+    val shape = RoundedCornerShape(AppTokens.dp.exerciseCard.radius)
 
     Column(
         modifier = modifier
@@ -76,8 +64,8 @@ public fun ExerciseCard(
             .background(AppTokens.colors.background.secondary)
             .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
             .padding(
-                horizontal = AppTokens.dp.paddings.mediumHorizontal,
-                vertical = AppTokens.dp.paddings.mediumVertical
+                horizontal = AppTokens.dp.exerciseCard.horizontalPadding,
+                vertical = AppTokens.dp.exerciseCard.verticalPadding
             ),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
@@ -100,7 +88,7 @@ public fun ExerciseCard(
             Icon(
                 modifier = Modifier
                     .graphicsLayer { rotationZ = rotation }
-                    .size(AppTokens.dp.icon.m),
+                    .size(AppTokens.dp.exerciseCard.icon),
                 imageVector = AppTokens.icons.ChevronDown,
                 tint = AppTokens.colors.icon.default,
                 contentDescription = null
@@ -113,7 +101,6 @@ public fun ExerciseCard(
                 .clip(shape = shape)
                 .background(AppTokens.colors.background.primary)
                 .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
-                .padding(horizontal = AppTokens.dp.paddings.mediumHorizontal)
         ) {
             AnimatedContent(
                 modifier = Modifier.fillMaxWidth(),
@@ -124,107 +111,14 @@ public fun ExerciseCard(
                 }
             ) { ex ->
                 when (ex) {
-                    true -> Column(modifier = Modifier.fillMaxWidth()) {
-                        value.iterations.forEachIndexed { index, iteration ->
+                    true -> ExerciseIterations(
+                        iterations = value.iterations
+                    )
 
-                            InformationCard(
-                                modifier = Modifier.fillMaxWidth(),
-                                label = AppTokens.strings.res(Res.string.set_value, "${index + 1}"),
-                                value = {
-                                    IterationCard(
-                                        modifier = Modifier,
-                                        value = iteration,
-                                    )
-                                }
-                            )
-
-
-                            if (index < value.iterations.lastIndex) {
-                                HorizontalDivider(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    color = AppTokens.colors.divider.default
-                                )
-                            }
-                        }
-                    }
-
-                    false -> Column(modifier = Modifier.fillMaxWidth()) {
-
-                        InformationCard(
-                            modifier = Modifier.fillMaxWidth(),
-                            label = AppTokens.strings.res(Res.string.tonnage),
-                            value = {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(2.dp)
-                                ) {
-                                    Text(
-                                        text = value.volume.toString(),
-                                        style = AppTokens.typography.b14Bold(),
-                                        color = AppTokens.colors.text.primary
-                                    )
-
-                                    Text(
-                                        text = AppTokens.strings.res(Res.string.kg),
-                                        style = AppTokens.typography.b14Semi(),
-                                        color = AppTokens.colors.text.secondary
-                                    )
-                                }
-                            }
-                        )
-
-                        HorizontalDivider(
-                            modifier = Modifier.fillMaxWidth(),
-                            color = AppTokens.colors.divider.default
-                        )
-
-                        InformationCard(
-                            modifier = Modifier.fillMaxWidth(),
-                            label = AppTokens.strings.res(Res.string.intensity),
-                            value = {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(2.dp)
-                                ) {
-                                    Text(
-                                        text = value.intensity.toString(),
-                                        style = AppTokens.typography.b14Bold(),
-                                        color = AppTokens.colors.text.primary
-                                    )
-
-                                    Text(
-                                        text = AppTokens.strings.res(Res.string.percent),
-                                        style = AppTokens.typography.b14Semi(),
-                                        color = AppTokens.colors.text.secondary
-                                    )
-                                }
-                            }
-                        )
-
-                        value.exerciseExample?.let { example ->
-                            HorizontalDivider(
-                                modifier = Modifier.fillMaxWidth(),
-                                color = AppTokens.colors.divider.default
-                            )
-
-                            InformationCard(
-                                modifier = Modifier.fillMaxWidth(),
-                                label = AppTokens.strings.res(Res.string.source),
-                                value = {
-                                    val clickProvider = remember(example) {
-                                        { onExerciseExampleClick.invoke(example.id) }
-                                    }
-
-                                    Button(
-                                        text = example.name,
-                                        endIcon = AppTokens.icons.ChevronRight,
-                                        style = ButtonStyle.Transparent,
-                                        onClick = clickProvider
-                                    )
-                                }
-                            )
-                        }
-                    }
+                    false -> ExerciseDetails(
+                        value = value,
+                        onExerciseExampleClick = onExerciseExampleClick
+                    )
                 }
             }
         }
