@@ -65,7 +65,7 @@ internal fun LoginScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(12.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.screen.padding.content))
 
         Text(
             modifier = Modifier.fillMaxWidth(),
@@ -75,14 +75,14 @@ internal fun LoginScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(26.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.screen.padding.block))
 
         InputEmail(
             value = state.email.value,
             onValueChange = contract::setEmail
         )
 
-        Spacer(modifier = Modifier.size(16.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.screen.padding.content))
 
         InputPassword(
             value = state.password.value,
@@ -107,12 +107,12 @@ internal fun LoginScreen(
             onClick = contract::login
         )
 
-        Spacer(modifier = Modifier.size(24.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.screen.padding.content))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.screen.padding.subContent)
         ) {
             HorizontalDivider(
                 modifier = Modifier.weight(1f),
@@ -131,12 +131,15 @@ internal fun LoginScreen(
             )
         }
 
-        Spacer(modifier = Modifier.size(16.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.screen.padding.content))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
+            horizontalArrangement = Arrangement.spacedBy(
+                AppTokens.dp.screen.padding.text,
+                Alignment.CenterHorizontally
+            )
         ) {
             Text(
                 text = AppTokens.strings.res(Res.string.login_button_registration_label),
