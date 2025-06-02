@@ -1,9 +1,8 @@
 package com.grippo.home.profile
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -11,7 +10,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
@@ -48,8 +46,12 @@ internal fun ProfileScreen(
                 .fillMaxWidth()
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = AppTokens.dp.screen.horizontalPadding).imePadding(),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(
+                    horizontal = AppTokens.dp.screen.horizontalPadding,
+                    vertical = AppTokens.dp.contentPadding.content
+                ).imePadding(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
         ) {
 
             if (state.user != null) {
@@ -59,8 +61,6 @@ internal fun ProfileScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
             val menu = ProfileMenu.entries.map {
                 it to MenuItem(it.text(), it.icon())
             }.toPersistentList()
@@ -69,8 +69,6 @@ internal fun ProfileScreen(
                 items = menu,
                 onClick = contract::onMenuClick
             )
-
-            Spacer(modifier = Modifier.height(24.dp))
 
             Button(
                 modifier = Modifier.fillMaxWidth(),

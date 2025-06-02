@@ -88,4 +88,6 @@
     <string name="profile">Profile</string>
     <string name="profile_menu_weight_history">Weight History</string>
     <string name="profile_menu_exercise_library">Exercise Library</string>
+
+    <string name="trainings">Trainings</string>
 </resources>

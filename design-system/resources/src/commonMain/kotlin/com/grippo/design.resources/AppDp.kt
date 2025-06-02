@@ -70,11 +70,6 @@ public data object AppDp {
         public data object Toolbar {
             val height: Dp = size.medium
         }
-
-        public data object Content {
-            val horizontalPadding: Dp = padding.extraLarge
-            val verticalPadding: Dp = padding.medium
-        }
     }
 
     public data object ContentPadding {
