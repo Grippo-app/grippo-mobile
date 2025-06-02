@@ -142,6 +142,7 @@ public object LightColor : AppColor {
     override val segment: AppColor.SegmentColors = object : AppColor.SegmentColors {
         override val active = Black
         override val inactive: Color = Neutral500
+        override val selector: Color = Primary500
     }
 
     override val muscle: AppColor.MuscleColors = object : AppColor.MuscleColors {
@@ -153,7 +154,6 @@ public object LightColor : AppColor {
 
     override val divider: DividerColors = object : DividerColors {
         override val default: Color = Neutral200
-        override val accent: Color = Primary500
     }
 
     override val konfetti: AppColor.Konfetti = object : AppColor.Konfetti {

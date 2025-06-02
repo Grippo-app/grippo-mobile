@@ -23,7 +23,6 @@ public interface AppColor {
 
     public interface DividerColors {
         public val default: Color
-        public val accent: Color
     }
 
     public interface ButtonColors {
@@ -148,6 +147,7 @@ public interface AppColor {
     public interface SegmentColors {
         public val active: Color
         public val inactive: Color
+        public val selector: Color
     }
 
     public interface Konfetti {

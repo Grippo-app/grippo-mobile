@@ -55,7 +55,7 @@ public fun <KEY> Tab(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .fillMaxWidth(),
-                color = AppTokens.colors.divider.accent,
+                color = AppTokens.colors.segment.selector,
                 thickness = 2.dp,
             )
         },

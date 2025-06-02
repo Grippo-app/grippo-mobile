@@ -53,7 +53,7 @@ public fun <KEY> Segment(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth(),
-                color = AppTokens.colors.divider.accent,
+                color = AppTokens.colors.segment.selector,
                 thickness = 2.dp,
             )
         },
