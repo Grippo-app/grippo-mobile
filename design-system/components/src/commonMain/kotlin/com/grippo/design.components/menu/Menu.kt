@@ -14,6 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.grippo.design.components.modifiers.ShadowElevation
+import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.core.AppTokens
 import kotlinx.collections.immutable.ImmutableList
 
@@ -34,6 +36,11 @@ public fun <KEY> Menu(
 
     Column(
         modifier = Modifier
+            .shadowDefault(
+                elevation = ShadowElevation.Card,
+                shape = shape,
+                color = AppTokens.colors.overlay.defaultShadow
+            )
             .fillMaxWidth()
             .clip(shape = shape)
             .background(AppTokens.colors.background.secondary)

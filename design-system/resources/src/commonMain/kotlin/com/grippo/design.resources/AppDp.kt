@@ -38,7 +38,7 @@ public data object AppDp {
     private data object Icon {
         val tiny: Dp = 12.dp
         val small: Dp = 18.dp
-        val medium: Dp = 24.dp
+        val medium: Dp = 22.dp
         val large: Dp = 32.dp
         val huge: Dp = 48.dp
     }
@@ -117,7 +117,6 @@ public data object AppDp {
         val horizontalPadding: Dp = padding.large
         val verticalPadding: Dp = padding.large
         val radius: Dp = AppDp.radius.large
-        val icon: Dp = AppDp.icon.medium
     }
 
     public data object BodyDetails {
