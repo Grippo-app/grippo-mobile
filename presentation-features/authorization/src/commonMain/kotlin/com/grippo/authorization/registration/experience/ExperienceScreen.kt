@@ -2,7 +2,6 @@ package com.grippo.authorization.registration.experience
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -60,7 +59,7 @@ internal fun ExperienceScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(12.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Text(
             modifier = Modifier.fillMaxWidth(),
@@ -70,14 +69,13 @@ internal fun ExperienceScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(20.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(vertical = 6.dp)
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
         ) {
 
             items(state.suggestions, key = { it.ordinal }) { item ->
@@ -104,7 +102,7 @@ internal fun ExperienceScreen(
             }
         }
 
-        Spacer(modifier = Modifier.size(20.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         Button(
             modifier = Modifier.fillMaxWidth(),

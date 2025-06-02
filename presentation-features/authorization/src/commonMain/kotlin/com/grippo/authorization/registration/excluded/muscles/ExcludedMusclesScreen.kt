@@ -2,7 +2,6 @@ package com.grippo.authorization.registration.excluded.muscles
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -63,7 +62,7 @@ internal fun ExcludedMusclesScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(12.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Text(
             modifier = Modifier.fillMaxWidth(),
@@ -73,14 +72,13 @@ internal fun ExcludedMusclesScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(20.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(vertical = 6.dp),
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
         ) {
             itemsIndexed(
                 state.suggestions,
@@ -130,7 +128,7 @@ internal fun ExcludedMusclesScreen(
             }
         }
 
-        Spacer(modifier = Modifier.size(20.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         Button(
             modifier = Modifier.fillMaxWidth(),

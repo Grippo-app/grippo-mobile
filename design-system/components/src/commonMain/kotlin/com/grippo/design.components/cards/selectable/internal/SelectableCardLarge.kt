@@ -1,9 +1,6 @@
 package com.grippo.design.components.cards.selectable.internal
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +21,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.cards.selectable.SelectableCardStyle
 import com.grippo.design.components.cards.selectable.SelectableCardVariants
@@ -44,11 +40,6 @@ internal fun SelectableCardLarge(
     onClick: () -> Unit
 ) {
     val shape = RoundedCornerShape(AppTokens.dp.selectableCard.large.radius)
-    val scale by animateFloatAsState(
-        targetValue = if (isSelected) 1.02f else 1f,
-        animationSpec = tween(durationMillis = 200, easing = FastOutSlowInEasing),
-        label = "mediumScale"
-    )
 
     val borderColor by animateColorAsState(
         if (isSelected) AppTokens.colors.border.focus else AppTokens.colors.border.defaultPrimary,
@@ -67,10 +58,6 @@ internal fun SelectableCardLarge(
 
     Row(
         modifier = modifier
-            .graphicsLayer {
-                scaleX = scale
-                scaleY = scale
-            }
             .shadowDefault(
                 elevation = ShadowElevation.Card,
                 shape = shape,

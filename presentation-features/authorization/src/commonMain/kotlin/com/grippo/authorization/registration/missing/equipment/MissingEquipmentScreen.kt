@@ -66,7 +66,7 @@ internal fun MissingEquipmentScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(12.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Text(
             modifier = Modifier.fillMaxWidth(),
@@ -76,7 +76,7 @@ internal fun MissingEquipmentScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(20.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         Column(modifier = Modifier.fillMaxWidth().weight(1f)) {
 
@@ -95,8 +95,6 @@ internal fun MissingEquipmentScreen(
                 thumbPosition = ThumbPosition.Bottom
             )
 
-            Spacer(modifier = Modifier.size(10.dp))
-
             val equipments = remember(state.selectedGroupId, state.suggestions) {
                 state.suggestions.find { it.id == state.selectedGroupId }?.equipments.orEmpty()
             }
@@ -105,8 +103,10 @@ internal fun MissingEquipmentScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(vertical = 6.dp),
+                contentPadding = PaddingValues(
+                    top = AppTokens.dp.contentPadding.content
+                ),
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
             ) {
                 items(equipments, key = { it.id }) { equipment ->
                     EquipmentRow(
@@ -118,7 +118,7 @@ internal fun MissingEquipmentScreen(
             }
         }
 
-        Spacer(modifier = Modifier.size(20.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         Button(
             modifier = Modifier.fillMaxWidth(),

@@ -65,7 +65,7 @@ internal fun LoginScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.screen.padding.content))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Text(
             modifier = Modifier.fillMaxWidth(),
@@ -75,14 +75,14 @@ internal fun LoginScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.screen.padding.block))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         InputEmail(
             value = state.email.value,
             onValueChange = contract::setEmail
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.screen.padding.content))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         InputPassword(
             value = state.password.value,
@@ -107,12 +107,12 @@ internal fun LoginScreen(
             onClick = contract::login
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.screen.padding.content))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.screen.padding.subContent)
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
         ) {
             HorizontalDivider(
                 modifier = Modifier.weight(1f),
@@ -131,13 +131,13 @@ internal fun LoginScreen(
             )
         }
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.screen.padding.content))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(
-                AppTokens.dp.screen.padding.text,
+                AppTokens.dp.contentPadding.text,
                 Alignment.CenterHorizontally
             )
         ) {

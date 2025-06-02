@@ -43,6 +43,7 @@ public data object AppDp {
         val huge: Dp = 48.dp
     }
 
+    val contentPadding: ContentPadding = ContentPadding
     val screen: Screen = Screen
     val input: Input = Input
     val button: Button = Button
@@ -63,25 +64,24 @@ public data object AppDp {
 
     public data object Screen {
         val toolbar: Toolbar = Toolbar
-        val horizontalPadding: Dp = AppDp.padding.extraLarge
-        val verticalPadding: Dp = AppDp.padding.extraLarge
-        val padding: Padding = Padding
+        val horizontalPadding: Dp = padding.extraLarge
+        val verticalPadding: Dp = padding.extraLarge
 
         public data object Toolbar {
             val height: Dp = size.medium
         }
 
         public data object Content {
-            val horizontalPadding: Dp = AppDp.padding.extraLarge
-            val verticalPadding: Dp = AppDp.padding.medium
+            val horizontalPadding: Dp = padding.extraLarge
+            val verticalPadding: Dp = padding.medium
         }
+    }
 
-        public data object Padding {
-            val block: Dp = AppDp.padding.extraLarge
-            val content: Dp = AppDp.padding.medium
-            val subContent: Dp = AppDp.padding.small
-            val text: Dp = AppDp.padding.extraSmall
-        }
+    public data object ContentPadding {
+        val block: Dp = padding.extraLarge
+        val content: Dp = padding.medium
+        val subContent: Dp = padding.small
+        val text: Dp = padding.extraSmall
     }
 
     public data object Input {

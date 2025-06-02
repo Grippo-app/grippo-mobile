@@ -58,7 +58,7 @@ internal fun CredentialScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(12.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Text(
             modifier = Modifier.fillMaxWidth(),
@@ -68,14 +68,14 @@ internal fun CredentialScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(26.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         InputEmail(
             value = state.email.value,
             onValueChange = contract::setEmail
         )
 
-        Spacer(modifier = Modifier.size(16.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         InputPassword(
             value = state.password.value,

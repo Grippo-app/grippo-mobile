@@ -54,7 +54,7 @@ internal fun BodyScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(12.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Text(
             modifier = Modifier.fillMaxWidth(),
@@ -64,14 +64,14 @@ internal fun BodyScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(26.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         InputWeight(
             value = state.weight,
             onClick = contract::openWeightPicker
         )
 
-        Spacer(modifier = Modifier.size(16.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         InputHeight(
             value = state.height,

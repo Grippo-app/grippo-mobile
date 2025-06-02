@@ -56,7 +56,7 @@ internal fun NameScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(12.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Text(
             modifier = Modifier.fillMaxWidth(),
@@ -66,7 +66,7 @@ internal fun NameScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(26.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         InputName(
             value = state.name.value,
