@@ -14,9 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.shadowDefault
-import com.grippo.design.components.segment.Segment
-import com.grippo.design.components.segment.SegmentWidth
-import com.grippo.design.components.segment.ThumbPosition
+import com.grippo.design.components.tab.Tab
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -39,7 +37,7 @@ internal fun BottomNavigationMenu(
 
         content.invoke(this)
 
-        Segment(
+        Tab(
             modifier = Modifier
                 .shadowDefault(
                     shape = RoundedCornerShape(0.dp),
@@ -51,8 +49,6 @@ internal fun BottomNavigationMenu(
             items = items,
             selected = selected,
             onSelect = onSelect,
-            segmentWidth = SegmentWidth.EqualFill,
-            thumbPosition = ThumbPosition.Top
         )
     }
 }

@@ -26,7 +26,6 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentWidth
-import com.grippo.design.components.segment.ThumbPosition
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -92,7 +91,6 @@ internal fun MissingEquipmentScreen(
                 selected = state.selectedGroupId,
                 onSelect = contract::selectGroup,
                 segmentWidth = SegmentWidth.Unspecified,
-                thumbPosition = ThumbPosition.Bottom
             )
 
             val equipments = remember(state.selectedGroupId, state.suggestions) {

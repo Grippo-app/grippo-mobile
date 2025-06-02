@@ -1,4 +1,4 @@
-package com.grippo.design.components.segment
+package com.grippo.design.components.tab
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,30 +26,20 @@ import com.grippo.segment.control.SegmentedFrame
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
-@Immutable
-public enum class SegmentWidth {
-    Unspecified,
-    EqualFill,
-}
-
 @Composable
-public fun <KEY> Segment(
+public fun <KEY> Tab(
     modifier: Modifier = Modifier,
     items: ImmutableList<Pair<KEY, String>>,
     selected: KEY?,
     onSelect: (KEY) -> Unit,
-    segmentWidth: SegmentWidth = SegmentWidth.Unspecified,
 ) {
     SegmentedFrame(
         modifier = modifier,
-        segmentSizing = when (segmentWidth) {
-            SegmentWidth.Unspecified -> SegmentSizing.Unspecified
-            SegmentWidth.EqualFill -> SegmentSizing.EqualFill
-        },
+        segmentSizing = SegmentSizing.EqualFill,
         thumb = {
             HorizontalDivider(
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
+                    .align(Alignment.TopCenter)
                     .fillMaxWidth(),
                 color = AppTokens.colors.divider.accent,
                 thickness = 2.dp,
@@ -114,7 +103,7 @@ public fun SegmentSkeleton(modifier: Modifier = Modifier) {
 @Composable
 private fun SegmentPreview() {
     PreviewContainer {
-        Segment(
+        Tab(
             modifier = Modifier,
             items = persistentListOf<Pair<String, String>>(
                 "Profile" to "Profile",
@@ -125,7 +114,7 @@ private fun SegmentPreview() {
             onSelect = {}
         )
 
-        Segment(
+        Tab(
             modifier = Modifier,
             items = persistentListOf<Pair<String, String>>(
                 "Profile" to "Profile",
