@@ -11,25 +11,37 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.nonRippleClick
 import com.grippo.design.components.modifiers.shimmerAnimation
 import com.grippo.design.core.AppTokens
+import com.grippo.design.core.UiText
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.icons.Box
+import com.grippo.design.resources.icons.Play
+import com.grippo.design.resources.icons.Settings
 import com.grippo.segment.control.SegmentBox
 import com.grippo.segment.control.SegmentSizing
 import com.grippo.segment.control.SegmentedFrame
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
+@Immutable
+public data class TabItem(
+    val text: UiText,
+    val icon: ImageVector
+)
+
 @Composable
 public fun <KEY> Tab(
     modifier: Modifier = Modifier,
-    items: ImmutableList<Pair<KEY, String>>,
+    items: ImmutableList<Pair<KEY, TabItem>>,
     selected: KEY?,
     onSelect: (KEY) -> Unit,
 ) {
@@ -59,7 +71,7 @@ public fun <KEY> Tab(
                                 .height(AppTokens.dp.segment.height)
                                 .wrapContentHeight()
                                 .nonRippleClick(onClick = clickProvider),
-                            text = item.second,
+                            text = item.second.text.text(),
                             style = if (item.first == selected) {
                                 AppTokens.typography.b13Bold()
                             } else {
@@ -98,30 +110,21 @@ public fun SegmentSkeleton(modifier: Modifier = Modifier) {
     }
 }
 
-
 @AppPreview
 @Composable
 private fun SegmentPreview() {
     PreviewContainer {
         Tab(
             modifier = Modifier,
-            items = persistentListOf<Pair<String, String>>(
-                "Profile" to "Profile",
-                "Home" to "Home",
-                "Dashboard" to "Dashboard",
+            items = persistentListOf<Pair<String, TabItem>>(
+                "Box" to TabItem(text = UiText.Str("Box"), icon = AppTokens.icons.Box),
+                "Play" to TabItem(text = UiText.Str("Play"), icon = AppTokens.icons.Play),
+                "Settings" to TabItem(
+                    text = UiText.Str("Settings"),
+                    icon = AppTokens.icons.Settings
+                ),
             ),
-            selected = "Profile",
-            onSelect = {}
-        )
-
-        Tab(
-            modifier = Modifier,
-            items = persistentListOf<Pair<String, String>>(
-                "Profile" to "Profile",
-                "Home" to "Home",
-                "Dashboard" to "Dashboard",
-            ),
-            selected = "Home",
+            selected = "Play",
             onSelect = {}
         )
     }

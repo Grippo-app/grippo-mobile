@@ -15,16 +15,19 @@ import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.components.tab.Tab
+import com.grippo.design.components.tab.TabItem
 import com.grippo.design.core.AppTokens
+import com.grippo.design.core.UiText
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.icons.Play
 import com.grippo.home.BottomBarMenu
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun BottomNavigationMenu(
-    items: ImmutableList<Pair<Int, String>>,
+    items: ImmutableList<Pair<Int, TabItem>>,
     selected: Int?,
     onSelect: (Int) -> Unit,
     content: @Composable ColumnScope.() -> Unit
@@ -59,7 +62,12 @@ private fun ScreenPreview() {
     PreviewContainer {
         BottomNavigationMenu(
             items = BottomBarMenu.entries
-                .map { it.ordinal to it.name }
+                .map {
+                    it.ordinal to TabItem(
+                        text = UiText.Str(it.name),
+                        icon = AppTokens.icons.Play
+                    )
+                }
                 .toPersistentList(),
             selected = 0,
             onSelect = { },

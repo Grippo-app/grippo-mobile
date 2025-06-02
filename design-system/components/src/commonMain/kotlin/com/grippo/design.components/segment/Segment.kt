@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.nonRippleClick
 import com.grippo.design.components.modifiers.shimmerAnimation
 import com.grippo.design.core.AppTokens
+import com.grippo.design.core.UiText
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.segment.control.SegmentBox
@@ -36,7 +37,7 @@ public enum class SegmentWidth {
 @Composable
 public fun <KEY> Segment(
     modifier: Modifier = Modifier,
-    items: ImmutableList<Pair<KEY, String>>,
+    items: ImmutableList<Pair<KEY, UiText>>,
     selected: KEY?,
     onSelect: (KEY) -> Unit,
     segmentWidth: SegmentWidth = SegmentWidth.Unspecified,
@@ -70,7 +71,7 @@ public fun <KEY> Segment(
                                 .height(AppTokens.dp.segment.height)
                                 .wrapContentHeight()
                                 .nonRippleClick(onClick = clickProvider),
-                            text = item.second,
+                            text = item.second.text(),
                             style = if (item.first == selected) {
                                 AppTokens.typography.b13Bold()
                             } else {
@@ -109,17 +110,16 @@ public fun SegmentSkeleton(modifier: Modifier = Modifier) {
     }
 }
 
-
 @AppPreview
 @Composable
 private fun SegmentPreview() {
     PreviewContainer {
         Segment(
             modifier = Modifier,
-            items = persistentListOf<Pair<String, String>>(
-                "Profile" to "Profile",
-                "Home" to "Home",
-                "Dashboard" to "Dashboard",
+            items = persistentListOf<Pair<String, UiText>>(
+                "Profile" to UiText.Str("Profile"),
+                "Home" to UiText.Str("Home"),
+                "Dashboard" to UiText.Str("Dashboard"),
             ),
             selected = "Profile",
             onSelect = {}
@@ -127,10 +127,10 @@ private fun SegmentPreview() {
 
         Segment(
             modifier = Modifier,
-            items = persistentListOf<Pair<String, String>>(
-                "Profile" to "Profile",
-                "Home" to "Home",
-                "Dashboard" to "Dashboard",
+            items = persistentListOf<Pair<String, UiText>>(
+                "Profile" to UiText.Str("Profile"),
+                "Home" to UiText.Str("Home"),
+                "Dashboard" to UiText.Str("Dashboard"),
             ),
             selected = "Home",
             onSelect = {}

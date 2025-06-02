@@ -27,6 +27,7 @@ import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentWidth
 import com.grippo.design.core.AppTokens
+import com.grippo.design.core.UiText
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
@@ -80,7 +81,7 @@ internal fun MissingEquipmentScreen(
         Column(modifier = Modifier.fillMaxWidth().weight(1f)) {
 
             val segmentItems = remember(state.suggestions) {
-                state.suggestions.map { it.id to it.name }.toPersistentList()
+                state.suggestions.map { it.id to UiText.Str(it.name) }.toPersistentList()
             }
 
             Segment(
