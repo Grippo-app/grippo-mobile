@@ -101,6 +101,8 @@ internal fun CompletedScreen(
             textAlign = TextAlign.Center
         )
 
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
         Spacer(modifier = Modifier.weight(0.5f))
 
         if (state.user != null) {
@@ -114,6 +116,8 @@ internal fun CompletedScreen(
         }
 
         Spacer(modifier = Modifier.weight(1f))
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         Button(
             modifier = Modifier.fillMaxWidth(),

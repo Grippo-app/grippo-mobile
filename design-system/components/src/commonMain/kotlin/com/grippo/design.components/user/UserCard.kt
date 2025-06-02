@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -88,14 +89,14 @@ public fun UserCard(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         BodyItem(
             weight = value.weight,
             height = value.height
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -119,7 +120,7 @@ public fun UserCard(
             )
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         val workoutsStr = if (value.records > 0) {
             AppTokens.strings.res(
@@ -133,7 +134,7 @@ public fun UserCard(
         Row(
             modifier = Modifier.fillMaxWidth().height(intrinsicSize = IntrinsicSize.Max),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
         ) {
 
             OverviewCard(
