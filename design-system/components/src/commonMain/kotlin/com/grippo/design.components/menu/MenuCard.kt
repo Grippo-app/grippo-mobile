@@ -45,7 +45,7 @@ public fun MenuCard(
         Text(
             modifier = Modifier.weight(1f),
             text = title,
-            style = AppTokens.typography.b15Med(),
+            style = AppTokens.typography.b14Bold(),
             color = AppTokens.colors.text.primary
         )
 

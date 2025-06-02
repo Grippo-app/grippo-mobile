@@ -2,13 +2,15 @@ package com.grippo.design.components.tab
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -65,24 +67,42 @@ public fun <KEY> Tab(
                 SegmentBox(
                     selected = item.first == selected,
                     content = {
-                        Text(
+                        Column(
                             modifier = Modifier
-                                .padding(horizontal = AppTokens.dp.segment.horizontalPadding)
-                                .height(AppTokens.dp.segment.height)
-                                .wrapContentHeight()
-                                .nonRippleClick(onClick = clickProvider),
-                            text = item.second.text.text(),
-                            style = if (item.first == selected) {
-                                AppTokens.typography.b13Bold()
-                            } else {
-                                AppTokens.typography.b13Semi()
-                            },
-                            color = if (item.first == selected) {
-                                AppTokens.colors.segment.active
-                            } else {
-                                AppTokens.colors.segment.inactive
-                            },
-                        )
+                                .nonRippleClick(onClick = clickProvider)
+                                .padding(
+                                    horizontal = AppTokens.dp.tab.horizontalPadding,
+                                    vertical = AppTokens.dp.tab.verticalPadding,
+                                ),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.tab.padding)
+                        ) {
+
+                            Icon(
+                                modifier = Modifier.size(AppTokens.dp.tab.icon),
+                                imageVector = item.second.icon,
+                                tint = if (item.first == selected) {
+                                    AppTokens.colors.segment.active
+                                } else {
+                                    AppTokens.colors.segment.inactive
+                                },
+                                contentDescription = null
+                            )
+
+                            Text(
+                                text = item.second.text.text(),
+                                style = if (item.first == selected) {
+                                    AppTokens.typography.b13Bold()
+                                } else {
+                                    AppTokens.typography.b13Semi()
+                                },
+                                color = if (item.first == selected) {
+                                    AppTokens.colors.segment.active
+                                } else {
+                                    AppTokens.colors.segment.inactive
+                                },
+                            )
+                        }
                     },
                 )
             }

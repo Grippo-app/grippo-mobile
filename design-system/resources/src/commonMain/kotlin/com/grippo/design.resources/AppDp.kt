@@ -50,6 +50,7 @@ public data object AppDp {
     val error: Error = Error
     val loader: Loader = Loader
     val segment: Segment = Segment
+    val tab: Tab = Tab
     val menu: Menu = Menu
     val selectableCard: SelectableCard = SelectableCard
     val informationCard: InformationCard = InformationCard
@@ -189,6 +190,13 @@ public data object AppDp {
         val radius: Dp = AppDp.radius.medium
         val height: Dp = size.medium
         val horizontalPadding: Dp = padding.large
+    }
+
+    public data object Tab {
+        val horizontalPadding: Dp = AppDp.padding.large
+        val verticalPadding: Dp = AppDp.padding.small
+        val padding: Dp = AppDp.padding.extraSmall
+        val icon: Dp = AppDp.icon.medium
     }
 
     public data object WheelPicker {

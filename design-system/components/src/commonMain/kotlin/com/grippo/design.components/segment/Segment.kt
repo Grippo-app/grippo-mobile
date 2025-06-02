@@ -67,10 +67,10 @@ public fun <KEY> Segment(
                     content = {
                         Text(
                             modifier = Modifier
+                                .nonRippleClick(onClick = clickProvider)
                                 .padding(horizontal = AppTokens.dp.segment.horizontalPadding)
                                 .height(AppTokens.dp.segment.height)
-                                .wrapContentHeight()
-                                .nonRippleClick(onClick = clickProvider),
+                                .wrapContentHeight(),
                             text = item.second.text(),
                             style = if (item.first == selected) {
                                 AppTokens.typography.b13Bold()
