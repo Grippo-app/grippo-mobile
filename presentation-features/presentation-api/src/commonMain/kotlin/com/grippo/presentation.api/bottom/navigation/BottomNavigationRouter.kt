@@ -10,5 +10,8 @@ public sealed class BottomNavigationRouter : BaseRouter {
     public data object Profile : BottomNavigationRouter()
 
     @Serializable
+    public data object Statistics : BottomNavigationRouter()
+
+    @Serializable
     public data object Trainings : BottomNavigationRouter()
 }

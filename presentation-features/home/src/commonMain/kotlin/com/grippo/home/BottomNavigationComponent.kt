@@ -12,6 +12,7 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
 import com.grippo.home.profile.ProfileComponent
+import com.grippo.home.statistics.StatisticsComponent
 import com.grippo.home.trainings.TrainingsComponent
 import com.grippo.presentation.api.bottom.navigation.BottomNavigationRouter
 
@@ -22,6 +23,7 @@ public class BottomNavigationComponent(
     internal sealed class Child(open val component: BaseComponent<*>) {
         data class Profile(override val component: ProfileComponent) : Child(component)
         data class Trainings(override val component: TrainingsComponent) : Child(component)
+        data class Statistics(override val component: StatisticsComponent) : Child(component)
     }
 
     override val viewModel: BottomNavigationViewModel = componentContext.retainedInstance {
@@ -30,8 +32,9 @@ public class BottomNavigationComponent(
 
     override suspend fun eventListener(direction: BottomNavigationDirection) {
         when (direction) {
-            BottomNavigationDirection.Profile -> navigation.select(0)
-            BottomNavigationDirection.Trainings -> navigation.select(1)
+            BottomNavigationDirection.Trainings -> navigation.select(0)
+            BottomNavigationDirection.Statistics -> navigation.select(1)
+            BottomNavigationDirection.Profile -> navigation.select(2)
         }
     }
 
@@ -44,9 +47,10 @@ public class BottomNavigationComponent(
             Pages<BottomNavigationRouter>(
                 items = listOf(
                     BottomNavigationRouter.Trainings,
+                    BottomNavigationRouter.Statistics,
                     BottomNavigationRouter.Profile,
                 ),
-                selectedIndex = 0
+                selectedIndex = viewModel.state.value.selectedIndex
             )
         },
         key = "BottomNavigationComponent",
@@ -64,6 +68,12 @@ public class BottomNavigationComponent(
 
             is BottomNavigationRouter.Trainings -> Child.Trainings(
                 TrainingsComponent(
+                    componentContext = context,
+                ),
+            )
+
+            is BottomNavigationRouter.Statistics -> Child.Statistics(
+                StatisticsComponent(
                     componentContext = context,
                 ),
             )

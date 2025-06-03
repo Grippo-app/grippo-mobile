@@ -85,9 +85,12 @@
     <string name="exercise_example_equipments">Equipments</string>
     <string name="exercise_example_muscles">Muscles</string>
 
-    <string name="profile">Profile</string>
     <string name="profile_menu_weight_history">Weight History</string>
     <string name="profile_menu_exercise_library">Exercise Library</string>
+    <string name="profile_menu_excluded_muscles">Excluded Muscles</string>
+    <string name="profile_menu_missing_equipment">Missing equipment</string>
 
     <string name="trainings">Trainings</string>
+    <string name="profile">Profile</string>
+    <string name="statistics">Statistics</string>
 </resources>

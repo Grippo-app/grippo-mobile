@@ -6,7 +6,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.icons.Book
+import com.grippo.design.resources.icons.Heart
+import com.grippo.design.resources.icons.Mic
+import com.grippo.design.resources.profile_menu_excluded_muscles
 import com.grippo.design.resources.profile_menu_exercise_library
+import com.grippo.design.resources.profile_menu_missing_equipment
 import com.grippo.design.resources.profile_menu_weight_history
 import com.grippo.presentation.api.user.models.UserState
 
@@ -18,6 +22,8 @@ internal data class ProfileState(
 @Immutable
 internal enum class ProfileMenu {
     WeightHistory,
+    ExcludedMuscles,
+    MissingEquipment,
     ExerciseLibrary;
 
     @Composable
@@ -25,6 +31,8 @@ internal enum class ProfileMenu {
         return when (this) {
             WeightHistory -> AppTokens.strings.res(Res.string.profile_menu_weight_history)
             ExerciseLibrary -> AppTokens.strings.res(Res.string.profile_menu_exercise_library)
+            ExcludedMuscles -> AppTokens.strings.res(Res.string.profile_menu_excluded_muscles)
+            MissingEquipment -> AppTokens.strings.res(Res.string.profile_menu_missing_equipment)
         }
     }
 
@@ -33,6 +41,8 @@ internal enum class ProfileMenu {
         return when (this) {
             WeightHistory -> AppTokens.icons.Book
             ExerciseLibrary -> AppTokens.icons.Book
+            ExcludedMuscles -> AppTokens.icons.Mic
+            MissingEquipment -> AppTokens.icons.Heart
         }
     }
 }

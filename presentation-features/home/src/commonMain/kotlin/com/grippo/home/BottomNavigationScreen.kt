@@ -12,10 +12,8 @@ import com.arkivanov.decompose.value.Value
 import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.tab.TabItem
 import com.grippo.design.core.AppTokens
-import com.grippo.design.core.UiText
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.icons.Play
 import com.grippo.home.internal.BottomNavigationMenu
 import com.grippo.presentation.api.bottom.navigation.BottomNavigationRouter
 import kotlinx.collections.immutable.ImmutableSet
@@ -29,12 +27,9 @@ internal fun BottomNavigationScreen(
     contract: BottomNavigationContract
 ) = BaseComposeScreen {
 
-    val tabs = BottomBarMenu.entries.map {
-        it.ordinal to TabItem(
-            text = it.title(),
-            icon = it.icon()
-        )
-    }.toPersistentList()
+    val tabs = BottomBarMenu.entries
+        .map { it.ordinal to TabItem(text = it.title(), icon = it.icon()) }
+        .toPersistentList()
 
     BottomNavigationMenu(
         items = tabs,
@@ -58,12 +53,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         BottomNavigationMenu(
             items = BottomBarMenu.entries
-                .map {
-                    it.ordinal to TabItem(
-                        text = UiText.Str(it.name),
-                        icon = AppTokens.icons.Play
-                    )
-                }
+                .map { it.ordinal to TabItem(text = it.title(), icon = it.icon()) }
                 .toPersistentList(),
             selected = 0,
             onSelect = { },

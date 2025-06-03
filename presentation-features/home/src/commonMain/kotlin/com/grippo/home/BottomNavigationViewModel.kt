@@ -9,8 +9,10 @@ public class BottomNavigationViewModel :
 
     override fun selectPage(index: Int) {
         when (index) {
-            0 -> navigateTo(BottomNavigationDirection.Profile)
-            1 -> navigateTo(BottomNavigationDirection.Trainings)
+            0 -> navigateTo(BottomNavigationDirection.Trainings)
+            1 -> navigateTo(BottomNavigationDirection.Statistics)
+            2 -> navigateTo(BottomNavigationDirection.Profile)
+            else -> return
         }
         update { it.copy(selectedIndex = index) }
     }
