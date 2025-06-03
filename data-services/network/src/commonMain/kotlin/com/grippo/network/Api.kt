@@ -67,14 +67,14 @@ public class Api(private val client: NetworkClient) {
     public suspend fun deleteExcludedEquipment(id: String): Result<Unit> {
         return request(
             method = HttpMethod.Delete,
-            path = "users/excluded-equipments/$id"
+            path = "/users/excluded-equipments/$id"
         )
     }
 
     public suspend fun setExcludedEquipment(id: String): Result<Unit> {
         return request(
             method = HttpMethod.Post,
-            path = "users/excluded-equipments/$id"
+            path = "/users/excluded-equipments/$id"
         )
     }
 
@@ -88,14 +88,14 @@ public class Api(private val client: NetworkClient) {
     public suspend fun deleteExcludedMuscle(id: String): Result<Unit> {
         return request(
             method = HttpMethod.Delete,
-            path = "users/excluded-muscles/$id"
+            path = "/users/excluded-muscles/$id"
         )
     }
 
     public suspend fun setExcludedMuscle(id: String): Result<Unit> {
         return request(
             method = HttpMethod.Post,
-            path = "users/excluded-muscles/$id"
+            path = "/users/excluded-muscles/$id"
         )
     }
 
