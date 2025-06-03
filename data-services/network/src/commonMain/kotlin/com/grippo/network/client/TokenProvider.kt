@@ -181,7 +181,7 @@ internal class TokenProvider(
         client: HttpClient,
         refreshToken: String
     ): TokenResponse {
-        AppLogger.network("🌐 [TokenProvider] Sending refresh request to /auth/register")
+        AppLogger.network("🌐 [TokenProvider] Sending refresh request to /auth/refresh")
         return client.submitForm {
             url {
                 method = HttpMethod.Post
