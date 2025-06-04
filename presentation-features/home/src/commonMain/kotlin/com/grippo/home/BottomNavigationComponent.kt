@@ -44,7 +44,7 @@ public class BottomNavigationComponent(
         source = navigation,
         serializer = BottomNavigationRouter.serializer(),
         initialPages = {
-            Pages<BottomNavigationRouter>(
+            Pages(
                 items = listOf(
                     BottomNavigationRouter.Trainings,
                     BottomNavigationRouter.Statistics,

@@ -136,7 +136,7 @@ private fun SegmentPreview() {
     PreviewContainer {
         Tab(
             modifier = Modifier,
-            items = persistentListOf<Pair<String, TabItem>>(
+            items = persistentListOf(
                 "Box" to TabItem(text = UiText.Str("Box"), icon = AppTokens.icons.Box),
                 "Play" to TabItem(text = UiText.Str("Play"), icon = AppTokens.icons.Play),
                 "Settings" to TabItem(
