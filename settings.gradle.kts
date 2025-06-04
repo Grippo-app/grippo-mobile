@@ -57,6 +57,7 @@ include(":data-features:exercise-examples")
 include(":presentation-features:presentation-api")
 include(":presentation-features:authorization")
 include(":presentation-features:home")
+include(":presentation-features:profile")
 
 include(":dialog-features:dialog-api")
 include(":dialog-features:weight-picker")

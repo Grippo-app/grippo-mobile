@@ -24,7 +24,6 @@ kotlin {
 
         implementation(compose.foundation)
         implementation(compose.material3)
-        implementation(compose.animation)
 
         implementation(libs.immutable.collections)
         implementation(libs.datetime)
