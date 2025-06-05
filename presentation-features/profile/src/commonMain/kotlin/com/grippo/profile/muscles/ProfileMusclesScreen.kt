@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -23,7 +24,7 @@ import com.grippo.design.components.muscle.MusclesImage
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
-import com.grippo.design.resources.continue_btn
+import com.grippo.design.resources.apply_btn
 import com.grippo.design.resources.profile
 import kotlinx.collections.immutable.ImmutableSet
 
@@ -38,6 +39,7 @@ internal fun ProfileMusclesScreen(
             modifier = Modifier.fillMaxWidth(),
             title = AppTokens.strings.res(Res.string.profile),
         )
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
@@ -99,10 +101,14 @@ internal fun ProfileMusclesScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         Button(
-            modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.continue_btn),
+            modifier = Modifier
+                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                .fillMaxWidth(),
+            text = AppTokens.strings.res(Res.string.apply_btn),
             style = ButtonStyle.Primary,
-            onClick = contract::next
+            onClick = contract::apply
         )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
     }
 }

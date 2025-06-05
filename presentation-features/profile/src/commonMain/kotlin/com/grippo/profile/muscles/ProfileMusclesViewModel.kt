@@ -36,7 +36,12 @@ internal class ProfileMusclesViewModel(
             .minus(excluded.map { it.id })
             .toPersistentList()
 
-        update { it.copy(suggestions = suggestions, selectedMuscleIds = selectedIds) }
+        update {
+            it.copy(
+                suggestions = suggestions,
+                selectedMuscleIds = selectedIds
+            )
+        }
     }
 
     override fun select(id: String) {
@@ -50,7 +55,7 @@ internal class ProfileMusclesViewModel(
         }
     }
 
-    override fun next() {
+    override fun apply() {
         navigateTo(ProfileMusclesDirection.Back)
     }
 }

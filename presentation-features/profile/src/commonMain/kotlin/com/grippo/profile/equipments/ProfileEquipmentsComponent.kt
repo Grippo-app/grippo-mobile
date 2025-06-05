@@ -12,7 +12,10 @@ internal class ProfileEquipmentsComponent(
 ) : BaseComponent<ProfileEquipmentsDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        ProfileEquipmentsViewModel()
+        ProfileEquipmentsViewModel(
+            equipmentFeature = getKoin().get(),
+            excludedEquipmentsFeature = getKoin().get()
+        )
     }
 
     override suspend fun eventListener(direction: ProfileEquipmentsDirection) {
