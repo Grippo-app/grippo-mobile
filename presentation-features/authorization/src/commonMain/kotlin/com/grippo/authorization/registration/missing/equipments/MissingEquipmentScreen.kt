@@ -1,4 +1,4 @@
-package com.grippo.authorization.registration.missing.equipment
+package com.grippo.authorization.registration.missing.equipments
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -20,10 +20,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.grippo.authorization.registration.missing.equipment.internal.EquipmentRow
 import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.equipment.EquipmentRow
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentWidth
 import com.grippo.design.core.AppTokens
@@ -41,10 +41,10 @@ import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 
 @Composable
-internal fun MissingEquipmentScreen(
-    state: MissingEquipmentState,
-    loaders: ImmutableSet<MissingEquipmentLoader>,
-    contract: MissingEquipmentContract
+internal fun MissingEquipmentsScreen(
+    state: MissingEquipmentsState,
+    loaders: ImmutableSet<MissingEquipmentsLoader>,
+    contract: MissingEquipmentsContract
 ) = BaseComposeScreen {
     Column(
         modifier = Modifier
@@ -132,8 +132,8 @@ internal fun MissingEquipmentScreen(
 @Composable
 private fun ScreenPreviewSelected() {
     PreviewContainer {
-        MissingEquipmentScreen(
-            state = MissingEquipmentState(
+        MissingEquipmentsScreen(
+            state = MissingEquipmentsState(
                 suggestions = stubEquipments(),
                 selectedEquipmentIds = stubEquipments()
                     .map { it.equipments.map { it.id } }
@@ -142,7 +142,7 @@ private fun ScreenPreviewSelected() {
                 selectedGroupId = stubEquipments().firstOrNull()?.id
             ),
             loaders = persistentSetOf(),
-            contract = MissingEquipmentContract.Empty
+            contract = MissingEquipmentsContract.Empty
         )
     }
 }
@@ -151,14 +151,14 @@ private fun ScreenPreviewSelected() {
 @Composable
 private fun ScreenPreviewUnselected() {
     PreviewContainer {
-        MissingEquipmentScreen(
-            state = MissingEquipmentState(
+        MissingEquipmentsScreen(
+            state = MissingEquipmentsState(
                 suggestions = stubEquipments(),
                 selectedEquipmentIds = persistentListOf(),
                 selectedGroupId = stubEquipments().firstOrNull()?.id
             ),
             loaders = persistentSetOf(),
-            contract = MissingEquipmentContract.Empty
+            contract = MissingEquipmentsContract.Empty
         )
     }
 }

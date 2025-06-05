@@ -1,4 +1,4 @@
-package com.grippo.authorization.registration.missing.equipment
+package com.grippo.authorization.registration.missing.equipments
 
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.equipment.EquipmentFeature
@@ -8,11 +8,11 @@ import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.onEach
 
-internal class MissingEquipmentViewModel(
+internal class MissingEquipmentsViewModel(
     equipmentFeature: EquipmentFeature,
-) : BaseViewModel<MissingEquipmentState, MissingEquipmentDirection, MissingEquipmentLoader>(
-    MissingEquipmentState()
-), MissingEquipmentContract {
+) : BaseViewModel<MissingEquipmentsState, MissingEquipmentsDirection, MissingEquipmentsLoader>(
+    MissingEquipmentsState()
+), MissingEquipmentsContract {
 
     init {
         equipmentFeature
@@ -53,7 +53,7 @@ internal class MissingEquipmentViewModel(
             .flatMap { it.equipments }
             .map { it.id } - state.value.selectedEquipmentIds
 
-        val direction = MissingEquipmentDirection.Completed(
+        val direction = MissingEquipmentsDirection.Completed(
             missingEquipmentIds = formattedList
         )
         navigateTo(direction)

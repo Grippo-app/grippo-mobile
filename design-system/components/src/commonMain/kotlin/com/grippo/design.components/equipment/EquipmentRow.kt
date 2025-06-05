@@ -1,4 +1,4 @@
-package com.grippo.authorization.registration.missing.equipment.internal
+package com.grippo.design.components.equipment
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -10,7 +10,7 @@ import com.grippo.presentation.api.equipment.models.EquipmentState
 import kotlinx.collections.immutable.ImmutableList
 
 @Composable
-internal fun EquipmentRow(
+public fun EquipmentRow(
     equipment: EquipmentState,
     selectedEquipmentIds: ImmutableList<String>,
     selectEquipment: (id: String) -> Unit

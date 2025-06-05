@@ -22,7 +22,7 @@ public sealed class RegistrationRouter : BaseRouter {
     public data object ExcludedMuscles : RegistrationRouter()
 
     @Serializable
-    public data object MissingEquipment : RegistrationRouter()
+    public data object MissingEquipments : RegistrationRouter()
 
     @Serializable
     public data object Completed : RegistrationRouter()

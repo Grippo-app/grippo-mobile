@@ -1,4 +1,4 @@
-package com.grippo.authorization.registration.missing.equipment
+package com.grippo.authorization.registration.missing.equipments
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
@@ -6,18 +6,18 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
 
-internal class MissingEquipmentComponent(
+internal class MissingEquipmentsComponent(
     componentContext: ComponentContext,
     private val toCompleted: (missingEquipmentIds: List<String>) -> Unit
-) : BaseComponent<MissingEquipmentDirection>(componentContext) {
+) : BaseComponent<MissingEquipmentsDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        MissingEquipmentViewModel(equipmentFeature = getKoin().get())
+        MissingEquipmentsViewModel(equipmentFeature = getKoin().get())
     }
 
-    override suspend fun eventListener(direction: MissingEquipmentDirection) {
+    override suspend fun eventListener(direction: MissingEquipmentsDirection) {
         when (direction) {
-            is MissingEquipmentDirection.Completed -> toCompleted.invoke(direction.missingEquipmentIds)
+            is MissingEquipmentsDirection.Completed -> toCompleted.invoke(direction.missingEquipmentIds)
         }
     }
 
@@ -25,6 +25,6 @@ internal class MissingEquipmentComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        MissingEquipmentScreen(state.value, loaders.value, viewModel)
+        MissingEquipmentsScreen(state.value, loaders.value, viewModel)
     }
 }

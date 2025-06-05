@@ -13,7 +13,7 @@ import com.grippo.authorization.registration.completed.CompletedComponent
 import com.grippo.authorization.registration.credential.CredentialComponent
 import com.grippo.authorization.registration.excluded.muscles.ExcludedMusclesComponent
 import com.grippo.authorization.registration.experience.ExperienceComponent
-import com.grippo.authorization.registration.missing.equipment.MissingEquipmentComponent
+import com.grippo.authorization.registration.missing.equipments.MissingEquipmentsComponent
 import com.grippo.authorization.registration.name.NameComponent
 import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
@@ -40,7 +40,7 @@ internal class RegistrationComponent(
         data class ExcludedMuscles(override val component: ExcludedMusclesComponent) :
             Child(component)
 
-        data class MussingEquipment(override val component: MissingEquipmentComponent) :
+        data class MussingEquipments(override val component: MissingEquipmentsComponent) :
             Child(component)
 
         data class Completed(override val component: CompletedComponent) :
@@ -112,13 +112,13 @@ internal class RegistrationComponent(
                     componentContext = context,
                     toMissingEquipment = { ids ->
                         viewModel.saveExcludedMuscleIds(ids)
-                        navigation.push(RegistrationRouter.MissingEquipment)
+                        navigation.push(RegistrationRouter.MissingEquipments)
                     }
                 ),
             )
 
-            RegistrationRouter.MissingEquipment -> Child.MussingEquipment(
-                MissingEquipmentComponent(
+            RegistrationRouter.MissingEquipments -> Child.MussingEquipments(
+                MissingEquipmentsComponent(
                     componentContext = context,
                     toCompleted = { ids ->
                         viewModel.saveMissingEquipmentIds(ids)
