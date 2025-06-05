@@ -3,5 +3,7 @@ package com.grippo.home.statistics
 import com.grippo.core.BaseViewModel
 
 internal class HomeStatisticsViewModel :
-    BaseViewModel<StatisticsState, HomeStatisticsDirection, HomeStatisticsLoader>(StatisticsState),
+    BaseViewModel<HomeStatisticsState, HomeStatisticsDirection, HomeStatisticsLoader>(
+        HomeStatisticsState
+    ),
     HomeStatisticsContract

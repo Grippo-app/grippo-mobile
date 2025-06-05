@@ -83,7 +83,7 @@ internal fun HomeProfileScreen(
 
 @AppPreview
 @Composable
-private fun HomeProfileScreenEmpty() {
+private fun ScreenPreview() {
     PreviewContainer {
         HomeProfileScreen(
             state = HomeProfileState(

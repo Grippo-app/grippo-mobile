@@ -13,7 +13,7 @@ import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
 import com.grippo.home.profile.HomeProfileComponent
 import com.grippo.home.statistics.HomeStatisticsComponent
-import com.grippo.home.trainings.TrainingsComponent
+import com.grippo.home.trainings.HomeTrainingsComponent
 import com.grippo.presentation.api.bottom.navigation.BottomNavigationRouter
 
 public class BottomNavigationComponent(
@@ -26,7 +26,7 @@ public class BottomNavigationComponent(
 
     internal sealed class Child(open val component: BaseComponent<*>) {
         data class Profile(override val component: HomeProfileComponent) : Child(component)
-        data class Trainings(override val component: TrainingsComponent) : Child(component)
+        data class Trainings(override val component: HomeTrainingsComponent) : Child(component)
         data class Statistics(override val component: HomeStatisticsComponent) : Child(component)
     }
 
@@ -75,7 +75,7 @@ public class BottomNavigationComponent(
             )
 
             is BottomNavigationRouter.Trainings -> Child.Trainings(
-                TrainingsComponent(
+                HomeTrainingsComponent(
                     componentContext = context,
                 ),
             )

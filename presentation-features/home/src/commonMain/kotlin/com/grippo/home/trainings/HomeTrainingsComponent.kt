@@ -6,24 +6,24 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
 
-internal class TrainingsComponent(
+internal class HomeTrainingsComponent(
     componentContext: ComponentContext,
-) : BaseComponent<TrainingsDirection>(componentContext) {
+) : BaseComponent<HomeTrainingsDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        TrainingsViewModel(
+        HomeTrainingsViewModel(
             trainingFeature = getKoin().get(),
             dialogController = getKoin().get()
         )
     }
 
-    override suspend fun eventListener(direction: TrainingsDirection) {
+    override suspend fun eventListener(direction: HomeTrainingsDirection) {
     }
 
     @Composable
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        TrainingsScreen(state.value, loaders.value, viewModel)
+        HomeTrainingsScreen(state.value, loaders.value, viewModel)
     }
 }

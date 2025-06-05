@@ -6,6 +6,6 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
-internal data class TrainingsState(
+internal data class HomeTrainingsState(
     val trainings: ImmutableList<TrainingState> = persistentListOf()
 )

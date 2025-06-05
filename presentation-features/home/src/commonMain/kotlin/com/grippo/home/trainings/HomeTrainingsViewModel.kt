@@ -9,12 +9,12 @@ import com.grippo.domain.mapper.training.toState
 import kotlinx.coroutines.flow.onEach
 import kotlinx.datetime.LocalDateTime
 
-internal class TrainingsViewModel(
+internal class HomeTrainingsViewModel(
     private val trainingFeature: TrainingFeature,
     private val dialogController: DialogController
-) : BaseViewModel<TrainingsState, TrainingsDirection, TrainingsLoader>(
-    TrainingsState()
-), TrainingsContract {
+) : BaseViewModel<HomeTrainingsState, HomeTrainingsDirection, HomeTrainingsLoader>(
+    HomeTrainingsState()
+), HomeTrainingsContract {
 
     init {
         trainingFeature.observeTrainings(
@@ -24,7 +24,7 @@ internal class TrainingsViewModel(
             .onEach(::provideTrainings)
             .safeLaunch()
 
-        safeLaunch(loader = TrainingsLoader.Trainings) {
+        safeLaunch(loader = HomeTrainingsLoader.Trainings) {
             trainingFeature.getTrainings(
                 start = LocalDateTime(2024, 1, 1, 11, 11, 11, 11),
                 end = LocalDateTime(2026, 1, 1, 11, 11, 11, 11)

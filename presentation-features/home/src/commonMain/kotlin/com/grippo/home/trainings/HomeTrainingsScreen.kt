@@ -24,10 +24,10 @@ import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 
 @Composable
-internal fun TrainingsScreen(
-    state: TrainingsState,
-    loaders: ImmutableSet<TrainingsLoader>,
-    contract: TrainingsContract
+internal fun HomeTrainingsScreen(
+    state: HomeTrainingsState,
+    loaders: ImmutableSet<HomeTrainingsLoader>,
+    contract: HomeTrainingsContract
 ) = BaseComposeScreen {
     Column {
         Toolbar(
@@ -68,12 +68,12 @@ internal fun TrainingsScreen(
 @Composable
 private fun ScreenPreview() {
     PreviewContainer {
-        TrainingsScreen(
-            state = TrainingsState(
+        HomeTrainingsScreen(
+            state = HomeTrainingsState(
                 trainings = persistentListOf(stubTraining(), stubTraining()),
             ),
             loaders = persistentSetOf(),
-            contract = TrainingsContract.Empty
+            contract = HomeTrainingsContract.Empty
         )
     }
 }
