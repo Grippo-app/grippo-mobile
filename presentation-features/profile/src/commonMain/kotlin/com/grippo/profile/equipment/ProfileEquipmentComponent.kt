@@ -1,4 +1,4 @@
-package com.grippo.profile.muscles
+package com.grippo.profile.equipment
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
@@ -6,21 +6,18 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
 
-internal class ProfileMusclesComponent(
+internal class ProfileEquipmentComponent(
     componentContext: ComponentContext,
     private val onBack: () -> Unit
-) : BaseComponent<ProfileMusclesDirection>(componentContext) {
+) : BaseComponent<ProfileEquipmentDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        ProfileMusclesViewModel(
-            muscleFeature = getKoin().get(),
-            excludedMusclesFeature = getKoin().get()
-        )
+        ProfileEquipmentViewModel()
     }
 
-    override suspend fun eventListener(direction: ProfileMusclesDirection) {
+    override suspend fun eventListener(direction: ProfileEquipmentDirection) {
         when (direction) {
-            ProfileMusclesDirection.Back -> onBack.invoke()
+            ProfileEquipmentDirection.Back -> onBack.invoke()
         }
     }
 
@@ -28,6 +25,6 @@ internal class ProfileMusclesComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        ProfileMusclesScreen(state.value, loaders.value, viewModel)
+        ProfileEquipmentScreen(state.value, loaders.value, viewModel)
     }
 }

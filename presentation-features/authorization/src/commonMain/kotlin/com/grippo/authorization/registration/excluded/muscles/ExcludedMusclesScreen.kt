@@ -18,11 +18,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.grippo.authorization.registration.excluded.muscles.internal.MusclesColumn
-import com.grippo.authorization.registration.excluded.muscles.internal.MusclesImage
 import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.muscle.MusclesColumn
+import com.grippo.design.components.muscle.MusclesImage
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer

@@ -17,9 +17,7 @@ internal class ProfileViewModel(
             .onEach(::provideUser)
             .safeLaunch()
 
-        safeLaunch {
-            userFeature.getUser().getOrThrow()
-        }
+        safeLaunch { userFeature.getUser().getOrThrow() }
     }
 
     private fun provideUser(user: User?) {
@@ -31,6 +29,13 @@ internal class ProfileViewModel(
     }
 
     override fun onMenuClick(menu: ProfileMenu) {
+        val direction = when (menu) {
+            ProfileMenu.WeightHistory -> ProfileDirection.WeightHistory
+            ProfileMenu.ExcludedMuscles -> ProfileDirection.ExcludedMuscles
+            ProfileMenu.MissingEquipment -> ProfileDirection.MissingEquipment
+            ProfileMenu.ExerciseLibrary -> ProfileDirection.ExerciseLibrary
+        }
 
+        navigateTo(direction)
     }
 }

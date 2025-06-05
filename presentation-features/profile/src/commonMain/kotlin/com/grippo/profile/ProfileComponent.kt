@@ -5,12 +5,13 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
 import com.grippo.presentation.api.profile.ProfileRouter
-import com.grippo.profile.equipments.ProfileEquipmentsComponent
+import com.grippo.profile.equipment.ProfileEquipmentComponent
 import com.grippo.profile.muscles.ProfileMusclesComponent
 
 public class ProfileComponent(
@@ -20,7 +21,7 @@ public class ProfileComponent(
 
     internal sealed class Child(open val component: BaseComponent<*>) {
         data class Muscles(override val component: ProfileMusclesComponent) : Child(component)
-        data class Equipments(override val component: ProfileEquipmentsComponent) : Child(component)
+        data class Equipments(override val component: ProfileEquipmentComponent) : Child(component)
     }
 
     override val viewModel: ProfileViewModel = componentContext.retainedInstance {
@@ -46,12 +47,14 @@ public class ProfileComponent(
             ProfileRouter.Muscles -> Child.Muscles(
                 ProfileMusclesComponent(
                     componentContext = context,
+                    onBack = navigation::pop
                 ),
             )
 
             is ProfileRouter.Equipments -> Child.Equipments(
-                ProfileEquipmentsComponent(
+                ProfileEquipmentComponent(
                     componentContext = context,
+                    onBack = navigation::pop
                 ),
             )
         }

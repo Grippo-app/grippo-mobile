@@ -1,4 +1,4 @@
-package com.grippo.authorization.registration.excluded.muscles.internal
+package com.grippo.design.components.muscle
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.aspectRatio
@@ -9,7 +9,7 @@ import com.grippo.presentation.api.muscles.models.MuscleRepresentationState
 import kotlinx.collections.immutable.ImmutableList
 
 @Composable
-internal fun MusclesImage(
+public fun MusclesImage(
     modifier: Modifier = Modifier,
     item: MuscleGroupState<MuscleRepresentationState.Plain>,
     selectedIds: ImmutableList<String>

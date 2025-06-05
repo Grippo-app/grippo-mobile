@@ -7,7 +7,7 @@ import com.grippo.data.features.excluded.equipments.domain.ExcludedEquipmentsRep
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
-public val excludedEquipmentsFeatureModule: Module = module {
+public val excludedEquipmentFeatureModule: Module = module {
     single<ExcludedEquipmentsFeature> {
         ExcludedEquipmentsFeatureImpl(get())
     }

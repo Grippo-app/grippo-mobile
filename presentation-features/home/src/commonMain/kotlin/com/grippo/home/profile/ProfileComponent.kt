@@ -8,6 +8,10 @@ import com.grippo.core.collectAsStateMultiplatform
 
 internal class ProfileComponent(
     componentContext: ComponentContext,
+    private val toExcludedMuscles: () -> Unit,
+    private val toMissingEquipment: () -> Unit,
+    private val toWeightHistory: () -> Unit,
+    private val toExerciseLibrary: () -> Unit,
 ) : BaseComponent<ProfileDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
@@ -18,6 +22,12 @@ internal class ProfileComponent(
     }
 
     override suspend fun eventListener(direction: ProfileDirection) {
+        when (direction) {
+            ProfileDirection.ExcludedMuscles -> toExcludedMuscles.invoke()
+            ProfileDirection.ExerciseLibrary -> toExerciseLibrary.invoke()
+            ProfileDirection.MissingEquipment -> toMissingEquipment.invoke()
+            ProfileDirection.WeightHistory -> toWeightHistory.invoke()
+        }
     }
 
     @Composable

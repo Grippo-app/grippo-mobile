@@ -1,4 +1,4 @@
-package com.grippo.authorization.registration.excluded.muscles.internal
+package com.grippo.design.components.muscle
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,7 +14,7 @@ import com.grippo.presentation.api.muscles.models.MuscleRepresentationState
 import kotlinx.collections.immutable.ImmutableList
 
 @Composable
-internal fun MusclesColumn(
+public fun MusclesColumn(
     modifier: Modifier = Modifier,
     item: MuscleGroupState<MuscleRepresentationState.Plain>,
     selectedIds: ImmutableList<String>,

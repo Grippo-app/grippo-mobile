@@ -18,6 +18,10 @@ import com.grippo.presentation.api.bottom.navigation.BottomNavigationRouter
 
 public class BottomNavigationComponent(
     componentContext: ComponentContext,
+    private val toExcludedMuscles: () -> Unit,
+    private val toMissingEquipment: () -> Unit,
+    private val toWeightHistory: () -> Unit,
+    private val toExerciseLibrary: () -> Unit,
 ) : BaseComponent<BottomNavigationDirection>(componentContext) {
 
     internal sealed class Child(open val component: BaseComponent<*>) {
@@ -63,6 +67,10 @@ public class BottomNavigationComponent(
             BottomNavigationRouter.Profile -> Child.Profile(
                 ProfileComponent(
                     componentContext = context,
+                    toExcludedMuscles = toExcludedMuscles,
+                    toExerciseLibrary = toExerciseLibrary,
+                    toMissingEquipment = toMissingEquipment,
+                    toWeightHistory = toWeightHistory
                 ),
             )
 

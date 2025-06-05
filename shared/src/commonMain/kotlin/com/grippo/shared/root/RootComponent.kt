@@ -5,6 +5,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.instancekeeper.retainedInstance
@@ -14,6 +15,7 @@ import com.grippo.core.collectAsStateMultiplatform
 import com.grippo.design.core.AppTheme
 import com.grippo.home.BottomNavigationComponent
 import com.grippo.presentation.api.RootRouter
+import com.grippo.presentation.api.profile.ProfileRouter
 import com.grippo.profile.ProfileComponent
 import com.grippo.shared.dialog.DialogComponent
 import com.grippo.shared.root.RootComponent.Child.Authorization
@@ -67,6 +69,10 @@ public class RootComponent(
             RootRouter.Home -> Home(
                 BottomNavigationComponent(
                     componentContext = context,
+                    toWeightHistory = {},
+                    toMissingEquipment = { navigation.push(RootRouter.Profile(ProfileRouter.Equipments)) },
+                    toExcludedMuscles = { navigation.push(RootRouter.Profile(ProfileRouter.Muscles)) },
+                    toExerciseLibrary = {}
                 )
             )
 
