@@ -1,4 +1,4 @@
-package com.grippo.profile.equipment
+package com.grippo.profile.equipments
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
@@ -6,18 +6,18 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
 
-internal class ProfileEquipmentComponent(
+internal class ProfileEquipmentsComponent(
     componentContext: ComponentContext,
     private val onBack: () -> Unit
-) : BaseComponent<ProfileEquipmentDirection>(componentContext) {
+) : BaseComponent<ProfileEquipmentsDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        ProfileEquipmentViewModel()
+        ProfileEquipmentsViewModel()
     }
 
-    override suspend fun eventListener(direction: ProfileEquipmentDirection) {
+    override suspend fun eventListener(direction: ProfileEquipmentsDirection) {
         when (direction) {
-            ProfileEquipmentDirection.Back -> onBack.invoke()
+            ProfileEquipmentsDirection.Back -> onBack.invoke()
         }
     }
 
@@ -25,6 +25,6 @@ internal class ProfileEquipmentComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        ProfileEquipmentScreen(state.value, loaders.value, viewModel)
+        ProfileEquipmentsScreen(state.value, loaders.value, viewModel)
     }
 }
