@@ -20,8 +20,8 @@ internal class CompletedViewModel(
     experience: ExperienceEnumState?,
     excludedMuscleIds: ImmutableList<String>,
     missingEquipmentIds: ImmutableList<String>,
+    userFeature: UserFeature,
     private val registerUseCase: RegisterUseCase,
-    private val userFeature: UserFeature,
 ) : BaseViewModel<CompletedState, CompletedDirection, CompletedLoader>(
     CompletedState()
 ), CompletedContract {

@@ -12,7 +12,7 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
 import com.grippo.home.profile.HomeProfileComponent
-import com.grippo.home.statistics.StatisticsComponent
+import com.grippo.home.statistics.HomeStatisticsComponent
 import com.grippo.home.trainings.TrainingsComponent
 import com.grippo.presentation.api.bottom.navigation.BottomNavigationRouter
 
@@ -27,7 +27,7 @@ public class BottomNavigationComponent(
     internal sealed class Child(open val component: BaseComponent<*>) {
         data class Profile(override val component: HomeProfileComponent) : Child(component)
         data class Trainings(override val component: TrainingsComponent) : Child(component)
-        data class Statistics(override val component: StatisticsComponent) : Child(component)
+        data class Statistics(override val component: HomeStatisticsComponent) : Child(component)
     }
 
     override val viewModel: BottomNavigationViewModel = componentContext.retainedInstance {
@@ -81,7 +81,7 @@ public class BottomNavigationComponent(
             )
 
             is BottomNavigationRouter.Statistics -> Child.Statistics(
-                StatisticsComponent(
+                HomeStatisticsComponent(
                     componentContext = context,
                 ),
             )

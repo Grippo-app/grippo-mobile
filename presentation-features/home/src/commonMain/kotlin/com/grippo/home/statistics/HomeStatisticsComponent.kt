@@ -6,21 +6,21 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
 
-internal class StatisticsComponent(
+internal class HomeStatisticsComponent(
     componentContext: ComponentContext,
-) : BaseComponent<StatisticsDirection>(componentContext) {
+) : BaseComponent<HomeStatisticsDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        StatisticsViewModel()
+        HomeStatisticsViewModel()
     }
 
-    override suspend fun eventListener(direction: StatisticsDirection) {
+    override suspend fun eventListener(direction: HomeStatisticsDirection) {
     }
 
     @Composable
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        StatisticsScreen(state.value, loaders.value, viewModel)
+        HomeStatisticsScreen(state.value, loaders.value, viewModel)
     }
 }

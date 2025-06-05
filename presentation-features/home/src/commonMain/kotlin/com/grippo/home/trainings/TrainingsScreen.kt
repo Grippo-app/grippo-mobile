@@ -13,9 +13,14 @@ import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.trainings
+import com.grippo.presentation.api.trainings.models.stubTraining
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 
 @Composable
@@ -56,5 +61,19 @@ internal fun TrainingsScreen(
                 )
             }
         }
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreview() {
+    PreviewContainer {
+        TrainingsScreen(
+            state = TrainingsState(
+                trainings = persistentListOf(stubTraining(), stubTraining()),
+            ),
+            loaders = persistentSetOf(),
+            contract = TrainingsContract.Empty
+        )
     }
 }
