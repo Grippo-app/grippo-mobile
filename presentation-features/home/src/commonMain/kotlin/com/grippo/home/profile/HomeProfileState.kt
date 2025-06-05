@@ -15,12 +15,12 @@ import com.grippo.design.resources.profile_menu_weight_history
 import com.grippo.presentation.api.profile.models.UserState
 
 @Immutable
-internal data class ProfileState(
+internal data class HomeProfileState(
     val user: UserState? = null
 )
 
 @Immutable
-internal enum class ProfileMenu {
+internal enum class HomeProfileMenu {
     WeightHistory,
     ExcludedMuscles,
     MissingEquipment,

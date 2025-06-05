@@ -30,10 +30,10 @@ import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 
 @Composable
-internal fun ProfileScreen(
-    state: ProfileState,
-    loaders: ImmutableSet<ProfileLoader>,
-    contract: ProfileContract
+internal fun HomeProfileScreen(
+    state: HomeProfileState,
+    loaders: ImmutableSet<HomeProfileLoader>,
+    contract: HomeProfileContract
 ) = BaseComposeScreen {
     Column {
         Toolbar(
@@ -61,7 +61,7 @@ internal fun ProfileScreen(
                 )
             }
 
-            val menu = ProfileMenu.entries.map {
+            val menu = HomeProfileMenu.entries.map {
                 it to MenuItem(it.text(), it.icon())
             }.toPersistentList()
 
@@ -83,13 +83,13 @@ internal fun ProfileScreen(
 
 @AppPreview
 @Composable
-private fun ProfileScreenEmpty() {
+private fun HomeProfileScreenEmpty() {
     PreviewContainer {
-        ProfileScreen(
-            state = ProfileState(
+        HomeProfileScreen(
+            state = HomeProfileState(
                 user = stubUser()
             ),
-            contract = ProfileContract.Empty,
+            contract = HomeProfileContract.Empty,
             loaders = persistentSetOf()
         )
     }

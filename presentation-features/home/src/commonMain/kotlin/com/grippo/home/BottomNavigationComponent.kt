@@ -11,7 +11,7 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
-import com.grippo.home.profile.ProfileComponent
+import com.grippo.home.profile.HomeProfileComponent
 import com.grippo.home.statistics.StatisticsComponent
 import com.grippo.home.trainings.TrainingsComponent
 import com.grippo.presentation.api.bottom.navigation.BottomNavigationRouter
@@ -25,7 +25,7 @@ public class BottomNavigationComponent(
 ) : BaseComponent<BottomNavigationDirection>(componentContext) {
 
     internal sealed class Child(open val component: BaseComponent<*>) {
-        data class Profile(override val component: ProfileComponent) : Child(component)
+        data class Profile(override val component: HomeProfileComponent) : Child(component)
         data class Trainings(override val component: TrainingsComponent) : Child(component)
         data class Statistics(override val component: StatisticsComponent) : Child(component)
     }
@@ -65,7 +65,7 @@ public class BottomNavigationComponent(
     private fun createChild(router: BottomNavigationRouter, context: ComponentContext): Child {
         return when (router) {
             BottomNavigationRouter.Profile -> Child.Profile(
-                ProfileComponent(
+                HomeProfileComponent(
                     componentContext = context,
                     toExcludedMuscles = toExcludedMuscles,
                     toExerciseLibrary = toExerciseLibrary,

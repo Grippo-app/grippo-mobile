@@ -6,27 +6,27 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
 
-internal class ProfileComponent(
+internal class HomeProfileComponent(
     componentContext: ComponentContext,
     private val toExcludedMuscles: () -> Unit,
     private val toMissingEquipment: () -> Unit,
     private val toWeightHistory: () -> Unit,
     private val toExerciseLibrary: () -> Unit,
-) : BaseComponent<ProfileDirection>(componentContext) {
+) : BaseComponent<HomeProfileDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        ProfileViewModel(
+        HomeProfileViewModel(
             userFeature = getKoin().get(),
             authorizationFeature = getKoin().get()
         )
     }
 
-    override suspend fun eventListener(direction: ProfileDirection) {
+    override suspend fun eventListener(direction: HomeProfileDirection) {
         when (direction) {
-            ProfileDirection.ExcludedMuscles -> toExcludedMuscles.invoke()
-            ProfileDirection.ExerciseLibrary -> toExerciseLibrary.invoke()
-            ProfileDirection.MissingEquipment -> toMissingEquipment.invoke()
-            ProfileDirection.WeightHistory -> toWeightHistory.invoke()
+            HomeProfileDirection.ExcludedMuscles -> toExcludedMuscles.invoke()
+            HomeProfileDirection.ExerciseLibrary -> toExerciseLibrary.invoke()
+            HomeProfileDirection.MissingEquipment -> toMissingEquipment.invoke()
+            HomeProfileDirection.WeightHistory -> toWeightHistory.invoke()
         }
     }
 
@@ -34,6 +34,6 @@ internal class ProfileComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        ProfileScreen(state.value, loaders.value, viewModel)
+        HomeProfileScreen(state.value, loaders.value, viewModel)
     }
 }

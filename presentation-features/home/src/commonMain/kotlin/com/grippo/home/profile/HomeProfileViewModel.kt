@@ -7,10 +7,11 @@ import com.grippo.data.features.api.user.models.User
 import com.grippo.domain.mapper.user.toState
 import kotlinx.coroutines.flow.onEach
 
-internal class ProfileViewModel(
+internal class HomeProfileViewModel(
     userFeature: UserFeature,
     private val authorizationFeature: AuthorizationFeature
-) : BaseViewModel<ProfileState, ProfileDirection, ProfileLoader>(ProfileState()), ProfileContract {
+) : BaseViewModel<HomeProfileState, HomeProfileDirection, HomeProfileLoader>(HomeProfileState()),
+    HomeProfileContract {
 
     init {
         userFeature.observeUser()
@@ -28,12 +29,12 @@ internal class ProfileViewModel(
         safeLaunch { authorizationFeature.logout() }
     }
 
-    override fun onMenuClick(menu: ProfileMenu) {
+    override fun onMenuClick(menu: HomeProfileMenu) {
         val direction = when (menu) {
-            ProfileMenu.WeightHistory -> ProfileDirection.WeightHistory
-            ProfileMenu.ExcludedMuscles -> ProfileDirection.ExcludedMuscles
-            ProfileMenu.MissingEquipment -> ProfileDirection.MissingEquipment
-            ProfileMenu.ExerciseLibrary -> ProfileDirection.ExerciseLibrary
+            HomeProfileMenu.WeightHistory -> HomeProfileDirection.WeightHistory
+            HomeProfileMenu.ExcludedMuscles -> HomeProfileDirection.ExcludedMuscles
+            HomeProfileMenu.MissingEquipment -> HomeProfileDirection.MissingEquipment
+            HomeProfileMenu.ExerciseLibrary -> HomeProfileDirection.ExerciseLibrary
         }
 
         navigateTo(direction)
