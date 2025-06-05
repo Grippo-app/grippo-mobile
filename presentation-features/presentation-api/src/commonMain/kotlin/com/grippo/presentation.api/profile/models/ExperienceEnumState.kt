@@ -1,4 +1,4 @@
-package com.grippo.presentation.api.user.models
+package com.grippo.presentation.api.profile.models
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable

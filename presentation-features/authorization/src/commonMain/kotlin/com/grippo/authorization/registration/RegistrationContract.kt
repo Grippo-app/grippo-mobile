@@ -1,6 +1,6 @@
 package com.grippo.authorization.registration
 
-import com.grippo.presentation.api.user.models.ExperienceEnumState
+import com.grippo.presentation.api.profile.models.ExperienceEnumState
 
 internal interface RegistrationContract {
     fun saveCredentials(email: String, password: String)

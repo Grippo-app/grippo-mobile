@@ -40,8 +40,8 @@ import com.grippo.design.resources.user_card_overview
 import com.grippo.design.resources.user_card_value_in_a_row
 import com.grippo.design.resources.user_card_value_personal_records
 import com.grippo.design.resources.user_card_value_workouts
-import com.grippo.presentation.api.user.models.UserState
-import com.grippo.presentation.api.user.models.stubUser
+import com.grippo.presentation.api.profile.models.UserState
+import com.grippo.presentation.api.profile.models.stubUser
 
 @Immutable
 public sealed interface UserCardStyle {

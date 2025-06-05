@@ -7,7 +7,7 @@ import com.grippo.data.features.api.user.UserFeature
 import com.grippo.data.features.api.user.models.User
 import com.grippo.domain.mapper.user.toDomain
 import com.grippo.domain.mapper.user.toState
-import com.grippo.presentation.api.user.models.ExperienceEnumState
+import com.grippo.presentation.api.profile.models.ExperienceEnumState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.onEach
 

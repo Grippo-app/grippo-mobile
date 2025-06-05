@@ -1,8 +1,8 @@
 package com.grippo.presentation.api.muscles.models
 
 import androidx.compose.runtime.Immutable
-import com.grippo.presentation.api.user.models.MuscleCoverageState
-import com.grippo.presentation.api.user.models.MuscleLoadEnumState
+import com.grippo.presentation.api.profile.models.MuscleCoverageState
+import com.grippo.presentation.api.profile.models.MuscleLoadEnumState
 
 @Immutable
 public sealed class MuscleRepresentationState(public open val value: MuscleState) {

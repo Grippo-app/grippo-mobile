@@ -14,6 +14,7 @@ import com.grippo.core.collectAsStateMultiplatform
 import com.grippo.design.core.AppTheme
 import com.grippo.home.BottomNavigationComponent
 import com.grippo.presentation.api.RootRouter
+import com.grippo.profile.ProfileComponent
 import com.grippo.shared.dialog.DialogComponent
 import com.grippo.shared.root.RootComponent.Child.Authorization
 import com.grippo.shared.root.RootComponent.Child.Home
@@ -27,6 +28,7 @@ public class RootComponent(
     public sealed class Child(public open val component: BaseComponent<*>) {
         public data class Authorization(override val component: AuthComponent) : Child(component)
         public data class Home(override val component: BottomNavigationComponent) : Child(component)
+        public data class Profile(override val component: ProfileComponent) : Child(component)
     }
 
     override val viewModel: RootViewModel = componentContext.retainedInstance {
@@ -65,6 +67,13 @@ public class RootComponent(
             RootRouter.Home -> Home(
                 BottomNavigationComponent(
                     componentContext = context,
+                )
+            )
+
+            is RootRouter.Profile -> Child.Profile(
+                ProfileComponent(
+                    componentContext = context,
+                    initial = router.value
                 )
             )
         }

@@ -40,6 +40,7 @@ kotlin {
         implementation(projects.presentationFeatures.presentationApi)
         implementation(projects.presentationFeatures.authorization)
         implementation(projects.presentationFeatures.home)
+        implementation(projects.presentationFeatures.profile)
 
         implementation(projects.dialogFeatures.dialogApi)
         implementation(projects.dialogFeatures.weightPicker)

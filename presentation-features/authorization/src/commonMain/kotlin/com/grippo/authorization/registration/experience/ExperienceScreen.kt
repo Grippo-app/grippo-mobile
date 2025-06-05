@@ -29,7 +29,7 @@ import com.grippo.design.resources.Res
 import com.grippo.design.resources.continue_btn
 import com.grippo.design.resources.registration_experience_description
 import com.grippo.design.resources.registration_experience_title
-import com.grippo.presentation.api.user.models.ExperienceEnumState
+import com.grippo.presentation.api.profile.models.ExperienceEnumState
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 

@@ -1,7 +1,7 @@
 package com.grippo.domain.mapper.user
 
 import com.grippo.data.features.api.user.models.User
-import com.grippo.presentation.api.user.models.UserState
+import com.grippo.presentation.api.profile.models.UserState
 
 public fun User.toState(): UserState {
     return UserState(

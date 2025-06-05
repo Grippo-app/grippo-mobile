@@ -36,7 +36,7 @@ import com.grippo.design.resources.Res
 import com.grippo.design.resources.get_started_btn
 import com.grippo.design.resources.registration_completed_description
 import com.grippo.design.resources.registration_completed_title
-import com.grippo.presentation.api.user.models.stubUser
+import com.grippo.presentation.api.profile.models.stubUser
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.delay

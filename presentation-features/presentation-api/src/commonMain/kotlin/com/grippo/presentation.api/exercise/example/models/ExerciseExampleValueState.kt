@@ -1,6 +1,6 @@
 package com.grippo.presentation.api.exercise.example.models
 
-import com.grippo.presentation.api.user.models.ExperienceEnumState
+import com.grippo.presentation.api.profile.models.ExperienceEnumState
 import kotlin.uuid.Uuid
 
 public data class ExerciseExampleValueState(

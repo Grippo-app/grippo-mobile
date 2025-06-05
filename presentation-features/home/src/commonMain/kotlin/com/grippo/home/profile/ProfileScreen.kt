@@ -24,7 +24,7 @@ import com.grippo.design.resources.Res
 import com.grippo.design.resources.icons.LogOut
 import com.grippo.design.resources.logout_btn
 import com.grippo.design.resources.profile
-import com.grippo.presentation.api.user.models.stubUser
+import com.grippo.presentation.api.profile.models.stubUser
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList

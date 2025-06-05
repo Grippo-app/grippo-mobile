@@ -12,7 +12,7 @@ import com.grippo.design.resources.profile_menu_excluded_muscles
 import com.grippo.design.resources.profile_menu_exercise_library
 import com.grippo.design.resources.profile_menu_missing_equipment
 import com.grippo.design.resources.profile_menu_weight_history
-import com.grippo.presentation.api.user.models.UserState
+import com.grippo.presentation.api.profile.models.UserState
 
 @Immutable
 internal data class ProfileState(

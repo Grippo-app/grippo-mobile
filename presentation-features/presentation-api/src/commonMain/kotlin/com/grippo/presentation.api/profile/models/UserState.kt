@@ -1,4 +1,4 @@
-package com.grippo.presentation.api.user.models
+package com.grippo.presentation.api.profile.models
 
 import com.grippo.date.utils.DateTimeUtils
 import kotlinx.datetime.LocalDateTime
