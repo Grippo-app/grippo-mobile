@@ -5,7 +5,6 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
-import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
@@ -17,6 +16,7 @@ import com.grippo.profile.muscles.ProfileMusclesComponent
 public class ProfileComponent(
     initial: ProfileRouter,
     componentContext: ComponentContext,
+    private val onBack: () -> Unit
 ) : BaseComponent<ProfileDirection>(componentContext) {
 
     internal sealed class Child(open val component: BaseComponent<*>) {
@@ -47,14 +47,14 @@ public class ProfileComponent(
             ProfileRouter.Muscles -> Child.Muscles(
                 ProfileMusclesComponent(
                     componentContext = context,
-                    onBack = navigation::pop
+                    onBack = onBack
                 ),
             )
 
             is ProfileRouter.Equipments -> Child.Equipments(
                 ProfileEquipmentsComponent(
                     componentContext = context,
-                    onBack = navigation::pop
+                    onBack = onBack
                 ),
             )
         }

@@ -7,6 +7,7 @@ import com.grippo.database.entity.UserExcludedEquipmentEntity
 import com.grippo.database.mapper.equipment.toDomain
 import com.grippo.network.Api
 import com.grippo.network.mapper.equipment.toEntities
+import com.grippo.network.user.IdsBody
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
@@ -27,7 +28,7 @@ internal class ExcludedEquipmentsRepositoryImpl(
         response.onSuccess {
             val userId = userDao.get().firstOrNull()?.id ?: return@onSuccess
             val entities = it
-                .mapNotNull { it.id }
+                .mapNotNull { m -> m.id }
                 .map { id -> UserExcludedEquipmentEntity(userId, id) }
 
             userDao.insertOrReplaceExcludedEquipments(entities)
@@ -36,31 +37,16 @@ internal class ExcludedEquipmentsRepositoryImpl(
         return response.map { }
     }
 
-    override suspend fun setExcludedEquipment(id: String): Result<Unit> {
-        val response = api.setExcludedEquipment(id)
+    override suspend fun setExcludedEquipments(ids: List<String>): Result<Unit> {
+        val response = api.postExcludedEquipments(IdsBody(ids))
 
         response.onSuccess {
             val userId = userDao.get().firstOrNull()?.id ?: return@onSuccess
             val entities = api.getExcludedEquipments()
                 .getOrNull()
                 ?.toEntities()
-                ?.map { UserExcludedEquipmentEntity(userId, it.id) } ?: return@onSuccess
-
-            userDao.insertOrReplaceExcludedEquipments(entities)
-        }
-
-        return response.map { }
-    }
-
-    override suspend fun deleteExcludedEquipment(id: String): Result<Unit> {
-        val response = api.deleteExcludedEquipment(id)
-
-        response.onSuccess {
-            val userId = userDao.get().firstOrNull()?.id ?: return@onSuccess
-            val entities = api.getExcludedEquipments()
-                .getOrNull()
-                ?.toEntities()
-                ?.map { UserExcludedEquipmentEntity(userId, it.id) } ?: return@onSuccess
+                ?.map { UserExcludedEquipmentEntity(userId = userId, equipmentId = it.id) }
+                ?: return@onSuccess
 
             userDao.insertOrReplaceExcludedEquipments(entities)
         }

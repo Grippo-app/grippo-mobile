@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.combine
 
 internal class ProfileEquipmentsViewModel(
     equipmentFeature: EquipmentFeature,
-    excludedEquipmentsFeature: ExcludedEquipmentsFeature,
+    private val excludedEquipmentsFeature: ExcludedEquipmentsFeature,
 ) : BaseViewModel<ProfileEquipmentsState, ProfileEquipmentsDirection, ProfileEquipmentsLoader>(
     ProfileEquipmentsState()
 ), ProfileEquipmentsContract {
@@ -65,6 +65,13 @@ internal class ProfileEquipmentsViewModel(
     }
 
     override fun apply() {
-        navigateTo(ProfileEquipmentsDirection.Back)
+        val formattedList = state.value.suggestions
+            .flatMap { it.equipments }
+            .map { it.id } - state.value.selectedEquipmentIds
+
+        safeLaunch(loader = ProfileEquipmentsLoader.ApplyButton) {
+            excludedEquipmentsFeature.setExcludedEquipments(formattedList).getOrThrow()
+            navigateTo(ProfileEquipmentsDirection.Back)
+        }
     }
 }

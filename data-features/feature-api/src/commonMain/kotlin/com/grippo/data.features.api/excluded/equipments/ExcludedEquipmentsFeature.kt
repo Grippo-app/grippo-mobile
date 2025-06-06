@@ -7,6 +7,5 @@ public interface ExcludedEquipmentsFeature {
     public fun observeExcludedEquipments(): Flow<List<Equipment>>
 
     public suspend fun getExcludedEquipments(): Result<Unit>
-    public suspend fun setExcludedEquipment(id: String): Result<Unit>
-    public suspend fun deleteExcludedEquipment(id: String): Result<Unit>
+    public suspend fun setExcludedEquipments(ids: List<String>): Result<Unit>
 }

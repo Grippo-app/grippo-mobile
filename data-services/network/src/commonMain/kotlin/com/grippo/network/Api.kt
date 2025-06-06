@@ -11,6 +11,7 @@ import com.grippo.network.dto.exercise.example.ExerciseExampleResponse
 import com.grippo.network.dto.muscle.MuscleGroupResponse
 import com.grippo.network.dto.muscle.MuscleResponse
 import com.grippo.network.dto.training.TrainingResponse
+import com.grippo.network.user.IdsBody
 import com.grippo.network.user.UserResponse
 import com.grippo.network.user.WeightHistoryResponse
 import io.ktor.client.call.body
@@ -64,17 +65,11 @@ public class Api(private val client: NetworkClient) {
         )
     }
 
-    public suspend fun deleteExcludedEquipment(id: String): Result<Unit> {
-        return request(
-            method = HttpMethod.Delete,
-            path = "/users/excluded-equipments/$id"
-        )
-    }
-
-    public suspend fun setExcludedEquipment(id: String): Result<Unit> {
+    public suspend fun postExcludedEquipments(body: IdsBody): Result<Unit> {
         return request(
             method = HttpMethod.Post,
-            path = "/users/excluded-equipments/$id"
+            path = "/users/excluded-equipments",
+            body = body
         )
     }
 
@@ -85,17 +80,11 @@ public class Api(private val client: NetworkClient) {
         )
     }
 
-    public suspend fun deleteExcludedMuscle(id: String): Result<Unit> {
-        return request(
-            method = HttpMethod.Delete,
-            path = "/users/excluded-muscles/$id"
-        )
-    }
-
-    public suspend fun setExcludedMuscle(id: String): Result<Unit> {
+    public suspend fun postExcludedMuscles(body: IdsBody): Result<Unit> {
         return request(
             method = HttpMethod.Post,
-            path = "/users/excluded-muscles/$id"
+            path = "/users/excluded-muscles",
+            body = body
         )
     }
 

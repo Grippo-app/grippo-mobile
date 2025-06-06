@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.equipment.EquipmentRow
 import com.grippo.design.components.segment.Segment
@@ -88,12 +89,20 @@ internal fun ProfileEquipmentsScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
+        val buttonState = remember(loaders) {
+            when {
+                loaders.contains(ProfileEquipmentsLoader.ApplyButton) -> ButtonState.Loading
+                else -> ButtonState.Enabled
+            }
+        }
+
         Button(
             modifier = Modifier
                 .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
                 .fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.apply_btn),
             style = ButtonStyle.Primary,
+            state = buttonState,
             onClick = contract::apply
         )
 

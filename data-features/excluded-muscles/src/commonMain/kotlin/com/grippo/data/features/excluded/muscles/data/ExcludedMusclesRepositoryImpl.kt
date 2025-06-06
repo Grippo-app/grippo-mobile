@@ -7,6 +7,7 @@ import com.grippo.database.entity.UserExcludedMuscleEntity
 import com.grippo.database.mapper.muscles.toDomain
 import com.grippo.network.Api
 import com.grippo.network.mapper.muscles.toEntities
+import com.grippo.network.user.IdsBody
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
@@ -36,31 +37,16 @@ internal class ExcludedMusclesRepositoryImpl(
         return response.map { }
     }
 
-    override suspend fun setExcludedMuscle(id: String): Result<Unit> {
-        val response = api.setExcludedMuscle(id)
+    override suspend fun setExcludedMuscles(ids: List<String>): Result<Unit> {
+        val response = api.postExcludedMuscles(IdsBody(ids))
 
         response.onSuccess {
             val userId = userDao.get().firstOrNull()?.id ?: return@onSuccess
             val entities = api.getExcludedMuscles()
                 .getOrNull()
                 ?.toEntities()
-                ?.map { UserExcludedMuscleEntity(userId, it.id) } ?: return@onSuccess
-
-            userDao.insertOrReplaceExcludedMuscles(entities)
-        }
-
-        return response.map { }
-    }
-
-    override suspend fun deleteExcludedMuscle(id: String): Result<Unit> {
-        val response = api.deleteExcludedMuscle(id)
-
-        response.onSuccess {
-            val userId = userDao.get().firstOrNull()?.id ?: return@onSuccess
-            val entities = api.getExcludedMuscles()
-                .getOrNull()
-                ?.toEntities()
-                ?.map { UserExcludedMuscleEntity(userId, it.id) } ?: return@onSuccess
+                ?.map { UserExcludedMuscleEntity(userId = userId, muscleId = it.id) }
+                ?: return@onSuccess
 
             userDao.insertOrReplaceExcludedMuscles(entities)
         }

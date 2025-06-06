@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.combine
 
 internal class ProfileMusclesViewModel(
     muscleFeature: MuscleFeature,
-    excludedMusclesFeature: ExcludedMusclesFeature
+    private val excludedMusclesFeature: ExcludedMusclesFeature
 ) : BaseViewModel<ProfileMusclesState, ProfileMusclesDirection, ProfileMusclesLoader>(
     ProfileMusclesState()
 ), ProfileMusclesContract {
@@ -23,6 +23,10 @@ internal class ProfileMusclesViewModel(
             flow2 = excludedMusclesFeature.observeExcludedMuscles(),
             transform = ::provideMuscles
         ).safeLaunch()
+
+        safeLaunch {
+            excludedMusclesFeature.getExcludedMuscles().getOrThrow()
+        }
     }
 
     private fun provideMuscles(
@@ -56,7 +60,14 @@ internal class ProfileMusclesViewModel(
     }
 
     override fun apply() {
+        val formattedList = state.value.suggestions
+            .flatMap { it.muscles }
+            .map { it.value.id } - state.value.selectedMuscleIds
 
-        navigateTo(ProfileMusclesDirection.Back)
+
+        safeLaunch(loader = ProfileMusclesLoader.ApplyButton) {
+            excludedMusclesFeature.setExcludedMuscles(formattedList).getOrThrow()
+            navigateTo(ProfileMusclesDirection.Back)
+        }
     }
 }

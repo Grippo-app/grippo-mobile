@@ -7,6 +7,5 @@ public interface ExcludedMusclesFeature {
     public fun observeExcludedMuscles(): Flow<List<Muscle>>
 
     public suspend fun getExcludedMuscles(): Result<Unit>
-    public suspend fun setExcludedMuscle(id: String): Result<Unit>
-    public suspend fun deleteExcludedMuscle(id: String): Result<Unit>
+    public suspend fun setExcludedMuscles(ids: List<String>): Result<Unit>
 }

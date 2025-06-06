@@ -7,6 +7,5 @@ internal interface ExcludedMusclesRepository {
     fun observeExcludedMuscles(): Flow<List<Muscle>>
 
     suspend fun getExcludedMuscles(): Result<Unit>
-    suspend fun setExcludedMuscle(id: String): Result<Unit>
-    suspend fun deleteExcludedMuscle(id: String): Result<Unit>
+    suspend fun setExcludedMuscles(ids: List<String>): Result<Unit>
 }
