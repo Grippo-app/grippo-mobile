@@ -17,8 +17,6 @@ internal class HomeProfileViewModel(
         userFeature.observeUser()
             .onEach(::provideUser)
             .safeLaunch()
-
-        safeLaunch { userFeature.getUser().getOrThrow() }
     }
 
     private fun provideUser(user: User?) {

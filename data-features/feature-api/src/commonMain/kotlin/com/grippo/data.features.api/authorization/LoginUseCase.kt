@@ -14,9 +14,13 @@ public class LoginUseCase(
 ) {
     public suspend fun execute(email: String, password: String) {
         authorizationFeature.login(email, password).getOrThrow()
+
+        // User details
         userFeature.getUser().getOrThrow()
         excludedMusclesFeature.getExcludedMuscles().getOrThrow()
         excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
+
+        // Exercises
         exerciseExampleFeature.getExerciseExamples().getOrThrow()
     }
 }

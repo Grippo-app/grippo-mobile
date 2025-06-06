@@ -5,12 +5,14 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import com.grippo.database.entity.EquipmentEntity
 import com.grippo.database.entity.MuscleEntity
 import com.grippo.database.entity.UserEntity
 import com.grippo.database.entity.UserExcludedEquipmentEntity
 import com.grippo.database.entity.UserExcludedMuscleEntity
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 
 @Dao
 public interface UserDao {
@@ -34,6 +36,9 @@ public interface UserDao {
     @Query("SELECT * FROM user LIMIT 1")
     public fun get(): Flow<UserEntity?>
 
+    @Query("SELECT * FROM user WHERE id = :id LIMIT 1")
+    public fun getById(id: String): Flow<UserEntity?>
+
     // ────────────── INSERT ──────────────
 
     @Transaction
@@ -48,8 +53,22 @@ public interface UserDao {
         insertExcludedMuscles(muscles)
     }
 
+    @Transaction
+    public suspend fun insertOrUpdate(user: UserEntity) {
+        val existingUser = getById(user.id).firstOrNull()
+
+        if (existingUser != null) {
+            updateUser(user)
+        } else {
+            insertUser(user)
+        }
+    }
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public suspend fun insertOrReplaceUser(user: UserEntity)
+    public suspend fun insertUser(user: UserEntity)
+
+    @Update
+    public suspend fun updateUser(user: UserEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public suspend fun insertExcludedEquipments(equipments: List<UserExcludedEquipmentEntity>)

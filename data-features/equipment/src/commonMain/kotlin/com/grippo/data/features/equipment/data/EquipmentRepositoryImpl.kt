@@ -25,7 +25,7 @@ internal class EquipmentRepositoryImpl(
         response.onSuccess { r ->
             val groups = r.toEntities()
             val equipments = r.mapNotNull { it.equipments?.toEntities() }.flatten()
-            equipmentDao.insertOrReplace(groups, equipments)
+            equipmentDao.insertOrUpdate(groups, equipments)
         }
 
         return response.map { }

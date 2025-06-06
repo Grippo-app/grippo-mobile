@@ -15,9 +15,13 @@ public class RegisterUseCase(
 ) {
     public suspend fun execute(registration: SetRegistration) {
         authorizationFeature.register(registration).getOrThrow()
+
+        // User details
         userFeature.getUser().getOrThrow()
         excludedMusclesFeature.getExcludedMuscles().getOrThrow()
         excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
+
+        // Exercises
         exerciseExampleFeature.getExerciseExamples().getOrThrow()
     }
 }

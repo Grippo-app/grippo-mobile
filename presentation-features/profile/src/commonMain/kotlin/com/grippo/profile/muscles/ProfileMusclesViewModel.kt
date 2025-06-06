@@ -56,6 +56,7 @@ internal class ProfileMusclesViewModel(
     }
 
     override fun apply() {
+
         navigateTo(ProfileMusclesDirection.Back)
     }
 }

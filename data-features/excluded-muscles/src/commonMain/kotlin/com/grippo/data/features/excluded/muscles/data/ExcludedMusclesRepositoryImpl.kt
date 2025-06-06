@@ -27,7 +27,7 @@ internal class ExcludedMusclesRepositoryImpl(
         response.onSuccess {
             val userId = userDao.get().firstOrNull()?.id ?: return@onSuccess
             val entities = it
-                .mapNotNull { it.id }
+                .mapNotNull { m -> m.id }
                 .map { id -> UserExcludedMuscleEntity(userId, id) }
 
             userDao.insertOrReplaceExcludedMuscles(entities)

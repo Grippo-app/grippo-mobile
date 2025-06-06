@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import com.grippo.database.entity.EquipmentEntity
 import com.grippo.database.entity.EquipmentGroupEntity
 import com.grippo.database.models.EquipmentGroupWithEquipments
@@ -20,21 +21,39 @@ public interface EquipmentDao {
     // ────────────── INSERT ──────────────
 
     @Transaction
-    public suspend fun insertOrReplace(
+    public suspend fun insertOrUpdate(
         groups: List<EquipmentGroupEntity>,
         equipments: List<EquipmentEntity>
     ) {
+        deleteMissingEquipmentGroups(groups.map { it.id })
+        deleteMissingEquipments(equipments.map { it.id })
+
+        updateExistingEquipmentGroups(groups)
+        updateExistingEquipments(equipments)
+
         insertEquipmentGroups(groups)
         insertEquipments(equipments)
     }
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public suspend fun insertEquipments(equipments: List<EquipmentEntity>)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     public suspend fun insertEquipmentGroups(groups: List<EquipmentGroupEntity>)
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    public suspend fun insertEquipments(equipments: List<EquipmentEntity>)
+
+    @Update
+    public suspend fun updateExistingEquipmentGroups(groups: List<EquipmentGroupEntity>)
+
+    @Update
+    public suspend fun updateExistingEquipments(equipments: List<EquipmentEntity>)
+
     // ────────────── DELETE ──────────────
+
+    @Query("DELETE FROM equipment_group WHERE id NOT IN (:ids)")
+    public suspend fun deleteMissingEquipmentGroups(ids: List<String>)
+
+    @Query("DELETE FROM equipment WHERE id NOT IN (:ids)")
+    public suspend fun deleteMissingEquipments(ids: List<String>)
 
     @Query("DELETE FROM equipment_group")
     public suspend fun delete()
