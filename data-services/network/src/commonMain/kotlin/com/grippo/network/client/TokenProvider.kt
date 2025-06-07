@@ -136,7 +136,7 @@ internal class TokenProvider(
                         val newId = AppLogger.checkOrLog(refresh.id) { "TokenResponse.id is null" }
                             ?: return@withLock false
 
-                        tokenDao.insert(
+                        tokenDao.insertOrUpdate(
                             TokenEntity(
                                 id = newId,
                                 access = refresh.accessToken,

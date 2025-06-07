@@ -26,7 +26,7 @@ internal class AuthorizationRepositoryImpl(
 
         response.onSuccess { r ->
             val entity = r.toEntityOrNull() ?: return@onSuccess
-            tokenDao.insert(entity)
+            tokenDao.insertOrUpdate(entity)
             userActiveDao.insertOrReplace(UserActiveEntity(userId = entity.id))
         }
 
@@ -38,7 +38,7 @@ internal class AuthorizationRepositoryImpl(
 
         response.onSuccess { r ->
             val entity = r.toEntityOrNull() ?: return@onSuccess
-            tokenDao.insert(entity)
+            tokenDao.insertOrUpdate(entity)
             userActiveDao.insertOrReplace(UserActiveEntity(userId = entity.id))
         }
 
