@@ -29,5 +29,6 @@ kotlin {
         languageSettings.optIn("androidx.compose.animation.ExperimentalSharedTransitionApi")
         languageSettings.optIn("kotlinx.datetime.format.FormatStringsInDatetimeFormats")
         languageSettings.optIn("kotlin.uuid.ExperimentalUuidApi")
+        languageSettings.optIn("com.arkivanov.decompose.ExperimentalDecomposeApi")
     }
 }

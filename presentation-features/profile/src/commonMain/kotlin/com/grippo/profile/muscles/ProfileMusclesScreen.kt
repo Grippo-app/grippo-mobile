@@ -27,7 +27,7 @@ import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.apply_btn
-import com.grippo.design.resources.profile
+import com.grippo.design.resources.muscles
 import kotlinx.collections.immutable.ImmutableSet
 
 @Composable
@@ -39,7 +39,7 @@ internal fun ProfileMusclesScreen(
     Column {
         Toolbar(
             modifier = Modifier.fillMaxWidth(),
-            title = AppTokens.strings.res(Res.string.profile),
+            title = AppTokens.strings.res(Res.string.muscles),
         )
 
         LazyColumn(

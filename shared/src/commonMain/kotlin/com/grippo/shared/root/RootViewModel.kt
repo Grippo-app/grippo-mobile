@@ -15,4 +15,8 @@ public class RootViewModel(
             .onEach { if (it == null) navigateTo(RootDirection.Login) }
             .safeLaunch()
     }
+
+    override fun back() {
+        navigateTo(RootDirection.Back)
+    }
 }

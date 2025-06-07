@@ -1,7 +1,11 @@
 package com.grippo.design.components.toolbar
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -10,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.shadowDefault
@@ -21,25 +26,35 @@ import com.grippo.design.preview.PreviewContainer
 public fun Toolbar(
     modifier: Modifier = Modifier,
     title: String,
+    content: (@Composable ColumnScope.() -> Unit)? = null
 ) {
-    Box(
+    Column(
         modifier = modifier
             .shadowDefault(
                 shape = RoundedCornerShape(0.dp),
                 elevation = ShadowElevation.Container
             )
             .background(AppTokens.colors.background.secondary)
-            .statusBarsPadding()
-            .height(AppTokens.dp.screen.toolbar.height)
-            .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+            .statusBarsPadding(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
 
-        Text(
-            modifier = Modifier.align(Alignment.Center),
-            text = title,
-            style = AppTokens.typography.h2(),
-            color = AppTokens.colors.text.primary,
-        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(AppTokens.dp.screen.toolbar.height)
+                .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+        ) {
+            Text(
+                modifier = Modifier.align(Alignment.Center),
+                text = title,
+                style = AppTokens.typography.h2(),
+                color = AppTokens.colors.text.primary,
+            )
+        }
+
+        content?.invoke(this)
     }
 }
 
@@ -49,6 +64,24 @@ private fun ToolbarPreview() {
     PreviewContainer {
         Toolbar(
             title = "Profile"
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ToolbarPreviewContent() {
+    PreviewContainer {
+        Toolbar(
+            title = "Profile",
+            content = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .background(Color.Cyan)
+                )
+            }
         )
     }
 }

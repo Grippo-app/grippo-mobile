@@ -33,4 +33,8 @@ internal class RegistrationViewModel :
         val list = ids.toPersistentList()
         update { it.copy(missingEquipmentIds = list) }
     }
+
+    override fun back() {
+        navigateTo(RegistrationDirection.Back)
+    }
 }

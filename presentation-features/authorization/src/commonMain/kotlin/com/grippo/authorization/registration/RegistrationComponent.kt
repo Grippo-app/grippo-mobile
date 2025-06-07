@@ -5,6 +5,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.instancekeeper.retainedInstance
@@ -52,6 +53,9 @@ internal class RegistrationComponent(
     }
 
     override suspend fun eventListener(direction: RegistrationDirection) {
+        when (direction) {
+            RegistrationDirection.Back -> navigation::pop
+        }
     }
 
     private val navigation = StackNavigation<RegistrationRouter>()
@@ -148,6 +152,6 @@ internal class RegistrationComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        RegistrationScreen(childStack, state.value, loaders.value, viewModel)
+        RegistrationScreen(this, state.value, loaders.value, viewModel)
     }
 }

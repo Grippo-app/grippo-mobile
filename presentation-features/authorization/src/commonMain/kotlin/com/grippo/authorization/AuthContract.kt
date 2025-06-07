@@ -1,5 +1,9 @@
 package com.grippo.authorization
 
 internal interface AuthContract {
-    companion object Empty : AuthContract
+    fun back()
+
+    companion object Empty : AuthContract {
+        override fun back() {}
+    }
 }

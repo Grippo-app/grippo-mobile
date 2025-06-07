@@ -29,6 +29,9 @@ public class ProfileComponent(
     }
 
     override suspend fun eventListener(direction: ProfileDirection) {
+        when (direction) {
+            ProfileDirection.Back -> onBack.invoke()
+        }
     }
 
     private val navigation = StackNavigation<ProfileRouter>()
@@ -64,6 +67,6 @@ public class ProfileComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        ProfileScreen(childStack, state.value, loaders.value, viewModel)
+        ProfileScreen(this, state.value, loaders.value, viewModel)
     }
 }

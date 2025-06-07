@@ -55,6 +55,8 @@ public class RootComponent(
             RootDirection.Login -> if (childStack.value.active.instance !is Authorization) {
                 navigation.replaceAll(RootRouter.Auth)
             }
+
+            RootDirection.Back -> navigation::pop
         }
     }
 
@@ -92,7 +94,7 @@ public class RootComponent(
         AppTheme {
             val state = viewModel.state.collectAsStateMultiplatform()
             val loaders = viewModel.loaders.collectAsStateMultiplatform()
-            RootScreen(childStack, state.value, viewModel, loaders.value)
+            RootScreen(childStack, backHandler, state.value, viewModel, loaders.value)
 
             dialogComponent.Render()
         }

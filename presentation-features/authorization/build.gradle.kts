@@ -12,6 +12,7 @@ kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.common.core)
         implementation(projects.common.validation)
+        implementation(projects.common.platformCore)
         implementation(projects.common.dateUtils)
         implementation(projects.dataMappers.domainMapper)
         implementation(projects.dialogFeatures.dialogApi)

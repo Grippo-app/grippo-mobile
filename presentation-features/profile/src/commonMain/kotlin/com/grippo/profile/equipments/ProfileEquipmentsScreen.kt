@@ -28,7 +28,8 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.apply_btn
-import com.grippo.design.resources.profile
+import com.grippo.design.resources.equipments
+import com.grippo.presentation.api.equipment.models.stubEquipments
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
@@ -39,51 +40,51 @@ internal fun ProfileEquipmentsScreen(
     loaders: ImmutableSet<ProfileEquipmentsLoader>,
     contract: ProfileEquipmentsContract
 ) = BaseComposeScreen {
+
+    val segmentItems = remember(state.suggestions) {
+        state.suggestions.map { it.id to UiText.Str(it.name) }.toPersistentList()
+    }
+
     Column {
         Toolbar(
             modifier = Modifier.fillMaxWidth(),
-            title = AppTokens.strings.res(Res.string.profile),
+            title = AppTokens.strings.res(Res.string.equipments),
+            content = {
+                Segment(
+                    modifier = Modifier
+                        .horizontalScroll(rememberScrollState())
+                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                        .fillMaxWidth(),
+                    items = segmentItems,
+                    selected = state.selectedGroupId,
+                    onSelect = contract::selectGroup,
+                    segmentWidth = SegmentWidth.Unspecified,
+                )
+
+            }
         )
 
-        Column(modifier = Modifier.fillMaxWidth().weight(1f)) {
+        val equipments = remember(state.selectedGroupId, state.suggestions) {
+            state.suggestions.find { it.id == state.selectedGroupId }?.equipments.orEmpty()
+        }
 
-            val segmentItems = remember(state.suggestions) {
-                state.suggestions.map { it.id to UiText.Str(it.name) }.toPersistentList()
-            }
-
-            Segment(
-                modifier = Modifier
-                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                    .horizontalScroll(rememberScrollState())
-                    .fillMaxWidth(),
-                items = segmentItems,
-                selected = state.selectedGroupId,
-                onSelect = contract::selectGroup,
-                segmentWidth = SegmentWidth.Unspecified,
-            )
-
-            val equipments = remember(state.selectedGroupId, state.suggestions) {
-                state.suggestions.find { it.id == state.selectedGroupId }?.equipments.orEmpty()
-            }
-
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                contentPadding = PaddingValues(
-                    top = AppTokens.dp.contentPadding.content,
-                    start = AppTokens.dp.screen.horizontalPadding,
-                    end = AppTokens.dp.screen.horizontalPadding,
-                ),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-            ) {
-                items(equipments, key = { it.id }) { equipment ->
-                    EquipmentRow(
-                        equipment = equipment,
-                        selectedEquipmentIds = state.selectedEquipmentIds,
-                        selectEquipment = contract::selectEquipment,
-                    )
-                }
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            contentPadding = PaddingValues(
+                top = AppTokens.dp.contentPadding.content,
+                start = AppTokens.dp.screen.horizontalPadding,
+                end = AppTokens.dp.screen.horizontalPadding,
+            ),
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+        ) {
+            items(equipments, key = { it.id }) { equipment ->
+                EquipmentRow(
+                    equipment = equipment,
+                    selectedEquipmentIds = state.selectedEquipmentIds,
+                    selectEquipment = contract::selectEquipment,
+                )
             }
         }
 
@@ -115,7 +116,9 @@ internal fun ProfileEquipmentsScreen(
 private fun ScreenPreview() {
     PreviewContainer {
         ProfileEquipmentsScreen(
-            state = ProfileEquipmentsState(),
+            state = ProfileEquipmentsState(
+                suggestions = stubEquipments()
+            ),
             loaders = persistentSetOf(),
             contract = ProfileEquipmentsContract.Empty
         )
