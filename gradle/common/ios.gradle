@@ -14,5 +14,7 @@ kotlin.cocoapods {
         // Required when using Decompose iOS Api
         export(libs.decompose.core.get())
         export(libs.decompose.essenty.get())
+        export(libs.decompose.state.keeper.get())
+        export(libs.decompose.back.handler.get())
     }
 }

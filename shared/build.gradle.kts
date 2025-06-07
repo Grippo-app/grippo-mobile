@@ -14,6 +14,8 @@ kotlin {
     sourceSets.commonMain.dependencies {
         api(libs.decompose.core)
         api(libs.decompose.extensions)
+        api(libs.decompose.back.handler)
+        api(libs.decompose.state.keeper)
 
         implementation(projects.designSystem.core)
         implementation(projects.designSystem.resources)

@@ -3,10 +3,13 @@ import shared
 
 struct RootView: UIViewControllerRepresentable {
     let root: RootComponent
+    let backDispatcher: BackDispatcher
 
     func makeUIViewController(context: Context) -> UIViewController {
-        return RootViewControllerKt.rootViewController(root: root)
+        let controller = RootViewControllerKt.rootViewController(root: root, backDispatcher: backDispatcher)
+        return controller
     }
 
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
+    }
 }

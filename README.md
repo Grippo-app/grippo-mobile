@@ -1,8 +1,9 @@
 # Grippo
 
 Clear project
+
 ```
-./gradlew clean      
+./gradlew clean
 cd iosApp
 rm -rf iosApp/Pods
 rm -rf iosApp/Podfile.lock
