@@ -13,6 +13,6 @@ public val userFeatureModule: Module = module {
     }
 
     single<UserRepository> {
-        UserRepositoryImpl(get(), get())
+        UserRepositoryImpl(get(), get(), get())
     }
 }

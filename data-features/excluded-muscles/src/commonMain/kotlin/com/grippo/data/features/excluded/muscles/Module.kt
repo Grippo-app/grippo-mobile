@@ -13,6 +13,6 @@ public val excludedMusclesFeatureModule: Module = module {
     }
 
     single<ExcludedMusclesRepository> {
-        ExcludedMusclesRepositoryImpl(get(), get())
+        ExcludedMusclesRepositoryImpl(get(), get(), get())
     }
 }

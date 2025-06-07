@@ -13,6 +13,6 @@ public val authorizationFeatureModule: Module = module {
     }
 
     single<AuthorizationRepository> {
-        AuthorizationRepositoryImpl(get(), get())
+        AuthorizationRepositoryImpl(get(), get(), get())
     }
 }

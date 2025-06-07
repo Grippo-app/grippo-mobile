@@ -26,7 +26,7 @@ public val networkModule: Module = module {
     }
 
     single {
-        TokenProvider(tokenDao = get())
+        TokenProvider(tokenDao = get(), userActiveDao = get())
     }
 
     single {

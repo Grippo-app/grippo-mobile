@@ -13,6 +13,6 @@ public val excludedEquipmentFeatureModule: Module = module {
     }
 
     single<ExcludedEquipmentsRepository> {
-        ExcludedEquipmentsRepositoryImpl(get(), get())
+        ExcludedEquipmentsRepositoryImpl(get(), get(), get())
     }
 }

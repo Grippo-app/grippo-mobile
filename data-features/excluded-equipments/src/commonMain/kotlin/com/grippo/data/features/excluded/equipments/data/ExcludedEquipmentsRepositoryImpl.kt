@@ -2,6 +2,7 @@ package com.grippo.data.features.excluded.equipments.data
 
 import com.grippo.data.features.api.equipment.models.Equipment
 import com.grippo.data.features.excluded.equipments.domain.ExcludedEquipmentsRepository
+import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.dao.UserDao
 import com.grippo.database.entity.UserExcludedEquipmentEntity
 import com.grippo.database.mapper.equipment.toDomain
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.map
 internal class ExcludedEquipmentsRepositoryImpl(
     private val api: Api,
     private val userDao: UserDao,
+    private val userActiveDao: UserActiveDao
 ) : ExcludedEquipmentsRepository {
 
     override fun observeExcludedEquipments(): Flow<List<Equipment>> {
@@ -26,7 +28,7 @@ internal class ExcludedEquipmentsRepositoryImpl(
         val response = api.getExcludedEquipments()
 
         response.onSuccess {
-            val userId = userDao.get().firstOrNull()?.id ?: return@onSuccess
+            val userId = userActiveDao.get().firstOrNull() ?: return@onSuccess
             val entities = it
                 .mapNotNull { m -> m.id }
                 .map { id -> UserExcludedEquipmentEntity(userId, id) }
@@ -41,7 +43,7 @@ internal class ExcludedEquipmentsRepositoryImpl(
         val response = api.postExcludedEquipments(IdsBody(ids))
 
         response.onSuccess {
-            val userId = userDao.get().firstOrNull()?.id ?: return@onSuccess
+            val userId = userActiveDao.get().firstOrNull() ?: return@onSuccess
             val entities = api.getExcludedEquipments()
                 .getOrNull()
                 ?.toEntities()

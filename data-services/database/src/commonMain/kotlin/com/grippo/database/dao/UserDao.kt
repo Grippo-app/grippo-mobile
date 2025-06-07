@@ -33,9 +33,6 @@ public interface UserDao {
     )
     public fun getExcludedEquipments(): Flow<List<EquipmentEntity>>
 
-    @Query("SELECT * FROM user LIMIT 1")
-    public fun get(): Flow<UserEntity?>
-
     @Query("SELECT * FROM user WHERE id = :id LIMIT 1")
     public fun getById(id: String): Flow<UserEntity?>
 

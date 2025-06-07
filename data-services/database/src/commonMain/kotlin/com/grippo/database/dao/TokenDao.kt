@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 public interface TokenDao {
 
-    @Query("SELECT * FROM token LIMIT 1")
-    public fun get(): Flow<TokenEntity?>
+    @Query("SELECT * FROM token WHERE id = :id LIMIT 1")
+    public fun getById(id: String): Flow<TokenEntity?>
 
     // ────────────── INSERT ──────────────
 
@@ -20,6 +20,6 @@ public interface TokenDao {
 
     // ────────────── DELETE ──────────────
 
-    @Query("DELETE FROM token")
-    public suspend fun delete()
+    @Query("DELETE FROM token WHERE id = :id")
+    public suspend fun delete(id: String)
 }

@@ -3,16 +3,22 @@ package com.grippo.data.features.authorization.data
 import com.grippo.data.features.api.authorization.models.SetRegistration
 import com.grippo.data.features.authorization.domain.AuthorizationRepository
 import com.grippo.database.dao.TokenDao
+import com.grippo.database.dao.UserActiveDao
+import com.grippo.database.entity.UserActiveEntity
 import com.grippo.domain.mapper.user.toDto
 import com.grippo.network.Api
 import com.grippo.network.dto.auth.AuthBody
 import com.grippo.network.mapper.user.toEntityOrNull
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 internal class AuthorizationRepositoryImpl(
     private val api: Api,
     private val tokenDao: TokenDao,
+    private val userActiveDao: UserActiveDao,
 ) : AuthorizationRepository {
 
     override suspend fun login(email: String, password: String): Result<Unit> {
@@ -21,6 +27,7 @@ internal class AuthorizationRepositoryImpl(
         response.onSuccess { r ->
             val entity = r.toEntityOrNull() ?: return@onSuccess
             tokenDao.insert(entity)
+            userActiveDao.insertOrReplace(UserActiveEntity(userId = entity.id))
         }
 
         return response.map { }
@@ -32,16 +39,22 @@ internal class AuthorizationRepositoryImpl(
         response.onSuccess { r ->
             val entity = r.toEntityOrNull() ?: return@onSuccess
             tokenDao.insert(entity)
+            userActiveDao.insertOrReplace(UserActiveEntity(userId = entity.id))
         }
 
         return response.map { }
     }
 
     override fun getToken(): Flow<String?> {
-        return tokenDao.get().map { it?.access }
+        return userActiveDao.get()
+            .flatMapLatest { activeId ->
+                if (activeId == null) flowOf(null)
+                else tokenDao.getById(activeId)
+            }.map { it?.access }
     }
 
     override suspend fun logout() {
-        tokenDao.delete()
+        val activeId = userActiveDao.get().firstOrNull() ?: return
+        tokenDao.delete(activeId)
     }
 }

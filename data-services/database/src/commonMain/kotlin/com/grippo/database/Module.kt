@@ -18,6 +18,9 @@ public val databaseModule: Module = module {
         get<Database>().weightHistoryDao()
     }
     single {
+        get<Database>().userActiveDao()
+    }
+    single {
         get<Database>().equipmentDao()
     }
     single {
