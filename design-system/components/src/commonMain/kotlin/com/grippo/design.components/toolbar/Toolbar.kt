@@ -1,14 +1,18 @@
 package com.grippo.design.components.toolbar
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.grippo.design.components.modifiers.ShadowElevation
+import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -18,16 +22,20 @@ public fun Toolbar(
     modifier: Modifier = Modifier,
     title: String,
 ) {
-    Row(
+    Box(
         modifier = modifier
+            .shadowDefault(
+                shape = RoundedCornerShape(0.dp),
+                elevation = ShadowElevation.Container
+            )
+            .background(AppTokens.colors.background.secondary)
+            .statusBarsPadding()
             .height(AppTokens.dp.screen.toolbar.height)
             .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(24.dp)
     ) {
 
         Text(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.align(Alignment.Center),
             text = title,
             style = AppTokens.typography.h2(),
             color = AppTokens.colors.text.primary,

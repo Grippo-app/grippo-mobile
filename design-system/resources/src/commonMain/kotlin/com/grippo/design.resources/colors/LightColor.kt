@@ -118,7 +118,7 @@ public object LightColor : AppColor {
     }
 
     override val overlay: AppColor.OverlayColors = object : AppColor.OverlayColors {
-        override val defaultShadow: Color = Color(0x1A000000)
+        override val defaultShadow: Color = Color(0x26000000)
         override val accentShadow: Color = Primary500.copy(alpha = 0.35f)
     }
 
