@@ -13,13 +13,13 @@ import kotlinx.collections.immutable.ImmutableSet
 import com.arkivanov.decompose.extensions.compose.experimental.stack.ChildStack as ChildStackCompose
 
 @Composable
-public fun RootScreen(
+internal fun RootScreen(
     stack: Value<ChildStack<RootRouter, Child>>,
     backHandler: BackHandler,
     state: RootState,
     contract: RootContract,
     loaders: ImmutableSet<RootLoader>,
-): Unit = BaseComposeScreen(AppTokens.colors.background.primary) {
+) = BaseComposeScreen(AppTokens.colors.background.primary) {
     ChildStackCompose(
         stack = stack,
         animation = backAnimation(

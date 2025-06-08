@@ -35,8 +35,7 @@ public fun rootViewController(
                 )
             },
             modifier = Modifier.fillMaxSize(),
-        ) {
-            root.Render()
-        }
+            content = { root.Render() }
+        )
     }
 }
