@@ -35,7 +35,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -70,12 +69,12 @@ public fun Button(
     val shape = RoundedCornerShape(AppTokens.dp.button.radius)
 
     val height = when (style) {
-        ButtonStyle.Transparent -> Dp.Unspecified
+        ButtonStyle.Transparent -> null
         else -> AppTokens.dp.button.height
     }
 
     val horizontalPadding = when (style) {
-        ButtonStyle.Transparent -> Dp.Unspecified
+        ButtonStyle.Transparent -> null
         else -> AppTokens.dp.button.horizontalPadding
     }
 
@@ -87,19 +86,27 @@ public fun Button(
         ButtonStyle.Transparent -> null
     }
 
+    val baseModifier = modifier
+        .clip(shape)
+        .background(colorTokens.background)
+        .border(1.dp, colorTokens.border, shape)
+        .clickable(
+            interactionSource = interactionSource,
+            indication = indication,
+            enabled = state == ButtonState.Enabled,
+            onClick = onClick
+        )
+
+    val paddedModifier = horizontalPadding?.let {
+        baseModifier.padding(horizontal = it)
+    } ?: baseModifier
+
+    val finalModifier = height?.let {
+        paddedModifier.height(it)
+    } ?: paddedModifier
+
     Box(
-        modifier = modifier
-            .clip(shape)
-            .background(colorTokens.background)
-            .border(1.dp, colorTokens.border, shape)
-            .clickable(
-                interactionSource = interactionSource,
-                indication = indication,
-                enabled = state == ButtonState.Enabled,
-                onClick = onClick
-            )
-            .padding(horizontal = horizontalPadding)
-            .height(height = height),
+        modifier = finalModifier,
         contentAlignment = Alignment.Center
     ) {
         Row(

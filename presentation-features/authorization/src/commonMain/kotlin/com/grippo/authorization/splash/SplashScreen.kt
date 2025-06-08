@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.loading.Loader
+import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import kotlinx.collections.immutable.ImmutableSet
@@ -16,7 +17,7 @@ internal fun SplashScreen(
     state: SplashState,
     loaders: ImmutableSet<SplashLoader>,
     contract: SplashContract
-) = BaseComposeScreen {
+) = BaseComposeScreen(AppTokens.colors.background.primary) {
     Box(Modifier.fillMaxSize()) {
         if (loaders.contains(SplashLoader.AppContent)) {
             Loader(modifier = Modifier.fillMaxSize())

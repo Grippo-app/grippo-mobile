@@ -45,7 +45,7 @@ internal fun MissingEquipmentsScreen(
     state: MissingEquipmentsState,
     loaders: ImmutableSet<MissingEquipmentsLoader>,
     contract: MissingEquipmentsContract
-) = BaseComposeScreen {
+) = BaseComposeScreen(AppTokens.colors.background.primary) {
     Column(
         modifier = Modifier
             .fillMaxSize()

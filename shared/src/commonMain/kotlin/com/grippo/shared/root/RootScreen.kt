@@ -1,8 +1,6 @@
 package com.grippo.shared.root
 
-import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackHandler
@@ -21,9 +19,8 @@ public fun RootScreen(
     state: RootState,
     contract: RootContract,
     loaders: ImmutableSet<RootLoader>,
-): Unit = BaseComposeScreen {
+): Unit = BaseComposeScreen(AppTokens.colors.background.primary) {
     ChildStackCompose(
-        modifier = Modifier.background(AppTokens.colors.background.primary),
         stack = stack,
         animation = backAnimation(
             backHandler = backHandler,

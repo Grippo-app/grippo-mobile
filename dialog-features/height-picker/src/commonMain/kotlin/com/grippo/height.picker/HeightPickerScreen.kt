@@ -34,7 +34,7 @@ internal fun HeightPickerScreen(
     state: HeightPickerState,
     loaders: ImmutableSet<HeightPickerLoader>,
     contract: HeightPickerContract
-) = BaseComposeScreen {
+) = BaseComposeScreen(AppTokens.colors.background.secondary) {
     Column(
         modifier = Modifier
             .fillMaxWidth()

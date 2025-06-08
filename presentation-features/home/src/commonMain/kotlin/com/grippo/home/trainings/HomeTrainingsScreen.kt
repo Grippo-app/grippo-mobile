@@ -28,7 +28,7 @@ internal fun HomeTrainingsScreen(
     state: HomeTrainingsState,
     loaders: ImmutableSet<HomeTrainingsLoader>,
     contract: HomeTrainingsContract
-) = BaseComposeScreen {
+) = BaseComposeScreen(AppTokens.colors.background.primary) {
     Column {
         Toolbar(
             modifier = Modifier.fillMaxWidth(),

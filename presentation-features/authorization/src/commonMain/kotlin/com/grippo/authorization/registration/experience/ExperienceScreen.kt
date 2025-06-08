@@ -38,7 +38,7 @@ internal fun ExperienceScreen(
     state: ExperienceState,
     loaders: ImmutableSet<ExperienceLoader>,
     contract: ExperienceContract
-) = BaseComposeScreen {
+) = BaseComposeScreen(AppTokens.colors.background.primary) {
     Column(
         modifier = Modifier
             .fillMaxSize()

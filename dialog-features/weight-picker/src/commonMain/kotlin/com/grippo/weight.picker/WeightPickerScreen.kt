@@ -34,7 +34,7 @@ internal fun WeightPickerScreen(
     state: WeightPickerState,
     loaders: ImmutableSet<WeightPickerLoader>,
     contract: WeightPickerContract
-) = BaseComposeScreen {
+) = BaseComposeScreen(AppTokens.colors.background.secondary) {
 
     Column(
         modifier = Modifier

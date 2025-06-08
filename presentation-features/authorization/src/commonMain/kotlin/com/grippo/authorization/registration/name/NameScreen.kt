@@ -35,7 +35,7 @@ internal fun NameScreen(
     state: NameState,
     loaders: ImmutableSet<NameLoader>,
     contract: NameContract
-) = BaseComposeScreen {
+) = BaseComposeScreen(AppTokens.colors.background.primary) {
     Column(
         modifier = Modifier
             .fillMaxSize()

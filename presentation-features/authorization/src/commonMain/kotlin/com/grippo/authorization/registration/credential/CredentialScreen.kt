@@ -37,7 +37,7 @@ internal fun CredentialScreen(
     state: CredentialState,
     loaders: ImmutableSet<CredentialLoader>,
     contract: CredentialContract
-) = BaseComposeScreen {
+) = BaseComposeScreen(AppTokens.colors.background.primary) {
     Column(
         modifier = Modifier
             .fillMaxSize()

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
+import com.grippo.design.core.AppTokens
 import com.grippo.platform.core.backAnimation
 import kotlinx.collections.immutable.ImmutableSet
 import com.arkivanov.decompose.extensions.compose.experimental.stack.ChildStack as ChildStackCompose
@@ -14,7 +15,7 @@ internal fun AuthScreen(
     state: AuthState,
     loaders: ImmutableSet<AuthLoader>,
     contract: AuthContract
-) = BaseComposeScreen {
+) = BaseComposeScreen(AppTokens.colors.background.primary) {
     ChildStackCompose(
         modifier = Modifier.systemBarsPadding(),
         stack = component.childStack,

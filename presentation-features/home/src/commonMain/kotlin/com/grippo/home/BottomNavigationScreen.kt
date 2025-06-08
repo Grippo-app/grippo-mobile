@@ -25,7 +25,7 @@ internal fun BottomNavigationScreen(
     state: BottomNavigationState,
     loaders: ImmutableSet<BottomNavigationLoader>,
     contract: BottomNavigationContract
-) = BaseComposeScreen {
+) = BaseComposeScreen(AppTokens.colors.background.primary) {
 
     val tabs = BottomBarMenu.entries
         .map { it.ordinal to TabItem(text = it.title(), icon = it.icon()) }

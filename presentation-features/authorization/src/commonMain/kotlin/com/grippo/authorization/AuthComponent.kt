@@ -7,6 +7,7 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.push
+import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.authorization.AuthComponent.Child.AuthProcess
@@ -54,7 +55,7 @@ public class AuthComponent(
             AuthRouter.Splash -> Splash(
                 SplashComponent(
                     componentContext = context,
-                    toAuthProcess = { navigation.push(AuthRouter.AuthProcess) },
+                    toAuthProcess = { navigation.replaceAll(AuthRouter.AuthProcess) },
                     toHome = toHome
                 ),
             )

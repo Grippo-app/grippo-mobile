@@ -41,7 +41,7 @@ internal fun ExcludedMusclesScreen(
     state: ExcludedMusclesState,
     loaders: ImmutableSet<ExcludedMusclesLoader>,
     contract: ExcludedMusclesContract
-) = BaseComposeScreen {
+) = BaseComposeScreen(AppTokens.colors.background.primary) {
     Column(
         modifier = Modifier
             .fillMaxSize()

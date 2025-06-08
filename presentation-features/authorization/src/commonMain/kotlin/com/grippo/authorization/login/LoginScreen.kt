@@ -43,7 +43,7 @@ internal fun LoginScreen(
     state: LoginState,
     loaders: ImmutableSet<LoginLoader>,
     contract: LoginContract
-) = BaseComposeScreen {
+) = BaseComposeScreen(AppTokens.colors.background.primary) {
 
     Column(
         modifier = Modifier

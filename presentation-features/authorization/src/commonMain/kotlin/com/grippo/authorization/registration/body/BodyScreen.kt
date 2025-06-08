@@ -33,7 +33,7 @@ internal fun BodyScreen(
     state: BodyState,
     loaders: ImmutableSet<BodyLoader>,
     contract: BodyContract
-) = BaseComposeScreen {
+) = BaseComposeScreen(AppTokens.colors.background.primary) {
     Column(
         modifier = Modifier
             .fillMaxSize()

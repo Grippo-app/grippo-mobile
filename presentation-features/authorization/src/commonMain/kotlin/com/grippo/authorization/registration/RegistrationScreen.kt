@@ -2,6 +2,7 @@ package com.grippo.authorization.registration
 
 import androidx.compose.runtime.Composable
 import com.grippo.core.BaseComposeScreen
+import com.grippo.design.core.AppTokens
 import com.grippo.platform.core.backAnimation
 import kotlinx.collections.immutable.ImmutableSet
 import com.arkivanov.decompose.extensions.compose.experimental.stack.ChildStack as ChildStackCompose
@@ -12,7 +13,7 @@ internal fun RegistrationScreen(
     state: RegistrationState,
     loaders: ImmutableSet<RegistrationLoader>,
     contract: RegistrationContract
-) = BaseComposeScreen {
+) = BaseComposeScreen(AppTokens.colors.background.primary) {
     ChildStackCompose(
         stack = component.childStack,
         animation = backAnimation(

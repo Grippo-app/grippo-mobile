@@ -34,7 +34,7 @@ internal fun HomeProfileScreen(
     state: HomeProfileState,
     loaders: ImmutableSet<HomeProfileLoader>,
     contract: HomeProfileContract
-) = BaseComposeScreen {
+) = BaseComposeScreen(AppTokens.colors.background.primary) {
     Column {
         Toolbar(
             modifier = Modifier.fillMaxWidth(),

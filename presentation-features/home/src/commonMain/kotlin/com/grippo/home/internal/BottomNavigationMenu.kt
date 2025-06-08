@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.shadowDefault
@@ -71,7 +72,7 @@ private fun ScreenPreview() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
-                        .background(AppTokens.colors.background.primary)
+                        .background(Color.White)
                 )
             }
         )

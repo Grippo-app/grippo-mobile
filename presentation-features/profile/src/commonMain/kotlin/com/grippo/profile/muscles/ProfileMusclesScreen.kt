@@ -35,7 +35,7 @@ internal fun ProfileMusclesScreen(
     state: ProfileMusclesState,
     loaders: ImmutableSet<ProfileMusclesLoader>,
     contract: ProfileMusclesContract
-) = BaseComposeScreen {
+) = BaseComposeScreen(AppTokens.colors.background.primary) {
     Column {
         Toolbar(
             modifier = Modifier.fillMaxWidth(),

@@ -39,7 +39,7 @@ internal fun ExerciseExampleScreen(
     state: ExerciseExampleState,
     loaders: ImmutableSet<ExerciseExampleLoader>,
     contract: ExerciseExampleContract
-) = BaseComposeScreen {
+) = BaseComposeScreen(AppTokens.colors.background.secondary) {
 
     Column(
         modifier = Modifier

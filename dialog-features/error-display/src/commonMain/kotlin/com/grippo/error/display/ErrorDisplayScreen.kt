@@ -32,7 +32,7 @@ internal fun ErrorDisplayScreen(
     state: ErrorDisplayState,
     loaders: ImmutableSet<ErrorDisplayLoader>,
     contract: ErrorDisplayContract
-) = BaseComposeScreen {
+) = BaseComposeScreen(AppTokens.colors.background.secondary) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
