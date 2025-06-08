@@ -94,9 +94,9 @@ public class RootComponent(
         AppTheme {
             val state = viewModel.state.collectAsStateMultiplatform()
             val loaders = viewModel.loaders.collectAsStateMultiplatform()
-            RootScreen(this, state.value, viewModel, loaders.value)
-//
-//            dialogComponent.Render()
+            RootScreen(this, state.value, loaders.value, viewModel)
+
+            dialogComponent.Render()
         }
     }
 }
