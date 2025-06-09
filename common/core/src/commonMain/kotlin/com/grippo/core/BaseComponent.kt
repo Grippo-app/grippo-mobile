@@ -11,6 +11,7 @@ import com.grippo.core.models.BaseDirection
 import com.grippo.core.models.ComponentIdentifier
 import com.grippo.core.models.ComponentLifeCycleEvent
 import com.grippo.core.models.NoneIdentifier
+import com.grippo.logger.AppLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -48,6 +49,7 @@ public abstract class BaseComponent<DIRECTION : BaseDirection>(
 
             viewModel.navigator
                 .onEach(::eventListener)
+                .onEach { AppLogger.navigation("Invoke direction: $it") }
                 .launchIn(coroutineScope)
         }
 

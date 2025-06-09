@@ -20,7 +20,7 @@ import com.grippo.presentation.api.auth.AuthRouter
 
 public class AuthComponent(
     componentContext: ComponentContext,
-    private val toHome: () -> Unit
+    private val toHome: () -> Unit,
 ) : BaseComponent<AuthDirection>(componentContext) {
 
     internal sealed class Child(open val component: BaseComponent<*>) {
@@ -63,7 +63,8 @@ public class AuthComponent(
             is AuthRouter.AuthProcess -> AuthProcess(
                 AuthProcessComponent(
                     componentContext = context,
-                    toHome = toHome
+                    toHome = toHome,
+                    back = navigation::pop
                 ),
             )
         }

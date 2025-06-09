@@ -5,7 +5,6 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
-import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.instancekeeper.retainedInstance
@@ -17,7 +16,8 @@ import com.grippo.presentation.api.auth.AuthProcessRouter
 
 internal class AuthProcessComponent(
     componentContext: ComponentContext,
-    private val toHome: () -> Unit
+    private val toHome: () -> Unit,
+    private val back: () -> Unit
 ) : BaseComponent<AuthProcessDirection>(componentContext) {
 
     internal sealed class Child(open val component: BaseComponent<*>) {
@@ -31,7 +31,7 @@ internal class AuthProcessComponent(
 
     override suspend fun eventListener(direction: AuthProcessDirection) {
         when (direction) {
-            AuthProcessDirection.Back -> navigation::pop
+            AuthProcessDirection.Back -> back.invoke()
         }
     }
 
