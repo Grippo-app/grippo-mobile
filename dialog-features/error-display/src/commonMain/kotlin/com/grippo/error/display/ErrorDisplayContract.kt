@@ -1,9 +1,9 @@
 package com.grippo.error.display
 
 internal interface ErrorDisplayContract {
-    fun next()
+    fun dismiss()
 
     companion object Empty : ErrorDisplayContract {
-        override fun next() {}
+        override fun dismiss() {}
     }
 }

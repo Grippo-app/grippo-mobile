@@ -53,6 +53,10 @@ internal class ProfileEquipmentsViewModel(
         update { it.copy(selectedGroupId = id) }
     }
 
+    override fun back() {
+        navigateTo(ProfileEquipmentsDirection.Back)
+    }
+
     override fun selectEquipment(id: String) {
         update {
             val newList: PersistentList<String> = it.selectedEquipmentIds

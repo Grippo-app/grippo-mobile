@@ -12,7 +12,7 @@ public class ErrorDisplayViewModel(
     )
 ), ErrorDisplayContract {
 
-    override fun next() {
+    override fun dismiss() {
         navigateTo(ErrorDisplayDirection.Dismiss)
     }
 }

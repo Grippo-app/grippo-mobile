@@ -2,6 +2,7 @@ package com.grippo.profile.muscles
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
@@ -16,6 +17,12 @@ internal class ProfileMusclesComponent(
             muscleFeature = getKoin().get(),
             excludedMusclesFeature = getKoin().get()
         )
+    }
+
+    private val backCallback = BackCallback(onBack = viewModel::back)
+
+    init {
+        backHandler.register(backCallback)
     }
 
     override suspend fun eventListener(direction: ProfileMusclesDirection) {

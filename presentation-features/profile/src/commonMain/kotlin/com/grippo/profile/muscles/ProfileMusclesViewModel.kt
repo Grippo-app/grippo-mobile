@@ -70,4 +70,8 @@ internal class ProfileMusclesViewModel(
             navigateTo(ProfileMusclesDirection.Back)
         }
     }
+
+    override fun back() {
+        navigateTo(ProfileMusclesDirection.Back)
+    }
 }
