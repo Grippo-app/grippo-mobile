@@ -19,7 +19,10 @@ class MainActivity : ComponentActivity() {
         )
 
         val rootComponent: RootComponent = retainedComponent("RootComponentContext") {
-            RootComponent(componentContext = it)
+            RootComponent(
+                componentContext = it,
+                onFinish = ::finishAffinity
+            )
         }
 
         setContent { rootComponent.Render() }

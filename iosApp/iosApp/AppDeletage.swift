@@ -11,7 +11,14 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             stateKeeper: stateKeeper,
             instanceKeeper: nil,
             backHandler: backDispatcher
-        )
+        ),
+        onFinish: {
+            // ✅ Soft hide app
+            UIApplication.shared.perform(#selector(NSXPCConnection.suspend))
+
+            // ❌ Hard close app
+            // exit(0)
+        }
     )
 
     func application(_ application: UIApplication, shouldSaveSecureApplicationState coder: NSCoder) -> Bool {

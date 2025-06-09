@@ -24,6 +24,7 @@ import com.grippo.shared.root.RootComponent.Child.Home
 
 public class RootComponent(
     componentContext: ComponentContext,
+    private val onFinish: () -> Unit,
 ) : BaseComponent<RootDirection>(componentContext) {
 
     private val dialogComponent = DialogComponent(componentContext)
@@ -65,7 +66,8 @@ public class RootComponent(
             RootRouter.Auth -> Authorization(
                 AuthComponent(
                     componentContext = context,
-                    toHome = { navigation.replaceAll(RootRouter.Home) }
+                    toHome = { navigation.replaceAll(RootRouter.Home) },
+                    onBack = { onFinish.invoke() }
                 ),
             )
 
@@ -75,7 +77,8 @@ public class RootComponent(
                     toWeightHistory = {},
                     toMissingEquipment = { navigation.push(RootRouter.Profile(ProfileRouter.Equipments)) },
                     toExcludedMuscles = { navigation.push(RootRouter.Profile(ProfileRouter.Muscles)) },
-                    toExerciseLibrary = {}
+                    toExerciseLibrary = {},
+                    onBack = { onFinish.invoke() }
                 )
             )
 

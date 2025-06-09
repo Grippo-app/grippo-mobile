@@ -22,6 +22,7 @@ public class BottomNavigationComponent(
     private val toMissingEquipment: () -> Unit,
     private val toWeightHistory: () -> Unit,
     private val toExerciseLibrary: () -> Unit,
+    private val onBack: () -> Unit,
 ) : BaseComponent<BottomNavigationDirection>(componentContext) {
 
     internal sealed class Child(open val component: BaseComponent<*>) {

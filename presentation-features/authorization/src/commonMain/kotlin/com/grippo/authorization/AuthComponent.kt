@@ -21,6 +21,7 @@ import com.grippo.presentation.api.auth.AuthRouter
 public class AuthComponent(
     componentContext: ComponentContext,
     private val toHome: () -> Unit,
+    private val onBack: () -> Unit,
 ) : BaseComponent<AuthDirection>(componentContext) {
 
     internal sealed class Child(open val component: BaseComponent<*>) {
