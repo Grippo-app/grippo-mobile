@@ -9,7 +9,7 @@ import com.grippo.core.collectAsStateMultiplatform
 
 internal class HomeStatisticsComponent(
     componentContext: ComponentContext,
-    private val onBack: () -> Unit
+    private val back: () -> Unit
 ) : BaseComponent<HomeStatisticsDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
@@ -24,7 +24,7 @@ internal class HomeStatisticsComponent(
 
     override suspend fun eventListener(direction: HomeStatisticsDirection) {
         when (direction) {
-            HomeStatisticsDirection.Back -> onBack.invoke()
+            HomeStatisticsDirection.Back -> back.invoke()
         }
     }
 

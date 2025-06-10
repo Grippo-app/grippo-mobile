@@ -76,14 +76,14 @@ public class BottomNavigationComponent(
             is BottomNavigationRouter.Trainings -> Child.Trainings(
                 HomeTrainingsComponent(
                     componentContext = context,
-                    onBack = back
+                    back = back
                 ),
             )
 
             is BottomNavigationRouter.Statistics -> Child.Statistics(
                 HomeStatisticsComponent(
                     componentContext = context,
-                    onBack = { navigation.select(0) }
+                    back = { navigation.select(0) }
                 ),
             )
 
@@ -94,7 +94,7 @@ public class BottomNavigationComponent(
                     toExerciseLibrary = toExerciseLibrary,
                     toMissingEquipment = toMissingEquipment,
                     toWeightHistory = toWeightHistory,
-                    onBack =  { navigation.select(1) }
+                    back = { navigation.select(1) }
                 ),
             )
         }

@@ -13,7 +13,7 @@ internal class HomeProfileComponent(
     private val toMissingEquipment: () -> Unit,
     private val toWeightHistory: () -> Unit,
     private val toExerciseLibrary: () -> Unit,
-    private val onBack: () -> Unit,
+    private val back: () -> Unit,
 ) : BaseComponent<HomeProfileDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
@@ -35,7 +35,7 @@ internal class HomeProfileComponent(
             HomeProfileDirection.ExerciseLibrary -> toExerciseLibrary.invoke()
             HomeProfileDirection.MissingEquipment -> toMissingEquipment.invoke()
             HomeProfileDirection.WeightHistory -> toWeightHistory.invoke()
-            HomeProfileDirection.Back -> onBack.invoke()
+            HomeProfileDirection.Back -> back.invoke()
         }
     }
 

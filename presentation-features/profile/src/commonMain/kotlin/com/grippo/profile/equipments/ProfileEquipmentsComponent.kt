@@ -9,7 +9,7 @@ import com.grippo.core.collectAsStateMultiplatform
 
 internal class ProfileEquipmentsComponent(
     componentContext: ComponentContext,
-    private val onBack: () -> Unit
+    private val back: () -> Unit
 ) : BaseComponent<ProfileEquipmentsDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
@@ -27,7 +27,7 @@ internal class ProfileEquipmentsComponent(
 
     override suspend fun eventListener(direction: ProfileEquipmentsDirection) {
         when (direction) {
-            ProfileEquipmentsDirection.Back -> onBack.invoke()
+            ProfileEquipmentsDirection.Back -> back.invoke()
         }
     }
 

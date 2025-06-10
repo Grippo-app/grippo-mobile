@@ -9,7 +9,7 @@ import com.grippo.core.collectAsStateMultiplatform
 
 internal class ProfileMusclesComponent(
     componentContext: ComponentContext,
-    private val onBack: () -> Unit
+    private val back: () -> Unit
 ) : BaseComponent<ProfileMusclesDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
@@ -27,7 +27,7 @@ internal class ProfileMusclesComponent(
 
     override suspend fun eventListener(direction: ProfileMusclesDirection) {
         when (direction) {
-            ProfileMusclesDirection.Back -> onBack.invoke()
+            ProfileMusclesDirection.Back -> back.invoke()
         }
     }
 

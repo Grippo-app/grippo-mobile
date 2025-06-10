@@ -57,14 +57,14 @@ public class ProfileComponent(
             ProfileRouter.Muscles -> Child.Muscles(
                 ProfileMusclesComponent(
                     componentContext = context,
-                    onBack = back
+                    back = back
                 ),
             )
 
             is ProfileRouter.Equipments -> Child.Equipments(
                 ProfileEquipmentsComponent(
                     componentContext = context,
-                    onBack = back
+                    back = back
                 ),
             )
         }
