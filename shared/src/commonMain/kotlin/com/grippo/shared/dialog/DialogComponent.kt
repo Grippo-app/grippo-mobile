@@ -71,7 +71,7 @@ internal class DialogComponent(
                             router.onResult.invoke(it)
                         }
                     },
-                    onDismiss = {
+                    back = {
                         viewModel.dismiss()
                     }
                 )
@@ -86,7 +86,7 @@ internal class DialogComponent(
                             router.onResult.invoke(it)
                         }
                     },
-                    onDismiss = {
+                    back = {
                         viewModel.dismiss()
                     }
                 )
@@ -97,7 +97,7 @@ internal class DialogComponent(
                     componentContext = context,
                     title = router.title,
                     description = router.description,
-                    onResult = viewModel::dismiss
+                    back = viewModel::dismiss
                 )
             )
 
@@ -108,7 +108,7 @@ internal class DialogComponent(
                     onResult = {
                         viewModel.dismiss()
                     },
-                    onDismiss = viewModel::dismiss
+                    back = viewModel::dismiss
                 )
             )
         }

@@ -11,7 +11,7 @@ public class ExerciseExampleComponent(
     componentContext: ComponentContext,
     id: String,
     private val onResult: (id: String) -> Unit,
-    private val onDismiss: () -> Unit,
+    private val back: () -> Unit,
 ) : BaseComponent<ExerciseExampleDirection>(componentContext) {
 
     override val viewModel: ExerciseExampleViewModel = componentContext.retainedInstance {
@@ -29,8 +29,8 @@ public class ExerciseExampleComponent(
 
     override suspend fun eventListener(direction: ExerciseExampleDirection) {
         when (direction) {
-            is ExerciseExampleDirection.DismissWithResult -> onResult.invoke(direction.id)
-            ExerciseExampleDirection.Dismiss -> onDismiss.invoke()
+            is ExerciseExampleDirection.BackWithResult -> onResult.invoke(direction.id)
+            ExerciseExampleDirection.Back -> back.invoke()
         }
     }
 

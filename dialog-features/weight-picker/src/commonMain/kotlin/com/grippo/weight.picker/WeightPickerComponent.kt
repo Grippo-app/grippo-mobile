@@ -11,7 +11,7 @@ public class WeightPickerComponent(
     componentContext: ComponentContext,
     private val initial: Float,
     private val onResult: (value: Float) -> Unit,
-    private val onDismiss: () -> Unit
+    private val back: () -> Unit
 ) : BaseComponent<WeightPickerDirection>(componentContext) {
 
     override val viewModel: WeightPickerViewModel = componentContext.retainedInstance {
@@ -25,8 +25,8 @@ public class WeightPickerComponent(
 
     override suspend fun eventListener(direction: WeightPickerDirection) {
         when (direction) {
-            is WeightPickerDirection.DismissWithResult -> onResult.invoke(direction.value)
-            WeightPickerDirection.Dismiss -> onDismiss.invoke()
+            is WeightPickerDirection.BackWithResult -> onResult.invoke(direction.value)
+            WeightPickerDirection.Back -> back.invoke()
         }
     }
 

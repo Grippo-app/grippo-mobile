@@ -10,7 +10,7 @@ import com.grippo.core.collectAsStateMultiplatform
 public class ErrorDisplayComponent(
     private val title: String,
     private val description: String,
-    private val onResult: () -> Unit,
+    private val back: () -> Unit,
     componentContext: ComponentContext,
 ) : BaseComponent<ErrorDisplayDirection>(componentContext) {
 
@@ -29,7 +29,7 @@ public class ErrorDisplayComponent(
 
     override suspend fun eventListener(direction: ErrorDisplayDirection) {
         when (direction) {
-            ErrorDisplayDirection.Dismiss -> onResult.invoke()
+            ErrorDisplayDirection.Back -> back.invoke()
         }
     }
 

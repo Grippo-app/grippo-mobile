@@ -28,6 +28,6 @@ public class ExerciseExampleViewModel(
     }
 
     override fun dismiss() {
-        navigateTo(ExerciseExampleDirection.Dismiss)
+        navigateTo(ExerciseExampleDirection.Back)
     }
 }

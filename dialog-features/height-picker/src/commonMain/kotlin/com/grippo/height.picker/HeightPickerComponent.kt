@@ -11,7 +11,7 @@ public class HeightPickerComponent(
     componentContext: ComponentContext,
     private val initial: Int,
     private val onResult: (value: Int) -> Unit,
-    private val onDismiss: () -> Unit,
+    private val back: () -> Unit,
 ) : BaseComponent<HeightPickerDirection>(componentContext) {
 
     override val viewModel: HeightPickerViewModel = componentContext.retainedInstance {
@@ -26,8 +26,8 @@ public class HeightPickerComponent(
 
     override suspend fun eventListener(direction: HeightPickerDirection) {
         when (direction) {
-            is HeightPickerDirection.DismissWithResult -> onResult.invoke(direction.value)
-            HeightPickerDirection.Dismiss -> onDismiss.invoke()
+            is HeightPickerDirection.BackWithResult -> onResult.invoke(direction.value)
+            HeightPickerDirection.Back -> back.invoke()
         }
     }
 

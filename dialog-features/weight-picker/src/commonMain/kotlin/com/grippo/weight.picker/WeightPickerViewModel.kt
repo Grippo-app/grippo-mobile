@@ -13,10 +13,10 @@ public class WeightPickerViewModel(
     }
 
     override fun submit() {
-        navigateTo(WeightPickerDirection.DismissWithResult(state.value.initial))
+        navigateTo(WeightPickerDirection.BackWithResult(state.value.initial))
     }
 
     override fun dismiss() {
-        navigateTo(WeightPickerDirection.Dismiss)
+        navigateTo(WeightPickerDirection.Back)
     }
 }
