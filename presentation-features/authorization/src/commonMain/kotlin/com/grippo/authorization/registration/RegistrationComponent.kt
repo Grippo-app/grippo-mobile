@@ -24,7 +24,7 @@ import com.grippo.presentation.api.auth.RegistrationRouter
 internal class RegistrationComponent(
     componentContext: ComponentContext,
     private val toHome: () -> Unit,
-    private val onBack: () -> Unit,
+    private val back: () -> Unit,
 ) : BaseComponent<RegistrationDirection>(componentContext) {
 
     internal sealed class Child(open val component: BaseComponent<*>) {
@@ -86,7 +86,7 @@ internal class RegistrationComponent(
                         viewModel.saveCredentials(e, p)
                         navigation.push(RegistrationRouter.Name)
                     },
-                    onBack = onBack
+                    back = back
                 ),
             )
 
@@ -97,7 +97,7 @@ internal class RegistrationComponent(
                         viewModel.saveName(n)
                         navigation.push(RegistrationRouter.Body)
                     },
-                    onBack = navigation::pop
+                    back = navigation::pop
                 ),
             )
 
@@ -108,7 +108,7 @@ internal class RegistrationComponent(
                         viewModel.saveWeightHeight(w, h)
                         navigation.push(RegistrationRouter.Experience)
                     },
-                    onBack = navigation::pop
+                    back = navigation::pop
                 ),
             )
 
@@ -119,7 +119,7 @@ internal class RegistrationComponent(
                         viewModel.saveExperience(e)
                         navigation.push(RegistrationRouter.ExcludedMuscles)
                     },
-                    onBack = navigation::pop
+                    back = navigation::pop
                 ),
             )
 
@@ -130,7 +130,7 @@ internal class RegistrationComponent(
                         viewModel.saveExcludedMuscleIds(ids)
                         navigation.push(RegistrationRouter.MissingEquipments)
                     },
-                    onBack = navigation::pop
+                    back = navigation::pop
                 ),
             )
 
@@ -141,7 +141,7 @@ internal class RegistrationComponent(
                         viewModel.saveMissingEquipmentIds(ids)
                         navigation.push(RegistrationRouter.Completed)
                     },
-                    onBack = navigation::pop
+                    back = navigation::pop
                 ),
             )
 
@@ -157,7 +157,7 @@ internal class RegistrationComponent(
                     excludedMuscleIds = viewModel.state.value.excludedMuscleIds,
                     missingEquipmentIds = viewModel.state.value.missingEquipmentIds,
                     toHome = toHome,
-                    onBack = toHome
+                    back = toHome
                 ),
             )
         }

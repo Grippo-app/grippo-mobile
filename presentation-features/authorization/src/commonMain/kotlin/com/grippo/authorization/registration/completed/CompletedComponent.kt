@@ -11,16 +11,16 @@ import kotlinx.collections.immutable.ImmutableList
 
 internal class CompletedComponent(
     componentContext: ComponentContext,
-    val email: String,
-    val password: String,
-    val name: String,
-    val weight: Float,
-    val height: Int,
-    val experience: ExperienceEnumState?,
-    val excludedMuscleIds: ImmutableList<String>,
-    val missingEquipmentIds: ImmutableList<String>,
+    private val email: String,
+    private val password: String,
+    private val name: String,
+    private val weight: Float,
+    private val height: Int,
+    private val experience: ExperienceEnumState?,
+    private val excludedMuscleIds: ImmutableList<String>,
+    private val missingEquipmentIds: ImmutableList<String>,
     private val toHome: () -> Unit,
-    private val onBack: () -> Unit,
+    private val back: () -> Unit,
 ) : BaseComponent<CompletedDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
@@ -47,7 +47,7 @@ internal class CompletedComponent(
     override suspend fun eventListener(direction: CompletedDirection) {
         when (direction) {
             CompletedDirection.Home -> toHome.invoke()
-            CompletedDirection.Back -> onBack.invoke()
+            CompletedDirection.Back -> back.invoke()
         }
     }
 

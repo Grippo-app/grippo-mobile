@@ -17,7 +17,7 @@ import com.grippo.profile.muscles.ProfileMusclesComponent
 public class ProfileComponent(
     initial: ProfileRouter,
     componentContext: ComponentContext,
-    private val onBack: () -> Unit
+    private val back: () -> Unit
 ) : BaseComponent<ProfileDirection>(componentContext) {
 
     internal sealed class Child(open val component: BaseComponent<*>) {
@@ -37,7 +37,7 @@ public class ProfileComponent(
 
     override suspend fun eventListener(direction: ProfileDirection) {
         when (direction) {
-            ProfileDirection.Back -> onBack.invoke()
+            ProfileDirection.Back -> back.invoke()
         }
     }
 
@@ -57,14 +57,14 @@ public class ProfileComponent(
             ProfileRouter.Muscles -> Child.Muscles(
                 ProfileMusclesComponent(
                     componentContext = context,
-                    onBack = onBack
+                    onBack = back
                 ),
             )
 
             is ProfileRouter.Equipments -> Child.Equipments(
                 ProfileEquipmentsComponent(
                     componentContext = context,
-                    onBack = onBack
+                    onBack = back
                 ),
             )
         }

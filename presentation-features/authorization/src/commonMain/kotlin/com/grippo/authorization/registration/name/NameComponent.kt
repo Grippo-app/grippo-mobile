@@ -10,7 +10,7 @@ import com.grippo.core.collectAsStateMultiplatform
 internal class NameComponent(
     componentContext: ComponentContext,
     private val toBody: (name: String) -> Unit,
-    private val onBack: () -> Unit,
+    private val back: () -> Unit,
 ) : BaseComponent<NameDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
@@ -26,7 +26,7 @@ internal class NameComponent(
     override suspend fun eventListener(direction: NameDirection) {
         when (direction) {
             is NameDirection.Body -> toBody.invoke(direction.name)
-            NameDirection.Back -> onBack.invoke()
+            NameDirection.Back -> back.invoke()
         }
     }
 

@@ -25,7 +25,7 @@ import com.grippo.shared.root.RootComponent.Child.Home
 
 public class RootComponent(
     componentContext: ComponentContext,
-    private val onFinish: () -> Unit,
+    private val finish: () -> Unit,
 ) : BaseComponent<RootDirection>(componentContext) {
 
     private val dialogComponent = DialogComponent(componentContext)
@@ -64,7 +64,7 @@ public class RootComponent(
                 navigation.replaceAll(RootRouter.Auth)
             }
 
-            RootDirection.Back -> onFinish.invoke()
+            RootDirection.Back -> finish.invoke()
         }
     }
 
@@ -74,7 +74,7 @@ public class RootComponent(
                 AuthComponent(
                     componentContext = context,
                     toHome = { navigation.replaceAll(RootRouter.Home) },
-                    onBack = { onFinish.invoke() }
+                    back = finish
                 ),
             )
 
@@ -85,7 +85,7 @@ public class RootComponent(
                     toMissingEquipment = { navigation.push(RootRouter.Profile(ProfileRouter.Equipments)) },
                     toExcludedMuscles = { navigation.push(RootRouter.Profile(ProfileRouter.Muscles)) },
                     toExerciseLibrary = {},
-                    onBack = { onFinish.invoke() }
+                    back = finish
                 )
             )
 
@@ -93,7 +93,7 @@ public class RootComponent(
                 ProfileComponent(
                     componentContext = context,
                     initial = router.value,
-                    onBack = navigation::pop
+                    back = navigation::pop
                 )
             )
         }

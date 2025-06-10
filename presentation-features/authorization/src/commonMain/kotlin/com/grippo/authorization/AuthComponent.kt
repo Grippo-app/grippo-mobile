@@ -5,7 +5,6 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
-import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.value.Value
@@ -22,7 +21,7 @@ import com.grippo.presentation.api.auth.AuthRouter
 public class AuthComponent(
     componentContext: ComponentContext,
     private val toHome: () -> Unit,
-    private val onBack: () -> Unit,
+    private val back: () -> Unit,
 ) : BaseComponent<AuthDirection>(componentContext) {
 
     internal sealed class Child(open val component: BaseComponent<*>) {
@@ -43,7 +42,7 @@ public class AuthComponent(
     override suspend fun eventListener(direction: AuthDirection) {
         when (direction) {
             AuthDirection.AuthProcess -> navigation.push(AuthRouter.AuthProcess)
-            AuthDirection.Back -> navigation::pop
+            AuthDirection.Back -> back.invoke()
         }
     }
 
@@ -65,7 +64,7 @@ public class AuthComponent(
                     componentContext = context,
                     toAuthProcess = { navigation.replaceAll(AuthRouter.AuthProcess) },
                     toHome = toHome,
-                    onBack = onBack
+                    back = back
                 ),
             )
 
@@ -73,7 +72,7 @@ public class AuthComponent(
                 AuthProcessComponent(
                     componentContext = context,
                     toHome = toHome,
-                    onBack = navigation::pop
+                    back = back
                 ),
             )
         }

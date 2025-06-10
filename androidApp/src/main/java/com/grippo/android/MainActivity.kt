@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
         val rootComponent: RootComponent = retainedComponent("RootComponentContext") {
             RootComponent(
                 componentContext = it,
-                onFinish = ::finishAffinity
+                finish = ::finishAffinity
             )
         }
 

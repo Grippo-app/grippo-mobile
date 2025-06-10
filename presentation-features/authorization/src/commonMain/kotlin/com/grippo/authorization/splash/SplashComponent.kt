@@ -11,7 +11,7 @@ internal class SplashComponent(
     componentContext: ComponentContext,
     private val toAuthProcess: () -> Unit,
     private val toHome: () -> Unit,
-    private val onBack: () -> Unit
+    private val back: () -> Unit
 ) : BaseComponent<SplashDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
@@ -32,7 +32,7 @@ internal class SplashComponent(
         when (direction) {
             SplashDirection.AuthProcess -> toAuthProcess.invoke()
             SplashDirection.Home -> toHome.invoke()
-            SplashDirection.Back -> onBack.invoke()
+            SplashDirection.Back -> back.invoke()
         }
     }
 

@@ -11,7 +11,7 @@ internal class LoginComponent(
     componentContext: ComponentContext,
     private val toRegistration: () -> Unit,
     private val toHome: () -> Unit,
-    private val onBack: () -> Unit,
+    private val back: () -> Unit,
 ) : BaseComponent<LoginDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
@@ -30,7 +30,7 @@ internal class LoginComponent(
         when (direction) {
             LoginDirection.Registration -> toRegistration.invoke()
             LoginDirection.Home -> toHome.invoke()
-            LoginDirection.Back -> onBack.invoke()
+            LoginDirection.Back -> back.invoke()
         }
     }
 

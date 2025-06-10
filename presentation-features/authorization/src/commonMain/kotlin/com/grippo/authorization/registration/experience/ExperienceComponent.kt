@@ -11,7 +11,7 @@ import com.grippo.presentation.api.profile.models.ExperienceEnumState
 internal class ExperienceComponent(
     componentContext: ComponentContext,
     private val toExcludedMuscles: (experience: ExperienceEnumState) -> Unit,
-    private val onBack: () -> Unit,
+    private val back: () -> Unit,
 ) : BaseComponent<ExperienceDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
@@ -27,7 +27,7 @@ internal class ExperienceComponent(
     override suspend fun eventListener(direction: ExperienceDirection) {
         when (direction) {
             is ExperienceDirection.ExcludedMuscles -> toExcludedMuscles.invoke(direction.experience)
-            ExperienceDirection.Back -> onBack.invoke()
+            ExperienceDirection.Back -> back.invoke()
         }
     }
 

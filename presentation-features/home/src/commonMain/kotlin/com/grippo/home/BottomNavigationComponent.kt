@@ -23,7 +23,7 @@ public class BottomNavigationComponent(
     private val toMissingEquipment: () -> Unit,
     private val toWeightHistory: () -> Unit,
     private val toExerciseLibrary: () -> Unit,
-    private val onBack: () -> Unit,
+    private val back: () -> Unit,
 ) : BaseComponent<BottomNavigationDirection>(componentContext) {
 
     internal sealed class Child(open val component: BaseComponent<*>) {
@@ -47,7 +47,7 @@ public class BottomNavigationComponent(
             BottomNavigationDirection.Trainings -> navigation.select(0)
             BottomNavigationDirection.Statistics -> navigation.select(1)
             BottomNavigationDirection.Profile -> navigation.select(2)
-            BottomNavigationDirection.Back -> onBack.invoke()
+            BottomNavigationDirection.Back -> back.invoke()
         }
     }
 
@@ -80,21 +80,21 @@ public class BottomNavigationComponent(
                     toExerciseLibrary = toExerciseLibrary,
                     toMissingEquipment = toMissingEquipment,
                     toWeightHistory = toWeightHistory,
-                    onBack = onBack
+                    onBack = back
                 ),
             )
 
             is BottomNavigationRouter.Trainings -> Child.Trainings(
                 HomeTrainingsComponent(
                     componentContext = context,
-                    onBack = onBack
+                    onBack = back
                 ),
             )
 
             is BottomNavigationRouter.Statistics -> Child.Statistics(
                 HomeStatisticsComponent(
                     componentContext = context,
-                    onBack = onBack
+                    onBack = back
                 ),
             )
         }
