@@ -5,11 +5,13 @@ internal interface LoginContract {
     fun setPassword(value: String)
     fun login()
     fun register()
+    fun back()
 
     companion object Empty : LoginContract {
         override fun setEmail(value: String) {}
         override fun setPassword(value: String) {}
         override fun login() {}
         override fun register() {}
+        override fun back() {}
     }
 }

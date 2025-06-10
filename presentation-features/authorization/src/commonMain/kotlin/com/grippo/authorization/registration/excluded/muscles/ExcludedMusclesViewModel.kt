@@ -48,4 +48,8 @@ internal class ExcludedMusclesViewModel(
         )
         navigateTo(direction)
     }
+
+    override fun back() {
+        navigateTo(ExcludedMusclesDirection.Back)
+    }
 }

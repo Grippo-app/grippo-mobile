@@ -32,6 +32,10 @@ internal class DialogViewModel(
         update { it.copy(process = Process.DISMISS, pendingResult = pendingResult) }
     }
 
+    override fun dismiss() {
+        update { it.copy(process = Process.DISMISS, pendingResult = null) }
+    }
+
     // Release dialog component from the graph
     override fun release(config: DialogConfig) {
         state.value.pendingResult?.invoke()

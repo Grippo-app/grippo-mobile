@@ -4,4 +4,5 @@ import com.grippo.core.models.BaseDirection
 
 public sealed interface ExerciseExampleDirection : BaseDirection {
     public data class DismissWithResult(val id: String) : ExerciseExampleDirection
+    public data object Dismiss : ExerciseExampleDirection
 }

@@ -2,6 +2,7 @@ package com.grippo.authorization.registration.completed
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
@@ -18,7 +19,8 @@ internal class CompletedComponent(
     val experience: ExperienceEnumState?,
     val excludedMuscleIds: ImmutableList<String>,
     val missingEquipmentIds: ImmutableList<String>,
-    private val toHome: () -> Unit
+    private val toHome: () -> Unit,
+    private val onBack: () -> Unit,
 ) : BaseComponent<CompletedDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
@@ -36,9 +38,16 @@ internal class CompletedComponent(
         )
     }
 
+    private val backCallback = BackCallback(onBack = viewModel::back)
+
+    init {
+        backHandler.register(backCallback)
+    }
+
     override suspend fun eventListener(direction: CompletedDirection) {
         when (direction) {
             CompletedDirection.Home -> toHome.invoke()
+            CompletedDirection.Back -> onBack.invoke()
         }
     }
 

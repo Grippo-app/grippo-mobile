@@ -8,6 +8,7 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.authorization.registration.body.BodyComponent
 import com.grippo.authorization.registration.completed.CompletedComponent
@@ -22,7 +23,8 @@ import com.grippo.presentation.api.auth.RegistrationRouter
 
 internal class RegistrationComponent(
     componentContext: ComponentContext,
-    private val toHome: () -> Unit
+    private val toHome: () -> Unit,
+    private val onBack: () -> Unit,
 ) : BaseComponent<RegistrationDirection>(componentContext) {
 
     internal sealed class Child(open val component: BaseComponent<*>) {
@@ -60,6 +62,12 @@ internal class RegistrationComponent(
 
     private val navigation = StackNavigation<RegistrationRouter>()
 
+    private val backCallback = BackCallback(onBack = viewModel::back)
+
+    init {
+        backHandler.register(backCallback)
+    }
+
     internal val childStack: Value<ChildStack<RegistrationRouter, Child>> = childStack(
         source = navigation,
         serializer = RegistrationRouter.serializer(),
@@ -77,7 +85,8 @@ internal class RegistrationComponent(
                     toName = { e, p ->
                         viewModel.saveCredentials(e, p)
                         navigation.push(RegistrationRouter.Name)
-                    }
+                    },
+                    onBack = onBack
                 ),
             )
 
@@ -87,7 +96,8 @@ internal class RegistrationComponent(
                     toBody = { n ->
                         viewModel.saveName(n)
                         navigation.push(RegistrationRouter.Body)
-                    }
+                    },
+                    onBack = navigation::pop
                 ),
             )
 
@@ -97,7 +107,8 @@ internal class RegistrationComponent(
                     toExperience = { w, h ->
                         viewModel.saveWeightHeight(w, h)
                         navigation.push(RegistrationRouter.Experience)
-                    }
+                    },
+                    onBack = navigation::pop
                 ),
             )
 
@@ -107,7 +118,8 @@ internal class RegistrationComponent(
                     toExcludedMuscles = { e ->
                         viewModel.saveExperience(e)
                         navigation.push(RegistrationRouter.ExcludedMuscles)
-                    }
+                    },
+                    onBack = navigation::pop
                 ),
             )
 
@@ -117,7 +129,8 @@ internal class RegistrationComponent(
                     toMissingEquipment = { ids ->
                         viewModel.saveExcludedMuscleIds(ids)
                         navigation.push(RegistrationRouter.MissingEquipments)
-                    }
+                    },
+                    onBack = navigation::pop
                 ),
             )
 
@@ -127,7 +140,8 @@ internal class RegistrationComponent(
                     toCompleted = { ids ->
                         viewModel.saveMissingEquipmentIds(ids)
                         navigation.push(RegistrationRouter.Completed)
-                    }
+                    },
+                    onBack = navigation::pop
                 ),
             )
 
@@ -142,7 +156,8 @@ internal class RegistrationComponent(
                     weight = viewModel.state.value.weight,
                     excludedMuscleIds = viewModel.state.value.excludedMuscleIds,
                     missingEquipmentIds = viewModel.state.value.missingEquipmentIds,
-                    toHome = toHome
+                    toHome = toHome,
+                    onBack = toHome
                 ),
             )
         }

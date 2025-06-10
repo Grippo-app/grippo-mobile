@@ -56,4 +56,8 @@ internal class CompletedViewModel(
     override fun complete() {
         navigateTo(CompletedDirection.Home)
     }
+
+    override fun back() {
+        navigateTo(CompletedDirection.Back)
+    }
 }

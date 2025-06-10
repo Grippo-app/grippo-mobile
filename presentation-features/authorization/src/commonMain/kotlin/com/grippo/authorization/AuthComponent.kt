@@ -9,6 +9,7 @@ import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.authorization.AuthComponent.Child.AuthProcess
 import com.grippo.authorization.AuthComponent.Child.Splash
@@ -31,6 +32,12 @@ public class AuthComponent(
 
     override val viewModel: AuthViewModel = componentContext.retainedInstance {
         AuthViewModel()
+    }
+
+    private val backCallback = BackCallback(onBack = viewModel::back)
+
+    init {
+        backHandler.register(backCallback)
     }
 
     override suspend fun eventListener(direction: AuthDirection) {
@@ -57,7 +64,8 @@ public class AuthComponent(
                 SplashComponent(
                     componentContext = context,
                     toAuthProcess = { navigation.replaceAll(AuthRouter.AuthProcess) },
-                    toHome = toHome
+                    toHome = toHome,
+                    onBack = onBack
                 ),
             )
 
@@ -65,7 +73,7 @@ public class AuthComponent(
                 AuthProcessComponent(
                     componentContext = context,
                     toHome = toHome,
-                    back = navigation::pop
+                    onBack = navigation::pop
                 ),
             )
         }

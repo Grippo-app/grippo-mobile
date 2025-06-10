@@ -8,6 +8,7 @@ import com.arkivanov.decompose.router.slot.activate
 import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
@@ -34,6 +35,12 @@ internal class DialogComponent(
 
     override val viewModel = componentContext.retainedInstance {
         DialogViewModel(dialogProvider = getKoin().get())
+    }
+
+    private val backCallback = BackCallback(onBack = viewModel::dismiss)
+
+    init {
+        backHandler.register(backCallback)
     }
 
     override suspend fun eventListener(direction: DialogDirection) {
@@ -63,6 +70,9 @@ internal class DialogComponent(
                         viewModel.dismiss {
                             router.onResult.invoke(it)
                         }
+                    },
+                    onDismiss = {
+                        viewModel.dismiss()
                     }
                 )
             )
@@ -75,6 +85,9 @@ internal class DialogComponent(
                         viewModel.dismiss {
                             router.onResult.invoke(it)
                         }
+                    },
+                    onDismiss = {
+                        viewModel.dismiss()
                     }
                 )
             )
@@ -84,9 +97,7 @@ internal class DialogComponent(
                     componentContext = context,
                     title = router.title,
                     description = router.description,
-                    onResult = {
-                        viewModel.dismiss(null)
-                    }
+                    onResult = viewModel::dismiss
                 )
             )
 
@@ -95,8 +106,9 @@ internal class DialogComponent(
                     componentContext = context,
                     id = router.id,
                     onResult = {
-                        viewModel.dismiss(null)
-                    }
+                        viewModel.dismiss()
+                    },
+                    onDismiss = viewModel::dismiss
                 )
             )
         }

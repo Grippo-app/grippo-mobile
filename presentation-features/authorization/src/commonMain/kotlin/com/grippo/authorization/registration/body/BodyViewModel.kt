@@ -32,4 +32,8 @@ internal class BodyViewModel(
         )
         navigateTo(direction)
     }
+
+    override fun back() {
+        navigateTo(BodyDirection.Back)
+    }
 }

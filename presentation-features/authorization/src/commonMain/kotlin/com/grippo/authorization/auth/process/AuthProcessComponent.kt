@@ -5,8 +5,10 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.authorization.login.LoginComponent
 import com.grippo.authorization.registration.RegistrationComponent
@@ -17,7 +19,7 @@ import com.grippo.presentation.api.auth.AuthProcessRouter
 internal class AuthProcessComponent(
     componentContext: ComponentContext,
     private val toHome: () -> Unit,
-    private val back: () -> Unit
+    private val onBack: () -> Unit
 ) : BaseComponent<AuthProcessDirection>(componentContext) {
 
     internal sealed class Child(open val component: BaseComponent<*>) {
@@ -29,9 +31,15 @@ internal class AuthProcessComponent(
         AuthProcessViewModel()
     }
 
+    private val backCallback = BackCallback(onBack = viewModel::back)
+
+    init {
+        backHandler.register(backCallback)
+    }
+
     override suspend fun eventListener(direction: AuthProcessDirection) {
         when (direction) {
-            AuthProcessDirection.Back -> back.invoke()
+            AuthProcessDirection.Back -> onBack.invoke()
         }
     }
 
@@ -52,14 +60,16 @@ internal class AuthProcessComponent(
                 LoginComponent(
                     componentContext = context,
                     toRegistration = { navigation.push(AuthProcessRouter.Registration) },
-                    toHome = toHome
+                    toHome = toHome,
+                    onBack = onBack
                 )
             )
 
             AuthProcessRouter.Registration -> Child.Registration(
                 RegistrationComponent(
                     componentContext = context,
-                    toHome = toHome
+                    toHome = toHome,
+                    onBack = navigation::pop
                 )
             )
         }

@@ -2,6 +2,7 @@ package com.grippo.authorization.login
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
@@ -10,6 +11,7 @@ internal class LoginComponent(
     componentContext: ComponentContext,
     private val toRegistration: () -> Unit,
     private val toHome: () -> Unit,
+    private val onBack: () -> Unit,
 ) : BaseComponent<LoginDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
@@ -18,10 +20,17 @@ internal class LoginComponent(
         )
     }
 
+    private val backCallback = BackCallback(onBack = viewModel::back)
+
+    init {
+        backHandler.register(backCallback)
+    }
+
     override suspend fun eventListener(direction: LoginDirection) {
         when (direction) {
             LoginDirection.Registration -> toRegistration.invoke()
             LoginDirection.Home -> toHome.invoke()
+            LoginDirection.Back -> onBack.invoke()
         }
     }
 

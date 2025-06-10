@@ -9,6 +9,7 @@ import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.authorization.AuthComponent
 import com.grippo.core.BaseComponent
@@ -51,13 +52,19 @@ public class RootComponent(
         childFactory = ::createChild,
     )
 
+    private val backCallback = BackCallback(onBack = viewModel::back)
+
+    init {
+        backHandler.register(backCallback)
+    }
+
     override suspend fun eventListener(direction: RootDirection) {
         when (direction) {
             RootDirection.Login -> if (childStack.value.active.instance !is Authorization) {
                 navigation.replaceAll(RootRouter.Auth)
             }
 
-            RootDirection.Back -> navigation::pop
+            RootDirection.Back -> onFinish.invoke()
         }
     }
 

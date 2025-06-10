@@ -17,4 +17,8 @@ internal class ExperienceViewModel :
         )
         navigateTo(direction)
     }
+
+    override fun back() {
+        navigateTo(ExperienceDirection.Back)
+    }
 }

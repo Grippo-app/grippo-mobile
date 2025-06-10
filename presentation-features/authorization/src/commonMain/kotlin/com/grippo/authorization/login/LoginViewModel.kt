@@ -32,4 +32,8 @@ internal class LoginViewModel(
     override fun register() {
         navigateTo(LoginDirection.Registration)
     }
+
+    override fun back() {
+        navigateTo(LoginDirection.Back)
+    }
 }

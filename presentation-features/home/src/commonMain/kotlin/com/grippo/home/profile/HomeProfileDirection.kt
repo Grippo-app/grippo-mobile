@@ -7,4 +7,5 @@ internal sealed interface HomeProfileDirection : BaseDirection {
     data object MissingEquipment : HomeProfileDirection
     data object ExerciseLibrary : HomeProfileDirection
     data object WeightHistory : HomeProfileDirection
+    data object Back : HomeProfileDirection
 }

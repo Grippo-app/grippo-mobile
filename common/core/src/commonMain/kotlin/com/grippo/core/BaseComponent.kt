@@ -49,8 +49,10 @@ public abstract class BaseComponent<DIRECTION : BaseDirection>(
 
             viewModel.navigator
                 .onEach(::eventListener)
-                .onEach { AppLogger.navigation("Invoke direction: $it") }
-                .launchIn(coroutineScope)
+                .onEach {
+                    val caller = this::class.simpleName
+                    AppLogger.navigation("[$caller] Invoke direction: $it")
+                }.launchIn(coroutineScope)
         }
 
         lifecycle.doOnDestroy {

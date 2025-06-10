@@ -16,4 +16,8 @@ public class BottomNavigationViewModel :
         }
         update { it.copy(selectedIndex = index) }
     }
+
+    override fun back() {
+        navigateTo(BottomNavigationDirection.Back)
+    }
 }

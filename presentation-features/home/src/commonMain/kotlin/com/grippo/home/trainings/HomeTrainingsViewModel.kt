@@ -45,4 +45,8 @@ internal class HomeTrainingsViewModel(
 
         dialogController.show(dialog)
     }
+
+    override fun back() {
+        navigateTo(HomeTrainingsDirection.Back)
+    }
 }

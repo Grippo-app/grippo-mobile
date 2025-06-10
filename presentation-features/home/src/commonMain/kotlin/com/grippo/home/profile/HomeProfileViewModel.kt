@@ -37,4 +37,8 @@ internal class HomeProfileViewModel(
 
         navigateTo(direction)
     }
+
+    override fun back() {
+        navigateTo(HomeProfileDirection.Back)
+    }
 }

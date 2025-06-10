@@ -58,4 +58,8 @@ internal class MissingEquipmentsViewModel(
         )
         navigateTo(direction)
     }
+
+    override fun back() {
+        navigateTo(MissingEquipmentsDirection.Back)
+    }
 }

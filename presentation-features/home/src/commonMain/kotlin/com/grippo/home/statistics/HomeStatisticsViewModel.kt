@@ -5,5 +5,9 @@ import com.grippo.core.BaseViewModel
 internal class HomeStatisticsViewModel :
     BaseViewModel<HomeStatisticsState, HomeStatisticsDirection, HomeStatisticsLoader>(
         HomeStatisticsState
-    ),
-    HomeStatisticsContract
+    ), HomeStatisticsContract {
+
+    override fun back() {
+        navigateTo(HomeStatisticsDirection.Back)
+    }
+}

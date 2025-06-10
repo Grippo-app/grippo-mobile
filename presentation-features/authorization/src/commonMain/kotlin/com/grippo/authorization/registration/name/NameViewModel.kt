@@ -16,4 +16,8 @@ internal class NameViewModel : BaseViewModel<NameState, NameDirection, NameLoade
         )
         navigateTo(direction)
     }
+
+    override fun back() {
+        navigateTo(NameDirection.Back)
+    }
 }

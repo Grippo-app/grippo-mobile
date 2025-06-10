@@ -22,4 +22,8 @@ internal class CredentialViewModel :
         )
         navigateTo(direction)
     }
+
+    override fun back() {
+        navigateTo(CredentialDirection.Back)
+    }
 }

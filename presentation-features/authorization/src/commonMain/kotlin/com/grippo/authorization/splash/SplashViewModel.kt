@@ -32,4 +32,8 @@ internal class SplashViewModel(
             }
         }
     }
+
+    override fun back() {
+        navigateTo(SplashDirection.Back)
+    }
 }

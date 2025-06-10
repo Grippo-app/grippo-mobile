@@ -8,6 +8,7 @@ import com.arkivanov.decompose.router.pages.PagesNavigation
 import com.arkivanov.decompose.router.pages.childPages
 import com.arkivanov.decompose.router.pages.select
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
@@ -35,11 +36,18 @@ public class BottomNavigationComponent(
         BottomNavigationViewModel()
     }
 
+    private val backCallback = BackCallback(onBack = viewModel::back)
+
+    init {
+        backHandler.register(backCallback)
+    }
+
     override suspend fun eventListener(direction: BottomNavigationDirection) {
         when (direction) {
             BottomNavigationDirection.Trainings -> navigation.select(0)
             BottomNavigationDirection.Statistics -> navigation.select(1)
             BottomNavigationDirection.Profile -> navigation.select(2)
+            BottomNavigationDirection.Back -> onBack.invoke()
         }
     }
 
@@ -71,19 +79,22 @@ public class BottomNavigationComponent(
                     toExcludedMuscles = toExcludedMuscles,
                     toExerciseLibrary = toExerciseLibrary,
                     toMissingEquipment = toMissingEquipment,
-                    toWeightHistory = toWeightHistory
+                    toWeightHistory = toWeightHistory,
+                    onBack = onBack
                 ),
             )
 
             is BottomNavigationRouter.Trainings -> Child.Trainings(
                 HomeTrainingsComponent(
                     componentContext = context,
+                    onBack = onBack
                 ),
             )
 
             is BottomNavigationRouter.Statistics -> Child.Statistics(
                 HomeStatisticsComponent(
                     componentContext = context,
+                    onBack = onBack
                 ),
             )
         }
