@@ -73,17 +73,6 @@ public class BottomNavigationComponent(
 
     private fun createChild(router: BottomNavigationRouter, context: ComponentContext): Child {
         return when (router) {
-            BottomNavigationRouter.Profile -> Child.Profile(
-                HomeProfileComponent(
-                    componentContext = context,
-                    toExcludedMuscles = toExcludedMuscles,
-                    toExerciseLibrary = toExerciseLibrary,
-                    toMissingEquipment = toMissingEquipment,
-                    toWeightHistory = toWeightHistory,
-                    onBack = back
-                ),
-            )
-
             is BottomNavigationRouter.Trainings -> Child.Trainings(
                 HomeTrainingsComponent(
                     componentContext = context,
@@ -94,7 +83,18 @@ public class BottomNavigationComponent(
             is BottomNavigationRouter.Statistics -> Child.Statistics(
                 HomeStatisticsComponent(
                     componentContext = context,
-                    onBack = back
+                    onBack = { navigation.select(0) }
+                ),
+            )
+
+            BottomNavigationRouter.Profile -> Child.Profile(
+                HomeProfileComponent(
+                    componentContext = context,
+                    toExcludedMuscles = toExcludedMuscles,
+                    toExerciseLibrary = toExerciseLibrary,
+                    toMissingEquipment = toMissingEquipment,
+                    toWeightHistory = toWeightHistory,
+                    onBack =  { navigation.select(1) }
                 ),
             )
         }
