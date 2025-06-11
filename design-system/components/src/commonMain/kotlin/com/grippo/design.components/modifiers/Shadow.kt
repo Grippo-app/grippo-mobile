@@ -15,6 +15,7 @@ public enum class ShadowElevation(public val dp: Dp) {
     Component(2.dp),
     Card(4.dp),
     Container(6.dp),
+    Non(0.dp),
 }
 
 @Composable
@@ -23,6 +24,8 @@ public fun Modifier.shadowDefault(
     elevation: ShadowElevation,
     color: Color = AppTokens.colors.overlay.defaultShadow,
 ): Modifier {
+    if (elevation == ShadowElevation.Non) return this
+
     val spotColor = color.copy(alpha = (color.alpha * 1.5F).coerceIn(0f, 1f))
     return this.then(
         Modifier.shadow(

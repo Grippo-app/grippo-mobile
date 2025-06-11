@@ -1,6 +1,6 @@
 package com.grippo.authorization
 
-import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
@@ -17,7 +17,7 @@ internal fun AuthScreen(
     contract: AuthContract
 ) = BaseComposeScreen(AppTokens.colors.background.primary) {
     ChildStackCompose(
-        modifier = Modifier.systemBarsPadding(),
+        modifier = Modifier.navigationBarsPadding(),
         stack = component.childStack,
         animation = backAnimation(
             backHandler = component.backHandler,

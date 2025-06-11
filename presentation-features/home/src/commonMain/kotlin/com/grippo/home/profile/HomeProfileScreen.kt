@@ -35,49 +35,48 @@ internal fun HomeProfileScreen(
     loaders: ImmutableSet<HomeProfileLoader>,
     contract: HomeProfileContract
 ) = BaseComposeScreen(AppTokens.colors.background.primary) {
-    Column {
-        Toolbar(
-            modifier = Modifier.fillMaxWidth(),
-            title = AppTokens.strings.res(Res.string.profile),
-        )
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-                .padding(
-                    horizontal = AppTokens.dp.screen.horizontalPadding,
-                    vertical = AppTokens.dp.contentPadding.content
-                ).imePadding(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-        ) {
+    Toolbar(
+        modifier = Modifier.fillMaxWidth(),
+        title = AppTokens.strings.res(Res.string.profile),
+    )
 
-            if (state.user != null) {
-                UserCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = state.user
-                )
-            }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f)
+            .verticalScroll(rememberScrollState())
+            .padding(
+                horizontal = AppTokens.dp.screen.horizontalPadding,
+                vertical = AppTokens.dp.contentPadding.content
+            ).imePadding(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+    ) {
 
-            val menu = HomeProfileMenu.entries.map {
-                it to MenuItem(it.text(), it.icon())
-            }.toPersistentList()
-
-            Menu(
-                items = menu,
-                onClick = contract::onMenuClick
-            )
-
-            Button(
+        if (state.user != null) {
+            UserCard(
                 modifier = Modifier.fillMaxWidth(),
-                style = ButtonStyle.Secondary,
-                startIcon = AppTokens.icons.LogOut,
-                text = AppTokens.strings.res(Res.string.logout_btn),
-                onClick = contract::onLogoutClick
+                value = state.user
             )
         }
+
+        val menu = HomeProfileMenu.entries.map {
+            it to MenuItem(it.text(), it.icon())
+        }.toPersistentList()
+
+        Menu(
+            items = menu,
+            onClick = contract::onMenuClick
+        )
+
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            style = ButtonStyle.Secondary,
+            startIcon = AppTokens.icons.LogOut,
+            text = AppTokens.strings.res(Res.string.logout_btn),
+            onClick = contract::onLogoutClick
+        )
     }
 }
 

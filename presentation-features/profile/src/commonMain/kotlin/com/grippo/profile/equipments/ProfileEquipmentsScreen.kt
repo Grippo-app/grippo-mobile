@@ -2,7 +2,6 @@ package com.grippo.profile.equipments
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -45,70 +44,68 @@ internal fun ProfileEquipmentsScreen(
         state.suggestions.map { it.id to UiText.Str(it.name) }.toPersistentList()
     }
 
-    Column {
-        Toolbar(
-            modifier = Modifier.fillMaxWidth(),
-            title = AppTokens.strings.res(Res.string.equipments),
-            content = {
-                Segment(
-                    modifier = Modifier
-                        .horizontalScroll(rememberScrollState())
-                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                        .fillMaxWidth(),
-                    items = segmentItems,
-                    selected = state.selectedGroupId,
-                    onSelect = contract::selectGroup,
-                    segmentWidth = SegmentWidth.Unspecified,
-                )
+    Toolbar(
+        modifier = Modifier.fillMaxWidth(),
+        title = AppTokens.strings.res(Res.string.equipments),
+        content = {
+            Segment(
+                modifier = Modifier
+                    .horizontalScroll(rememberScrollState())
+                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                    .fillMaxWidth(),
+                items = segmentItems,
+                selected = state.selectedGroupId,
+                onSelect = contract::selectGroup,
+                segmentWidth = SegmentWidth.Unspecified,
+            )
 
-            }
-        )
-
-        val equipments = remember(state.selectedGroupId, state.suggestions) {
-            state.suggestions.find { it.id == state.selectedGroupId }?.equipments.orEmpty()
         }
+    )
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            contentPadding = PaddingValues(
-                top = AppTokens.dp.contentPadding.content,
-                start = AppTokens.dp.screen.horizontalPadding,
-                end = AppTokens.dp.screen.horizontalPadding,
-            ),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-        ) {
-            items(equipments, key = { it.id }) { equipment ->
-                EquipmentRow(
-                    equipment = equipment,
-                    selectedEquipmentIds = state.selectedEquipmentIds,
-                    selectEquipment = contract::selectEquipment,
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-        val buttonState = remember(loaders) {
-            when {
-                loaders.contains(ProfileEquipmentsLoader.ApplyButton) -> ButtonState.Loading
-                else -> ButtonState.Enabled
-            }
-        }
-
-        Button(
-            modifier = Modifier
-                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                .fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.apply_btn),
-            style = ButtonStyle.Primary,
-            state = buttonState,
-            onClick = contract::apply
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+    val equipments = remember(state.selectedGroupId, state.suggestions) {
+        state.suggestions.find { it.id == state.selectedGroupId }?.equipments.orEmpty()
     }
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f),
+        contentPadding = PaddingValues(
+            top = AppTokens.dp.contentPadding.content,
+            start = AppTokens.dp.screen.horizontalPadding,
+            end = AppTokens.dp.screen.horizontalPadding,
+        ),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+    ) {
+        items(equipments, key = { it.id }) { equipment ->
+            EquipmentRow(
+                equipment = equipment,
+                selectedEquipmentIds = state.selectedEquipmentIds,
+                selectEquipment = contract::selectEquipment,
+            )
+        }
+    }
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+    val buttonState = remember(loaders) {
+        when {
+            loaders.contains(ProfileEquipmentsLoader.ApplyButton) -> ButtonState.Loading
+            else -> ButtonState.Enabled
+        }
+    }
+
+    Button(
+        modifier = Modifier
+            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+            .fillMaxWidth(),
+        text = AppTokens.strings.res(Res.string.apply_btn),
+        style = ButtonStyle.Primary,
+        state = buttonState,
+        onClick = contract::apply
+    )
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
 }
 
 @AppPreview

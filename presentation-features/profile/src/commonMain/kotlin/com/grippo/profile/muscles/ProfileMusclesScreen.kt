@@ -1,7 +1,6 @@
 package com.grippo.profile.muscles
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -36,89 +35,88 @@ internal fun ProfileMusclesScreen(
     loaders: ImmutableSet<ProfileMusclesLoader>,
     contract: ProfileMusclesContract
 ) = BaseComposeScreen(AppTokens.colors.background.primary) {
-    Column {
-        Toolbar(
-            modifier = Modifier.fillMaxWidth(),
-            title = AppTokens.strings.res(Res.string.muscles),
-        )
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            contentPadding = PaddingValues(
-                horizontal = AppTokens.dp.screen.horizontalPadding,
-                vertical = AppTokens.dp.contentPadding.content
-            ),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-        ) {
-            itemsIndexed(
-                state.suggestions,
-                key = { _, item -> item.id }) { index, group ->
-                val isEven = index % 2 == 0
+    Toolbar(
+        modifier = Modifier.fillMaxWidth(),
+        title = AppTokens.strings.res(Res.string.muscles),
+    )
 
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = group.name,
-                    style = AppTokens.typography.h3(),
-                    textAlign = TextAlign.Center,
-                    color = AppTokens.colors.text.primary,
-                )
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f),
+        contentPadding = PaddingValues(
+            horizontal = AppTokens.dp.screen.horizontalPadding,
+            vertical = AppTokens.dp.contentPadding.content
+        ),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+    ) {
+        itemsIndexed(
+            state.suggestions,
+            key = { _, item -> item.id }) { index, group ->
+            val isEven = index % 2 == 0
 
-                Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = group.name,
+                style = AppTokens.typography.h3(),
+                textAlign = TextAlign.Center,
+                color = AppTokens.colors.text.primary,
+            )
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    if (isEven) {
-                        MusclesColumn(
-                            modifier = Modifier.weight(1f),
-                            item = group,
-                            selectedIds = state.selectedMuscleIds,
-                            onSelect = contract::select
-                        )
-                        MusclesImage(
-                            modifier = Modifier.weight(1f),
-                            item = group,
-                            selectedIds = state.selectedMuscleIds
-                        )
-                    } else {
-                        MusclesImage(
-                            modifier = Modifier.weight(1f),
-                            item = group,
-                            selectedIds = state.selectedMuscleIds
-                        )
-                        MusclesColumn(
-                            modifier = Modifier.weight(1f),
-                            item = group,
-                            selectedIds = state.selectedMuscleIds,
-                            onSelect = contract::select
-                        )
-                    }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                if (isEven) {
+                    MusclesColumn(
+                        modifier = Modifier.weight(1f),
+                        item = group,
+                        selectedIds = state.selectedMuscleIds,
+                        onSelect = contract::select
+                    )
+                    MusclesImage(
+                        modifier = Modifier.weight(1f),
+                        item = group,
+                        selectedIds = state.selectedMuscleIds
+                    )
+                } else {
+                    MusclesImage(
+                        modifier = Modifier.weight(1f),
+                        item = group,
+                        selectedIds = state.selectedMuscleIds
+                    )
+                    MusclesColumn(
+                        modifier = Modifier.weight(1f),
+                        item = group,
+                        selectedIds = state.selectedMuscleIds,
+                        onSelect = contract::select
+                    )
                 }
             }
         }
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-        val buttonState = remember(loaders) {
-            when {
-                loaders.contains(ProfileMusclesLoader.ApplyButton) -> ButtonState.Loading
-                else -> ButtonState.Enabled
-            }
-        }
-
-        Button(
-            modifier = Modifier
-                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                .fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.apply_btn),
-            style = ButtonStyle.Primary,
-            state = buttonState,
-            onClick = contract::apply
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
     }
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+    val buttonState = remember(loaders) {
+        when {
+            loaders.contains(ProfileMusclesLoader.ApplyButton) -> ButtonState.Loading
+            else -> ButtonState.Enabled
+        }
+    }
+
+    Button(
+        modifier = Modifier
+            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+            .fillMaxWidth(),
+        text = AppTokens.strings.res(Res.string.apply_btn),
+        style = ButtonStyle.Primary,
+        state = buttonState,
+        onClick = contract::apply
+    )
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
 }

@@ -1,17 +1,21 @@
 package com.grippo.design.components.toolbar
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,20 +25,40 @@ import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.icons.ChevronLeft
+
+@Immutable
+public enum class ToolbarStyle {
+    Default,
+    Transparent
+}
 
 @Composable
 public fun Toolbar(
     modifier: Modifier = Modifier,
-    title: String,
+    title: String? = null,
+    style: ToolbarStyle = ToolbarStyle.Default,
+    onBack: (() -> Unit)? = null,
     content: (@Composable ColumnScope.() -> Unit)? = null
 ) {
+
+    val color = when (style) {
+        ToolbarStyle.Default -> AppTokens.colors.background.secondary
+        ToolbarStyle.Transparent -> Color.Transparent
+    }
+
+    val shadowElevation = when (style) {
+        ToolbarStyle.Default -> ShadowElevation.Container
+        ToolbarStyle.Transparent -> ShadowElevation.Non
+    }
+
     Column(
         modifier = modifier
             .shadowDefault(
                 shape = RoundedCornerShape(0.dp),
-                elevation = ShadowElevation.Container
+                elevation = shadowElevation
             )
-            .background(AppTokens.colors.background.secondary)
+            .background(color)
             .statusBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
@@ -43,15 +67,31 @@ public fun Toolbar(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(AppTokens.dp.screen.toolbar.height)
-                .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+                .height(AppTokens.dp.screen.toolbar.height),
         ) {
-            Text(
-                modifier = Modifier.align(Alignment.Center),
-                text = title,
-                style = AppTokens.typography.h2(),
-                color = AppTokens.colors.text.primary,
-            )
+            onBack?.let {
+                Icon(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .clickable(onClick = it)
+                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+                    imageVector = AppTokens.icons.ChevronLeft,
+                    contentDescription = null,
+                    tint = AppTokens.colors.icon.default,
+
+                    )
+            }
+
+            title?.let {
+                Text(
+                    modifier = Modifier
+                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                        .align(Alignment.Center),
+                    text = it,
+                    style = AppTokens.typography.h2(),
+                    color = AppTokens.colors.text.primary,
+                )
+            }
         }
 
         content?.invoke(this)
@@ -63,7 +103,15 @@ public fun Toolbar(
 private fun ToolbarPreview() {
     PreviewContainer {
         Toolbar(
-            title = "Profile"
+            title = "Primary",
+            onBack = {},
+            style = ToolbarStyle.Default
+        )
+
+        Toolbar(
+            title = "Secondary",
+            onBack = {},
+            style = ToolbarStyle.Transparent
         )
     }
 }

@@ -28,6 +28,8 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.konfetti.KonfettiParade
 import com.grippo.design.components.loading.Loader
+import com.grippo.design.components.toolbar.Toolbar
+import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.components.user.UserCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -47,6 +49,7 @@ internal fun CompletedScreen(
     loaders: ImmutableSet<CompletedLoader>,
     contract: CompletedContract
 ) = BaseComposeScreen(AppTokens.colors.background.primary) {
+
     if (loaders.contains(CompletedLoader.Registration)) {
         Loader(modifier = Modifier.fillMaxSize())
         return@BaseComposeScreen
@@ -71,17 +74,20 @@ internal fun CompletedScreen(
         label = "offsetY"
     )
 
+    Toolbar(
+        modifier = Modifier.fillMaxWidth(),
+        style = ToolbarStyle.Transparent
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(
                 horizontal = AppTokens.dp.screen.horizontalPadding,
-                vertical = AppTokens.dp.screen.verticalPadding
+                vertical = AppTokens.dp.contentPadding.content
             ).imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        Spacer(modifier = Modifier.size(60.dp))
 
         Text(
             modifier = Modifier.fillMaxWidth(),

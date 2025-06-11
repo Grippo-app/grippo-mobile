@@ -23,6 +23,8 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.muscle.MusclesColumn
 import com.grippo.design.components.muscle.MusclesImage
+import com.grippo.design.components.toolbar.Toolbar
+import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -42,17 +44,22 @@ internal fun ExcludedMusclesScreen(
     loaders: ImmutableSet<ExcludedMusclesLoader>,
     contract: ExcludedMusclesContract
 ) = BaseComposeScreen(AppTokens.colors.background.primary) {
+
+    Toolbar(
+        modifier = Modifier.fillMaxWidth(),
+        onBack = contract::back,
+        style = ToolbarStyle.Transparent
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(
                 horizontal = AppTokens.dp.screen.horizontalPadding,
-                vertical = AppTokens.dp.screen.verticalPadding
+                vertical = AppTokens.dp.contentPadding.content
             ).imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        Spacer(modifier = Modifier.size(60.dp))
 
         Text(
             modifier = Modifier.fillMaxWidth(),

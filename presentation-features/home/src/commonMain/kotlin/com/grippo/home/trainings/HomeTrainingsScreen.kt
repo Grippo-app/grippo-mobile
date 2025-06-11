@@ -1,7 +1,6 @@
 package com.grippo.home.trainings
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,37 +28,36 @@ internal fun HomeTrainingsScreen(
     loaders: ImmutableSet<HomeTrainingsLoader>,
     contract: HomeTrainingsContract
 ) = BaseComposeScreen(AppTokens.colors.background.primary) {
-    Column {
-        Toolbar(
-            modifier = Modifier.fillMaxWidth(),
-            title = AppTokens.strings.res(Res.string.trainings),
-        )
 
-        val list = remember(state.trainings) {
-            state
-                .trainings
-                .firstOrNull()
-                ?.exercises
-                .orEmpty()
-                .toPersistentList()
-        }
+    Toolbar(
+        modifier = Modifier.fillMaxWidth(),
+        title = AppTokens.strings.res(Res.string.trainings),
+    )
 
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth().weight(1f),
-            contentPadding = PaddingValues(
-                horizontal = AppTokens.dp.screen.horizontalPadding,
-                vertical = AppTokens.dp.contentPadding.content
-            ),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-        ) {
+    val list = remember(state.trainings) {
+        state
+            .trainings
+            .firstOrNull()
+            ?.exercises
+            .orEmpty()
+            .toPersistentList()
+    }
 
-            items(list, key = { it.id }) { exercise ->
-                ExerciseCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = exercise,
-                    onExerciseExampleClick = contract::openExerciseExample
-                )
-            }
+    LazyColumn(
+        modifier = Modifier.fillMaxWidth().weight(1f),
+        contentPadding = PaddingValues(
+            horizontal = AppTokens.dp.screen.horizontalPadding,
+            vertical = AppTokens.dp.contentPadding.content
+        ),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+    ) {
+
+        items(list, key = { it.id }) { exercise ->
+            ExerciseCard(
+                modifier = Modifier.fillMaxWidth(),
+                value = exercise,
+                onExerciseExampleClick = contract::openExerciseExample
+            )
         }
     }
 }

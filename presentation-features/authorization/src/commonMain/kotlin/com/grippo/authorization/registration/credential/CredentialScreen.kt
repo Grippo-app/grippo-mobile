@@ -13,13 +13,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.inputs.InputEmail
 import com.grippo.design.components.inputs.InputPassword
+import com.grippo.design.components.toolbar.Toolbar
+import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -38,17 +39,22 @@ internal fun CredentialScreen(
     loaders: ImmutableSet<CredentialLoader>,
     contract: CredentialContract
 ) = BaseComposeScreen(AppTokens.colors.background.primary) {
+
+    Toolbar(
+        modifier = Modifier.fillMaxWidth(),
+        onBack = contract::back,
+        style = ToolbarStyle.Transparent
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(
                 horizontal = AppTokens.dp.screen.horizontalPadding,
-                vertical = AppTokens.dp.screen.verticalPadding
+                vertical = AppTokens.dp.contentPadding.content
             ).imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        Spacer(modifier = Modifier.size(60.dp))
 
         Text(
             modifier = Modifier.fillMaxWidth(),
