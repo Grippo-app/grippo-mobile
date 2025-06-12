@@ -55,33 +55,30 @@ public fun Konfetti(
                 val deltaMs = if (frameTime.value > 0) (frameMs - frameTime.value) else 0
                 frameTime.value = frameMs
 
-                particles.value =
-                    partySystems.map { particleSystem ->
+                particles.value = partySystems.map { particleSystem ->
 
-                        val totalTimeRunning = getTotalTimeRunning(particleSystem.createdAt)
-                        // Do not start particleSystem yet if totalTimeRunning is below delay
-                        if (totalTimeRunning < particleSystem.party.delay) return@map listOf()
+                    val totalTimeRunning = getTotalTimeRunning(particleSystem.createdAt)
+                    // Do not start particleSystem yet if totalTimeRunning is below delay
+                    if (totalTimeRunning < particleSystem.party.delay) return@map listOf()
 
-                        if (particleSystem.isDoneEmitting()) {
-                            updateListener?.onParticleSystemEnded(
-                                system = particleSystem,
-                                activeSystems = partySystems.count { !it.isDoneEmitting() },
-                            )
-                        }
+                    if (particleSystem.isDoneEmitting()) {
+                        updateListener?.onParticleSystemEnded(
+                            system = particleSystem,
+                            activeSystems = partySystems.count { !it.isDoneEmitting() },
+                        )
+                    }
 
-                        particleSystem.render(deltaMs.div(1000f), drawArea.value)
-                    }.flatten()
+                    particleSystem.render(deltaMs.div(1000f), drawArea.value)
+                }.flatten()
             }
         }
     }
 
     Canvas(
-        modifier =
-            modifier
-                .onGloballyPositioned {
-                    drawArea.value =
-                        CoreRectImpl(0f, 0f, it.size.width.toFloat(), it.size.height.toFloat())
-                },
+        modifier = modifier.onGloballyPositioned {
+            drawArea.value =
+                CoreRectImpl(0f, 0f, it.size.width.toFloat(), it.size.height.toFloat())
+        },
         onDraw = {
             particles.value.forEach { particle ->
                 withTransform({
