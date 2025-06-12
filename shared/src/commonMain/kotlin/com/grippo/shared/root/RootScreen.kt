@@ -3,7 +3,7 @@ package com.grippo.shared.root
 import androidx.compose.runtime.Composable
 import com.grippo.core.BaseComposeScreen
 import com.grippo.design.core.AppTokens
-import com.grippo.platform.core.backAnimation
+import com.grippo.platform.core.platformAnimation
 import kotlinx.collections.immutable.ImmutableSet
 import com.arkivanov.decompose.extensions.compose.experimental.stack.ChildStack as ChildStackCompose
 
@@ -16,10 +16,7 @@ internal fun RootScreen(
 ) = BaseComposeScreen(AppTokens.colors.background.primary) {
     ChildStackCompose(
         stack = component.childStack,
-        animation = backAnimation(
-            backHandler = component.backHandler,
-            onBack = contract::back
-        ),
+        animation = platformAnimation(),
         content = { child -> child.instance.component.Render() }
     )
 }

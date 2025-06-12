@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
 import com.grippo.design.core.AppTokens
-import com.grippo.platform.core.backAnimation
+import com.grippo.platform.core.platformAnimation
 import kotlinx.collections.immutable.ImmutableSet
 import com.arkivanov.decompose.extensions.compose.experimental.stack.ChildStack as ChildStackCompose
 
@@ -19,10 +19,7 @@ internal fun AuthScreen(
     ChildStackCompose(
         modifier = Modifier.navigationBarsPadding(),
         stack = component.childStack,
-        animation = backAnimation(
-            backHandler = component.backHandler,
-            onBack = contract::back
-        ),
+        animation = platformAnimation(),
         content = { child -> child.instance.component.Render() }
     )
 }

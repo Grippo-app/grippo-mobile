@@ -14,10 +14,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         ),
         finish: {
             // ✅ Soft hide app
-            // UIApplication.shared.perform(#selector(NSXPCConnection.suspend))
+            UIApplication.shared.perform(#selector(NSXPCConnection.suspend))
 
             // ❌ Hard close app
-            exit(0)
+            // exit(0)
         }
     )
 

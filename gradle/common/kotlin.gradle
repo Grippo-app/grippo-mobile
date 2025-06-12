@@ -21,7 +21,6 @@ kotlin {
         languageSettings.optIn("kotlin.time.ExperimentalTime")
         languageSettings.optIn("org.jetbrains.compose.resources.ExperimentalResourceApi")
         languageSettings.optIn("kotlinx.cinterop.ExperimentalForeignApi")
-        languageSettings.optIn("androidx.compose.material3.ExperimentalMaterial3Api")
         languageSettings.optIn("com.arkivanov.decompose.DelicateDecomposeApi")
         languageSettings.optIn("androidx.compose.animation.ExperimentalSharedTransitionApi")
         languageSettings.optIn("kotlinx.datetime.format.FormatStringsInDatetimeFormats")

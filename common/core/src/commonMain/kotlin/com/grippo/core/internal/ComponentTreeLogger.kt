@@ -36,11 +36,13 @@ internal object ComponentTreeLogger {
 
     private fun printNavigationTree() {
         val tree = buildString {
-            append("┌──────── COMPONENTS ────────\n")
+            appendLine("┌────── 📦 COMPONENT TREE ──────")
             activeComponents.forEachIndexed { index, name ->
-                append("│  " + "  ".repeat(index) + "└── $name\n")
+                val indent = "│   ".repeat(index)
+                val branch = if (index == activeComponents.lastIndex) "└── " else "├── "
+                appendLine("$indent$branch$name")
             }
-            append("└────────" + " COMPONENTS ────────")
+            append("└" + "─".repeat(30))
         }
         AppLogger.navigation(tree)
     }
