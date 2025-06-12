@@ -1,6 +1,13 @@
 package com.grippo.profile.weight.history
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
@@ -28,10 +35,33 @@ internal fun WeightHistoryScreen(
         onBack = contract::back
     )
 
-    InputWeight(
-        value = state.weight.value,
-        onClick = contract::openWeightPicker
-    )
+    Column(
+        modifier = Modifier.fillMaxWidth()
+            .weight(1f)
+            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+    ) {
+
+        Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
+
+        InputWeight(
+            value = state.weight.value,
+            onClick = contract::openWeightPicker
+        )
+
+        Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            contentPadding = PaddingValues(
+                bottom = AppTokens.dp.contentPadding.content
+            ),
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+        ) {
+
+        }
+    }
 }
 
 @AppPreview
