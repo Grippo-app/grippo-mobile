@@ -12,7 +12,9 @@ internal class WeightHistoryComponent(
 ) : BaseComponent<WeightHistoryDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        WeightHistoryViewModel()
+        WeightHistoryViewModel(
+            dialogController = getKoin().get()
+        )
     }
 
     override suspend fun eventListener(direction: WeightHistoryDirection) {

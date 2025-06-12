@@ -3,7 +3,7 @@ package com.grippo.authorization.login
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.authorization.LoginUseCase
 import com.grippo.presentation.api.auth.models.EmailFormatState
-import com.grippo.presentation.api.auth.models.PasswordFormatState
+import com.grippo.presentation.api.profile.models.PasswordFormatState
 
 internal class LoginViewModel(
     private val loginUseCase: LoginUseCase

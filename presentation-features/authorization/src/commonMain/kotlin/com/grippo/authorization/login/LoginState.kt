@@ -2,7 +2,7 @@ package com.grippo.authorization.login
 
 import androidx.compose.runtime.Immutable
 import com.grippo.presentation.api.auth.models.EmailFormatState
-import com.grippo.presentation.api.auth.models.PasswordFormatState
+import com.grippo.presentation.api.profile.models.PasswordFormatState
 
 @Immutable
 internal data class LoginState(

@@ -2,7 +2,7 @@ package com.grippo.authorization.registration.credential
 
 import com.grippo.core.BaseViewModel
 import com.grippo.presentation.api.auth.models.EmailFormatState
-import com.grippo.presentation.api.auth.models.PasswordFormatState
+import com.grippo.presentation.api.profile.models.PasswordFormatState
 
 internal class CredentialViewModel :
     BaseViewModel<CredentialState, CredentialDirection, CredentialLoader>(CredentialState()),

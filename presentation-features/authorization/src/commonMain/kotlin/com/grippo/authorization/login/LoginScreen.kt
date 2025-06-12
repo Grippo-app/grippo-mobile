@@ -35,7 +35,7 @@ import com.grippo.design.resources.login_description
 import com.grippo.design.resources.login_title
 import com.grippo.design.resources.or
 import com.grippo.presentation.api.auth.models.EmailFormatState
-import com.grippo.presentation.api.auth.models.PasswordFormatState
+import com.grippo.presentation.api.profile.models.PasswordFormatState
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 

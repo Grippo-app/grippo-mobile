@@ -26,6 +26,8 @@ import com.grippo.design.resources.Res
 import com.grippo.design.resources.continue_btn
 import com.grippo.design.resources.registration_body_description
 import com.grippo.design.resources.registration_body_title
+import com.grippo.presentation.api.profile.models.HeightFormatState
+import com.grippo.presentation.api.profile.models.WeightFormatState
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -73,14 +75,14 @@ internal fun BodyScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         InputWeight(
-            value = state.weight,
+            value = state.weight.value,
             onClick = contract::openWeightPicker
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         InputHeight(
-            value = state.height,
+            value = state.height.value,
             onClick = contract::openHeightPicker
         )
 
@@ -101,8 +103,8 @@ private fun ScreenPreview() {
     PreviewContainer {
         BodyScreen(
             state = BodyState(
-                weight = 65f,
-                height = 144
+                weight = WeightFormatState.of(64.0f),
+                height = HeightFormatState.of(144)
             ),
             loaders = persistentSetOf(),
             contract = BodyContract.Empty

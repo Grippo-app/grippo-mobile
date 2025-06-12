@@ -1,4 +1,4 @@
-package com.grippo.presentation.api.auth.models
+package com.grippo.presentation.api.profile.models
 
 import androidx.compose.runtime.Immutable
 import com.grippo.validation.PasswordValidator
