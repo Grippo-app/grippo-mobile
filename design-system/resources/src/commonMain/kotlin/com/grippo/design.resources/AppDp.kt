@@ -123,7 +123,7 @@ public data object AppDp {
     public data object BodyDetails {
         val horizontalPadding: Dp = padding.extraSmall
         val verticalPadding: Dp = padding.extraSmall
-        val radius: Dp = AppDp.radius.medium
+        val radius: Dp = AppDp.radius.small
         val icon: Dp = AppDp.icon.small
     }
 
