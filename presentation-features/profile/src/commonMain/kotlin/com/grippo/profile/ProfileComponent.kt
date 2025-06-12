@@ -11,8 +11,12 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
 import com.grippo.presentation.api.profile.ProfileRouter
+import com.grippo.profile.ProfileComponent.Child.Equipments
+import com.grippo.profile.ProfileComponent.Child.Muscles
+import com.grippo.profile.ProfileComponent.Child.WeightHistory
 import com.grippo.profile.equipments.ProfileEquipmentsComponent
 import com.grippo.profile.muscles.ProfileMusclesComponent
+import com.grippo.profile.weight.history.WeightHistoryComponent
 
 public class ProfileComponent(
     initial: ProfileRouter,
@@ -23,6 +27,7 @@ public class ProfileComponent(
     internal sealed class Child(open val component: BaseComponent<*>) {
         data class Muscles(override val component: ProfileMusclesComponent) : Child(component)
         data class Equipments(override val component: ProfileEquipmentsComponent) : Child(component)
+        data class WeightHistory(override val component: WeightHistoryComponent) : Child(component)
     }
 
     override val viewModel: ProfileViewModel = componentContext.retainedInstance {
@@ -54,18 +59,25 @@ public class ProfileComponent(
 
     private fun createChild(router: ProfileRouter, context: ComponentContext): Child {
         return when (router) {
-            ProfileRouter.Muscles -> Child.Muscles(
+            ProfileRouter.Muscles -> Muscles(
                 ProfileMusclesComponent(
                     componentContext = context,
                     back = back
                 ),
             )
 
-            is ProfileRouter.Equipments -> Child.Equipments(
+            is ProfileRouter.Equipments -> Equipments(
                 ProfileEquipmentsComponent(
                     componentContext = context,
                     back = back
                 ),
+            )
+
+            ProfileRouter.WeightHistory -> WeightHistory(
+                WeightHistoryComponent(
+                    componentContext = context,
+                    back = back
+                )
             )
         }
     }

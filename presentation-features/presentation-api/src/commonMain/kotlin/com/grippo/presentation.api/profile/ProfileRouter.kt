@@ -10,4 +10,7 @@ public sealed class ProfileRouter : BaseRouter {
 
     @Serializable
     public data object Muscles : ProfileRouter()
+
+    @Serializable
+    public data object WeightHistory : ProfileRouter()
 }

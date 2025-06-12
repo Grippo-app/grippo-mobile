@@ -47,6 +47,7 @@ internal fun ProfileEquipmentsScreen(
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.equipments),
+        onBack = contract::back,
         content = {
             Segment(
                 modifier = Modifier

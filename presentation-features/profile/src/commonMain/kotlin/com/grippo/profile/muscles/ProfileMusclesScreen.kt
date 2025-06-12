@@ -39,6 +39,7 @@ internal fun ProfileMusclesScreen(
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.muscles),
+        onBack = contract::back
     )
 
     LazyColumn(
