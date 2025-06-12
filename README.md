@@ -89,7 +89,7 @@ The iOS application uses SwiftUI as an entry point and hosts the Compose UI insi
 ./gradlew assemble
 ```
 
-For a full clean (as documented in [`README.md`](../README.md)):
+For a full clean
 
 ```bash
 ./gradlew clean
