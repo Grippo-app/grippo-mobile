@@ -6,8 +6,7 @@ import kotlinx.coroutines.flow.onEach
 
 public class RootViewModel(
     authorizationFeature: AuthorizationFeature
-) : BaseViewModel<RootState, RootDirection, RootLoader>(RootState),
-    RootContract {
+) : BaseViewModel<RootState, RootDirection, RootLoader>(RootState), RootContract {
 
     init {
         authorizationFeature

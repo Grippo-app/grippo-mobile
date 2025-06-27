@@ -1,9 +1,7 @@
 package com.grippo.date.utils
 
-import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DayOfWeek
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
@@ -14,7 +12,9 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.todayIn
+import kotlin.time.Clock
 import kotlin.time.Duration
+import kotlin.time.Instant
 
 public object DateTimeUtils {
 
