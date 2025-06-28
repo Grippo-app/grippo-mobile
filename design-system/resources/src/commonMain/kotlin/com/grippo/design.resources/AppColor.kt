@@ -20,6 +20,7 @@ public interface AppColor {
     public val muscle: MuscleColors
     public val segment: SegmentColors
     public val konfetti: Konfetti
+    public val muscleColorPreset: MuscleColorPreset
 
     public interface DividerColors {
         public val default: Color
@@ -161,5 +162,34 @@ public interface AppColor {
         public val confettiColor8: Color
         public val confettiColor9: Color
         public val confettiColor10: Color
+    }
+
+    public interface MuscleColorPreset {
+        public val pectoralisMajorClavicular: Color
+        public val pectoralisMajorSternocostal: Color
+        public val pectoralisMajorAbdominal: Color
+
+        public val trapezius: Color
+        public val latissimusDorsi: Color
+        public val rhomboids: Color
+        public val teresMajor: Color
+
+        public val rectusAbdominis: Color
+        public val obliques: Color
+
+        public val calf: Color
+        public val gluteal: Color
+        public val hamstrings: Color
+        public val quadriceps: Color
+        public val adductors: Color
+        public val abductors: Color
+
+        public val anteriorDeltoid: Color
+        public val lateralDeltoid: Color
+        public val posteriorDeltoid: Color
+
+        public val biceps: Color
+        public val triceps: Color
+        public val forearm: Color
     }
 }
