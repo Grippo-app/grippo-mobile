@@ -15,8 +15,12 @@ import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.presentation.api.equipment.models.EquipmentState
+import com.grippo.presentation.api.equipment.models.stubEquipments
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 public fun EquipmentsCard(
@@ -46,5 +50,19 @@ public fun EquipmentsCard(
                 value = item
             )
         }
+    }
+}
+
+@AppPreview
+@Composable
+private fun EquipmentsCardPreview() {
+    PreviewContainer {
+        EquipmentsCard(
+            value = stubEquipments()
+                .shuffled()
+                .flatMap { it.equipments }
+                .take(3)
+                .toPersistentList()
+        )
     }
 }

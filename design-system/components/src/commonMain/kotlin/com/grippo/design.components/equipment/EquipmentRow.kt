@@ -6,8 +6,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.design.components.cards.selectable.SelectableCard
 import com.grippo.design.components.cards.selectable.SelectableCardStyle
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.presentation.api.equipment.models.EquipmentState
+import com.grippo.presentation.api.equipment.models.stubEquipments
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 public fun EquipmentRow(
@@ -32,4 +36,23 @@ public fun EquipmentRow(
         isSelected = isSelected,
         onSelect = selectProvider
     )
+}
+
+@AppPreview
+@Composable
+private fun EquipmentRowPreview() {
+    PreviewContainer {
+        val equip = stubEquipments().random().equipments.random()
+        EquipmentRow(
+            equipment = equip,
+            selectEquipment = {},
+            selectedEquipmentIds = persistentListOf(equip.id)
+        )
+
+        EquipmentRow(
+            equipment = equip,
+            selectEquipment = {},
+            selectedEquipmentIds = persistentListOf()
+        )
+    }
 }

@@ -23,6 +23,7 @@ public class BottomNavigationComponent(
     private val toMissingEquipment: () -> Unit,
     private val toWeightHistory: () -> Unit,
     private val toExerciseLibrary: () -> Unit,
+    private val toDebug: () -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<BottomNavigationDirection>(componentContext) {
 
@@ -94,6 +95,7 @@ public class BottomNavigationComponent(
                     toExerciseLibrary = toExerciseLibrary,
                     toMissingEquipment = toMissingEquipment,
                     toWeightHistory = toWeightHistory,
+                    toDebug = toDebug,
                     back = { navigation.select(1) }
                 ),
             )

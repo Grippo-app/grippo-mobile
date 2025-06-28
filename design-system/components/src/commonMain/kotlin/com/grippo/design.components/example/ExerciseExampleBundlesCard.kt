@@ -25,9 +25,12 @@ import com.grippo.design.components.chart.PieChart
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.percent
 import com.grippo.presentation.api.exercise.example.models.ExerciseExampleBundleState
+import com.grippo.presentation.api.exercise.example.models.stubExerciseExample
 import com.grippo.presentation.api.muscles.factories.images
 import kotlinx.collections.immutable.ImmutableList
 
@@ -134,5 +137,15 @@ public fun ExerciseExampleBundlesCard(
                 }
             }
         }
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseExampleBundlesCardPreview() {
+    PreviewContainer {
+        ExerciseExampleBundlesCard(
+            value = stubExerciseExample().bundles
+        )
     }
 }

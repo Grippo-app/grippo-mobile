@@ -41,4 +41,8 @@ internal class HomeProfileViewModel(
     override fun back() {
         navigateTo(HomeProfileDirection.Back)
     }
+
+    override fun onDebugClick() {
+        navigateTo(HomeProfileDirection.Debug)
+    }
 }

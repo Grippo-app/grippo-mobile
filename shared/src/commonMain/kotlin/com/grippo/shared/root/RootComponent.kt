@@ -14,6 +14,7 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.authorization.AuthComponent
 import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
+import com.grippo.debug.DebugComponent
 import com.grippo.design.core.AppTheme
 import com.grippo.home.BottomNavigationComponent
 import com.grippo.presentation.api.RootRouter
@@ -35,6 +36,7 @@ public class RootComponent(
         public data class Authorization(override val component: AuthComponent) : Child(component)
         public data class Home(override val component: BottomNavigationComponent) : Child(component)
         public data class Profile(override val component: ProfileComponent) : Child(component)
+        public data class Debug(override val component: DebugComponent) : Child(component)
     }
 
     override val viewModel: RootViewModel = componentContext.retainedInstance {
@@ -86,6 +88,7 @@ public class RootComponent(
                     toWeightHistory = { navigation.push(RootRouter.Profile(ProfileRouter.WeightHistory)) },
                     toMissingEquipment = { navigation.push(RootRouter.Profile(ProfileRouter.Equipments)) },
                     toExcludedMuscles = { navigation.push(RootRouter.Profile(ProfileRouter.Muscles)) },
+                    toDebug = { navigation.push(RootRouter.Debug) },
                     toExerciseLibrary = {},
                     back = finish
                 )
@@ -95,6 +98,13 @@ public class RootComponent(
                 ProfileComponent(
                     componentContext = context,
                     initial = router.value,
+                    back = navigation::pop
+                )
+            )
+
+            is RootRouter.Debug -> Child.Debug(
+                DebugComponent(
+                    componentContext = context,
                     back = navigation::pop
                 )
             )

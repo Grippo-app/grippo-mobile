@@ -22,6 +22,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.icons.LogOut
+import com.grippo.design.resources.icons.Settings
 import com.grippo.design.resources.logout_btn
 import com.grippo.design.resources.profile
 import com.grippo.presentation.api.profile.models.stubUser
@@ -76,6 +77,14 @@ internal fun HomeProfileScreen(
             startIcon = AppTokens.icons.LogOut,
             text = AppTokens.strings.res(Res.string.logout_btn),
             onClick = contract::onLogoutClick
+        )
+
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            style = ButtonStyle.Primary,
+            startIcon = AppTokens.icons.Settings,
+            text = "Debug panel",
+            onClick = contract::onDebugClick
         )
     }
 }

@@ -2,6 +2,7 @@ package com.grippo.home.profile
 
 internal interface HomeProfileContract {
     fun onLogoutClick()
+    fun onDebugClick()
     fun onMenuClick(menu: HomeProfileMenu)
     fun back()
 
@@ -9,5 +10,6 @@ internal interface HomeProfileContract {
         override fun onLogoutClick() {}
         override fun onMenuClick(menu: HomeProfileMenu) {}
         override fun back() {}
+        override fun onDebugClick() {}
     }
 }

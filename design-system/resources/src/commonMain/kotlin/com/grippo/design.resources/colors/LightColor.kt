@@ -30,26 +30,6 @@ public object LightColor : AppColor {
     private val Neutral600 = Color(0xFF666666)
     private val Neutral700 = Color(0xFF333333)
 
-    private val MuscleBlue1 = Color(0xFFA3C8F0)
-    private val MuscleBlue2 = Color(0xFF7AAEE6)
-    private val MuscleBlue3 = Color(0xFF4D90CC)
-
-    private val MuscleOrange1 = Color(0xFFFFC187)
-    private val MuscleOrange2 = Color(0xFFFFAA50)
-    private val MuscleOrange3 = Color(0xFFFF9240)
-
-    private val MusclePurple1 = Color(0xFFD3B3F8)
-    private val MusclePurple2 = Color(0xFFB087E5)
-    private val MusclePurple3 = Color(0xFF976AD3)
-
-    private val MuscleGreen1 = Color(0xFFB2E6A1)
-    private val MuscleGreen2 = Color(0xFF91D685)
-    private val MuscleGreen3 = Color(0xFF72C26A)
-    private val MuscleGreen4 = Color(0xFF56B055)
-
-    private val MuscleRed1 = Color(0xFFFFB3A3)
-    private val MuscleRed2 = Color(0xFFFF7A7A)
-
     override val button: AppColor.ButtonColors = object : AppColor.ButtonColors {
         override val backgroundPrimary = Primary500
         override val contentPrimary = White
@@ -173,32 +153,38 @@ public object LightColor : AppColor {
 
         override val colorful: AppColor.MuscleColors.Colorful =
             object : AppColor.MuscleColors.Colorful {
-                override val pectoralisMajorClavicular = MusclePurple1
-                override val pectoralisMajorSternocostal = MusclePurple2
-                override val pectoralisMajorAbdominal = MusclePurple3
+                // 🟣 Chest (top → bottom) — violet
+                override val pectoralisMajorClavicular = Color(0xFF986AD9)    // top, darker
+                override val pectoralisMajorSternocostal = Color(0xFFAA7FDD)
+                override val pectoralisMajorAbdominal = Color(0xFFC9A2E8)     // bottom, lighter
 
-                override val trapezius = MuscleRed1
-                override val latissimusDorsi = MuscleRed2
-                override val rhomboids = MuscleOrange1
-                override val teresMajor = MuscleOrange2
+                // 🔵 Back (top → bottom) — blue
+                override val trapezius = Color(0xFF1B4D8C)
+                override val rhomboids = Color(0xFF2D6AA6)
+                override val latissimusDorsi = Color(0xFF4C90C9)
+                override val teresMajor = Color(0xFF76B9E5)
 
-                override val rectusAbdominis = MuscleOrange3
-                override val obliques = MuscleOrange2
+                // 🟠 Abs & Obliques — orange (top → side)
+                override val rectusAbdominis = Color(0xFFD97A20)
+                override val obliques = Color(0xFFFFB066)
 
-                override val calf = MuscleGreen1
-                override val gluteal = MuscleGreen4
-                override val hamstrings = MuscleGreen2
-                override val quadriceps = MuscleGreen3
-                override val adductors = MuscleBlue1
-                override val abductors = MuscleBlue2
+                // 🟢 Legs & Glutes (top → bottom) — green
+                override val gluteal = Color(0xFF216F4A)
+                override val hamstrings = Color(0xFF2F895C)
+                override val quadriceps = Color(0xFF3FA870)
+                override val abductors = Color(0xFF5EC486)
+                override val adductors = Color(0xFF7FDBA4)
+                override val calf = Color(0xFFC0F2D4)
 
-                override val anteriorDeltoid = MuscleOrange1
-                override val lateralDeltoid = MuscleOrange2
-                override val posteriorDeltoid = MuscleOrange3
+                // 🟡 Shoulders — gold (front → back)
+                override val anteriorDeltoid = Color(0xFFAD8A00)
+                override val lateralDeltoid = Color(0xFFC99F00)
+                override val posteriorDeltoid = Color(0xFFEFC944)
 
-                override val biceps = MuscleBlue3
-                override val triceps = MusclePurple2
-                override val forearm = MuscleRed2
+                // 🔴 Arms (top → bottom) — red
+                override val biceps = Color(0xFFB83333)
+                override val triceps = Color(0xFFD24545)
+                override val forearm = Color(0xFFFF7373)
             }
     }
 

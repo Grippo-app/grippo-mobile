@@ -9,9 +9,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.cards.selectable.SelectableCard
 import com.grippo.design.components.cards.selectable.SelectableCardStyle
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.presentation.api.muscles.models.MuscleGroupState
 import com.grippo.presentation.api.muscles.models.MuscleRepresentationState
+import com.grippo.presentation.api.muscles.models.stubMuscles
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 public fun MusclesColumn(
@@ -42,5 +46,19 @@ public fun MusclesColumn(
                 onSelect = selectProvider
             )
         }
+    }
+}
+
+@AppPreview
+@Composable
+private fun MusclesColumnPreview() {
+    PreviewContainer {
+        val group = stubMuscles().random()
+
+        MusclesColumn(
+            item = group,
+            selectedIds = persistentListOf(group.muscles.random().value.id),
+            onSelect = {}
+        )
     }
 }

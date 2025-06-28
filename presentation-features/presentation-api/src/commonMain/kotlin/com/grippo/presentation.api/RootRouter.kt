@@ -16,4 +16,7 @@ public sealed class RootRouter : BaseRouter {
 
     @Serializable
     public data class Profile(val value: ProfileRouter) : RootRouter()
+
+    @Serializable
+    public data object Debug : RootRouter()
 }
