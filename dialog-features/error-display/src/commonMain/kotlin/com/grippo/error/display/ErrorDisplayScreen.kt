@@ -60,18 +60,20 @@ internal fun ErrorDisplayScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(12.dp))
+        if (state.description != null) {
+            Spacer(modifier = Modifier.size(12.dp))
 
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(max = 400.dp)
-                .verticalScroll(rememberScrollState()),
-            text = state.description,
-            style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.secondary,
-            textAlign = TextAlign.Center
-        )
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 400.dp)
+                    .verticalScroll(rememberScrollState()),
+                text = state.description,
+                style = AppTokens.typography.b14Med(),
+                color = AppTokens.colors.text.secondary,
+                textAlign = TextAlign.Center
+            )
+        }
 
         Spacer(modifier = Modifier.size(26.dp))
 

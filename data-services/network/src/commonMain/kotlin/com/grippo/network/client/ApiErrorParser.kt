@@ -5,6 +5,7 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -13,26 +14,60 @@ internal class ApiErrorParser(private val json: Json) {
 
     companion object {
         private const val MAX_DEPTH = 4
+        private const val DEFAULT_ERROR = "Something went wrong. Please try again."
     }
 
-    fun parseMessage(rawBody: String?): String {
-        if (rawBody.isNullOrBlank()) return "Something went wrong"
+    data class ParsedError(val title: String, val description: String?)
 
-        return runCatching {
-            val element = json.parseToJsonElement(rawBody)
-            extractMessagesRecursive(element)
+    fun parseDetailedMessage(rawBody: String?, status: Int?): ParsedError {
+        if (rawBody.isNullOrBlank()) {
+            return ParsedError(
+                title = getFallbackMessage(status),
+                description = null
+            )
+        }
+
+        return try {
+            val element = runCatching { json.parseToJsonElement(rawBody) }
+                .getOrElse {
+                    return ParsedError(
+                        title = getFallbackMessage(status),
+                        description = null
+                    )
+                }
+
+            if (element is JsonObject) {
+                val message = element["message"]?.jsonPrimitive?.contentOrNull
+                val error = element["error"]?.jsonPrimitive?.contentOrNull
+                val reason = element["reason"]?.jsonPrimitive?.contentOrNull
+                val description = element["description"]?.jsonPrimitive?.contentOrNull
+
+                val main = message ?: description ?: reason
+                val secondary = error
+
+                val title = main?.takeIf { it.isNotBlank() } ?: getFallbackMessage(status)
+                val desc = secondary?.takeIf { it.isNotBlank() }
+
+                return ParsedError(title = title, description = desc)
+            }
+
+            val fallbackText = extractMessagesRecursive(element)
                 .filter { it.isNotBlank() }
                 .distinct()
                 .joinToString("\n")
-                .ifBlank { "Something went wrong" }
-        }.getOrElse { "Something went wrong" }
+                .ifBlank { getFallbackMessage(status) }
+
+            ParsedError(title = fallbackText, description = null)
+        } catch (e: Exception) {
+            ParsedError(title = getFallbackMessage(status), description = null)
+        }
     }
 
     fun parseKeys(rawBody: String?): List<String> {
         if (rawBody.isNullOrBlank()) return emptyList()
 
         return runCatching {
-            val element = Json.parseToJsonElement(rawBody)
+            val element = json.parseToJsonElement(rawBody)
             element.jsonObject["errors"]
                 ?.jsonArray
                 ?.mapNotNull { it.jsonObject["code"]?.jsonPrimitive?.content }
@@ -40,7 +75,7 @@ internal class ApiErrorParser(private val json: Json) {
         }.getOrDefault(emptyList())
     }
 
-    fun getDefaultClientErrorMessage(status: Int): String = when (status) {
+    fun getDefaultClientErrorMessage(status: Int?): String = when (status) {
         400 -> "Invalid request. Please try again."
         401 -> "You’re not authorized."
         403 -> "Access denied."
@@ -50,12 +85,20 @@ internal class ApiErrorParser(private val json: Json) {
         else -> "Something went wrong on your side."
     }
 
-    fun getDefaultServerErrorMessage(status: Int): String = when (status) {
+    fun getDefaultServerErrorMessage(status: Int?): String = when (status) {
         500 -> "Server error. Try again later."
         502 -> "Bad gateway."
         503 -> "Service unavailable."
         504 -> "Gateway timeout."
         else -> "Server issue occurred."
+    }
+
+    private fun getFallbackMessage(status: Int?): String {
+        return when (status) {
+            in 400..499 -> getDefaultClientErrorMessage(status)
+            in 500..599 -> getDefaultServerErrorMessage(status)
+            else -> DEFAULT_ERROR
+        }
     }
 
     private fun extractMessagesRecursive(

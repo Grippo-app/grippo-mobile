@@ -12,15 +12,10 @@ public sealed class AppError(
 
         public data class Expected(
             val keys: List<String> = emptyList(),
-            override val message: String,
+            val title: String,
+            val description: String?,
             override val cause: Throwable? = null
-        ) : Network(message, cause)
-
-        public data class Unexpected(
-            val statusCode: Int? = null,
-            override val message: String,
-            override val cause: Throwable? = null
-        ) : Network(message, cause)
+        ) : Network(title, cause)
 
         public data class NoInternet(
             override val message: String,
@@ -32,7 +27,8 @@ public sealed class AppError(
             override val cause: Throwable? = null
         ) : Network(message, cause)
 
-        public data class ConnectionLost(
+        public data class Unexpected(
+            val statusCode: Int? = null,
             override val message: String,
             override val cause: Throwable? = null
         ) : Network(message, cause)

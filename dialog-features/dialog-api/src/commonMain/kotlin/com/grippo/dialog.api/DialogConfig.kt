@@ -7,7 +7,7 @@ public sealed class DialogConfig(public open val onDismiss: (() -> Unit)?) {
     @Serializable
     public data class ErrorDisplay(
         val title: String,
-        val description: String,
+        val description: String?,
         val onClose: () -> Unit,
     ) : DialogConfig(onClose)
 

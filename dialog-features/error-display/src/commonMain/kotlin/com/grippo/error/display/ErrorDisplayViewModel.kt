@@ -4,7 +4,7 @@ import com.grippo.core.BaseViewModel
 
 public class ErrorDisplayViewModel(
     title: String,
-    description: String,
+    description: String?,
 ) : BaseViewModel<ErrorDisplayState, ErrorDisplayDirection, ErrorDisplayLoader>(
     ErrorDisplayState(
         title = title,

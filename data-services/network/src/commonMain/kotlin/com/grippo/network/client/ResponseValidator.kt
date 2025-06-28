@@ -2,41 +2,37 @@ package com.grippo.network.client
 
 import com.grippo.error.provider.AppError
 import io.ktor.client.HttpClientConfig
-import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.HttpResponseValidator
-import io.ktor.client.plugins.RedirectResponseException
-import io.ktor.client.plugins.ResponseException
-import io.ktor.client.plugins.ServerResponseException
-import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
+import io.ktor.serialization.JsonConvertException
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.io.IOException
 
 internal fun HttpClientConfig<*>.responseValidator(
     apiErrorParser: ApiErrorParser
 ) = HttpResponseValidator {
-    validateResponse { response: HttpResponse ->
+    validateResponse { response ->
         val statusCode = response.status.value
 
+        if (statusCode in 200..299) return@validateResponse
+
+        val rawBody = runCatching { response.bodyAsText() }.getOrNull()
+
         when (statusCode) {
-            in 100..199 -> Unit
-            in 200..299 -> Unit
-
-            in 300..399 -> throw AppError.Network.Unexpected(
-                message = "Unexpected redirect [$statusCode]"
-            )
-
             in 400..499 -> {
-                val rawBody = runCatching { response.bodyAsText() }.getOrNull()
-
+                val parsed = apiErrorParser.parseDetailedMessage(rawBody, statusCode)
                 throw AppError.Network.Expected(
                     keys = apiErrorParser.parseKeys(rawBody),
-                    message = apiErrorParser.parseMessage(rawBody)
+                    title = parsed.title,
+                    description = parsed.description
                 )
             }
 
-            in 500..599 -> throw AppError.Network.Unexpected(
-                message = apiErrorParser.getDefaultServerErrorMessage(statusCode)
-            )
+            in 500..599 -> {
+                throw AppError.Network.Unexpected(
+                    message = apiErrorParser.getDefaultServerErrorMessage(statusCode)
+                )
+            }
 
             else -> throw AppError.Network.Unexpected(
                 message = "Unexpected HTTP code: $statusCode"
@@ -45,29 +41,26 @@ internal fun HttpClientConfig<*>.responseValidator(
     }
 
     handleResponseExceptionWithRequest { cause, _ ->
-        throw when (cause) {
-            is RedirectResponseException,
-            is ClientRequestException,
-            is ServerResponseException -> {
-                // already handled in validateResponse — but just in case
-                AppError.Network.Unexpected(
-                    message = cause.message ?: "Unexpected HTTP exception",
-                    cause = cause
-                )
-            }
+        when (cause) {
+            is AppError.Network.Expected -> throw cause
 
-            is TimeoutCancellationException -> AppError.Network.Timeout(
+            is TimeoutCancellationException -> throw AppError.Network.Unexpected(
                 message = "Request timed out. Try again.",
                 cause = cause
             )
 
-            is ResponseException -> AppError.Network.Unexpected(
-                message = cause.message ?: "Network error",
+            is JsonConvertException -> throw AppError.Network.Unexpected(
+                message = "Invalid server response format.",
                 cause = cause
             )
 
-            else -> AppError.Network.ConnectionLost(
-                message = cause.message ?: "Network connection lost.",
+            is IOException -> throw AppError.Network.Unexpected(
+                message = "Connection lost or unavailable.",
+                cause = cause
+            )
+
+            else -> throw AppError.Network.Unexpected(
+                message = cause.message ?: "Unexpected network error",
                 cause = cause
             )
         }

@@ -9,7 +9,7 @@ import com.grippo.core.collectAsStateMultiplatform
 
 public class ErrorDisplayComponent(
     private val title: String,
-    private val description: String,
+    private val description: String?,
     private val back: () -> Unit,
     componentContext: ComponentContext,
 ) : BaseComponent<ErrorDisplayDirection>(componentContext) {

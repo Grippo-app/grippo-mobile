@@ -21,15 +21,9 @@ internal class ErrorProviderImpl(val dialogController: DialogController) : Error
                 onClose = callback
             )
 
-            is AppError.Network.ConnectionLost -> DialogConfig.ErrorDisplay(
-                title = "Connection Lost",
-                description = exception.message,
-                onClose = callback
-            )
-
             is AppError.Network.Expected -> DialogConfig.ErrorDisplay(
-                title = "Oops",
-                description = exception.message,
+                title = exception.title,
+                description = exception.description,
                 onClose = callback
             )
 
