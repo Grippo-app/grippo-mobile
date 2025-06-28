@@ -17,6 +17,7 @@ import com.grippo.core.collectAsStateMultiplatform
 import com.grippo.design.core.AppTheme
 import com.grippo.home.BottomNavigationComponent
 import com.grippo.presentation.api.RootRouter
+import com.grippo.presentation.api.auth.AuthRouter
 import com.grippo.presentation.api.profile.ProfileRouter
 import com.grippo.profile.ProfileComponent
 import com.grippo.shared.dialog.DialogComponent
@@ -46,7 +47,7 @@ public class RootComponent(
     internal val childStack: Value<ChildStack<RootRouter, Child>> = childStack(
         source = navigation,
         serializer = RootRouter.serializer(),
-        initialConfiguration = RootRouter.Auth,
+        initialConfiguration = RootRouter.Auth(AuthRouter.Splash),
         handleBackButton = true,
         key = "RootComponent",
         childFactory = ::createChild,
@@ -61,7 +62,7 @@ public class RootComponent(
     override suspend fun eventListener(direction: RootDirection) {
         when (direction) {
             RootDirection.Login -> if (childStack.value.active.instance !is Authorization) {
-                navigation.replaceAll(RootRouter.Auth)
+                navigation.replaceAll(RootRouter.Auth(AuthRouter.AuthProcess))
             }
 
             RootDirection.Back -> finish.invoke()
@@ -70,9 +71,10 @@ public class RootComponent(
 
     private fun createChild(router: RootRouter, context: ComponentContext): Child {
         return when (router) {
-            RootRouter.Auth -> Authorization(
+            is RootRouter.Auth -> Authorization(
                 AuthComponent(
                     componentContext = context,
+                    initial = router.value,
                     toHome = { navigation.replaceAll(RootRouter.Home) },
                     back = finish
                 ),

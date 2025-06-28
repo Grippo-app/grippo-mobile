@@ -20,6 +20,7 @@ import com.grippo.presentation.api.auth.AuthRouter
 
 public class AuthComponent(
     componentContext: ComponentContext,
+    initial: AuthRouter,
     private val toHome: () -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<AuthDirection>(componentContext) {
@@ -51,7 +52,7 @@ public class AuthComponent(
     internal val childStack: Value<ChildStack<AuthRouter, Child>> = childStack(
         source = navigation,
         serializer = AuthRouter.serializer(),
-        initialStack = { listOf(AuthRouter.Splash) },
+        initialStack = { listOf(initial) },
         key = "AuthComponent",
         handleBackButton = true,
         childFactory = ::createChild,
