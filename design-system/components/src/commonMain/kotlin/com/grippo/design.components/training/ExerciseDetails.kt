@@ -35,7 +35,8 @@ public fun ExerciseDetails(
     onExerciseExampleClick: (id: String) -> Unit
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(horizontal = AppTokens.dp.exerciseDetails.horizontalPadding)
     ) {
 

@@ -1,4 +1,4 @@
-package com.grippo.design.components.muscle
+package com.grippo.design.components.example
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -6,9 +6,11 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -30,12 +32,12 @@ import com.grippo.presentation.api.muscles.factories.images
 import kotlinx.collections.immutable.ImmutableList
 
 @Composable
-public fun MuscleBundleCard(
+public fun ExerciseExampleBundlesCard(
     modifier: Modifier = Modifier,
     value: ImmutableList<ExerciseExampleBundleState>
 ) {
 
-    val shape = RoundedCornerShape(AppTokens.dp.muscleBundleCard.radius)
+    val shape = RoundedCornerShape(AppTokens.dp.exerciseExampleBundlesCard.radius)
 
     val colors = AppTokens.colors.muscle.colorful
 
@@ -52,8 +54,8 @@ public fun MuscleBundleCard(
             .background(AppTokens.colors.background.secondary)
             .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
             .padding(
-                horizontal = AppTokens.dp.muscleBundleCard.horizontalPadding,
-                vertical = AppTokens.dp.muscleBundleCard.verticalPadding,
+                horizontal = AppTokens.dp.exerciseExampleBundlesCard.horizontalPadding,
+                vertical = AppTokens.dp.exerciseExampleBundlesCard.verticalPadding,
             ),
     ) {
 
@@ -90,35 +92,46 @@ public fun MuscleBundleCard(
             )
         }
 
-        value.forEachIndexed { index, item ->
-            InformationCard(
-                modifier = Modifier.fillMaxWidth(),
-                label = item.muscle.name,
-                value = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(2.dp)
-                    ) {
-                        Text(
-                            text = item.percentage.toString(),
-                            style = AppTokens.typography.b14Bold(),
-                            color = item.muscle.type.color()
-                        )
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-                        Text(
-                            text = AppTokens.strings.res(Res.string.percent),
-                            style = AppTokens.typography.b14Semi(),
-                            color = item.muscle.type.color()
-                        )
-                    }
-                }
-            )
-
-            if (index < value.lastIndex) {
-                HorizontalDivider(
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(shape = shape)
+                .background(AppTokens.colors.background.primary)
+                .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
+                .padding(horizontal = AppTokens.dp.exerciseExampleBundlesCard.list.horizontalPadding)
+        ) {
+            value.forEachIndexed { index, item ->
+                InformationCard(
                     modifier = Modifier.fillMaxWidth(),
-                    color = AppTokens.colors.divider.default
+                    label = item.muscle.name,
+                    value = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(2.dp)
+                        ) {
+                            Text(
+                                text = item.percentage.toString(),
+                                style = AppTokens.typography.b14Bold(),
+                                color = item.muscle.type.color()
+                            )
+
+                            Text(
+                                text = AppTokens.strings.res(Res.string.percent),
+                                style = AppTokens.typography.b14Semi(),
+                                color = item.muscle.type.color()
+                            )
+                        }
+                    }
                 )
+
+                if (index < value.lastIndex) {
+                    HorizontalDivider(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = AppTokens.colors.divider.default
+                    )
+                }
             }
         }
     }

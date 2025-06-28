@@ -61,7 +61,7 @@ public data object AppDp {
     val overviewCard: OverviewCard = OverviewCard
     val equipmentCard: EquipmentCard = EquipmentCard
     val equipmentsCard: EquipmentsCard = EquipmentsCard
-    val muscleBundleCard: MuscleBundleCard = MuscleBundleCard
+    val exerciseExampleBundlesCard: ExerciseExampleBundlesCard = ExerciseExampleBundlesCard
     val exerciseCard: ExerciseCard = ExerciseCard
     val exerciseIterations: ExerciseIterations = ExerciseIterations
     val exerciseDetails: ExerciseDetails = ExerciseDetails
@@ -160,10 +160,15 @@ public data object AppDp {
         val radius: Dp = AppDp.radius.large
     }
 
-    public data object MuscleBundleCard {
+    public data object ExerciseExampleBundlesCard {
         val horizontalPadding: Dp = padding.large
         val verticalPadding: Dp = padding.large
         val radius: Dp = AppDp.radius.large
+        val list: List = List
+
+        public data object List {
+            val horizontalPadding: Dp = padding.large
+        }
     }
 
     public data object SelectableCard {

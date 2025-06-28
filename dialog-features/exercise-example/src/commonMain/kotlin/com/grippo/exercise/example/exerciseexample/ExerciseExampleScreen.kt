@@ -15,7 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.equipment.EquipmentsCard
-import com.grippo.design.components.muscle.MuscleBundleCard
+import com.grippo.design.components.example.ExerciseExampleBundlesCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -93,7 +93,7 @@ internal fun ExerciseExampleScreen(
 
         Spacer(modifier = Modifier.size(12.dp))
 
-        MuscleBundleCard(
+        ExerciseExampleBundlesCard(
             modifier = Modifier.fillMaxWidth(),
             value = example.bundles
         )
