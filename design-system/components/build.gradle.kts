@@ -15,6 +15,7 @@ kotlin {
         implementation(projects.designSystem.preview)
         implementation(projects.composeLibs.segmentControl)
         implementation(projects.composeLibs.konfetti)
+        implementation(projects.composeLibs.chart)
         implementation(projects.presentationFeatures.presentationApi)
         implementation(projects.common.dateUtils)
 

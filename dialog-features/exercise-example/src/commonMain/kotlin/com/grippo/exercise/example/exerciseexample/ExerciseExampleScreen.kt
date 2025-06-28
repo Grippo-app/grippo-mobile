@@ -18,10 +18,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.cards.information.InformationCard
+import com.grippo.design.components.chart.PieChart
 import com.grippo.design.components.equipment.EquipmentCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -129,6 +131,13 @@ internal fun ExerciseExampleScreen(
                     contentDescription = null
                 )
             }
+
+            PieChart(
+                modifier = Modifier.size(100.dp),
+                data = example.bundles.map {
+                    Color.Red to it.percentage.toLong()
+                }
+            )
         }
 
         example.bundles.forEachIndexed { index, item ->

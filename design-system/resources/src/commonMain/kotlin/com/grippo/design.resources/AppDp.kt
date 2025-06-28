@@ -55,6 +55,7 @@ public data object AppDp {
     val selectableCard: SelectableCard = SelectableCard
     val informationCard: InformationCard = InformationCard
     val wheelPicker: WheelPicker = WheelPicker
+    val chart: Chart = Chart
     val userCard: UserCard = UserCard
     val bodyDetails: BodyDetails = BodyDetails
     val overviewCard: OverviewCard = OverviewCard
@@ -202,5 +203,13 @@ public data object AppDp {
     public data object WheelPicker {
         val height: Dp = size.medium * 3
         val radius: Dp = AppDp.radius.large
+    }
+
+    public data object Chart {
+        val pie: Pie = Pie
+
+        public data object Pie {
+            val width: Dp = size.tiny
+        }
     }
 }

@@ -13,7 +13,8 @@ public object AppLogger {
     public fun error(msg: String) {
         onDebug {
             val category = LogCategory.GENERAL
-            println(category.name + " " + "🔴 $msg")
+//            println(category.name + " " + "🔴 $msg")
+            println("🔴 $msg")
             logListener?.invoke(category, "🔴 $msg")
         }
     }
@@ -21,7 +22,8 @@ public object AppLogger {
     public fun warning(msg: String) {
         onDebug {
             val category = LogCategory.GENERAL
-            println(category.name + " " + "⚠\uFE0F $msg")
+//            println(category.name + " " + "⚠\uFE0F $msg")
+            println("⚠\uFE0F $msg")
             logListener?.invoke(category, "⚠\uFE0F $msg")
         }
     }
@@ -29,7 +31,8 @@ public object AppLogger {
     public fun network(msg: String) {
         onDebug {
             val category = LogCategory.NETWORK
-            println(category.name + " " + msg)
+//            println(category.name + " " + msg)
+            println(msg)
             logListener?.invoke(category, msg)
         }
     }
@@ -37,7 +40,8 @@ public object AppLogger {
     public fun navigation(msg: String) {
         onDebug {
             val category = LogCategory.NAVIGATION
-            println(category.name + " " + msg)
+//            println(category.name + " " + msg)
+            println(msg)
             logListener?.invoke(category, msg)
         }
     }
@@ -50,7 +54,8 @@ public object AppLogger {
 
         val fullMessage = "${msg()} $location"
         onDebug {
-            println(category.name + " " + fullMessage)
+//            println(category.name + " " + fullMessage)
+            println(fullMessage)
             logListener?.invoke(category, fullMessage)
         }
 

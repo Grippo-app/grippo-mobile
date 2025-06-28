@@ -76,6 +76,7 @@ include(":common:date-utils")
 include(":compose-libs:wheel-picker")
 include(":compose-libs:segment-control")
 include(":compose-libs:konfetti")
+include(":compose-libs:chart")
 
 include(":data-mappers:database-mapper")
 include(":data-mappers:network-mapper")
