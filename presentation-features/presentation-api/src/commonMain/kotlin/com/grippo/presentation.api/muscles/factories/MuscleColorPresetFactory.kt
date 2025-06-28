@@ -36,9 +36,7 @@ internal object MuscleColorPresetFactory {
 
     sealed interface MuscleColorMode {
         data object Monochrome : MuscleColorMode
-        data class Colorful(
-            val color: AppColor.MuscleColors.Colorful
-        ) : MuscleColorMode
+        data class Colorful(val color: AppColor.MuscleColors.Colorful) : MuscleColorMode
     }
 
     sealed class MuscleColorSelection {
@@ -52,7 +50,6 @@ internal object MuscleColorPresetFactory {
             val selectedIds: ImmutableSet<String>,
         ) : MuscleColorSelection()
     }
-
 
     @Composable
     fun from(selection: MuscleColorSelection): MuscleColorPreset {

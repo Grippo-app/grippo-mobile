@@ -60,6 +60,7 @@ public fun UserCard(
     value: UserState,
     style: UserCardStyle = UserCardStyle.Preview
 ) {
+
     val shape = RoundedCornerShape(AppTokens.dp.userCard.radius)
 
     Column(

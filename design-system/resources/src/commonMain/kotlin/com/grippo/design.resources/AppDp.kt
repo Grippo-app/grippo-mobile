@@ -155,15 +155,15 @@ public data object AppDp {
     }
 
     public data object EquipmentsCard {
+        val horizontalPadding: Dp = padding.large
+        val verticalPadding: Dp = padding.large
         val radius: Dp = AppDp.radius.large
-        val horizontalPadding: Dp = padding.small
-        val verticalPadding: Dp = padding.small
     }
 
     public data object MuscleBundleCard {
+        val horizontalPadding: Dp = padding.large
+        val verticalPadding: Dp = padding.large
         val radius: Dp = AppDp.radius.large
-        val horizontalPadding: Dp = padding.small
-        val verticalPadding: Dp = padding.small
     }
 
     public data object SelectableCard {
