@@ -5,12 +5,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
@@ -24,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.cards.information.InformationCard
 import com.grippo.design.components.chart.PieChart
-import com.grippo.design.components.equipment.EquipmentCard
+import com.grippo.design.components.equipment.EquipmentsCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -86,16 +84,10 @@ internal fun ExerciseExampleScreen(
 
         Spacer(modifier = Modifier.size(12.dp))
 
-        LazyRow(
+        EquipmentsCard(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-        ) {
-            items(example.equipments, key = { it.id }) { item ->
-                EquipmentCard(
-                    value = item
-                )
-            }
-        }
+            value = example.equipments
+        )
 
         Spacer(modifier = Modifier.size(16.dp))
 
@@ -123,7 +115,7 @@ internal fun ExerciseExampleScreen(
         ) {
             front?.let {
                 Image(
-                    modifier = Modifier.width(100.dp),
+                    modifier = Modifier.weight(1f),
                     imageVector = front,
                     contentDescription = null
                 )
@@ -131,7 +123,7 @@ internal fun ExerciseExampleScreen(
 
             back?.let {
                 Image(
-                    modifier = Modifier.width(100.dp),
+                    modifier = Modifier.weight(1f),
                     imageVector = back,
                     contentDescription = null
                 )
@@ -144,7 +136,7 @@ internal fun ExerciseExampleScreen(
             }
 
             PieChart(
-                modifier = Modifier.size(100.dp),
+                modifier = Modifier.weight(1f).aspectRatio(1f),
                 data = pie
             )
         }
