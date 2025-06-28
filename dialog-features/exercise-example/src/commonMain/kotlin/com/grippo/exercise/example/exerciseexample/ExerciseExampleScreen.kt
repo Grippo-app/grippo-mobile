@@ -16,9 +16,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
@@ -109,7 +109,12 @@ internal fun ExerciseExampleScreen(
 
         Spacer(modifier = Modifier.size(12.dp))
 
-        val (front, back) = example.image()
+        /* * * * * * * * * * * *
+        * Muscle Colors
+        * * * * * * * * * * * */
+        val colors = AppTokens.colors.muscle.colorful
+
+        val (front, back) = example.image(colors)
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -132,11 +137,15 @@ internal fun ExerciseExampleScreen(
                 )
             }
 
+            val pie = remember(example.bundles) {
+                example.bundles.map {
+                    it.muscle.type.allocateColorByMuscle(colors) to it.percentage.toLong()
+                }
+            }
+
             PieChart(
                 modifier = Modifier.size(100.dp),
-                data = example.bundles.map {
-                    Color.Red to it.percentage.toLong()
-                }
+                data = pie
             )
         }
 
@@ -152,13 +161,13 @@ internal fun ExerciseExampleScreen(
                         Text(
                             text = item.percentage.toString(),
                             style = AppTokens.typography.b14Bold(),
-                            color = AppTokens.colors.text.primary
+                            color = item.muscle.type.color()
                         )
 
                         Text(
                             text = AppTokens.strings.res(Res.string.percent),
                             style = AppTokens.typography.b14Semi(),
-                            color = AppTokens.colors.text.secondary
+                            color = item.muscle.type.color()
                         )
                     }
                 }

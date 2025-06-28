@@ -170,6 +170,36 @@ public object LightColor : AppColor {
         override val inactive = Neutral300
         override val background = Neutral200
         override val outline = Neutral200
+
+        override val colorful: AppColor.MuscleColors.Colorful =
+            object : AppColor.MuscleColors.Colorful {
+                override val pectoralisMajorClavicular = MusclePurple1
+                override val pectoralisMajorSternocostal = MusclePurple2
+                override val pectoralisMajorAbdominal = MusclePurple3
+
+                override val trapezius = MuscleRed1
+                override val latissimusDorsi = MuscleRed2
+                override val rhomboids = MuscleOrange1
+                override val teresMajor = MuscleOrange2
+
+                override val rectusAbdominis = MuscleOrange3
+                override val obliques = MuscleOrange2
+
+                override val calf = MuscleGreen1
+                override val gluteal = MuscleGreen4
+                override val hamstrings = MuscleGreen2
+                override val quadriceps = MuscleGreen3
+                override val adductors = MuscleBlue1
+                override val abductors = MuscleBlue2
+
+                override val anteriorDeltoid = MuscleOrange1
+                override val lateralDeltoid = MuscleOrange2
+                override val posteriorDeltoid = MuscleOrange3
+
+                override val biceps = MuscleBlue3
+                override val triceps = MusclePurple2
+                override val forearm = MuscleRed2
+            }
     }
 
     override val divider: DividerColors = object : DividerColors {
@@ -188,34 +218,4 @@ public object LightColor : AppColor {
         override val confettiColor9 = Neutral400
         override val confettiColor10 = Neutral500
     }
-
-    public override val muscleColorPreset: AppColor.MuscleColorPreset =
-        object : AppColor.MuscleColorPreset {
-            override val pectoralisMajorClavicular = MusclePurple1
-            override val pectoralisMajorSternocostal = MusclePurple2
-            override val pectoralisMajorAbdominal = MusclePurple3
-
-            override val trapezius = MuscleRed1
-            override val latissimusDorsi = MuscleRed2
-            override val rhomboids = MuscleOrange1
-            override val teresMajor = MuscleOrange2
-
-            override val rectusAbdominis = MuscleOrange3
-            override val obliques = MuscleOrange2
-
-            override val calf = MuscleGreen1
-            override val gluteal = MuscleGreen4
-            override val hamstrings = MuscleGreen2
-            override val quadriceps = MuscleGreen3
-            override val adductors = MuscleBlue1
-            override val abductors = MuscleBlue2
-
-            override val anteriorDeltoid = MuscleOrange1
-            override val lateralDeltoid = MuscleOrange2
-            override val posteriorDeltoid = MuscleOrange3
-
-            override val biceps = MuscleBlue3
-            override val triceps = MusclePurple2
-            override val forearm = MuscleRed2
-        }
 }

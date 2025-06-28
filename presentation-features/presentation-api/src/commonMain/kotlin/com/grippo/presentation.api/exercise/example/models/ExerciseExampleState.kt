@@ -3,12 +3,14 @@ package com.grippo.presentation.api.exercise.example.models
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.grippo.design.resources.AppColor
 import com.grippo.design.resources.icons.muscles.fullBack
 import com.grippo.design.resources.icons.muscles.fullFront
 import com.grippo.presentation.api.equipment.models.EquipmentState
 import com.grippo.presentation.api.equipment.models.stubEquipments
 import com.grippo.presentation.api.muscles.factories.BodySide
 import com.grippo.presentation.api.muscles.factories.MuscleColorPresetFactory
+import com.grippo.presentation.api.muscles.factories.MuscleColorPresetFactory.MuscleColorMode
 import com.grippo.presentation.api.muscles.factories.MuscleSideFactory
 import com.grippo.presentation.api.muscles.models.MuscleState
 import kotlinx.collections.immutable.ImmutableList
@@ -24,13 +26,14 @@ public data class ExerciseExampleState(
     val tutorials: ImmutableList<TutorialState>,
 ) {
     @Composable
-    public fun image(): Pair<ImageVector?, ImageVector?> {
+    public fun image(colors: AppColor.MuscleColors.Colorful): Pair<ImageVector?, ImageVector?> {
         val muscles: List<MuscleState> = bundles.map { it.muscle }
         val muscleTypes = muscles.map { it.type }.toImmutableSet()
 
         val preset = MuscleColorPresetFactory.from(
             MuscleColorPresetFactory.MuscleColorSelection.EnumSelection(
-                muscleTypes
+                muscleTypes,
+                mode = MuscleColorMode.Colorful(colors)
             )
         )
 

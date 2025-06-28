@@ -34,19 +34,22 @@ import kotlinx.collections.immutable.toImmutableSet
 
 internal object MuscleColorPresetFactory {
 
-    enum class MuscleColorMode {
-        Monochrome, Colorful
+    sealed interface MuscleColorMode {
+        data object Monochrome : MuscleColorMode
+        data class Colorful(
+            val color: AppColor.MuscleColors.Colorful
+        ) : MuscleColorMode
     }
 
     sealed class MuscleColorSelection {
         data class EnumSelection(
             val selected: ImmutableSet<MuscleEnumState>,
-            val mode: MuscleColorMode = MuscleColorMode.Monochrome
+            val mode: MuscleColorMode
         ) : MuscleColorSelection()
 
         data class GroupSelection(
             val group: MuscleGroupState<*>,
-            val selectedIds: ImmutableSet<String>
+            val selectedIds: ImmutableSet<String>,
         ) : MuscleColorSelection()
     }
 
@@ -56,8 +59,14 @@ internal object MuscleColorPresetFactory {
         return when (selection) {
             is MuscleColorSelection.EnumSelection -> {
                 when (selection.mode) {
-                    MuscleColorMode.Monochrome -> createMonochromePreset(selection.selected)
-                    MuscleColorMode.Colorful -> createColorfulPreset(selection.selected)
+                    MuscleColorMode.Monochrome -> createMonochromePreset(
+                        selection.selected
+                    )
+
+                    is MuscleColorMode.Colorful -> createColorfulPreset(
+                        selection.selected,
+                        selection.mode.color
+                    )
                 }
             }
 
@@ -83,14 +92,13 @@ internal object MuscleColorPresetFactory {
     @Composable
     private fun createColorfulPreset(
         selected: ImmutableSet<MuscleEnumState>,
-        mode: MuscleColorMode = MuscleColorMode.Monochrome
+        colors: AppColor.MuscleColors.Colorful
     ): MuscleColorPreset {
-        val preset = AppTokens.colors.muscleColorPreset
         val inactiveColor = AppTokens.colors.muscle.inactive
 
-        val colorMap = remember(preset, selected) {
+        val colorMap = remember(colors, selected) {
             MuscleEnumState.entries.associateWith { muscle ->
-                if (muscle in selected) muscle.allocateColorByMuscle(preset) else inactiveColor
+                if (muscle in selected) muscle.allocateColorByMuscle(colors) else inactiveColor
             }
         }
 
@@ -100,7 +108,6 @@ internal object MuscleColorPresetFactory {
     @Composable
     private fun createMonochromePreset(
         selected: ImmutableSet<MuscleEnumState>,
-        mode: MuscleColorMode = MuscleColorMode.Monochrome
     ): MuscleColorPreset {
         val selectedColor = AppTokens.colors.muscle.active
         val inactiveColor = AppTokens.colors.muscle.inactive
@@ -154,42 +161,5 @@ internal object MuscleColorPresetFactory {
             backgroundFront = AppTokens.colors.muscle.background,
             backgroundBack = AppTokens.colors.muscle.background
         )
-    }
-
-    private fun MuscleEnumState.allocateColorByMuscle(preset: AppColor.MuscleColorPreset): Color {
-        return when (this) {
-            // Chest
-            PECTORALIS_MAJOR_CLAVICULAR -> preset.pectoralisMajorClavicular
-            PECTORALIS_MAJOR_STERNOCOSTAL -> preset.pectoralisMajorSternocostal
-            PECTORALIS_MAJOR_ABDOMINAL -> preset.pectoralisMajorAbdominal
-
-            // Back
-            TRAPEZIUS -> preset.trapezius
-            LATISSIMUS_DORSI -> preset.latissimusDorsi
-            RHOMBOIDS -> preset.rhomboids
-            TERES_MAJOR -> preset.teresMajor
-
-            // Abdominal
-            RECTUS_ABDOMINIS -> preset.rectusAbdominis
-            OBLIQUES -> preset.obliques
-
-            // Legs
-            CALF -> preset.calf
-            GLUTEAL -> preset.gluteal
-            HAMSTRINGS -> preset.hamstrings
-            QUADRICEPS -> preset.quadriceps
-            ADDUCTORS -> preset.adductors
-            ABDUCTORS -> preset.abductors
-
-            // Shoulder
-            ANTERIOR_DELTOID -> preset.anteriorDeltoid
-            LATERAL_DELTOID -> preset.lateralDeltoid
-            POSTERIOR_DELTOID -> preset.posteriorDeltoid
-
-            // Arms
-            BICEPS -> preset.biceps
-            TRICEPS -> preset.triceps
-            FOREARM -> preset.forearm
-        }
     }
 }
