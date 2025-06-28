@@ -2,6 +2,7 @@ package com.grippo.network.client
 
 import com.grippo.error.provider.AppError
 import io.ktor.client.HttpClientConfig
+import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.statement.bodyAsText
 import io.ktor.serialization.JsonConvertException
@@ -44,7 +45,8 @@ internal fun HttpClientConfig<*>.responseValidator(
         when (cause) {
             is AppError.Network.Expected -> throw cause
 
-            is TimeoutCancellationException -> throw AppError.Network.Unexpected(
+            is TimeoutCancellationException,
+            is HttpRequestTimeoutException -> throw AppError.Network.Timeout(
                 message = "Request timed out. Try again.",
                 cause = cause
             )
@@ -54,7 +56,7 @@ internal fun HttpClientConfig<*>.responseValidator(
                 cause = cause
             )
 
-            is IOException -> throw AppError.Network.Unexpected(
+            is IOException -> throw AppError.Network.NoInternet(
                 message = "Connection lost or unavailable.",
                 cause = cause
             )
