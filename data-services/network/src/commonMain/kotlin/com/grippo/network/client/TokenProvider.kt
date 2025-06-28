@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeout
+import kotlin.coroutines.cancellation.CancellationException
 
 internal class TokenProvider(
     private val tokenDao: TokenDao,
@@ -181,10 +182,23 @@ internal class TokenProvider(
 
         logWarn { "🧨 Refresh failed — error will propagate to all waiting requests (${e::class.simpleName}: ${e.message})" }
 
-        userActiveDao.get().firstOrNull()?.let { userId ->
-            logInfo { "🗑 Deleting tokens for user $userId" }
-            tokenDao.delete(userId)
-        } ?: logWarn { "⚠️ No active user found — cannot delete token after failure" }
+        when (e) {
+            is CancellationException -> {
+                logWarn {
+                    "⚠️ Refresh was cancelled by coroutine host — skipping token deletion to avoid side effects"
+                }
+            }
+
+            else -> {
+                val userId = userActiveDao.get().firstOrNull()
+                if (userId != null) {
+                    logInfo { "🗑 Deleting tokens for user $userId after refresh failure" }
+                    tokenDao.delete(userId)
+                } else {
+                    logWarn { "⚠️ No active user found — cannot delete token after refresh failure" }
+                }
+            }
+        }
 
         logError { "❌ Throwing refresh error" }
         throw e
