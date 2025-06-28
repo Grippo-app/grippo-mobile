@@ -26,9 +26,11 @@ public data class MuscleGroupState<T : MuscleRepresentationState>(
     public fun image(
         selectedIds: ImmutableList<String>
     ): ImageVector {
-        val preset = MuscleColorPresetFactory.fromSelected(
-            group = this,
-            selected = selectedIds.toImmutableSet()
+        val preset = MuscleColorPresetFactory.from(
+            MuscleColorPresetFactory.MuscleColorSelection.GroupSelection(
+                group = this,
+                selectedIds = selectedIds.toImmutableSet()
+            )
         )
 
         return when (type) {

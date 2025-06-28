@@ -28,7 +28,11 @@ public data class ExerciseExampleState(
         val muscles: List<MuscleState> = bundles.map { it.muscle }
         val muscleTypes = muscles.map { it.type }.toImmutableSet()
 
-        val preset = MuscleColorPresetFactory.fromSelected(muscleTypes)
+        val preset = MuscleColorPresetFactory.from(
+            MuscleColorPresetFactory.MuscleColorSelection.EnumSelection(
+                muscleTypes
+            )
+        )
 
         val hasFront = muscleTypes.any {
             val side = MuscleSideFactory.side(it)
