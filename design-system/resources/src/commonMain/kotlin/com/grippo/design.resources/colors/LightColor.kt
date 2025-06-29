@@ -86,10 +86,10 @@ public object LightColor : AppColor {
         override val leading: Color = Neutral700
         override val trailing: Color = Neutral700
 
-        override val backgroundDisabled = Neutral100
-        override val borderDisabled = Neutral200
-        override val textDisabled = Neutral300
-        override val placeholderDisabled = Neutral300
+        override val backgroundDisabled = Neutral200
+        override val borderDisabled = Neutral400
+        override val textDisabled = Neutral400
+        override val placeholderDisabled = Neutral400
     }
 
     override val background: AppColor.BackgroundColors = object : AppColor.BackgroundColors {

@@ -60,11 +60,11 @@ internal fun BodyItem(
             contentDescription = null
         )
 
-        Spacer(Modifier.width(12.dp))
+        Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
 
         Text(
             text = weight.toString(),
-            style = AppTokens.typography.b16Bold(),
+            style = AppTokens.typography.b14Bold(),
             color = AppTokens.colors.text.primary,
             textAlign = TextAlign.Center
         )
@@ -73,19 +73,19 @@ internal fun BodyItem(
 
         Text(
             text = AppTokens.strings.res(Res.string.kg),
-            style = AppTokens.typography.b16Bold(),
+            style = AppTokens.typography.b14Bold(),
             color = AppTokens.colors.text.secondary,
             textAlign = TextAlign.Center
         )
 
-        Spacer(Modifier.width(12.dp))
+        Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
 
         VerticalDivider(
             modifier = Modifier.fillMaxHeight(),
             color = AppTokens.colors.divider.default
         )
 
-        Spacer(Modifier.width(12.dp))
+        Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
 
         Icon(
             modifier = Modifier
@@ -98,12 +98,12 @@ internal fun BodyItem(
             contentDescription = null
         )
 
-        Spacer(Modifier.width(12.dp))
+        Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
 
         Text(
             modifier = Modifier,
             text = height.toString(),
-            style = AppTokens.typography.b16Bold(),
+            style = AppTokens.typography.b14Bold(),
             color = AppTokens.colors.text.primary,
             textAlign = TextAlign.Center
         )
@@ -113,7 +113,7 @@ internal fun BodyItem(
         Text(
             modifier = Modifier,
             text = AppTokens.strings.res(Res.string.cm),
-            style = AppTokens.typography.b16Bold(),
+            style = AppTokens.typography.b14Bold(),
             color = AppTokens.colors.text.secondary,
             textAlign = TextAlign.Center
         )

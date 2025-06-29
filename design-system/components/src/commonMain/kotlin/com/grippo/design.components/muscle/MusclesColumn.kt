@@ -3,12 +3,15 @@ package com.grippo.design.components.muscle
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.cards.selectable.SelectableCard
 import com.grippo.design.components.cards.selectable.SelectableCardStyle
+import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.presentation.api.muscles.models.MuscleGroupState
@@ -28,6 +31,14 @@ public fun MusclesColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = item.name,
+            style = AppTokens.typography.h3(),
+            color = AppTokens.colors.text.primary,
+            textAlign = TextAlign.Center
+        )
+
         item.muscles.forEach { muscle ->
             val selectProvider = remember(muscle.value.id) {
                 { onSelect.invoke(muscle.value.id) }

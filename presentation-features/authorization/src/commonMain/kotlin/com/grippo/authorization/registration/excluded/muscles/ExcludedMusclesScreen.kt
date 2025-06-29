@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -92,19 +91,10 @@ internal fun ExcludedMusclesScreen(
                 key = { _, item -> item.id }) { index, group ->
                 val isEven = index % 2 == 0
 
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = group.name,
-                    style = AppTokens.typography.h3(),
-                    textAlign = TextAlign.Center,
-                    color = AppTokens.colors.text.primary,
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     if (isEven) {
                         MusclesColumn(

@@ -15,7 +15,7 @@ public data object AppTypography {
     public fun h1(): TextStyle = TextStyle(
         fontSize = 32.sp,
         fontFamily = manrope(),
-        lineHeight = 44.sp,
+        lineHeight = 40.sp, // ×1.25
         fontWeight = FontWeight.SemiBold,
     )
 
@@ -23,7 +23,7 @@ public data object AppTypography {
     public fun h2(): TextStyle = TextStyle(
         fontSize = 24.sp,
         fontFamily = manrope(),
-        lineHeight = 24.sp,
+        lineHeight = 32.sp, // ×1.33
         fontWeight = FontWeight.Bold,
     )
 
@@ -31,7 +31,7 @@ public data object AppTypography {
     public fun h3(): TextStyle = TextStyle(
         fontSize = 18.sp,
         fontFamily = manrope(),
-        lineHeight = 18.sp,
+        lineHeight = 24.sp, // ×1.33
         fontWeight = FontWeight.Bold,
     )
 
@@ -39,7 +39,15 @@ public data object AppTypography {
     public fun b16Bold(): TextStyle = TextStyle(
         fontSize = 16.sp,
         fontFamily = manrope(),
-        lineHeight = 16.sp,
+        lineHeight = 24.sp, // ×1.5
+        fontWeight = FontWeight.Bold,
+    )
+
+    @Composable
+    public fun b15Bold(): TextStyle = TextStyle(
+        fontSize = 15.sp,
+        fontFamily = manrope(),
+        lineHeight = 22.sp, // ×1.47
         fontWeight = FontWeight.Bold,
     )
 
@@ -47,7 +55,7 @@ public data object AppTypography {
     public fun b15Med(): TextStyle = TextStyle(
         fontSize = 15.sp,
         fontFamily = manrope(),
-        lineHeight = 15.sp,
+        lineHeight = 22.sp, // ×1.47
         fontWeight = FontWeight.Medium,
     )
 
@@ -55,7 +63,7 @@ public data object AppTypography {
     public fun b14Bold(): TextStyle = TextStyle(
         fontSize = 14.sp,
         fontFamily = manrope(),
-        lineHeight = 14.sp,
+        lineHeight = 20.sp, // ×1.43
         fontWeight = FontWeight.Bold,
     )
 
@@ -63,7 +71,7 @@ public data object AppTypography {
     public fun b14Semi(): TextStyle = TextStyle(
         fontSize = 14.sp,
         fontFamily = manrope(),
-        lineHeight = 14.sp,
+        lineHeight = 20.sp,
         fontWeight = FontWeight.SemiBold,
     )
 
@@ -71,7 +79,7 @@ public data object AppTypography {
     public fun b14Med(): TextStyle = TextStyle(
         fontSize = 14.sp,
         fontFamily = manrope(),
-        lineHeight = 14.sp,
+        lineHeight = 20.sp,
         fontWeight = FontWeight.Medium,
     )
 
@@ -79,7 +87,7 @@ public data object AppTypography {
     public fun b14Reg(): TextStyle = TextStyle(
         fontSize = 14.sp,
         fontFamily = manrope(),
-        lineHeight = 14.sp,
+        lineHeight = 20.sp,
         fontWeight = FontWeight.Normal,
     )
 
@@ -87,7 +95,7 @@ public data object AppTypography {
     public fun b13Bold(): TextStyle = TextStyle(
         fontSize = 13.sp,
         fontFamily = manrope(),
-        lineHeight = 13.sp,
+        lineHeight = 18.sp, // ×1.38
         fontWeight = FontWeight.Bold,
     )
 
@@ -95,7 +103,7 @@ public data object AppTypography {
     public fun b13Semi(): TextStyle = TextStyle(
         fontSize = 13.sp,
         fontFamily = manrope(),
-        lineHeight = 13.sp,
+        lineHeight = 18.sp,
         fontWeight = FontWeight.SemiBold,
     )
 
@@ -103,7 +111,7 @@ public data object AppTypography {
     public fun b13Med(): TextStyle = TextStyle(
         fontSize = 13.sp,
         fontFamily = manrope(),
-        lineHeight = 13.sp,
+        lineHeight = 18.sp,
         fontWeight = FontWeight.Medium,
     )
 
@@ -111,7 +119,7 @@ public data object AppTypography {
     public fun b13Reg(): TextStyle = TextStyle(
         fontSize = 13.sp,
         fontFamily = manrope(),
-        lineHeight = 13.sp,
+        lineHeight = 18.sp,
         fontWeight = FontWeight.Normal,
     )
 
@@ -119,7 +127,7 @@ public data object AppTypography {
     public fun b12Bold(): TextStyle = TextStyle(
         fontSize = 12.sp,
         fontFamily = manrope(),
-        lineHeight = 12.sp,
+        lineHeight = 16.sp, // ×1.33
         fontWeight = FontWeight.Bold,
     )
 
@@ -127,7 +135,7 @@ public data object AppTypography {
     public fun b12Semi(): TextStyle = TextStyle(
         fontSize = 12.sp,
         fontFamily = manrope(),
-        lineHeight = 12.sp,
+        lineHeight = 16.sp,
         fontWeight = FontWeight.SemiBold,
     )
 
@@ -135,7 +143,7 @@ public data object AppTypography {
     public fun b12Med(): TextStyle = TextStyle(
         fontSize = 12.sp,
         fontFamily = manrope(),
-        lineHeight = 12.sp,
+        lineHeight = 16.sp,
         fontWeight = FontWeight.Medium,
     )
 
@@ -143,11 +151,10 @@ public data object AppTypography {
     public fun b12Reg(): TextStyle = TextStyle(
         fontSize = 12.sp,
         fontFamily = manrope(),
-        lineHeight = 12.sp,
+        lineHeight = 16.sp,
         fontWeight = FontWeight.Normal,
     )
 }
-
 
 @Composable
 internal fun manrope(): FontFamily = FontFamily(

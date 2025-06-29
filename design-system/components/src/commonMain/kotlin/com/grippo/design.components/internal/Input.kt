@@ -40,6 +40,8 @@ import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 
 @Immutable
 internal sealed class InputStyle {
@@ -254,4 +256,78 @@ internal fun Input(
             }
         },
     )
+}
+
+@AppPreview
+@Composable
+private fun InputDefaultEmptyPreview() {
+    PreviewContainer {
+        Input(
+            value = "",
+            placeholder = PlaceHolder.Empty,
+            inputStyle = InputStyle.Default(onValueChange = {}),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun InputDefaultWithPlaceholderPreview() {
+    PreviewContainer {
+        Input(
+            value = "",
+            placeholder = PlaceHolder.OverInput("Label"),
+            inputStyle = InputStyle.Default(onValueChange = {}),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun InputDefaultWithTextPreview() {
+    PreviewContainer {
+        Input(
+            value = "Some text",
+            placeholder = PlaceHolder.OverInput("Label"),
+            inputStyle = InputStyle.Default(onValueChange = {}),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun InputClickablePreview() {
+    PreviewContainer {
+        Input(
+            value = "Tap me",
+            placeholder = PlaceHolder.OverInput("Action"),
+            inputStyle = InputStyle.Clickable(onClick = {}),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun InputErrorPreview() {
+    PreviewContainer {
+        Input(
+            value = "Wrong",
+            placeholder = PlaceHolder.OverInput("Error label"),
+            error = InputError.Error("Invalid input"),
+            inputStyle = InputStyle.Default(onValueChange = {}),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun InputDisabledPreview() {
+    PreviewContainer {
+        Input(
+            value = "Disabled",
+            placeholder = PlaceHolder.OverInput("Disabled"),
+            inputStyle = InputStyle.Default(onValueChange = {}),
+            enabled = false
+        )
+    }
 }

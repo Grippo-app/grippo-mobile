@@ -1,6 +1,5 @@
 package com.grippo.exercise.example.exerciseexample
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,13 +10,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.equipment.EquipmentsCard
 import com.grippo.design.components.example.ExerciseExampleBundlesCard
 import com.grippo.design.components.toolbar.Toolbar
+import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -38,13 +35,13 @@ internal fun ExerciseExampleScreen(
     val example = state.example ?: return@BaseComposeScreen
 
     Toolbar(
-        modifier = Modifier.background(Color.Cyan),
+        modifier = Modifier,
         title = example.value.name,
+        style = ToolbarStyle.Transparent
     )
 
     Column(
         modifier = Modifier
-            .background(AppTokens.colors.background.primary)
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
             .padding(
@@ -57,37 +54,35 @@ internal fun ExerciseExampleScreen(
             modifier = Modifier.fillMaxWidth(),
             text = example.value.description,
             style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.secondary,
+            color = AppTokens.colors.text.primary,
         )
 
-        Spacer(modifier = Modifier.size(24.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
 
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.exercise_example_equipments),
-            style = AppTokens.typography.h3(),
-            textAlign = TextAlign.Center,
+            style = AppTokens.typography.b15Bold(),
             color = AppTokens.colors.text.primary,
         )
 
-        Spacer(modifier = Modifier.size(12.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
         EquipmentsCard(
             modifier = Modifier.fillMaxWidth(),
             value = example.equipments
         )
 
-        Spacer(modifier = Modifier.size(16.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.exercise_example_muscles),
-            style = AppTokens.typography.h3(),
-            textAlign = TextAlign.Center,
+            style = AppTokens.typography.b15Bold(),
             color = AppTokens.colors.text.primary,
         )
 
-        Spacer(modifier = Modifier.size(12.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
         ExerciseExampleBundlesCard(
             modifier = Modifier.fillMaxWidth(),

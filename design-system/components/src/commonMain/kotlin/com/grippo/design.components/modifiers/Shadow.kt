@@ -62,17 +62,16 @@ public fun Modifier.shadowDefault(
 }
 
 private fun Modifier.clipSides(
-    left: Boolean = true,
-    top: Boolean = true,
-    right: Boolean = true,
-    bottom: Boolean = true
+    left: Boolean = false,
+    top: Boolean = false,
+    right: Boolean = false,
+    bottom: Boolean = false
 ): Modifier = drawWithContent {
     clipRect(
-        left = if (left) 0f else -Float.MAX_VALUE,
-        top = if (top) 0f else -Float.MAX_VALUE,
-        right = if (right) size.width else Float.MAX_VALUE,
-        bottom = if (bottom) size.height else Float.MAX_VALUE,
-    ) {
-        this@drawWithContent.drawContent()
-    }
+        left = if (left) -Float.MAX_VALUE else 0f,
+        top = if (top) -Float.MAX_VALUE else 0f,
+        right = if (right) Float.MAX_VALUE else size.width,
+        bottom = if (bottom) Float.MAX_VALUE else size.height,
+        block = { this@drawWithContent.drawContent() }
+    )
 }
