@@ -31,7 +31,8 @@ import com.grippo.design.resources.Res
 import com.grippo.design.resources.percent
 import com.grippo.presentation.api.exercise.example.models.ExerciseExampleBundleState
 import com.grippo.presentation.api.exercise.example.models.stubExerciseExample
-import com.grippo.presentation.api.muscles.factories.images
+import com.grippo.presentation.api.muscles.factory.MuscleColorStrategy
+import com.grippo.presentation.api.muscles.factory.MuscleEngine
 import kotlinx.collections.immutable.ImmutableList
 
 @Composable
@@ -42,9 +43,8 @@ public fun ExerciseExampleBundlesCard(
 
     val shape = RoundedCornerShape(AppTokens.dp.exerciseExampleBundlesCard.radius)
 
-    val colors = AppTokens.colors.muscle.colorful
-
-    val (front, back) = value.images(colors)
+    val preset = MuscleEngine.generatePreset(MuscleColorStrategy.ByAlpha(value))
+    val (front, back) = MuscleEngine.generateImages(preset, value)
 
     Column(
         modifier = modifier
@@ -85,8 +85,8 @@ public fun ExerciseExampleBundlesCard(
 
             val pie = remember(value) {
                 value.map {
-                    it.muscle.type.allocateColorByMuscle(colors) to it.percentage.toLong()
-                }
+                    it.muscle.type.color(preset) to it.percentage.toLong()
+                }.sortedBy { it.second }
             }
 
             PieChart(
@@ -117,13 +117,13 @@ public fun ExerciseExampleBundlesCard(
                             Text(
                                 text = item.percentage.toString(),
                                 style = AppTokens.typography.b14Bold(),
-                                color = item.muscle.type.color()
+                                color = item.muscle.type.color(preset)
                             )
 
                             Text(
                                 text = AppTokens.strings.res(Res.string.percent),
                                 style = AppTokens.typography.b14Semi(),
-                                color = item.muscle.type.color()
+                                color = item.muscle.type.color(preset)
                             )
                         }
                     }

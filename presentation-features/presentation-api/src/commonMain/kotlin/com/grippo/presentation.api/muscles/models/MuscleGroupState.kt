@@ -7,7 +7,8 @@ import com.grippo.design.resources.icons.muscles.bodyBack
 import com.grippo.design.resources.icons.muscles.bodyFront
 import com.grippo.design.resources.icons.muscles.bodySplit
 import com.grippo.design.resources.icons.muscles.legsSplit
-import com.grippo.presentation.api.muscles.factories.MuscleColorPresetFactory
+import com.grippo.presentation.api.muscles.factory.MuscleColorStrategy
+import com.grippo.presentation.api.muscles.factory.MuscleEngine
 import com.grippo.presentation.api.muscles.models.MuscleRepresentationState.Plain
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentList
@@ -26,8 +27,8 @@ public data class MuscleGroupState<T : MuscleRepresentationState>(
     public fun image(
         selectedIds: ImmutableList<String>
     ): ImageVector {
-        val preset = MuscleColorPresetFactory.from(
-            MuscleColorPresetFactory.MuscleColorSelection.GroupSelection(
+        val preset = MuscleEngine.generatePreset(
+            MuscleColorStrategy.BySelection(
                 group = this,
                 selectedIds = selectedIds.toImmutableSet()
             )

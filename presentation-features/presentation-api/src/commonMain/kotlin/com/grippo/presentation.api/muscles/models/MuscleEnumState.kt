@@ -1,10 +1,8 @@
 package com.grippo.presentation.api.muscles.models
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
-import com.grippo.design.core.AppTokens
-import com.grippo.design.resources.AppColor
+import com.grippo.design.resources.icons.muscles.MuscleColorPreset
 
 @Immutable
 public enum class MuscleEnumState {
@@ -41,46 +39,40 @@ public enum class MuscleEnumState {
     TRICEPS,
     FOREARM;
 
-    @Composable
-    public fun color(): Color {
-        val colors = AppTokens.colors.muscle.colorful
-        return allocateColorByMuscle(colors)
-    }
-
-    public fun allocateColorByMuscle(colors: AppColor.MuscleColors.Colorful): Color {
+    public fun color(preset: MuscleColorPreset): Color {
         return when (this) {
             // Chest
-            PECTORALIS_MAJOR_CLAVICULAR -> colors.pectoralisMajorClavicular
-            PECTORALIS_MAJOR_STERNOCOSTAL -> colors.pectoralisMajorSternocostal
-            PECTORALIS_MAJOR_ABDOMINAL -> colors.pectoralisMajorAbdominal
+            PECTORALIS_MAJOR_CLAVICULAR -> preset.pectoralisMajorClavicular
+            PECTORALIS_MAJOR_STERNOCOSTAL -> preset.pectoralisMajorSternocostal
+            PECTORALIS_MAJOR_ABDOMINAL -> preset.pectoralisMajorAbdominal
 
             // Back
-            TRAPEZIUS -> colors.trapezius
-            LATISSIMUS_DORSI -> colors.latissimusDorsi
-            RHOMBOIDS -> colors.rhomboids
-            TERES_MAJOR -> colors.teresMajor
+            TRAPEZIUS -> preset.trapezius
+            LATISSIMUS_DORSI -> preset.latissimus
+            RHOMBOIDS -> preset.rhomboids
+            TERES_MAJOR -> preset.teresMajor
 
             // Abdominal
-            RECTUS_ABDOMINIS -> colors.rectusAbdominis
-            OBLIQUES -> colors.obliques
+            RECTUS_ABDOMINIS -> preset.rectusAbdominis
+            OBLIQUES -> preset.obliquesAbdominis
 
             // Legs
-            CALF -> colors.calf
-            GLUTEAL -> colors.gluteal
-            HAMSTRINGS -> colors.hamstrings
-            QUADRICEPS -> colors.quadriceps
-            ADDUCTORS -> colors.adductors
-            ABDUCTORS -> colors.abductors
+            CALF -> preset.calf
+            GLUTEAL -> preset.gluteal
+            HAMSTRINGS -> preset.hamstrings
+            QUADRICEPS -> preset.quadriceps
+            ADDUCTORS -> preset.adductors
+            ABDUCTORS -> preset.abductors
 
             // Shoulder
-            ANTERIOR_DELTOID -> colors.anteriorDeltoid
-            LATERAL_DELTOID -> colors.lateralDeltoid
-            POSTERIOR_DELTOID -> colors.posteriorDeltoid
+            ANTERIOR_DELTOID -> preset.anteriorDeltoid
+            LATERAL_DELTOID -> preset.lateralDeltoid
+            POSTERIOR_DELTOID -> preset.posteriorDeltoid
 
             // Arms
-            BICEPS -> colors.biceps
-            TRICEPS -> colors.triceps
-            FOREARM -> colors.forearm
+            BICEPS -> preset.biceps
+            TRICEPS -> preset.triceps
+            FOREARM -> preset.forearm
         }
     }
 }

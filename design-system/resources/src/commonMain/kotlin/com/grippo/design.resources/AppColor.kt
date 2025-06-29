@@ -138,40 +138,11 @@ public interface AppColor {
     }
 
     public interface MuscleColors {
+        public val focused: Color
         public val active: Color
         public val inactive: Color
         public val background: Color
         public val outline: Color
-        public val colorful: Colorful
-
-        public interface Colorful {
-            public val pectoralisMajorClavicular: Color
-            public val pectoralisMajorSternocostal: Color
-            public val pectoralisMajorAbdominal: Color
-
-            public val trapezius: Color
-            public val latissimusDorsi: Color
-            public val rhomboids: Color
-            public val teresMajor: Color
-
-            public val rectusAbdominis: Color
-            public val obliques: Color
-
-            public val calf: Color
-            public val gluteal: Color
-            public val hamstrings: Color
-            public val quadriceps: Color
-            public val adductors: Color
-            public val abductors: Color
-
-            public val anteriorDeltoid: Color
-            public val lateralDeltoid: Color
-            public val posteriorDeltoid: Color
-
-            public val biceps: Color
-            public val triceps: Color
-            public val forearm: Color
-        }
     }
 
     public interface SegmentColors {
