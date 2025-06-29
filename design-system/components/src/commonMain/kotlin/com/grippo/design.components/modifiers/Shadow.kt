@@ -3,12 +3,16 @@ package com.grippo.design.components.modifiers
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toPersistentList
 
 @Immutable
 public enum class ShadowElevation(public val dp: Dp) {
@@ -18,22 +22,57 @@ public enum class ShadowElevation(public val dp: Dp) {
     Non(0.dp),
 }
 
+@Immutable
+public enum class Side {
+    TOP, BOTTOM, LEFT, RIGHT
+}
+
 @Composable
 public fun Modifier.shadowDefault(
     shape: Shape,
     elevation: ShadowElevation,
+    sides: ImmutableList<Side> = Side.entries.toPersistentList(),
     color: Color = AppTokens.colors.overlay.defaultShadow,
 ): Modifier {
     if (elevation == ShadowElevation.Non) return this
 
     val spotColor = color.copy(alpha = (color.alpha * 1.5F).coerceIn(0f, 1f))
-    return this.then(
-        Modifier.shadow(
-            elevation = elevation.dp,
-            shape = shape,
-            ambientColor = color,
-            spotColor = spotColor,
-            clip = false
+
+    val hasTop = Side.TOP in sides
+    val hasBottom = Side.BOTTOM in sides
+    val hasLeft = Side.LEFT in sides
+    val hasRight = Side.RIGHT in sides
+
+    return this
+        .clipSides(
+            left = hasLeft,
+            top = hasTop,
+            right = hasRight,
+            bottom = hasBottom
         )
-    )
+        .then(
+            Modifier.shadow(
+                elevation = elevation.dp,
+                shape = shape,
+                ambientColor = color,
+                spotColor = spotColor,
+                clip = false
+            )
+        )
+}
+
+private fun Modifier.clipSides(
+    left: Boolean = true,
+    top: Boolean = true,
+    right: Boolean = true,
+    bottom: Boolean = true
+): Modifier = drawWithContent {
+    clipRect(
+        left = if (left) 0f else -Float.MAX_VALUE,
+        top = if (top) 0f else -Float.MAX_VALUE,
+        right = if (right) size.width else Float.MAX_VALUE,
+        bottom = if (bottom) size.height else Float.MAX_VALUE,
+    ) {
+        this@drawWithContent.drawContent()
+    }
 }

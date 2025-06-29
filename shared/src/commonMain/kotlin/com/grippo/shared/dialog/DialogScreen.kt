@@ -2,6 +2,7 @@ package com.grippo.shared.dialog
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ModalBottomSheet
@@ -47,6 +48,7 @@ internal fun DialogScreen(
         }
 
         ModalBottomSheet(
+            modifier = Modifier.statusBarsPadding(),
             onDismissRequest = { contract.release(config) },
             sheetState = modalBottomSheetState,
             scrimColor = AppTokens.colors.dialog.scrim,

@@ -21,11 +21,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.ShadowElevation
+import com.grippo.design.components.modifiers.Side
 import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.icons.ChevronLeft
+import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 public enum class ToolbarStyle {
@@ -56,7 +58,8 @@ public fun Toolbar(
         modifier = modifier
             .shadowDefault(
                 shape = RoundedCornerShape(0.dp),
-                elevation = shadowElevation
+                elevation = shadowElevation,
+                sides = persistentListOf(Side.BOTTOM)
             )
             .background(color)
             .statusBarsPadding(),
