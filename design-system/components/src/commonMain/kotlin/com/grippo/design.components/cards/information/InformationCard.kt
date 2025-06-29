@@ -21,12 +21,16 @@ import com.grippo.presentation.api.trainings.models.stubIteration
 public fun InformationCard(
     modifier: Modifier = Modifier,
     label: String,
+    trailing: @Composable RowScope.() -> Unit = {},
     value: @Composable RowScope.() -> Unit
 ) {
     Row(
         modifier = modifier.height(AppTokens.dp.informationCard.height),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+
+        trailing.invoke(this)
+
         Text(
             text = label,
             style = AppTokens.typography.b14Med(),

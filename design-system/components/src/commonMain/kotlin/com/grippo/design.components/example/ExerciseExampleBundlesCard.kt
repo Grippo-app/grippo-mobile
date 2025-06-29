@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -101,7 +102,6 @@ public fun ExerciseExampleBundlesCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(shape = shape)
-                .background(AppTokens.colors.background.primary)
                 .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
                 .padding(horizontal = AppTokens.dp.exerciseExampleBundlesCard.list.horizontalPadding)
         ) {
@@ -109,6 +109,14 @@ public fun ExerciseExampleBundlesCard(
                 InformationCard(
                     modifier = Modifier.fillMaxWidth(),
                     label = item.muscle.name,
+                    trailing = {
+                        Spacer(
+                            modifier = Modifier
+                                .size(14.dp)
+                                .background(item.muscle.type.color(preset)),
+                        )
+                        Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
+                    },
                     value = {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -117,13 +125,13 @@ public fun ExerciseExampleBundlesCard(
                             Text(
                                 text = item.percentage.toString(),
                                 style = AppTokens.typography.b14Bold(),
-                                color = item.muscle.type.color(preset)
+                                color = AppTokens.colors.text.primary
                             )
 
                             Text(
                                 text = AppTokens.strings.res(Res.string.percent),
                                 style = AppTokens.typography.b14Semi(),
-                                color = item.muscle.type.color(preset)
+                                color = AppTokens.colors.text.primary
                             )
                         }
                     }
