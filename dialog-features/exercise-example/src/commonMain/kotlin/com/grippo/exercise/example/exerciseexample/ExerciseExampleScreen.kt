@@ -37,7 +37,6 @@ internal fun ExerciseExampleScreen(
     Toolbar(
         modifier = Modifier,
         title = example.value.name,
-        style = ToolbarStyle.Transparent
     )
 
     Column(

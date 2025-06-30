@@ -10,16 +10,20 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.grippo.design.core.AppTokens
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 
 @Immutable
-public enum class ShadowElevation(public val dp: Dp) {
-    Component(2.dp),
-    Card(4.dp),
-    Container(6.dp),
-    Non(0.dp),
+public enum class ShadowElevation(
+    public val dp: Dp,
+    public val zIndex: Float
+) {
+    Component(2.dp, zIndex = 1f),
+    Card(4.dp, zIndex = 2f),
+    Container(6.dp, zIndex = 3f),
+    Non(0.dp, zIndex = 0f),
 }
 
 @Immutable
@@ -44,6 +48,7 @@ public fun Modifier.shadowDefault(
     val hasRight = Side.RIGHT in sides
 
     return this
+        .zIndex(elevation.zIndex)
         .clipSides(
             left = hasLeft,
             top = hasTop,
