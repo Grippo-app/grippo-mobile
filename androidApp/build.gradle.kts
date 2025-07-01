@@ -1,11 +1,8 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.jetbrains.compose)
+    id("android.application.convention")
 }
-
-apply(from = "$rootDir/gradle/common/android.gradle")
 
 android {
     defaultConfig {

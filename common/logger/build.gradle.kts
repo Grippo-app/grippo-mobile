@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.library)
+    id("android.library.convention")
 }
 
-apply(from = "$rootDir/gradle/common/android.gradle")
 apply(from = "$rootDir/gradle/common/kotlin.gradle")
