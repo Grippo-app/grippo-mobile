@@ -25,5 +25,9 @@ gradlePlugin {
             id = "compose.multiplatform.convention"
             implementationClass = "ComposeMultiplatformConventionPlugin"
         }
+        register("kotlin.multiplatform.convention") {
+            id = "kotlin.multiplatform.convention"
+            implementationClass = "KotlinMultiplatformConventionPlugin"
+        }
     }
 }

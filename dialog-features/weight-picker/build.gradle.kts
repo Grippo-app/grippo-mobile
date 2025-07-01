@@ -1,10 +1,8 @@
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
     id("android.library.convention")
+    id("kotlin.multiplatform.convention")
     id("compose.multiplatform.convention")
 }
-
-apply(from = "$rootDir/gradle/common/kotlin.gradle")
 
 kotlin {
     sourceSets.commonMain.dependencies {

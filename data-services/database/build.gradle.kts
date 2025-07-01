@@ -1,12 +1,10 @@
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.room)
-    alias(libs.plugins.ksp)
     id("android.library.convention")
+    id("kotlin.multiplatform.convention")
     id("ios.cocoapods.convention")
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
 }
-
-apply(from = "$rootDir/gradle/common/kotlin.gradle")
 
 room {
     schemaDirectory("$projectDir/schemas")
