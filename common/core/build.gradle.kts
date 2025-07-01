@@ -1,13 +1,11 @@
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.jetbrains.compose)
     id("android.library.convention")
     id("ios.cocoapods.convention")
+    id("compose.multiplatform.convention")
 }
 
 apply(from = "$rootDir/gradle/common/kotlin.gradle")
-apply(from = "$rootDir/gradle/common/compose.gradle")
 
 kotlin {
     sourceSets.commonMain.dependencies {

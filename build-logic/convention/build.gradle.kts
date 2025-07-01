@@ -4,6 +4,7 @@ plugins {
 dependencies {
     implementation(libs.android.gradle.plugin)
     implementation(libs.kotlin.gradle.plugin)
+    implementation(libs.compose.gradle.plugin)
 }
 
 gradlePlugin {
@@ -19,6 +20,10 @@ gradlePlugin {
         register("ios.cocoapods.convention") {
             id = "ios.cocoapods.convention"
             implementationClass = "IosCocoapodsConventionPlugin"
+        }
+        register("compose.multiplatform.convention") {
+            id = "compose.multiplatform.convention"
+            implementationClass = "ComposeMultiplatformConventionPlugin"
         }
     }
 }
