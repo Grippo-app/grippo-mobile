@@ -5,6 +5,7 @@ dependencies {
     implementation(libs.android.gradle.plugin)
     implementation(libs.kotlin.gradle.plugin)
     implementation(libs.compose.gradle.plugin)
+    implementation(libs.ksp.plugin.api)
 }
 
 gradlePlugin {
@@ -28,6 +29,10 @@ gradlePlugin {
         register("kotlin.multiplatform.convention") {
             id = "kotlin.multiplatform.convention"
             implementationClass = "KotlinMultiplatformConventionPlugin"
+        }
+        register("koin.annotation.convention") {
+            id = "koin.annotation.convention"
+            implementationClass = "KoinAnnotationConventionPlugin"
         }
     }
 }

@@ -5,23 +5,24 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 
 class AndroidApplicationConventionPlugin : Plugin<Project> {
-    override fun apply(target: Project) = with(target) {
+    override fun apply(target: Project) {
+        with(target) {
+            pluginManager.apply("com.android.application")
+            pluginManager.apply("org.jetbrains.kotlin.android")
 
-        pluginManager.apply("com.android.application")
-        pluginManager.apply("org.jetbrains.kotlin.android")
+            extensions.configure<ApplicationExtension> {
+                compileSdk = 35
+                namespace = "com.grippo"
 
-        extensions.configure<ApplicationExtension> {
-            compileSdk = 35
-            namespace = "com.grippo"
+                defaultConfig {
+                    minSdk = 26
+                    targetSdk = 35
+                }
 
-            defaultConfig {
-                minSdk = 26
-                targetSdk = 35
-            }
-
-            compileOptions {
-                sourceCompatibility = JavaVersion.VERSION_21
-                targetCompatibility = JavaVersion.VERSION_21
+                compileOptions {
+                    sourceCompatibility = JavaVersion.VERSION_21
+                    targetCompatibility = JavaVersion.VERSION_21
+                }
             }
         }
     }

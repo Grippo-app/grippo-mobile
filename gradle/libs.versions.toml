@@ -7,6 +7,7 @@ compose-plugin = "1.8.2"
 activity-compose = "1.10.1"
 datetime = "0.7.0"
 koin = "4.1.0"
+koin-annotations = "2.1.0"
 decompose = "3.4.0-alpha03"
 decompose-essently = "2.5.0"
 room = "2.7.2"
@@ -26,6 +27,7 @@ androidx-activity-compose = { group = "androidx.activity", name = "activity-comp
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 compose-gradle-plugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
+ksp-plugin-api = { module = "com.google.devtools.ksp:symbol-processing-gradle-plugin", version.ref = "ksp" }
 
 #Decompose
 decompose-core = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
@@ -52,6 +54,8 @@ ktor-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 #Koin
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koin-annotations" }
+koin-ksp-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koin-annotations" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
