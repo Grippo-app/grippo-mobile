@@ -1,3 +1,4 @@
+import com.grippo.applySafely
 import com.grippo.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -8,7 +9,7 @@ import org.jetbrains.kotlin.gradle.plugin.cocoapods.CocoapodsExtension
 class IosCocoapodsConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
-            pluginManager.apply("org.jetbrains.kotlin.native.cocoapods")
+            pluginManager.applySafely("org.jetbrains.kotlin.native.cocoapods")
 
             extensions.getByType<KotlinMultiplatformExtension>().apply {
                 extensions.getByType<CocoapodsExtension>().apply {
