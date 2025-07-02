@@ -15,8 +15,10 @@ import com.grippo.database.databaseModule
 import com.grippo.dialog.api.dialogModule
 import com.grippo.error.provider.impl.errorModule
 import com.grippo.network.networkModule
+import com.grippo.platform.core.PlatformModule
 import org.koin.core.KoinApplication
 import org.koin.dsl.KoinAppDeclaration
+import org.koin.ksp.generated.module
 import org.koin.mp.KoinPlatformTools
 
 public object Koin {
@@ -25,7 +27,7 @@ public object Koin {
     ): KoinApplication = KoinPlatformTools.defaultContext().startKoin {
         appDeclaration()
         modules(
-            platformModule,
+            PlatformModule().module,
             errorModule,
             networkModule,
             databaseModule,

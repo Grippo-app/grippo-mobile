@@ -3,6 +3,7 @@ plugins {
     id("kotlin.multiplatform.convention")
     id("ios.cocoapods.convention")
     id("compose.multiplatform.convention")
+    id("koin.annotation.convention")
 }
 
 kotlin {
@@ -46,7 +47,6 @@ kotlin {
         implementation(projects.dialogFeatures.errorDisplay)
         implementation(projects.dialogFeatures.exerciseExample)
 
-        implementation(libs.koin.core)
         implementation(libs.immutable.collections)
 
         implementation(compose.ui)

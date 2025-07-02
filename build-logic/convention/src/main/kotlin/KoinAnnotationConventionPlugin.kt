@@ -15,6 +15,8 @@ class KoinAnnotationConventionPlugin : Plugin<Project> {
         val kotlinExt = extensions.getByType<KotlinMultiplatformExtension>()
 
         kotlinExt.sourceSets.named("commonMain").configure {
+            // todo maybe remove or not ( it doesn't works with ROOM)
+            kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin") // Add KSP-generated code
             dependencies {
                 implementation(libs.findLibrary("koin.core").get())
                 api(libs.findLibrary("koin.annotations").get())

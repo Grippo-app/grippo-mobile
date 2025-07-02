@@ -2,7 +2,7 @@ package com.grippo.platform.core
 
 import android.content.Context
 
-public actual class NativeContext private actual constructor() {
+public actual class NativeContext actual constructor() {
     public lateinit var context: Context
         private set
 
