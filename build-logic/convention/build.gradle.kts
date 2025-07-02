@@ -34,5 +34,9 @@ gradlePlugin {
             id = "koin.annotation.convention"
             implementationClass = "KoinAnnotationConventionPlugin"
         }
+        register("room.convention") {
+            id = "room.convention"
+            implementationClass = "RoomConventionPlugin"
+        }
     }
 }
