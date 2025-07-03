@@ -92,12 +92,20 @@ The iOS application uses SwiftUI as an entry point and hosts the Compose UI insi
 For a full clean
 
 ```bash
-./gradlew clean
-cd iosApp
-rm -rf iosApp/Pods iosApp/Podfile.lock build
-rm -rf ~/Library/Developer/Xcode/DerivedData
-pod deintegrate
-pod install
+./gradlew clean --no-daemon && \
+find . -type d -name "build" -exec rm -rf {} + && \
+find . -type d -name ".gradle" -exec rm -rf {} + && \
+find . -type f -name "*.podspec" -exec rm -f {} + && \
+rm -rf ~/.gradle/caches/modules-2/modules-2.lock && \
+rm -rf ~/.gradle/caches/transforms-* && \
+cd iosApp && \
+rm -rf Pods Podfile.lock build && \
+rm -rf ~/Library/Developer/Xcode/DerivedData && \
+pod deintegrate || true && \
+pod install && \
+cd .. && \
+echo "✅ Cleaned"
+
 ```
 
 ## Summary

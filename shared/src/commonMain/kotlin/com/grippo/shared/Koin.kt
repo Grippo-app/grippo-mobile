@@ -11,10 +11,10 @@ import com.grippo.data.features.muscle.musclesFeatureModule
 import com.grippo.data.features.trainings.trainingsFeatureModule
 import com.grippo.data.features.user.userFeatureModule
 import com.grippo.data.features.weight.history.weightHistoryFeatureModule
-import com.grippo.database.databaseModule
+import com.grippo.database.DatabaseModule
 import com.grippo.dialog.api.dialogModule
 import com.grippo.error.provider.impl.errorModule
-import com.grippo.network.networkModule
+import com.grippo.network.NetworkModule
 import com.grippo.platform.core.PlatformModule
 import org.koin.core.KoinApplication
 import org.koin.dsl.KoinAppDeclaration
@@ -28,9 +28,9 @@ public object Koin {
         appDeclaration()
         modules(
             PlatformModule().module,
+            DatabaseModule().module,
+            NetworkModule().module,
             errorModule,
-            networkModule,
-            databaseModule,
             authorizationFeatureModule,
             userFeatureModule,
             weightHistoryFeatureModule,

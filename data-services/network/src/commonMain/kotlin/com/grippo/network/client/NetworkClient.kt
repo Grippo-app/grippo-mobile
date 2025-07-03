@@ -15,16 +15,19 @@ import io.ktor.http.contentType
 import io.ktor.http.path
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import org.koin.core.annotation.Single
 
-public class NetworkClient(
+@Single
+internal class NetworkClient(
     httpClient: HttpClient,
-    json: Json
+    json: Json,
+    clientLogger: ClientLogger
 ) {
 
     private val clientProvider = httpClient.config {
         install(Logging) {
             level = LogLevel.ALL
-            logger = ClientLogger
+            logger = clientLogger
         }
 
         install(ContentNegotiation) {
@@ -41,7 +44,7 @@ public class NetworkClient(
         }
     }
 
-    public suspend fun invoke(
+    suspend fun invoke(
         method: HttpMethod,
         path: String,
         body: Any? = null,

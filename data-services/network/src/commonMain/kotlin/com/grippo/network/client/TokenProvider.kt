@@ -24,8 +24,10 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeout
+import org.koin.core.annotation.Single
 import kotlin.coroutines.cancellation.CancellationException
 
+@Single
 internal class TokenProvider(
     private val tokenDao: TokenDao,
     private val userActiveDao: UserActiveDao,

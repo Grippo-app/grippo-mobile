@@ -2,8 +2,10 @@ package com.grippo.network.client
 
 import com.grippo.logger.AppLogger
 import io.ktor.client.plugins.logging.Logger
+import org.koin.core.annotation.Single
 
-internal object ClientLogger : Logger {
+@Single
+internal class ClientLogger : Logger {
 
     override fun log(message: String) {
 
