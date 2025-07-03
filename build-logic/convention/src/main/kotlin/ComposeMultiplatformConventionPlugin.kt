@@ -19,16 +19,6 @@ class ComposeMultiplatformConventionPlugin : Plugin<Project> {
                     "/META-INF/{AL2.0,LGPL2.1}"
                 )
             }
-
-            extensions.getByType<ComposeCompilerGradlePluginExtension>().apply {
-                featureFlags.set(
-                    setOf(
-                        ComposeFeatureFlag.IntrinsicRemember,
-                        ComposeFeatureFlag.StrongSkipping,
-                        ComposeFeatureFlag.OptimizeNonSkippingGroups
-                    )
-                )
-            }
         }
     }
 }

@@ -16,18 +16,22 @@ class IosCocoapodsConventionPlugin : Plugin<Project> {
                     version = "1.0"
                     summary = "Shared Code"
                     homepage = "https://github.com/voitenkodev/Grippo"
-                    podfile = file("$rootDir/iosApp/Podfile")
+                    authors = "Maxim Voitenko"
+                    license = "MIT"
                     ios.deploymentTarget = "16.0"
+                    podfile = file("$rootDir/iosApp/Podfile")
 
                     framework {
                         baseName = "shared"
                         isStatic = true
                         linkerOpts.add("-lsqlite3")
 
-                        export(libs.findLibrary("decompose.core").get())
-                        export(libs.findLibrary("decompose.essenty").get())
-                        export(libs.findLibrary("decompose.state.keeper").get())
-                        export(libs.findLibrary("decompose.back.handler").get())
+                        listOf(
+                            libs.findLibrary("decompose.core").get(),
+                            libs.findLibrary("decompose.essenty").get(),
+                            libs.findLibrary("decompose.state.keeper").get(),
+                            libs.findLibrary("decompose.back.handler").get()
+                        ).forEach { export(it) }
                     }
                 }
             }

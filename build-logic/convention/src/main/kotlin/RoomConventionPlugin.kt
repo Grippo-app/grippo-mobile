@@ -1,3 +1,4 @@
+import com.google.devtools.ksp.gradle.KspAATask
 import com.google.devtools.ksp.gradle.KspExtension
 import com.grippo.applySafely
 import com.grippo.libs
@@ -15,6 +16,7 @@ class RoomConventionPlugin : Plugin<Project> {
         val kotlinExt = extensions.getByType<KotlinMultiplatformExtension>()
 
         kotlinExt.sourceSets.named("commonMain") {
+            kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
             dependencies {
                 implementation(libs.findLibrary("androidx.room.runtime").get())
                 implementation(libs.findLibrary("sqlite.bundled").get())
@@ -33,18 +35,12 @@ class RoomConventionPlugin : Plugin<Project> {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
 
-        val generatedDir = file("build/generated/ksp/metadata/commonMain/kotlin")
-
-        target.afterEvaluate {
-            if (generatedDir.exists()) {
-                kotlinExt.sourceSets.named("commonMain") {
-                    kotlin.srcDir(generatedDir)
+        project.afterEvaluate {
+            tasks.withType(KspAATask::class.java).configureEach {
+                if (name != "kspCommonMainKotlinMetadata") {
+                    dependsOn("kspCommonMainKotlinMetadata")
                 }
             }
-        }
-
-        tasks.matching { it.name == "compileKotlinMetadata" }.configureEach {
-            dependsOn("kspCommonMainKotlinMetadata")
         }
     }
 }

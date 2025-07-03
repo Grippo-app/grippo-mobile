@@ -31,15 +31,11 @@ class KoinAnnotationConventionPlugin : Plugin<Project> {
             arg("KOIN_CONFIG_CHECK", "true")
         }
 
-        tasks.withType(KotlinCompilationTask::class.java).configureEach {
-            if (name != "kspCommonMainKotlinMetadata") {
-                dependsOn("kspCommonMainKotlinMetadata")
-            }
-        }
-
-        target.afterEvaluate {
-            tasks.named("kspDebugKotlinAndroid", KspAATask::class.java) {
-                dependsOn("kspCommonMainKotlinMetadata")
+        project.afterEvaluate {
+            tasks.withType(KspAATask::class.java).configureEach {
+                if (name != "kspCommonMainKotlinMetadata") {
+                    dependsOn("kspCommonMainKotlinMetadata")
+                }
             }
         }
     }
