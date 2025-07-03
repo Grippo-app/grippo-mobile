@@ -32,5 +32,19 @@ class RoomConventionPlugin : Plugin<Project> {
         extensions.configure<KspExtension> {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
+
+        val generatedDir = file("build/generated/ksp/metadata/commonMain/kotlin")
+
+        target.afterEvaluate {
+            if (generatedDir.exists()) {
+                kotlinExt.sourceSets.named("commonMain") {
+                    kotlin.srcDir(generatedDir)
+                }
+            }
+        }
+
+        tasks.matching { it.name == "compileKotlinMetadata" }.configureEach {
+            dependsOn("kspCommonMainKotlinMetadata")
+        }
     }
 }

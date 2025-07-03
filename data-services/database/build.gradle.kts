@@ -3,7 +3,7 @@ plugins {
     id("kotlin.multiplatform.convention")
     id("ios.cocoapods.convention")
     id("room.convention")
-    alias(libs.plugins.ksp)
+    id("koin.annotation.convention")
 }
 
 kotlin {
@@ -12,7 +12,6 @@ kotlin {
             implementation(projects.common.platformCore)
             implementation(projects.common.logger)
             implementation(projects.common.error.errorProvider)
-            implementation(libs.koin.core)
         }
     }
 }

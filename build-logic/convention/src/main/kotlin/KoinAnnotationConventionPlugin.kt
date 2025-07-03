@@ -1,3 +1,4 @@
+import com.google.devtools.ksp.gradle.KspAATask
 import com.google.devtools.ksp.gradle.KspExtension
 import com.grippo.applySafely
 import com.grippo.libs
@@ -15,8 +16,7 @@ class KoinAnnotationConventionPlugin : Plugin<Project> {
         val kotlinExt = extensions.getByType<KotlinMultiplatformExtension>()
 
         kotlinExt.sourceSets.named("commonMain").configure {
-            // todo maybe remove or not ( it doesn't works with ROOM)
-            kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin") // Add KSP-generated code
+            kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
             dependencies {
                 implementation(libs.findLibrary("koin.core").get())
                 api(libs.findLibrary("koin.annotations").get())
@@ -33,6 +33,12 @@ class KoinAnnotationConventionPlugin : Plugin<Project> {
 
         tasks.withType(KotlinCompilationTask::class.java).configureEach {
             if (name != "kspCommonMainKotlinMetadata") {
+                dependsOn("kspCommonMainKotlinMetadata")
+            }
+        }
+
+        target.afterEvaluate {
+            tasks.named("kspDebugKotlinAndroid", KspAATask::class.java) {
                 dependsOn("kspCommonMainKotlinMetadata")
             }
         }
