@@ -8,7 +8,9 @@ import com.grippo.network.Api
 import com.grippo.network.mapper.equipment.toEntities
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.koin.core.annotation.Single
 
+@Single(binds = [EquipmentRepository::class])
 internal class EquipmentRepositoryImpl(
     private val api: Api,
     private val equipmentDao: EquipmentDao,

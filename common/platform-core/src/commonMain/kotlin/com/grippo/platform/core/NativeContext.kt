@@ -1,3 +1,3 @@
 package com.grippo.platform.core
 
-public expect class NativeContext private constructor()
+public expect class NativeContext

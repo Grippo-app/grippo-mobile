@@ -11,7 +11,9 @@ import com.grippo.network.mapper.training.toEntityOrNull
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDateTime
+import org.koin.core.annotation.Single
 
+@Single(binds = [TrainingRepository::class])
 internal class TrainingRepositoryImpl(
     private val api: Api,
     private val trainingDao: TrainingDao,

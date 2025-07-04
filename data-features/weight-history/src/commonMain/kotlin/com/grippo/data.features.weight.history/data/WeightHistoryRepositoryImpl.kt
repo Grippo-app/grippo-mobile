@@ -8,7 +8,9 @@ import com.grippo.network.Api
 import com.grippo.network.mapper.user.toEntities
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.koin.core.annotation.Single
 
+@Single(binds = [WeightHistoryRepository::class])
 internal class WeightHistoryRepositoryImpl(
     private val api: Api,
     private val weightHistoryDao: WeightHistoryDao,

@@ -1,5 +1,6 @@
 import com.android.build.api.dsl.ApplicationExtension
 import com.grippo.applySafely
+import com.grippo.configureJvmToolchain
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -25,6 +26,8 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                     targetCompatibility = JavaVersion.VERSION_19
                 }
             }
+
+            configureJvmToolchain(19)
         }
     }
 }

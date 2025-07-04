@@ -1,5 +1,6 @@
 import com.android.build.gradle.LibraryExtension
 import com.grippo.applySafely
+import com.grippo.configureJvmToolchain
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -23,6 +24,8 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                     targetCompatibility = JavaVersion.VERSION_19
                 }
             }
+
+            configureJvmToolchain(19)
         }
     }
 }

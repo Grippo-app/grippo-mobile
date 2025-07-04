@@ -4,7 +4,9 @@ import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.error.provider.AppError
 import com.grippo.error.provider.ErrorProvider
+import org.koin.core.annotation.Single
 
+@Single(binds = [ErrorProviderImpl::class])
 internal class ErrorProviderImpl(val dialogController: DialogController) : ErrorProvider {
 
     override fun provide(exception: Throwable, callback: () -> Unit) {

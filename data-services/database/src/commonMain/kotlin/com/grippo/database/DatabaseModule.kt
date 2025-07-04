@@ -16,6 +16,7 @@ import org.koin.core.annotation.Single
 @Module
 @ComponentScan("com.grippo.database")
 public class DatabaseModule {
+
     @Single
     internal fun provideDatabase(nativeContext: NativeContext): Database {
         return nativeContext.getDatabaseBuilder()

@@ -12,7 +12,9 @@ import com.grippo.network.user.IdsBody
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import org.koin.core.annotation.Single
 
+@Single(binds = [ExcludedMusclesRepository::class])
 internal class ExcludedMusclesRepositoryImpl(
     private val api: Api,
     private val userDao: UserDao,

@@ -14,7 +14,9 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import org.koin.core.annotation.Single
 
+@Single(binds = [AuthorizationRepository::class])
 internal class AuthorizationRepositoryImpl(
     private val api: Api,
     private val tokenDao: TokenDao,

@@ -9,7 +9,9 @@ import com.grippo.network.mapper.exercise.example.toEntities
 import com.grippo.network.mapper.exercise.example.toEntityOrNull
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.koin.core.annotation.Single
 
+@Single(binds = [ExerciseExampleRepository::class])
 internal class ExerciseExampleRepositoryImpl(
     private val api: Api,
     private val exerciseExampleDao: ExerciseExampleDao,

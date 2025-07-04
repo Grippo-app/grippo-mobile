@@ -3,7 +3,9 @@ package com.grippo.data.features.weight.history.domain
 import com.grippo.data.features.api.weight.history.WeightHistoryFeature
 import com.grippo.data.features.api.weight.history.models.WeightHistory
 import kotlinx.coroutines.flow.Flow
+import org.koin.core.annotation.Single
 
+@Single(binds = [WeightHistoryFeature::class])
 internal class WeightHistoryFeatureImpl(
     private val repository: WeightHistoryRepository
 ) : WeightHistoryFeature {
