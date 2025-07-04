@@ -53,8 +53,4 @@ kotlin {
         implementation(compose.material3)
         implementation(compose.foundation)
     }
-
-    sourceSets.androidMain.dependencies {
-        implementation(libs.koin.android)
-    }
 }

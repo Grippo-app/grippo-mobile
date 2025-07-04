@@ -1,7 +1,7 @@
 package com.grippo.shared
 
 import com.grippo.core.CoreModule
-import com.grippo.data.features.api.featureApiModule
+import com.grippo.data.features.api.FeatureApiModule
 import com.grippo.data.features.authorization.AuthorizationFeatureModule
 import com.grippo.data.features.equipment.EquipmentFeatureModule
 import com.grippo.data.features.excluded.equipments.ExcludedEquipmentFeatureModule
@@ -42,7 +42,7 @@ public object Koin {
             ExcludedMusclesFeatureModule().module,
             TrainingsFeatureModule().module,
             ExcludedEquipmentFeatureModule().module,
-            featureApiModule,
+            FeatureApiModule().module,
         )
     }
 }
