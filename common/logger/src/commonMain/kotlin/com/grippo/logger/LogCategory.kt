@@ -5,4 +5,5 @@ public enum class LogCategory {
     NETWORK,
     NAVIGATION,
     MAPPING,
+    PERFORMANCE,
 }

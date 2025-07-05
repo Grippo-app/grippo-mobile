@@ -1,5 +1,6 @@
 package com.grippo.logger
 
+import com.grippo.logger.internal.PerformanceTracker
 import com.grippo.logger.internal.getCallerLocation
 
 public object AppLogger {
@@ -11,55 +12,41 @@ public object AppLogger {
     }
 
     public fun error(msg: String) {
-        onDebug {
-            val category = LogCategory.GENERAL
-//            println(category.name + " " + "🔴 $msg")
-            println("🔴 $msg")
-            logListener?.invoke(category, "🔴 $msg")
-        }
+        present(LogCategory.GENERAL, "🔴 $msg")
     }
 
     public fun warning(msg: String) {
-        onDebug {
-            val category = LogCategory.GENERAL
-//            println(category.name + " " + "⚠\uFE0F $msg")
-            println("⚠\uFE0F $msg")
-            logListener?.invoke(category, "⚠\uFE0F $msg")
-        }
+        present(LogCategory.GENERAL, "⚠\uFE0F $msg")
     }
 
     public fun network(msg: String) {
-        onDebug {
-            val category = LogCategory.NETWORK
-//            println(category.name + " " + msg)
-            println(msg)
-            logListener?.invoke(category, msg)
-        }
+        present(LogCategory.NETWORK, msg)
     }
 
     public fun navigation(msg: String) {
-        onDebug {
-            val category = LogCategory.NAVIGATION
-//            println(category.name + " " + msg)
-            println(msg)
-            logListener?.invoke(category, msg)
+        present(LogCategory.NAVIGATION, msg)
+    }
+
+    public fun performance(screen: String) {
+        val duration = PerformanceTracker.markScreen(screen)
+        if (duration != null) {
+            val summary = PerformanceTracker.logSummary()
+            present(LogCategory.PERFORMANCE, "🧭 [$screen] → ${duration}ms\n$summary")
         }
     }
 
     public fun <T> checkOrLog(value: T?, msg: () -> String): T? {
         if (value != null) return value
-
-        val category = LogCategory.MAPPING
         val location = getCallerLocation()
-
-        val fullMessage = "${msg()} $location"
-        onDebug {
-//            println(category.name + " " + fullMessage)
-            println(fullMessage)
-            logListener?.invoke(category, fullMessage)
-        }
-
+        present(LogCategory.MAPPING, "${msg()} $location")
         return null
+    }
+
+    private fun present(category: LogCategory, msg: String) {
+        onDebug {
+            println(msg)
+            logListener?.invoke(category, msg)
+        }
     }
 
     private fun onDebug(action: () -> Unit) {

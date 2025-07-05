@@ -53,6 +53,7 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
     }
 
     protected fun navigateTo(destination: DIRECTION) {
+        AppLogger.performance(destination.toString())
         coroutineScope.launch { _navigator.send(destination) }
     }
 

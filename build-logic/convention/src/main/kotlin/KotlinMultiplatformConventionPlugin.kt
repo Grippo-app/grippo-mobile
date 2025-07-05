@@ -35,18 +35,6 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
                         optIn("androidx.compose.animation.ExperimentalSharedTransitionApi")
                         optIn("kotlin.uuid.ExperimentalUuidApi")
                         optIn("com.arkivanov.decompose.ExperimentalDecomposeApi")
-
-                        // Emit the compilation warning on expect/actual classes. The warning must mention that expect/actual classes are in Beta
-                        // https://youtrack.jetbrains.com/issue/KT-61573
-                        targets.all {
-                            compilations.all {
-                                compileTaskProvider.configure {
-                                    compilerOptions {
-                                        freeCompilerArgs.add("-Xexpect-actual-classes")
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
             }
