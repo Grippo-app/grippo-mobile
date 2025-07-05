@@ -53,7 +53,6 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
     }
 
     protected fun navigateTo(destination: DIRECTION) {
-        AppLogger.performance(destination.toString())
         coroutineScope.launch { _navigator.send(destination) }
     }
 
@@ -104,10 +103,10 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
     }
 
     private fun sendError(exception: Throwable, onError: (() -> Unit)) {
-        AppLogger.error("┌───────── ViewModel error ─────────")
-        AppLogger.error("│ message: ${exception.message}")
-        AppLogger.error("│ cause: ${exception.cause?.message}")
-        AppLogger.error("└───────── ViewModel error ─────────")
+        AppLogger.General.error("┌───────── ViewModel error ─────────")
+        AppLogger.General.error("│ message: ${exception.message}")
+        AppLogger.General.error("│ cause: ${exception.cause?.message}")
+        AppLogger.General.error("└───────── ViewModel error ─────────")
 
         errorProvider.provide(exception, callback = onError)
     }

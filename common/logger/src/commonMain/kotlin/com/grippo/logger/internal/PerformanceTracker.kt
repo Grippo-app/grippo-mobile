@@ -1,9 +1,9 @@
 package com.grippo.logger.internal
 
+import androidx.compose.runtime.Composable
+
 internal expect object PerformanceTracker {
-    /**
-     * @return renderDurationMs if second call (screen completed), or null if it's the first call (start).
-     */
-    fun markScreen(screenName: String, screenParams: Any? = null): Long?
-    fun logSummary(): String
+    fun navigate(screen: String, onLogged: (durationMs: Long, summary: String) -> Unit)
+    @Composable
+    fun Track(screen: String, onOpened: () -> Unit)
 }

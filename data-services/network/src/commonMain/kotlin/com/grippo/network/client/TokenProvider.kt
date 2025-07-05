@@ -246,18 +246,18 @@ internal class TokenProvider(
     }
 
     private inline fun logInfo(message: () -> String) {
-        AppLogger.network("ℹ️ [TokenProvider] ${message()}")
+        AppLogger.Network.log("ℹ️ [TokenProvider] ${message()}")
     }
 
     private inline fun logWarn(message: () -> String) {
-        AppLogger.network("⚠️ [TokenProvider] ${message()}")
+        AppLogger.Network.log("⚠️ [TokenProvider] ${message()}")
     }
 
     private inline fun logError(message: () -> String) {
-        AppLogger.network("❌ [TokenProvider] ${message()}")
+        AppLogger.Network.log("❌ [TokenProvider] ${message()}")
     }
 
     private inline fun logDebug(message: () -> String) {
-        AppLogger.network("🔧 [TokenProvider] ${message()}")
+        AppLogger.Network.log("🔧 [TokenProvider] ${message()}")
     }
 }

@@ -23,7 +23,7 @@ internal class ClientLogger : Logger {
             .split("\n")
             .joinToString("\n│ ")
 
-        AppLogger.network(
+        AppLogger.Network.log(
             "┌$emojiLine HTTP LOG $emojiLine\n│ $formattedMessage\n└────────────────────────────────────────"
         )
     }

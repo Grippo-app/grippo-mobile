@@ -44,6 +44,6 @@ internal object ComponentTreeLogger {
             }
             append("└" + "─".repeat(30))
         }
-        AppLogger.navigation(tree)
+        AppLogger.Navigation.log(tree)
     }
 }

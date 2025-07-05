@@ -1,30 +1,51 @@
 package com.grippo.logger.internal
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
 import platform.Foundation.NSThread
 import platform.Foundation.timeIntervalSince1970
 
 internal actual object PerformanceTracker {
+
     private val screenStarts = mutableMapOf<String, Long>()
     private var totalRenderTimeMs = 0L
     private var renderCount = 0
     private var peakThreadCount = 0
 
-    actual fun markScreen(screenName: String, screenParams: Any?): Long? {
-        val key = screenKey(screenName, screenParams)
+    actual fun navigate(screen: String, onLogged: (durationMs: Long, summary: String) -> Unit) {
         val now = currentTimeMillis()
-
-        val start = screenStarts.remove(key)
-        return if (start != null) {
+        val start = screenStarts.remove(screen)
+        if (start != null) {
             val duration = now - start
-            record(screenName, duration)
-            duration
+            record(duration)
+            val summary = buildSummary()
+            onLogged(duration, summary)
         } else {
-            screenStarts[key] = now
-            null
+            screenStarts[screen] = now
         }
     }
 
-    private fun record(screenName: String, duration: Long) {
+    @Composable
+    actual fun Track(screen: String, onOpened: () -> Unit) {
+        val tracked = remember { mutableStateOf(false) }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .onGloballyPositioned {
+                    if (!tracked.value) {
+                        tracked.value = true
+                        onOpened()
+                    }
+                }
+        )
+    }
+
+    private fun record(duration: Long) {
         totalRenderTimeMs += duration
         renderCount++
         peakThreadCount = maxOf(
@@ -33,14 +54,12 @@ internal actual object PerformanceTracker {
         )
     }
 
-    actual fun logSummary(): String {
-        val avg = if (renderCount == 0) 0 else totalRenderTimeMs / renderCount
+    private fun buildSummary(): String {
+        if (renderCount == 0) return ""
+        val avg = totalRenderTimeMs / renderCount
         val icon = performanceIcon(avg)
         return "📱 $renderCount screens · $icon ${avg}ms avg · 🧠 $peakThreadCount threads"
     }
-
-    private fun screenKey(name: String, params: Any?) =
-        if (params != null) "$name|$params" else name
 
     private fun currentTimeMillis(): Long {
         return (platform.Foundation.NSDate().timeIntervalSince1970 * 1000).toLong()
