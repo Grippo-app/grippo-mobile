@@ -17,11 +17,12 @@ import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.core.AppTokens
+import com.grippo.design.core.UiText
 import kotlinx.collections.immutable.ImmutableList
 
 @Immutable
 public data class MenuItem(
-    val title: String,
+    val title: UiText,
     val icon: ImageVector
 )
 
@@ -52,7 +53,7 @@ public fun <KEY> Menu(
 
             MenuCard(
                 modifier = Modifier.fillMaxWidth(),
-                title = item.second.title,
+                title = item.second.title.text(),
                 icon = item.second.icon,
                 onClick = onClickProvider
             )

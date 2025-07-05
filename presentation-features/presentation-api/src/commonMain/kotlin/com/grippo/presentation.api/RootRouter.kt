@@ -19,4 +19,7 @@ public sealed class RootRouter : BaseRouter {
 
     @Serializable
     public data object Debug : RootRouter()
+
+    @Serializable
+    public data object Workout : RootRouter()
 }

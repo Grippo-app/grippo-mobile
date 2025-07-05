@@ -1,15 +1,19 @@
 package com.grippo.home.profile
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
@@ -18,13 +22,16 @@ import com.grippo.design.components.menu.MenuItem
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.user.UserCard
 import com.grippo.design.core.AppTokens
+import com.grippo.design.core.UiText
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.icons.LogOut
+import com.grippo.design.resources.icons.Repeat
 import com.grippo.design.resources.icons.Settings
 import com.grippo.design.resources.logout_btn
 import com.grippo.design.resources.profile
+import com.grippo.design.resources.start_workout
 import com.grippo.presentation.api.profile.models.stubUser
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -36,6 +43,14 @@ internal fun HomeProfileScreen(
     loaders: ImmutableSet<HomeProfileLoader>,
     contract: HomeProfileContract
 ) = BaseComposeScreen(AppTokens.colors.background.primary) {
+
+    val activity = HomeProfileActivityMenu.entries.map {
+        it to MenuItem(UiText.Str(it.text()), it.icon())
+    }.toPersistentList()
+
+    val settings = HomeProfileSettingsMenu.entries.map {
+        it to MenuItem(UiText.Str(it.text()), it.icon())
+    }.toPersistentList()
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
@@ -51,8 +66,7 @@ internal fun HomeProfileScreen(
                 horizontal = AppTokens.dp.screen.horizontalPadding,
                 vertical = AppTokens.dp.contentPadding.content
             ).imePadding(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
         if (state.user != null) {
@@ -62,14 +76,49 @@ internal fun HomeProfileScreen(
             )
         }
 
-        val menu = HomeProfileMenu.entries.map {
-            it to MenuItem(it.text(), it.icon())
-        }.toPersistentList()
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            style = ButtonStyle.Primary,
+            startIcon = AppTokens.icons.Repeat,
+            text = AppTokens.strings.res(Res.string.start_workout),
+            onClick = contract::onStartWorkoutClick
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = HomeProfileActivityMenu.title(),
+            style = AppTokens.typography.b14Bold(),
+            color = AppTokens.colors.text.secondary,
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
         Menu(
-            items = menu,
-            onClick = contract::onMenuClick
+            items = activity,
+            onClick = contract::onActivityMenuClick
         )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = HomeProfileSettingsMenu.title(),
+            style = AppTokens.typography.b14Bold(),
+            color = AppTokens.colors.text.secondary,
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+
+        Menu(
+            items = settings,
+            onClick = contract::onSettingsMenuClick
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Button(
             modifier = Modifier.fillMaxWidth(),
@@ -79,9 +128,11 @@ internal fun HomeProfileScreen(
             onClick = contract::onLogoutClick
         )
 
+        Spacer(Modifier.height(100.dp))
+
         Button(
             modifier = Modifier.fillMaxWidth(),
-            style = ButtonStyle.Primary,
+            style = ButtonStyle.Secondary,
             startIcon = AppTokens.icons.Settings,
             text = "Debug panel",
             onClick = contract::onDebugClick

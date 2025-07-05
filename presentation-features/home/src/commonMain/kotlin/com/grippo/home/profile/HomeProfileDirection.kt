@@ -9,4 +9,6 @@ internal sealed interface HomeProfileDirection : BaseDirection {
     data object WeightHistory : HomeProfileDirection
     data object Back : HomeProfileDirection
     data object Debug : HomeProfileDirection
+    data object Workout : HomeProfileDirection
+    data object SystemSettings : HomeProfileDirection
 }

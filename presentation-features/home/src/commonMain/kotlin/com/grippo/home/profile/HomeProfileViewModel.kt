@@ -27,15 +27,27 @@ internal class HomeProfileViewModel(
         safeLaunch { authorizationFeature.logout() }
     }
 
-    override fun onMenuClick(menu: HomeProfileMenu) {
+    override fun onActivityMenuClick(menu: HomeProfileActivityMenu) {
         val direction = when (menu) {
-            HomeProfileMenu.WeightHistory -> HomeProfileDirection.WeightHistory
-            HomeProfileMenu.ExcludedMuscles -> HomeProfileDirection.ExcludedMuscles
-            HomeProfileMenu.MissingEquipment -> HomeProfileDirection.MissingEquipment
-            HomeProfileMenu.ExerciseLibrary -> HomeProfileDirection.ExerciseLibrary
+            HomeProfileActivityMenu.WeightHistory -> HomeProfileDirection.WeightHistory
+            HomeProfileActivityMenu.ExcludedMuscles -> HomeProfileDirection.ExcludedMuscles
+            HomeProfileActivityMenu.MissingEquipment -> HomeProfileDirection.MissingEquipment
+            HomeProfileActivityMenu.ExerciseLibrary -> HomeProfileDirection.ExerciseLibrary
         }
 
         navigateTo(direction)
+    }
+
+    override fun onSettingsMenuClick(menu: HomeProfileSettingsMenu) {
+        val direction = when (menu) {
+            HomeProfileSettingsMenu.System -> HomeProfileDirection.SystemSettings
+        }
+
+        navigateTo(direction)
+    }
+
+    override fun onStartWorkoutClick() {
+        navigateTo(HomeProfileDirection.Workout)
     }
 
     override fun back() {
