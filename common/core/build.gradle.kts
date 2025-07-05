@@ -14,8 +14,6 @@ kotlin {
         api(libs.decompose.core)
         api(libs.decompose.extensions)
 
-        api(libs.koin.core) // todo remove it
-
         implementation(libs.kotlinx.coroutines.core)
         implementation(libs.immutable.collections)
 

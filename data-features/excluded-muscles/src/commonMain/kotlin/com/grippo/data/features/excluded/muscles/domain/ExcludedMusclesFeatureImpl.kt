@@ -5,7 +5,7 @@ import com.grippo.data.features.api.muscle.models.Muscle
 import kotlinx.coroutines.flow.Flow
 import org.koin.core.annotation.Single
 
-@Single(binds = [ExcludedMusclesFeatureImpl::class])
+@Single(binds = [ExcludedMusclesFeature::class])
 internal class ExcludedMusclesFeatureImpl(
     private val repository: ExcludedMusclesRepository
 ) : ExcludedMusclesFeature {
