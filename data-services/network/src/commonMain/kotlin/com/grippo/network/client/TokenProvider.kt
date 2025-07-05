@@ -136,7 +136,7 @@ internal class TokenProvider(
                             performTokenRefresh(response.call.client, refreshToken)
                         }
 
-                        val newId = AppLogger.checkOrLog(refresh.id) { "TokenResponse.id is null" }
+                        val newId = AppLogger.Mapping.log(refresh.id) { "TokenResponse.id is null" }
                             ?: return@withLock false
 
                         tokenDao.insertOrUpdate(

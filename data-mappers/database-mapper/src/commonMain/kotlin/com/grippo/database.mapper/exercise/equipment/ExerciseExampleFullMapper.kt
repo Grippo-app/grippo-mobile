@@ -9,7 +9,7 @@ public fun List<ExerciseExamplePack>.toDomain(): List<ExerciseExample> {
 }
 
 public fun ExerciseExamplePack.toDomain(): ExerciseExample? {
-    val mappedValue = AppLogger.checkOrLog(example.toDomain()) {
+    val mappedValue = AppLogger.Mapping.log(example.toDomain()) {
         "ExerciseExamplePack has invalid example and cannot be mapped"
     } ?: return null
 

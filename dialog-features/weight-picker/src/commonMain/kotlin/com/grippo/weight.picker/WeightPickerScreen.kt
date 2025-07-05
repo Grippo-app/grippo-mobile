@@ -39,7 +39,7 @@ internal fun WeightPickerScreen(
 ) = BaseComposeScreen(AppTokens.colors.background.secondary) {
 
     Toolbar(
-        modifier = Modifier,
+        modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.weight_picker_title),
         style = ToolbarStyle.Transparent
     )

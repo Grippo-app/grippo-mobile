@@ -10,7 +10,7 @@ public fun List<ExerciseExampleTutorialEntity>.toDomain(): List<Tutorial> {
 }
 
 public fun ExerciseExampleTutorialEntity.toDomain(): Tutorial? {
-    val mappedResourceType = AppLogger.checkOrLog(ResourceTypeEnum.of(resourceType)) {
+    val mappedResourceType = AppLogger.Mapping.log(ResourceTypeEnum.of(resourceType)) {
         "Tutorial $id has unrecognized resourceType: $resourceType"
     } ?: return null
 

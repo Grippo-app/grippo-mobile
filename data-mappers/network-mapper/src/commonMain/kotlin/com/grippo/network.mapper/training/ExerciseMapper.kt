@@ -9,35 +9,35 @@ public fun List<ExerciseResponse>.toEntities(): List<ExerciseEntity> {
 }
 
 public fun ExerciseResponse.toEntityOrNull(): ExerciseEntity? {
-    val entityId = AppLogger.checkOrLog(id) {
+    val entityId = AppLogger.Mapping.log(id) {
         "ExerciseResponse.id is null"
     } ?: return null
 
-    val entityTrainingId = AppLogger.checkOrLog(trainingId) {
+    val entityTrainingId = AppLogger.Mapping.log(trainingId) {
         "ExerciseResponse.trainingId is null"
     } ?: return null
 
-    val entityName = AppLogger.checkOrLog(name) {
+    val entityName = AppLogger.Mapping.log(name) {
         "ExerciseResponse.name is null"
     } ?: return null
 
-    val entityVolume = AppLogger.checkOrLog(volume) {
+    val entityVolume = AppLogger.Mapping.log(volume) {
         "ExerciseResponse.volume is null"
     } ?: return null
 
-    val entityRepetitions = AppLogger.checkOrLog(repetitions) {
+    val entityRepetitions = AppLogger.Mapping.log(repetitions) {
         "ExerciseResponse.repetitions is null"
     } ?: return null
 
-    val entityIntensity = AppLogger.checkOrLog(intensity) {
+    val entityIntensity = AppLogger.Mapping.log(intensity) {
         "ExerciseResponse.intensity is null"
     } ?: return null
 
-    val entityCreatedAt = AppLogger.checkOrLog(createdAt) {
+    val entityCreatedAt = AppLogger.Mapping.log(createdAt) {
         "ExerciseResponse.createdAt is null"
     } ?: return null
 
-    val entityUpdatedAt = AppLogger.checkOrLog(updatedAt) {
+    val entityUpdatedAt = AppLogger.Mapping.log(updatedAt) {
         "ExerciseResponse.updatedAt is null"
     } ?: return null
 

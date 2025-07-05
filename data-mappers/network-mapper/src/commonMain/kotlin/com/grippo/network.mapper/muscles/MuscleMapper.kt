@@ -9,27 +9,27 @@ public fun List<MuscleResponse>.toEntities(): List<MuscleEntity> {
 }
 
 public fun MuscleResponse.toEntityOrNull(): MuscleEntity? {
-    val entityId = AppLogger.checkOrLog(id) {
+    val entityId = AppLogger.Mapping.log(id) {
         "MuscleResponse.id is null"
     } ?: return null
 
-    val entityMuscleGroupId = AppLogger.checkOrLog(muscleGroupId) {
+    val entityMuscleGroupId = AppLogger.Mapping.log(muscleGroupId) {
         "MuscleResponse.muscleGroupId is null"
     } ?: return null
 
-    val entityName = AppLogger.checkOrLog(name) {
+    val entityName = AppLogger.Mapping.log(name) {
         "MuscleResponse.name is null"
     } ?: return null
 
-    val entityType = AppLogger.checkOrLog(type) {
+    val entityType = AppLogger.Mapping.log(type) {
         "MuscleResponse.type is null"
     } ?: return null
 
-    val entityCreatedAt = AppLogger.checkOrLog(createdAt) {
+    val entityCreatedAt = AppLogger.Mapping.log(createdAt) {
         "MuscleResponse.createdAt is null"
     } ?: return null
 
-    val entityUpdatedAt = AppLogger.checkOrLog(updatedAt) {
+    val entityUpdatedAt = AppLogger.Mapping.log(updatedAt) {
         "MuscleResponse.updatedAt is null"
     } ?: return null
 

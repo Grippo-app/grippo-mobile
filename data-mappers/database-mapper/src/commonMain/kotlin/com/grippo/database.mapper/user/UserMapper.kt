@@ -7,7 +7,7 @@ import com.grippo.date.utils.DateTimeUtils
 import com.grippo.logger.AppLogger
 
 public fun UserEntity.toDomain(): User? {
-    val mappedExperience = AppLogger.checkOrLog(ExperienceEnum.of(experience)) {
+    val mappedExperience = AppLogger.Mapping.log(ExperienceEnum.of(experience)) {
         "UserEntity $id has unrecognized experience: $experience"
     } ?: return null
 

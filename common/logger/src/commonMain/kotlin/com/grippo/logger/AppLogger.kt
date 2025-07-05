@@ -12,6 +12,12 @@ public object AppLogger {
         logListener = listener
     }
 
+    public object General {
+        public fun error(msg: String): Unit = present(LogCategory.GENERAL, "🔴 $msg")
+
+        public fun warning(msg: String): Unit = present(LogCategory.GENERAL, "⚠\uFE0F $msg")
+    }
+
     public object Navigation {
         public fun log(msg: String): Unit = present(LogCategory.NAVIGATION, msg)
     }
@@ -37,17 +43,13 @@ public object AppLogger {
         }
     }
 
-    public object General {
-        public fun error(msg: String): Unit = present(LogCategory.GENERAL, "🔴 $msg")
-
-        public fun warning(msg: String): Unit = present(LogCategory.GENERAL, "⚠\uFE0F $msg")
-    }
-
-    public fun <T> checkOrLog(value: T?, msg: () -> String): T? {
-        if (value != null) return value
-        val location = getCallerLocation()
-        present(LogCategory.MAPPING, "${msg()} $location")
-        return null
+    public object Mapping {
+        public fun <T> log(value: T?, msg: () -> String): T? {
+            if (value != null) return value
+            val location = getCallerLocation()
+            present(LogCategory.MAPPING, "${msg()} $location")
+            return null
+        }
     }
 
     private fun present(category: LogCategory, msg: String) {
