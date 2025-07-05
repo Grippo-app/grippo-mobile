@@ -65,7 +65,7 @@ internal fun BodyItem(
         Text(
             text = weight.toString(),
             style = AppTokens.typography.b14Bold(),
-            color = AppTokens.colors.text.primary,
+            color = AppTokens.colors.text.secondary,
             textAlign = TextAlign.Center
         )
 
@@ -104,7 +104,7 @@ internal fun BodyItem(
             modifier = Modifier,
             text = height.toString(),
             style = AppTokens.typography.b14Bold(),
-            color = AppTokens.colors.text.primary,
+            color = AppTokens.colors.text.secondary,
             textAlign = TextAlign.Center
         )
 
