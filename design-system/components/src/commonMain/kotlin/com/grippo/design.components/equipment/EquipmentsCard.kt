@@ -37,7 +37,7 @@ public fun EquipmentsCard(
                 color = AppTokens.colors.overlay.defaultShadow
             )
             .clip(shape = shape)
-            .background(AppTokens.colors.background.secondary)
+            .background(AppTokens.colors.background.primary)
             .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
             .padding(
                 horizontal = AppTokens.dp.equipmentsCard.horizontalPadding,

@@ -36,7 +36,7 @@ public fun IterationCard(
             Text(
                 text = value.weight.toString(),
                 style = AppTokens.typography.b14Bold(),
-                color = AppTokens.colors.text.primary
+                color = AppTokens.colors.text.secondary
             )
 
             Text(
@@ -54,7 +54,7 @@ public fun IterationCard(
             Text(
                 text = value.repetitions.toString(),
                 style = AppTokens.typography.b14Bold(),
-                color = AppTokens.colors.text.primary
+                color = AppTokens.colors.text.secondary
             )
 
             Text(

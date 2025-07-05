@@ -106,7 +106,7 @@ public object LightColor : AppColor {
 
     override val text: AppColor.TextColors = object : AppColor.TextColors {
         override val primary = Black
-        override val secondary = Neutral500
+        override val secondary = Neutral600
         override val disabled = Neutral300
     }
 

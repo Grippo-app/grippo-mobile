@@ -51,7 +51,7 @@ public fun ExerciseDetails(
                     Text(
                         text = value.volume.toString(),
                         style = AppTokens.typography.b14Bold(),
-                        color = AppTokens.colors.text.primary
+                        color = AppTokens.colors.text.secondary
                     )
 
                     Text(
@@ -79,7 +79,7 @@ public fun ExerciseDetails(
                     Text(
                         text = value.intensity.toString(),
                         style = AppTokens.typography.b14Bold(),
-                        color = AppTokens.colors.text.primary
+                        color = AppTokens.colors.text.secondary
                     )
 
                     Text(

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -35,17 +36,26 @@ import com.grippo.presentation.api.exercise.example.models.stubExerciseExample
 import com.grippo.presentation.api.muscles.factory.MuscleColorStrategy
 import com.grippo.presentation.api.muscles.factory.MuscleEngine
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 public fun ExerciseExampleBundlesCard(
     modifier: Modifier = Modifier,
     value: ImmutableList<ExerciseExampleBundleState>
 ) {
-
     val shape = RoundedCornerShape(AppTokens.dp.exerciseExampleBundlesCard.radius)
 
-    val preset = MuscleEngine.generatePreset(MuscleColorStrategy.ByAlpha(value))
-    val (front, back) = MuscleEngine.generateImages(preset, value)
+    val internalList = remember(value) {
+        value.sortedByDescending { it.percentage }.toPersistentList()
+    }
+
+    val preset = MuscleEngine.generatePreset(MuscleColorStrategy.ByAlpha(internalList))
+
+    val (front, back) = MuscleEngine.generateImages(preset, internalList)
+
+    val pie = remember(internalList) {
+        internalList.map { it.muscle.type.color(preset) to it.percentage.toLong() }
+    }
 
     Column(
         modifier = modifier
@@ -55,13 +65,12 @@ public fun ExerciseExampleBundlesCard(
                 color = AppTokens.colors.overlay.defaultShadow
             )
             .clip(shape = shape)
-            .background(AppTokens.colors.background.secondary)
+            .background(AppTokens.colors.background.primary)
             .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
-            .padding(
-                horizontal = AppTokens.dp.exerciseExampleBundlesCard.horizontalPadding,
-                vertical = AppTokens.dp.exerciseExampleBundlesCard.verticalPadding,
-            ),
+            .padding(horizontal = AppTokens.dp.exerciseExampleBundlesCard.horizontalPadding),
     ) {
+
+        Spacer(Modifier.height(AppTokens.dp.exerciseExampleBundlesCard.topPadding))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -84,12 +93,6 @@ public fun ExerciseExampleBundlesCard(
                 )
             }
 
-            val pie = remember(value) {
-                value.map {
-                    it.muscle.type.color(preset) to it.percentage.toLong()
-                }.sortedBy { it.second }
-            }
-
             PieChart(
                 modifier = Modifier.weight(1f).aspectRatio(1f),
                 data = pie
@@ -98,20 +101,15 @@ public fun ExerciseExampleBundlesCard(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(shape = shape)
-                .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
-                .padding(horizontal = AppTokens.dp.exerciseExampleBundlesCard.list.horizontalPadding)
-        ) {
-            value.forEachIndexed { index, item ->
+        Column(modifier = Modifier.fillMaxWidth()) {
+            internalList.forEachIndexed { index, item ->
                 InformationCard(
                     modifier = Modifier.fillMaxWidth(),
                     label = item.muscle.name,
                     trailing = {
                         Spacer(
                             modifier = Modifier
+                                .clip(RoundedCornerShape(4.dp))
                                 .size(14.dp)
                                 .background(item.muscle.type.color(preset)),
                         )
@@ -125,19 +123,19 @@ public fun ExerciseExampleBundlesCard(
                             Text(
                                 text = item.percentage.toString(),
                                 style = AppTokens.typography.b14Bold(),
-                                color = AppTokens.colors.text.primary
+                                color = AppTokens.colors.text.secondary
                             )
 
                             Text(
                                 text = AppTokens.strings.res(Res.string.percent),
                                 style = AppTokens.typography.b14Semi(),
-                                color = AppTokens.colors.text.primary
+                                color = AppTokens.colors.text.secondary
                             )
                         }
                     }
                 )
 
-                if (index < value.lastIndex) {
+                if (index < internalList.lastIndex) {
                     HorizontalDivider(
                         modifier = Modifier.fillMaxWidth(),
                         color = AppTokens.colors.divider.default
@@ -145,6 +143,8 @@ public fun ExerciseExampleBundlesCard(
                 }
             }
         }
+
+        Spacer(Modifier.height(AppTokens.dp.exerciseExampleBundlesCard.bottomPadding))
     }
 }
 

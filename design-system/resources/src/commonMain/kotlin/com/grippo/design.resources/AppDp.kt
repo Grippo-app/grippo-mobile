@@ -162,13 +162,9 @@ public data object AppDp {
 
     public data object ExerciseExampleBundlesCard {
         val horizontalPadding: Dp = padding.large
-        val verticalPadding: Dp = padding.large
+        val topPadding: Dp = padding.large
+        val bottomPadding: Dp = padding.small
         val radius: Dp = AppDp.radius.large
-        val list: List = List
-
-        public data object List {
-            val horizontalPadding: Dp = padding.large
-        }
     }
 
     public data object SelectableCard {
