@@ -27,7 +27,7 @@ internal fun HomeTrainingsScreen(
     state: HomeTrainingsState,
     loaders: ImmutableSet<HomeTrainingsLoader>,
     contract: HomeTrainingsContract
-) = BaseComposeScreen(AppTokens.colors.background.primary) {
+) = BaseComposeScreen(AppTokens.colors.background.secondary) {
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
@@ -37,7 +37,7 @@ internal fun HomeTrainingsScreen(
     val list = remember(state.trainings) {
         state
             .trainings
-            .firstOrNull()
+            .firstOrNull() // todo temporary solution, need to rework
             ?.exercises
             .orEmpty()
             .toPersistentList()

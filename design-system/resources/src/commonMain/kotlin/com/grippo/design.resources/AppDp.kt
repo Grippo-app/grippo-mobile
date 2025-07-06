@@ -11,7 +11,7 @@ public data object AppDp {
 
     private data object Padding {
         val none: Dp = 0.dp
-        val extraSmall: Dp = 4.dp
+        val extraSmall: Dp = 3.dp
         val small: Dp = 8.dp
         val medium: Dp = 12.dp
         val large: Dp = 16.dp
@@ -63,8 +63,8 @@ public data object AppDp {
     val equipmentsCard: EquipmentsCard = EquipmentsCard
     val exerciseExampleBundlesCard: ExerciseExampleBundlesCard = ExerciseExampleBundlesCard
     val exerciseCard: ExerciseCard = ExerciseCard
-    val exerciseIterations: ExerciseIterations = ExerciseIterations
-    val exerciseDetails: ExerciseDetails = ExerciseDetails
+    val iterationsCard: IterationsCard = IterationsCard
+    val iterationCard: IterationCard = IterationCard
 
     public data object Screen {
         val toolbar: Toolbar = Toolbar
@@ -109,14 +109,6 @@ public data object AppDp {
         }
     }
 
-    public data object ExerciseDetails {
-        val horizontalPadding: Dp = padding.large
-    }
-
-    public data object ExerciseIterations {
-        val horizontalPadding: Dp = padding.large
-    }
-
     public data object UserCard {
         val horizontalPadding: Dp = padding.large
         val verticalPadding: Dp = padding.large
@@ -133,15 +125,27 @@ public data object AppDp {
     public data object OverviewCard {
         val horizontalPadding: Dp = padding.small
         val verticalPadding: Dp = padding.small
-        val radius: Dp = AppDp.radius.medium
+        val radius: Dp = AppDp.radius.small
         val icon: Dp = AppDp.icon.large
     }
 
     public data object ExerciseCard {
-        val horizontalPadding: Dp = padding.large
-        val verticalPadding: Dp = padding.large
+        val horizontalPadding: Dp = padding.medium
+        val verticalPadding: Dp = padding.medium
         val radius: Dp = AppDp.radius.large
-        val icon: Dp = AppDp.icon.medium
+    }
+
+    public data object IterationsCard {
+        val horizontalPadding: Dp = 8.dp
+        val verticalPadding: Dp = 8.dp
+        val arrangement: Dp = 6.dp
+        val radius: Dp = AppDp.radius.medium
+    }
+
+    public data object IterationCard {
+        val horizontalPadding: Dp = 4.dp
+        val verticalPadding: Dp = 5.dp
+        val radius: Dp = AppDp.radius.small
     }
 
     public data object InformationCard {
