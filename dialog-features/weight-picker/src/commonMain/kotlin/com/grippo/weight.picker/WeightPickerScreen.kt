@@ -41,7 +41,8 @@ internal fun WeightPickerScreen(
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.weight_picker_title),
-        style = ToolbarStyle.Transparent
+        style = ToolbarStyle.Transparent,
+        onClose = contract::dismiss
     )
 
     Column(

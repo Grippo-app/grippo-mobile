@@ -37,10 +37,12 @@ internal fun HeightPickerScreen(
     loaders: ImmutableSet<HeightPickerLoader>,
     contract: HeightPickerContract
 ) = BaseComposeScreen(AppTokens.colors.background.secondary) {
+
     Toolbar(
         modifier = Modifier,
         title = AppTokens.strings.res(Res.string.height_picker_title),
-        style = ToolbarStyle.Transparent
+        style = ToolbarStyle.Transparent,
+        onClose = contract::dismiss
     )
 
     Column(

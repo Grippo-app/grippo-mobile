@@ -35,6 +35,7 @@ internal fun ExerciseExampleScreen(
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.overview),
+        onClose = contract::dismiss
     )
 
     Column(
