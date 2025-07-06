@@ -20,7 +20,7 @@ public fun PieChart(
         modifier = modifier,
         data = data,
         style = PieStyle(
-            textStyle = AppTokens.typography.b10Bold().copy(
+            textStyle = AppTokens.typography.b10Semi().copy(
                 color = AppTokens.colors.text.inverted
             )
         )
