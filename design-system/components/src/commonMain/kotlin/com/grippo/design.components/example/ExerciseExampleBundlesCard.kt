@@ -59,7 +59,7 @@ public fun ExerciseExampleBundlesCard(
         internalList.map { it.muscle.type.color(preset) to it.percentage.toLong() }
     }
 
-    val expanded = remember { mutableStateOf(false) }
+    val expanded = remember { mutableStateOf(true) }
 
     Column(
         modifier = modifier
@@ -69,7 +69,7 @@ public fun ExerciseExampleBundlesCard(
                 color = AppTokens.colors.overlay.defaultShadow
             )
             .clip(shape = shape)
-            .background(AppTokens.colors.background.primary)
+            .background(AppTokens.colors.background.secondary)
             .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
             .padding(horizontal = AppTokens.dp.exerciseExampleBundlesCard.horizontalPadding),
     ) {
@@ -105,9 +105,7 @@ public fun ExerciseExampleBundlesCard(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-        AnimatedVisibility(
-            visible = expanded.value
-        ) {
+        AnimatedVisibility(visible = expanded.value) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 internalList.forEachIndexed { index, item ->
                     InformationCard(

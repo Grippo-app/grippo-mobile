@@ -13,22 +13,30 @@ public data object AppTypography {
 
     @Composable
     public fun h1(): TextStyle = TextStyle(
-        fontSize = 32.sp,
+        fontSize = 28.sp,
         fontFamily = manrope(),
-        lineHeight = 40.sp, // ×1.25
-        fontWeight = FontWeight.SemiBold,
+        lineHeight = 36.sp,
+        fontWeight = FontWeight.Bold,
     )
 
     @Composable
     public fun h2(): TextStyle = TextStyle(
-        fontSize = 24.sp,
+        fontSize = 25.sp,
         fontFamily = manrope(),
-        lineHeight = 32.sp, // ×1.33
+        lineHeight = 32.sp,
         fontWeight = FontWeight.Bold,
     )
 
     @Composable
     public fun h3(): TextStyle = TextStyle(
+        fontSize = 22.sp,
+        fontFamily = manrope(),
+        lineHeight = 28.sp,
+        fontWeight = FontWeight.Bold,
+    )
+
+    @Composable
+    public fun h4(): TextStyle = TextStyle(
         fontSize = 18.sp,
         fontFamily = manrope(),
         lineHeight = 24.sp, // ×1.33

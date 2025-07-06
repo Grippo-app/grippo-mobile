@@ -83,7 +83,7 @@ public fun UserCard(
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = value.name,
-            style = AppTokens.typography.h2(),
+            style = AppTokens.typography.h3(),
             color = AppTokens.colors.text.primary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

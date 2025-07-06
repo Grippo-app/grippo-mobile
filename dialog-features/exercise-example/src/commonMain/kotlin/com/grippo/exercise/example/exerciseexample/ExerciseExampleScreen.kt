@@ -14,10 +14,11 @@ import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.equipment.EquipmentsCard
 import com.grippo.design.components.example.ExerciseExampleBundlesCard
 import com.grippo.design.components.toolbar.Toolbar
-import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.Res
+import com.grippo.design.resources.overview
 import com.grippo.presentation.api.exercise.example.models.stubExerciseExample
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -27,14 +28,13 @@ internal fun ExerciseExampleScreen(
     state: ExerciseExampleState,
     loaders: ImmutableSet<ExerciseExampleLoader>,
     contract: ExerciseExampleContract
-) = BaseComposeScreen(AppTokens.colors.background.secondary) {
+) = BaseComposeScreen(AppTokens.colors.background.primary) {
 
     val example = state.example ?: return@BaseComposeScreen
 
     Toolbar(
-        modifier = Modifier,
-        title = example.value.name,
-        style = ToolbarStyle.Transparent
+        modifier = Modifier.fillMaxWidth(),
+        title = AppTokens.strings.res(Res.string.overview),
     )
 
     Column(
@@ -49,6 +49,15 @@ internal fun ExerciseExampleScreen(
 
         Text(
             modifier = Modifier.fillMaxWidth(),
+            text = example.value.name,
+            style = AppTokens.typography.h1(),
+            color = AppTokens.colors.text.primary,
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+
+        Text(
+            modifier = Modifier.fillMaxWidth(),
             text = example.value.description,
             style = AppTokens.typography.b14Reg(),
             color = AppTokens.colors.text.primary,
@@ -56,12 +65,30 @@ internal fun ExerciseExampleScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
 
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = "Muscles in use",
+            style = AppTokens.typography.b14Bold(),
+            color = AppTokens.colors.text.secondary,
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+
         ExerciseExampleBundlesCard(
             modifier = Modifier.fillMaxWidth(),
             value = example.bundles
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = "Equipments",
+            style = AppTokens.typography.b14Bold(),
+            color = AppTokens.colors.text.secondary,
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
         EquipmentsCard(
             modifier = Modifier.fillMaxWidth(),

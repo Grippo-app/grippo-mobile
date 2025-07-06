@@ -91,7 +91,7 @@ public fun Toolbar(
                         .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
                         .align(Alignment.Center),
                     text = it,
-                    style = AppTokens.typography.h2(),
+                    style = AppTokens.typography.h3(),
                     color = AppTokens.colors.text.primary,
                 )
             }
