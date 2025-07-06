@@ -84,6 +84,7 @@ public interface AppColor {
 
     public interface TextColors {
         public val primary: Color
+        public val inverted: Color
         public val secondary: Color
         public val disabled: Color
     }

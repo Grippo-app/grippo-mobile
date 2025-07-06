@@ -1,5 +1,6 @@
 package com.grippo.design.components.example
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,6 +58,8 @@ public fun ExerciseExampleBundlesCard(
     val pie = remember(internalList) {
         internalList.map { it.muscle.type.color(preset) to it.percentage.toLong() }
     }
+
+    val expanded = remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -101,45 +105,49 @@ public fun ExerciseExampleBundlesCard(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-        Column(modifier = Modifier.fillMaxWidth()) {
-            internalList.forEachIndexed { index, item ->
-                InformationCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    label = item.muscle.name,
-                    trailing = {
-                        Spacer(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(4.dp))
-                                .size(14.dp)
-                                .background(item.muscle.type.color(preset)),
-                        )
-                        Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
-                    },
-                    value = {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(2.dp)
-                        ) {
-                            Text(
-                                text = item.percentage.toString(),
-                                style = AppTokens.typography.b14Bold(),
-                                color = AppTokens.colors.text.secondary
-                            )
-
-                            Text(
-                                text = AppTokens.strings.res(Res.string.percent),
-                                style = AppTokens.typography.b14Semi(),
-                                color = AppTokens.colors.text.secondary
-                            )
-                        }
-                    }
-                )
-
-                if (index < internalList.lastIndex) {
-                    HorizontalDivider(
+        AnimatedVisibility(
+            visible = expanded.value
+        ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                internalList.forEachIndexed { index, item ->
+                    InformationCard(
                         modifier = Modifier.fillMaxWidth(),
-                        color = AppTokens.colors.divider.default
+                        label = item.muscle.name,
+                        trailing = {
+                            Spacer(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(4.dp))
+                                    .size(14.dp)
+                                    .background(item.muscle.type.color(preset)),
+                            )
+                            Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
+                        },
+                        value = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(2.dp)
+                            ) {
+                                Text(
+                                    text = item.percentage.toString(),
+                                    style = AppTokens.typography.b14Bold(),
+                                    color = AppTokens.colors.text.secondary
+                                )
+
+                                Text(
+                                    text = AppTokens.strings.res(Res.string.percent),
+                                    style = AppTokens.typography.b14Semi(),
+                                    color = AppTokens.colors.text.secondary
+                                )
+                            }
+                        }
                     )
+
+                    if (index < internalList.lastIndex) {
+                        HorizontalDivider(
+                            modifier = Modifier.fillMaxWidth(),
+                            color = AppTokens.colors.divider.default
+                        )
+                    }
                 }
             }
         }

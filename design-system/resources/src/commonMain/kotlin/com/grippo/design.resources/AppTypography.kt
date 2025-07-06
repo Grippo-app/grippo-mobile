@@ -154,6 +154,38 @@ public data object AppTypography {
         lineHeight = 16.sp,
         fontWeight = FontWeight.Normal,
     )
+
+    @Composable
+    public fun b10Bold(): TextStyle = TextStyle(
+        fontSize = 10.sp,
+        fontFamily = manrope(),
+        lineHeight = 13.sp,
+        fontWeight = FontWeight.Bold,
+    )
+
+    @Composable
+    public fun b10Semi(): TextStyle = TextStyle(
+        fontSize = 10.sp,
+        fontFamily = manrope(),
+        lineHeight = 13.sp,
+        fontWeight = FontWeight.SemiBold,
+    )
+
+    @Composable
+    public fun b10Med(): TextStyle = TextStyle(
+        fontSize = 10.sp,
+        fontFamily = manrope(),
+        lineHeight = 13.sp,
+        fontWeight = FontWeight.Medium,
+    )
+
+    @Composable
+    public fun b10Reg(): TextStyle = TextStyle(
+        fontSize = 10.sp,
+        fontFamily = manrope(),
+        lineHeight = 13.sp,
+        fontWeight = FontWeight.Normal,
+    )
 }
 
 @Composable

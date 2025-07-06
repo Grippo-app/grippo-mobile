@@ -13,29 +13,26 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.DrawStyle
 import androidx.compose.ui.graphics.drawscope.Fill
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
 import kotlin.math.PI
 import kotlin.math.asin
 import kotlin.math.cos
+import kotlin.math.roundToInt
 import kotlin.math.sin
-
-//  Based on design assessment by human
-private const val EMPIRICAL_VISIBLE_MIN_ANGLE = 4
 
 // https://medium.com/@developerchunk/create-custom-pie-chart-with-animations-in-jetpack-compose-android-studio-kotlin-49cf95ef321e
 @Composable
 public fun PieChart(
     modifier: Modifier = Modifier,
     data: List<Pair<Color, Long>>,
-    chartBarWidth: Dp = 22.dp,
-    paddingAngle: Float = 2f,
+    style: PieStyle,
 ) {
-    var lastValue = 0f
+    val textMeasurer = rememberTextMeasurer()
 
     Canvas(modifier = modifier) {
-        val minAngle = (2 * paddingAngle + EMPIRICAL_VISIBLE_MIN_ANGLE)
-
+        val minAngle = (2 * style.paddingAngle + style.minVisibleAngle)
         val totalSum = data.sumOf { it.second }
         val floatValue = mutableListOf<Float>()
         var difference = 0f
@@ -56,14 +53,44 @@ public fun PieChart(
             }
         }
 
+        var lastValue = 0f
+
         floatValue.forEachIndexed { index, value ->
+            val startAngle = lastValue + style.paddingAngle
+            val sweepAngle = value - style.paddingAngle * 2
+            val outerRadius = size.minDimension / 2
+            val innerRadius = outerRadius - style.chartBarWidth.toPx()
+            val centerRadius = (outerRadius + innerRadius) / 2f
+
             drawRoundedArc(
                 color = data.getOrNull(index)?.first ?: Color.Transparent,
-                startAngle = lastValue + paddingAngle,
-                sweepAngle = value - paddingAngle * 2,
-                width = chartBarWidth.toPx(),
-                cornerRadius = 6.dp.toPx(),
+                startAngle = startAngle,
+                sweepAngle = sweepAngle,
+                width = style.chartBarWidth.toPx(),
+                cornerRadius = style.cornerRadius.toPx(),
             )
+
+            val angleMiddle = startAngle + sweepAngle / 2f
+            val angleRad = angleMiddle * PI.toFloat() / 180f
+            val x = (center.x + centerRadius * cos(angleRad)).toFloat()
+            val y = (center.y + centerRadius * sin(angleRad)).toFloat()
+
+            val percent = (100 * data[index].second.toFloat() / totalSum).roundToInt()
+            val label = "$percent%"
+
+            val layout = textMeasurer.measure(
+                text = AnnotatedString(label),
+                style = style.textStyle
+            )
+
+            drawText(
+                layout,
+                topLeft = Offset(
+                    x - layout.size.width / 2,
+                    y - layout.size.height / 2
+                )
+            )
+
             lastValue += value
         }
     }

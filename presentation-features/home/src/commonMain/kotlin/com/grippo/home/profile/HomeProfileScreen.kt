@@ -132,7 +132,7 @@ internal fun HomeProfileScreen(
 
         Button(
             modifier = Modifier.fillMaxWidth(),
-            style = ButtonStyle.Secondary,
+            style = ButtonStyle.Transparent,
             startIcon = AppTokens.icons.Settings,
             text = "Debug panel",
             onClick = contract::onDebugClick
