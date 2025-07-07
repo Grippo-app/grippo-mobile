@@ -42,7 +42,6 @@ internal fun HeightPickerScreen(
         modifier = Modifier,
         title = AppTokens.strings.res(Res.string.height_picker_title),
         style = ToolbarStyle.Transparent,
-        onClose = contract::dismiss
     )
 
     Column(

@@ -22,31 +22,28 @@ public val AppIcon.User: ImageVector
             viewportHeight = 24f
         ).apply {
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(20f, 21f)
+                moveTo(5f, 20f)
                 verticalLineTo(19f)
-                curveTo(20f, 17.939f, 19.579f, 16.922f, 18.828f, 16.172f)
-                curveTo(18.078f, 15.421f, 17.061f, 15f, 16f, 15f)
-                horizontalLineTo(8f)
-                curveTo(6.939f, 15f, 5.922f, 15.421f, 5.172f, 16.172f)
-                curveTo(4.421f, 16.922f, 4f, 17.939f, 4f, 19f)
-                verticalLineTo(21f)
+                curveTo(5f, 15.134f, 8.134f, 12f, 12f, 12f)
+                curveTo(15.866f, 12f, 19f, 15.134f, 19f, 19f)
+                verticalLineTo(20f)
             }
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(12f, 11f)
-                curveTo(14.209f, 11f, 16f, 9.209f, 16f, 7f)
-                curveTo(16f, 4.791f, 14.209f, 3f, 12f, 3f)
-                curveTo(9.791f, 3f, 8f, 4.791f, 8f, 7f)
-                curveTo(8f, 9.209f, 9.791f, 11f, 12f, 11f)
+                moveTo(12f, 12f)
+                curveTo(14.209f, 12f, 16f, 10.209f, 16f, 8f)
+                curveTo(16f, 5.791f, 14.209f, 4f, 12f, 4f)
+                curveTo(9.791f, 4f, 8f, 5.791f, 8f, 8f)
+                curveTo(8f, 10.209f, 9.791f, 12f, 12f, 12f)
                 close()
             }
         }.build()

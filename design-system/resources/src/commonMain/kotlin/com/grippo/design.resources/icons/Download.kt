@@ -22,38 +22,30 @@ public val AppIcon.Download: ImageVector
             viewportHeight = 24f
         ).apply {
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(21f, 15f)
-                verticalLineTo(19f)
-                curveTo(21f, 19.53f, 20.789f, 20.039f, 20.414f, 20.414f)
-                curveTo(20.039f, 20.789f, 19.53f, 21f, 19f, 21f)
-                horizontalLineTo(5f)
-                curveTo(4.47f, 21f, 3.961f, 20.789f, 3.586f, 20.414f)
-                curveTo(3.211f, 20.039f, 3f, 19.53f, 3f, 19f)
-                verticalLineTo(15f)
+                moveTo(6f, 20f)
+                horizontalLineTo(18f)
             }
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(7f, 10f)
-                lineTo(12f, 15f)
-                lineTo(17f, 10f)
-            }
-            path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
-            ) {
-                moveTo(12f, 15f)
-                verticalLineTo(3f)
+                moveTo(12f, 16f)
+                lineTo(8.5f, 12.5f)
+                moveTo(12f, 4f)
+                verticalLineTo(16f)
+                verticalLineTo(4f)
+                close()
+                moveTo(12f, 16f)
+                lineTo(15.5f, 12.5f)
+                lineTo(12f, 16f)
+                close()
             }
         }.build()
 

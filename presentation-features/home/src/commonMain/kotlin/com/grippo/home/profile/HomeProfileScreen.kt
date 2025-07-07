@@ -27,7 +27,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.icons.LogOut
-import com.grippo.design.resources.icons.Repeat
+import com.grippo.design.resources.icons.Rocket
 import com.grippo.design.resources.icons.Settings
 import com.grippo.design.resources.logout_btn
 import com.grippo.design.resources.profile
@@ -81,7 +81,7 @@ internal fun HomeProfileScreen(
         Button(
             modifier = Modifier.fillMaxWidth(),
             style = ButtonStyle.Primary,
-            startIcon = AppTokens.icons.Repeat,
+            startIcon = AppTokens.icons.Rocket,
             text = AppTokens.strings.res(Res.string.start_workout),
             onClick = contract::onStartWorkoutClick
         )

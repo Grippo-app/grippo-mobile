@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.icons.Loader
+import com.grippo.design.resources.icons.SystemRestart
 
 @Immutable
 public enum class ButtonSize { Small, Medium, Large }
@@ -125,7 +125,7 @@ public fun Button(
                     modifier = Modifier
                         .size(AppTokens.dp.button.icon)
                         .graphicsLayer { rotationZ = angle.value },
-                    imageVector = AppTokens.icons.Loader,
+                    imageVector = AppTokens.icons.SystemRestart,
                     tint = colorTokens.icon,
                     contentDescription = null,
                 )

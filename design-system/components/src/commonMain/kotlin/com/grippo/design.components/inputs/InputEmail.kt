@@ -31,7 +31,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.email_placeholder
-import com.grippo.design.resources.icons.X
+import com.grippo.design.resources.icons.Cancel
 
 @Composable
 public fun InputEmail(
@@ -66,7 +66,7 @@ public fun InputEmail(
                         Icon(
                             modifier = Modifier
                                 .size(AppTokens.dp.input.icon),
-                            imageVector = AppTokens.icons.X,
+                            imageVector = AppTokens.icons.Cancel,
                             tint = color,
                             contentDescription = null
                         )

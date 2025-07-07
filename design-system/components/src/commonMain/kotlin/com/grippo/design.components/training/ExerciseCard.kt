@@ -23,7 +23,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
-import com.grippo.design.resources.icons.ChevronRight
+import com.grippo.design.resources.icons.NavArrowRight
 import com.grippo.design.resources.overview
 import com.grippo.presentation.api.trainings.models.ExerciseState
 import com.grippo.presentation.api.trainings.models.stubExercise
@@ -70,7 +70,7 @@ public fun ExerciseCard(
                 Button(
                     text = AppTokens.strings.res(Res.string.overview),
                     style = ButtonStyle.Transparent,
-                    endIcon = AppTokens.icons.ChevronRight,
+                    endIcon = AppTokens.icons.NavArrowRight,
                     onClick = clickProvider
                 )
             }

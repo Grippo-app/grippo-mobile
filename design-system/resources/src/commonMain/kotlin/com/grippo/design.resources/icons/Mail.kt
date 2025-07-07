@@ -22,31 +22,29 @@ public val AppIcon.Mail: ImageVector
             viewportHeight = 24f
         ).apply {
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(4f, 4f)
-                horizontalLineTo(20f)
-                curveTo(21.1f, 4f, 22f, 4.9f, 22f, 6f)
-                verticalLineTo(18f)
-                curveTo(22f, 19.1f, 21.1f, 20f, 20f, 20f)
-                horizontalLineTo(4f)
-                curveTo(2.9f, 20f, 2f, 19.1f, 2f, 18f)
-                verticalLineTo(6f)
-                curveTo(2f, 4.9f, 2.9f, 4f, 4f, 4f)
-                close()
+                moveTo(7f, 9f)
+                lineTo(12f, 12.5f)
+                lineTo(17f, 9f)
             }
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f
             ) {
-                moveTo(22f, 6f)
-                lineTo(12f, 13f)
-                lineTo(2f, 6f)
+                moveTo(2f, 17f)
+                verticalLineTo(7f)
+                curveTo(2f, 5.895f, 2.895f, 5f, 4f, 5f)
+                horizontalLineTo(20f)
+                curveTo(21.105f, 5f, 22f, 5.895f, 22f, 7f)
+                verticalLineTo(17f)
+                curveTo(22f, 18.105f, 21.105f, 19f, 20f, 19f)
+                horizontalLineTo(4f)
+                curveTo(2.895f, 19f, 2f, 18.105f, 2f, 17f)
+                close()
             }
         }.build()
 

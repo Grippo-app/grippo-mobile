@@ -31,9 +31,9 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
-import com.grippo.design.resources.icons.Award
 import com.grippo.design.resources.icons.Calendar
-import com.grippo.design.resources.icons.Heart
+import com.grippo.design.resources.icons.Gym
+import com.grippo.design.resources.icons.Trophy
 import com.grippo.design.resources.user_card_no_records_yet
 import com.grippo.design.resources.user_card_no_workouts_yet
 import com.grippo.design.resources.user_card_overview
@@ -141,7 +141,7 @@ public fun UserCard(
             OverviewCard(
                 modifier = Modifier.weight(1f).fillMaxHeight(),
                 title = workoutsStr,
-                icon = AppTokens.icons.Heart
+                icon = AppTokens.icons.Gym
             )
 
             val ago = DateCompose.rememberAgo(value.createdAt)
@@ -167,7 +167,7 @@ public fun UserCard(
             OverviewCard(
                 modifier = Modifier.weight(1f).fillMaxHeight(),
                 title = recordsStr,
-                icon = AppTokens.icons.Award
+                icon = AppTokens.icons.Trophy
             )
         }
     }

@@ -26,7 +26,6 @@ import com.grippo.design.core.UiText
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.icons.Box
-import com.grippo.design.resources.icons.Play
 import com.grippo.design.resources.icons.Settings
 import com.grippo.segment.control.SegmentBox
 import com.grippo.segment.control.SegmentSizing
@@ -138,7 +137,7 @@ private fun SegmentPreview() {
             modifier = Modifier,
             items = persistentListOf(
                 "Box" to TabItem(text = UiText.Str("Box"), icon = AppTokens.icons.Box),
-                "Play" to TabItem(text = UiText.Str("Play"), icon = AppTokens.icons.Play),
+                "Play" to TabItem(text = UiText.Str("Play"), icon = AppTokens.icons.Settings),
                 "Settings" to TabItem(
                     text = UiText.Str("Settings"),
                     icon = AppTokens.icons.Settings

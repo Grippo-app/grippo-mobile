@@ -22,24 +22,33 @@ public val AppIcon.Code: ImageVector
             viewportHeight = 24f
         ).apply {
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(16f, 18f)
-                lineTo(22f, 12f)
-                lineTo(16f, 6f)
+                moveTo(13.5f, 6f)
+                lineTo(10f, 18.5f)
             }
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(8f, 6f)
-                lineTo(2f, 12f)
-                lineTo(8f, 18f)
+                moveTo(6.5f, 8.5f)
+                lineTo(3f, 12f)
+                lineTo(6.5f, 15.5f)
+            }
+            path(
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round
+            ) {
+                moveTo(17.5f, 8.5f)
+                lineTo(21f, 12f)
+                lineTo(17.5f, 15.5f)
             }
         }.build()
 

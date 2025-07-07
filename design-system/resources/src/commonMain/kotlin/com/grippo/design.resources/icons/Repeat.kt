@@ -22,48 +22,28 @@ public val AppIcon.Repeat: ImageVector
             viewportHeight = 24f
         ).apply {
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(17f, 1f)
-                lineTo(21f, 5f)
-                lineTo(17f, 9f)
+                moveTo(17f, 17f)
+                horizontalLineTo(8f)
+                curveTo(6.333f, 17f, 3f, 16f, 3f, 12f)
+                curveTo(3f, 8f, 6.333f, 7f, 8f, 7f)
+                horizontalLineTo(16f)
+                curveTo(17.667f, 7f, 21f, 8f, 21f, 12f)
+                curveTo(21f, 13.494f, 20.535f, 14.57f, 19.865f, 15.331f)
             }
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(3f, 11f)
-                verticalLineTo(9f)
-                curveTo(3f, 7.939f, 3.421f, 6.922f, 4.172f, 6.172f)
-                curveTo(4.922f, 5.421f, 5.939f, 5f, 7f, 5f)
-                horizontalLineTo(21f)
-            }
-            path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
-            ) {
-                moveTo(7f, 23f)
-                lineTo(3f, 19f)
-                lineTo(7f, 15f)
-            }
-            path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
-            ) {
-                moveTo(21f, 13f)
-                verticalLineTo(15f)
-                curveTo(21f, 16.061f, 20.579f, 17.078f, 19.828f, 17.828f)
-                curveTo(19.078f, 18.579f, 18.061f, 19f, 17f, 19f)
-                horizontalLineTo(3f)
+                moveTo(14.5f, 14.5f)
+                lineTo(17f, 17f)
+                lineTo(14.5f, 19.5f)
             }
         }.build()
 

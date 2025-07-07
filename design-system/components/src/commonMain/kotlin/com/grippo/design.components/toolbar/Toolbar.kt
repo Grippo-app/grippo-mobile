@@ -26,8 +26,7 @@ import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.icons.ChevronLeft
-import com.grippo.design.resources.icons.X
+import com.grippo.design.resources.icons.NavArrowLeft
 import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
@@ -42,7 +41,6 @@ public fun Toolbar(
     title: String? = null,
     style: ToolbarStyle = ToolbarStyle.Default,
     onBack: (() -> Unit)? = null,
-    onClose: (() -> Unit)? = null,
     content: (@Composable ColumnScope.() -> Unit)? = null
 ) {
 
@@ -80,24 +78,11 @@ public fun Toolbar(
                         .fillMaxHeight()
                         .clickable(onClick = it)
                         .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-                    imageVector = AppTokens.icons.ChevronLeft,
+                    imageVector = AppTokens.icons.NavArrowLeft,
                     contentDescription = null,
                     tint = AppTokens.colors.icon.default,
 
                     )
-            }
-
-            onClose?.let {
-                Icon(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .clickable(onClick = it)
-                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                        .align(Alignment.CenterEnd),
-                    imageVector = AppTokens.icons.X,
-                    contentDescription = null,
-                    tint = AppTokens.colors.icon.default,
-                )
             }
 
             title?.let {

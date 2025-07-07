@@ -22,32 +22,38 @@ public val AppIcon.Gift: ImageVector
             viewportHeight = 24f
         ).apply {
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
                 moveTo(20f, 12f)
-                verticalLineTo(22f)
-                horizontalLineTo(4f)
+                verticalLineTo(21.4f)
+                curveTo(20f, 21.731f, 19.731f, 22f, 19.4f, 22f)
+                horizontalLineTo(4.6f)
+                curveTo(4.269f, 22f, 4f, 21.731f, 4f, 21.4f)
                 verticalLineTo(12f)
             }
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(22f, 7f)
-                horizontalLineTo(2f)
-                verticalLineTo(12f)
-                horizontalLineTo(22f)
-                verticalLineTo(7f)
+                moveTo(21.4f, 7f)
+                horizontalLineTo(2.6f)
+                curveTo(2.269f, 7f, 2f, 7.269f, 2f, 7.6f)
+                verticalLineTo(11.4f)
+                curveTo(2f, 11.731f, 2.269f, 12f, 2.6f, 12f)
+                horizontalLineTo(21.4f)
+                curveTo(21.731f, 12f, 22f, 11.731f, 22f, 11.4f)
+                verticalLineTo(7.6f)
+                curveTo(22f, 7.269f, 21.731f, 7f, 21.4f, 7f)
                 close()
             }
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
@@ -55,8 +61,8 @@ public val AppIcon.Gift: ImageVector
                 verticalLineTo(7f)
             }
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
@@ -70,8 +76,8 @@ public val AppIcon.Gift: ImageVector
                 close()
             }
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {

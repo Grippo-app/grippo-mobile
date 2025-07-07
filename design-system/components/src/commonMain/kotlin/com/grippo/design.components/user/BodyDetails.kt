@@ -23,7 +23,8 @@ import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.cm
-import com.grippo.design.resources.icons.Box
+import com.grippo.design.resources.icons.ExpandLines
+import com.grippo.design.resources.icons.Weight
 import com.grippo.design.resources.kg
 
 @Composable
@@ -55,7 +56,7 @@ internal fun BodyItem(
                 .background(AppTokens.colors.background.accent)
                 .padding(4.dp)
                 .size(AppTokens.dp.bodyDetails.icon),
-            imageVector = AppTokens.icons.Box,
+            imageVector = AppTokens.icons.Weight,
             tint = AppTokens.colors.icon.invert,
             contentDescription = null
         )
@@ -93,7 +94,7 @@ internal fun BodyItem(
                 .background(AppTokens.colors.background.accent)
                 .padding(4.dp)
                 .size(AppTokens.dp.bodyDetails.icon),
-            imageVector = AppTokens.icons.Box,
+            imageVector = AppTokens.icons.ExpandLines,
             tint = AppTokens.colors.icon.invert,
             contentDescription = null
         )

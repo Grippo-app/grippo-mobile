@@ -44,7 +44,7 @@ public fun InputWeight(
         ),
         trailing = { color ->
             Text(
-                modifier = Modifier.padding(end = 4.dp),
+                modifier = Modifier.padding(end = 8.dp),
                 text = AppTokens.strings.res(Res.string.kg),
                 style = AppTokens.typography.b14Semi(),
                 color = color

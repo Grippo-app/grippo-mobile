@@ -22,48 +22,62 @@ public val AppIcon.Calendar: ImageVector
             viewportHeight = 24f
         ).apply {
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(19f, 4f)
-                horizontalLineTo(5f)
-                curveTo(3.895f, 4f, 3f, 4.895f, 3f, 6f)
-                verticalLineTo(20f)
-                curveTo(3f, 21.105f, 3.895f, 22f, 5f, 22f)
-                horizontalLineTo(19f)
-                curveTo(20.105f, 22f, 21f, 21.105f, 21f, 20f)
+                moveTo(15f, 4f)
+                verticalLineTo(2f)
+                verticalLineTo(4f)
+                close()
+                moveTo(15f, 4f)
                 verticalLineTo(6f)
-                curveTo(21f, 4.895f, 20.105f, 4f, 19f, 4f)
+                verticalLineTo(4f)
+                close()
+                moveTo(15f, 4f)
+                horizontalLineTo(10.5f)
+                horizontalLineTo(15f)
+                close()
+                moveTo(3f, 10f)
+                verticalLineTo(19f)
+                curveTo(3f, 20.105f, 3.895f, 21f, 5f, 21f)
+                horizontalLineTo(19f)
+                curveTo(20.105f, 21f, 21f, 20.105f, 21f, 19f)
+                verticalLineTo(10f)
+                horizontalLineTo(3f)
                 close()
             }
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
-            ) {
-                moveTo(16f, 2f)
-                verticalLineTo(6f)
-            }
-            path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
-            ) {
-                moveTo(8f, 2f)
-                verticalLineTo(6f)
-            }
-            path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
                 moveTo(3f, 10f)
-                horizontalLineTo(21f)
+                verticalLineTo(6f)
+                curveTo(3f, 4.895f, 3.895f, 4f, 5f, 4f)
+                horizontalLineTo(7f)
+            }
+            path(
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round
+            ) {
+                moveTo(7f, 2f)
+                verticalLineTo(6f)
+            }
+            path(
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round
+            ) {
+                moveTo(21f, 10f)
+                verticalLineTo(6f)
+                curveTo(21f, 4.895f, 20.105f, 4f, 19f, 4f)
+                horizontalLineTo(18.5f)
             }
         }.build()
 

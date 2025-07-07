@@ -22,41 +22,37 @@ public val AppIcon.Youtube: ImageVector
             viewportHeight = 24f
         ).apply {
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                fill = SolidColor(Color(0xFF0F172A)),
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(22.54f, 6.42f)
-                curveTo(22.421f, 5.945f, 22.179f, 5.511f, 21.839f, 5.159f)
-                curveTo(21.498f, 4.808f, 21.071f, 4.553f, 20.6f, 4.42f)
-                curveTo(18.88f, 4f, 12f, 4f, 12f, 4f)
-                curveTo(12f, 4f, 5.12f, 4f, 3.4f, 4.46f)
-                curveTo(2.929f, 4.593f, 2.502f, 4.848f, 2.161f, 5.199f)
-                curveTo(1.821f, 5.551f, 1.579f, 5.985f, 1.46f, 6.46f)
-                curveTo(1.145f, 8.206f, 0.991f, 9.976f, 1f, 11.75f)
-                curveTo(0.989f, 13.537f, 1.143f, 15.321f, 1.46f, 17.08f)
-                curveTo(1.591f, 17.54f, 1.838f, 17.958f, 2.178f, 18.295f)
-                curveTo(2.518f, 18.631f, 2.939f, 18.874f, 3.4f, 19f)
-                curveTo(5.12f, 19.46f, 12f, 19.46f, 12f, 19.46f)
-                curveTo(12f, 19.46f, 18.88f, 19.46f, 20.6f, 19f)
-                curveTo(21.071f, 18.867f, 21.498f, 18.612f, 21.839f, 18.261f)
-                curveTo(22.179f, 17.909f, 22.421f, 17.475f, 22.54f, 17f)
-                curveTo(22.852f, 15.268f, 23.006f, 13.51f, 23f, 11.75f)
-                curveTo(23.011f, 9.963f, 22.857f, 8.179f, 22.54f, 6.42f)
-                verticalLineTo(6.42f)
+                moveTo(14f, 12f)
+                lineTo(10.5f, 14f)
+                verticalLineTo(10f)
+                lineTo(14f, 12f)
                 close()
             }
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f
             ) {
-                moveTo(9.75f, 15.02f)
-                lineTo(15.5f, 11.75f)
-                lineTo(9.75f, 8.48f)
-                verticalLineTo(15.02f)
+                moveTo(2f, 12.708f)
+                verticalLineTo(11.292f)
+                curveTo(2f, 8.397f, 2f, 6.949f, 2.905f, 6.018f)
+                curveTo(3.811f, 5.086f, 5.237f, 5.046f, 8.088f, 4.965f)
+                curveTo(9.439f, 4.927f, 10.819f, 4.9f, 12f, 4.9f)
+                curveTo(13.181f, 4.9f, 14.561f, 4.927f, 15.912f, 4.965f)
+                curveTo(18.763f, 5.046f, 20.189f, 5.086f, 21.094f, 6.018f)
+                curveTo(22f, 6.949f, 22f, 8.397f, 22f, 11.292f)
+                verticalLineTo(12.708f)
+                curveTo(22f, 15.603f, 22f, 17.051f, 21.094f, 17.982f)
+                curveTo(20.189f, 18.913f, 18.764f, 18.954f, 15.912f, 19.034f)
+                curveTo(14.561f, 19.073f, 13.181f, 19.1f, 12f, 19.1f)
+                curveTo(10.819f, 19.1f, 9.439f, 19.073f, 8.088f, 19.034f)
+                curveTo(5.237f, 18.954f, 3.811f, 18.913f, 2.905f, 17.982f)
+                curveTo(2f, 17.051f, 2f, 15.603f, 2f, 12.708f)
                 close()
             }
         }.build()

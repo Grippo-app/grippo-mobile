@@ -87,14 +87,14 @@ public data object AppDp {
         val height: Dp = size.medium
         val horizontalPadding: Dp = padding.large
         val radius: Dp = AppDp.radius.large
-        val icon: Dp = AppDp.icon.small
+        val icon: Dp = AppDp.icon.medium
     }
 
     public data object Button {
         val height: Dp = size.medium
         val horizontalPadding: Dp = padding.large
         val radius: Dp = AppDp.radius.large
-        val icon: Dp = AppDp.icon.small
+        val icon: Dp = AppDp.icon.medium
         val space: Dp = padding.small
     }
 
@@ -119,7 +119,7 @@ public data object AppDp {
         val horizontalPadding: Dp = padding.extraSmall
         val verticalPadding: Dp = padding.extraSmall
         val radius: Dp = AppDp.radius.small
-        val icon: Dp = AppDp.icon.small
+        val icon: Dp = AppDp.icon.medium
     }
 
     public data object OverviewCard {

@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.icons.ChevronRight
+import com.grippo.design.resources.icons.NavArrowRight
 import com.grippo.design.resources.icons.User
 
 @Composable
@@ -51,7 +51,7 @@ public fun MenuCard(
 
         Icon(
             modifier = Modifier.size(AppTokens.dp.menu.item.icon),
-            imageVector = AppTokens.icons.ChevronRight,
+            imageVector = AppTokens.icons.NavArrowRight,
             tint = AppTokens.colors.icon.default,
             contentDescription = null
         )

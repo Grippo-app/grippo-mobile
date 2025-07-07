@@ -6,10 +6,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.activity
-import com.grippo.design.resources.icons.Book
-import com.grippo.design.resources.icons.Heart
-import com.grippo.design.resources.icons.Mic
+import com.grippo.design.resources.icons.Gym
+import com.grippo.design.resources.icons.Repository
 import com.grippo.design.resources.icons.Settings
+import com.grippo.design.resources.icons.Waist
+import com.grippo.design.resources.icons.Weight
 import com.grippo.design.resources.profile_menu_excluded_muscles
 import com.grippo.design.resources.profile_menu_exercise_library
 import com.grippo.design.resources.profile_menu_missing_equipment
@@ -50,10 +51,10 @@ internal enum class HomeProfileActivityMenu {
     @Composable
     fun icon(): ImageVector {
         return when (this) {
-            WeightHistory -> AppTokens.icons.Book
-            ExerciseLibrary -> AppTokens.icons.Book
-            ExcludedMuscles -> AppTokens.icons.Mic
-            MissingEquipment -> AppTokens.icons.Heart
+            WeightHistory -> AppTokens.icons.Weight
+            ExerciseLibrary -> AppTokens.icons.Repository
+            ExcludedMuscles -> AppTokens.icons.Waist
+            MissingEquipment -> AppTokens.icons.Gym
         }
     }
 }

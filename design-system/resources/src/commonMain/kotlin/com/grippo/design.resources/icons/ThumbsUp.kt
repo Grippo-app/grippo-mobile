@@ -22,35 +22,36 @@ public val AppIcon.ThumbsUp: ImageVector
             viewportHeight = 24f
         ).apply {
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Round
+            ) {
+                moveTo(16.472f, 20f)
+                horizontalLineTo(4.1f)
+                curveTo(3.769f, 20f, 3.5f, 19.732f, 3.5f, 19.4f)
+                verticalLineTo(9.6f)
+                curveTo(3.5f, 9.269f, 3.769f, 9f, 4.1f, 9f)
+                horizontalLineTo(6.868f)
+                curveTo(7.57f, 9f, 8.221f, 8.632f, 8.583f, 8.029f)
+                lineTo(11.293f, 3.512f)
+                curveTo(11.878f, 2.537f, 13.255f, 2.444f, 13.965f, 3.332f)
+                curveTo(14.3f, 3.75f, 14.408f, 4.306f, 14.254f, 4.82f)
+                lineTo(13.232f, 8.228f)
+                curveTo(13.116f, 8.613f, 13.405f, 9f, 13.806f, 9f)
+                horizontalLineTo(18.382f)
+                curveTo(19.7f, 9f, 20.658f, 10.254f, 20.311f, 11.526f)
+                lineTo(18.402f, 18.526f)
+                curveTo(18.165f, 19.396f, 17.374f, 20f, 16.472f, 20f)
+                close()
+            }
+            path(
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(7f, 22f)
-                horizontalLineTo(4f)
-                curveTo(3.47f, 22f, 2.961f, 21.789f, 2.586f, 21.414f)
-                curveTo(2.211f, 21.039f, 2f, 20.53f, 2f, 20f)
-                verticalLineTo(13f)
-                curveTo(2f, 12.47f, 2.211f, 11.961f, 2.586f, 11.586f)
-                curveTo(2.961f, 11.211f, 3.47f, 11f, 4f, 11f)
-                horizontalLineTo(7f)
-                moveTo(14f, 9f)
-                verticalLineTo(5f)
-                curveTo(14f, 4.204f, 13.684f, 3.441f, 13.121f, 2.879f)
-                curveTo(12.559f, 2.316f, 11.796f, 2f, 11f, 2f)
-                lineTo(7f, 11f)
-                verticalLineTo(22f)
-                horizontalLineTo(18.28f)
-                curveTo(18.762f, 22.006f, 19.23f, 21.836f, 19.598f, 21.524f)
-                curveTo(19.965f, 21.212f, 20.208f, 20.777f, 20.28f, 20.3f)
-                lineTo(21.66f, 11.3f)
-                curveTo(21.704f, 11.013f, 21.684f, 10.721f, 21.603f, 10.442f)
-                curveTo(21.522f, 10.164f, 21.382f, 9.906f, 21.192f, 9.688f)
-                curveTo(21.002f, 9.469f, 20.766f, 9.294f, 20.502f, 9.175f)
-                curveTo(20.237f, 9.057f, 19.95f, 8.997f, 19.66f, 9f)
-                horizontalLineTo(14f)
-                close()
+                moveTo(7f, 20f)
+                verticalLineTo(9f)
             }
         }.build()
 

@@ -22,35 +22,37 @@ public val AppIcon.ZoomOut: ImageVector
             viewportHeight = 24f
         ).apply {
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(11f, 19f)
-                curveTo(15.418f, 19f, 19f, 15.418f, 19f, 11f)
-                curveTo(19f, 6.582f, 15.418f, 3f, 11f, 3f)
-                curveTo(6.582f, 3f, 3f, 6.582f, 3f, 11f)
-                curveTo(3f, 15.418f, 6.582f, 19f, 11f, 19f)
+                moveTo(9f, 11f)
+                horizontalLineTo(11f)
+                horizontalLineTo(13f)
+            }
+            path(
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round
+            ) {
+                moveTo(16f, 16f)
+                lineTo(20f, 20f)
+            }
+            path(
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round
+            ) {
+                moveTo(4f, 11f)
+                curveTo(4f, 14.866f, 7.134f, 18f, 11f, 18f)
+                curveTo(12.936f, 18f, 14.689f, 17.214f, 15.956f, 15.943f)
+                curveTo(17.219f, 14.677f, 18f, 12.93f, 18f, 11f)
+                curveTo(18f, 7.134f, 14.866f, 4f, 11f, 4f)
+                curveTo(7.134f, 4f, 4f, 7.134f, 4f, 11f)
                 close()
-            }
-            path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
-            ) {
-                moveTo(21f, 21f)
-                lineTo(16.65f, 16.65f)
-            }
-            path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
-            ) {
-                moveTo(8f, 11f)
-                horizontalLineTo(14f)
             }
         }.build()
 

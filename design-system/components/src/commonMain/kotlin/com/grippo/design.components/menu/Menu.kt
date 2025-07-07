@@ -32,7 +32,6 @@ public fun <KEY> Menu(
     items: ImmutableList<Pair<KEY, MenuItem>>,
     onClick: (KEY) -> Unit
 ) {
-
     val shape = RoundedCornerShape(AppTokens.dp.menu.radius)
 
     Column(

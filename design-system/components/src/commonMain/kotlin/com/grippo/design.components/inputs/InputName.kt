@@ -29,7 +29,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
-import com.grippo.design.resources.icons.X
+import com.grippo.design.resources.icons.Cancel
 import com.grippo.design.resources.name_placeholder
 
 @Composable
@@ -65,7 +65,7 @@ public fun InputName(
                         Icon(
                             modifier = Modifier
                                 .size(AppTokens.dp.input.icon),
-                            imageVector = AppTokens.icons.X,
+                            imageVector = AppTokens.icons.Cancel,
                             tint = color,
                             contentDescription = null
                         )
