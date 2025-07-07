@@ -49,7 +49,7 @@ public fun IterationCard(
         Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
 
         Text(
-            text = AppTokens.strings.res(Res.string.kg).uppercase(),
+            text = AppTokens.strings.res(Res.string.kg),
             style = AppTokens.typography.b12Semi(),
             color = AppTokens.colors.text.tertiary
         )
@@ -65,7 +65,7 @@ public fun IterationCard(
         Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
 
         Text(
-            text = AppTokens.strings.res(Res.string.reps).uppercase(),
+            text = AppTokens.strings.res(Res.string.reps),
             style = AppTokens.typography.b12Semi(),
             color = AppTokens.colors.text.tertiary
         )
