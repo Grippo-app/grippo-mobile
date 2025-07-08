@@ -6,6 +6,7 @@ import com.grippo.data.features.api.training.models.Training
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.mapper.training.toState
+import com.grippo.domain.mapper.training.transformToTrainingListValue
 import kotlinx.coroutines.flow.onEach
 import kotlinx.datetime.LocalDateTime
 
@@ -33,7 +34,7 @@ internal class HomeTrainingsViewModel(
     }
 
     private fun provideTrainings(list: List<Training>) {
-        val trainings = list.toState()
+        val trainings = list.toState().transformToTrainingListValue()
         update { it.copy(trainings = trainings) }
     }
 

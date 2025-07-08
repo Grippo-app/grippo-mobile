@@ -1,7 +1,5 @@
 package com.grippo.design.components.training
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,14 +7,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
@@ -36,13 +31,6 @@ public fun ExerciseCard(
 ) {
     Column(
         modifier = modifier
-            .clip(RoundedCornerShape(AppTokens.dp.exerciseCard.radius))
-            .border(
-                width = 1.dp,
-                color = AppTokens.colors.border.defaultPrimary,
-                shape = RoundedCornerShape(AppTokens.dp.exerciseCard.radius)
-            )
-            .background(AppTokens.colors.background.primary)
             .padding(
                 vertical = AppTokens.dp.exerciseCard.verticalPadding,
                 horizontal = AppTokens.dp.exerciseCard.horizontalPadding

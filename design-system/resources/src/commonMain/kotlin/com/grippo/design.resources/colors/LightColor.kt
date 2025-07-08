@@ -117,6 +117,7 @@ public object LightColor : AppColor {
         override val error = Error
         override val warning = Warning
         override val info = Primary500
+        override val accent = Primary500
     }
 
     override val overlay: AppColor.OverlayColors = object : AppColor.OverlayColors {
