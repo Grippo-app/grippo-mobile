@@ -143,7 +143,7 @@ public fun ExerciseExampleBundlesCard(
                     if (index < internalList.lastIndex) {
                         HorizontalDivider(
                             modifier = Modifier.fillMaxWidth(),
-                            color = AppTokens.colors.divider.default
+                            color = AppTokens.colors.divider.primary
                         )
                     }
                 }

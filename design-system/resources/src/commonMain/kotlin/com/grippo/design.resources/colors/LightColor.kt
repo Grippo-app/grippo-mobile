@@ -23,7 +23,9 @@ public object LightColor : AppColor {
     private val Primary900 = Color(0xFF152F94)
 
     private val Neutral100 = Color(0xFFFAFAFA)
+    private val Neutral150 = Color(0xFFF6F6F6)
     private val Neutral200 = Color(0xFFF2F2F2)
+    private val Neutral250 = Color(0xFFE7E7E7)
     private val Neutral300 = Color(0xFFDCDCDC)
     private val Neutral400 = Color(0xFFBFBFBF)
     private val Neutral500 = Color(0xFF999999)
@@ -94,7 +96,7 @@ public object LightColor : AppColor {
     }
 
     override val background: AppColor.BackgroundColors = object : AppColor.BackgroundColors {
-        override val primary = Neutral100
+        override val primary = Neutral150
         override val secondary = White
         override val accent = Primary500
     }
@@ -126,18 +128,6 @@ public object LightColor : AppColor {
         override val accentShadow: Color = Primary500.copy(alpha = 0.35f)
     }
 
-    override val interaction: AppColor.InteractionColors = object : AppColor.InteractionColors {
-        override val pressed = Neutral200
-        override val hovered = Neutral100
-        override val focused = Primary500
-    }
-
-    override val elevation: AppColor.ElevationColors = object : AppColor.ElevationColors {
-        override val level0 = Color(0x00000000)
-        override val level1 = Color(0x05000000)
-        override val level2 = Color(0x0A000000)
-    }
-
     override val skeleton: AppColor.SkeletonColors = object : AppColor.SkeletonColors {
         override val background = Neutral300
         override val shimmer = Neutral400
@@ -158,7 +148,8 @@ public object LightColor : AppColor {
     }
 
     override val divider: DividerColors = object : DividerColors {
-        override val default: Color = Neutral200
+        override val primary: Color = Neutral200
+        override val secondary: Color = Neutral250
     }
 
     override val konfetti: AppColor.Konfetti = object : AppColor.Konfetti {

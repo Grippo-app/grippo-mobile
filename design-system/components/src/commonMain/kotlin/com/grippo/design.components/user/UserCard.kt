@@ -106,7 +106,7 @@ public fun UserCard(
         ) {
             HorizontalDivider(
                 modifier = Modifier.weight(1f),
-                color = AppTokens.colors.divider.default
+                color = AppTokens.colors.divider.primary
             )
 
             Text(
@@ -117,7 +117,7 @@ public fun UserCard(
 
             HorizontalDivider(
                 modifier = Modifier.weight(1f),
-                color = AppTokens.colors.divider.default
+                color = AppTokens.colors.divider.primary
             )
         }
 

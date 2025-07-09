@@ -62,7 +62,7 @@ public fun <KEY> Menu(
                     modifier = Modifier
                         .padding(horizontal = AppTokens.dp.menu.item.horizontalPadding)
                         .fillMaxWidth(),
-                    color = AppTokens.colors.divider.default
+                    color = AppTokens.colors.divider.primary
                 )
             }
         }
