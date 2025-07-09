@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
@@ -42,9 +43,11 @@ public fun IterationsCard(
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
     ) {
         value.forEach { iteration ->
-            IterationCard(
-                value = iteration,
-            )
+            key(iteration.id) {
+                IterationCard(
+                    value = iteration,
+                )
+            }
         }
     }
 }

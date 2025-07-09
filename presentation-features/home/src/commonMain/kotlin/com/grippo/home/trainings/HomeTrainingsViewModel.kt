@@ -7,9 +7,12 @@ import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.mapper.training.toState
 import com.grippo.domain.mapper.training.transformToTrainingListValue
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.onEach
 import kotlinx.datetime.LocalDateTime
 
+@OptIn(FlowPreview::class)
 internal class HomeTrainingsViewModel(
     private val trainingFeature: TrainingFeature,
     private val dialogController: DialogController
@@ -21,7 +24,7 @@ internal class HomeTrainingsViewModel(
         trainingFeature.observeTrainings(
             start = LocalDateTime(2024, 1, 1, 11, 11, 11, 11),
             end = LocalDateTime(2026, 1, 1, 11, 11, 11, 11)
-        )
+        ).debounce(300)
             .onEach(::provideTrainings)
             .safeLaunch()
 
