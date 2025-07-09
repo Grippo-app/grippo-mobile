@@ -22,7 +22,8 @@ public fun PieChart(
         style = PieStyle(
             textStyle = AppTokens.typography.b10Semi().copy(
                 color = AppTokens.colors.text.inverted
-            )
+            ),
+            chartBarWidth = AppTokens.dp.chart.pie.width
         )
     )
 }

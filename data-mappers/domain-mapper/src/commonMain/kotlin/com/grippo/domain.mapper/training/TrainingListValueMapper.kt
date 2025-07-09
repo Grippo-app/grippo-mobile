@@ -13,7 +13,6 @@ public fun List<TrainingState>.transformToTrainingListValue(): ImmutableList<Tra
 
     nonEmptyTrainings.forEachIndexed { index, training ->
         val exercises = training.exercises
-        if (exercises.isEmpty()) return@forEachIndexed
 
         val trainingPosition = when {
             nonEmptyTrainings.size == 1 -> TrainingPosition.SINGLE
@@ -24,40 +23,58 @@ public fun List<TrainingState>.transformToTrainingListValue(): ImmutableList<Tra
 
         result += TrainingListValue.DateTime(
             date = training.createdAt,
-            position = trainingPosition
+            position = trainingPosition,
+            id = "date-${training.id}"
         )
 
         when (exercises.size) {
-            1 -> result += TrainingListValue.SingleExercise(
-                exerciseState = exercises[0],
-                position = trainingPosition
-            )
+            1 -> {
+                val ex = exercises[0]
+                result += TrainingListValue.SingleExercise(
+                    exerciseState = ex,
+                    position = trainingPosition,
+                    id = "single-${training.id}-${ex.id}"
+                )
+            }
 
             2 -> {
+                val first = exercises[0]
+                val last = exercises[1]
                 result += TrainingListValue.FirstExercise(
-                    exerciseState = exercises[0],
-                    position = trainingPosition
+                    exerciseState = first,
+                    position = trainingPosition,
+                    id = "first-${training.id}-${first.id}"
                 )
                 result += TrainingListValue.LastExercise(
-                    exerciseState = exercises[1],
-                    position = trainingPosition
+                    exerciseState = last,
+                    position = trainingPosition,
+                    id = "last-${training.id}-${last.id}"
                 )
             }
 
             else -> {
+                val first = exercises.first()
+                val last = exercises.last()
+                val middle = exercises.subList(1, exercises.lastIndex)
+
                 result += TrainingListValue.FirstExercise(
-                    exerciseState = exercises.first(),
-                    position = trainingPosition
+                    exerciseState = first,
+                    position = trainingPosition,
+                    id = "first-${training.id}-${first.id}"
                 )
-                exercises.subList(1, exercises.lastIndex).forEach {
+
+                middle.forEach { ex ->
                     result += TrainingListValue.MiddleExercise(
-                        exerciseState = it,
-                        position = trainingPosition
+                        exerciseState = ex,
+                        position = trainingPosition,
+                        id = "middle-${training.id}-${ex.id}"
                     )
                 }
+
                 result += TrainingListValue.LastExercise(
-                    exerciseState = exercises.last(),
-                    position = trainingPosition
+                    exerciseState = last,
+                    position = trainingPosition,
+                    id = "last-${training.id}-${last.id}"
                 )
             }
         }

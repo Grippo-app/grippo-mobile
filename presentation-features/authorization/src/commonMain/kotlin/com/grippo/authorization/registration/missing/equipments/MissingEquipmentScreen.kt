@@ -112,7 +112,10 @@ internal fun MissingEquipmentsScreen(
                 ),
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
             ) {
-                items(equipments, key = { it.id }) { equipment ->
+                items(
+                    items = equipments,
+                    key = { it.id },
+                    contentType = { it::class }) { equipment ->
                     EquipmentRow(
                         equipment = equipment,
                         selectedEquipmentIds = state.selectedEquipmentIds,

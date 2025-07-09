@@ -25,7 +25,7 @@ public fun IterationsCard(
     value: ImmutableList<IterationState>,
 ) {
     FlowRow(
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(AppTokens.dp.iterationsCard.radius))
             .background(AppTokens.colors.background.secondary)
             .border(

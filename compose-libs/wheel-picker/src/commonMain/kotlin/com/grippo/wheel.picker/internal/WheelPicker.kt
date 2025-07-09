@@ -97,7 +97,7 @@ internal fun WheelPicker(
             flingBehavior = flingBehavior,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            items(count) { index ->
+            items(count, key = { it }, contentType = { it::class }) { index ->
                 val alpha = calculateAnimatedAlpha(layoutInfo, index, rowCount)
                 val rotationX = calculateAnimatedRotationX(layoutInfo, index, rowCount)
 

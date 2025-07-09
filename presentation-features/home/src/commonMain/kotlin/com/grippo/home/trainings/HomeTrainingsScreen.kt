@@ -1,22 +1,20 @@
 package com.grippo.home.trainings
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.modifiers.ShadowElevation
-import com.grippo.design.components.modifiers.Side
+import com.grippo.design.components.modifiers.border
 import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.components.timeline.TimeLabel
-import com.grippo.design.components.timeline.TimeLinePointStyle
 import com.grippo.design.components.timeline.TimelineIndicator
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.training.ExerciseCard
@@ -26,8 +24,11 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.trainings
 import com.grippo.domain.mapper.training.transformToTrainingListValue
+import com.grippo.home.trainings.factory.exerciseOf
+import com.grippo.home.trainings.factory.shapeFor
+import com.grippo.home.trainings.factory.sidesFor
+import com.grippo.home.trainings.factory.timelineStyle
 import com.grippo.presentation.api.trainings.models.TrainingListValue
-import com.grippo.presentation.api.trainings.models.TrainingPosition
 import com.grippo.presentation.api.trainings.models.stubTraining
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
@@ -38,7 +39,7 @@ internal fun HomeTrainingsScreen(
     state: HomeTrainingsState,
     loaders: ImmutableSet<HomeTrainingsLoader>,
     contract: HomeTrainingsContract
-) = BaseComposeScreen(AppTokens.colors.background.secondary) {
+) = BaseComposeScreen(AppTokens.colors.background.primary) {
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
@@ -52,46 +53,17 @@ internal fun HomeTrainingsScreen(
             vertical = AppTokens.dp.contentPadding.content
         ),
     ) {
+        items(
+            items = state.trainings,
+            key = { it.id },
+            contentType = { it::class }
+        ) { value ->
+            val style = remember(value) { timelineStyle(value) }
+            val shape = remember(value) { shapeFor(value) }
+            val sides = remember(value) { sidesFor(value) }
+            val exercise = remember(value) { exerciseOf(value) }
 
-        items(state.trainings) { value ->
-            val timelineStyle = when (value) {
-                is TrainingListValue.DateTime -> when (value.position) {
-                    TrainingPosition.FIRST -> TimeLinePointStyle.Start
-                    TrainingPosition.MIDDLE -> TimeLinePointStyle.Middle
-                    TrainingPosition.LAST -> TimeLinePointStyle.End
-                    TrainingPosition.SINGLE -> TimeLinePointStyle.Single
-                }
-
-                is TrainingListValue.FirstExercise -> when (value.position) {
-                    TrainingPosition.LAST -> TimeLinePointStyle.Empty
-                    TrainingPosition.SINGLE -> TimeLinePointStyle.Empty
-                    TrainingPosition.FIRST -> TimeLinePointStyle.Line
-                    TrainingPosition.MIDDLE -> TimeLinePointStyle.Line
-                }
-
-                is TrainingListValue.MiddleExercise -> when (value.position) {
-                    TrainingPosition.LAST -> TimeLinePointStyle.Empty
-                    TrainingPosition.SINGLE -> TimeLinePointStyle.Empty
-                    TrainingPosition.FIRST -> TimeLinePointStyle.Line
-                    TrainingPosition.MIDDLE -> TimeLinePointStyle.Line
-                }
-
-                is TrainingListValue.LastExercise -> when (value.position) {
-                    TrainingPosition.LAST -> TimeLinePointStyle.Empty
-                    TrainingPosition.SINGLE -> TimeLinePointStyle.Empty
-                    TrainingPosition.FIRST -> TimeLinePointStyle.Line
-                    TrainingPosition.MIDDLE -> TimeLinePointStyle.Line
-                }
-
-                is TrainingListValue.SingleExercise -> when (value.position) {
-                    TrainingPosition.LAST -> TimeLinePointStyle.Empty
-                    TrainingPosition.SINGLE -> TimeLinePointStyle.Empty
-                    TrainingPosition.FIRST -> TimeLinePointStyle.Line
-                    TrainingPosition.MIDDLE -> TimeLinePointStyle.Line
-                }
-            }
-
-            TimelineIndicator(style = timelineStyle) {
+            TimelineIndicator(style = style) {
 
                 if (value is TrainingListValue.DateTime) {
                     TimeLabel(
@@ -101,80 +73,27 @@ internal fun HomeTrainingsScreen(
                     return@TimelineIndicator
                 }
 
-                val shape = when (value) {
-                    is TrainingListValue.DateTime -> RoundedCornerShape(
-                        0.dp
-                    )
-
-                    is TrainingListValue.FirstExercise -> RoundedCornerShape(
-                        topStart = 16.dp,
-                        topEnd = 16.dp
-                    )
-
-                    is TrainingListValue.LastExercise -> RoundedCornerShape(
-                        bottomStart = 16.dp,
-                        bottomEnd = 16.dp
-                    )
-
-                    is TrainingListValue.MiddleExercise -> RoundedCornerShape(
-                        0.dp
-                    )
-
-                    is TrainingListValue.SingleExercise -> RoundedCornerShape(
-                        16.dp
+                if (exercise != null) {
+                    ExerciseCard(
+                        modifier = Modifier
+                            .clip(shape)
+                            .shadowDefault(
+                                shape = shape,
+                                elevation = ShadowElevation.Card,
+                                sides = sides
+                            )
+                            .border(
+                                width = 1.dp,
+                                color = AppTokens.colors.border.defaultPrimary,
+                                shape = shape,
+                                sides = sides
+                            )
+                            .background(AppTokens.colors.background.secondary)
+                            .fillMaxWidth(),
+                        value = exercise,
+                        onExerciseExampleClick = contract::openExerciseExample
                     )
                 }
-
-                val exercise = when (value) {
-                    is TrainingListValue.FirstExercise -> value.exerciseState
-                    is TrainingListValue.LastExercise -> value.exerciseState
-                    is TrainingListValue.MiddleExercise -> value.exerciseState
-                    is TrainingListValue.SingleExercise -> value.exerciseState
-                    else -> return@TimelineIndicator
-                }
-
-                val sides = when (value) {
-                    is TrainingListValue.FirstExercise -> persistentListOf(
-                        Side.TOP,
-                        Side.LEFT,
-                        Side.RIGHT
-                    )
-
-                    is TrainingListValue.LastExercise -> persistentListOf(
-                        Side.BOTTOM,
-                        Side.LEFT,
-                        Side.RIGHT
-                    )
-
-                    is TrainingListValue.MiddleExercise -> persistentListOf(
-                        Side.LEFT,
-                        Side.RIGHT
-                    )
-
-                    is TrainingListValue.SingleExercise -> persistentListOf(
-                        Side.TOP,
-                        Side.LEFT,
-                        Side.RIGHT,
-                        Side.BOTTOM
-                    )
-
-                    else -> return@TimelineIndicator
-                }
-
-                ExerciseCard(
-                    modifier = Modifier
-                        .clip(shape)
-                        .shadowDefault(
-                            shape = shape,
-                            elevation = ShadowElevation.Card,
-                            sides = sides
-                        )
-                        .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
-                        .background(AppTokens.colors.background.primary)
-                        .fillMaxWidth(),
-                    value = exercise,
-                    onExerciseExampleClick = contract::openExerciseExample
-                )
             }
         }
     }

@@ -45,7 +45,7 @@ public fun EquipmentsCard(
             ),
         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
     ) {
-        items(value, key = { it.id }) { item ->
+        items(items = value, key = { it.id }, contentType = { it::class }) { item ->
             EquipmentCard(
                 value = item
             )

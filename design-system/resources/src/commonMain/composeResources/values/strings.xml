@@ -106,4 +106,5 @@
     <string name="overview">Overview</string>
     <string name="muscles_in_use">Muscles in use</string>
     <string name="required_equipment">Required equipment</string>
+    <string name="training_at_value">Training at %1$s</string>
 </resources>

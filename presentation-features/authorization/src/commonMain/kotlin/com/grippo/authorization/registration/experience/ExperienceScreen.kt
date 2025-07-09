@@ -85,7 +85,10 @@ internal fun ExperienceScreen(
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
         ) {
 
-            items(state.suggestions, key = { it.ordinal }) { item ->
+            items(
+                items = state.suggestions,
+                key = { it.ordinal },
+                contentType = { it::class }) { item ->
                 val selectProvider = remember { { contract.select(item) } }
                 val isSelected = remember(state.selected) { state.selected == item }
 

@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.ShadowElevation
-import com.grippo.design.components.modifiers.Side
+import com.grippo.design.components.modifiers.models.Side
 import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.components.tab.Tab
 import com.grippo.design.components.tab.TabItem

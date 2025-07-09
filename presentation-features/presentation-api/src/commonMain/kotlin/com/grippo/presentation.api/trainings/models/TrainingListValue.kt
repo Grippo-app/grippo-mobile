@@ -13,36 +13,42 @@ public enum class TrainingPosition {
 
 @Immutable
 public sealed class TrainingListValue(
+    public open val id: String,
     public open val position: TrainingPosition,
 ) {
 
     @Immutable
     public data class FirstExercise(
         val exerciseState: ExerciseState,
-        override val position: TrainingPosition
-    ) : TrainingListValue(position)
+        override val position: TrainingPosition,
+        override val id: String
+    ) : TrainingListValue(id, position)
 
     @Immutable
     public data class MiddleExercise(
         val exerciseState: ExerciseState,
-        override val position: TrainingPosition
-    ) : TrainingListValue(position)
+        override val position: TrainingPosition,
+        override val id: String
+    ) : TrainingListValue(id, position)
 
     @Immutable
     public data class LastExercise(
         val exerciseState: ExerciseState,
-        override val position: TrainingPosition
-    ) : TrainingListValue(position)
+        override val position: TrainingPosition,
+        override val id: String
+    ) : TrainingListValue(id, position)
 
     @Immutable
     public data class SingleExercise(
         val exerciseState: ExerciseState,
-        override val position: TrainingPosition
-    ) : TrainingListValue(position)
+        override val position: TrainingPosition,
+        override val id: String
+    ) : TrainingListValue(id, position)
 
     @Immutable
     public data class DateTime(
         val date: LocalDateTime,
-        override val position: TrainingPosition
-    ) : TrainingListValue(position)
+        override val position: TrainingPosition,
+        override val id: String
+    ) : TrainingListValue(id, position)
 }

@@ -14,7 +14,9 @@ import com.grippo.date.utils.DateFormat
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.Res
 import com.grippo.design.resources.icons.ClockOutline
+import com.grippo.design.resources.training_at_value
 import kotlinx.datetime.LocalDateTime
 
 @Composable
@@ -25,7 +27,7 @@ public fun TimeLabel(
     Row(
         modifier = modifier.padding(vertical = AppTokens.dp.timeLabel.verticalPaddings),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
     ) {
         val text = DateCompose.rememberFormat(value, DateFormat.HH_MMM)
 
@@ -37,7 +39,7 @@ public fun TimeLabel(
         )
 
         Text(
-            text = text,
+            text = AppTokens.strings.res(Res.string.training_at_value, text),
             style = AppTokens.typography.b13Bold(),
             color = AppTokens.colors.text.primary
         )

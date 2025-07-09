@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.grippo.design.components.modifiers.models.Side
 import com.grippo.design.core.AppTokens
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
@@ -24,11 +25,6 @@ public enum class ShadowElevation(
     Card(4.dp, zIndex = 2f),
     Container(6.dp, zIndex = 3f),
     Non(0.dp, zIndex = 0f),
-}
-
-@Immutable
-public enum class Side {
-    TOP, BOTTOM, LEFT, RIGHT
 }
 
 @Composable
