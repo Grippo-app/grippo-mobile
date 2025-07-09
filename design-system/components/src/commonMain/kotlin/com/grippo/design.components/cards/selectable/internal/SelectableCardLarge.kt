@@ -52,7 +52,7 @@ internal fun SelectableCardLarge(
     )
 
     val iconTint by animateColorAsState(
-        if (isSelected) AppTokens.colors.icon.accent else AppTokens.colors.icon.default,
+        if (isSelected) AppTokens.colors.icon.accent else AppTokens.colors.icon.primary,
         label = "mediumIconTint"
     )
 

@@ -12,12 +12,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 
 @Immutable
 public enum class TimeLinePointStyle {
@@ -37,6 +40,7 @@ public fun TimelineIndicator(
 ) {
     val dotColor = AppTokens.colors.semantic.accent
     val lineColor = AppTokens.colors.divider.default
+    val lineWidth = 2.dp
 
     Row(
         modifier = modifier.height(intrinsicSize = IntrinsicSize.Min),
@@ -52,7 +56,7 @@ public fun TimelineIndicator(
                 TimeLinePointStyle.Start -> {
                     Spacer(
                         modifier = Modifier
-                            .width(1.dp)
+                            .width(lineWidth)
                             .weight(1f)
                     )
                     Box(
@@ -63,7 +67,7 @@ public fun TimelineIndicator(
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .width(1.dp)
+                            .width(lineWidth)
                             .background(lineColor)
                     )
                 }
@@ -72,7 +76,7 @@ public fun TimelineIndicator(
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .width(1.dp)
+                            .width(lineWidth)
                             .background(lineColor)
                     )
                     Box(
@@ -83,7 +87,7 @@ public fun TimelineIndicator(
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .width(1.dp)
+                            .width(lineWidth)
                             .background(lineColor)
                     )
                 }
@@ -92,7 +96,7 @@ public fun TimelineIndicator(
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .width(1.dp)
+                            .width(lineWidth)
                             .background(lineColor)
                     )
                     Box(
@@ -102,7 +106,7 @@ public fun TimelineIndicator(
                     )
                     Spacer(
                         modifier = Modifier
-                            .width(1.dp)
+                            .width(lineWidth)
                             .weight(1f)
                     )
                 }
@@ -110,7 +114,7 @@ public fun TimelineIndicator(
                 TimeLinePointStyle.Single -> {
                     Spacer(
                         modifier = Modifier
-                            .width(1.dp)
+                            .width(lineWidth)
                             .weight(1f)
                     )
                     Box(
@@ -120,7 +124,7 @@ public fun TimelineIndicator(
                     )
                     Spacer(
                         modifier = Modifier
-                            .width(1.dp)
+                            .width(lineWidth)
                             .weight(1f)
                     )
                 }
@@ -129,7 +133,7 @@ public fun TimelineIndicator(
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .width(1.dp)
+                            .width(lineWidth)
                             .background(lineColor)
                     )
                 }
@@ -137,7 +141,7 @@ public fun TimelineIndicator(
                 TimeLinePointStyle.Empty -> {
                     Spacer(
                         modifier = Modifier
-                            .width(1.dp)
+                            .width(lineWidth)
                             .weight(1f)
                     )
                 }
@@ -147,5 +151,19 @@ public fun TimelineIndicator(
         Spacer(modifier = Modifier.width(8.dp))
 
         content()
+    }
+}
+
+@AppPreview
+@Composable
+private fun TimelineIndicatorPreviews() {
+    PreviewContainer {
+        TimeLinePointStyle.entries.forEach { style ->
+            TimelineIndicator(
+                modifier = Modifier.height(20.dp),
+                style = style,
+                content = { Text(text = style.name) }
+            )
+        }
     }
 }

@@ -1,20 +1,25 @@
 package com.grippo.home.trainings
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
+import com.grippo.design.components.modifiers.ShadowElevation
+import com.grippo.design.components.modifiers.Side
+import com.grippo.design.components.modifiers.shadowDefault
+import com.grippo.design.components.timeline.TimeLabel
 import com.grippo.design.components.timeline.TimeLinePointStyle
 import com.grippo.design.components.timeline.TimelineIndicator
 import com.grippo.design.components.toolbar.Toolbar
+import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -79,24 +84,98 @@ internal fun HomeTrainingsScreen(
                 }
 
                 is TrainingListValue.SingleExercise -> when (value.position) {
-                    TrainingPosition.SINGLE -> TimeLinePointStyle.Single
-                    TrainingPosition.LAST -> TimeLinePointStyle.End
-                    TrainingPosition.FIRST -> TimeLinePointStyle.Start
-                    TrainingPosition.MIDDLE -> TimeLinePointStyle.End
+                    TrainingPosition.LAST -> TimeLinePointStyle.Empty
+                    TrainingPosition.SINGLE -> TimeLinePointStyle.Empty
+                    TrainingPosition.FIRST -> TimeLinePointStyle.Line
+                    TrainingPosition.MIDDLE -> TimeLinePointStyle.Line
                 }
             }
 
             TimelineIndicator(style = timelineStyle) {
-                Box(
-                    modifier = Modifier.size(100.dp).background(Color.Cyan)
+
+                if (value is TrainingListValue.DateTime) {
+                    TimeLabel(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = value.date
+                    )
+                    return@TimelineIndicator
+                }
+
+                val shape = when (value) {
+                    is TrainingListValue.DateTime -> RoundedCornerShape(
+                        0.dp
+                    )
+
+                    is TrainingListValue.FirstExercise -> RoundedCornerShape(
+                        topStart = 16.dp,
+                        topEnd = 16.dp
+                    )
+
+                    is TrainingListValue.LastExercise -> RoundedCornerShape(
+                        bottomStart = 16.dp,
+                        bottomEnd = 16.dp
+                    )
+
+                    is TrainingListValue.MiddleExercise -> RoundedCornerShape(
+                        0.dp
+                    )
+
+                    is TrainingListValue.SingleExercise -> RoundedCornerShape(
+                        16.dp
+                    )
+                }
+
+                val exercise = when (value) {
+                    is TrainingListValue.FirstExercise -> value.exerciseState
+                    is TrainingListValue.LastExercise -> value.exerciseState
+                    is TrainingListValue.MiddleExercise -> value.exerciseState
+                    is TrainingListValue.SingleExercise -> value.exerciseState
+                    else -> return@TimelineIndicator
+                }
+
+                val sides = when (value) {
+                    is TrainingListValue.FirstExercise -> persistentListOf(
+                        Side.TOP,
+                        Side.LEFT,
+                        Side.RIGHT
+                    )
+
+                    is TrainingListValue.LastExercise -> persistentListOf(
+                        Side.BOTTOM,
+                        Side.LEFT,
+                        Side.RIGHT
+                    )
+
+                    is TrainingListValue.MiddleExercise -> persistentListOf(
+                        Side.LEFT,
+                        Side.RIGHT
+                    )
+
+                    is TrainingListValue.SingleExercise -> persistentListOf(
+                        Side.TOP,
+                        Side.LEFT,
+                        Side.RIGHT,
+                        Side.BOTTOM
+                    )
+
+                    else -> return@TimelineIndicator
+                }
+
+                ExerciseCard(
+                    modifier = Modifier
+                        .clip(shape)
+                        .shadowDefault(
+                            shape = shape,
+                            elevation = ShadowElevation.Card,
+                            sides = sides
+                        )
+                        .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
+                        .background(AppTokens.colors.background.primary)
+                        .fillMaxWidth(),
+                    value = exercise,
+                    onExerciseExampleClick = contract::openExerciseExample
                 )
             }
-
-//            ExerciseCard(
-//                modifier = Modifier.fillMaxWidth(),
-//                value = exercise,
-//                onExerciseExampleClick = contract::openExerciseExample
-//            )
         }
     }
 }

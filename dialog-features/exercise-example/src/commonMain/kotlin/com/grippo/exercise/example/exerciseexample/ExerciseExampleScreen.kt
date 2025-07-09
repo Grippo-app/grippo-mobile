@@ -28,7 +28,7 @@ internal fun ExerciseExampleScreen(
     state: ExerciseExampleState,
     loaders: ImmutableSet<ExerciseExampleLoader>,
     contract: ExerciseExampleContract
-) = BaseComposeScreen(AppTokens.colors.background.primary) {
+) = BaseComposeScreen(AppTokens.colors.background.secondary) {
 
     val example = state.example ?: return@BaseComposeScreen
 

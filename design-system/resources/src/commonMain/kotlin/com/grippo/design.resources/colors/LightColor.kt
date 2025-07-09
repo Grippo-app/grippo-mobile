@@ -55,7 +55,8 @@ public object LightColor : AppColor {
     }
 
     override val icon: AppColor.IconColors = object : AppColor.IconColors {
-        override val default = Neutral700
+        override val primary = Neutral700
+        override val secondary = Neutral500
         override val disabled = Neutral300
         override val accent = Primary500
         override val invert = White

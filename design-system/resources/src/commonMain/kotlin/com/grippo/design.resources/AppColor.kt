@@ -130,7 +130,8 @@ public interface AppColor {
     }
 
     public interface IconColors {
-        public val default: Color
+        public val primary: Color
+        public val secondary: Color
         public val disabled: Color
         public val accent: Color
         public val invert: Color

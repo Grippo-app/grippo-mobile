@@ -64,6 +64,7 @@ public data object AppDp {
     val exerciseExampleBundlesCard: ExerciseExampleBundlesCard = ExerciseExampleBundlesCard
     val exerciseCard: ExerciseCard = ExerciseCard
     val timeline: Timeline = Timeline
+    val timeLabel: TimeLabel = TimeLabel
     val iterationsCard: IterationsCard = IterationsCard
     val iterationCard: IterationCard = IterationCard
 
@@ -128,6 +129,11 @@ public data object AppDp {
         val verticalPadding: Dp = padding.small
         val radius: Dp = AppDp.radius.small
         val icon: Dp = AppDp.icon.large
+    }
+
+    public data object TimeLabel {
+        val icon: Dp = AppDp.icon.medium
+        val verticalPaddings: Dp = padding.medium
     }
 
     public data object Timeline {

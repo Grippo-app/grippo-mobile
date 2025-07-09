@@ -80,7 +80,7 @@ public fun Toolbar(
                         .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
                     imageVector = AppTokens.icons.NavArrowLeft,
                     contentDescription = null,
-                    tint = AppTokens.colors.icon.default,
+                    tint = AppTokens.colors.icon.primary,
 
                     )
             }

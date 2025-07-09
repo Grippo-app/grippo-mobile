@@ -13,7 +13,7 @@ public enum class TrainingPosition {
 
 @Immutable
 public sealed class TrainingListValue(
-    public open val position: TrainingPosition
+    public open val position: TrainingPosition,
 ) {
 
     @Immutable
