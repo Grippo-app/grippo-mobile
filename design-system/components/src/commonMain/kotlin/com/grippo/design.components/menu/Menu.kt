@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.ShadowElevation
@@ -42,8 +41,7 @@ public fun <KEY> Menu(
                 color = AppTokens.colors.overlay.defaultShadow
             )
             .fillMaxWidth()
-            .clip(shape = shape)
-            .background(AppTokens.colors.background.secondary)
+            .background(AppTokens.colors.background.secondary, shape)
             .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
     ) {
 

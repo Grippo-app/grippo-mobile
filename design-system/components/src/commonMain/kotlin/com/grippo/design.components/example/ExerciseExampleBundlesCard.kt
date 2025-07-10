@@ -22,7 +22,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.cards.information.InformationCard
 import com.grippo.design.components.chart.PieChart
@@ -68,8 +67,7 @@ public fun ExerciseExampleBundlesCard(
                 shape = shape,
                 color = AppTokens.colors.overlay.defaultShadow
             )
-            .clip(shape = shape)
-            .background(AppTokens.colors.background.secondary)
+            .background(AppTokens.colors.background.secondary, shape)
             .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
             .padding(horizontal = AppTokens.dp.exerciseExampleBundlesCard.horizontalPadding),
     ) {
@@ -114,9 +112,11 @@ public fun ExerciseExampleBundlesCard(
                         trailing = {
                             Spacer(
                                 modifier = Modifier
-                                    .clip(RoundedCornerShape(4.dp))
                                     .size(14.dp)
-                                    .background(item.muscle.type.color(preset)),
+                                    .background(
+                                        item.muscle.type.color(preset),
+                                        RoundedCornerShape(4.dp)
+                                    ),
                             )
                             Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
                         },
