@@ -3,8 +3,10 @@ package com.grippo.home.trainings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -73,6 +75,29 @@ internal fun HomeTrainingsScreen(
                     return@TimelineIndicator
                 }
 
+                if (value is TrainingListValue.BetweenExercises) {
+                    HorizontalDivider(
+                        modifier = Modifier
+                            .clip(shape)
+                            .shadowDefault(
+                                shape = shape,
+                                elevation = ShadowElevation.Card,
+                                sides = sides
+                            )
+                            .border(
+                                width = 1.dp,
+                                color = AppTokens.colors.border.defaultPrimary,
+                                shape = shape,
+                                sides = sides
+                            )
+                            .background(AppTokens.colors.background.secondary)
+                            .fillMaxWidth()
+                            .padding(horizontal = AppTokens.dp.contentPadding.content),
+                        color = AppTokens.colors.divider.primary
+                    )
+                    return@TimelineIndicator
+                }
+
                 if (exercise != null) {
                     ExerciseCard(
                         modifier = Modifier
@@ -89,10 +114,12 @@ internal fun HomeTrainingsScreen(
                                 sides = sides
                             )
                             .background(AppTokens.colors.background.secondary)
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .padding(AppTokens.dp.contentPadding.content),
                         value = exercise,
                         onExerciseExampleClick = contract::openExerciseExample
                     )
+                    return@TimelineIndicator
                 }
             }
         }

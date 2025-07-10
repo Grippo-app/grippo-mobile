@@ -51,4 +51,10 @@ public sealed class TrainingListValue(
         override val position: TrainingPosition,
         override val id: String
     ) : TrainingListValue(id, position)
+
+    @Immutable
+    public data class BetweenExercises(
+        override val position: TrainingPosition,
+        override val id: String
+    ) : TrainingListValue(id, position)
 }

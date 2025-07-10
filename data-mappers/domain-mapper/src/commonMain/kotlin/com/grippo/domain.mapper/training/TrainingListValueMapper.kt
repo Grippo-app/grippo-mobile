@@ -45,6 +45,10 @@ public fun List<TrainingState>.transformToTrainingListValue(): ImmutableList<Tra
                     position = trainingPosition,
                     id = "first-${training.id}-${first.id}"
                 )
+                result += TrainingListValue.BetweenExercises(
+                    position = trainingPosition,
+                    id = "between-${training.id}-${first.id}-${last.id}"
+                )
                 result += TrainingListValue.LastExercise(
                     exerciseState = last,
                     position = trainingPosition,
@@ -62,12 +66,23 @@ public fun List<TrainingState>.transformToTrainingListValue(): ImmutableList<Tra
                     position = trainingPosition,
                     id = "first-${training.id}-${first.id}"
                 )
-
-                middle.forEach { ex ->
+                result += TrainingListValue.BetweenExercises(
+                    position = trainingPosition,
+                    id = "between-${training.id}-${first.id}-${middle.first().id}"
+                )
+                middle.forEachIndexed { i, ex ->
                     result += TrainingListValue.MiddleExercise(
                         exerciseState = ex,
                         position = trainingPosition,
                         id = "middle-${training.id}-${ex.id}"
+                    )
+
+                    val next = middle.getOrNull(i + 1)
+                        ?: last
+
+                    result += TrainingListValue.BetweenExercises(
+                        position = trainingPosition,
+                        id = "between-${training.id}-${ex.id}-${next.id}"
                     )
                 }
 
