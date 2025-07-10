@@ -57,7 +57,7 @@ internal fun BodyItem(
                 .padding(4.dp)
                 .size(AppTokens.dp.bodyDetails.icon),
             imageVector = AppTokens.icons.Weight,
-            tint = AppTokens.colors.icon.invert,
+            tint = AppTokens.colors.icon.inverted,
             contentDescription = null
         )
 
@@ -95,7 +95,7 @@ internal fun BodyItem(
                 .padding(4.dp)
                 .size(AppTokens.dp.bodyDetails.icon),
             imageVector = AppTokens.icons.ExpandLines,
-            tint = AppTokens.colors.icon.invert,
+            tint = AppTokens.colors.icon.inverted,
             contentDescription = null
         )
 

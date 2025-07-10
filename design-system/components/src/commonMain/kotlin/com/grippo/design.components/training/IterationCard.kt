@@ -1,17 +1,13 @@
 package com.grippo.design.components.training
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -27,16 +23,10 @@ public fun IterationCard(
     value: IterationState,
 ) {
     Row(
-        modifier = modifier
-            .clip(RoundedCornerShape(AppTokens.dp.iterationCard.radius))
-            .border(
-                width = 1.dp,
-                color = AppTokens.colors.border.defaultPrimary,
-                shape = RoundedCornerShape(AppTokens.dp.iterationCard.radius)
-            ).padding(
-                vertical = AppTokens.dp.iterationCard.verticalPadding,
-                horizontal = AppTokens.dp.iterationCard.horizontalPadding
-            ),
+        modifier = modifier.padding(
+            vertical = AppTokens.dp.iterationCard.verticalPadding,
+            horizontal = AppTokens.dp.iterationCard.horizontalPadding
+        ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
 

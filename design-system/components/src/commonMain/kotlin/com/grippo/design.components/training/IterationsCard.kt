@@ -1,7 +1,6 @@
 package com.grippo.design.components.training
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -28,12 +26,7 @@ public fun IterationsCard(
     FlowRow(
         modifier = modifier
             .clip(RoundedCornerShape(AppTokens.dp.iterationsCard.radius))
-            .background(AppTokens.colors.background.secondary)
-            .border(
-                width = 1.dp,
-                color = AppTokens.colors.border.defaultPrimary,
-                shape = RoundedCornerShape(AppTokens.dp.iterationsCard.radius)
-            )
+            .background(AppTokens.colors.background.primary)
             .fillMaxWidth()
             .padding(
                 vertical = AppTokens.dp.iterationsCard.verticalPadding,

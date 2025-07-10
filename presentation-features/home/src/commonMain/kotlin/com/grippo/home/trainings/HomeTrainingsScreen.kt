@@ -69,7 +69,7 @@ internal fun HomeTrainingsScreen(
 
                 if (value is TrainingListValue.DateTime) {
                     TimeLabel(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.padding(vertical = AppTokens.dp.contentPadding.content),
                         value = value.date
                     )
                     return@TimelineIndicator

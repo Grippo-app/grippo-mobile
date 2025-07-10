@@ -3,7 +3,6 @@ package com.grippo.home.profile
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -13,7 +12,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
@@ -28,7 +26,6 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.icons.LogOut
 import com.grippo.design.resources.icons.Rocket
-import com.grippo.design.resources.icons.Settings
 import com.grippo.design.resources.logout_btn
 import com.grippo.design.resources.profile
 import com.grippo.design.resources.start_workout
@@ -126,16 +123,6 @@ internal fun HomeProfileScreen(
             startIcon = AppTokens.icons.LogOut,
             text = AppTokens.strings.res(Res.string.logout_btn),
             onClick = contract::onLogoutClick
-        )
-
-        Spacer(Modifier.height(100.dp))
-
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            style = ButtonStyle.Transparent,
-            startIcon = AppTokens.icons.Settings,
-            text = "Debug panel",
-            onClick = contract::onDebugClick
         )
     }
 }

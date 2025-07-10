@@ -133,7 +133,8 @@ public data object AppDp {
 
     public data object TimeLabel {
         val icon: Dp = AppDp.icon.medium
-        val verticalPaddings: Dp = padding.medium
+        val horizontalPadding: Dp = padding.extraSmall
+        val verticalPadding: Dp = padding.extraSmall
     }
 
     public data object Timeline {
@@ -153,7 +154,6 @@ public data object AppDp {
     public data object IterationCard {
         val horizontalPadding: Dp = 4.dp
         val verticalPadding: Dp = 5.dp
-        val radius: Dp = AppDp.radius.small
     }
 
     public data object InformationCard {

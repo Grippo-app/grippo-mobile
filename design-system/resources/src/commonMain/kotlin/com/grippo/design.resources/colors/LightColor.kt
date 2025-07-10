@@ -61,7 +61,7 @@ public object LightColor : AppColor {
         override val secondary = Neutral500
         override val disabled = Neutral300
         override val accent = Primary500
-        override val invert = White
+        override val inverted = White
     }
 
     override val toggle: AppColor.ToggleColors = object : AppColor.ToggleColors {
