@@ -146,9 +146,7 @@ public data object AppDp {
     }
 
     public data object IterationsCard {
-        val horizontalPadding: Dp = padding.small
-        val verticalPadding: Dp = padding.small
-        val radius: Dp = AppDp.radius.medium
+        // todo add something
     }
 
     public data object IterationCard {
