@@ -12,7 +12,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import com.grippo.date.utils.DateCompose
 import com.grippo.date.utils.DateFormat
 import com.grippo.design.core.AppTokens
@@ -30,8 +29,7 @@ public fun TimeLabel(
 ) {
     Row(
         modifier = modifier
-            .clip(CircleShape)
-            .background(AppTokens.colors.background.accent)
+            .background(AppTokens.colors.background.accent, CircleShape)
             .padding(
                 vertical = AppTokens.dp.timeLabel.verticalPadding,
                 horizontal = AppTokens.dp.timeLabel.horizontalPadding

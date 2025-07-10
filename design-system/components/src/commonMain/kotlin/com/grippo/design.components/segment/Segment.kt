@@ -16,7 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.grippo.design.components.modifiers.nonRippleClick
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.modifiers.shimmerAnimation
 import com.grippo.design.core.AppTokens
 import com.grippo.design.core.UiText
@@ -67,7 +67,7 @@ public fun <KEY> Segment(
                     content = {
                         Text(
                             modifier = Modifier
-                                .nonRippleClick(onClick = clickProvider)
+                                .scalableClick(onClick = clickProvider)
                                 .padding(horizontal = AppTokens.dp.segment.horizontalPadding)
                                 .height(AppTokens.dp.segment.height)
                                 .wrapContentHeight(),

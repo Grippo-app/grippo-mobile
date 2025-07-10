@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.grippo.design.components.internal.Input
 import com.grippo.design.components.internal.InputStyle
 import com.grippo.design.components.internal.PlaceHolder
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -70,7 +71,7 @@ public fun InputPassword(
                     modifier = Modifier
                         .clip(CircleShape)
                         .size(40.dp)
-                        .clickable { passwordVisible = true },
+                        .scalableClick { passwordVisible = true },
                     visible = !passwordVisible,
                     enter = fadeIn() + scaleIn(),
                     exit = scaleOut() + fadeOut(),

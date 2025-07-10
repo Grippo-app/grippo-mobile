@@ -1,6 +1,5 @@
 package com.grippo.design.components.menu
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -12,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -27,7 +27,7 @@ public fun MenuCard(
 ) {
     Row(
         modifier = modifier
-            .clickable(onClick = onClick)
+            .scalableClick(onClick = onClick)
             .padding(
                 vertical = AppTokens.dp.menu.item.verticalPadding,
                 horizontal = AppTokens.dp.menu.item.horizontalPadding

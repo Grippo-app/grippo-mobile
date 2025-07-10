@@ -10,7 +10,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.design.components.modifiers.ShadowElevation
@@ -78,7 +77,6 @@ internal fun HomeTrainingsScreen(
                 if (value is TrainingListValue.BetweenExercises) {
                     HorizontalDivider(
                         modifier = Modifier
-                            .clip(shape)
                             .shadowDefault(
                                 shape = shape,
                                 elevation = ShadowElevation.Card,
@@ -90,7 +88,7 @@ internal fun HomeTrainingsScreen(
                                 shape = shape,
                                 sides = sides
                             )
-                            .background(AppTokens.colors.background.secondary)
+                            .background(AppTokens.colors.background.secondary, shape)
                             .fillMaxWidth()
                             .padding(horizontal = AppTokens.dp.contentPadding.content),
                         color = AppTokens.colors.divider.primary
@@ -101,7 +99,6 @@ internal fun HomeTrainingsScreen(
                 if (exercise != null) {
                     ExerciseCard(
                         modifier = Modifier
-                            .clip(shape)
                             .shadowDefault(
                                 shape = shape,
                                 elevation = ShadowElevation.Card,
@@ -113,7 +110,7 @@ internal fun HomeTrainingsScreen(
                                 shape = shape,
                                 sides = sides
                             )
-                            .background(AppTokens.colors.background.secondary)
+                            .background(AppTokens.colors.background.secondary, shape)
                             .fillMaxWidth()
                             .padding(AppTokens.dp.contentPadding.content),
                         value = exercise,

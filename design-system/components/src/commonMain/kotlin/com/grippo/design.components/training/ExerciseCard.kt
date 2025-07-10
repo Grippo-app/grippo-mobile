@@ -17,7 +17,7 @@ import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
-import com.grippo.design.components.modifiers.nonRippleClick
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -84,7 +84,7 @@ public fun ExerciseCard(
                     children = {
                         Icon(
                             modifier = Modifier
-                                .nonRippleClick(onClick = clickProvider)
+                                .scalableClick(onClick = clickProvider)
                                 .fillMaxHeight()
                                 .aspectRatio(1f),
                             imageVector = AppTokens.icons.InfoEmpty,

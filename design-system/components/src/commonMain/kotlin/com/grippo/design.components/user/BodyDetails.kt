@@ -17,7 +17,6 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
@@ -35,8 +34,10 @@ internal fun BodyItem(
 ) {
     Row(
         modifier = modifier
-            .clip(shape = RoundedCornerShape(AppTokens.dp.bodyDetails.radius))
-            .background(AppTokens.colors.background.primary)
+            .background(
+                AppTokens.colors.background.primary,
+                RoundedCornerShape(AppTokens.dp.bodyDetails.radius)
+            )
             .border(
                 1.dp,
                 color = AppTokens.colors.border.defaultPrimary,
@@ -49,11 +50,12 @@ internal fun BodyItem(
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {
-
         Icon(
             modifier = Modifier
-                .clip(RoundedCornerShape(AppTokens.dp.bodyDetails.radius))
-                .background(AppTokens.colors.background.accent)
+                .background(
+                    AppTokens.colors.background.accent,
+                    RoundedCornerShape(AppTokens.dp.bodyDetails.radius)
+                )
                 .padding(4.dp)
                 .size(AppTokens.dp.bodyDetails.icon),
             imageVector = AppTokens.icons.Weight,
@@ -90,8 +92,10 @@ internal fun BodyItem(
 
         Icon(
             modifier = Modifier
-                .clip(RoundedCornerShape(AppTokens.dp.bodyDetails.radius))
-                .background(AppTokens.colors.background.accent)
+                .background(
+                    AppTokens.colors.background.accent,
+                    RoundedCornerShape(AppTokens.dp.bodyDetails.radius)
+                )
                 .padding(4.dp)
                 .size(AppTokens.dp.bodyDetails.icon),
             imageVector = AppTokens.icons.ExpandLines,

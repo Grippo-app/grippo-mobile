@@ -6,7 +6,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
@@ -29,7 +28,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -38,6 +36,7 @@ import androidx.compose.ui.text.lerp
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.ShadowElevation
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -156,13 +155,12 @@ internal fun Input(
                 shape = shape,
                 color = shadowColor.value
             )
-            .clip(shape)
+            .scalableClick(onClick = {})
             .background(color = backgroundColor, shape = shape)
             .border(width = 1.dp, color = borderColor, shape = shape)
             .heightIn(min = height)
             .onFocusChanged { hasFocus.value = it.hasFocus }
-            .animateContentSize()
-            .clickable(interactionSource = interactionSource, indication = null, onClick = {}),
+            .animateContentSize(),
         value = value,
         onValueChange = when (inputStyle) {
             is InputStyle.Clickable -> {

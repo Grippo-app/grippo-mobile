@@ -5,7 +5,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -25,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.grippo.design.components.internal.Input
 import com.grippo.design.components.internal.InputStyle
 import com.grippo.design.components.internal.PlaceHolder
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -53,7 +53,7 @@ public fun InputName(
                     modifier = Modifier
                         .clip(CircleShape)
                         .size(40.dp)
-                        .clickable { onValueChange.invoke("") },
+                        .scalableClick { onValueChange.invoke("") },
                     visible = value.isNotEmpty(),
                     enter = fadeIn() + scaleIn(),
                     exit = scaleOut() + fadeOut(),

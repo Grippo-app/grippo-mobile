@@ -19,7 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.grippo.design.components.modifiers.nonRippleClick
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.modifiers.shimmerAnimation
 import com.grippo.design.core.AppTokens
 import com.grippo.design.core.UiText
@@ -68,7 +68,7 @@ public fun <KEY> Tab(
                     content = {
                         Column(
                             modifier = Modifier
-                                .nonRippleClick(onClick = clickProvider)
+                                .scalableClick(onClick = clickProvider)
                                 .padding(
                                     horizontal = AppTokens.dp.tab.horizontalPadding,
                                     vertical = AppTokens.dp.tab.verticalPadding,

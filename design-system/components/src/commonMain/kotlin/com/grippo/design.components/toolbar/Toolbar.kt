@@ -1,7 +1,6 @@
 package com.grippo.design.components.toolbar
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.models.Side
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -75,8 +75,8 @@ public fun Toolbar(
             onBack?.let {
                 Icon(
                     modifier = Modifier
+                        .scalableClick(onClick = it)
                         .fillMaxHeight()
-                        .clickable(onClick = it)
                         .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
                     imageVector = AppTokens.icons.NavArrowLeft,
                     contentDescription = null,

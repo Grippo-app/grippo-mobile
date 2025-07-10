@@ -19,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -70,8 +69,7 @@ public fun UserCard(
                 shape = shape,
                 color = AppTokens.colors.overlay.defaultShadow
             )
-            .clip(shape = shape)
-            .background(AppTokens.colors.background.secondary)
+            .background(AppTokens.colors.background.secondary, shape)
             .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
             .padding(
                 horizontal = AppTokens.dp.userCard.horizontalPadding,
