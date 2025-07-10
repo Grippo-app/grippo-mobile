@@ -55,7 +55,7 @@ public fun TimeLabel(
             color = AppTokens.colors.text.inverted
         )
 
-        Spacer(Modifier.width(AppTokens.dp.timeLabel.verticalPadding))
+        Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
     }
 }
 
