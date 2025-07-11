@@ -1,12 +1,9 @@
 package com.grippo.design.components.timeline
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,12 +25,7 @@ public fun TimeLabel(
     value: LocalDateTime
 ) {
     Row(
-        modifier = modifier
-            .background(AppTokens.colors.background.accent, CircleShape)
-            .padding(
-                vertical = AppTokens.dp.timeLabel.verticalPadding,
-                horizontal = AppTokens.dp.timeLabel.horizontalPadding
-            ),
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         val text = DateCompose.rememberFormat(value, DateFormat.HH_MMM)
@@ -41,16 +33,16 @@ public fun TimeLabel(
         Icon(
             modifier = Modifier.size(AppTokens.dp.timeLabel.icon),
             imageVector = AppTokens.icons.ClockOutline,
-            tint = AppTokens.colors.icon.inverted,
+            tint = AppTokens.colors.icon.secondary,
             contentDescription = null
         )
 
-        Spacer(Modifier.width(AppTokens.dp.timeLabel.verticalPadding))
+        Spacer(Modifier.width(AppTokens.dp.timeLabel.spacer))
 
         Text(
             text = AppTokens.strings.res(Res.string.training_at_value, text),
             style = AppTokens.typography.b13Bold(),
-            color = AppTokens.colors.text.inverted
+            color = AppTokens.colors.text.secondary
         )
 
         Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))

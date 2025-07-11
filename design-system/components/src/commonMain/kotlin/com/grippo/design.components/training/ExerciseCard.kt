@@ -32,34 +32,6 @@ public fun ExerciseCard(
     onExerciseExampleClick: (id: String) -> Unit
 ) {
     Column(modifier = modifier) {
-//        Row(
-//            modifier = Modifier.fillMaxWidth(),
-//            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-//        ) {
-//            Text(
-//                modifier = Modifier.weight(1f),
-//                text = value.name,
-//                maxLines = 2,
-//                overflow = TextOverflow.Ellipsis,
-//                style = AppTokens.typography.h4(),
-//                color = AppTokens.colors.text.primary
-//            )
-//
-//            val example = value.exerciseExample
-//
-//            if (example != null) {
-//                val clickProvider = remember(example) {
-//                    { onExerciseExampleClick.invoke(example.id) }
-//                }
-//                Button(
-//                    text = AppTokens.strings.res(Res.string.overview),
-//                    style = ButtonStyle.Transparent,
-//                    endIcon = AppTokens.icons.NavArrowRight,
-//                    onClick = clickProvider
-//                )
-//            }
-//        }
-
         val example = value.exerciseExample
 
         val iconId = "exercise_example_icon"

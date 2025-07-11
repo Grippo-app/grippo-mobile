@@ -62,10 +62,8 @@ public data object AppDp {
     val equipmentCard: EquipmentCard = EquipmentCard
     val equipmentsCard: EquipmentsCard = EquipmentsCard
     val exerciseExampleBundlesCard: ExerciseExampleBundlesCard = ExerciseExampleBundlesCard
-    val exerciseCard: ExerciseCard = ExerciseCard
     val timeline: Timeline = Timeline
     val timeLabel: TimeLabel = TimeLabel
-    val iterationsCard: IterationsCard = IterationsCard
     val iterationCard: IterationCard = IterationCard
 
     public data object Screen {
@@ -133,20 +131,11 @@ public data object AppDp {
 
     public data object TimeLabel {
         val icon: Dp = AppDp.icon.medium
-        val horizontalPadding: Dp = padding.extraSmall
-        val verticalPadding: Dp = padding.extraSmall
+        val spacer: Dp = padding.extraSmall
     }
 
     public data object Timeline {
         val dot: Dp = 10.dp
-    }
-
-    public data object ExerciseCard {
-        // todo add something
-    }
-
-    public data object IterationsCard {
-        // todo add something
     }
 
     public data object IterationCard {
