@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
+import com.grippo.core.ScreenBackground
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -25,7 +26,7 @@ internal fun HomeStatisticsScreen(
     state: HomeStatisticsState,
     loaders: ImmutableSet<HomeStatisticsLoader>,
     contract: HomeStatisticsContract
-) = BaseComposeScreen(AppTokens.colors.background.primary) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.statistics),

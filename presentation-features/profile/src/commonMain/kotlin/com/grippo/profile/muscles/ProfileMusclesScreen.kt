@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
+import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
@@ -33,7 +34,7 @@ internal fun ProfileMusclesScreen(
     state: ProfileMusclesState,
     loaders: ImmutableSet<ProfileMusclesLoader>,
     contract: ProfileMusclesContract
-) = BaseComposeScreen(AppTokens.colors.background.primary) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),

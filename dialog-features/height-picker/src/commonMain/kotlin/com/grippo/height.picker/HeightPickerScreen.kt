@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
+import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.toolbar.Toolbar
@@ -36,7 +37,7 @@ internal fun HeightPickerScreen(
     state: HeightPickerState,
     loaders: ImmutableSet<HeightPickerLoader>,
     contract: HeightPickerContract
-) = BaseComposeScreen(AppTokens.colors.background.secondary) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.secondary)) {
 
     Toolbar(
         modifier = Modifier,

@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
+import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.menu.Menu
@@ -39,7 +40,7 @@ internal fun HomeProfileScreen(
     state: HomeProfileState,
     loaders: ImmutableSet<HomeProfileLoader>,
     contract: HomeProfileContract
-) = BaseComposeScreen(AppTokens.colors.background.primary) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
 
     val activity = HomeProfileActivityMenu.entries.map {
         it to MenuItem(UiText.Str(it.text()), it.icon())

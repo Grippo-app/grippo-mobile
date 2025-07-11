@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.BaseComposeScreen
+import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
@@ -38,7 +39,7 @@ internal fun CredentialScreen(
     state: CredentialState,
     loaders: ImmutableSet<CredentialLoader>,
     contract: CredentialContract
-) = BaseComposeScreen(AppTokens.colors.background.primary) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),

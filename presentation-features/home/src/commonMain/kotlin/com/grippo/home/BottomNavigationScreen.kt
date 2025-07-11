@@ -10,6 +10,7 @@ import com.arkivanov.decompose.extensions.compose.pages.PagesScrollAnimation
 import com.arkivanov.decompose.router.pages.ChildPages
 import com.arkivanov.decompose.value.Value
 import com.grippo.core.BaseComposeScreen
+import com.grippo.core.ScreenBackground
 import com.grippo.design.components.tab.TabItem
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -25,7 +26,7 @@ internal fun BottomNavigationScreen(
     state: BottomNavigationState,
     loaders: ImmutableSet<BottomNavigationLoader>,
     contract: BottomNavigationContract
-) = BaseComposeScreen(AppTokens.colors.background.primary) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
 
     val tabs = BottomBarMenu.entries
         .map { it.ordinal to TabItem(text = it.title(), icon = it.icon()) }

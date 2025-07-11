@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
+import com.grippo.core.ScreenBackground
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.border
 import com.grippo.design.components.modifiers.shadowDefault
@@ -40,7 +41,7 @@ internal fun HomeTrainingsScreen(
     state: HomeTrainingsState,
     loaders: ImmutableSet<HomeTrainingsLoader>,
     contract: HomeTrainingsContract
-) = BaseComposeScreen(AppTokens.colors.background.primary) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),

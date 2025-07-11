@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
+import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.muscle.MusclesColumn
@@ -42,7 +43,7 @@ internal fun ExcludedMusclesScreen(
     state: ExcludedMusclesState,
     loaders: ImmutableSet<ExcludedMusclesLoader>,
     contract: ExcludedMusclesContract
-) = BaseComposeScreen(AppTokens.colors.background.primary) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),

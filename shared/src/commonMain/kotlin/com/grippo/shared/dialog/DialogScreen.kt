@@ -16,6 +16,7 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.value.Value
 import com.grippo.core.BaseComposeScreen
+import com.grippo.core.ScreenBackground
 import com.grippo.design.core.AppTokens
 import com.grippo.dialog.api.DialogConfig
 import kotlinx.collections.immutable.ImmutableSet
@@ -26,7 +27,7 @@ internal fun DialogScreen(
     state: DialogState,
     loaders: ImmutableSet<DialogLoader>,
     contract: DialogContract
-) = BaseComposeScreen(AppTokens.colors.background.primary) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
     val slotState = slot.subscribeAsState()
 
     val child = slotState.value.child

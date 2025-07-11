@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
+import com.grippo.core.ScreenBackground
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentWidth
 import com.grippo.design.components.toolbar.Toolbar
@@ -26,7 +27,7 @@ internal fun DebugScreen(
     state: DebugState,
     loaders: ImmutableSet<DebugLoader>,
     contract: DebugContract
-) = BaseComposeScreen(AppTokens.colors.background.primary) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
 
     val segmentItems = remember {
         DebugMenu.entries.map { it to UiText.Str(it.name) }.toPersistentList()

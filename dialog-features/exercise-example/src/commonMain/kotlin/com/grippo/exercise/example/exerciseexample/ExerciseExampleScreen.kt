@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
+import com.grippo.core.ScreenBackground
 import com.grippo.design.components.equipment.EquipmentsCard
 import com.grippo.design.components.example.ExerciseExampleBundlesCard
 import com.grippo.design.components.toolbar.Toolbar
@@ -28,7 +29,7 @@ internal fun ExerciseExampleScreen(
     state: ExerciseExampleState,
     loaders: ImmutableSet<ExerciseExampleLoader>,
     contract: ExerciseExampleContract
-) = BaseComposeScreen(AppTokens.colors.background.secondary) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.secondary)) {
 
     val example = state.example ?: return@BaseComposeScreen
 
