@@ -15,7 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
@@ -47,7 +47,7 @@ public fun Loader(modifier: Modifier = Modifier) {
         Icon(
             modifier = Modifier
                 .size(AppTokens.dp.loader.icon)
-                .graphicsLayer { rotationZ = rotation },
+                .rotate(rotation),
             imageVector = AppTokens.icons.SystemRestart,
             tint = AppTokens.colors.skeleton.shimmer,
             contentDescription = null

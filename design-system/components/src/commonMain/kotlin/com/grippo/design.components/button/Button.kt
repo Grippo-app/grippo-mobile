@@ -25,7 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
@@ -109,7 +109,7 @@ public fun Button(
                 Icon(
                     modifier = Modifier
                         .size(AppTokens.dp.button.icon)
-                        .graphicsLayer { rotationZ = angle.value },
+                        .rotate(angle.value),
                     imageVector = AppTokens.icons.SystemRestart,
                     tint = colorTokens.icon,
                     contentDescription = null,
