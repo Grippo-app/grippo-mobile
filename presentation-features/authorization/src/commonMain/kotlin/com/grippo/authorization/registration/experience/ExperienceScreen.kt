@@ -3,9 +3,9 @@ package com.grippo.authorization.registration.experience
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -51,7 +51,9 @@ internal fun ExperienceScreen(
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .navigationBarsPadding()
+            .fillMaxWidth()
+            .weight(1f)
             .padding(
                 horizontal = AppTokens.dp.screen.horizontalPadding,
                 vertical = AppTokens.dp.contentPadding.content

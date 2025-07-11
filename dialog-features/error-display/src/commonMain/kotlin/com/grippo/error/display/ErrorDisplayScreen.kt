@@ -15,7 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.grippo.core.BaseComposeScreen
+import com.grippo.core.BaseComposeDialog
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
@@ -33,7 +33,8 @@ internal fun ErrorDisplayScreen(
     state: ErrorDisplayState,
     loaders: ImmutableSet<ErrorDisplayLoader>,
     contract: ErrorDisplayContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.secondary)) {
+) = BaseComposeDialog(background = ScreenBackground.Color(AppTokens.colors.background.secondary)) {
+
     Column(
         modifier = Modifier
             .fillMaxWidth()

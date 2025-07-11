@@ -10,7 +10,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.grippo.core.BaseComposeScreen
+import com.grippo.core.BaseComposeDialog
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.equipment.EquipmentsCard
 import com.grippo.design.components.example.ExerciseExampleBundlesCard
@@ -29,9 +29,9 @@ internal fun ExerciseExampleScreen(
     state: ExerciseExampleState,
     loaders: ImmutableSet<ExerciseExampleLoader>,
     contract: ExerciseExampleContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.secondary)) {
+) = BaseComposeDialog(background = ScreenBackground.Color(AppTokens.colors.background.secondary)) {
 
-    val example = state.example ?: return@BaseComposeScreen
+    val example = state.example ?: return@BaseComposeDialog
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),

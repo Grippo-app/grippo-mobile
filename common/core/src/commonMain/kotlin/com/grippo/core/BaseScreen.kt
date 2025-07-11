@@ -1,9 +1,12 @@
 package com.grippo.core
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
@@ -29,43 +32,30 @@ public fun BaseComposeScreen(
 ) {
     val focusManager = LocalFocusManager.current
 
-    Column(
-        modifier = Modifier
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = { focusManager.clearFocus(force = true) }
-            ),
-        content = content
-    )
+    Box(modifier = Modifier.fillMaxSize()) {
+
+        when (background) {
+            is ScreenBackground.Color -> Box(
+                modifier = Modifier.fillMaxSize().background(background.value),
+            )
+
+            is ScreenBackground.Painter -> androidx.compose.foundation.Image(
+                modifier = Modifier.fillMaxSize(),
+                painter = background.value,
+                contentDescription = null,
+                contentScale = androidx.compose.ui.layout.ContentScale.Crop
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = { focusManager.clearFocus(force = true) }
+                ),
+            content = content
+        )
+    }
 }
-
-
-//val focusManager = LocalFocusManager.current
-//
-//Box(modifier = Modifier.fillMaxSize()) {
-//
-//        when (background) {
-//            is ScreenBackground.Color -> Box(
-//                modifier = Modifier.fillMaxSize().background(background.value),
-//            )
-//
-//            is ScreenBackground.Painter -> Image(
-//                modifier = Modifier.fillMaxSize(),
-//                painter = background.value,
-//                contentDescription = null,
-//                contentScale = ContentScale.Crop
-//            )
-////        }
-//
-//    Column(
-//        modifier = Modifier
-//            .clickable(
-//                interactionSource = remember { MutableInteractionSource() },
-//                indication = null,
-//                onClick = { focusManager.clearFocus(force = true) }
-//            )
-//            .fillMaxSize(),
-//        content = content
-//    )
-//}

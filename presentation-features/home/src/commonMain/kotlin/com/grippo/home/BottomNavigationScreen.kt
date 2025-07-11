@@ -41,7 +41,7 @@ internal fun BottomNavigationScreen(
                 modifier = Modifier.fillMaxWidth().weight(1f),
                 pages = pages,
                 onPageSelected = contract::selectPage,
-                scrollAnimation = PagesScrollAnimation.Default,
+                scrollAnimation = PagesScrollAnimation.Disabled,
                 pageContent = { _, page -> page.component.Render() }
             )
         }

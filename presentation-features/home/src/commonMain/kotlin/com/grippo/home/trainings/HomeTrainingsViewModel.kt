@@ -24,7 +24,7 @@ internal class HomeTrainingsViewModel(
         trainingFeature.observeTrainings(
             start = LocalDateTime(2024, 1, 1, 11, 11, 11, 11),
             end = LocalDateTime(2026, 1, 1, 11, 11, 11, 11)
-        ).debounce(300)
+        ).debounce(100)
             .onEach(::provideTrainings)
             .safeLaunch()
 

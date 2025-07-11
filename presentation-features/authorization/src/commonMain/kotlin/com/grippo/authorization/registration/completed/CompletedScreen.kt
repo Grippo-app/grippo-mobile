@@ -4,11 +4,13 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -36,8 +38,8 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
+import com.grippo.design.resources.background_1
 import com.grippo.design.resources.get_started_btn
-import com.grippo.design.resources.registration_completed_description
 import com.grippo.design.resources.registration_completed_title
 import com.grippo.presentation.api.profile.models.stubUser
 import kotlinx.collections.immutable.ImmutableSet
@@ -49,7 +51,9 @@ internal fun CompletedScreen(
     state: CompletedState,
     loaders: ImmutableSet<CompletedLoader>,
     contract: CompletedContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
+) = BaseComposeScreen(
+    ScreenBackground.Painter(AppTokens.drawables.res(Res.drawable.background_1))
+) {
 
     if (loaders.contains(CompletedLoader.Registration)) {
         Loader(modifier = Modifier.fillMaxSize())
@@ -80,62 +84,59 @@ internal fun CompletedScreen(
         style = ToolbarStyle.Transparent
     )
 
-    Column(
+    Box(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(
-                horizontal = AppTokens.dp.screen.horizontalPadding,
-                vertical = AppTokens.dp.contentPadding.content
-            ).imePadding(),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .fillMaxWidth()
+            .weight(1f)
     ) {
+        Column(
+            modifier = Modifier
+                .navigationBarsPadding()
+                .fillMaxSize()
+                .padding(
+                    horizontal = AppTokens.dp.screen.horizontalPadding,
+                    vertical = AppTokens.dp.contentPadding.content
+                ).imePadding(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.registration_completed_title),
-            style = AppTokens.typography.h2(),
-            color = AppTokens.colors.text.primary,
-            textAlign = TextAlign.Center
-        )
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = AppTokens.strings.res(Res.string.registration_completed_title),
+                style = AppTokens.typography.h2(),
+                color = AppTokens.colors.text.primary,
+                textAlign = TextAlign.Center
+            )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.registration_completed_description),
-            style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.secondary,
-            textAlign = TextAlign.Center
-        )
+            Spacer(modifier = Modifier.weight(0.5f))
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+            if (state.user != null) {
+                UserCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .offset(y = offsetY)
+                        .alpha(alpha),
+                    value = state.user
+                )
+            }
 
-        Spacer(modifier = Modifier.weight(0.5f))
+            Spacer(modifier = Modifier.weight(1f))
 
-        if (state.user != null) {
-            UserCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .offset(y = offsetY)
-                    .alpha(alpha),
-                value = state.user
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                text = AppTokens.strings.res(Res.string.get_started_btn),
+                style = ButtonStyle.Primary,
+                onClick = contract::complete
             )
         }
 
-        Spacer(modifier = Modifier.weight(1f))
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.get_started_btn),
-            style = ButtonStyle.Primary,
-            onClick = contract::complete
-        )
-    }
-
-    if (state.user != null) {
-        KonfettiParade()
+        if (state.user != null) {
+            KonfettiParade()
+        }
     }
 }
 

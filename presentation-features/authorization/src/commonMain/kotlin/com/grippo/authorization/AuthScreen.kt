@@ -1,6 +1,6 @@
 package com.grippo.authorization
 
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
@@ -18,7 +18,7 @@ internal fun AuthScreen(
     contract: AuthContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
     ChildStackCompose(
-        modifier = Modifier.navigationBarsPadding(),
+        modifier = Modifier.fillMaxSize(),
         stack = component.childStack,
         animation = platformAnimation(),
         content = { child -> child.instance.component.Render() }
