@@ -34,7 +34,7 @@ public fun <KEY> Menu(
     val shape = RoundedCornerShape(AppTokens.dp.menu.radius)
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .shadowDefault(
                 elevation = ShadowElevation.Card,
                 shape = shape,

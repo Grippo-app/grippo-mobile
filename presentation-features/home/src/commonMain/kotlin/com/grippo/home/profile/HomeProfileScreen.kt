@@ -42,6 +42,11 @@ internal fun HomeProfileScreen(
     contract: HomeProfileContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
 
+    Toolbar(
+        modifier = Modifier.fillMaxWidth(),
+        title = AppTokens.strings.res(Res.string.profile),
+    )
+
     val activity = HomeProfileActivityMenu.entries.map {
         it to MenuItem(UiText.Str(it.text()), it.icon())
     }.toPersistentList()
@@ -49,11 +54,6 @@ internal fun HomeProfileScreen(
     val settings = HomeProfileSettingsMenu.entries.map {
         it to MenuItem(UiText.Str(it.text()), it.icon())
     }.toPersistentList()
-
-    Toolbar(
-        modifier = Modifier.fillMaxWidth(),
-        title = AppTokens.strings.res(Res.string.profile),
-    )
 
     Column(
         modifier = Modifier
@@ -74,7 +74,7 @@ internal fun HomeProfileScreen(
             )
         }
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         Button(
             modifier = Modifier.fillMaxWidth(),

@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
@@ -36,7 +37,6 @@ import androidx.compose.ui.text.lerp
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.ShadowElevation
-import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -155,7 +155,11 @@ internal fun Input(
                 shape = shape,
                 color = shadowColor.value
             )
-            .scalableClick(onClick = {})
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = {}
+            )
             .background(color = backgroundColor, shape = shape)
             .border(width = 1.dp, color = borderColor, shape = shape)
             .heightIn(min = height)

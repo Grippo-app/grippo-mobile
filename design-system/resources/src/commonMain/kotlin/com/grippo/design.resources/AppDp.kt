@@ -32,6 +32,7 @@ public data object AppDp {
         val small: Dp = 8.dp
         val medium: Dp = 12.dp
         val large: Dp = 16.dp
+        val xLarge: Dp = 24.dp
         val circle: Dp = 50.dp
     }
 
@@ -110,9 +111,9 @@ public data object AppDp {
     }
 
     public data object UserCard {
-        val horizontalPadding: Dp = padding.large
-        val verticalPadding: Dp = padding.large
-        val radius: Dp = AppDp.radius.large
+        val horizontalPadding: Dp = padding.extraLarge
+        val verticalPadding: Dp = padding.extraLarge
+        val radius: Dp = AppDp.radius.xLarge
     }
 
     public data object BodyDetails {
@@ -125,8 +126,7 @@ public data object AppDp {
     public data object OverviewCard {
         val horizontalPadding: Dp = padding.small
         val verticalPadding: Dp = padding.small
-        val radius: Dp = AppDp.radius.small
-        val icon: Dp = AppDp.icon.large
+        val icon: Dp = AppDp.icon.small
     }
 
     public data object TimeLabel {

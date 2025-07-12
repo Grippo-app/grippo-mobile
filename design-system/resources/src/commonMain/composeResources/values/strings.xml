@@ -72,7 +72,6 @@
     <string name="experience_pro_description">You've been working out for over 5 years, have excellent exercise form, and maintain a high level of muscular development.</string>
 
     <string name="user_card_preferences">preferences</string>
-    <string name="user_card_overview">overview</string>
     <string name="user_card_value_in_a_row">%1$s in a Row</string>
     <string name="user_card_value_workouts">%1$s Workouts</string>
     <string name="user_card_no_workouts_yet">No workouts yet</string>

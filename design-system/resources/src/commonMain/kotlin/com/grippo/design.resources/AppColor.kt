@@ -107,6 +107,7 @@ public interface AppColor {
         public val disabledPrimary: Color
         public val defaultSecondary: Color
         public val disabledSecondary: Color
+        public val inverted: Color
         public val focus: Color
         public val error: Color
     }

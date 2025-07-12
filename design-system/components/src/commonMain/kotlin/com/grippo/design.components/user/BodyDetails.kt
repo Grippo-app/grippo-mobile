@@ -52,14 +52,10 @@ internal fun BodyItem(
     ) {
         Icon(
             modifier = Modifier
-                .background(
-                    AppTokens.colors.background.accent,
-                    RoundedCornerShape(AppTokens.dp.bodyDetails.radius)
-                )
                 .padding(4.dp)
                 .size(AppTokens.dp.bodyDetails.icon),
             imageVector = AppTokens.icons.Weight,
-            tint = AppTokens.colors.icon.inverted,
+            tint = AppTokens.colors.icon.accent,
             contentDescription = null
         )
 
@@ -92,14 +88,10 @@ internal fun BodyItem(
 
         Icon(
             modifier = Modifier
-                .background(
-                    AppTokens.colors.background.accent,
-                    RoundedCornerShape(AppTokens.dp.bodyDetails.radius)
-                )
                 .padding(4.dp)
                 .size(AppTokens.dp.bodyDetails.icon),
             imageVector = AppTokens.icons.ExpandLines,
-            tint = AppTokens.colors.icon.inverted,
+            tint = AppTokens.colors.icon.accent,
             contentDescription = null
         )
 

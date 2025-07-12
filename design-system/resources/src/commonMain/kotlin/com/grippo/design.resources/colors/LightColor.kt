@@ -22,15 +22,15 @@ public object LightColor : AppColor {
     private val Primary800 = Color(0xFF1C3DAF)
     private val Primary900 = Color(0xFF152F94)
 
-    private val Neutral100 = Color(0xFFFAFAFA)
-    private val Neutral150 = Color(0xFFF6F6F6)
-    private val Neutral200 = Color(0xFFF2F2F2)
-    private val Neutral250 = Color(0xFFE7E7E7)
-    private val Neutral300 = Color(0xFFDCDCDC)
-    private val Neutral400 = Color(0xFFBFBFBF)
-    private val Neutral500 = Color(0xFF999999)
-    private val Neutral600 = Color(0xFF666666)
-    private val Neutral700 = Color(0xFF333333)
+    private val Neutral100 = Color(0xFFF9FBFE) // super light background
+    private val Neutral150 = Color(0xFFF6F9FF) // card top
+    private val Neutral200 = Color(0xFFE9EFF8) // default background
+    private val Neutral250 = Color(0xFFE1EAF6) // gradient bottom
+    private val Neutral300 = Color(0xFFC5D2E6) // shimmer / container
+    private val Neutral400 = Color(0xFFA7B8D1) // border / placeholder
+    private val Neutral500 = Color(0xFF8294B3) // disabled text
+    private val Neutral600 = Color(0xFF5F6C88) // secondary text
+    private val Neutral700 = Color(0xFF3E4961) // primary text
 
     override val button: AppColor.ButtonColors = object : AppColor.ButtonColors {
         override val backgroundPrimary = Primary500
@@ -51,6 +51,7 @@ public object LightColor : AppColor {
         override val disabledPrimary = Neutral200
         override val defaultSecondary = Primary200
         override val disabledSecondary = Neutral200
+        override val inverted = White
 
         override val focus = Primary500
         override val error = Error
@@ -148,7 +149,7 @@ public object LightColor : AppColor {
     }
 
     override val divider: DividerColors = object : DividerColors {
-        override val primary: Color = Neutral200
+        override val primary: Color = Neutral150
         override val secondary: Color = Neutral250
     }
 
