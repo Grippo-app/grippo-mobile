@@ -8,15 +8,12 @@ import com.grippo.domain.mapper.user.toState
 import kotlinx.coroutines.flow.onEach
 
 internal class HomeProfileViewModel(
-    userFeature: UserFeature,
-    private val authorizationFeature: AuthorizationFeature
+    userFeature: UserFeature, private val authorizationFeature: AuthorizationFeature
 ) : BaseViewModel<HomeProfileState, HomeProfileDirection, HomeProfileLoader>(HomeProfileState()),
     HomeProfileContract {
 
     init {
-        userFeature.observeUser()
-            .onEach(::provideUser)
-            .safeLaunch()
+        userFeature.observeUser().onEach(::provideUser).safeLaunch()
     }
 
     private fun provideUser(user: User?) {
@@ -41,6 +38,7 @@ internal class HomeProfileViewModel(
     override fun onSettingsMenuClick(menu: HomeProfileSettingsMenu) {
         val direction = when (menu) {
             HomeProfileSettingsMenu.System -> HomeProfileDirection.SystemSettings
+            HomeProfileSettingsMenu.Debug -> HomeProfileDirection.Debug
         }
 
         navigateTo(direction)
@@ -52,9 +50,5 @@ internal class HomeProfileViewModel(
 
     override fun back() {
         navigateTo(HomeProfileDirection.Back)
-    }
-
-    override fun onDebugClick() {
-        navigateTo(HomeProfileDirection.Debug)
     }
 }

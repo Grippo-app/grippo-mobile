@@ -6,6 +6,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.activity
+import com.grippo.design.resources.debug
+import com.grippo.design.resources.icons.Flask
 import com.grippo.design.resources.icons.Gym
 import com.grippo.design.resources.icons.Repository
 import com.grippo.design.resources.icons.Settings
@@ -61,7 +63,8 @@ internal enum class HomeProfileActivityMenu {
 
 @Immutable
 internal enum class HomeProfileSettingsMenu {
-    System;
+    System,
+    Debug;
 
     companion object {
         @Composable
@@ -74,6 +77,7 @@ internal enum class HomeProfileSettingsMenu {
     fun text(): String {
         return when (this) {
             System -> AppTokens.strings.res(Res.string.system)
+            Debug -> AppTokens.strings.res(Res.string.debug)
         }
     }
 
@@ -81,6 +85,7 @@ internal enum class HomeProfileSettingsMenu {
     fun icon(): ImageVector {
         return when (this) {
             System -> AppTokens.icons.Settings
+            Debug -> AppTokens.icons.Flask
         }
     }
 }

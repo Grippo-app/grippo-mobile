@@ -26,16 +26,21 @@ public interface AppColor {
 
     public interface ButtonColors {
         public val backgroundPrimary: Color
-        public val contentPrimary: Color
+        public val textPrimary: Color
+        public val iconPrimary: Color
         public val backgroundPrimaryDisabled: Color
         public val contentPrimaryDisabled: Color
 
         public val backgroundSecondary: Color
-        public val contentSecondary: Color
+        public val textSecondary: Color
+        public val iconSecondary: Color
         public val backgroundSecondaryDisabled: Color
         public val contentSecondaryDisabled: Color
 
         public val contentTransparentDisabled: Color
+        public val textTransparent: Color
+        public val iconTransparent: Color
+
     }
 
     public interface ToggleColors {
@@ -73,6 +78,7 @@ public interface AppColor {
         public val primary: Color
         public val secondary: Color
         public val accent: Color
+        public val tertiary: Color
     }
 
     public interface DialogColors {

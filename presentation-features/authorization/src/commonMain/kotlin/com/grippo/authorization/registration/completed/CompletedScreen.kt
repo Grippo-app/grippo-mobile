@@ -40,6 +40,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.background_trainings
 import com.grippo.design.resources.get_started_btn
+import com.grippo.design.resources.icons.Check
 import com.grippo.design.resources.registration_completed_title
 import com.grippo.presentation.api.profile.models.stubUser
 import kotlinx.collections.immutable.ImmutableSet
@@ -129,7 +130,8 @@ internal fun CompletedScreen(
             Button(
                 modifier = Modifier.fillMaxWidth(),
                 text = AppTokens.strings.res(Res.string.get_started_btn),
-                style = ButtonStyle.Primary,
+                style = ButtonStyle.Secondary,
+                startIcon = AppTokens.icons.Check,
                 onClick = contract::complete
             )
         }

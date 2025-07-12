@@ -46,23 +46,23 @@ internal fun resolveButtonColors(
         else -> when (style) {
             ButtonStyle.Primary -> ButtonColorTokens(
                 background = colors.backgroundPrimary,
-                content = colors.contentPrimary,
+                content = colors.textPrimary,
                 border = Color.Transparent,
-                icon = colors.contentPrimary,
+                icon = colors.iconPrimary,
             )
 
             ButtonStyle.Secondary -> ButtonColorTokens(
                 background = colors.backgroundSecondary,
-                content = colors.contentSecondary,
+                content = colors.textSecondary,
                 border = borders.defaultSecondary,
-                icon = colors.contentSecondary,
+                icon = colors.iconSecondary,
             )
 
             ButtonStyle.Transparent -> ButtonColorTokens(
                 background = Color.Transparent,
-                content = colors.contentSecondary,
+                content = colors.textTransparent,
                 border = Color.Transparent,
-                icon = colors.contentSecondary,
+                icon = colors.iconTransparent,
             )
         }
     }

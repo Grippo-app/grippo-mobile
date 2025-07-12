@@ -106,6 +106,7 @@ public fun Button(
                         repeatMode = RepeatMode.Restart,
                     )
                 )
+
                 Icon(
                     modifier = Modifier
                         .size(AppTokens.dp.button.icon)

@@ -78,7 +78,7 @@ internal fun HomeProfileScreen(
 
         Button(
             modifier = Modifier.fillMaxWidth(),
-            style = ButtonStyle.Primary,
+            style = ButtonStyle.Secondary,
             startIcon = AppTokens.icons.Rocket,
             text = AppTokens.strings.res(Res.string.start_workout),
             onClick = contract::onStartWorkoutClick
@@ -116,7 +116,7 @@ internal fun HomeProfileScreen(
             onClick = contract::onSettingsMenuClick
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         Button(
             modifier = Modifier.fillMaxWidth(),

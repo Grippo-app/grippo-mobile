@@ -13,6 +13,7 @@ public object LightColor : AppColor {
     private val Success = Color(0xFF3AC86B)
 
     private val Primary100 = Color(0xFFE6ECFF)
+    private val Primary150 = Color(0xFFD4DFFF)
     private val Primary200 = Color(0xFFC2D1FF)
     private val Primary300 = Color(0xFF99B2FF)
     private val Primary400 = Color(0xFF7090FF)
@@ -22,34 +23,38 @@ public object LightColor : AppColor {
     private val Primary800 = Color(0xFF1C3DAF)
     private val Primary900 = Color(0xFF152F94)
 
-    private val Neutral100 = Color(0xFFF9FBFE) // super light background
-    private val Neutral150 = Color(0xFFF6F9FF) // card top
-    private val Neutral200 = Color(0xFFE9EFF8) // default background
-    private val Neutral250 = Color(0xFFE1EAF6) // gradient bottom
-    private val Neutral300 = Color(0xFFC5D2E6) // shimmer / container
-    private val Neutral400 = Color(0xFFA7B8D1) // border / placeholder
-    private val Neutral500 = Color(0xFF8294B3) // disabled text
-    private val Neutral600 = Color(0xFF5F6C88) // secondary text
-    private val Neutral700 = Color(0xFF3E4961) // primary text
+    private val Neutral100 = Color(0xFFF9FBFE)
+    private val Neutral150 = Color(0xFFF6F9FF)
+    private val Neutral200 = Color(0xFFE9EFF8)
+    private val Neutral250 = Color(0xFFE1EAF6)
+    private val Neutral300 = Color(0xFFC5D2E6)
+    private val Neutral400 = Color(0xFFA7B8D1)
+    private val Neutral500 = Color(0xFF8294B3)
+    private val Neutral600 = Color(0xFF5F6C88)
+    private val Neutral700 = Color(0xFF3E4961)
 
     override val button: AppColor.ButtonColors = object : AppColor.ButtonColors {
         override val backgroundPrimary = Primary500
-        override val contentPrimary = White
+        override val textPrimary = White
+        override val iconPrimary = White
         override val backgroundPrimaryDisabled = Neutral200
         override val contentPrimaryDisabled = Neutral500
 
-        override val backgroundSecondary = Transparent
-        override val contentSecondary = Primary500
+        override val backgroundSecondary = Neutral200
+        override val textSecondary = Black
+        override val iconSecondary = Primary500
         override val backgroundSecondaryDisabled = Neutral100
         override val contentSecondaryDisabled = Neutral300
 
         override val contentTransparentDisabled = Neutral300
+        override val textTransparent: Color = Primary500
+        override val iconTransparent: Color = Primary500
     }
 
     override val border: AppColor.BorderColors = object : AppColor.BorderColors {
         override val defaultPrimary = Neutral200
         override val disabledPrimary = Neutral200
-        override val defaultSecondary = Primary200
+        override val defaultSecondary = Primary150
         override val disabledSecondary = Neutral200
         override val inverted = White
 
@@ -100,6 +105,7 @@ public object LightColor : AppColor {
         override val primary = Neutral150
         override val secondary = White
         override val accent = Primary500
+        override val tertiary = Neutral250
     }
 
     override val dialog: AppColor.DialogColors = object : AppColor.DialogColors {

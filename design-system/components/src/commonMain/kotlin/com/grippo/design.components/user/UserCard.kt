@@ -57,7 +57,7 @@ public fun UserCard(
 
     val gradient = Brush.verticalGradient(
         colors = listOf(
-            AppTokens.colors.background.primary,
+            AppTokens.colors.background.tertiary,
             AppTokens.colors.background.secondary,
         )
     )
