@@ -43,12 +43,13 @@ public object LightColor : AppColor {
         override val backgroundSecondary = Neutral200
         override val textSecondary = Black
         override val iconSecondary = Primary500
-        override val backgroundSecondaryDisabled = Neutral100
-        override val contentSecondaryDisabled = Neutral300
+        override val borderSecondary = Primary200
+        override val backgroundSecondaryDisabled = Neutral200
+        override val contentSecondaryDisabled = Neutral500
 
-        override val contentTransparentDisabled = Neutral300
         override val textTransparent: Color = Primary500
         override val iconTransparent: Color = Primary500
+        override val contentTransparentDisabled = Neutral500
     }
 
     override val border: AppColor.BorderColors = object : AppColor.BorderColors {

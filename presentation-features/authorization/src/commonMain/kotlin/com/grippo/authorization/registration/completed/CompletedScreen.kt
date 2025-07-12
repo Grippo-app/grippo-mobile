@@ -130,7 +130,7 @@ internal fun CompletedScreen(
             Button(
                 modifier = Modifier.fillMaxWidth(),
                 text = AppTokens.strings.res(Res.string.get_started_btn),
-                style = ButtonStyle.Secondary,
+                style = ButtonStyle.Primary,
                 startIcon = AppTokens.icons.Check,
                 onClick = contract::complete
             )
