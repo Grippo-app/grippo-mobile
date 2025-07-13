@@ -13,7 +13,9 @@ internal class HomeProfileViewModel(
     HomeProfileContract {
 
     init {
-        userFeature.observeUser().onEach(::provideUser).safeLaunch()
+        userFeature.observeUser()
+            .onEach(::provideUser)
+            .safeLaunch()
     }
 
     private fun provideUser(user: User?) {
@@ -26,7 +28,6 @@ internal class HomeProfileViewModel(
 
     override fun onActivityMenuClick(menu: HomeProfileActivityMenu) {
         val direction = when (menu) {
-            HomeProfileActivityMenu.WeightHistory -> HomeProfileDirection.WeightHistory
             HomeProfileActivityMenu.ExcludedMuscles -> HomeProfileDirection.ExcludedMuscles
             HomeProfileActivityMenu.MissingEquipment -> HomeProfileDirection.MissingEquipment
             HomeProfileActivityMenu.ExerciseLibrary -> HomeProfileDirection.ExerciseLibrary
