@@ -50,7 +50,12 @@ internal class HomeTrainingsViewModel(
     }
 
     override fun selectDate() {
-        // todo add logic
+        val dialog = DialogConfig.DatePicker(
+            initial = state.value.date,
+            onResult = { value -> update { it.copy(date = value) } }
+        )
+
+        dialogController.show(dialog)
     }
 
     override fun back() {

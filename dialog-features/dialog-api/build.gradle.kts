@@ -12,6 +12,7 @@ kotlin {
         implementation(projects.common.validation)
 
         implementation(libs.kotlinx.serialization.json)
+        implementation(libs.datetime)
 
         implementation(compose.foundation)
     }

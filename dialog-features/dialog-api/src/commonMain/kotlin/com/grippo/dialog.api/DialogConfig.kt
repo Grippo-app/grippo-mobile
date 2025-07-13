@@ -1,5 +1,6 @@
 package com.grippo.dialog.api
 
+import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -10,6 +11,12 @@ public sealed class DialogConfig(public open val onDismiss: (() -> Unit)?) {
         val description: String?,
         val onClose: () -> Unit,
     ) : DialogConfig(onClose)
+
+    @Serializable
+    public data class ExerciseExample(
+        val id: String,
+        val onResult: (id: String) -> Unit,
+    ) : DialogConfig(null)
 
     @Serializable
     public data class WeightPicker(
@@ -24,8 +31,8 @@ public sealed class DialogConfig(public open val onDismiss: (() -> Unit)?) {
     ) : DialogConfig(null)
 
     @Serializable
-    public data class ExerciseExample(
-        val id: String,
-        val onResult: (id: String) -> Unit,
+    public data class DatePicker(
+        val initial: LocalDateTime,
+        val onResult: (value: LocalDateTime) -> Unit,
     ) : DialogConfig(null)
 }

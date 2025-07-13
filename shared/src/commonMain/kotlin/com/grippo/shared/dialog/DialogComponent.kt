@@ -17,6 +17,7 @@ import com.grippo.error.display.ErrorDisplayComponent
 import com.grippo.exercise.example.exerciseexample.ExerciseExampleComponent
 import com.grippo.height.picker.HeightPickerComponent
 import com.grippo.shared.dialog.DialogComponent.Dialog.ErrorDisplay
+import com.grippo.shared.dialog.DialogComponent.Dialog.ExerciseExample
 import com.grippo.shared.dialog.DialogComponent.Dialog.HeightPicker
 import com.grippo.shared.dialog.DialogComponent.Dialog.WeightPicker
 import com.grippo.weight.picker.WeightPickerComponent
@@ -101,7 +102,7 @@ internal class DialogComponent(
                 )
             )
 
-            is DialogConfig.ExerciseExample -> Dialog.ExerciseExample(
+            is DialogConfig.ExerciseExample -> ExerciseExample(
                 ExerciseExampleComponent(
                     componentContext = context,
                     id = router.id,
@@ -111,6 +112,8 @@ internal class DialogComponent(
                     back = viewModel::dismiss
                 )
             )
+
+            is DialogConfig.DatePicker -> TODO()
         }
     }
 
