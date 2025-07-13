@@ -3,7 +3,9 @@ package com.grippo.data.features.exercise.examples.domain
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import kotlinx.coroutines.flow.Flow
+import org.koin.core.annotation.Single
 
+@Single(binds = [ExerciseExampleFeature::class])
 internal class ExerciseExampleFeatureImpl(
     private val repository: ExerciseExampleRepository
 ) : ExerciseExampleFeature {

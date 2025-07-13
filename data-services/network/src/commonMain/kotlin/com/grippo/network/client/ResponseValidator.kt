@@ -61,7 +61,7 @@ internal fun HttpClientConfig<*>.responseValidator(
                 cause = cause
             )
 
-            else -> throw AppError.Network.Unexpected(
+            else -> AppError.Network.Unexpected(
                 message = cause.message ?: "Unexpected network error",
                 cause = cause
             )

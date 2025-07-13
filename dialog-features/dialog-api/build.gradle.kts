@@ -2,6 +2,7 @@ plugins {
     id("android.library.convention")
     id("kotlin.multiplatform.convention")
     id("compose.multiplatform.convention")
+    id("koin.annotation.convention")
     alias(libs.plugins.kotlin.serialization)
 }
 
@@ -11,6 +12,7 @@ kotlin {
         implementation(projects.common.validation)
 
         implementation(libs.kotlinx.serialization.json)
+        implementation(libs.datetime)
 
         implementation(compose.foundation)
     }

@@ -29,7 +29,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -156,13 +155,16 @@ internal fun Input(
                 shape = shape,
                 color = shadowColor.value
             )
-            .clip(shape)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = {}
+            )
             .background(color = backgroundColor, shape = shape)
             .border(width = 1.dp, color = borderColor, shape = shape)
             .heightIn(min = height)
             .onFocusChanged { hasFocus.value = it.hasFocus }
-            .animateContentSize()
-            .clickable(interactionSource = interactionSource, indication = null, onClick = {}),
+            .animateContentSize(),
         value = value,
         onValueChange = when (inputStyle) {
             is InputStyle.Clickable -> {

@@ -1,6 +1,5 @@
 package com.grippo.design.components.menu
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -12,10 +11,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.icons.ChevronRight
+import com.grippo.design.resources.icons.NavArrowRight
 import com.grippo.design.resources.icons.User
 
 @Composable
@@ -27,7 +27,7 @@ public fun MenuCard(
 ) {
     Row(
         modifier = modifier
-            .clickable(onClick = onClick)
+            .scalableClick(onClick = onClick)
             .padding(
                 vertical = AppTokens.dp.menu.item.verticalPadding,
                 horizontal = AppTokens.dp.menu.item.horizontalPadding
@@ -38,7 +38,7 @@ public fun MenuCard(
         Icon(
             modifier = Modifier.size(AppTokens.dp.menu.item.icon),
             imageVector = icon,
-            tint = AppTokens.colors.icon.default,
+            tint = AppTokens.colors.icon.primary,
             contentDescription = null
         )
 
@@ -51,8 +51,8 @@ public fun MenuCard(
 
         Icon(
             modifier = Modifier.size(AppTokens.dp.menu.item.icon),
-            imageVector = AppTokens.icons.ChevronRight,
-            tint = AppTokens.colors.icon.default,
+            imageVector = AppTokens.icons.NavArrowRight,
+            tint = AppTokens.colors.icon.primary,
             contentDescription = null
         )
     }

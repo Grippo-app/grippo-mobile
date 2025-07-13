@@ -15,14 +15,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
-import com.grippo.design.resources.icons.Loader
+import com.grippo.design.resources.icons.SystemRestart
 import com.grippo.design.resources.loading
 
 @Composable
@@ -47,8 +47,8 @@ public fun Loader(modifier: Modifier = Modifier) {
         Icon(
             modifier = Modifier
                 .size(AppTokens.dp.loader.icon)
-                .graphicsLayer { rotationZ = rotation },
-            imageVector = AppTokens.icons.Loader,
+                .rotate(rotation),
+            imageVector = AppTokens.icons.SystemRestart,
             tint = AppTokens.colors.skeleton.shimmer,
             contentDescription = null
         )

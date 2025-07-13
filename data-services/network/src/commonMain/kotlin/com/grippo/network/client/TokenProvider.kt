@@ -24,8 +24,10 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeout
+import org.koin.core.annotation.Single
 import kotlin.coroutines.cancellation.CancellationException
 
+@Single
 internal class TokenProvider(
     private val tokenDao: TokenDao,
     private val userActiveDao: UserActiveDao,
@@ -134,7 +136,7 @@ internal class TokenProvider(
                             performTokenRefresh(response.call.client, refreshToken)
                         }
 
-                        val newId = AppLogger.checkOrLog(refresh.id) { "TokenResponse.id is null" }
+                        val newId = AppLogger.Mapping.log(refresh.id) { "TokenResponse.id is null" }
                             ?: return@withLock false
 
                         tokenDao.insertOrUpdate(
@@ -244,18 +246,18 @@ internal class TokenProvider(
     }
 
     private inline fun logInfo(message: () -> String) {
-        AppLogger.network("ℹ️ [TokenProvider] ${message()}")
+        AppLogger.Network.log("ℹ️ [TokenProvider] ${message()}")
     }
 
     private inline fun logWarn(message: () -> String) {
-        AppLogger.network("⚠️ [TokenProvider] ${message()}")
+        AppLogger.Network.log("⚠️ [TokenProvider] ${message()}")
     }
 
     private inline fun logError(message: () -> String) {
-        AppLogger.network("❌ [TokenProvider] ${message()}")
+        AppLogger.Network.log("❌ [TokenProvider] ${message()}")
     }
 
     private inline fun logDebug(message: () -> String) {
-        AppLogger.network("🔧 [TokenProvider] ${message()}")
+        AppLogger.Network.log("🔧 [TokenProvider] ${message()}")
     }
 }

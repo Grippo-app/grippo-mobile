@@ -19,14 +19,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.grippo.design.components.modifiers.nonRippleClick
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.modifiers.shimmerAnimation
 import com.grippo.design.core.AppTokens
 import com.grippo.design.core.UiText
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.icons.Box
-import com.grippo.design.resources.icons.Play
 import com.grippo.design.resources.icons.Settings
 import com.grippo.segment.control.SegmentBox
 import com.grippo.segment.control.SegmentSizing
@@ -69,7 +68,7 @@ public fun <KEY> Tab(
                     content = {
                         Column(
                             modifier = Modifier
-                                .nonRippleClick(onClick = clickProvider)
+                                .scalableClick(onClick = clickProvider)
                                 .padding(
                                     horizontal = AppTokens.dp.tab.horizontalPadding,
                                     vertical = AppTokens.dp.tab.verticalPadding,
@@ -138,7 +137,7 @@ private fun SegmentPreview() {
             modifier = Modifier,
             items = persistentListOf(
                 "Box" to TabItem(text = UiText.Str("Box"), icon = AppTokens.icons.Box),
-                "Play" to TabItem(text = UiText.Str("Play"), icon = AppTokens.icons.Play),
+                "Play" to TabItem(text = UiText.Str("Play"), icon = AppTokens.icons.Settings),
                 "Settings" to TabItem(
                     text = UiText.Str("Settings"),
                     icon = AppTokens.icons.Settings

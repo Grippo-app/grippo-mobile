@@ -22,35 +22,35 @@ public val AppIcon.GitCommit: ImageVector
             viewportHeight = 24f
         ).apply {
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(12f, 16f)
-                curveTo(14.209f, 16f, 16f, 14.209f, 16f, 12f)
-                curveTo(16f, 9.791f, 14.209f, 8f, 12f, 8f)
-                curveTo(9.791f, 8f, 8f, 9.791f, 8f, 12f)
-                curveTo(8f, 14.209f, 9.791f, 16f, 12f, 16f)
+                moveTo(12f, 15f)
+                curveTo(13.657f, 15f, 15f, 13.657f, 15f, 12f)
+                curveTo(15f, 10.343f, 13.657f, 9f, 12f, 9f)
+                curveTo(10.343f, 9f, 9f, 10.343f, 9f, 12f)
+                curveTo(9f, 13.657f, 10.343f, 15f, 12f, 15f)
                 close()
             }
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(1.05f, 12f)
-                horizontalLineTo(7f)
+                moveTo(9f, 12f)
+                horizontalLineTo(3f)
             }
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(17.01f, 12f)
-                horizontalLineTo(22.96f)
+                moveTo(15f, 12f)
+                horizontalLineTo(21f)
             }
         }.build()
 

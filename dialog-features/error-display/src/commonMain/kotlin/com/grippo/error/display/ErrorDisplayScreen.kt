@@ -15,7 +15,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.grippo.core.BaseComposeScreen
+import com.grippo.core.BaseComposeDialog
+import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
@@ -23,7 +24,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.got_it_btn
-import com.grippo.design.resources.icons.AlertTriangle
+import com.grippo.design.resources.icons.WarningTriangleOutline
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -32,7 +33,8 @@ internal fun ErrorDisplayScreen(
     state: ErrorDisplayState,
     loaders: ImmutableSet<ErrorDisplayLoader>,
     contract: ErrorDisplayContract
-) = BaseComposeScreen(AppTokens.colors.background.secondary) {
+) = BaseComposeDialog(background = ScreenBackground.Color(AppTokens.colors.background.secondary)) {
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -45,7 +47,7 @@ internal fun ErrorDisplayScreen(
 
         Icon(
             modifier = Modifier.size(AppTokens.dp.error.icon),
-            imageVector = AppTokens.icons.AlertTriangle,
+            imageVector = AppTokens.icons.WarningTriangleOutline,
             tint = AppTokens.colors.semantic.error,
             contentDescription = null
         )

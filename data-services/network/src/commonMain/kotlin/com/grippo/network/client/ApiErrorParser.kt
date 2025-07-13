@@ -9,7 +9,9 @@ import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import org.koin.core.annotation.Single
 
+@Single
 internal class ApiErrorParser(private val json: Json) {
 
     companion object {

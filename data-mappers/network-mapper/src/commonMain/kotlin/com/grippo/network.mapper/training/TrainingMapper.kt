@@ -9,35 +9,35 @@ public fun List<TrainingResponse>.toEntities(): List<TrainingEntity> {
 }
 
 public fun TrainingResponse.toEntityOrNull(): TrainingEntity? {
-    val entityId = AppLogger.checkOrLog(id) {
+    val entityId = AppLogger.Mapping.log(id) {
         "TrainingResponse.id is null"
     } ?: return null
 
-    val entityDuration = AppLogger.checkOrLog(duration) {
+    val entityDuration = AppLogger.Mapping.log(duration) {
         "TrainingResponse.duration is null"
     } ?: return null
 
-    val entityCreatedAt = AppLogger.checkOrLog(createdAt) {
+    val entityCreatedAt = AppLogger.Mapping.log(createdAt) {
         "TrainingResponse.createdAt is null"
     } ?: return null
 
-    val entityVolume = AppLogger.checkOrLog(volume) {
+    val entityVolume = AppLogger.Mapping.log(volume) {
         "TrainingResponse.volume is null"
     } ?: return null
 
-    val entityRepetitions = AppLogger.checkOrLog(repetitions) {
+    val entityRepetitions = AppLogger.Mapping.log(repetitions) {
         "TrainingResponse.repetitions is null"
     } ?: return null
 
-    val entityIntensity = AppLogger.checkOrLog(intensity) {
+    val entityIntensity = AppLogger.Mapping.log(intensity) {
         "TrainingResponse.intensity is null"
     } ?: return null
 
-    val entityUpdatedAt = AppLogger.checkOrLog(updatedAt) {
+    val entityUpdatedAt = AppLogger.Mapping.log(updatedAt) {
         "TrainingResponse.updatedAt is null"
     } ?: return null
 
-    val entityUserId = AppLogger.checkOrLog(userId) {
+    val entityUserId = AppLogger.Mapping.log(userId) {
         "TrainingResponse.userId is null"
     } ?: return null
 

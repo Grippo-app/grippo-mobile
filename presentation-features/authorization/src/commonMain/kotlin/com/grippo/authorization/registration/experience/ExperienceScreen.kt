@@ -3,9 +3,9 @@ package com.grippo.authorization.registration.experience
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.BaseComposeScreen
+import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
@@ -40,7 +41,7 @@ internal fun ExperienceScreen(
     state: ExperienceState,
     loaders: ImmutableSet<ExperienceLoader>,
     contract: ExperienceContract
-) = BaseComposeScreen(AppTokens.colors.background.primary) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
@@ -50,7 +51,9 @@ internal fun ExperienceScreen(
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .navigationBarsPadding()
+            .fillMaxWidth()
+            .weight(1f)
             .padding(
                 horizontal = AppTokens.dp.screen.horizontalPadding,
                 vertical = AppTokens.dp.contentPadding.content
@@ -85,7 +88,10 @@ internal fun ExperienceScreen(
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
         ) {
 
-            items(state.suggestions, key = { it.ordinal }) { item ->
+            items(
+                items = state.suggestions,
+                key = { it.ordinal },
+                contentType = { it::class }) { item ->
                 val selectProvider = remember { { contract.select(item) } }
                 val isSelected = remember(state.selected) { state.selected == item }
 

@@ -22,38 +22,37 @@ public val AppIcon.Edit: ImageVector
             viewportHeight = 24f
         ).apply {
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(11f, 4f)
-                horizontalLineTo(4f)
-                curveTo(3.47f, 4f, 2.961f, 4.211f, 2.586f, 4.586f)
-                curveTo(2.211f, 4.961f, 2f, 5.47f, 2f, 6f)
-                verticalLineTo(20f)
-                curveTo(2f, 20.53f, 2.211f, 21.039f, 2.586f, 21.414f)
-                curveTo(2.961f, 21.789f, 3.47f, 22f, 4f, 22f)
-                horizontalLineTo(18f)
-                curveTo(18.53f, 22f, 19.039f, 21.789f, 19.414f, 21.414f)
-                curveTo(19.789f, 21.039f, 20f, 20.53f, 20f, 20f)
-                verticalLineTo(13f)
+                moveTo(3f, 21f)
+                horizontalLineTo(12f)
+                horizontalLineTo(21f)
             }
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(18.5f, 2.5f)
-                curveTo(18.898f, 2.102f, 19.437f, 1.879f, 20f, 1.879f)
-                curveTo(20.563f, 1.879f, 21.102f, 2.102f, 21.5f, 2.5f)
-                curveTo(21.898f, 2.898f, 22.121f, 3.437f, 22.121f, 4f)
-                curveTo(22.121f, 4.563f, 21.898f, 5.102f, 21.5f, 5.5f)
-                lineTo(12f, 15f)
-                lineTo(8f, 16f)
-                lineTo(9f, 12f)
-                lineTo(18.5f, 2.5f)
+                moveTo(12.222f, 5.828f)
+                lineTo(17.171f, 10.778f)
+                moveTo(12.222f, 5.828f)
+                lineTo(15.05f, 3f)
+                lineTo(20f, 7.95f)
+                lineTo(17.171f, 10.778f)
+                lineTo(12.222f, 5.828f)
+                close()
+                moveTo(12.222f, 5.828f)
+                lineTo(6.615f, 11.435f)
+                curveTo(6.428f, 11.623f, 6.322f, 11.877f, 6.322f, 12.142f)
+                verticalLineTo(16.678f)
+                horizontalLineTo(10.858f)
+                curveTo(11.123f, 16.678f, 11.377f, 16.572f, 11.565f, 16.385f)
+                lineTo(17.171f, 10.778f)
+                lineTo(12.222f, 5.828f)
                 close()
             }
         }.build()

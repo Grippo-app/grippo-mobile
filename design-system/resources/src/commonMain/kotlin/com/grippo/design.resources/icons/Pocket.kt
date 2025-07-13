@@ -22,30 +22,24 @@ public val AppIcon.Pocket: ImageVector
             viewportHeight = 24f
         ).apply {
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(4f, 3f)
-                horizontalLineTo(20f)
-                curveTo(20.53f, 3f, 21.039f, 3.211f, 21.414f, 3.586f)
-                curveTo(21.789f, 3.961f, 22f, 4.47f, 22f, 5f)
+                moveTo(21f, 6f)
                 verticalLineTo(11f)
-                curveTo(22f, 13.652f, 20.946f, 16.196f, 19.071f, 18.071f)
-                curveTo(17.196f, 19.946f, 14.652f, 21f, 12f, 21f)
-                curveTo(10.687f, 21f, 9.386f, 20.741f, 8.173f, 20.239f)
-                curveTo(6.96f, 19.736f, 5.858f, 19f, 4.929f, 18.071f)
-                curveTo(3.054f, 16.196f, 2f, 13.652f, 2f, 11f)
-                verticalLineTo(5f)
-                curveTo(2f, 4.47f, 2.211f, 3.961f, 2.586f, 3.586f)
-                curveTo(2.961f, 3.211f, 3.47f, 3f, 4f, 3f)
-                verticalLineTo(3f)
+                curveTo(21f, 15.971f, 16.971f, 20f, 12f, 20f)
+                curveTo(7.029f, 20f, 3f, 15.971f, 3f, 11f)
+                verticalLineTo(6f)
+                curveTo(3f, 4.895f, 3.895f, 4f, 5f, 4f)
+                horizontalLineTo(19f)
+                curveTo(20.105f, 4f, 21f, 4.895f, 21f, 6f)
                 close()
             }
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {

@@ -5,7 +5,9 @@ import com.grippo.core.models.ComponentLifeCycleEvent
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
+import org.koin.core.annotation.Single
 
+@Single
 public class ComponentLifecycleEmitter {
     private val _listener =
         Channel<Pair<ComponentIdentifier, ComponentLifeCycleEvent>>(capacity = Channel.BUFFERED)

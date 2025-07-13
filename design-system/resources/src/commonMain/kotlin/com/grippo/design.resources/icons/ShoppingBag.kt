@@ -22,44 +22,31 @@ public val AppIcon.ShoppingBag: ImageVector
             viewportHeight = 24f
         ).apply {
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(6f, 2f)
-                lineTo(3f, 6f)
-                verticalLineTo(20f)
-                curveTo(3f, 20.53f, 3.211f, 21.039f, 3.586f, 21.414f)
-                curveTo(3.961f, 21.789f, 4.47f, 22f, 5f, 22f)
-                horizontalLineTo(19f)
-                curveTo(19.53f, 22f, 20.039f, 21.789f, 20.414f, 21.414f)
-                curveTo(20.789f, 21.039f, 21f, 20.53f, 21f, 20f)
-                verticalLineTo(6f)
-                lineTo(18f, 2f)
-                horizontalLineTo(6f)
+                moveTo(19.261f, 9.696f)
+                lineTo(20.646f, 18.696f)
+                curveTo(20.832f, 19.907f, 19.895f, 21f, 18.669f, 21f)
+                horizontalLineTo(5.331f)
+                curveTo(4.105f, 21f, 3.168f, 19.907f, 3.355f, 18.696f)
+                lineTo(4.739f, 9.696f)
+                curveTo(4.889f, 8.72f, 5.729f, 8f, 6.716f, 8f)
+                horizontalLineTo(17.284f)
+                curveTo(18.271f, 8f, 19.111f, 8.72f, 19.261f, 9.696f)
                 close()
             }
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(3f, 6f)
-                horizontalLineTo(21f)
-            }
-            path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
-            ) {
-                moveTo(16f, 10f)
-                curveTo(16f, 11.061f, 15.579f, 12.078f, 14.828f, 12.828f)
-                curveTo(14.078f, 13.579f, 13.061f, 14f, 12f, 14f)
-                curveTo(10.939f, 14f, 9.922f, 13.579f, 9.172f, 12.828f)
-                curveTo(8.421f, 12.078f, 8f, 11.061f, 8f, 10f)
+                moveTo(14f, 5f)
+                curveTo(14f, 3.895f, 13.105f, 3f, 12f, 3f)
+                curveTo(10.895f, 3f, 10f, 3.895f, 10f, 5f)
             }
         }.build()
 

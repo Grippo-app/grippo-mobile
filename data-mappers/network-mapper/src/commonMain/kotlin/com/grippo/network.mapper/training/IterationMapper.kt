@@ -9,27 +9,27 @@ public fun List<IterationResponse>.toEntities(): List<IterationEntity> {
 }
 
 public fun IterationResponse.toEntityOrNull(): IterationEntity? {
-    val entityId = AppLogger.checkOrLog(id) {
+    val entityId = AppLogger.Mapping.log(id) {
         "IterationResponse.id is null"
     } ?: return null
 
-    val entityExerciseId = AppLogger.checkOrLog(exerciseId) {
+    val entityExerciseId = AppLogger.Mapping.log(exerciseId) {
         "IterationResponse.exerciseId is null"
     } ?: return null
 
-    val entityWeight = AppLogger.checkOrLog(weight) {
+    val entityWeight = AppLogger.Mapping.log(weight) {
         "IterationResponse.weight is null"
     } ?: return null
 
-    val entityRepetitions = AppLogger.checkOrLog(repetitions) {
+    val entityRepetitions = AppLogger.Mapping.log(repetitions) {
         "IterationResponse.repetitions is null"
     } ?: return null
 
-    val entityCreatedAt = AppLogger.checkOrLog(createdAt) {
+    val entityCreatedAt = AppLogger.Mapping.log(createdAt) {
         "IterationResponse.createdAt is null"
     } ?: return null
 
-    val entityUpdatedAt = AppLogger.checkOrLog(updatedAt) {
+    val entityUpdatedAt = AppLogger.Mapping.log(updatedAt) {
         "IterationResponse.updatedAt is null"
     } ?: return null
 

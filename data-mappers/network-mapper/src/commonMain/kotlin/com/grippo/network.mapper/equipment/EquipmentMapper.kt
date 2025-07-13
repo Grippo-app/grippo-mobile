@@ -9,27 +9,27 @@ public fun List<EquipmentResponse>.toEntities(): List<EquipmentEntity> {
 }
 
 public fun EquipmentResponse.toEntityOrNull(): EquipmentEntity? {
-    val entityId = AppLogger.checkOrLog(id) {
+    val entityId = AppLogger.Mapping.log(id) {
         "EquipmentResponse.id is null"
     } ?: return null
 
-    val entityEquipmentGroupId = AppLogger.checkOrLog(equipmentGroupId) {
+    val entityEquipmentGroupId = AppLogger.Mapping.log(equipmentGroupId) {
         "EquipmentResponse.equipmentGroupId is null"
     } ?: return null
 
-    val entityName = AppLogger.checkOrLog(name) {
+    val entityName = AppLogger.Mapping.log(name) {
         "EquipmentResponse.name is null"
     } ?: return null
 
-    val entityType = AppLogger.checkOrLog(type) {
+    val entityType = AppLogger.Mapping.log(type) {
         "EquipmentResponse.type is null"
     } ?: return null
 
-    val entityCreatedAt = AppLogger.checkOrLog(createdAt) {
+    val entityCreatedAt = AppLogger.Mapping.log(createdAt) {
         "EquipmentResponse.createdAt is null"
     } ?: return null
 
-    val entityUpdatedAt = AppLogger.checkOrLog(updatedAt) {
+    val entityUpdatedAt = AppLogger.Mapping.log(updatedAt) {
         "EquipmentResponse.updatedAt is null"
     } ?: return null
 

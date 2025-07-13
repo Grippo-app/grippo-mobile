@@ -10,7 +10,7 @@ public fun List<MuscleGroupWithMuscles>.toDomain(): List<MuscleGroup> {
 }
 
 public fun MuscleGroupWithMuscles.toDomain(): MuscleGroup? {
-    val mappedType = AppLogger.checkOrLog(MuscleGroupEnum.of(group.type)) {
+    val mappedType = AppLogger.Mapping.log(MuscleGroupEnum.of(group.type)) {
         "MuscleGroupWithMuscles ${group.id} has unrecognized type: ${group.type}"
     } ?: return null
 

@@ -4,7 +4,9 @@ import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDateTime
+import org.koin.core.annotation.Single
 
+@Single(binds = [TrainingFeature::class])
 internal class TrainingFeatureImpl(
     private val repository: TrainingRepository
 ) : TrainingFeature {

@@ -4,9 +4,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.HorizontalDivider
@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.BaseComposeScreen
+import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
@@ -44,7 +45,7 @@ internal fun LoginScreen(
     state: LoginState,
     loaders: ImmutableSet<LoginLoader>,
     contract: LoginContract
-) = BaseComposeScreen(AppTokens.colors.background.primary) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
@@ -53,7 +54,9 @@ internal fun LoginScreen(
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .navigationBarsPadding()
+            .fillMaxWidth()
+            .weight(1f)
             .padding(
                 horizontal = AppTokens.dp.screen.horizontalPadding,
                 vertical = AppTokens.dp.contentPadding.content
@@ -120,7 +123,7 @@ internal fun LoginScreen(
         ) {
             HorizontalDivider(
                 modifier = Modifier.weight(1f),
-                color = AppTokens.colors.divider.default
+                color = AppTokens.colors.divider.secondary
             )
 
             Text(
@@ -131,7 +134,7 @@ internal fun LoginScreen(
 
             HorizontalDivider(
                 modifier = Modifier.weight(1f),
-                color = AppTokens.colors.divider.default
+                color = AppTokens.colors.divider.secondary
             )
         }
 

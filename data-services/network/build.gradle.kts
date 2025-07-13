@@ -1,6 +1,7 @@
 plugins {
     id("android.library.convention")
     id("kotlin.multiplatform.convention")
+    id("koin.annotation.convention")
     alias(libs.plugins.kotlin.serialization)
 }
 
@@ -18,7 +19,6 @@ kotlin {
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.ktor.auth)
             implementation(libs.kotlinx.serialization.json)
-            implementation(libs.koin.core)
         }
 
         androidMain.dependencies {

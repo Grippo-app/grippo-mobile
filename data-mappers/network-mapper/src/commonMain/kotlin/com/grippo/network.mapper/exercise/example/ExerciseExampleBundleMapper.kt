@@ -9,27 +9,27 @@ public fun List<ExerciseExampleBundleResponse>.toEntities(): List<ExerciseExampl
 }
 
 public fun ExerciseExampleBundleResponse.toEntityOrNull(): ExerciseExampleBundleEntity? {
-    val entityId = AppLogger.checkOrLog(id) {
+    val entityId = AppLogger.Mapping.log(id) {
         "ExerciseExampleBundleResponse.id is null"
     } ?: return null
 
-    val entityExerciseExampleId = AppLogger.checkOrLog(exerciseExampleId) {
+    val entityExerciseExampleId = AppLogger.Mapping.log(exerciseExampleId) {
         "ExerciseExampleBundleResponse.exerciseExampleId is null"
     } ?: return null
 
-    val entityMuscleId = AppLogger.checkOrLog(muscleId) {
+    val entityMuscleId = AppLogger.Mapping.log(muscleId) {
         "ExerciseExampleBundleResponse.muscleId is null"
     } ?: return null
 
-    val entityPercentage = AppLogger.checkOrLog(percentage) {
+    val entityPercentage = AppLogger.Mapping.log(percentage) {
         "ExerciseExampleBundleResponse.percentage is null"
     } ?: return null
 
-    val entityCreatedAt = AppLogger.checkOrLog(createdAt) {
+    val entityCreatedAt = AppLogger.Mapping.log(createdAt) {
         "ExerciseExampleBundleResponse.createdAt is null"
     } ?: return null
 
-    val entityUpdatedAt = AppLogger.checkOrLog(updatedAt) {
+    val entityUpdatedAt = AppLogger.Mapping.log(updatedAt) {
         "ExerciseExampleBundleResponse.updatedAt is null"
     } ?: return null
 

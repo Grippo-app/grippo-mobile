@@ -79,11 +79,7 @@ internal fun WheelPicker(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(itemHeight)
-                    .graphicsLayer {
-                        this.shape = shape
-                        this.clip = true
-                    }
-                    .background(color)
+                    .background(color, shape)
                     .let { border?.let { border -> it.border(border, shape) } ?: it }
             )
         }
@@ -97,7 +93,7 @@ internal fun WheelPicker(
             flingBehavior = flingBehavior,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            items(count) { index ->
+            items(count, key = { it }, contentType = { it::class }) { index ->
                 val alpha = calculateAnimatedAlpha(layoutInfo, index, rowCount)
                 val rotationX = calculateAnimatedRotationX(layoutInfo, index, rowCount)
 

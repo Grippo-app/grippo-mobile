@@ -1,4 +1,6 @@
 import com.android.build.api.dsl.ApplicationExtension
+import com.grippo.applySafely
+import com.grippo.configureJvmToolchain
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -7,8 +9,8 @@ import org.gradle.kotlin.dsl.configure
 class AndroidApplicationConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
-            pluginManager.apply("com.android.application")
-            pluginManager.apply("org.jetbrains.kotlin.android")
+            pluginManager.applySafely("com.android.application")
+            pluginManager.applySafely("org.jetbrains.kotlin.android")
 
             extensions.configure<ApplicationExtension> {
                 compileSdk = 35
@@ -20,10 +22,12 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                 }
 
                 compileOptions {
-                    sourceCompatibility = JavaVersion.VERSION_21
-                    targetCompatibility = JavaVersion.VERSION_21
+                    sourceCompatibility = JavaVersion.VERSION_19
+                    targetCompatibility = JavaVersion.VERSION_19
                 }
             }
+
+            configureJvmToolchain(19)
         }
     }
 }

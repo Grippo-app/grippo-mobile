@@ -22,27 +22,25 @@ public val AppIcon.Underline: ImageVector
             viewportHeight = 24f
         ).apply {
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(6f, 3f)
-                verticalLineTo(10f)
-                curveTo(6f, 11.591f, 6.632f, 13.117f, 7.757f, 14.243f)
-                curveTo(8.883f, 15.368f, 10.409f, 16f, 12f, 16f)
-                curveTo(13.591f, 16f, 15.117f, 15.368f, 16.243f, 14.243f)
-                curveTo(17.368f, 13.117f, 18f, 11.591f, 18f, 10f)
-                verticalLineTo(3f)
+                moveTo(16f, 5f)
+                verticalLineTo(11f)
+                curveTo(16f, 13.209f, 14.209f, 15f, 12f, 15f)
+                curveTo(9.791f, 15f, 8f, 13.209f, 8f, 11f)
+                verticalLineTo(5f)
             }
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(4f, 21f)
-                horizontalLineTo(20f)
+                moveTo(6f, 19f)
+                horizontalLineTo(18f)
             }
         }.build()
 

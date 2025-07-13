@@ -10,7 +10,7 @@ public fun List<ExerciseEquipmentWithEquipment>.toDomain(): List<Equipment> {
 }
 
 public fun ExerciseEquipmentWithEquipment.toDomain(): Equipment? {
-    val equipment = AppLogger.checkOrLog(this@toDomain.equipment.toDomain()) {
+    val equipment = AppLogger.Mapping.log(this@toDomain.equipment.toDomain()) {
         "ExerciseEquipmentWithEquipment: equipment mapping failed for equipmentId=${this@toDomain.equipment.id}"
     }
 

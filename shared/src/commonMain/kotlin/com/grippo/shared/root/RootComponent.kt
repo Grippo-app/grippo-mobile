@@ -19,6 +19,7 @@ import com.grippo.design.core.AppTheme
 import com.grippo.home.BottomNavigationComponent
 import com.grippo.presentation.api.RootRouter
 import com.grippo.presentation.api.auth.AuthRouter
+import com.grippo.presentation.api.bottom.navigation.BottomNavigationRouter
 import com.grippo.presentation.api.profile.ProfileRouter
 import com.grippo.profile.ProfileComponent
 import com.grippo.shared.dialog.DialogComponent
@@ -85,10 +86,13 @@ public class RootComponent(
             RootRouter.Home -> Home(
                 BottomNavigationComponent(
                     componentContext = context,
+                    initial = BottomNavigationRouter.Trainings,
                     toWeightHistory = { navigation.push(RootRouter.Profile(ProfileRouter.WeightHistory)) },
                     toMissingEquipment = { navigation.push(RootRouter.Profile(ProfileRouter.Equipments)) },
                     toExcludedMuscles = { navigation.push(RootRouter.Profile(ProfileRouter.Muscles)) },
                     toDebug = { navigation.push(RootRouter.Debug) },
+                    toWorkout = { navigation.push(RootRouter.Workout) },
+                    toSystemSettings = {},
                     toExerciseLibrary = {},
                     back = finish
                 )
@@ -108,6 +112,11 @@ public class RootComponent(
                     back = navigation::pop
                 )
             )
+
+            is RootRouter.Workout -> {
+                // Handle Workout router if needed
+                throw NotImplementedError("Workout router is not implemented yet")
+            }
         }
     }
 

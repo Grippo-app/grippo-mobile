@@ -6,9 +6,12 @@ import com.grippo.data.features.api.training.models.Training
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.mapper.training.toState
+import com.grippo.domain.mapper.training.transformToTrainingListValue
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.onEach
 import kotlinx.datetime.LocalDateTime
 
+@OptIn(FlowPreview::class)
 internal class HomeTrainingsViewModel(
     private val trainingFeature: TrainingFeature,
     private val dialogController: DialogController
@@ -33,7 +36,7 @@ internal class HomeTrainingsViewModel(
     }
 
     private fun provideTrainings(list: List<Training>) {
-        val trainings = list.toState()
+        val trainings = list.toState().transformToTrainingListValue()
         update { it.copy(trainings = trainings) }
     }
 
@@ -41,6 +44,15 @@ internal class HomeTrainingsViewModel(
         val dialog = DialogConfig.ExerciseExample(
             id = id,
             onResult = { value -> }
+        )
+
+        dialogController.show(dialog)
+    }
+
+    override fun selectDate() {
+        val dialog = DialogConfig.DatePicker(
+            initial = state.value.date,
+            onResult = { value -> update { it.copy(date = value) } }
         )
 
         dialogController.show(dialog)

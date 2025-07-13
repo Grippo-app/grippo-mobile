@@ -8,7 +8,9 @@ import com.grippo.network.Api
 import com.grippo.network.mapper.muscles.toEntities
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.koin.core.annotation.Single
 
+@Single(binds = [MuscleRepository::class])
 internal class MuscleRepositoryImpl(
     private val api: Api,
     private val muscleDao: MuscleDao,

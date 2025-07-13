@@ -11,7 +11,7 @@ android {
     }
 
     signingConfigs.create("release") {
-        storeFile = file("$rootDir/gradle/keys/developer")
+        storeFile = file("$rootDir/build-logic/keys/developer")
         storePassword = "qwerty123"
         keyAlias = "developer"
         keyPassword = "qwerty123"

@@ -17,13 +17,13 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.cm
-import com.grippo.design.resources.icons.Box
+import com.grippo.design.resources.icons.ExpandLines
+import com.grippo.design.resources.icons.Weight
 import com.grippo.design.resources.kg
 
 @Composable
@@ -34,8 +34,10 @@ internal fun BodyItem(
 ) {
     Row(
         modifier = modifier
-            .clip(shape = RoundedCornerShape(AppTokens.dp.bodyDetails.radius))
-            .background(AppTokens.colors.background.primary)
+            .background(
+                AppTokens.colors.background.primary,
+                RoundedCornerShape(AppTokens.dp.bodyDetails.radius)
+            )
             .border(
                 1.dp,
                 color = AppTokens.colors.border.defaultPrimary,
@@ -48,15 +50,12 @@ internal fun BodyItem(
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {
-
         Icon(
             modifier = Modifier
-                .clip(RoundedCornerShape(AppTokens.dp.bodyDetails.radius))
-                .background(AppTokens.colors.background.accent)
                 .padding(4.dp)
                 .size(AppTokens.dp.bodyDetails.icon),
-            imageVector = AppTokens.icons.Box,
-            tint = AppTokens.colors.icon.invert,
+            imageVector = AppTokens.icons.Weight,
+            tint = AppTokens.colors.icon.accent,
             contentDescription = null
         )
 
@@ -65,7 +64,7 @@ internal fun BodyItem(
         Text(
             text = weight.toString(),
             style = AppTokens.typography.b14Bold(),
-            color = AppTokens.colors.text.primary,
+            color = AppTokens.colors.text.secondary,
             textAlign = TextAlign.Center
         )
 
@@ -82,19 +81,17 @@ internal fun BodyItem(
 
         VerticalDivider(
             modifier = Modifier.fillMaxHeight(),
-            color = AppTokens.colors.divider.default
+            color = AppTokens.colors.divider.secondary
         )
 
         Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
 
         Icon(
             modifier = Modifier
-                .clip(RoundedCornerShape(AppTokens.dp.bodyDetails.radius))
-                .background(AppTokens.colors.background.accent)
                 .padding(4.dp)
                 .size(AppTokens.dp.bodyDetails.icon),
-            imageVector = AppTokens.icons.Box,
-            tint = AppTokens.colors.icon.invert,
+            imageVector = AppTokens.icons.ExpandLines,
+            tint = AppTokens.colors.icon.accent,
             contentDescription = null
         )
 
@@ -104,7 +101,7 @@ internal fun BodyItem(
             modifier = Modifier,
             text = height.toString(),
             style = AppTokens.typography.b14Bold(),
-            color = AppTokens.colors.text.primary,
+            color = AppTokens.colors.text.secondary,
             textAlign = TextAlign.Center
         )
 

@@ -22,43 +22,40 @@ public val AppIcon.Wifi: ImageVector
             viewportHeight = 24f
         ).apply {
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(5f, 12.55f)
-                curveTo(6.977f, 10.904f, 9.468f, 10.002f, 12.04f, 10.002f)
-                curveTo(14.612f, 10.002f, 17.103f, 10.904f, 19.08f, 12.55f)
+                moveTo(12f, 19.51f)
+                lineTo(12.01f, 19.499f)
             }
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(1.42f, 9f)
-                curveTo(4.342f, 6.424f, 8.104f, 5.003f, 12f, 5.003f)
-                curveTo(15.896f, 5.003f, 19.658f, 6.424f, 22.58f, 9f)
+                moveTo(2f, 8f)
+                curveTo(8f, 3.5f, 16f, 3.5f, 22f, 8f)
             }
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(8.53f, 16.11f)
-                curveTo(9.545f, 15.389f, 10.76f, 15.001f, 12.005f, 15.001f)
-                curveTo(13.25f, 15.001f, 14.465f, 15.389f, 15.48f, 16.11f)
+                moveTo(5f, 12f)
+                curveTo(9f, 9f, 15f, 9f, 19f, 12f)
             }
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(12f, 20f)
-                horizontalLineTo(12.01f)
+                moveTo(8.5f, 15.5f)
+                curveTo(10.75f, 14.1f, 13.25f, 14.1f, 15.5f, 15.5f)
             }
         }.build()
 

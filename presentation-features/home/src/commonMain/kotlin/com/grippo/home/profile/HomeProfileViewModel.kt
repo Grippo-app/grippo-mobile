@@ -8,8 +8,7 @@ import com.grippo.domain.mapper.user.toState
 import kotlinx.coroutines.flow.onEach
 
 internal class HomeProfileViewModel(
-    userFeature: UserFeature,
-    private val authorizationFeature: AuthorizationFeature
+    userFeature: UserFeature, private val authorizationFeature: AuthorizationFeature
 ) : BaseViewModel<HomeProfileState, HomeProfileDirection, HomeProfileLoader>(HomeProfileState()),
     HomeProfileContract {
 
@@ -27,22 +26,30 @@ internal class HomeProfileViewModel(
         safeLaunch { authorizationFeature.logout() }
     }
 
-    override fun onMenuClick(menu: HomeProfileMenu) {
+    override fun onActivityMenuClick(menu: HomeProfileActivityMenu) {
         val direction = when (menu) {
-            HomeProfileMenu.WeightHistory -> HomeProfileDirection.WeightHistory
-            HomeProfileMenu.ExcludedMuscles -> HomeProfileDirection.ExcludedMuscles
-            HomeProfileMenu.MissingEquipment -> HomeProfileDirection.MissingEquipment
-            HomeProfileMenu.ExerciseLibrary -> HomeProfileDirection.ExerciseLibrary
+            HomeProfileActivityMenu.ExcludedMuscles -> HomeProfileDirection.ExcludedMuscles
+            HomeProfileActivityMenu.MissingEquipment -> HomeProfileDirection.MissingEquipment
+            HomeProfileActivityMenu.ExerciseLibrary -> HomeProfileDirection.ExerciseLibrary
         }
 
         navigateTo(direction)
     }
 
-    override fun back() {
-        navigateTo(HomeProfileDirection.Back)
+    override fun onSettingsMenuClick(menu: HomeProfileSettingsMenu) {
+        val direction = when (menu) {
+            HomeProfileSettingsMenu.System -> HomeProfileDirection.SystemSettings
+            HomeProfileSettingsMenu.Debug -> HomeProfileDirection.Debug
+        }
+
+        navigateTo(direction)
     }
 
-    override fun onDebugClick() {
-        navigateTo(HomeProfileDirection.Debug)
+    override fun onStartWorkoutClick() {
+        navigateTo(HomeProfileDirection.Workout)
+    }
+
+    override fun back() {
+        navigateTo(HomeProfileDirection.Back)
     }
 }

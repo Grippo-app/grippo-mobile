@@ -6,6 +6,7 @@ import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.grippo.design.resources.AppColor
 import com.grippo.design.resources.AppDp
+import com.grippo.design.resources.AppDrawable
 import com.grippo.design.resources.AppIcon
 import com.grippo.design.resources.AppString
 import com.grippo.design.resources.AppTypography
@@ -22,6 +23,7 @@ internal fun ProvideResources(
         LocalAppIcons provides AppIcon,
         LocalAppTypography provides AppTypography,
         LocalAppStrings provides AppString,
+        LocalAppDrawables provides AppDrawable,
         LocalAppDp provides AppDp,
         *values,
         content = content,
@@ -39,6 +41,9 @@ internal val LocalAppTypography = staticCompositionLocalOf<AppTypography> {
 }
 internal val LocalAppStrings = staticCompositionLocalOf<AppString> {
     error("No strings provided")
+}
+internal val LocalAppDrawables = staticCompositionLocalOf<AppDrawable> {
+    error("No drawables provided")
 }
 internal val LocalAppDp = staticCompositionLocalOf<AppDp> {
     error("No dp provided")

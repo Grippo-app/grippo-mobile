@@ -2,11 +2,10 @@ package com.grippo.home
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.pages.ChildPages
-import com.arkivanov.decompose.router.pages.Pages
-import com.arkivanov.decompose.router.pages.PagesNavigation
-import com.arkivanov.decompose.router.pages.childPages
-import com.arkivanov.decompose.router.pages.select
+import com.arkivanov.decompose.router.stack.ChildStack
+import com.arkivanov.decompose.router.stack.StackNavigation
+import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
@@ -18,12 +17,15 @@ import com.grippo.home.trainings.HomeTrainingsComponent
 import com.grippo.presentation.api.bottom.navigation.BottomNavigationRouter
 
 public class BottomNavigationComponent(
+    initial: BottomNavigationRouter,
     componentContext: ComponentContext,
     private val toExcludedMuscles: () -> Unit,
     private val toMissingEquipment: () -> Unit,
     private val toWeightHistory: () -> Unit,
     private val toExerciseLibrary: () -> Unit,
     private val toDebug: () -> Unit,
+    private val toWorkout: () -> Unit,
+    private val toSystemSettings: () -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<BottomNavigationDirection>(componentContext) {
 
@@ -34,7 +36,9 @@ public class BottomNavigationComponent(
     }
 
     override val viewModel: BottomNavigationViewModel = componentContext.retainedInstance {
-        BottomNavigationViewModel()
+        BottomNavigationViewModel(
+            initial = initial
+        )
     }
 
     private val backCallback = BackCallback(onBack = viewModel::back)
@@ -45,31 +49,22 @@ public class BottomNavigationComponent(
 
     override suspend fun eventListener(direction: BottomNavigationDirection) {
         when (direction) {
-            BottomNavigationDirection.Trainings -> navigation.select(0)
-            BottomNavigationDirection.Statistics -> navigation.select(1)
-            BottomNavigationDirection.Profile -> navigation.select(2)
+            BottomNavigationDirection.Trainings -> navigation.replaceAll(BottomNavigationRouter.Trainings)
+            BottomNavigationDirection.Statistics -> navigation.replaceAll(BottomNavigationRouter.Statistics)
+            BottomNavigationDirection.Profile -> navigation.replaceAll(BottomNavigationRouter.Profile)
             BottomNavigationDirection.Back -> back.invoke()
         }
     }
 
-    private val navigation = PagesNavigation<BottomNavigationRouter>()
+    private val navigation = StackNavigation<BottomNavigationRouter>()
 
-    internal val childPages: Value<ChildPages<BottomNavigationRouter, Child>> = childPages(
+    internal val childStack: Value<ChildStack<BottomNavigationRouter, Child>> = childStack(
         source = navigation,
         serializer = BottomNavigationRouter.serializer(),
-        initialPages = {
-            Pages(
-                items = listOf(
-                    BottomNavigationRouter.Trainings,
-                    BottomNavigationRouter.Statistics,
-                    BottomNavigationRouter.Profile,
-                ),
-                selectedIndex = viewModel.state.value.selectedIndex
-            )
-        },
-        key = "BottomNavigationComponent",
+        initialStack = { listOf(initial) },
+        key = "AuthProcessComponent",
         handleBackButton = true,
-        childFactory = ::createChild
+        childFactory = ::createChild,
     )
 
     private fun createChild(router: BottomNavigationRouter, context: ComponentContext): Child {
@@ -84,7 +79,7 @@ public class BottomNavigationComponent(
             is BottomNavigationRouter.Statistics -> Child.Statistics(
                 HomeStatisticsComponent(
                     componentContext = context,
-                    back = { navigation.select(0) }
+                    back = back
                 ),
             )
 
@@ -95,8 +90,10 @@ public class BottomNavigationComponent(
                     toExerciseLibrary = toExerciseLibrary,
                     toMissingEquipment = toMissingEquipment,
                     toWeightHistory = toWeightHistory,
+                    toWorkout = toWorkout,
                     toDebug = toDebug,
-                    back = { navigation.select(1) }
+                    toSystemSettings = toSystemSettings,
+                    back = back
                 ),
             )
         }
@@ -106,6 +103,6 @@ public class BottomNavigationComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        BottomNavigationScreen(childPages, state.value, loaders.value, viewModel)
+        BottomNavigationScreen(this, state.value, loaders.value, viewModel)
     }
 }

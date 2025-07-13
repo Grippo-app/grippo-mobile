@@ -1,6 +1,7 @@
 package com.grippo.data.features.excluded.equipments.data
 
 import com.grippo.data.features.api.equipment.models.Equipment
+import com.grippo.data.features.api.excluded.equipments.ExcludedEquipmentsFeature
 import com.grippo.data.features.excluded.equipments.domain.ExcludedEquipmentsRepository
 import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.dao.UserDao
@@ -12,7 +13,9 @@ import com.grippo.network.user.IdsBody
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import org.koin.core.annotation.Single
 
+@Single(binds = [ExcludedEquipmentsRepository::class])
 internal class ExcludedEquipmentsRepositoryImpl(
     private val api: Api,
     private val userDao: UserDao,

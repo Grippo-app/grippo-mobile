@@ -17,7 +17,6 @@ internal fun resolveButtonColors(
     state: ButtonState,
 ): ButtonColorTokens {
     val colors = AppTokens.colors.button
-    val borders = AppTokens.colors.border
 
     return when (state) {
         ButtonState.Disabled -> when (style) {
@@ -31,7 +30,7 @@ internal fun resolveButtonColors(
             ButtonStyle.Secondary -> ButtonColorTokens(
                 background = colors.backgroundSecondaryDisabled,
                 content = colors.contentSecondaryDisabled,
-                border = borders.disabledSecondary,
+                border = Color.Transparent,
                 icon = colors.contentSecondaryDisabled
             )
 
@@ -46,23 +45,23 @@ internal fun resolveButtonColors(
         else -> when (style) {
             ButtonStyle.Primary -> ButtonColorTokens(
                 background = colors.backgroundPrimary,
-                content = colors.contentPrimary,
+                content = colors.textPrimary,
                 border = Color.Transparent,
-                icon = colors.contentPrimary,
+                icon = colors.iconPrimary,
             )
 
             ButtonStyle.Secondary -> ButtonColorTokens(
                 background = colors.backgroundSecondary,
-                content = colors.contentSecondary,
-                border = borders.defaultSecondary,
-                icon = colors.contentSecondary,
+                content = colors.textSecondary,
+                border = colors.borderSecondary,
+                icon = colors.iconSecondary,
             )
 
             ButtonStyle.Transparent -> ButtonColorTokens(
                 background = Color.Transparent,
-                content = colors.contentSecondary,
+                content = colors.textTransparent,
                 border = Color.Transparent,
-                icon = colors.contentSecondary,
+                icon = colors.iconTransparent,
             )
         }
     }

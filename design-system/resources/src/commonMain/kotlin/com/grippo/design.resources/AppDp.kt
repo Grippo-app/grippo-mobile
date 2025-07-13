@@ -11,7 +11,7 @@ public data object AppDp {
 
     private data object Padding {
         val none: Dp = 0.dp
-        val extraSmall: Dp = 4.dp
+        val extraSmall: Dp = 3.dp
         val small: Dp = 8.dp
         val medium: Dp = 12.dp
         val large: Dp = 16.dp
@@ -32,6 +32,7 @@ public data object AppDp {
         val small: Dp = 8.dp
         val medium: Dp = 12.dp
         val large: Dp = 16.dp
+        val xLarge: Dp = 24.dp
         val circle: Dp = 50.dp
     }
 
@@ -62,9 +63,10 @@ public data object AppDp {
     val equipmentCard: EquipmentCard = EquipmentCard
     val equipmentsCard: EquipmentsCard = EquipmentsCard
     val exerciseExampleBundlesCard: ExerciseExampleBundlesCard = ExerciseExampleBundlesCard
-    val exerciseCard: ExerciseCard = ExerciseCard
-    val exerciseIterations: ExerciseIterations = ExerciseIterations
-    val exerciseDetails: ExerciseDetails = ExerciseDetails
+    val timeline: Timeline = Timeline
+    val timeLabel: TimeLabel = TimeLabel
+    val datePicker: DatePicker = DatePicker
+    val iterationCard: IterationCard = IterationCard
 
     public data object Screen {
         val toolbar: Toolbar = Toolbar
@@ -87,14 +89,14 @@ public data object AppDp {
         val height: Dp = size.medium
         val horizontalPadding: Dp = padding.large
         val radius: Dp = AppDp.radius.large
-        val icon: Dp = AppDp.icon.small
+        val icon: Dp = AppDp.icon.medium
     }
 
     public data object Button {
         val height: Dp = size.medium
         val horizontalPadding: Dp = padding.large
         val radius: Dp = AppDp.radius.large
-        val icon: Dp = AppDp.icon.small
+        val icon: Dp = AppDp.icon.medium
         val space: Dp = padding.small
     }
 
@@ -109,39 +111,42 @@ public data object AppDp {
         }
     }
 
-    public data object ExerciseDetails {
-        val horizontalPadding: Dp = padding.large
-    }
-
-    public data object ExerciseIterations {
-        val horizontalPadding: Dp = padding.large
-    }
-
     public data object UserCard {
-        val horizontalPadding: Dp = padding.large
-        val verticalPadding: Dp = padding.large
-        val radius: Dp = AppDp.radius.large
+        val horizontalPadding: Dp = padding.extraLarge
+        val verticalPadding: Dp = padding.extraLarge
+        val radius: Dp = AppDp.radius.xLarge
     }
 
     public data object BodyDetails {
         val horizontalPadding: Dp = padding.extraSmall
         val verticalPadding: Dp = padding.extraSmall
         val radius: Dp = AppDp.radius.small
-        val icon: Dp = AppDp.icon.small
+        val icon: Dp = AppDp.icon.medium
     }
 
     public data object OverviewCard {
         val horizontalPadding: Dp = padding.small
         val verticalPadding: Dp = padding.small
-        val radius: Dp = AppDp.radius.medium
-        val icon: Dp = AppDp.icon.large
+        val icon: Dp = AppDp.icon.small
     }
 
-    public data object ExerciseCard {
-        val horizontalPadding: Dp = padding.large
-        val verticalPadding: Dp = padding.large
-        val radius: Dp = AppDp.radius.large
+    public data object DatePicker {
         val icon: Dp = AppDp.icon.medium
+        val spacer: Dp = padding.small
+    }
+
+    public data object TimeLabel {
+        val icon: Dp = AppDp.icon.medium
+        val spacer: Dp = padding.extraSmall
+    }
+
+    public data object Timeline {
+        val dot: Dp = 10.dp
+    }
+
+    public data object IterationCard {
+        val horizontalPadding: Dp = 4.dp
+        val verticalPadding: Dp = 5.dp
     }
 
     public data object InformationCard {
@@ -162,13 +167,9 @@ public data object AppDp {
 
     public data object ExerciseExampleBundlesCard {
         val horizontalPadding: Dp = padding.large
-        val verticalPadding: Dp = padding.large
+        val topPadding: Dp = padding.large
+        val bottomPadding: Dp = padding.small
         val radius: Dp = AppDp.radius.large
-        val list: List = List
-
-        public data object List {
-            val horizontalPadding: Dp = padding.large
-        }
     }
 
     public data object SelectableCard {

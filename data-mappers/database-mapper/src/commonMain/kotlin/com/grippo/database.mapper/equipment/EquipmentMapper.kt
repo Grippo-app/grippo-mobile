@@ -10,7 +10,7 @@ public fun List<EquipmentEntity>.toDomain(): List<Equipment> {
 }
 
 public fun EquipmentEntity.toDomain(): Equipment? {
-    val mappedType = AppLogger.checkOrLog(EquipmentEnum.of(type)) {
+    val mappedType = AppLogger.Mapping.log(EquipmentEnum.of(type)) {
         "EquipmentEntity $id has unrecognized type: $type"
     } ?: return null
 

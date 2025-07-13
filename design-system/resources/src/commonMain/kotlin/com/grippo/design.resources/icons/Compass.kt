@@ -22,8 +22,21 @@ public val AppIcon.Compass: ImageVector
             viewportHeight = 24f
         ).apply {
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round
+            ) {
+                moveTo(10.586f, 10.586f)
+                lineTo(16.949f, 7.05f)
+                lineTo(13.414f, 13.414f)
+                lineTo(7.05f, 16.95f)
+                lineTo(10.586f, 10.586f)
+                close()
+            }
+            path(
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
@@ -32,19 +45,6 @@ public val AppIcon.Compass: ImageVector
                 curveTo(22f, 6.477f, 17.523f, 2f, 12f, 2f)
                 curveTo(6.477f, 2f, 2f, 6.477f, 2f, 12f)
                 curveTo(2f, 17.523f, 6.477f, 22f, 12f, 22f)
-                close()
-            }
-            path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
-            ) {
-                moveTo(16.24f, 7.76f)
-                lineTo(14.12f, 14.12f)
-                lineTo(7.76f, 16.24f)
-                lineTo(9.88f, 9.88f)
-                lineTo(16.24f, 7.76f)
                 close()
             }
         }.build()

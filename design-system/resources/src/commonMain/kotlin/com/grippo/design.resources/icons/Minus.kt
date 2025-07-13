@@ -22,13 +22,13 @@ public val AppIcon.Minus: ImageVector
             viewportHeight = 24f
         ).apply {
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(5f, 12f)
-                horizontalLineTo(19f)
+                moveTo(6f, 12f)
+                horizontalLineTo(18f)
             }
         }.build()
 

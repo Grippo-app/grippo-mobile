@@ -9,19 +9,19 @@ import com.grippo.database.entity.ExerciseExampleEntity
 import com.grippo.logger.AppLogger
 
 public fun ExerciseExampleEntity.toDomain(): ExerciseExampleValue? {
-    val mappedWeightType = AppLogger.checkOrLog(WeightTypeEnum.of(weightType)) {
+    val mappedWeightType = AppLogger.Mapping.log(WeightTypeEnum.of(weightType)) {
         "ExerciseExampleEntity $id has unrecognized weightType: $weightType"
     } ?: return null
 
-    val mappedExperience = AppLogger.checkOrLog(ExperienceEnum.of(experience)) {
+    val mappedExperience = AppLogger.Mapping.log(ExperienceEnum.of(experience)) {
         "ExerciseExampleEntity $id has unrecognized experience: $experience"
     } ?: return null
 
-    val mappedForceType = AppLogger.checkOrLog(ForceTypeEnum.of(forceType)) {
+    val mappedForceType = AppLogger.Mapping.log(ForceTypeEnum.of(forceType)) {
         "ExerciseExampleEntity $id has unrecognized forceType: $forceType"
     } ?: return null
 
-    val mappedCategory = AppLogger.checkOrLog(CategoryEnum.of(category)) {
+    val mappedCategory = AppLogger.Mapping.log(CategoryEnum.of(category)) {
         "ExerciseExampleEntity $id has unrecognized category: $category"
     } ?: return null
 

@@ -14,7 +14,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.grippo.design.components.modifiers.nonRippleClick
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -32,9 +32,9 @@ public fun Toggle(
 
     Box(
         modifier = modifier
+            .scalableClick(onClick = onCheckedChange)
             .size(width = 51.dp, height = 31.dp)
             .background(color = Color.Transparent)
-            .nonRippleClick(onClick = onCheckedChange)
     ) {
 
         Canvas(modifier = Modifier.matchParentSize()) {

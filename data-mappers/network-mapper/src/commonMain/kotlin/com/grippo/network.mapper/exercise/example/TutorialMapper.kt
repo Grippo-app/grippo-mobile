@@ -9,35 +9,35 @@ public fun List<TutorialResponse>.toEntities(): List<ExerciseExampleTutorialEnti
 }
 
 public fun TutorialResponse.toEntityOrNull(): ExerciseExampleTutorialEntity? {
-    val entityId = AppLogger.checkOrLog(id) {
+    val entityId = AppLogger.Mapping.log(id) {
         "TutorialResponse.id is null"
     } ?: return null
 
-    val entityExerciseExampleId = AppLogger.checkOrLog(exerciseExampleId) {
+    val entityExerciseExampleId = AppLogger.Mapping.log(exerciseExampleId) {
         "TutorialResponse.exerciseExampleId is null"
     } ?: return null
 
-    val entityTitle = AppLogger.checkOrLog(title) {
+    val entityTitle = AppLogger.Mapping.log(title) {
         "TutorialResponse.title is null"
     } ?: return null
 
-    val entityLanguage = AppLogger.checkOrLog(language) {
+    val entityLanguage = AppLogger.Mapping.log(language) {
         "TutorialResponse.language is null"
     } ?: return null
 
-    val entityValue = AppLogger.checkOrLog(value) {
+    val entityValue = AppLogger.Mapping.log(value) {
         "TutorialResponse.value is null"
     } ?: return null
 
-    val entityResourceType = AppLogger.checkOrLog(resourceType) {
+    val entityResourceType = AppLogger.Mapping.log(resourceType) {
         "TutorialResponse.resourceType is null"
     } ?: return null
 
-    val entityCreatedAt = AppLogger.checkOrLog(createdAt) {
+    val entityCreatedAt = AppLogger.Mapping.log(createdAt) {
         "TutorialResponse.createdAt is null"
     } ?: return null
 
-    val entityUpdatedAt = AppLogger.checkOrLog(updatedAt) {
+    val entityUpdatedAt = AppLogger.Mapping.log(updatedAt) {
         "TutorialResponse.updatedAt is null"
     } ?: return null
 

@@ -3,6 +3,7 @@ plugins {
     id("kotlin.multiplatform.convention")
     id("ios.cocoapods.convention")
     id("compose.multiplatform.convention")
+    id("koin.annotation.convention")
 }
 
 kotlin {
@@ -12,7 +13,7 @@ kotlin {
 
         api(libs.decompose.core)
         api(libs.decompose.extensions)
-        api(libs.koin.core)
+
         implementation(libs.kotlinx.coroutines.core)
         implementation(libs.immutable.collections)
 

@@ -9,35 +9,35 @@ public fun List<UserResponse>.toEntities(): List<UserEntity> {
 }
 
 public fun UserResponse.toEntityOrNull(): UserEntity? {
-    val entityId = AppLogger.checkOrLog(id) {
+    val entityId = AppLogger.Mapping.log(id) {
         "UserResponse.id is null"
     } ?: return null
 
-    val entityWeight = AppLogger.checkOrLog(weight) {
+    val entityWeight = AppLogger.Mapping.log(weight) {
         "UserResponse.weight is null"
     } ?: return null
 
-    val entityHeight = AppLogger.checkOrLog(height) {
+    val entityHeight = AppLogger.Mapping.log(height) {
         "UserResponse.height is null"
     } ?: return null
 
-    val entityEmail = AppLogger.checkOrLog(email) {
+    val entityEmail = AppLogger.Mapping.log(email) {
         "UserResponse.email is null"
     } ?: return null
 
-    val entityExperience = AppLogger.checkOrLog(experience) {
+    val entityExperience = AppLogger.Mapping.log(experience) {
         "UserResponse.experience is null"
     } ?: return null
 
-    val entityName = AppLogger.checkOrLog(name) {
+    val entityName = AppLogger.Mapping.log(name) {
         "UserResponse.name is null"
     } ?: return null
 
-    val entityCreatedAt = AppLogger.checkOrLog(createdAt) {
+    val entityCreatedAt = AppLogger.Mapping.log(createdAt) {
         "UserResponse.createdAt is null"
     } ?: return null
 
-    val entityUpdatedAt = AppLogger.checkOrLog(updatedAt) {
+    val entityUpdatedAt = AppLogger.Mapping.log(updatedAt) {
         "UserResponse.updatedAt is null"
     } ?: return null
 

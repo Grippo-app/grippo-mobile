@@ -10,7 +10,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.shadowDefault
@@ -36,8 +35,7 @@ public fun EquipmentsCard(
                 shape = shape,
                 color = AppTokens.colors.overlay.defaultShadow
             )
-            .clip(shape = shape)
-            .background(AppTokens.colors.background.secondary)
+            .background(AppTokens.colors.background.secondary, shape)
             .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
             .padding(
                 horizontal = AppTokens.dp.equipmentsCard.horizontalPadding,
@@ -45,7 +43,7 @@ public fun EquipmentsCard(
             ),
         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
     ) {
-        items(value, key = { it.id }) { item ->
+        items(items = value, key = { it.id }, contentType = { it::class }) { item ->
             EquipmentCard(
                 value = item
             )

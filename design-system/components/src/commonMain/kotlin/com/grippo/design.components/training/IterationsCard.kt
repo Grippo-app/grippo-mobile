@@ -1,0 +1,48 @@
+package com.grippo.design.components.training
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
+import androidx.compose.ui.Modifier
+import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
+import com.grippo.presentation.api.trainings.models.IterationState
+import com.grippo.presentation.api.trainings.models.stubIteration
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toPersistentList
+
+@Composable
+public fun IterationsCard(
+    modifier: Modifier = Modifier,
+    value: ImmutableList<IterationState>,
+) {
+    FlowRow(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+    ) {
+        value.forEach { iteration ->
+            key(iteration.id) {
+                IterationCard(
+                    value = iteration,
+                )
+            }
+        }
+    }
+}
+
+@AppPreview
+@Composable
+private fun IterationsCardPreview() {
+    PreviewContainer {
+        IterationsCard(
+            value = listOf(
+                stubIteration(),
+                stubIteration(),
+                stubIteration()
+            ).toPersistentList()
+        )
+    }
+}

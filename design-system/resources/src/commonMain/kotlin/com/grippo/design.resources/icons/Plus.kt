@@ -22,22 +22,25 @@ public val AppIcon.Plus: ImageVector
             viewportHeight = 24f
         ).apply {
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(12f, 5f)
-                verticalLineTo(19f)
-            }
-            path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
-            ) {
-                moveTo(5f, 12f)
-                horizontalLineTo(19f)
+                moveTo(12f, 12f)
+                verticalLineTo(18f)
+                moveTo(6f, 12f)
+                horizontalLineTo(12f)
+                horizontalLineTo(6f)
+                close()
+                moveTo(18f, 12f)
+                horizontalLineTo(12f)
+                horizontalLineTo(18f)
+                close()
+                moveTo(12f, 12f)
+                verticalLineTo(6f)
+                verticalLineTo(12f)
+                close()
             }
         }.build()
 

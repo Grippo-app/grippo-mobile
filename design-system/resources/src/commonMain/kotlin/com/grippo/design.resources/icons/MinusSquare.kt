@@ -22,30 +22,31 @@ public val AppIcon.MinusSquare: ImageVector
             viewportHeight = 24f
         ).apply {
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(19f, 3f)
-                horizontalLineTo(5f)
-                curveTo(3.895f, 3f, 3f, 3.895f, 3f, 5f)
-                verticalLineTo(19f)
-                curveTo(3f, 20.105f, 3.895f, 21f, 5f, 21f)
-                horizontalLineTo(19f)
-                curveTo(20.105f, 21f, 21f, 20.105f, 21f, 19f)
-                verticalLineTo(5f)
-                curveTo(21f, 3.895f, 20.105f, 3f, 19f, 3f)
-                close()
+                moveTo(9f, 12f)
+                horizontalLineTo(12f)
+                horizontalLineTo(15f)
             }
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(8f, 12f)
-                horizontalLineTo(16f)
+                moveTo(21f, 3.6f)
+                verticalLineTo(20.4f)
+                curveTo(21f, 20.731f, 20.731f, 21f, 20.4f, 21f)
+                horizontalLineTo(3.6f)
+                curveTo(3.269f, 21f, 3f, 20.731f, 3f, 20.4f)
+                verticalLineTo(3.6f)
+                curveTo(3f, 3.269f, 3.269f, 3f, 3.6f, 3f)
+                horizontalLineTo(20.4f)
+                curveTo(20.731f, 3f, 21f, 3.269f, 21f, 3.6f)
+                close()
             }
         }.build()
 

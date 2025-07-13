@@ -1,6 +1,7 @@
 plugins {
     id("android.library.convention")
     id("kotlin.multiplatform.convention")
+    id("koin.annotation.convention")
 }
 
 kotlin {
@@ -13,7 +14,6 @@ kotlin {
         implementation(projects.dataMappers.networkMapper)
         implementation(projects.common.dateUtils)
 
-        implementation(libs.koin.core)
         implementation(libs.kotlinx.coroutines.core)
         implementation(libs.datetime)
     }

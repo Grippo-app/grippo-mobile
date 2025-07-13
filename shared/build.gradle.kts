@@ -3,6 +3,7 @@ plugins {
     id("kotlin.multiplatform.convention")
     id("ios.cocoapods.convention")
     id("compose.multiplatform.convention")
+    id("koin.annotation.convention")
 }
 
 kotlin {
@@ -43,18 +44,15 @@ kotlin {
         implementation(projects.dialogFeatures.dialogApi)
         implementation(projects.dialogFeatures.weightPicker)
         implementation(projects.dialogFeatures.heightPicker)
+        implementation(projects.dialogFeatures.datePicker)
         implementation(projects.dialogFeatures.errorDisplay)
         implementation(projects.dialogFeatures.exerciseExample)
 
-        implementation(libs.koin.core)
+        implementation(libs.datetime)
         implementation(libs.immutable.collections)
 
         implementation(compose.ui)
         implementation(compose.material3)
         implementation(compose.foundation)
-    }
-
-    sourceSets.androidMain.dependencies {
-        implementation(libs.koin.android)
     }
 }

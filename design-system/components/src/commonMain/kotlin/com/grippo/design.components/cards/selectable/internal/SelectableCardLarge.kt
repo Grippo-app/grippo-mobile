@@ -20,12 +20,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.cards.selectable.SelectableCardStyle
 import com.grippo.design.components.cards.selectable.SelectableCardVariants
 import com.grippo.design.components.modifiers.ShadowElevation
-import com.grippo.design.components.modifiers.nonRippleClick
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.components.modifiers.shimmerAnimation
 import com.grippo.design.core.AppTokens
@@ -52,20 +51,19 @@ internal fun SelectableCardLarge(
     )
 
     val iconTint by animateColorAsState(
-        if (isSelected) AppTokens.colors.icon.accent else AppTokens.colors.icon.default,
+        if (isSelected) AppTokens.colors.icon.accent else AppTokens.colors.icon.primary,
         label = "mediumIconTint"
     )
 
     Row(
         modifier = modifier
+            .scalableClick(onClick = onClick)
             .shadowDefault(
                 elevation = ShadowElevation.Card,
                 shape = shape,
                 color = shadowColor
             )
-            .clip(shape)
-            .nonRippleClick(onClick = onClick)
-            .background(AppTokens.colors.background.secondary)
+            .background(AppTokens.colors.background.secondary, shape)
             .border(1.dp, borderColor, shape)
             .padding(
                 horizontal = AppTokens.dp.selectableCard.large.horizontalPadding,
@@ -111,13 +109,14 @@ internal fun SelectableCardLargeSkeleton(modifier: Modifier) {
                 shape = RoundedCornerShape(shape),
                 color = AppTokens.colors.overlay.defaultShadow,
             )
-            .clip(RoundedCornerShape(shape))
-            .background(AppTokens.colors.background.secondary)
+            .background(AppTokens.colors.background.secondary, RoundedCornerShape(shape))
             .border(1.dp, AppTokens.colors.border.defaultPrimary, RoundedCornerShape(shape))
             .padding(
                 horizontal = AppTokens.dp.selectableCard.large.horizontalPadding,
                 vertical = AppTokens.dp.selectableCard.large.verticalPadding
-            ).height(AppTokens.dp.selectableCard.large.icon),
+            ).height(
+                AppTokens.dp.selectableCard.large.icon
+            ),
     )
 }
 

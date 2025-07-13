@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
+import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
@@ -39,7 +40,7 @@ internal fun ProfileEquipmentsScreen(
     state: ProfileEquipmentsState,
     loaders: ImmutableSet<ProfileEquipmentsLoader>,
     contract: ProfileEquipmentsContract
-) = BaseComposeScreen(AppTokens.colors.background.primary) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
 
     val segmentItems = remember(state.suggestions) {
         state.suggestions.map { it.id to UiText.Str(it.name) }.toPersistentList()
@@ -60,7 +61,6 @@ internal fun ProfileEquipmentsScreen(
                 onSelect = contract::selectGroup,
                 segmentWidth = SegmentWidth.Unspecified,
             )
-
         }
     )
 
@@ -79,7 +79,7 @@ internal fun ProfileEquipmentsScreen(
         ),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
     ) {
-        items(equipments, key = { it.id }) { equipment ->
+        items(items = equipments, key = { it.id }, contentType = { it::class }) { equipment ->
             EquipmentRow(
                 equipment = equipment,
                 selectedEquipmentIds = state.selectedEquipmentIds,

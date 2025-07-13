@@ -10,7 +10,7 @@ public fun List<MuscleEntity>.toDomain(): List<Muscle> {
 }
 
 public fun MuscleEntity.toDomain(): Muscle? {
-    val mappedType = AppLogger.checkOrLog(MuscleEnum.of(type)) {
+    val mappedType = AppLogger.Mapping.log(MuscleEnum.of(type)) {
         "MuscleEntity $id has unrecognized type: $type"
     } ?: return null
 

@@ -6,6 +6,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
+import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
@@ -58,6 +59,7 @@ public object DateTimeUtils {
      * Date/Time Formatting
      * * * * * * * * * * */
 
+    @OptIn(FormatStringsInDatetimeFormats::class)
     public fun format(value: LocalDateTime, format: DateFormat): String {
         return value.format(LocalDateTime.Format { byUnicodePattern(format.value) })
     }

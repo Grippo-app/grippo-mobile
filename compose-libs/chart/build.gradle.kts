@@ -7,6 +7,7 @@ plugins {
 kotlin {
     sourceSets.commonMain.dependencies {
         implementation(compose.foundation)
+        implementation(compose.ui)
         implementation(compose.material3)
     }
 }

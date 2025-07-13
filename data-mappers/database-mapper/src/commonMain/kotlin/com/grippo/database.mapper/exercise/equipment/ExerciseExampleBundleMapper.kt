@@ -10,7 +10,7 @@ public fun List<ExerciseExampleBundleWithMuscle>.toDomain(): List<ExerciseExampl
 }
 
 public fun ExerciseExampleBundleWithMuscle.toDomain(): ExerciseExampleBundle? {
-    val mappedMuscle = AppLogger.checkOrLog(muscle.toDomain()) {
+    val mappedMuscle = AppLogger.Mapping.log(muscle.toDomain()) {
         "ExerciseExampleBundleWithMuscle ${bundle.id} has invalid muscle (id=${muscle.id})"
     } ?: return null
 

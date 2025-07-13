@@ -3,7 +3,9 @@ package com.grippo.data.features.authorization.domain
 import com.grippo.data.features.api.authorization.AuthorizationFeature
 import com.grippo.data.features.api.authorization.models.SetRegistration
 import kotlinx.coroutines.flow.Flow
+import org.koin.core.annotation.Single
 
+@Single(binds = [AuthorizationFeature::class])
 internal class AuthorizationFeatureImpl(
     private val repository: AuthorizationRepository
 ) : AuthorizationFeature {

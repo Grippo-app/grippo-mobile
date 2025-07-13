@@ -11,17 +11,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.core.AppTokens
+import com.grippo.design.core.UiText
 import kotlinx.collections.immutable.ImmutableList
 
 @Immutable
 public data class MenuItem(
-    val title: String,
+    val title: UiText,
     val icon: ImageVector
 )
 
@@ -31,19 +31,17 @@ public fun <KEY> Menu(
     items: ImmutableList<Pair<KEY, MenuItem>>,
     onClick: (KEY) -> Unit
 ) {
-
     val shape = RoundedCornerShape(AppTokens.dp.menu.radius)
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .shadowDefault(
                 elevation = ShadowElevation.Card,
                 shape = shape,
                 color = AppTokens.colors.overlay.defaultShadow
             )
             .fillMaxWidth()
-            .clip(shape = shape)
-            .background(AppTokens.colors.background.secondary)
+            .background(AppTokens.colors.background.secondary, shape)
             .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
     ) {
 
@@ -52,7 +50,7 @@ public fun <KEY> Menu(
 
             MenuCard(
                 modifier = Modifier.fillMaxWidth(),
-                title = item.second.title,
+                title = item.second.title.text(),
                 icon = item.second.icon,
                 onClick = onClickProvider
             )
@@ -62,7 +60,7 @@ public fun <KEY> Menu(
                     modifier = Modifier
                         .padding(horizontal = AppTokens.dp.menu.item.horizontalPadding)
                         .fillMaxWidth(),
-                    color = AppTokens.colors.divider.default
+                    color = AppTokens.colors.divider.primary
                 )
             }
         }

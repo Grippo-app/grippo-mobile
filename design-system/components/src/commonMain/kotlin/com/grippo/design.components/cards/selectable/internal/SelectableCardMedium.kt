@@ -17,14 +17,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.cards.selectable.SelectableCardStyle
 import com.grippo.design.components.cards.selectable.SelectableCardVariants
 import com.grippo.design.components.modifiers.ShadowElevation
-import com.grippo.design.components.modifiers.nonRippleClick
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.components.modifiers.shimmerAnimation
 import com.grippo.design.components.toggle.Toggle
@@ -43,14 +42,13 @@ internal fun SelectableCardMedium(
 
     Row(
         modifier = modifier
+            .scalableClick(onClick = onClick)
             .shadowDefault(
                 elevation = ShadowElevation.Card,
                 shape = shape,
                 color = AppTokens.colors.overlay.defaultShadow
             )
-            .clip(shape)
-            .nonRippleClick(onClick = onClick)
-            .background(AppTokens.colors.background.secondary)
+            .background(AppTokens.colors.background.secondary, shape)
             .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
             .padding(
                 horizontal = AppTokens.dp.selectableCard.medium.horizontalPadding,
@@ -98,8 +96,7 @@ internal fun SelectableCardMediumSkeleton(modifier: Modifier) {
                 shape = RoundedCornerShape(radius),
                 color = AppTokens.colors.overlay.defaultShadow
             )
-            .clip(RoundedCornerShape(radius))
-            .background(AppTokens.colors.background.secondary)
+            .background(AppTokens.colors.background.secondary, RoundedCornerShape(radius))
             .border(1.dp, AppTokens.colors.border.defaultPrimary, RoundedCornerShape(radius))
             .padding(
                 horizontal = AppTokens.dp.selectableCard.medium.horizontalPadding,

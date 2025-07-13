@@ -1,6 +1,7 @@
 plugins {
     id("android.library.convention")
     id("kotlin.multiplatform.convention")
+    id("koin.annotation.convention")
 }
 
 kotlin {
@@ -12,7 +13,6 @@ kotlin {
         implementation(projects.dataMappers.databaseMapper)
         implementation(projects.dataMappers.networkMapper)
 
-        implementation(libs.koin.core)
         implementation(libs.kotlinx.coroutines.core)
     }
 }

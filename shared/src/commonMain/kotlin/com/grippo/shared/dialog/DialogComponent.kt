@@ -12,11 +12,13 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.collectAsStateMultiplatform
+import com.grippo.date.picker.DatePickerComponent
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.error.display.ErrorDisplayComponent
 import com.grippo.exercise.example.exerciseexample.ExerciseExampleComponent
 import com.grippo.height.picker.HeightPickerComponent
 import com.grippo.shared.dialog.DialogComponent.Dialog.ErrorDisplay
+import com.grippo.shared.dialog.DialogComponent.Dialog.ExerciseExample
 import com.grippo.shared.dialog.DialogComponent.Dialog.HeightPicker
 import com.grippo.shared.dialog.DialogComponent.Dialog.WeightPicker
 import com.grippo.weight.picker.WeightPickerComponent
@@ -26,10 +28,19 @@ internal class DialogComponent(
 ) : BaseComponent<DialogDirection>(componentContext) {
 
     internal sealed class Dialog(open val component: BaseComponent<*>) {
-        data class WeightPicker(override val component: WeightPickerComponent) : Dialog(component)
-        data class HeightPicker(override val component: HeightPickerComponent) : Dialog(component)
-        data class ErrorDisplay(override val component: ErrorDisplayComponent) : Dialog(component)
+        data class WeightPicker(override val component: WeightPickerComponent) :
+            Dialog(component)
+
+        data class HeightPicker(override val component: HeightPickerComponent) :
+            Dialog(component)
+
+        data class ErrorDisplay(override val component: ErrorDisplayComponent) :
+            Dialog(component)
+
         data class ExerciseExample(override val component: ExerciseExampleComponent) :
+            Dialog(component)
+
+        data class DatePicker(override val component: DatePickerComponent) :
             Dialog(component)
     }
 
@@ -101,12 +112,25 @@ internal class DialogComponent(
                 )
             )
 
-            is DialogConfig.ExerciseExample -> Dialog.ExerciseExample(
+            is DialogConfig.ExerciseExample -> ExerciseExample(
                 ExerciseExampleComponent(
                     componentContext = context,
                     id = router.id,
                     onResult = {
                         viewModel.dismiss()
+                    },
+                    back = viewModel::dismiss
+                )
+            )
+
+            is DialogConfig.DatePicker -> Dialog.DatePicker(
+                DatePickerComponent(
+                    componentContext = context,
+                    initial = router.initial,
+                    onResult = {
+                        viewModel.dismiss {
+                            router.onResult.invoke(it)
+                        }
                     },
                     back = viewModel::dismiss
                 )

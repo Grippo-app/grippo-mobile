@@ -16,8 +16,10 @@ import com.grippo.network.user.UserResponse
 import com.grippo.network.user.WeightHistoryResponse
 import io.ktor.client.call.body
 import io.ktor.http.HttpMethod
+import org.koin.core.annotation.Single
 
-public class Api(private val client: NetworkClient) {
+@Single
+public class Api internal constructor(private val client: NetworkClient) {
 
     /* * * * * * * * * * * * * * * * *
      * Auth service

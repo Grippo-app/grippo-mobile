@@ -12,8 +12,6 @@ public interface AppColor {
     public val semantic: SemanticColors
     public val overlay: OverlayColors
     public val border: BorderColors
-    public val interaction: InteractionColors
-    public val elevation: ElevationColors
     public val skeleton: SkeletonColors
     public val icon: IconColors
     public val toggle: ToggleColors
@@ -22,21 +20,28 @@ public interface AppColor {
     public val konfetti: Konfetti
 
     public interface DividerColors {
-        public val default: Color
+        public val primary: Color
+        public val secondary: Color
     }
 
     public interface ButtonColors {
         public val backgroundPrimary: Color
-        public val contentPrimary: Color
+        public val textPrimary: Color
+        public val iconPrimary: Color
         public val backgroundPrimaryDisabled: Color
         public val contentPrimaryDisabled: Color
 
         public val backgroundSecondary: Color
-        public val contentSecondary: Color
+        public val textSecondary: Color
+        public val iconSecondary: Color
+        public val borderSecondary: Color
         public val backgroundSecondaryDisabled: Color
         public val contentSecondaryDisabled: Color
 
         public val contentTransparentDisabled: Color
+        public val textTransparent: Color
+        public val iconTransparent: Color
+
     }
 
     public interface ToggleColors {
@@ -74,6 +79,7 @@ public interface AppColor {
         public val primary: Color
         public val secondary: Color
         public val accent: Color
+        public val tertiary: Color
     }
 
     public interface DialogColors {
@@ -85,6 +91,8 @@ public interface AppColor {
     public interface TextColors {
         public val primary: Color
         public val secondary: Color
+        public val tertiary: Color
+        public val inverted: Color
         public val disabled: Color
     }
 
@@ -93,6 +101,7 @@ public interface AppColor {
         public val error: Color
         public val warning: Color
         public val info: Color
+        public val accent: Color
     }
 
     public interface OverlayColors {
@@ -105,20 +114,9 @@ public interface AppColor {
         public val disabledPrimary: Color
         public val defaultSecondary: Color
         public val disabledSecondary: Color
+        public val inverted: Color
         public val focus: Color
         public val error: Color
-    }
-
-    public interface InteractionColors {
-        public val pressed: Color
-        public val hovered: Color
-        public val focused: Color
-    }
-
-    public interface ElevationColors {
-        public val level0: Color
-        public val level1: Color
-        public val level2: Color
     }
 
     public interface SkeletonColors {
@@ -127,10 +125,11 @@ public interface AppColor {
     }
 
     public interface IconColors {
-        public val default: Color
+        public val primary: Color
+        public val secondary: Color
         public val disabled: Color
         public val accent: Color
-        public val invert: Color
+        public val inverted: Color
     }
 
     public interface EquipmentColors {

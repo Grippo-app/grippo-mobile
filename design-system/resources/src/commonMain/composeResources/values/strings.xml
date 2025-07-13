@@ -59,6 +59,8 @@
     <string name="height_picker_title">Select your height</string>
     <string name="height_picker_description">This will help us personalize your workout recommendations.</string>
 
+    <string name="date_picker_title">Select date</string>
+
     <string name="weight_picker_title">Select your weight</string>
     <string name="weight_picker_description">Used for calculating stats like BMI and optimizing your workouts.</string>
 
@@ -72,7 +74,6 @@
     <string name="experience_pro_description">You've been working out for over 5 years, have excellent exercise form, and maintain a high level of muscular development.</string>
 
     <string name="user_card_preferences">preferences</string>
-    <string name="user_card_overview">overview</string>
     <string name="user_card_value_in_a_row">%1$s in a Row</string>
     <string name="user_card_value_workouts">%1$s Workouts</string>
     <string name="user_card_no_workouts_yet">No workouts yet</string>
@@ -98,4 +99,14 @@
     <string name="equipments">Equipments</string>
     <string name="muscles">Muscles</string>
     <string name="weight_history">Weight History</string>
+    <string name="view_details">View details</string>
+    <string name="start_workout">Start Workout</string>
+    <string name="system">System</string>
+    <string name="debug">Debug</string>
+    <string name="settings">Settings</string>
+    <string name="activity">Activity</string>
+    <string name="overview">Overview</string>
+    <string name="muscles_in_use">Muscles in use</string>
+    <string name="required_equipment">Required equipment</string>
+    <string name="training_at_value">Training at %1$s</string>
 </resources>

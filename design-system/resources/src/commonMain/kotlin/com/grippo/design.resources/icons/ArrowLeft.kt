@@ -22,23 +22,21 @@ public val AppIcon.ArrowLeft: ImageVector
             viewportHeight = 24f
         ).apply {
             path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(19f, 12f)
-                horizontalLineTo(5f)
-            }
-            path(
-                stroke = SolidColor(Color(0xFF000000)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
-            ) {
-                moveTo(12f, 19f)
-                lineTo(5f, 12f)
-                lineTo(12f, 5f)
+                moveTo(6f, 12f)
+                lineTo(12f, 18f)
+                moveTo(18.5f, 12f)
+                horizontalLineTo(6f)
+                horizontalLineTo(18.5f)
+                close()
+                moveTo(6f, 12f)
+                lineTo(12f, 6f)
+                lineTo(6f, 12f)
+                close()
             }
         }.build()
 
