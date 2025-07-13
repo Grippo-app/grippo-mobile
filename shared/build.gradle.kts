@@ -44,9 +44,11 @@ kotlin {
         implementation(projects.dialogFeatures.dialogApi)
         implementation(projects.dialogFeatures.weightPicker)
         implementation(projects.dialogFeatures.heightPicker)
+        implementation(projects.dialogFeatures.datePicker)
         implementation(projects.dialogFeatures.errorDisplay)
         implementation(projects.dialogFeatures.exerciseExample)
 
+        implementation(libs.datetime)
         implementation(libs.immutable.collections)
 
         implementation(compose.ui)

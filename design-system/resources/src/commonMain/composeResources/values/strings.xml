@@ -59,6 +59,8 @@
     <string name="height_picker_title">Select your height</string>
     <string name="height_picker_description">This will help us personalize your workout recommendations.</string>
 
+    <string name="date_picker_title">Select date</string>
+
     <string name="weight_picker_title">Select your weight</string>
     <string name="weight_picker_description">Used for calculating stats like BMI and optimizing your workouts.</string>
 
