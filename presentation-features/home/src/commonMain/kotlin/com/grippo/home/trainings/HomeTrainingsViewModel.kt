@@ -8,7 +8,6 @@ import com.grippo.dialog.api.DialogController
 import com.grippo.domain.mapper.training.toState
 import com.grippo.domain.mapper.training.transformToTrainingListValue
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.onEach
 import kotlinx.datetime.LocalDateTime
 
@@ -24,7 +23,7 @@ internal class HomeTrainingsViewModel(
         trainingFeature.observeTrainings(
             start = LocalDateTime(2024, 1, 1, 11, 11, 11, 11),
             end = LocalDateTime(2026, 1, 1, 11, 11, 11, 11)
-        ).debounce(100)
+        )
             .onEach(::provideTrainings)
             .safeLaunch()
 

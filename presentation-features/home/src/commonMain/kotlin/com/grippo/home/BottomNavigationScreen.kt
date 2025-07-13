@@ -5,10 +5,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.arkivanov.decompose.extensions.compose.pages.ChildPages
-import com.arkivanov.decompose.extensions.compose.pages.PagesScrollAnimation
-import com.arkivanov.decompose.router.pages.ChildPages
-import com.arkivanov.decompose.value.Value
+import com.arkivanov.decompose.extensions.compose.experimental.stack.animation.fade
+import com.arkivanov.decompose.extensions.compose.experimental.stack.animation.stackAnimation
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.tab.TabItem
@@ -16,13 +14,13 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.home.internal.BottomNavigationMenu
-import com.grippo.presentation.api.bottom.navigation.BottomNavigationRouter
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.toPersistentList
+import com.arkivanov.decompose.extensions.compose.experimental.stack.ChildStack as ChildStackCompose
 
 @Composable
 internal fun BottomNavigationScreen(
-    pages: Value<ChildPages<BottomNavigationRouter, BottomNavigationComponent.Child>>,
+    component: BottomNavigationComponent,
     state: BottomNavigationState,
     loaders: ImmutableSet<BottomNavigationLoader>,
     contract: BottomNavigationContract
@@ -37,12 +35,11 @@ internal fun BottomNavigationScreen(
         selected = state.selectedIndex,
         onSelect = contract::selectPage,
         content = {
-            ChildPages(
+            ChildStackCompose(
                 modifier = Modifier.fillMaxWidth().weight(1f),
-                pages = pages,
-                onPageSelected = contract::selectPage,
-                scrollAnimation = PagesScrollAnimation.Disabled,
-                pageContent = { _, page -> page.component.Render() }
+                stack = component.childStack,
+                animation = stackAnimation(animator = fade()),
+                content = { child -> child.instance.component.Render() }
             )
         }
     )
