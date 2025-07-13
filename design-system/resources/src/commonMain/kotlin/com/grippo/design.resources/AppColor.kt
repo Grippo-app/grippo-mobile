@@ -18,7 +18,6 @@ public interface AppColor {
     public val muscle: MuscleColors
     public val segment: SegmentColors
     public val konfetti: Konfetti
-    public val calendar: CalendarColors
 
     public interface DividerColors {
         public val primary: Color
@@ -162,16 +161,5 @@ public interface AppColor {
         public val confettiColor8: Color
         public val confettiColor9: Color
         public val confettiColor10: Color
-    }
-
-    public interface CalendarColors {
-        public val container: Color
-        public val selectedDayBackground: Color
-        public val selectedDayText: Color
-        public val todayBorder: Color
-        public val todayText: Color
-        public val disabledDayText: Color
-        public val dayText: Color
-        public val weekdayText: Color
     }
 }

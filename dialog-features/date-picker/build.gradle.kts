@@ -12,6 +12,7 @@ kotlin {
         implementation(projects.designSystem.resources)
         implementation(projects.designSystem.preview)
         implementation(projects.designSystem.components)
+        implementation(projects.composeLibs.wheelPicker)
 
         implementation(compose.foundation)
         implementation(compose.material3)

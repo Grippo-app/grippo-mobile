@@ -172,15 +172,4 @@ public object LightColor : AppColor {
         override val confettiColor9 = Neutral400
         override val confettiColor10 = Neutral500
     }
-
-    override val calendar: AppColor.CalendarColors = object : AppColor.CalendarColors {
-        override val container = background.secondary
-        override val selectedDayBackground = button.backgroundPrimary
-        override val selectedDayText = button.textPrimary
-        override val todayBorder = icon.accent
-        override val todayText = icon.accent
-        override val disabledDayText = text.disabled
-        override val dayText = text.primary
-        override val weekdayText = text.secondary
-    }
 }

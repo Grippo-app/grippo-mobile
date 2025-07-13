@@ -1,19 +1,15 @@
 package com.grippo.height.picker
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeDialog
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
@@ -27,8 +23,7 @@ import com.grippo.design.resources.Res
 import com.grippo.design.resources.height_picker_description
 import com.grippo.design.resources.height_picker_title
 import com.grippo.design.resources.submit_btn
-import com.grippo.wheel.picker.DefaultSelectorProperties
-import com.grippo.wheel.picker.WheelPicker
+import com.grippo.height.picker.internal.HeightWheelPicker
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -40,7 +35,7 @@ internal fun HeightPickerScreen(
 ) = BaseComposeDialog(ScreenBackground.Color(AppTokens.colors.background.secondary)) {
 
     Toolbar(
-        modifier = Modifier,
+        modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.height_picker_title),
         style = ToolbarStyle.Transparent,
     )
@@ -65,26 +60,11 @@ internal fun HeightPickerScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-        WheelPicker(
-            modifier = Modifier.fillMaxWidth()
-                .height(AppTokens.dp.wheelPicker.height),
-            items = state.suggestions,
-            initial = state.initial,
-            onValueChange = contract::select,
-            rowCount = 3,
-            selectorProperties = DefaultSelectorProperties(
-                enabled = true,
-                shape = RoundedCornerShape(AppTokens.dp.wheelPicker.radius),
-                color = AppTokens.colors.background.primary,
-                border = BorderStroke(1.dp, AppTokens.colors.border.defaultPrimary)
-            ),
-            content = {
-                Text(
-                    modifier = Modifier,
-                    text = it.toString(),
-                    style = AppTokens.typography.b16Bold()
-                )
-            }
+        HeightWheelPicker(
+            modifier = Modifier.fillMaxWidth(),
+            suggestions = state.suggestions,
+            value = state.initial,
+            select = contract::select
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
