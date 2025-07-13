@@ -1,12 +1,11 @@
 package com.grippo.date.picker
 
 import androidx.compose.runtime.Immutable
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDateTime
 
 @Immutable
 public data class DatePickerState(
-    public val suggestions: PersistentList<Int> = (100..250).toPersistentList(),
+    public val limitations: Pair<LocalDateTime, LocalDateTime> =
+        LocalDateTime(2024, 7, 9, 14, 30) to LocalDateTime(2026, 7, 9, 14, 30),
     val initial: LocalDateTime
 )
