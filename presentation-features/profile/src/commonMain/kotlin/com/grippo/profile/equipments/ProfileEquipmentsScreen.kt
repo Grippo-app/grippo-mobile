@@ -61,7 +61,6 @@ internal fun ProfileEquipmentsScreen(
                 onSelect = contract::selectGroup,
                 segmentWidth = SegmentWidth.Unspecified,
             )
-
         }
     )
 

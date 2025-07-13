@@ -49,6 +49,10 @@ internal class HomeTrainingsViewModel(
         dialogController.show(dialog)
     }
 
+    override fun selectDate() {
+        // todo add logic
+    }
+
     override fun back() {
         navigateTo(HomeTrainingsDirection.Back)
     }

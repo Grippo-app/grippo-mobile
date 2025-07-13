@@ -2,6 +2,7 @@ package com.grippo.home.trainings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
+import com.grippo.design.components.datetime.DatePicker
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.border
 import com.grippo.design.components.modifiers.shadowDefault
@@ -35,6 +37,7 @@ import com.grippo.presentation.api.trainings.models.stubTraining
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.datetime.LocalDateTime
 
 @Composable
 internal fun HomeTrainingsScreen(
@@ -46,6 +49,22 @@ internal fun HomeTrainingsScreen(
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.trainings),
+        content = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        bottom = AppTokens.dp.contentPadding.content,
+                        start = AppTokens.dp.screen.horizontalPadding,
+                        end = AppTokens.dp.screen.horizontalPadding
+                    ),
+            ) {
+                DatePicker(
+                    value = LocalDateTime(2025, 7, 9, 14, 30),
+                    onClick = contract::selectDate
+                )
+            }
+        }
     )
 
     LazyColumn(

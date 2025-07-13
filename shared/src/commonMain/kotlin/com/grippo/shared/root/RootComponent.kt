@@ -86,7 +86,7 @@ public class RootComponent(
             RootRouter.Home -> Home(
                 BottomNavigationComponent(
                     componentContext = context,
-                    initial = BottomNavigationRouter.Profile,
+                    initial = BottomNavigationRouter.Trainings,
                     toWeightHistory = { navigation.push(RootRouter.Profile(ProfileRouter.WeightHistory)) },
                     toMissingEquipment = { navigation.push(RootRouter.Profile(ProfileRouter.Equipments)) },
                     toExcludedMuscles = { navigation.push(RootRouter.Profile(ProfileRouter.Muscles)) },

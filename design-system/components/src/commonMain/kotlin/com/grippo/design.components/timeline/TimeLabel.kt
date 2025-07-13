@@ -24,12 +24,12 @@ public fun TimeLabel(
     modifier: Modifier = Modifier,
     value: LocalDateTime
 ) {
+    val text = DateCompose.rememberFormat(value, DateFormat.HH_mm)
+
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        val text = DateCompose.rememberFormat(value, DateFormat.HH_MMM)
-
         Icon(
             modifier = Modifier.size(AppTokens.dp.timeLabel.icon),
             imageVector = AppTokens.icons.ClockOutline,
