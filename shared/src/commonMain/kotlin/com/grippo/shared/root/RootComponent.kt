@@ -19,6 +19,7 @@ import com.grippo.design.core.AppTheme
 import com.grippo.home.BottomNavigationComponent
 import com.grippo.presentation.api.RootRouter
 import com.grippo.presentation.api.auth.AuthRouter
+import com.grippo.presentation.api.bottom.navigation.BottomNavigationRouter
 import com.grippo.presentation.api.profile.ProfileRouter
 import com.grippo.profile.ProfileComponent
 import com.grippo.shared.dialog.DialogComponent
@@ -85,6 +86,7 @@ public class RootComponent(
             RootRouter.Home -> Home(
                 BottomNavigationComponent(
                     componentContext = context,
+                    initial = BottomNavigationRouter.Profile,
                     toWeightHistory = { navigation.push(RootRouter.Profile(ProfileRouter.WeightHistory)) },
                     toMissingEquipment = { navigation.push(RootRouter.Profile(ProfileRouter.Equipments)) },
                     toExcludedMuscles = { navigation.push(RootRouter.Profile(ProfileRouter.Muscles)) },

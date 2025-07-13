@@ -17,6 +17,7 @@ import com.grippo.home.trainings.HomeTrainingsComponent
 import com.grippo.presentation.api.bottom.navigation.BottomNavigationRouter
 
 public class BottomNavigationComponent(
+    initial: BottomNavigationRouter,
     componentContext: ComponentContext,
     private val toExcludedMuscles: () -> Unit,
     private val toMissingEquipment: () -> Unit,
@@ -35,7 +36,9 @@ public class BottomNavigationComponent(
     }
 
     override val viewModel: BottomNavigationViewModel = componentContext.retainedInstance {
-        BottomNavigationViewModel()
+        BottomNavigationViewModel(
+            initial = initial
+        )
     }
 
     private val backCallback = BackCallback(onBack = viewModel::back)
@@ -58,7 +61,7 @@ public class BottomNavigationComponent(
     internal val childStack: Value<ChildStack<BottomNavigationRouter, Child>> = childStack(
         source = navigation,
         serializer = BottomNavigationRouter.serializer(),
-        initialStack = { listOf(BottomNavigationRouter.Profile) },
+        initialStack = { listOf(initial) },
         key = "AuthProcessComponent",
         handleBackButton = true,
         childFactory = ::createChild,

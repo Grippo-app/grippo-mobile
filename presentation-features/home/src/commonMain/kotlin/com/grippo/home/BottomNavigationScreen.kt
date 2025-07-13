@@ -32,8 +32,8 @@ internal fun BottomNavigationScreen(
 
     BottomNavigationMenu(
         items = tabs,
-        selected = state.selectedIndex,
-        onSelect = contract::selectPage,
+        selected = state.selected.ordinal,
+        onSelect = contract::selectTab,
         content = {
             ChildStackCompose(
                 modifier = Modifier.fillMaxWidth().weight(1f),
