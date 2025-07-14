@@ -1,99 +1,85 @@
 package com.grippo.wheel.picker.internal
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.compose.foundation.lazy.LazyListLayoutInfo
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.SubcomposeLayout
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
-import com.grippo.wheel.picker.SelectorProperties
-import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
-// https://github.com/commandiron/WheelPickerCompose
 @Composable
-internal fun WheelPicker(
+internal fun <T> SingleWheelColumn(
     modifier: Modifier = Modifier,
-    startIndex: Int = 0,
-    count: Int,
+    items: List<T>,
+    initialIndex: Int,
     rowCount: Int,
-    selectorProperties: SelectorProperties,
-    onValueChange: (snappedIndex: Int) -> Int? = { _ -> null },
-    content: @Composable LazyItemScope.(index: Int) -> Unit,
+    onValueChange: (T) -> Unit,
+    itemContent: @Composable (T) -> Unit,
+    descriptionContent: (@Composable () -> Unit)? = null,
 ) {
-    val lazyListState = rememberLazyListState(startIndex)
-    val flingBehavior = rememberSnapFlingBehavior(lazyListState)
-
-    val layoutInfo by remember { derivedStateOf { lazyListState.layoutInfo } }
-
-    val shape = selectorProperties.shape().value
-    val border = selectorProperties.border().value
-    val enabled = selectorProperties.enabled().value
-    val color = selectorProperties.color().value
-
-    val coroutineScope = rememberCoroutineScope()
+    val listState = rememberLazyListState(initialIndex)
+    val layoutInfo by remember { derivedStateOf { listState.layoutInfo } }
 
     val centerIndex by remember {
-        derivedStateOf {
-            layoutInfo.closestItemToCenter()?.index ?: startIndex
-        }
+        derivedStateOf { layoutInfo.closestItemToCenter()?.index ?: initialIndex }
     }
 
     LaunchedEffect(centerIndex) {
-        onValueChange(centerIndex)?.let { targetIndex ->
-            if (targetIndex != centerIndex) {
-                coroutineScope.launch {
-                    lazyListState.scrollToItem(targetIndex)
-                }
-            }
-        }
+        items.getOrNull(centerIndex)?.let { onValueChange(it) }
     }
 
-    BoxWithConstraints(
-        modifier = modifier,
-        contentAlignment = Alignment.Center
-    ) {
-
+    BoxWithConstraints(modifier = modifier, contentAlignment = Alignment.Center) {
         val itemHeight = maxHeight / rowCount
 
-        if (enabled) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(itemHeight)
-                    .background(color, shape)
-                    .let { border?.let { border -> it.border(border, shape) } ?: it }
-            )
+        // Measure width of description
+        val descriptionWidthPx = remember { mutableStateOf(0) }
+        val density = LocalDensity.current
+
+        if (descriptionContent != null) {
+            SubcomposeLayout { constraints ->
+                val placeables = subcompose("desc", descriptionContent).map {
+                    it.measure(constraints)
+                }
+                descriptionWidthPx.value = placeables.maxOfOrNull { it.width } ?: 0
+                layout(0, 0) {}
+            }
         }
+
+        val offset = with(density) { descriptionWidthPx.value.toDp() + 4.dp }
 
         LazyColumn(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(maxHeight),
-            state = lazyListState,
+                .fillMaxHeight()
+                .offset(x = -offset),
+            state = listState,
             contentPadding = PaddingValues(vertical = itemHeight * ((rowCount - 1) / 2)),
-            flingBehavior = flingBehavior,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            flingBehavior = rememberSnapFlingBehavior(listState)
         ) {
-            items(count, key = { it }, contentType = { it::class }) { index ->
+            itemsIndexed(items) { index, item ->
                 val alpha = calculateAnimatedAlpha(layoutInfo, index, rowCount)
                 val rotationX = calculateAnimatedRotationX(layoutInfo, index, rowCount)
 
@@ -103,19 +89,22 @@ internal fun WheelPicker(
                         .height(itemHeight)
                         .alpha(alpha)
                         .graphicsLayer { this.rotationX = rotationX },
-                    contentAlignment = Alignment.Center,
-                    content = { content(index) }
-                )
+                    contentAlignment = Alignment.Center
+                ) {
+                    itemContent(item)
+                }
             }
         }
-    }
-}
 
-private fun LazyListLayoutInfo.closestItemToCenter(): LazyListItemInfo? {
-    val center = viewportStartOffset + viewportSize.height / 2
-    return visibleItemsInfo.minByOrNull { item ->
-        val itemCenter = item.offset + item.size / 2
-        (itemCenter - center).absoluteValue
+        // Description rendered next to center item
+        descriptionContent?.let {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(start = 4.dp),
+                content = { it() }
+            )
+        }
     }
 }
 
@@ -147,4 +136,12 @@ private fun calculateAnimatedRotationX(
     val maxDistance = layoutInfo.viewportSize.height.toFloat() / rowCount
 
     return (-20f * (distance / maxDistance)).coerceIn(-90f, 90f)
+}
+
+private fun LazyListLayoutInfo.closestItemToCenter(): LazyListItemInfo? {
+    val center = viewportStartOffset + viewportSize.height / 2
+    return visibleItemsInfo.minByOrNull { item ->
+        val itemCenter = item.offset + item.size / 2
+        (itemCenter - center).absoluteValue
+    }
 }
