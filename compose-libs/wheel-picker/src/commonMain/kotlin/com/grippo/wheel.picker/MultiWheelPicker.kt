@@ -43,16 +43,18 @@ public fun MultiWheelPicker(
         Row(
             modifier = Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.spacedBy(spacing),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            columns.forEach { column ->
-                key(column.id) {
-                    column.Content(
-                        modifier = modifier.weight(1f),
-                        rowCount = rowCount
-                    )
+            verticalAlignment = Alignment.CenterVertically,
+            content = {
+                columns.forEach { column ->
+                    key(column.id) {
+                        column.Content(
+                            modifier = modifier.weight(1f),
+                            itemHeight = itemHeight,
+                            rowCount = rowCount
+                        )
+                    }
                 }
             }
-        }
+        )
     }
 }

@@ -93,13 +93,6 @@ internal fun DateWheelPicker(
                         style = AppTokens.typography.b16Bold(),
                         color = AppTokens.colors.text.primary
                     )
-                },
-                labelContent = {
-                    Text(
-                        text = "Days",
-                        style = AppTokens.typography.b16Bold(),
-                        color = AppTokens.colors.text.secondary
-                    )
                 }
             ),
             WheelColumn(
@@ -109,16 +102,9 @@ internal fun DateWheelPicker(
                 onValueChange = { selectedMonth = it },
                 itemContent = {
                     Text(
-                        text = "Years",
+                        text = it.name.lowercase().replaceFirstChar(Char::titlecase),
                         style = AppTokens.typography.b16Bold(),
-                        color = AppTokens.colors.text.secondary
-                    )
-                },
-                labelContent = {
-                    Text(
-                        text = "Months",
-                        style = AppTokens.typography.b16Bold(),
-                        color = AppTokens.colors.text.secondary
+                        color = AppTokens.colors.text.primary
                     )
                 }
             ),
@@ -133,13 +119,6 @@ internal fun DateWheelPicker(
                         style = AppTokens.typography.b16Bold(),
                         color = AppTokens.colors.text.primary
                     )
-                },
-                labelContent = {
-                    Text(
-                        text = "Years",
-                        style = AppTokens.typography.b16Bold(),
-                        color = AppTokens.colors.text.secondary
-                    )
                 }
             )
         )
@@ -149,7 +128,6 @@ internal fun DateWheelPicker(
 private fun getDaysInMonth(year: Int, month: Month): Int {
     val nextMonth = if (month == Month.DECEMBER) Month.JANUARY else Month.entries[month.ordinal + 1]
     val nextYear = if (month == Month.DECEMBER) year + 1 else year
-
     val firstOfNextMonth = LocalDate(nextYear, nextMonth, 1)
     val lastDayOfThisMonth = firstOfNextMonth.minus(DatePeriod(days = 1))
     return lastDayOfThisMonth.dayOfMonth
@@ -166,7 +144,7 @@ private fun DateWheelPickerPreview() {
         DateWheelPicker(
             initial = now,
             limitations = start to end,
-            select = { }
+            select = {}
         )
     }
 }

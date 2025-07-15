@@ -11,8 +11,6 @@ import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.Res
-import com.grippo.design.resources.kg
 import com.grippo.wheel.picker.DefaultSelectorProperties
 import com.grippo.wheel.picker.MultiWheelPicker
 import com.grippo.wheel.picker.WheelColumn
@@ -48,13 +46,6 @@ internal fun WeightWheelPicker(
                         text = it.toString(),
                         style = AppTokens.typography.b16Bold(),
                         color = AppTokens.colors.text.primary
-                    )
-                },
-                labelContent = {
-                    Text(
-                        text = AppTokens.strings.res(Res.string.kg),
-                        style = AppTokens.typography.b16Bold(),
-                        color = AppTokens.colors.text.secondary
                     )
                 }
             )
