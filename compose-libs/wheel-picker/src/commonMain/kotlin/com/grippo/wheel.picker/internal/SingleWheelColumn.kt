@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListItemInfo
-import androidx.compose.foundation.lazy.LazyListLayoutInfo
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
@@ -25,23 +23,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.SubcomposeLayout
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.lerp
-import kotlin.math.absoluteValue
 
 @Composable
 internal fun <T> SingleWheelColumn(
     modifier: Modifier = Modifier,
     items: List<T>,
-    initialIndex: Int,
+    initial: T,
     rowCount: Int,
     onValueChange: (T) -> Unit,
     itemContent: @Composable (T) -> Unit,
-    descriptionContent: (@Composable () -> Unit)? = null,
+    labelContent: (@Composable () -> Unit)? = null,
 ) {
+    val initialIndex = remember(items, initial) {
+        items.indexOf(initial).takeIf { it >= 0 } ?: 0
+    }
+
     val listState = rememberLazyListState(initialIndex)
+
     val layoutInfo by remember { derivedStateOf { listState.layoutInfo } }
+
 
     val centerIndex by remember {
         derivedStateOf { layoutInfo.closestItemToCenter()?.index ?: initialIndex }
@@ -54,26 +55,24 @@ internal fun <T> SingleWheelColumn(
     BoxWithConstraints(modifier = modifier, contentAlignment = Alignment.Center) {
         val itemHeight = maxHeight / rowCount
 
-        // Measure width of description
-        val descriptionWidthPx = remember { mutableStateOf(0) }
-        val density = LocalDensity.current
+        val labelWidthPx = remember { mutableStateOf(0) }
 
-        if (descriptionContent != null) {
+        if (labelContent != null) {
             SubcomposeLayout { constraints ->
-                val placeables = subcompose("desc", descriptionContent).map {
+                val placeables = subcompose("label", labelContent).map {
                     it.measure(constraints)
                 }
-                descriptionWidthPx.value = placeables.maxOfOrNull { it.width } ?: 0
+                labelWidthPx.value = placeables.maxOfOrNull { it.width } ?: 0
                 layout(0, 0) {}
             }
         }
 
-        val offset = with(density) { descriptionWidthPx.value.toDp() + 4.dp }
+        val centerItemOffsetY = remember(itemHeight) { itemHeight * ((rowCount - 1) / 2) }
 
         LazyColumn(
             modifier = Modifier
                 .fillMaxHeight()
-                .offset(x = -offset),
+                .align(Alignment.Center),
             state = listState,
             contentPadding = PaddingValues(vertical = itemHeight * ((rowCount - 1) / 2)),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -96,52 +95,15 @@ internal fun <T> SingleWheelColumn(
             }
         }
 
-        // Description rendered next to center item
-        descriptionContent?.let {
+        if (labelContent != null) {
             Box(
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
+                    .offset(y = centerItemOffsetY)
                     .padding(start = 4.dp),
-                content = { it() }
+                contentAlignment = Alignment.Center,
+                content = { labelContent() }
             )
         }
-    }
-}
-
-private fun calculateAnimatedAlpha(
-    layoutInfo: LazyListLayoutInfo,
-    index: Int,
-    rowCount: Int
-): Float {
-    val item = layoutInfo.visibleItemsInfo.find { it.index == index } ?: return 0.2f
-    val center = layoutInfo.viewportStartOffset + layoutInfo.viewportSize.height / 2
-    val itemCenter = item.offset + item.size / 2
-    val distance = (itemCenter - center).absoluteValue
-    val maxDistance = layoutInfo.viewportSize.height.toFloat() / rowCount
-
-    return if (distance <= maxDistance) {
-        lerp(0.2f, 1.0f, 1f - (distance / maxDistance))
-    } else 0.2f
-}
-
-private fun calculateAnimatedRotationX(
-    layoutInfo: LazyListLayoutInfo,
-    index: Int,
-    rowCount: Int
-): Float {
-    val item = layoutInfo.visibleItemsInfo.find { it.index == index } ?: return 0f
-    val center = layoutInfo.viewportStartOffset + layoutInfo.viewportSize.height / 2
-    val itemCenter = item.offset + item.size / 2
-    val distance = itemCenter - center
-    val maxDistance = layoutInfo.viewportSize.height.toFloat() / rowCount
-
-    return (-20f * (distance / maxDistance)).coerceIn(-90f, 90f)
-}
-
-private fun LazyListLayoutInfo.closestItemToCenter(): LazyListItemInfo? {
-    val center = viewportStartOffset + viewportSize.height / 2
-    return visibleItemsInfo.minByOrNull { item ->
-        val itemCenter = item.offset + item.size / 2
-        (itemCenter - center).absoluteValue
     }
 }

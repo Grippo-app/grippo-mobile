@@ -1,7 +1,7 @@
 package com.grippo.date.picker.internal
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -12,14 +12,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.wheel.picker.DefaultSelectorProperties
-import com.grippo.wheel.picker.WheelPicker
+import com.grippo.wheel.picker.MultiWheelPicker
+import com.grippo.wheel.picker.WheelColumn
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
@@ -30,6 +30,7 @@ import kotlinx.datetime.atTime
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
+import kotlin.enums.EnumEntries
 
 @Composable
 internal fun DateWheelPicker(
@@ -38,19 +39,19 @@ internal fun DateWheelPicker(
     limitations: Pair<LocalDateTime, LocalDateTime>,
     select: (LocalDateTime) -> Unit,
 ) {
-    val months = Month.entries
-    val years = (limitations.first.year..limitations.second.year).toList()
+    val months: EnumEntries<Month> = Month.entries
+    val years: List<Int> = (limitations.first.year..limitations.second.year).toList()
 
     var selectedYear by remember { mutableStateOf(initial.year) }
     var selectedMonth by remember { mutableStateOf(initial.month) }
     var selectedDay by remember { mutableStateOf(initial.dayOfMonth) }
 
     val daysInMonth by remember(selectedYear, selectedMonth) {
-        derivedStateOf { getDaysInMonth(selectedYear, selectedMonth) }
+        derivedStateOf { (1..getDaysInMonth(selectedYear, selectedMonth)).toList() }
     }
 
     val safeDay = remember(selectedDay, daysInMonth) {
-        minOf(selectedDay, daysInMonth)
+        minOf(selectedDay, daysInMonth.last())
     }
 
     LaunchedEffect(selectedYear, selectedMonth, safeDay) {
@@ -69,70 +70,80 @@ internal fun DateWheelPicker(
             ?.let(select)
     }
 
-    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
-        WheelPicker(
-            modifier = Modifier
-                .weight(1f)
-                .height(AppTokens.dp.wheelPicker.height),
-            initial = safeDay,
-            items = (1..daysInMonth).toList(),
-            rowCount = 3,
-            selectorProperties = DefaultSelectorProperties(
-                enabled = true,
-                shape = RoundedCornerShape(AppTokens.dp.wheelPicker.radius),
-                color = AppTokens.colors.background.primary,
-                border = BorderStroke(1.dp, AppTokens.colors.border.defaultPrimary)
+    MultiWheelPicker(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(AppTokens.dp.wheelPicker.height),
+        rowCount = 3,
+        selectorProperties = DefaultSelectorProperties(
+            enabled = true,
+            shape = RoundedCornerShape(AppTokens.dp.wheelPicker.radius),
+            color = AppTokens.colors.background.primary,
+            border = BorderStroke(1.dp, AppTokens.colors.border.defaultPrimary)
+        ),
+        columns = listOf(
+            WheelColumn(
+                id = "day",
+                items = daysInMonth,
+                initial = selectedDay,
+                onValueChange = { selectedDay = it },
+                itemContent = {
+                    Text(
+                        text = it.toString(),
+                        style = AppTokens.typography.b16Bold(),
+                        color = AppTokens.colors.text.primary
+                    )
+                },
+                labelContent = {
+                    Text(
+                        text = "Days",
+                        style = AppTokens.typography.b16Bold(),
+                        color = AppTokens.colors.text.secondary
+                    )
+                }
             ),
-            onValueChange = { selectedDay = it }
-        ) {
-            Text(
-                text = it.toString(),
-                style = AppTokens.typography.b16Bold()
-            )
-        }
-
-        WheelPicker(
-            modifier = Modifier
-                .weight(1f)
-                .height(AppTokens.dp.wheelPicker.height),
-            initial = selectedMonth,
-            items = months,
-            rowCount = 3,
-            selectorProperties = DefaultSelectorProperties(
-                enabled = true,
-                shape = RoundedCornerShape(AppTokens.dp.wheelPicker.radius),
-                color = AppTokens.colors.background.primary,
-                border = BorderStroke(1.dp, AppTokens.colors.border.defaultPrimary)
+            WheelColumn(
+                id = "month",
+                items = months,
+                initial = selectedMonth,
+                onValueChange = { selectedMonth = it },
+                itemContent = {
+                    Text(
+                        text = "Years",
+                        style = AppTokens.typography.b16Bold(),
+                        color = AppTokens.colors.text.secondary
+                    )
+                },
+                labelContent = {
+                    Text(
+                        text = "Months",
+                        style = AppTokens.typography.b16Bold(),
+                        color = AppTokens.colors.text.secondary
+                    )
+                }
             ),
-            onValueChange = { selectedMonth = it }
-        ) {
-            Text(
-                text = it.name.lowercase().replaceFirstChar(Char::titlecase),
-                style = AppTokens.typography.b16Bold()
+            WheelColumn(
+                id = "year",
+                items = years,
+                initial = selectedYear,
+                onValueChange = { selectedYear = it },
+                itemContent = {
+                    Text(
+                        text = it.toString(),
+                        style = AppTokens.typography.b16Bold(),
+                        color = AppTokens.colors.text.primary
+                    )
+                },
+                labelContent = {
+                    Text(
+                        text = "Years",
+                        style = AppTokens.typography.b16Bold(),
+                        color = AppTokens.colors.text.secondary
+                    )
+                }
             )
-        }
-
-        WheelPicker(
-            modifier = Modifier
-                .weight(1f)
-                .height(AppTokens.dp.wheelPicker.height),
-            initial = selectedYear,
-            items = years,
-            rowCount = 3,
-            selectorProperties = DefaultSelectorProperties(
-                enabled = true,
-                shape = RoundedCornerShape(AppTokens.dp.wheelPicker.radius),
-                color = AppTokens.colors.background.primary,
-                border = BorderStroke(1.dp, AppTokens.colors.border.defaultPrimary)
-            ),
-            onValueChange = { selectedYear = it }
-        ) {
-            Text(
-                text = it.toString(),
-                style = AppTokens.typography.b16Bold()
-            )
-        }
-    }
+        )
+    )
 }
 
 private fun getDaysInMonth(year: Int, month: Month): Int {

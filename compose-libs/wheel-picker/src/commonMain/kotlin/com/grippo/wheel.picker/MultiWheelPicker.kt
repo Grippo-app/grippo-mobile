@@ -1,4 +1,4 @@
-package com.grippo.wheel.picker.internal
+package com.grippo.wheel.picker
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,34 +15,30 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.grippo.wheel.picker.SelectorProperties
-import com.grippo.wheel.picker.WheelColumn
 
 @Composable
-internal fun <T> MultiWheelPicker(
+public fun MultiWheelPicker(
     modifier: Modifier = Modifier,
     rowCount: Int,
     selectorProperties: SelectorProperties,
-    columns: List<WheelColumn<T>>,
+    columns: List<IWheelColumn>,
     spacing: Dp = 8.dp,
 ) {
     BoxWithConstraints(modifier = modifier) {
         val itemHeight = maxHeight / rowCount
+        val background = selectorProperties.color().value
+        val shape = selectorProperties.shape().value
+        val border = selectorProperties.border().value
+        val enabled = selectorProperties.enabled().value
 
-        if (selectorProperties.enabled().value) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(itemHeight)
-                    .align(Alignment.Center)
-                    .background(selectorProperties.color().value, selectorProperties.shape().value)
-                    .then(
-                        selectorProperties.border().value?.let {
-                            Modifier.border(it, selectorProperties.shape().value)
-                        } ?: Modifier
-                    )
-            )
-        }
+        if (enabled) Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(itemHeight)
+                .align(Alignment.Center)
+                .background(background, shape)
+                .then(border?.let { Modifier.border(it, shape) } ?: Modifier)
+        )
 
         Row(
             modifier = Modifier.fillMaxSize(),
@@ -51,14 +47,9 @@ internal fun <T> MultiWheelPicker(
         ) {
             columns.forEach { column ->
                 key(column.id) {
-                    SingleWheelColumn(
-                        modifier = Modifier.weight(1f),
-                        items = column.items,
-                        initialIndex = column.initialIndex,
-                        rowCount = rowCount,
-                        onValueChange = column.onValueChange,
-                        itemContent = column.itemContent,
-                        descriptionContent = column.descriptionContent
+                    column.Content(
+                        modifier = modifier.weight(1f),
+                        rowCount = rowCount
                     )
                 }
             }

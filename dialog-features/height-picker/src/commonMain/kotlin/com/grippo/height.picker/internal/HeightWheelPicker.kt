@@ -1,6 +1,7 @@
 package com.grippo.height.picker.internal
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -10,8 +11,11 @@ import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.Res
+import com.grippo.design.resources.cm
 import com.grippo.wheel.picker.DefaultSelectorProperties
-import com.grippo.wheel.picker.WheelPicker
+import com.grippo.wheel.picker.MultiWheelPicker
+import com.grippo.wheel.picker.WheelColumn
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 
@@ -22,11 +26,11 @@ internal fun HeightWheelPicker(
     value: Int,
     select: (Int) -> Unit
 ) {
-    WheelPicker(
-        modifier = modifier.height(AppTokens.dp.wheelPicker.height),
-        items = suggestions,
-        initial = value,
-        onValueChange = select,
+
+    MultiWheelPicker(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(AppTokens.dp.wheelPicker.height),
         rowCount = 3,
         selectorProperties = DefaultSelectorProperties(
             enabled = true,
@@ -34,12 +38,28 @@ internal fun HeightWheelPicker(
             color = AppTokens.colors.background.primary,
             border = BorderStroke(1.dp, AppTokens.colors.border.defaultPrimary)
         ),
-        content = {
-            Text(
-                text = it.toString(),
-                style = AppTokens.typography.b16Bold()
+        columns = listOf(
+            WheelColumn(
+                id = "height",
+                initial = value,
+                onValueChange = select,
+                items = suggestions,
+                itemContent = {
+                    Text(
+                        text = it.toString(),
+                        style = AppTokens.typography.b16Bold(),
+                        color = AppTokens.colors.text.primary
+                    )
+                },
+                labelContent = {
+                    Text(
+                        text = AppTokens.strings.res(Res.string.cm),
+                        style = AppTokens.typography.b16Bold(),
+                        color = AppTokens.colors.text.secondary
+                    )
+                }
             )
-        }
+        )
     )
 }
 
