@@ -6,32 +6,28 @@ import androidx.compose.ui.util.lerp
 import kotlin.math.absoluteValue
 
 internal fun calculateAnimatedAlpha(
-    layoutInfo: LazyListLayoutInfo,
+    visibleItems: List<LazyListItemInfo>,
     index: Int,
-    rowCount: Int
+    center: Int,
+    maxDistance: Float
 ): Float {
-    val item = layoutInfo.visibleItemsInfo.find { it.index == index } ?: return 0.2f
-    val center = layoutInfo.viewportStartOffset + layoutInfo.viewportSize.height / 2
+    val item = visibleItems.find { it.index == index } ?: return 0.2f
     val itemCenter = item.offset + item.size / 2
     val distance = (itemCenter - center).absoluteValue
-    val maxDistance = layoutInfo.viewportSize.height.toFloat() / rowCount
-
     return if (distance <= maxDistance) {
         lerp(0.2f, 1.0f, 1f - (distance / maxDistance))
     } else 0.2f
 }
 
 internal fun calculateAnimatedRotationX(
-    layoutInfo: LazyListLayoutInfo,
+    visibleItems: List<LazyListItemInfo>,
     index: Int,
-    rowCount: Int
+    center: Int,
+    maxDistance: Float
 ): Float {
-    val item = layoutInfo.visibleItemsInfo.find { it.index == index } ?: return 0f
-    val center = layoutInfo.viewportStartOffset + layoutInfo.viewportSize.height / 2
+    val item = visibleItems.find { it.index == index } ?: return 0f
     val itemCenter = item.offset + item.size / 2
     val distance = itemCenter - center
-    val maxDistance = layoutInfo.viewportSize.height.toFloat() / rowCount
-
     return (-20f * (distance / maxDistance)).coerceIn(-90f, 90f)
 }
 

@@ -10,14 +10,16 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.graphicsLayer
 import com.grippo.wheel.picker.WheelConfig
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
 internal fun <T> SingleWheelColumn(
@@ -29,20 +31,27 @@ internal fun <T> SingleWheelColumn(
     itemContent: @Composable (T) -> Unit,
 ) {
     val initialIndex = remember(items, initial) {
-        items.indexOf(initial).takeIf { it >= 0 } ?: 0
+        items.indexOf(initial).coerceAtLeast(0)
     }
 
     val listState = rememberLazyListState(initialIndex)
 
-    val layoutInfo by remember { derivedStateOf { listState.layoutInfo } }
-
-    val centerIndex by remember {
-        derivedStateOf { layoutInfo.closestItemToCenter()?.index ?: initialIndex }
+    LaunchedEffect(listState) {
+        snapshotFlow {
+            listState.layoutInfo.closestItemToCenter()?.index
+                ?: listState.firstVisibleItemIndex
+        }
+            .distinctUntilChanged()
+            .collectLatest { index ->
+                delay(100)
+                items.getOrNull(index)?.let(onValueChange)
+            }
     }
 
-    LaunchedEffect(centerIndex) {
-        items.getOrNull(centerIndex)?.let { onValueChange(it) }
-    }
+    val layoutInfo = listState.layoutInfo
+    val visibleItems = layoutInfo.visibleItemsInfo
+    val center = layoutInfo.viewportStartOffset + layoutInfo.viewportSize.height / 2
+    val maxDistance = layoutInfo.viewportSize.height.toFloat() / config.rowCount
 
     LazyColumn(
         modifier = modifier.fillMaxHeight(),
@@ -51,9 +60,9 @@ internal fun <T> SingleWheelColumn(
         horizontalAlignment = Alignment.CenterHorizontally,
         flingBehavior = rememberSnapFlingBehavior(listState)
     ) {
-        itemsIndexed(items) { index, item ->
-            val alpha = calculateAnimatedAlpha(layoutInfo, index, config.rowCount)
-            val rotationX = calculateAnimatedRotationX(layoutInfo, index, config.rowCount)
+        itemsIndexed(items, key = { index, item -> item.hashCode() }) { index, item ->
+            val alpha = calculateAnimatedAlpha(visibleItems, index, center, maxDistance)
+            val rotationX = calculateAnimatedRotationX(visibleItems, index, center, maxDistance)
 
             Box(
                 modifier = Modifier

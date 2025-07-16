@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
@@ -32,23 +33,29 @@ public fun MultiWheelPicker(
 ) {
     BoxWithConstraints(modifier = modifier) {
         val itemHeight = maxHeight / config.rowCount
+
         val background = selectorProperties.color().value
         val shape = selectorProperties.shape().value
         val border = selectorProperties.border().value
         val enabled = selectorProperties.enabled().value
-        val wheelConfig = WheelConfig(
-            rowCount = config.rowCount,
-            itemHeight = itemHeight,
-        )
 
-        if (enabled) Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(itemHeight)
-                .align(Alignment.Center)
-                .background(background, shape)
-                .then(border?.let { Modifier.border(it, shape) } ?: Modifier)
-        )
+        val wheelConfig = remember(config.rowCount, itemHeight) {
+            WheelConfig(
+                rowCount = config.rowCount,
+                itemHeight = itemHeight,
+            )
+        }
+
+        if (enabled) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(itemHeight)
+                    .align(Alignment.Center)
+                    .background(background, shape)
+                    .let { if (border != null) it.border(border, shape) else it }
+            )
+        }
 
         Row(
             modifier = Modifier.fillMaxSize(),
