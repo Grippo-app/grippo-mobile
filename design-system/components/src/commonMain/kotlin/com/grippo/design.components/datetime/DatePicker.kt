@@ -2,7 +2,6 @@ package com.grippo.design.components.datetime
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
@@ -35,34 +34,33 @@ public fun DatePicker(
 
     val shape = CircleShape
 
-    Column(
-        modifier = modifier.scalableClick(onClick = onClick)
+    Row(
+        modifier = modifier.scalableClick(onClick = onClick),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
 
-            Text(
-                text = text,
-                style = AppTokens.typography.b16Bold(),
-                color = AppTokens.colors.text.primary
-            )
+        Text(
+            text = text,
+            style = AppTokens.typography.b16Bold(),
+            color = AppTokens.colors.text.primary
+        )
 
-            Spacer(Modifier.width(AppTokens.dp.datePicker.spacer))
+        Spacer(Modifier.width(AppTokens.dp.datePicker.spacer))
 
-            Icon(
-                modifier = Modifier
-                    .shadowDefault(
-                        elevation = ShadowElevation.Card,
-                        shape = shape,
-                        color = AppTokens.colors.overlay.defaultShadow
-                    )
-                    .background(AppTokens.colors.background.primary, shape)
-                    .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
-                    .size(AppTokens.dp.datePicker.icon),
-                imageVector = AppTokens.icons.NavArrowDown,
-                tint = AppTokens.colors.icon.primary,
-                contentDescription = null
-            )
-        }
+        Icon(
+            modifier = Modifier
+                .shadowDefault(
+                    elevation = ShadowElevation.Card,
+                    shape = shape,
+                    color = AppTokens.colors.overlay.defaultShadow
+                )
+                .background(AppTokens.colors.background.primary, shape)
+                .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
+                .size(AppTokens.dp.datePicker.icon),
+            imageVector = AppTokens.icons.NavArrowDown,
+            tint = AppTokens.colors.icon.primary,
+            contentDescription = null
+        )
     }
 }
 

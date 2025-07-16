@@ -53,7 +53,7 @@ public object LightColor : AppColor {
     }
 
     override val border: AppColor.BorderColors = object : AppColor.BorderColors {
-        override val defaultPrimary = Neutral200
+        override val defaultPrimary = White
         override val disabledPrimary = Neutral200
         override val defaultSecondary = Primary150
         override val disabledSecondary = Neutral200
