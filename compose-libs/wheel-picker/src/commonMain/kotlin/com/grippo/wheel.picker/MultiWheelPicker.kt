@@ -10,26 +10,38 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
+@Immutable
+public data class MultiWheelPickerConfig(
+    val spacing: Dp = 8.dp,
+    val rowCount: Int = 3,
+    val snapEnabled: Boolean = false,
+)
+
 @Composable
 public fun MultiWheelPicker(
     modifier: Modifier = Modifier,
-    rowCount: Int,
     selectorProperties: SelectorProperties,
+    config: MultiWheelPickerConfig = MultiWheelPickerConfig(),
     columns: List<IWheelColumn>,
-    spacing: Dp = 8.dp,
 ) {
     BoxWithConstraints(modifier = modifier) {
-        val itemHeight = maxHeight / rowCount
+        val itemHeight = maxHeight / config.rowCount
         val background = selectorProperties.color().value
         val shape = selectorProperties.shape().value
         val border = selectorProperties.border().value
         val enabled = selectorProperties.enabled().value
+        val wheelConfig = WheelConfig(
+            rowCount = config.rowCount,
+            itemHeight = itemHeight,
+            snapEnabled = config.snapEnabled
+        )
 
         if (enabled) Box(
             modifier = Modifier
@@ -42,15 +54,14 @@ public fun MultiWheelPicker(
 
         Row(
             modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.spacedBy(spacing),
+            horizontalArrangement = Arrangement.spacedBy(config.spacing),
             verticalAlignment = Alignment.CenterVertically,
             content = {
                 columns.forEach { column ->
                     key(column.id) {
                         column.Content(
                             modifier = modifier.weight(1f),
-                            itemHeight = itemHeight,
-                            rowCount = rowCount
+                            config = wheelConfig,
                         )
                     }
                 }

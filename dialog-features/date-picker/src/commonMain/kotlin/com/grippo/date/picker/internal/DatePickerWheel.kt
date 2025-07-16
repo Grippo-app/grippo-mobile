@@ -74,7 +74,6 @@ internal fun DateWheelPicker(
         modifier = Modifier
             .fillMaxWidth()
             .height(AppTokens.dp.wheelPicker.height),
-        rowCount = 3,
         selectorProperties = DefaultSelectorProperties(
             enabled = true,
             shape = RoundedCornerShape(AppTokens.dp.wheelPicker.radius),

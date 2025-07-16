@@ -3,7 +3,6 @@ package com.grippo.wheel.picker
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.Dp
 import com.grippo.wheel.picker.internal.SingleWheelColumn
 
 @Immutable
@@ -15,13 +14,12 @@ public data class WheelColumn<T : Comparable<T>>(
     val itemContent: @Composable (T) -> Unit,
 ) : IWheelColumn {
     @Composable
-    override fun Content(modifier: Modifier, itemHeight: Dp, rowCount: Int) {
+    override fun Content(modifier: Modifier, config: WheelConfig) {
         SingleWheelColumn(
             modifier = modifier,
             items = items,
             initial = initial,
-            rowCount = rowCount,
-            itemHeight = itemHeight,
+            config = config,
             onValueChange = onValueChange,
             itemContent = itemContent,
         )
@@ -33,5 +31,5 @@ public sealed interface IWheelColumn {
     public val id: String
 
     @Composable
-    public fun Content(modifier: Modifier, itemHeight: Dp, rowCount: Int)
+    public fun Content(modifier: Modifier, config: WheelConfig)
 }
