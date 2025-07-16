@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 public data class MultiWheelPickerConfig(
     val spacing: Dp = 8.dp,
     val rowCount: Int = 3,
-    val snapEnabled: Boolean = false,
 )
 
 @Composable
@@ -40,7 +39,6 @@ public fun MultiWheelPicker(
         val wheelConfig = WheelConfig(
             rowCount = config.rowCount,
             itemHeight = itemHeight,
-            snapEnabled = config.snapEnabled
         )
 
         if (enabled) Box(

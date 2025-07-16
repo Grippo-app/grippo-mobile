@@ -7,5 +7,4 @@ import androidx.compose.ui.unit.Dp
 public data class WheelConfig(
     val rowCount: Int,
     val itemHeight: Dp,
-    val snapEnabled: Boolean
 )

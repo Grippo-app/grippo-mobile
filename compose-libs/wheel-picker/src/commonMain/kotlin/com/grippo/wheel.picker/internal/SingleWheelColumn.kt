@@ -1,6 +1,5 @@
 package com.grippo.wheel.picker.internal
 
-import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -10,7 +9,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -30,14 +28,6 @@ internal fun <T> SingleWheelColumn(
     onValueChange: (T) -> Unit,
     itemContent: @Composable (T) -> Unit,
 ) {
-
-    DisposableEffect(Unit) {
-        println("DISPOSE TEST START")
-        onDispose {
-            println("DISPOSE TEST END")
-        }
-    }
-
     val initialIndex = remember(items, initial) {
         items.indexOf(initial).takeIf { it >= 0 } ?: 0
     }
@@ -54,18 +44,12 @@ internal fun <T> SingleWheelColumn(
         items.getOrNull(centerIndex)?.let { onValueChange(it) }
     }
 
-    val flingBehavior = if (config.snapEnabled) {
-        ScrollableDefaults.flingBehavior() // 🧯 basic snap
-    } else {
-        rememberSnapFlingBehavior(listState) // 🔄 auto snap
-    }
-
     LazyColumn(
         modifier = modifier.fillMaxHeight(),
         state = listState,
         contentPadding = PaddingValues(vertical = config.itemHeight * ((config.rowCount - 1) / 2)),
         horizontalAlignment = Alignment.CenterHorizontally,
-        flingBehavior = flingBehavior,
+        flingBehavior = rememberSnapFlingBehavior(listState)
     ) {
         itemsIndexed(items) { index, item ->
             val alpha = calculateAnimatedAlpha(layoutInfo, index, config.rowCount)
