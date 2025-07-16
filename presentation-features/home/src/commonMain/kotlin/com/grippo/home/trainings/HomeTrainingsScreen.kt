@@ -60,7 +60,7 @@ internal fun HomeTrainingsScreen(
                     ),
             ) {
                 DatePicker(
-                    value = LocalDateTime(2025, 7, 9, 14, 30),
+                    value = state.date,
                     onClick = contract::selectDate
                 )
             }
