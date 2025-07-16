@@ -1,9 +1,9 @@
 package com.grippo.design.components.training
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.InlineTextContent
@@ -22,6 +22,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.icons.InfoEmpty
+import com.grippo.design.resources.icons.NavArrowRight
 import com.grippo.presentation.api.trainings.models.ExerciseState
 import com.grippo.presentation.api.trainings.models.stubExercise
 
@@ -29,67 +30,75 @@ import com.grippo.presentation.api.trainings.models.stubExercise
 public fun ExerciseCard(
     modifier: Modifier = Modifier,
     value: ExerciseState,
-    onExerciseExampleClick: (id: String) -> Unit
+    onExerciseClick: (id: String) -> Unit,
+    onExerciseExampleClick: (id: String) -> Unit,
 ) {
     Column(modifier = modifier) {
-        val example = value.exerciseExample
 
-        val iconId = "exercise_example_icon"
-        val (name, content) = if (example != null) {
-            val annotated = buildAnnotatedString {
-                append(value.name)
-                append(" ")
-                appendInlineContent(iconId)
-            }
+        val iconId = "open_exercise_icon"
 
-            val clickProvider = remember(example) {
-                { onExerciseExampleClick.invoke(example.id) }
-            }
-
-            val content = mapOf(
-                iconId to InlineTextContent(
-                    placeholder = Placeholder(
-                        width = AppTokens.typography.h4().fontSize,
-                        height = AppTokens.typography.h4().fontSize,
-                        placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter
-                    ),
-                    children = {
-                        Icon(
-                            modifier = Modifier
-                                .scalableClick(onClick = clickProvider)
-                                .fillMaxHeight()
-                                .aspectRatio(1f),
-                            imageVector = AppTokens.icons.InfoEmpty,
-                            contentDescription = null,
-                            tint = AppTokens.colors.icon.accent
-                        )
-                    }
-                )
-            )
-
-            annotated to content
-        } else {
-            buildAnnotatedString { append(value.name) } to emptyMap()
+        val annotated = buildAnnotatedString {
+            append(value.name)
+            append(" ")
+            appendInlineContent(iconId)
         }
 
-        Text(
-            modifier = Modifier.weight(1f),
-            text = name,
-            inlineContent = content,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            style = AppTokens.typography.h4(),
-            color = AppTokens.colors.text.primary,
+        val openExerciseProvider = remember {
+            { onExerciseClick.invoke(value.id) }
+        }
+
+        val content = mapOf(
+            iconId to InlineTextContent(
+                placeholder = Placeholder(
+                    width = AppTokens.typography.h4().fontSize,
+                    height = AppTokens.typography.h4().fontSize,
+                    placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter
+                ),
+                children = {
+                    Icon(
+                        modifier = Modifier
+                            .scalableClick(onClick = openExerciseProvider)
+                            .fillMaxSize(),
+                        imageVector = AppTokens.icons.NavArrowRight,
+                        tint = AppTokens.colors.icon.primary,
+                        contentDescription = null,
+                    )
+                }
+            )
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-        IterationsCard(
+        Row(
             modifier = Modifier.fillMaxWidth(),
-            value = value.iterations
-        )
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+        ) {
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+            Text(
+                modifier = Modifier.weight(1f),
+                text = annotated,
+                inlineContent = content,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                style = AppTokens.typography.h4(),
+                color = AppTokens.colors.text.primary,
+            )
+
+            val example = value.exerciseExample
+
+            if (example != null) {
+                val openExerciseExampleProvider = remember(example) {
+                    { onExerciseExampleClick.invoke(example.id) }
+                }
+
+                Icon(
+                    modifier = Modifier
+                        .scalableClick(onClick = openExerciseExampleProvider)
+                        .size(AppTokens.dp.exerciseCard.icon),
+                    imageVector = AppTokens.icons.InfoEmpty,
+                    tint = AppTokens.colors.icon.secondary,
+                    contentDescription = null,
+                )
+            }
+        }
     }
 }
 
@@ -99,7 +108,8 @@ private fun ExerciseCardPreview() {
     PreviewContainer {
         ExerciseCard(
             value = stubExercise(),
-            onExerciseExampleClick = {}
+            onExerciseExampleClick = {},
+            onExerciseClick = {}
         )
     }
 }

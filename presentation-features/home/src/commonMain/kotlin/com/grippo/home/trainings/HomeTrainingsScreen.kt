@@ -37,7 +37,6 @@ import com.grippo.presentation.api.trainings.models.stubTraining
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.datetime.LocalDateTime
 
 @Composable
 internal fun HomeTrainingsScreen(
@@ -134,7 +133,8 @@ internal fun HomeTrainingsScreen(
                             .fillMaxWidth()
                             .padding(AppTokens.dp.contentPadding.content),
                         value = exercise,
-                        onExerciseExampleClick = contract::openExerciseExample
+                        onExerciseExampleClick = contract::openExerciseExample,
+                        onExerciseClick = contract::openExercise
                     )
                     return@TimelineIndicator
                 }

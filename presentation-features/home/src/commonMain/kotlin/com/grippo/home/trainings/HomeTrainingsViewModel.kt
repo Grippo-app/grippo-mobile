@@ -49,6 +49,16 @@ internal class HomeTrainingsViewModel(
         dialogController.show(dialog)
     }
 
+    override fun openExercise(id: String) {
+        // todo change
+        val dialog = DialogConfig.ExerciseExample(
+            id = id,
+            onResult = { value -> }
+        )
+
+        dialogController.show(dialog)
+    }
+
     override fun selectDate() {
         val dialog = DialogConfig.DatePicker(
             initial = state.value.date,

@@ -66,6 +66,7 @@ public data object AppDp {
     val timeline: Timeline = Timeline
     val timeLabel: TimeLabel = TimeLabel
     val datePicker: DatePicker = DatePicker
+    val exerciseCard: ExerciseCard = ExerciseCard
     val iterationCard: IterationCard = IterationCard
 
     public data object Screen {
@@ -151,6 +152,10 @@ public data object AppDp {
 
     public data object InformationCard {
         val height: Dp = size.medium
+    }
+
+    public data object ExerciseCard {
+        val icon: Dp = size.tiny
     }
 
     public data object EquipmentCard {
