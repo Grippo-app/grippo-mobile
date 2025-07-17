@@ -27,7 +27,10 @@ internal class TrainingRepositoryImpl(
 
     override fun observeExercise(id: String): Flow<Exercise?> {
         return trainingDao.getExerciseById(id)
-            .map { it?.toDomain() }
+            .map {
+                println("KWKWKWKWKWK = ${it}")
+                it?.toDomain()
+            }
     }
 
     override fun observeTrainings(

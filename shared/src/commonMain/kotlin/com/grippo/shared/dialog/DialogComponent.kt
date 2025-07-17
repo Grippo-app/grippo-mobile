@@ -15,6 +15,7 @@ import com.grippo.core.collectAsStateMultiplatform
 import com.grippo.date.picker.DatePickerComponent
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.error.display.ErrorDisplayComponent
+import com.grippo.exercise.ExerciseComponent
 import com.grippo.exercise.example.exerciseexample.ExerciseExampleComponent
 import com.grippo.height.picker.HeightPickerComponent
 import com.grippo.shared.dialog.DialogComponent.Dialog.ErrorDisplay
@@ -38,6 +39,9 @@ internal class DialogComponent(
             Dialog(component)
 
         data class ExerciseExample(override val component: ExerciseExampleComponent) :
+            Dialog(component)
+
+        data class Exercise(override val component: ExerciseComponent) :
             Dialog(component)
 
         data class DatePicker(override val component: DatePickerComponent) :
@@ -136,18 +140,16 @@ internal class DialogComponent(
                 )
             )
 
-            is DialogConfig.Exercise -> {
-                ExerciseExample(
-                    ExerciseExampleComponent(
-                        componentContext = context,
-                        id = router.id,
-                        onResult = {
-                            viewModel.dismiss()
-                        },
-                        back = viewModel::dismiss
-                    )
+            is DialogConfig.Exercise -> Dialog.Exercise(
+                ExerciseComponent(
+                    componentContext = context,
+                    id = router.id,
+                    onResult = {
+                        viewModel.dismiss()
+                    },
+                    back = viewModel::dismiss
                 )
-            }
+            )
         }
     }
 

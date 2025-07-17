@@ -47,6 +47,7 @@ kotlin {
         implementation(projects.dialogFeatures.datePicker)
         implementation(projects.dialogFeatures.errorDisplay)
         implementation(projects.dialogFeatures.exerciseExample)
+        implementation(projects.dialogFeatures.exercise)
 
         implementation(libs.datetime)
         implementation(libs.immutable.collections)
