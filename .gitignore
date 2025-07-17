@@ -1,16 +1,30 @@
-# Compiled class file
+# Gradle files
+.gradle/
+build/
+*/build/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Local configuration file
+local.properties
+
+# Log Files
+*.log
+hs_err_pid*
+replay_pid*
+
+# Android Studio / IntelliJ IDEA
+*.iml
+*.iws
+.idea/
+.navigation/
+output.json
+
+# Compiled class files
 *.class
 
-# Log file
-*.log
-
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
+# Package Files
 *.jar
 *.war
 *.nar
@@ -19,13 +33,61 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-replay_pid*
-
-# Kotlin Gradle plugin data, see https://kotlinlang.org/docs/whatsnew20.html#new-directory-for-kotlin-data-in-gradle-projects
+# Kotlin
 .kotlin/
+kotlin-js-store/
 
-local.properties
-.gradle
-.idea
+# Android
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# iOS / Xcode
+xcuserdata/
+*.xcuserstate
+*.xcworkspace
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.moved-aside
+DerivedData/
+Pods/
+*.podspec
+*.podspec.json
+*.generated.swift
+Podfile.lock
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Generated files
+**/generated/
+**/commonMain/generated/
+**/iosMain/generated/
+**/androidMain/generated/
+**/jsMain/generated/
+**/schemas/
+
+# Android release
+androidApp/release/
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Temporary files
+*~
+.*.swp
+.*.swo
