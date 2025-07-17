@@ -1,5 +1,6 @@
 package com.grippo.data.features.trainings.data
 
+import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.data.features.trainings.domain.TrainingRepository
 import com.grippo.database.dao.TrainingDao
@@ -21,6 +22,11 @@ internal class TrainingRepositoryImpl(
 
     override fun observeTraining(id: String): Flow<Training?> {
         return trainingDao.getById(id)
+            .map { it?.toDomain() }
+    }
+
+    override fun observeExercise(id: String): Flow<Exercise?> {
+        return trainingDao.getExerciseById(id)
             .map { it?.toDomain() }
     }
 

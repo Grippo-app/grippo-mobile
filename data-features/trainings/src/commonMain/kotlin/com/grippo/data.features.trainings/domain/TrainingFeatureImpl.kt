@@ -1,6 +1,7 @@
 package com.grippo.data.features.trainings.domain
 
 import com.grippo.data.features.api.training.TrainingFeature
+import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.data.features.api.training.models.Training
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDateTime
@@ -13,6 +14,10 @@ internal class TrainingFeatureImpl(
 
     override fun observeTraining(id: String): Flow<Training?> {
         return repository.observeTraining(id)
+    }
+
+    override fun observeExercise(id: String): Flow<Exercise?> {
+        return repository.observeExercise(id)
     }
 
     override fun observeTrainings(start: LocalDateTime, end: LocalDateTime): Flow<List<Training>> {

@@ -19,6 +19,12 @@ public sealed class DialogConfig(public open val onDismiss: (() -> Unit)?) {
     ) : DialogConfig(null)
 
     @Serializable
+    public data class Exercise(
+        val id: String,
+        val onResult: (id: String) -> Unit,
+    ) : DialogConfig(null)
+
+    @Serializable
     public data class WeightPicker(
         val initial: Float,
         val onResult: (value: Float) -> Unit,

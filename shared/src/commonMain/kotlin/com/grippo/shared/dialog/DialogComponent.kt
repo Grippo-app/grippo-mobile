@@ -135,6 +135,19 @@ internal class DialogComponent(
                     back = viewModel::dismiss
                 )
             )
+
+            is DialogConfig.Exercise -> {
+                ExerciseExample(
+                    ExerciseExampleComponent(
+                        componentContext = context,
+                        id = router.id,
+                        onResult = {
+                            viewModel.dismiss()
+                        },
+                        back = viewModel::dismiss
+                    )
+                )
+            }
         }
     }
 

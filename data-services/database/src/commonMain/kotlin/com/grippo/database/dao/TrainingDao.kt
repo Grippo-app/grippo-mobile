@@ -8,6 +8,7 @@ import androidx.room.Transaction
 import com.grippo.database.entity.ExerciseEntity
 import com.grippo.database.entity.IterationEntity
 import com.grippo.database.entity.TrainingEntity
+import com.grippo.database.models.ExercisePack
 import com.grippo.database.models.TrainingPack
 import kotlinx.coroutines.flow.Flow
 
@@ -33,6 +34,16 @@ public interface TrainingDao {
         """
     )
     public fun getById(id: String): Flow<TrainingPack?>
+
+    @Transaction
+    @Query(
+        """
+        SELECT * FROM exercise
+        WHERE id = :id
+        LIMIT 1
+        """
+    )
+    public fun getExerciseById(id: String): Flow<ExercisePack?>
 
     // ────────────── INSERT ──────────────
 
