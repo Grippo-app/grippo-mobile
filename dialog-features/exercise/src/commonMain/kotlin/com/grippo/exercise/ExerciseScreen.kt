@@ -25,7 +25,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.exercise_details
-import com.grippo.design.resources.iterations
 import com.grippo.presentation.api.trainings.models.stubExercise
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -99,7 +98,7 @@ internal fun ExerciseScreen(
                 modifier = Modifier.fillMaxWidth(),
                 text = AppTokens.strings.res(Res.string.exercise_details),
                 style = AppTokens.typography.b14Bold(),
-                color = AppTokens.colors.text.secondary,
+                color = AppTokens.colors.text.primary,
             )
 
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
