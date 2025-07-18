@@ -25,22 +25,6 @@ public fun RepetitionsChip(
     )
 }
 
-@Composable
-public fun RepetitionsChip(
-    modifier: Modifier = Modifier,
-    value: String
-) {
-    Chip(
-        modifier = modifier,
-        label = AppTokens.strings.res(Res.string.repetitions),
-        value = value,
-        icon = AppTokens.icons.Repeat,
-        backgroundColor = AppTokens.colors.background.accent.copy(alpha = 0.1f),
-        contentColor = AppTokens.colors.text.primary,
-        borderColor = AppTokens.colors.border.defaultPrimary
-    )
-}
-
 @AppPreview
 @Composable
 private fun ChipPreview() {

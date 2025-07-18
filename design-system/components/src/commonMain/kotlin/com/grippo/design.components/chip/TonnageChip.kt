@@ -32,22 +32,6 @@ public fun TonnageChip(
     )
 }
 
-@Composable
-public fun TonnageChip(
-    modifier: Modifier = Modifier,
-    value: String
-) {
-    Chip(
-        modifier = modifier,
-        label = AppTokens.strings.res(Res.string.tonnage),
-        value = value,
-        icon = AppTokens.icons.Weight,
-        backgroundColor = AppTokens.colors.background.primary.copy(alpha = 0.1f),
-        contentColor = AppTokens.colors.text.primary,
-        borderColor = AppTokens.colors.border.defaultPrimary
-    )
-}
-
 @AppPreview
 @Composable
 private fun ChipPreview() {

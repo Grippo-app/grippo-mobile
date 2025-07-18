@@ -32,22 +32,6 @@ public fun IntensityChip(
     )
 }
 
-@Composable
-public fun IntensityChip(
-    modifier: Modifier = Modifier,
-    value: String
-) {
-    Chip(
-        modifier = modifier,
-        label = AppTokens.strings.res(Res.string.intensity),
-        value = value,
-        icon = AppTokens.icons.FireFlame,
-        backgroundColor = AppTokens.colors.semantic.error.copy(alpha = 0.1f),
-        contentColor = AppTokens.colors.semantic.error,
-        borderColor = AppTokens.colors.border.error
-    )
-}
-
 @AppPreview
 @Composable
 private fun ChipPreview() {

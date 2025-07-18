@@ -33,7 +33,7 @@ public data object AppDp {
         val medium: Dp = 12.dp
         val large: Dp = 16.dp
         val xLarge: Dp = 24.dp
-        val circle: Dp = 50.dp
+        val xxLarge: Dp = 28.dp
     }
 
     private data object Icon {
@@ -44,6 +44,7 @@ public data object AppDp {
         val huge: Dp = 48.dp
     }
 
+    val bottomSheet: BottomSheet = BottomSheet
     val contentPadding: ContentPadding = ContentPadding
     val screen: Screen = Screen
     val input: Input = Input
@@ -85,6 +86,10 @@ public data object AppDp {
         val content: Dp = padding.medium
         val subContent: Dp = padding.small
         val text: Dp = padding.extraSmall
+    }
+
+    public data object BottomSheet {
+        val radius: Dp = AppDp.radius.xxLarge
     }
 
     public data object Input {
@@ -165,18 +170,9 @@ public data object AppDp {
         val verticalPadding: Dp = padding.small
     }
 
-    public data object EquipmentsCard {
-        val horizontalPadding: Dp = padding.large
-        val verticalPadding: Dp = padding.large
-        val radius: Dp = AppDp.radius.large
-    }
+    public data object EquipmentsCard
 
-    public data object ExerciseExampleBundlesCard {
-        val horizontalPadding: Dp = padding.large
-        val topPadding: Dp = padding.large
-        val bottomPadding: Dp = padding.small
-        val radius: Dp = AppDp.radius.large
-    }
+    public data object ExerciseExampleBundlesCard
 
     public data object SelectableCard {
         val large: Large = Large

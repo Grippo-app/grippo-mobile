@@ -11,7 +11,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.value.Value
@@ -55,7 +54,10 @@ internal fun DialogScreen(
             scrimColor = AppTokens.colors.dialog.scrim,
             properties = ModalBottomSheetProperties(shouldDismissOnBackPress = true),
             containerColor = AppTokens.colors.dialog.background,
-            shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+            shape = RoundedCornerShape(
+                topStart = AppTokens.dp.bottomSheet.radius,
+                topEnd = AppTokens.dp.bottomSheet.radius
+            ),
             dragHandle = {
                 BottomSheetDefaults.DragHandle(
                     color = AppTokens.colors.dialog.handle

@@ -5,7 +5,6 @@ import com.grippo.design.resources.AppColor
 import com.grippo.design.resources.AppColor.DividerColors
 
 public object LightColor : AppColor {
-    private val Transparent = Color(0x00000000)
     private val White = Color(0xFFFFFFFF)
     private val Black = Color(0xFF000000)
     private val Error = Color(0xFFFF4D4F)
@@ -156,7 +155,7 @@ public object LightColor : AppColor {
     }
 
     override val divider: DividerColors = object : DividerColors {
-        override val primary: Color = Neutral150
+        override val primary: Color = Neutral200
         override val secondary: Color = Neutral250
     }
 

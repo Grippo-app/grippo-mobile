@@ -90,7 +90,7 @@ internal fun ExerciseScreen(
         if (example != null) {
             HorizontalDivider(
                 modifier = Modifier.fillMaxWidth(),
-                color = AppTokens.colors.divider.secondary
+                color = AppTokens.colors.divider.primary
             )
 
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))

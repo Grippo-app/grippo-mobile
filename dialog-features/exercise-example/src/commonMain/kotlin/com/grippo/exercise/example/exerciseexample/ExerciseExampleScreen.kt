@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -47,7 +48,7 @@ internal fun ExerciseExampleScreen(
             color = AppTokens.colors.text.primary,
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Text(
             modifier = Modifier.fillMaxWidth(),
@@ -58,14 +59,26 @@ internal fun ExerciseExampleScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
 
-        Text(
+        HorizontalDivider(
             modifier = Modifier.fillMaxWidth(),
-            text = "Muscles in use",
-            style = AppTokens.typography.b14Bold(),
-            color = AppTokens.colors.text.secondary,
+            color = AppTokens.colors.divider.primary
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+
+        EquipmentsCard(
+            modifier = Modifier.fillMaxWidth(),
+            value = example.equipments
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+
+        HorizontalDivider(
+            modifier = Modifier.fillMaxWidth(),
+            color = AppTokens.colors.divider.primary
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
 
         ExerciseExampleBundlesCard(
             modifier = Modifier.fillMaxWidth(),
@@ -73,20 +86,6 @@ internal fun ExerciseExampleScreen(
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
-
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = "Equipments",
-            style = AppTokens.typography.b14Bold(),
-            color = AppTokens.colors.text.secondary,
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-        EquipmentsCard(
-            modifier = Modifier.fillMaxWidth(),
-            value = example.equipments
-        )
     }
 }
 
