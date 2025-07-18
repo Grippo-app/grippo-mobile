@@ -14,12 +14,9 @@ import com.grippo.core.BaseComposeDialog
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.equipment.EquipmentsCard
 import com.grippo.design.components.example.ExerciseExampleBundlesCard
-import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.Res
-import com.grippo.design.resources.overview
 import com.grippo.presentation.api.exercise.example.models.stubExerciseExample
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -32,11 +29,6 @@ internal fun ExerciseExampleScreen(
 ) = BaseComposeDialog(background = ScreenBackground.Color(AppTokens.colors.background.secondary)) {
 
     val example = state.example ?: return@BaseComposeDialog
-
-    Toolbar(
-        modifier = Modifier.fillMaxWidth(),
-        title = AppTokens.strings.res(Res.string.overview),
-    )
 
     Column(
         modifier = Modifier

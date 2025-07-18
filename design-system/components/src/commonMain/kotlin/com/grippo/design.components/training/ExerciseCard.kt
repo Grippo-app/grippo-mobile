@@ -56,9 +56,7 @@ public fun ExerciseCard(
                 ),
                 children = {
                     Icon(
-                        modifier = Modifier
-                            .scalableClick(onClick = openExerciseProvider)
-                            .fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         imageVector = AppTokens.icons.NavArrowRight,
                         tint = AppTokens.colors.icon.primary,
                         contentDescription = null,
@@ -71,9 +69,10 @@ public fun ExerciseCard(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
         ) {
-
             Text(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .scalableClick(onClick = openExerciseProvider)
+                    .weight(1f),
                 text = annotated,
                 inlineContent = content,
                 maxLines = 2,

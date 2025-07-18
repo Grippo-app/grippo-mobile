@@ -111,4 +111,5 @@
     <string name="exercise_details">Exercise details</string>
     <string name="required_equipment">Required equipment</string>
     <string name="training_at_value">Training at %1$s</string>
+    <string name="iterations">Iterations</string>
 </resources>
