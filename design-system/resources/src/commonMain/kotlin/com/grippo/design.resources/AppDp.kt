@@ -68,6 +68,7 @@ public data object AppDp {
     val datePicker: DatePicker = DatePicker
     val exerciseCard: ExerciseCard = ExerciseCard
     val iterationCard: IterationCard = IterationCard
+    val chip: Chip = Chip
 
     public data object Screen {
         val toolbar: Toolbar = Toolbar
@@ -236,5 +237,13 @@ public data object AppDp {
         public data object Pie {
             val width: Dp = size.tiny
         }
+    }
+
+    public data object Chip {
+        val horizontalPadding: Dp = padding.medium
+        val verticalPadding: Dp = padding.small
+        val radius: Dp = AppDp.radius.large
+        val iconSize: Dp = icon.small
+        val spaceBetween: Dp = padding.small
     }
 }

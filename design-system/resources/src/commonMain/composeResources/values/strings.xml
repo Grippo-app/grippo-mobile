@@ -105,6 +105,7 @@
     <string name="debug">Debug</string>
     <string name="settings">Settings</string>
     <string name="activity">Activity</string>
+    <string name="repetitions">Repetitions</string>
     <string name="overview">Overview</string>
     <string name="muscles_in_use">Muscles in use</string>
     <string name="exercise_details">Exercise details</string>
