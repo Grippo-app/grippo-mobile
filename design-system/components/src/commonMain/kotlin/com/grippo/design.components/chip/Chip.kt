@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
@@ -28,20 +29,22 @@ public fun Chip(
     label: String,
     value: String,
     icon: ImageVector,
-    backgroundColor: Color,
     contentColor: Color,
     borderColor: Color = Color.Transparent,
+    brush: Brush,
 ) {
+    val shape = RoundedCornerShape(AppTokens.dp.chip.radius)
+
     Box(
         modifier = modifier
             .border(
                 width = 1.dp,
                 color = borderColor,
-                shape = RoundedCornerShape(AppTokens.dp.chip.radius)
+                shape = shape
             )
             .background(
-                color = backgroundColor,
-                shape = RoundedCornerShape(AppTokens.dp.chip.radius)
+                brush = brush,
+                shape = shape
             )
             .padding(
                 horizontal = AppTokens.dp.chip.horizontalPadding,
@@ -77,7 +80,7 @@ private fun ChipPreview() {
             label = "Basic",
             value = "Value",
             icon = AppTokens.icons.Weight,
-            backgroundColor = Color.LightGray.copy(alpha = 0.3f),
+            brush = Brush.linearGradient(),
             contentColor = Color.Black
         )
     }

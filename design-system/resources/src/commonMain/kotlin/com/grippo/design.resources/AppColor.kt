@@ -18,6 +18,7 @@ public interface AppColor {
     public val muscle: MuscleColors
     public val segment: SegmentColors
     public val konfetti: Konfetti
+    public val chip: ChipColors
 
     public interface DividerColors {
         public val primary: Color
@@ -161,5 +162,18 @@ public interface AppColor {
         public val confettiColor8: Color
         public val confettiColor9: Color
         public val confettiColor10: Color
+    }
+
+    public interface ChipColors {
+        public val intensity: GradientColors
+        public val tonnage: GradientColors
+        public val repetitions: GradientColors
+
+        public interface GradientColors {
+            public val startColor: Color
+            public val endColor: Color
+            public val contentColor: Color
+            public val borderColor: Color
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.grippo.design.components.chip
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -14,14 +15,18 @@ public fun RepetitionsChip(
     modifier: Modifier = Modifier,
     value: Int
 ) {
+    val colors = AppTokens.colors.chip.repetitions
+
     Chip(
         modifier = modifier,
         label = AppTokens.strings.res(Res.string.repetitions),
         value = value.toString(),
         icon = AppTokens.icons.Repeat,
-        backgroundColor = AppTokens.colors.background.accent.copy(alpha = 0.1f),
-        contentColor = AppTokens.colors.text.primary,
-        borderColor = AppTokens.colors.border.defaultPrimary
+        contentColor = colors.contentColor,
+        borderColor = colors.borderColor,
+        brush = Brush.horizontalGradient(
+            colors = listOf(colors.startColor, colors.endColor)
+        )
     )
 }
 

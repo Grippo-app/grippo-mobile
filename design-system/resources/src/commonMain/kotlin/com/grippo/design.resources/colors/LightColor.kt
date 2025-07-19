@@ -171,4 +171,30 @@ public object LightColor : AppColor {
         override val confettiColor9 = Neutral400
         override val confettiColor10 = Neutral500
     }
+
+    override val chip: AppColor.ChipColors = object : AppColor.ChipColors {
+        override val intensity: AppColor.ChipColors.GradientColors =
+            object : AppColor.ChipColors.GradientColors {
+                override val startColor = Color(0xFFFF5757) // Bright red
+                override val endColor = Color(0xFFFF8C29)   // Orange
+                override val contentColor = White
+                override val borderColor = Color(0xFFFF5757).copy(alpha = 0.5f)
+            }
+
+        override val tonnage: AppColor.ChipColors.GradientColors =
+            object : AppColor.ChipColors.GradientColors {
+                override val startColor = Color(0xFF2B7FFF) // Blue
+                override val endColor = Color(0xFF00C2FF)   // Cyan
+                override val contentColor = White
+                override val borderColor = Color(0xFF2B7FFF).copy(alpha = 0.5f)
+            }
+
+        override val repetitions: AppColor.ChipColors.GradientColors =
+            object : AppColor.ChipColors.GradientColors {
+                override val startColor = Color(0xFF8C52FF) // Purple
+                override val endColor = Color(0xFFAF5CF7)   // Light purple
+                override val contentColor = White
+                override val borderColor = Color(0xFF8C52FF).copy(alpha = 0.5f)
+            }
+    }
 }

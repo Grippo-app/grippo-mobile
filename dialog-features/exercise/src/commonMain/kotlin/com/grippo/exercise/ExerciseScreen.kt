@@ -47,7 +47,6 @@ internal fun ExerciseScreen(
                 vertical = AppTokens.dp.contentPadding.content
             )
     ) {
-
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = exercise.name,
@@ -55,34 +54,42 @@ internal fun ExerciseScreen(
             color = AppTokens.colors.text.primary,
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = "Volume: ${exercise.volume}",
-            style = AppTokens.typography.b14Reg(),
-            color = AppTokens.colors.text.primary,
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = "Repetitions: ${exercise.repetitions}",
-            style = AppTokens.typography.b14Reg(),
-            color = AppTokens.colors.text.primary,
-        )
+        if (exercise.iterations.isNotEmpty()) {
 
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = "Intensity: ${exercise.intensity}",
-            style = AppTokens.typography.b14Reg(),
-            color = AppTokens.colors.text.primary,
-        )
+            IterationsCard(
+                modifier = Modifier.fillMaxWidth(),
+                value = exercise.iterations
+            )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+
+            Row(
+                modifier = Modifier
+                    .horizontalScroll(rememberScrollState())
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+            ) {
+                TonnageChip(
+                    modifier = Modifier,
+                    value = exercise.volume
+                )
+
+                IntensityChip(
+                    modifier = Modifier,
+                    value = exercise.intensity
+                )
+
+                RepetitionsChip(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = exercise.repetitions
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         val example = exercise.exerciseExample
 

@@ -2,6 +2,7 @@ package com.grippo.design.components.chip
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -21,14 +22,18 @@ public fun TonnageChip(
         ((value * 10).roundToInt() / 10.0).toString()
     }
 
+    val colors = AppTokens.colors.chip.tonnage
+
     Chip(
         modifier = modifier,
         label = AppTokens.strings.res(Res.string.tonnage),
         value = displayValue,
         icon = AppTokens.icons.Weight,
-        backgroundColor = AppTokens.colors.background.primary.copy(alpha = 0.1f),
-        contentColor = AppTokens.colors.text.primary,
-        borderColor = AppTokens.colors.border.defaultPrimary
+        contentColor = colors.contentColor,
+        borderColor = colors.borderColor,
+        brush = Brush.horizontalGradient(
+            colors = listOf(colors.startColor, colors.endColor)
+        )
     )
 }
 

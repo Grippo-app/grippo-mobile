@@ -2,6 +2,7 @@ package com.grippo.design.components.chip
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -21,14 +22,18 @@ public fun IntensityChip(
         ((value * 10).roundToInt() / 10.0).toString()
     }
 
+    val colors = AppTokens.colors.chip.intensity
+
     Chip(
         modifier = modifier,
         label = AppTokens.strings.res(Res.string.intensity),
         value = displayValue,
         icon = AppTokens.icons.FireFlame,
-        backgroundColor = AppTokens.colors.semantic.error.copy(alpha = 0.1f),
-        contentColor = AppTokens.colors.semantic.error,
-        borderColor = AppTokens.colors.border.error
+        contentColor = colors.contentColor,
+        borderColor = colors.borderColor,
+        brush = Brush.horizontalGradient(
+            colors = listOf(colors.startColor, colors.endColor)
+        )
     )
 }
 
