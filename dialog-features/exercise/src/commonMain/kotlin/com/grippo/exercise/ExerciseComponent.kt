@@ -16,7 +16,8 @@ public class ExerciseComponent(
     override val viewModel: ExerciseViewModel = componentContext.retainedInstance {
         ExerciseViewModel(
             id = id,
-            trainingFeature = getKoin().get()
+            trainingFeature = getKoin().get(),
+            dialogController = getKoin().get()
         )
     }
 

@@ -11,6 +11,7 @@ kotlin {
         implementation(projects.presentationFeatures.presentationApi)
         implementation(projects.dataMappers.domainMapper)
         implementation(projects.dataFeatures.featureApi)
+        implementation(projects.dialogFeatures.dialogApi)
         implementation(projects.designSystem.core)
         implementation(projects.designSystem.resources)
         implementation(projects.designSystem.components)

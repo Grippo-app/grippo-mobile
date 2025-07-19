@@ -19,8 +19,8 @@ internal class DialogViewModel(
     // Show component and bottom-sheet
     private fun show(config: DialogConfig) {
         if (state.value.process != Process.RELEASE) {
-            AppLogger.General.warning("🚫 Dialog already active. Skipping: $config")
-            return
+            AppLogger.General.warning("🚫 Dialog already active. Change config: $config")
+            // Add "return" here if u want to avoid opening second alert
         }
 
         update { it.copy(process = Process.SHOW) }

@@ -1,5 +1,7 @@
 package com.grippo.shared.dialog
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -64,10 +66,15 @@ internal fun DialogScreen(
                 )
             },
             content = {
-                Column(
-                    modifier = Modifier.navigationBarsPadding(),
-                    content = { component.Render() }
-                )
+                Crossfade(
+                    modifier = Modifier.animateContentSize(),
+                    targetState = component,
+                ) {
+                    Column(
+                        modifier = Modifier.navigationBarsPadding(),
+                        content = { it.Render() }
+                    )
+                }
             },
         )
     }
