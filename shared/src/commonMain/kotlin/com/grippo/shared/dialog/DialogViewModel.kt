@@ -3,7 +3,6 @@ package com.grippo.shared.dialog
 import com.grippo.core.BaseViewModel
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogProvider
-import com.grippo.logger.AppLogger
 import kotlinx.coroutines.flow.onEach
 
 internal class DialogViewModel(
@@ -18,12 +17,16 @@ internal class DialogViewModel(
 
     // Show component and bottom-sheet
     private fun show(config: DialogConfig) {
-        if (state.value.process != Process.RELEASE) {
-            AppLogger.General.warning("🚫 Dialog already active. Change config: $config")
-            // Add "return" here if u want to avoid opening second alert
+        val current = state.value
+
+        val newStack = if (current.process == Process.RELEASE) {
+            DialogStack(listOf(config))
+        } else {
+            current.stack.push(config)
         }
 
-        update { it.copy(process = Process.SHOW) }
+        update { it.copy(process = Process.SHOW, stack = newStack) }
+
         navigateTo(DialogDirection.Activate(config))
     }
 
@@ -34,6 +37,29 @@ internal class DialogViewModel(
 
     override fun dismiss() {
         update { it.copy(process = Process.DISMISS, pendingResult = null) }
+    }
+
+    // Show previous config from Backstack or release
+    override fun back() {
+        val current = state.value
+        val stack = current.stack
+
+        if (stack.stack.size > 1) {
+            val newStack = stack.pop()
+            val prevConfig = newStack.current
+
+            update {
+                it.copy(
+                    process = Process.SHOW,
+                    stack = newStack,
+                    pendingResult = null
+                )
+            }
+
+            navigateTo(DialogDirection.Activate(prevConfig!!))
+        } else {
+            release(stack.current ?: return)
+        }
     }
 
     // Release dialog component from the graph

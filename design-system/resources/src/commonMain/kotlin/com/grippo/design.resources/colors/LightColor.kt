@@ -110,7 +110,7 @@ public object LightColor : AppColor {
 
     override val dialog: AppColor.DialogColors = object : AppColor.DialogColors {
         override val background = White
-        override val handle = Neutral300
+        override val handle = Neutral500
         override val scrim = Color(0x80000000)
     }
 

@@ -1,23 +1,24 @@
 package com.grippo.shared.dialog
 
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.value.Value
 import com.grippo.core.BaseComposeDialog
 import com.grippo.core.ScreenBackground
+import com.grippo.design.components.bottomsheet.DragHandle
 import com.grippo.design.core.AppTokens
 import com.grippo.dialog.api.DialogConfig
 import kotlinx.collections.immutable.ImmutableSet
@@ -49,6 +50,12 @@ internal fun DialogScreen(
             }
         }
 
+        val backProvider = remember(state.stack.stack.size) {
+            if (state.stack.stack.size > 1) {
+                { contract.back() }
+            } else null
+        }
+
         ModalBottomSheet(
             modifier = Modifier.statusBarsPadding(),
             onDismissRequest = { contract.release(config) },
@@ -61,13 +68,14 @@ internal fun DialogScreen(
                 topEnd = AppTokens.dp.bottomSheet.radius
             ),
             dragHandle = {
-                BottomSheetDefaults.DragHandle(
-                    color = AppTokens.colors.dialog.handle
+                DragHandle(
+                    modifier = Modifier.fillMaxWidth(),
+                    onBack = backProvider
                 )
             },
             content = {
-                Crossfade(
-                    modifier = Modifier.animateContentSize(),
+                AnimatedContent(
+                    modifier = Modifier,
                     targetState = component,
                 ) {
                     Column(
