@@ -120,9 +120,6 @@ internal class DialogComponent(
                 ExerciseExampleComponent(
                     componentContext = context,
                     id = router.id,
-                    onResult = {
-                        viewModel.dismiss()
-                    },
                     back = viewModel::dismiss
                 )
             )
@@ -144,9 +141,6 @@ internal class DialogComponent(
                 ExerciseComponent(
                     componentContext = context,
                     id = router.id,
-                    onResult = {
-                        viewModel.dismiss()
-                    },
                     back = viewModel::dismiss
                 )
             )

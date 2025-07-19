@@ -41,7 +41,6 @@ internal class HomeTrainingsViewModel(
     override fun openExerciseExample(id: String) {
         val dialog = DialogConfig.ExerciseExample(
             id = id,
-            onResult = { value -> }
         )
 
         dialogController.show(dialog)
@@ -50,7 +49,6 @@ internal class HomeTrainingsViewModel(
     override fun openExercise(id: String) {
         val dialog = DialogConfig.Exercise(
             id = id,
-            onResult = { value -> }
         )
 
         dialogController.show(dialog)

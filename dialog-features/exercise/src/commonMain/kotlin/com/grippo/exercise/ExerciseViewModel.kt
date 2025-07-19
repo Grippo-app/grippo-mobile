@@ -27,4 +27,7 @@ public class ExerciseViewModel(
     override fun dismiss() {
         navigateTo(ExerciseDirection.Back)
     }
+
+    override fun onExampleDetailsClick(id: String) {
+    }
 }

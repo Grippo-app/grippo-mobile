@@ -10,7 +10,6 @@ import com.grippo.core.collectAsStateMultiplatform
 public class ExerciseComponent(
     componentContext: ComponentContext,
     id: String,
-    private val onResult: (id: String) -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<ExerciseDirection>(componentContext) {
 
@@ -29,7 +28,6 @@ public class ExerciseComponent(
 
     override suspend fun eventListener(direction: ExerciseDirection) {
         when (direction) {
-            is ExerciseDirection.BackWithResult -> onResult.invoke(direction.id)
             ExerciseDirection.Back -> back.invoke()
         }
     }

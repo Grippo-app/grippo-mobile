@@ -1,13 +1,20 @@
 package com.grippo.design.components.training
 
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.grippo.design.components.modifiers.border
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -23,10 +30,17 @@ public fun IterationCard(
     value: IterationState,
 ) {
     Row(
-        modifier = modifier.padding(
-            vertical = AppTokens.dp.iterationCard.verticalPadding,
-            horizontal = AppTokens.dp.iterationCard.horizontalPadding
-        ),
+        modifier = modifier
+            .height(intrinsicSize = IntrinsicSize.Min)
+            .border(
+                width = 1.dp,
+                color = AppTokens.colors.border.defaultPrimary,
+                shape = RoundedCornerShape(AppTokens.dp.iterationCard.radius),
+            )
+            .padding(
+                vertical = AppTokens.dp.iterationCard.verticalPadding,
+                horizontal = AppTokens.dp.iterationCard.horizontalPadding
+            ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
 
@@ -40,8 +54,15 @@ public fun IterationCard(
 
         Text(
             text = AppTokens.strings.res(Res.string.kg),
-            style = AppTokens.typography.b12Semi(),
-            color = AppTokens.colors.text.tertiary
+            style = AppTokens.typography.b12Reg(),
+            color = AppTokens.colors.text.secondary
+        )
+
+        Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
+
+        VerticalDivider(
+            modifier = Modifier.fillMaxHeight(),
+            color = AppTokens.colors.divider.secondary
         )
 
         Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
@@ -56,8 +77,8 @@ public fun IterationCard(
 
         Text(
             text = AppTokens.strings.res(Res.string.reps),
-            style = AppTokens.typography.b12Semi(),
-            color = AppTokens.colors.text.tertiary
+            style = AppTokens.typography.b12Reg(),
+            color = AppTokens.colors.text.secondary
         )
     }
 }

@@ -154,6 +154,7 @@ public data object AppDp {
     public data object IterationCard {
         val horizontalPadding: Dp = 4.dp
         val verticalPadding: Dp = 5.dp
+        val radius: Dp = Radius.small
     }
 
     public data object InformationCard {

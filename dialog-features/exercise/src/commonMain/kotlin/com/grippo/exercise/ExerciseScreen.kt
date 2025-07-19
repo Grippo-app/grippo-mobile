@@ -13,9 +13,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeDialog
 import com.grippo.core.ScreenBackground
+import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.chip.IntensityChip
 import com.grippo.design.components.chip.RepetitionsChip
 import com.grippo.design.components.chip.TonnageChip
@@ -24,7 +27,8 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
-import com.grippo.design.resources.exercise_details
+import com.grippo.design.resources.icons.NavArrowRight
+import com.grippo.design.resources.overview
 import com.grippo.presentation.api.trainings.models.stubExercise
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -63,8 +67,7 @@ internal fun ExerciseScreen(
                 value = exercise.iterations
             )
 
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
             Row(
                 modifier = Modifier
@@ -94,6 +97,11 @@ internal fun ExerciseScreen(
         val example = exercise.exerciseExample
 
         if (example != null) {
+
+            val onExampleDetailsClick = remember {
+                { contract.onExampleDetailsClick(example.id) }
+            }
+
             HorizontalDivider(
                 modifier = Modifier.fillMaxWidth(),
                 color = AppTokens.colors.divider.primary
@@ -101,12 +109,21 @@ internal fun ExerciseScreen(
 
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = AppTokens.strings.res(Res.string.exercise_details),
-                style = AppTokens.typography.b14Bold(),
-                color = AppTokens.colors.text.primary,
-            )
+            Row {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = example.name,
+                    style = AppTokens.typography.b14Bold(),
+                    color = AppTokens.colors.text.primary,
+                )
+
+                Button(
+                    onClick = onExampleDetailsClick,
+                    style = ButtonStyle.Transparent,
+                    text = AppTokens.strings.res(Res.string.overview),
+                    endIcon = AppTokens.icons.NavArrowRight
+                )
+            }
 
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 

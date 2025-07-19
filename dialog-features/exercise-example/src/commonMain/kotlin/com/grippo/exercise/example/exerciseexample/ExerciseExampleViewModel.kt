@@ -19,7 +19,7 @@ public class ExerciseExampleViewModel(
             .safeLaunch()
 
         safeLaunch {
-            exerciseExampleFeature.getExerciseExampleById(id)
+            exerciseExampleFeature.getExerciseExampleById(id).getOrThrow()
         }
     }
 
