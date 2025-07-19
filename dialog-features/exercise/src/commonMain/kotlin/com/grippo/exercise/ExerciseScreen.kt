@@ -14,6 +14,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeDialog
 import com.grippo.core.ScreenBackground
@@ -46,13 +47,12 @@ internal fun ExerciseScreen(
         modifier = Modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
-            .padding(
-                horizontal = AppTokens.dp.screen.horizontalPadding,
-                vertical = AppTokens.dp.contentPadding.content
-            )
+            .padding(vertical = AppTokens.dp.contentPadding.content)
     ) {
         Text(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                .fillMaxWidth(),
             text = exercise.name,
             style = AppTokens.typography.h1(),
             color = AppTokens.colors.text.primary,
@@ -63,7 +63,9 @@ internal fun ExerciseScreen(
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
             IterationsCard(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                    .fillMaxWidth(),
                 value = exercise.iterations
             )
 
@@ -72,6 +74,7 @@ internal fun ExerciseScreen(
             Row(
                 modifier = Modifier
                     .horizontalScroll(rememberScrollState())
+                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
             ) {
@@ -103,13 +106,19 @@ internal fun ExerciseScreen(
             }
 
             HorizontalDivider(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                    .fillMaxWidth(),
                 color = AppTokens.colors.divider.primary
             )
 
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-            Row {
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
                     modifier = Modifier.weight(1f),
                     text = example.name,
@@ -128,7 +137,9 @@ internal fun ExerciseScreen(
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
             Text(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                    .fillMaxWidth(),
                 text = example.description,
                 style = AppTokens.typography.b14Reg(),
                 color = AppTokens.colors.text.primary,
