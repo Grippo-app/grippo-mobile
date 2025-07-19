@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
+import com.grippo.design.components.chip.TonnageChip
 import com.grippo.design.components.datetime.DatePicker
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.border
@@ -112,6 +113,32 @@ internal fun HomeTrainingsScreen(
                             .padding(horizontal = AppTokens.dp.contentPadding.content),
                         color = AppTokens.colors.divider.primary
                     )
+                    return@TimelineIndicator
+                }
+
+                if (value is TrainingListValue.TrainingSummary) {
+                    Row(
+                        modifier = Modifier
+                            .shadowDefault(
+                                shape = shape,
+                                elevation = ShadowElevation.Card,
+                                sides = sides
+                            )
+                            .border(
+                                width = 1.dp,
+                                color = AppTokens.colors.border.defaultPrimary,
+                                shape = shape,
+                                sides = sides
+                            )
+                            .background(AppTokens.colors.background.secondary, shape)
+                            .fillMaxWidth()
+                            .padding(
+                                horizontal = AppTokens.dp.contentPadding.content,
+                                vertical = AppTokens.dp.contentPadding.content,
+                            ),
+                    ) {
+                        TonnageChip(value = value.training.volume)
+                    }
                     return@TimelineIndicator
                 }
 

@@ -93,6 +93,12 @@ public fun List<TrainingState>.transformToTrainingListValue(): ImmutableList<Tra
                 )
             }
         }
+
+        result += TrainingListValue.TrainingSummary(
+            training = training,
+            position = trainingPosition,
+            id = "summary-${training.id}"
+        )
     }
 
     return result.toPersistentList()

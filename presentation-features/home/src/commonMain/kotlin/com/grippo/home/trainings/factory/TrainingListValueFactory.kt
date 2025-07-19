@@ -9,7 +9,6 @@ import com.grippo.presentation.api.trainings.models.TrainingListValue
 import com.grippo.presentation.api.trainings.models.TrainingPosition
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
 
 internal fun timelineStyle(value: TrainingListValue): TimeLinePointStyle = when (value) {
     is TrainingListValue.DateTime -> when (value.position) {
@@ -27,16 +26,21 @@ internal fun timelineStyle(value: TrainingListValue): TimeLinePointStyle = when 
 
 internal fun shapeFor(value: TrainingListValue): RoundedCornerShape = when (value) {
     is TrainingListValue.FirstExercise -> RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-    is TrainingListValue.LastExercise -> RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
-    is TrainingListValue.SingleExercise -> RoundedCornerShape(16.dp)
+    is TrainingListValue.SingleExercise -> RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+    is TrainingListValue.TrainingSummary -> RoundedCornerShape(
+        bottomStart = 16.dp,
+        bottomEnd = 16.dp
+    )
+
     else -> RoundedCornerShape(0.dp)
 }
 
 internal fun sidesFor(value: TrainingListValue): ImmutableList<Side> = when (value) {
     is TrainingListValue.FirstExercise -> persistentListOf(Side.TOP, Side.LEFT, Side.RIGHT)
-    is TrainingListValue.LastExercise -> persistentListOf(Side.BOTTOM, Side.LEFT, Side.RIGHT)
+    is TrainingListValue.SingleExercise -> persistentListOf(Side.TOP, Side.LEFT, Side.RIGHT)
+    is TrainingListValue.LastExercise -> persistentListOf(Side.LEFT, Side.RIGHT)
     is TrainingListValue.MiddleExercise -> persistentListOf(Side.LEFT, Side.RIGHT)
-    is TrainingListValue.SingleExercise -> Side.entries.toPersistentList()
+    is TrainingListValue.TrainingSummary -> persistentListOf(Side.BOTTOM, Side.LEFT, Side.RIGHT)
     else -> persistentListOf()
 }
 
