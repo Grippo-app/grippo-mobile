@@ -14,8 +14,6 @@ import com.grippo.core.BaseComposeDialog
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.toolbar.Toolbar
-import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -34,21 +32,22 @@ internal fun HeightPickerScreen(
     contract: HeightPickerContract
 ) = BaseComposeDialog(ScreenBackground.Color(AppTokens.colors.background.secondary)) {
 
-    Toolbar(
-        modifier = Modifier.fillMaxWidth(),
-        title = AppTokens.strings.res(Res.string.height_picker_title),
-        style = ToolbarStyle.Transparent,
-    )
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                horizontal = AppTokens.dp.screen.horizontalPadding,
-                vertical = AppTokens.dp.contentPadding.content
-            ),
+            .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = AppTokens.strings.res(Res.string.height_picker_title),
+            style = AppTokens.typography.h3(),
+            color = AppTokens.colors.text.primary,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Text(
             modifier = Modifier.fillMaxWidth(),
@@ -75,6 +74,8 @@ internal fun HeightPickerScreen(
             style = ButtonStyle.Primary,
             onClick = contract::submit
         )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
     }
 }
 

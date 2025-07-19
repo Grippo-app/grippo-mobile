@@ -6,16 +6,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.BaseComposeDialog
 import com.grippo.core.ScreenBackground
 import com.grippo.date.picker.internal.DateWheelPicker
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.toolbar.Toolbar
-import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -33,21 +33,22 @@ internal fun DatePickerScreen(
     contract: DatePickerContract
 ) = BaseComposeDialog(ScreenBackground.Color(AppTokens.colors.background.secondary)) {
 
-    Toolbar(
-        modifier = Modifier.fillMaxWidth(),
-        title = AppTokens.strings.res(Res.string.date_picker_title),
-        style = ToolbarStyle.Transparent,
-    )
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                horizontal = AppTokens.dp.screen.horizontalPadding,
-                vertical = AppTokens.dp.contentPadding.content
-            ),
+            .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = AppTokens.strings.res(Res.string.date_picker_title),
+            style = AppTokens.typography.h3(),
+            color = AppTokens.colors.text.primary,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         DateWheelPicker(
             modifier = Modifier
@@ -66,6 +67,8 @@ internal fun DatePickerScreen(
             style = ButtonStyle.Primary,
             onClick = contract::submit
         )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
     }
 }
 

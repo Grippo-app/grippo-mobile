@@ -38,13 +38,9 @@ internal fun ErrorDisplayScreen(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                horizontal = AppTokens.dp.screen.horizontalPadding,
-                vertical = AppTokens.dp.screen.verticalPadding
-            ),
+            .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Icon(
             modifier = Modifier.size(AppTokens.dp.error.icon),
             imageVector = AppTokens.icons.WarningTriangleOutline,
@@ -52,7 +48,7 @@ internal fun ErrorDisplayScreen(
             contentDescription = null
         )
 
-        Spacer(modifier = Modifier.size(20.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
 
         Text(
             modifier = Modifier.fillMaxWidth(),
@@ -63,7 +59,7 @@ internal fun ErrorDisplayScreen(
         )
 
         if (state.description != null) {
-            Spacer(modifier = Modifier.size(12.dp))
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
             Text(
                 modifier = Modifier
@@ -77,7 +73,7 @@ internal fun ErrorDisplayScreen(
             )
         }
 
-        Spacer(modifier = Modifier.size(26.dp))
+        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
 
         Button(
             modifier = Modifier.fillMaxWidth(),
@@ -85,6 +81,8 @@ internal fun ErrorDisplayScreen(
             style = ButtonStyle.Primary,
             onClick = contract::dismiss
         )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
     }
 }
 
