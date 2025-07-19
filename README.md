@@ -61,7 +61,7 @@ The project follows a modular architecture organized by feature and layer:
 | Module | Description |
 |--------|-------------|
 | `presentation-features/` | UI screens and components built with Jetpack Compose |
-| `dialog-features/` | Reusable dialog components (pickers, alerts, etc.) |
+| `dialog-features/` | Reusable dialog components (pickers, alerts, etc.) with stack-based navigation |
 | `compose-libs/` | Standalone Compose libraries (segment control, wheel picker, etc.) |
 
 The build is managed using Gradle Kotlin DSL with a version catalog defining consistent dependencies across all modules.

@@ -85,6 +85,13 @@ Dialog modules provide reusable dialog components that can be used across the ap
 - Handle user input and validation
 - Provide consistent look and feel through the design system
 - Return results to calling components
+- Support stack-based navigation for nested dialogs
+
+The dialog content is managed as a stack, allowing for nested dialogs and back navigation:
+- Solo dialogs (like error displays) replace the entire stack
+- Regular dialogs are pushed onto the stack when shown
+- Back navigation pops from the stack or releases the dialog if only one item remains
+- Dialog state tracks the current process (SHOW, DISMISS, RELEASE) and manages the stack
 
 Examples include selection dialogs (date, weight, height), information displays, and error messages.
 
