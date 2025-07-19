@@ -81,14 +81,8 @@ internal class DialogComponent(
                 WeightPickerComponent(
                     componentContext = context,
                     initial = router.initial,
-                    onResult = {
-                        viewModel.dismiss {
-                            router.onResult.invoke(it)
-                        }
-                    },
-                    back = {
-                        viewModel.dismiss()
-                    }
+                    onResult = { viewModel.dismiss { router.onResult.invoke(it) } },
+                    back = viewModel::dismiss
                 )
             )
 
@@ -96,14 +90,8 @@ internal class DialogComponent(
                 HeightPickerComponent(
                     componentContext = context,
                     initial = router.initial,
-                    onResult = {
-                        viewModel.dismiss {
-                            router.onResult.invoke(it)
-                        }
-                    },
-                    back = {
-                        viewModel.dismiss()
-                    }
+                    onResult = { viewModel.dismiss { router.onResult.invoke(it) } },
+                    back = viewModel::dismiss
                 )
             )
 
@@ -128,11 +116,7 @@ internal class DialogComponent(
                 DatePickerComponent(
                     componentContext = context,
                     initial = router.initial,
-                    onResult = {
-                        viewModel.dismiss {
-                            router.onResult.invoke(it)
-                        }
-                    },
+                    onResult = { viewModel.dismiss { router.onResult.invoke(it) } },
                     back = viewModel::dismiss
                 )
             )
