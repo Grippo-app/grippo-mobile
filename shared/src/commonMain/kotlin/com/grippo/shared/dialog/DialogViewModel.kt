@@ -4,6 +4,7 @@ import com.grippo.core.BaseViewModel
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogProvider
 import kotlinx.coroutines.flow.onEach
+import kotlin.reflect.KClass
 
 internal class DialogViewModel(
     dialogProvider: DialogProvider
@@ -15,17 +16,29 @@ internal class DialogViewModel(
             .safeLaunch()
     }
 
+    companion object {
+        private val soloDialogPresets: Set<KClass<out DialogConfig>> = setOf(
+            DialogConfig.ErrorDisplay::class,
+        )
+    }
+
     // Show component and bottom-sheet
     private fun show(config: DialogConfig) {
-        val current = state.value
+        val isSoloDialog = config::class in soloDialogPresets
 
-        val newStack = if (current.process == Process.RELEASE) {
-            DialogStack(listOf(config))
-        } else {
-            current.stack.push(config)
+        val newStack = when {
+            isSoloDialog -> DialogStack(listOf(config))
+            state.value.process == Process.RELEASE -> DialogStack(listOf(config))
+            else -> state.value.stack.push(config)
         }
 
-        update { it.copy(process = Process.SHOW, stack = newStack) }
+        update {
+            it.copy(
+                process = Process.SHOW,
+                stack = newStack,
+                pendingResult = if (isSoloDialog) null else it.pendingResult
+            )
+        }
 
         navigateTo(DialogDirection.Activate(config))
     }
