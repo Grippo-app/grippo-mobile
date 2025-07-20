@@ -14,6 +14,7 @@ import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.icons.NavArrowLeft
 
 @Composable
 public fun DragHandle(
@@ -31,7 +32,8 @@ public fun DragHandle(
                     .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
                 onClick = onBack,
                 text = "Back",
-                style = ButtonStyle.Transparent
+                style = ButtonStyle.Transparent,
+                startIcon = AppTokens.icons.NavArrowLeft
             )
         }
 

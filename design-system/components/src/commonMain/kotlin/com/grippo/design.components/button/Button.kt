@@ -73,6 +73,11 @@ public fun Button(
         else -> AppTokens.dp.button.horizontalPadding
     }
 
+    val iconPadding = when (style) {
+        ButtonStyle.Transparent -> AppTokens.dp.button.spaceTransparent
+        else -> AppTokens.dp.button.space
+    }
+
     val baseModifier = modifier
         .scalableClick(
             enabled = state == ButtonState.Enabled,
@@ -106,7 +111,6 @@ public fun Button(
                         repeatMode = RepeatMode.Restart,
                     )
                 )
-
                 Icon(
                     modifier = Modifier
                         .size(AppTokens.dp.button.icon)
@@ -124,7 +128,7 @@ public fun Button(
                         contentDescription = null
                     )
 
-                    Spacer(modifier = Modifier.width(AppTokens.dp.button.space))
+                    Spacer(modifier = Modifier.width(iconPadding))
                 }
 
                 Text(
@@ -136,7 +140,7 @@ public fun Button(
                 )
 
                 if (endIcon != null) {
-                    Spacer(modifier = Modifier.width(AppTokens.dp.button.space))
+                    Spacer(modifier = Modifier.width(iconPadding))
 
                     Icon(
                         modifier = Modifier.size(AppTokens.dp.button.icon),
