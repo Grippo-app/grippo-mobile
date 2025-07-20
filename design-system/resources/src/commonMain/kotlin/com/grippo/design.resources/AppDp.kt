@@ -162,7 +162,8 @@ public data object AppDp {
     }
 
     public data object ExerciseCard {
-        val icon: Dp = size.tiny
+        val radius: Dp = AppDp.radius.xLarge
+        val icon: Dp = AppDp.icon.medium
     }
 
     public data object EquipmentCard {

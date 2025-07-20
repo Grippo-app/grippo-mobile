@@ -1,6 +1,8 @@
 package com.grippo.home.trainings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
+import com.grippo.design.components.chip.IntensityChip
+import com.grippo.design.components.chip.RepetitionsChip
 import com.grippo.design.components.chip.TonnageChip
 import com.grippo.design.components.datetime.DatePicker
 import com.grippo.design.components.modifiers.ShadowElevation
@@ -78,8 +82,9 @@ internal fun HomeTrainingsScreen(
             key = { it.id },
             contentType = { it::class }
         ) { value ->
+            val radius = AppTokens.dp.exerciseCard.radius
             val style = remember(value) { timelineStyle(value) }
-            val shape = remember(value) { shapeFor(value) }
+            val shape = remember(value) { shapeFor(value, radius) }
             val sides = remember(value) { sidesFor(value) }
             val exercise = remember(value) { exerciseOf(value) }
 
@@ -94,14 +99,13 @@ internal fun HomeTrainingsScreen(
                 }
 
                 if (value is TrainingListValue.TrainingSummary) {
-                    Row(
+                    Column(
                         modifier = Modifier
                             .shadowDefault(
                                 shape = shape,
                                 elevation = ShadowElevation.Card,
                                 sides = sides
-                            )
-                            .border(
+                            ).border(
                                 width = 1.dp,
                                 color = AppTokens.colors.border.defaultPrimary,
                                 shape = shape,
@@ -113,8 +117,25 @@ internal fun HomeTrainingsScreen(
                                 horizontal = AppTokens.dp.contentPadding.content,
                                 vertical = AppTokens.dp.contentPadding.content,
                             ),
+                        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
                     ) {
-                        TonnageChip(value = value.training.volume)
+
+                        Row(horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)) {
+                            TonnageChip(
+                                modifier = Modifier.weight(1f),
+                                value = value.training.volume
+                            )
+                            RepetitionsChip(
+                                modifier = Modifier.weight(1f),
+                                value = value.training.repetitions
+                            )
+                        }
+
+                        IntensityChip(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = value.training.intensity
+                        )
+
                     }
                     return@TimelineIndicator
                 }
@@ -126,8 +147,7 @@ internal fun HomeTrainingsScreen(
                                 shape = shape,
                                 elevation = ShadowElevation.Card,
                                 sides = sides
-                            )
-                            .border(
+                            ).border(
                                 width = 1.dp,
                                 color = AppTokens.colors.border.defaultPrimary,
                                 shape = shape,

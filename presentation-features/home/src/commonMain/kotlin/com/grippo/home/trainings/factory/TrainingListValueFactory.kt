@@ -1,6 +1,7 @@
 package com.grippo.home.trainings.factory
 
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.models.Side
 import com.grippo.design.components.timeline.TimeLinePointStyle
@@ -24,12 +25,20 @@ internal fun timelineStyle(value: TrainingListValue): TimeLinePointStyle = when 
     }
 }
 
-internal fun shapeFor(value: TrainingListValue): RoundedCornerShape = when (value) {
-    is TrainingListValue.FirstExercise -> RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-    is TrainingListValue.SingleExercise -> RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+internal fun shapeFor(value: TrainingListValue, radius: Dp): RoundedCornerShape = when (value) {
+    is TrainingListValue.FirstExercise -> RoundedCornerShape(
+        topStart = radius,
+        topEnd = radius
+    )
+
+    is TrainingListValue.SingleExercise -> RoundedCornerShape(
+        topStart = radius,
+        topEnd = radius
+    )
+
     is TrainingListValue.TrainingSummary -> RoundedCornerShape(
-        bottomStart = 16.dp,
-        bottomEnd = 16.dp
+        bottomStart = radius,
+        bottomEnd = radius
     )
 
     else -> RoundedCornerShape(0.dp)
