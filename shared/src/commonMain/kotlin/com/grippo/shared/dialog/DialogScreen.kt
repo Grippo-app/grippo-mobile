@@ -2,8 +2,11 @@ package com.grippo.shared.dialog
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ModalBottomSheet
@@ -18,8 +21,10 @@ import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.value.Value
 import com.grippo.core.BaseComposeDialog
 import com.grippo.core.ScreenBackground
-import com.grippo.design.components.bottomsheet.DragHandle
+import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
+import com.grippo.design.resources.icons.NavArrowLeft
 import com.grippo.dialog.api.DialogConfig
 import kotlinx.collections.immutable.ImmutableSet
 
@@ -67,12 +72,6 @@ internal fun DialogScreen(
                 topStart = AppTokens.dp.bottomSheet.radius,
                 topEnd = AppTokens.dp.bottomSheet.radius
             ),
-            dragHandle = {
-                DragHandle(
-                    modifier = Modifier.fillMaxWidth(),
-                    onBack = backProvider
-                )
-            },
             content = {
                 AnimatedContent(
                     modifier = Modifier,
@@ -80,7 +79,24 @@ internal fun DialogScreen(
                 ) {
                     Column(
                         modifier = Modifier.navigationBarsPadding(),
-                        content = { it.Render() }
+                        content = {
+
+                            it.Render()
+
+                            backProvider?.let { back->
+                                Button(
+                                    modifier = Modifier
+                                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                                        .fillMaxWidth(),
+                                    text = "Back",
+                                    startIcon = AppTokens.icons.NavArrowLeft,
+                                    style = ButtonStyle.Secondary,
+                                    onClick = back
+                                )
+
+                                Spacer(Modifier.height(AppTokens.dp.screen.verticalPadding))
+                            }
+                        }
                     )
                 }
             },
