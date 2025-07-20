@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -90,28 +89,6 @@ internal fun HomeTrainingsScreen(
                     TimeLabel(
                         modifier = Modifier.padding(vertical = AppTokens.dp.contentPadding.content),
                         value = value.date
-                    )
-                    return@TimelineIndicator
-                }
-
-                if (value is TrainingListValue.BetweenExercises) {
-                    HorizontalDivider(
-                        modifier = Modifier
-                            .shadowDefault(
-                                shape = shape,
-                                elevation = ShadowElevation.Card,
-                                sides = sides
-                            )
-                            .border(
-                                width = 1.dp,
-                                color = AppTokens.colors.border.defaultPrimary,
-                                shape = shape,
-                                sides = sides
-                            )
-                            .background(AppTokens.colors.background.secondary, shape)
-                            .fillMaxWidth()
-                            .padding(horizontal = AppTokens.dp.contentPadding.content),
-                        color = AppTokens.colors.divider.primary
                     )
                     return@TimelineIndicator
                 }
