@@ -1,6 +1,7 @@
 package com.grippo.connectivity
 
 import com.grippo.connectivity.internal.DefaultConnectivity
+import com.grippo.platform.core.NativeContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharedFlow
@@ -32,18 +33,10 @@ public interface Connectivity {
     }
 }
 
-public fun Connectivity(
-    provider: ConnectivityProvider,
+internal fun NativeContext.Connectivity(
+    provider: ConnectivityProvider = getConnectivityProvider(),
     options: ConnectivityOptions = ConnectivityOptions(),
     scope: CoroutineScope = CoroutineScope(Dispatchers.Default),
 ): Connectivity {
     return DefaultConnectivity(scope, provider, options)
-}
-
-public fun Connectivity(
-    provider: ConnectivityProvider,
-    scope: CoroutineScope = CoroutineScope(Dispatchers.Default),
-    options: ConnectivityOptions.Builder.() -> Unit,
-): Connectivity {
-    return Connectivity(provider, ConnectivityOptions.build(options), scope)
 }

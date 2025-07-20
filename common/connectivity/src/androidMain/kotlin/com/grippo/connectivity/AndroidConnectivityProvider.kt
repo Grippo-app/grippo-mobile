@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOf
 
-internal class ConnectivityProviderImpl(private val context: Context) : ConnectivityProvider {
+internal class AndroidConnectivityProvider(private val context: Context) : ConnectivityProvider {
 
     override fun monitor(): Flow<Connectivity.Status> {
         val manager: ConnectivityManager =

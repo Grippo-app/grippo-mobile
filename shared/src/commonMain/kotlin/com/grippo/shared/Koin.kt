@@ -1,5 +1,6 @@
 package com.grippo.shared
 
+import com.grippo.connectivity.ConnectivityModule
 import com.grippo.core.CoreModule
 import com.grippo.data.features.api.FeatureApiModule
 import com.grippo.data.features.authorization.AuthorizationFeatureModule
@@ -43,6 +44,7 @@ public object Koin {
             TrainingsFeatureModule().module,
             ExcludedEquipmentFeatureModule().module,
             FeatureApiModule().module,
+            ConnectivityModule().module
         )
     }
 }

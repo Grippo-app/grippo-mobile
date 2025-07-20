@@ -17,7 +17,7 @@ import platform.Network.nw_path_uses_interface_type
 import platform.darwin.DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL
 import platform.darwin.dispatch_queue_create
 
-internal class ConnectivityProviderImpl : ConnectivityProvider {
+internal class AppleConnectivityProvider : ConnectivityProvider {
 
     override fun monitor(): Flow<Connectivity.Status> {
         val monitor = nw_path_monitor_create()

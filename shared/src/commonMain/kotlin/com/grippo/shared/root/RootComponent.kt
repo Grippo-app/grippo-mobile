@@ -42,7 +42,8 @@ public class RootComponent(
 
     override val viewModel: RootViewModel = componentContext.retainedInstance {
         RootViewModel(
-            authorizationFeature = getKoin().get()
+            authorizationFeature = getKoin().get(),
+            connectivity = getKoin().get()
         )
     }
 
