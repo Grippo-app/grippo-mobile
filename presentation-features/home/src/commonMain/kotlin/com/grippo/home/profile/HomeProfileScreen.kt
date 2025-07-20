@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -84,32 +83,14 @@ internal fun HomeProfileScreen(
             onClick = contract::onStartWorkoutClick
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = HomeProfileActivityMenu.title(),
-            style = AppTokens.typography.b14Bold(),
-            color = AppTokens.colors.text.secondary,
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         Menu(
             items = activity,
             onClick = contract::onActivityMenuClick
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = HomeProfileSettingsMenu.title(),
-            style = AppTokens.typography.b14Bold(),
-            color = AppTokens.colors.text.secondary,
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         Menu(
             items = settings,
