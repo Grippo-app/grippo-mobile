@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 
+// https://github.com/jordond/connectivity?tab=readme-ov-file#features
 public interface Connectivity {
 
     public val statusUpdates: SharedFlow<Status>
@@ -35,7 +36,7 @@ public interface Connectivity {
 
 internal fun NativeContext.Connectivity(
     provider: ConnectivityProvider = getConnectivityProvider(),
-    options: ConnectivityOptions = ConnectivityOptions(),
+    options: ConnectivityOptions = ConnectivityOptions(autoStart = true),
     scope: CoroutineScope = CoroutineScope(Dispatchers.Default),
 ): Connectivity {
     return DefaultConnectivity(scope, provider, options)

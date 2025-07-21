@@ -70,6 +70,7 @@ public data object AppDp {
     val exerciseCard: ExerciseCard = ExerciseCard
     val iterationCard: IterationCard = IterationCard
     val chip: Chip = Chip
+    val connectionSnackbar: ConnectionSnackbar = ConnectionSnackbar
 
     public data object Screen {
         val toolbar: Toolbar = Toolbar
@@ -223,6 +224,13 @@ public data object AppDp {
         val verticalPadding: Dp = AppDp.padding.small
         val padding: Dp = AppDp.padding.extraSmall
         val icon: Dp = AppDp.icon.medium
+    }
+
+    public data object ConnectionSnackbar {
+        val horizontalPadding: Dp = AppDp.padding.extraLarge
+        val verticalPadding: Dp = AppDp.padding.small
+        val padding: Dp = AppDp.padding.extraSmall
+        val icon: Dp = AppDp.icon.small
     }
 
     public data object WheelPicker {

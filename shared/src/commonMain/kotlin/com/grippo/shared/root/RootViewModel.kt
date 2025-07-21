@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.onEach
 public class RootViewModel(
     authorizationFeature: AuthorizationFeature,
     connectivity: Connectivity
-) : BaseViewModel<RootState, RootDirection, RootLoader>(RootState), RootContract {
+) : BaseViewModel<RootState, RootDirection, RootLoader>(RootState()), RootContract {
 
     init {
         authorizationFeature
@@ -17,11 +17,18 @@ public class RootViewModel(
             .onEach { if (it == null) navigateTo(RootDirection.Login) }
             .safeLaunch()
 
-        connectivity.start()
+        connectivity
+            .statusUpdates
+            .onEach(::provideConnectionStatus)
+            .launchIn(coroutineScope)
+    }
 
-        connectivity.monitoring.onEach {
-
-        }.launchIn(coroutineScope)
+    private fun provideConnectionStatus(value: Connectivity.Status) {
+        val isConnected = when (value) {
+            is Connectivity.Status.Connected -> true
+            Connectivity.Status.Disconnected -> false
+        }
+        update { it.copy(isConnectedToInternet = isConnected) }
     }
 
     override fun back() {
