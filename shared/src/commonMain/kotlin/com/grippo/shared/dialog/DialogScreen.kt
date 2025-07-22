@@ -1,33 +1,24 @@
 package com.grippo.shared.dialog
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.value.Value
 import com.grippo.core.BaseComposeDialog
 import com.grippo.core.ScreenBackground
-import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.drag.handler.DragHandle
 import com.grippo.design.core.AppTokens
-import com.grippo.design.resources.Res
-import com.grippo.design.resources.back
-import com.grippo.design.resources.icons.NavArrowLeft
 import com.grippo.dialog.api.DialogConfig
 import kotlinx.collections.immutable.ImmutableSet
 
@@ -71,23 +62,7 @@ internal fun DialogScreen(
             scrimColor = AppTokens.colors.dialog.scrim,
             properties = ModalBottomSheetProperties(shouldDismissOnBackPress = true),
             containerColor = AppTokens.colors.dialog.background,
-            dragHandle = {
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    BottomSheetDefaults.DragHandle(modifier = Modifier.align(Alignment.Center))
-
-                    backProvider?.let { back ->
-                        Button(
-                            modifier = Modifier
-                                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                                .align(Alignment.CenterStart),
-                            text = AppTokens.strings.res(Res.string.back),
-                            startIcon = AppTokens.icons.NavArrowLeft,
-                            style = ButtonStyle.Transparent,
-                            onClick = back
-                        )
-                    }
-                }
-            },
+            dragHandle = { DragHandle(backProvider) },
             shape = RoundedCornerShape(
                 topStart = AppTokens.dp.bottomSheet.radius,
                 topEnd = AppTokens.dp.bottomSheet.radius
