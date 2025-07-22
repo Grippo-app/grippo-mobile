@@ -11,6 +11,7 @@ public data object AppDp {
 
     private data object Padding {
         val none: Dp = 0.dp
+        val tiny: Dp = 2.dp
         val extraSmall: Dp = 4.dp
         val small: Dp = 8.dp
         val medium: Dp = 12.dp
@@ -106,7 +107,7 @@ public data object AppDp {
         val radius: Dp = AppDp.radius.large
         val icon: Dp = AppDp.icon.medium
         val space: Dp = padding.small
-        val spaceTransparent: Dp = padding.extraSmall
+        val spaceTransparent: Dp = padding.tiny
     }
 
     public data object Menu {
