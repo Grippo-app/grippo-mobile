@@ -46,7 +46,6 @@ internal fun ExerciseScreen(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = AppTokens.dp.screen.verticalPadding)
             .verticalScroll(rememberScrollState())
     ) {
         Text(

@@ -1,6 +1,7 @@
 package com.grippo.shared.dialog
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -77,7 +78,12 @@ internal fun DialogScreen(
             content = {
                 AnimatedContent(targetState = component to backProvider) {
                     Column {
-                        it.first.Render()
+                        Box(
+                            modifier = Modifier
+                                .weight(1f, false)
+                                .padding(vertical = AppTokens.dp.screen.verticalPadding),
+                            content = { it.first.Render() }
+                        )
 
                         it.second?.let { back ->
                             Button(

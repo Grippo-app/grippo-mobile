@@ -154,6 +154,30 @@ public object DarkColor : AppColor {
         override val inactive = Neutral400
         override val background = Neutral300
         override val outline = Neutral400
+        override val palette: List<Color> = listOf(
+            Color(0xFFEF9A9A), // Soft Red
+            Color(0xFFFFAB91), // Soft Deep Orange
+            Color(0xFFFFE082), // Soft Amber
+            Color(0xFFCE93D8), // Soft Purple
+            Color(0xFF9FA8DA), // Indigo
+            Color(0xFFB39DDB), // Lavender
+            Color(0xFF9FA8DA), // Soft Blue
+            Color(0xFFFFF59D), // Yellow
+            Color(0xFFFFCC80), // Soft Orange
+            Color(0xFFA1887F), // Brown
+            Color(0xFF80CBC4), // Teal
+            Color(0xFFA5D6A7), // Green
+            Color(0xFFC5E1A5), // Light Green
+            Color(0xFFE6EE9C), // Lime
+            Color(0xFFCFD8DC), // Blue Grey
+            Color(0xFFFFAB91), // Coral
+            Color(0xFFFFCC80), // Apricot
+            Color(0xFFFFE082), // Yellowish
+            Color(0xFF90CAF9), // Blue
+            Color(0xFF64B5F6), // Bright Blue
+            Color(0xFF4FC3F7), // Sky Blue
+            Color(0xFFB0BEC5), // Muted Grey Blue
+        )
     }
 
     override val divider: DividerColors = object : DividerColors {

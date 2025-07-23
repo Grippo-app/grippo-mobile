@@ -35,10 +35,7 @@ internal fun HeightPickerScreen(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                horizontal = AppTokens.dp.screen.horizontalPadding,
-                vertical = AppTokens.dp.screen.verticalPadding
-            ),
+            .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 

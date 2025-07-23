@@ -30,6 +30,10 @@ public object MuscleEngine {
                 strategy.group,
                 strategy.selectedIds
             )
+
+            is MuscleColorStrategy.ByUniqueColor -> generateByUniqueColor(
+                strategy.bundles
+            )
         }
     }
 
@@ -57,6 +61,25 @@ public object MuscleEngine {
         val bundles = fromAlpha(bundles, focusedColor)
         val colorMap = bundles.associate { it.first.muscle.type to it.second }
         return buildPreset(colorMap)
+    }
+
+    @Composable
+    private fun generateByUniqueColor(
+        bundles: ImmutableList<ExerciseExampleBundleState>
+    ): MuscleColorPreset {
+        val defaultColor = AppTokens.colors.muscle.inactive
+        val palette = AppTokens.colors.muscle.palette
+
+        val muscleTypes = remember(bundles) {
+            bundles.map { it.muscle.type }.distinct()
+        }
+
+        val colorMap = muscleTypes.mapIndexed { index, muscle ->
+            val color = palette.getOrElse(index) { palette.last() }
+            muscle to color
+        }.toMap()
+
+        return buildPreset(colorMap, defaultColor)
     }
 
     @Composable
