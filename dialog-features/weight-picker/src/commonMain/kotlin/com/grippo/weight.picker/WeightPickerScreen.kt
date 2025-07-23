@@ -35,7 +35,10 @@ internal fun WeightPickerScreen(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+            .padding(
+                horizontal = AppTokens.dp.screen.horizontalPadding,
+                vertical = AppTokens.dp.screen.verticalPadding
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
@@ -74,8 +77,6 @@ internal fun WeightPickerScreen(
             style = ButtonStyle.Primary,
             onClick = contract::submit
         )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
     }
 }
 

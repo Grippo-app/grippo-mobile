@@ -38,7 +38,10 @@ internal fun ErrorDisplayScreen(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+            .padding(
+                horizontal = AppTokens.dp.screen.horizontalPadding,
+                vertical = AppTokens.dp.screen.verticalPadding
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
@@ -81,8 +84,6 @@ internal fun ErrorDisplayScreen(
             style = ButtonStyle.Primary,
             onClick = contract::dismiss
         )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
     }
 }
 

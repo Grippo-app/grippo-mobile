@@ -35,7 +35,10 @@ internal fun ExerciseExampleScreen(
         modifier = Modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+            .padding(
+                horizontal = AppTokens.dp.screen.horizontalPadding,
+                vertical = AppTokens.dp.screen.verticalPadding
+            ),
     ) {
         Text(
             modifier = Modifier.fillMaxWidth(),
@@ -80,8 +83,6 @@ internal fun ExerciseExampleScreen(
             modifier = Modifier.fillMaxWidth(),
             value = example.bundles
         )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
     }
 }
 
