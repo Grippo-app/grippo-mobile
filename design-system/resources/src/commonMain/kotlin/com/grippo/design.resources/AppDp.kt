@@ -175,7 +175,11 @@ public data object AppDp {
         val verticalPadding: Dp = padding.small
     }
 
-    public data object EquipmentsCard
+    public data object EquipmentsCard {
+        val horizontalPadding: Dp = padding.extraLarge
+        val verticalPadding: Dp = padding.extraLarge
+        val radius: Dp = AppDp.radius.xLarge
+    }
 
     public data object ExerciseExampleBundlesCard
 

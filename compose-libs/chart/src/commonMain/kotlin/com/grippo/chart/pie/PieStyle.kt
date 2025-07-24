@@ -11,5 +11,10 @@ public data class PieStyle(
     val paddingAngle: Float = 2f,
     val cornerRadius: Dp = 6.dp,
     val minVisibleAngle: Float = 6f,
+    val pieText: PieText? = null
+)
+
+@Immutable
+public data class PieText(
     val textStyle: TextStyle,
 )

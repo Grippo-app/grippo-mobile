@@ -53,8 +53,7 @@ public fun ExerciseExampleBundlesCard(
     }
 
     Column(
-        modifier = modifier
-            .padding(vertical = AppTokens.dp.contentPadding.content),
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
 
@@ -65,25 +64,21 @@ public fun ExerciseExampleBundlesCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally)
         ) {
-            front?.let {
-                Image(
-                    modifier = Modifier.weight(1f),
-                    imageVector = front,
-                    contentDescription = null
-                )
-            }
-
-            back?.let {
-                Image(
-                    modifier = Modifier.weight(1f),
-                    imageVector = back,
-                    contentDescription = null
-                )
-            }
+            Image(
+                modifier = Modifier.weight(1f),
+                imageVector = front,
+                contentDescription = null
+            )
 
             PieChart(
                 modifier = Modifier.weight(1f).aspectRatio(1f),
                 data = pie
+            )
+
+            Image(
+                modifier = Modifier.weight(1f),
+                imageVector = back,
+                contentDescription = null
             )
         }
 

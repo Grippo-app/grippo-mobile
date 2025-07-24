@@ -75,4 +75,34 @@ public enum class MuscleEnumState {
             FOREARM -> preset.forearm
         }
     }
+
+    public companion object {
+        public fun front(): List<MuscleEnumState> = listOf(
+            PECTORALIS_MAJOR_CLAVICULAR,
+            PECTORALIS_MAJOR_STERNOCOSTAL,
+            PECTORALIS_MAJOR_ABDOMINAL,
+            RECTUS_ABDOMINIS,
+            OBLIQUES,
+            ANTERIOR_DELTOID,
+            LATERAL_DELTOID,
+            QUADRICEPS,
+            BICEPS,
+            FOREARM
+        )
+
+        public fun back(): List<MuscleEnumState> = listOf(
+            TRAPEZIUS,
+            LATISSIMUS_DORSI,
+            RHOMBOIDS,
+            TERES_MAJOR,
+            POSTERIOR_DELTOID,
+            GLUTEAL,
+            HAMSTRINGS,
+            CALF,
+            ADDUCTORS,
+            ABDUCTORS,
+            TRICEPS,
+            FOREARM
+        )
+    }
 }

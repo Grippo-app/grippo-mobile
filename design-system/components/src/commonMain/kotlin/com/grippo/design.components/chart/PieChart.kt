@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.grippo.chart.pie.PieChart
 import com.grippo.chart.pie.PieStyle
+import com.grippo.chart.pie.PieText
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -20,8 +21,10 @@ public fun PieChart(
         modifier = modifier,
         data = data,
         style = PieStyle(
-            textStyle = AppTokens.typography.b10Semi().copy(
-                color = AppTokens.colors.text.inverted
+            pieText = PieText(
+                textStyle = AppTokens.typography.b11Bold().copy(
+                    color = AppTokens.colors.text.inverted
+                )
             ),
             chartBarWidth = AppTokens.dp.chart.pie.width
         )

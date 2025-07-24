@@ -1,11 +1,18 @@
 package com.grippo.design.components.equipment
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.grippo.design.components.modifiers.ShadowElevation
+import com.grippo.design.components.modifiers.border
+import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -19,8 +26,22 @@ public fun EquipmentsCard(
     modifier: Modifier = Modifier,
     value: ImmutableList<EquipmentState>
 ) {
+
+    val shape = RoundedCornerShape(AppTokens.dp.equipmentsCard.radius)
+
     LazyRow(
-        modifier = modifier,
+        modifier = modifier
+            .shadowDefault(
+                elevation = ShadowElevation.Card,
+                shape = shape,
+                color = AppTokens.colors.overlay.defaultShadow
+            )
+            .background(AppTokens.colors.background.primary, shape)
+            .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
+            .padding(
+                horizontal = AppTokens.dp.equipmentsCard.horizontalPadding,
+                vertical = AppTokens.dp.equipmentsCard.verticalPadding,
+            ),
         horizontalArrangement = Arrangement.spacedBy(
             AppTokens.dp.contentPadding.subContent,
             Alignment.CenterHorizontally

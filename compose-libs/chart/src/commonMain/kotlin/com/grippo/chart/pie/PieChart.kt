@@ -70,27 +70,28 @@ public fun PieChart(
                 cornerRadius = style.cornerRadius.toPx(),
             )
 
-            val angleMiddle = startAngle + sweepAngle / 2f
-            val angleRad = angleMiddle * PI.toFloat() / 180f
-            val x = (center.x + centerRadius * cos(angleRad)).toFloat()
-            val y = (center.y + centerRadius * sin(angleRad)).toFloat()
+            style.pieText?.let {
+                val angleMiddle = startAngle + sweepAngle / 2f
+                val angleRad = angleMiddle * PI.toFloat() / 180f
+                val x = (center.x + centerRadius * cos(angleRad))
+                val y = (center.y + centerRadius * sin(angleRad))
 
-            val percent = (100 * data[index].second.toFloat() / totalSum).roundToInt()
-            val label = "$percent%"
+                val percent = (100 * data[index].second.toFloat() / totalSum).roundToInt()
+                val label = "$percent%"
 
-            val layout = textMeasurer.measure(
-                text = AnnotatedString(label),
-                style = style.textStyle
-            )
-
-            drawText(
-                layout,
-                topLeft = Offset(
-                    x - layout.size.width / 2,
-                    y - layout.size.height / 2
+                val layout = textMeasurer.measure(
+                    text = AnnotatedString(label),
+                    style = it.textStyle
                 )
-            )
 
+                drawText(
+                    layout,
+                    topLeft = Offset(
+                        x - layout.size.width / 2,
+                        y - layout.size.height / 2
+                    )
+                )
+            }
             lastValue += value
         }
     }

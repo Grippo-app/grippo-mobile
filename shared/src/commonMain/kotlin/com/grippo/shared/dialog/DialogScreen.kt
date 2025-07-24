@@ -1,11 +1,10 @@
 package com.grippo.shared.dialog
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -77,11 +76,13 @@ internal fun DialogScreen(
             ),
             content = {
                 AnimatedContent(targetState = component to backProvider) {
-                    Column {
+                    Column(
+                        modifier = Modifier.padding(vertical = AppTokens.dp.screen.verticalPadding),
+                        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.screen.verticalPadding)
+                    ) {
                         Box(
                             modifier = Modifier
-                                .weight(1f, false)
-                                .padding(vertical = AppTokens.dp.screen.verticalPadding),
+                                .weight(1f, false),
                             content = { it.first.Render() }
                         )
 
@@ -95,8 +96,6 @@ internal fun DialogScreen(
                                 style = ButtonStyle.Secondary,
                                 onClick = back
                             )
-
-                            Spacer(modifier = Modifier.height(AppTokens.dp.screen.verticalPadding))
                         }
                     }
                 }

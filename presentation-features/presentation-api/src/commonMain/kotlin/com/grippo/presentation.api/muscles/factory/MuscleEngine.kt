@@ -41,7 +41,7 @@ public object MuscleEngine {
     public fun generateImages(
         preset: MuscleColorPreset,
         bundles: ImmutableList<ExerciseExampleBundleState>
-    ): Pair<ImageVector?, ImageVector?> {
+    ): Pair<ImageVector, ImageVector> {
         return images(bundles, preset)
     }
 
@@ -141,48 +141,9 @@ public object MuscleEngine {
     private fun images(
         bundles: ImmutableList<ExerciseExampleBundleState>,
         preset: MuscleColorPreset
-    ): Pair<ImageVector?, ImageVector?> {
-        val muscleTypes = bundles.map { it.muscle.type }.toSet()
-
-        val hasFront = muscleTypes.any {
-            when (it) {
-                MuscleEnumState.PECTORALIS_MAJOR_CLAVICULAR,
-                MuscleEnumState.PECTORALIS_MAJOR_STERNOCOSTAL,
-                MuscleEnumState.PECTORALIS_MAJOR_ABDOMINAL,
-                MuscleEnumState.RECTUS_ABDOMINIS,
-                MuscleEnumState.OBLIQUES,
-                MuscleEnumState.ANTERIOR_DELTOID,
-                MuscleEnumState.LATERAL_DELTOID,
-                MuscleEnumState.QUADRICEPS,
-                MuscleEnumState.BICEPS,
-                MuscleEnumState.FOREARM -> true
-
-                else -> false
-            }
-        }
-
-        val hasBack = muscleTypes.any {
-            when (it) {
-                MuscleEnumState.TRAPEZIUS,
-                MuscleEnumState.LATISSIMUS_DORSI,
-                MuscleEnumState.RHOMBOIDS,
-                MuscleEnumState.TERES_MAJOR,
-                MuscleEnumState.POSTERIOR_DELTOID,
-                MuscleEnumState.GLUTEAL,
-                MuscleEnumState.HAMSTRINGS,
-                MuscleEnumState.CALF,
-                MuscleEnumState.ADDUCTORS,
-                MuscleEnumState.ABDUCTORS,
-                MuscleEnumState.TRICEPS,
-                MuscleEnumState.FOREARM -> true
-
-                else -> false
-            }
-        }
-
-        val frontImage = if (hasFront) fullFront(preset) else null
-        val backImage = if (hasBack) fullBack(preset) else null
-
+    ): Pair<ImageVector, ImageVector> {
+        val frontImage = fullFront(preset)
+        val backImage = fullBack(preset)
         return frontImage to backImage
     }
 

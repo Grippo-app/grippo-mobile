@@ -1,6 +1,5 @@
 package com.grippo.exercise.example.exerciseexample
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -58,20 +57,18 @@ internal fun ExerciseExampleScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
 
+        ExerciseExampleBundlesCard(
+            modifier = Modifier.fillMaxWidth(),
+            value = example.bundles
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+
         EquipmentsCard(
             modifier = Modifier
                 .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
                 .fillMaxWidth(),
             value = example.equipments
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
-
-        ExerciseExampleBundlesCard(
-            modifier = Modifier
-                .background(AppTokens.colors.background.primary)
-                .fillMaxWidth(),
-            value = example.bundles
         )
     }
 }
