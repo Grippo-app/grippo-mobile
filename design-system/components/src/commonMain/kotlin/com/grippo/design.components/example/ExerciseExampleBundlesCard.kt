@@ -98,7 +98,7 @@ public fun ExerciseExampleBundlesCard(
                     Chip(
                         modifier = modifier,
                         label = item.muscle.name,
-                        value = item.percentage.toString(),
+                        value = "${item.percentage}%",
                         trailing = Trailing.Content {
                             Spacer(
                                 modifier = Modifier
