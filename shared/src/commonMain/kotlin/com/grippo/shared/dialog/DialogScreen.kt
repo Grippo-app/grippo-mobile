@@ -1,13 +1,14 @@
 package com.grippo.shared.dialog
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -76,26 +77,32 @@ internal fun DialogScreen(
             ),
             content = {
                 AnimatedContent(targetState = component to backProvider) {
-                    Column(
-                        modifier = Modifier.padding(vertical = AppTokens.dp.screen.verticalPadding),
-                        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.screen.verticalPadding)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .weight(1f, false),
+                    Column {
+                        Column(
+                            modifier = Modifier.weight(1f, false),
                             content = { it.first.Render() }
                         )
 
                         it.second?.let { back ->
+
+                            HorizontalDivider(
+                                modifier = Modifier.fillMaxWidth(),
+                                color = AppTokens.colors.divider.primary
+                            )
+
+                            Spacer(Modifier.height(AppTokens.dp.screen.verticalPadding))
+
                             Button(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
                                 text = AppTokens.strings.res(Res.string.back),
                                 startIcon = AppTokens.icons.NavArrowLeft,
-                                style = ButtonStyle.Secondary,
+                                style = ButtonStyle.Transparent,
                                 onClick = back
                             )
+
+                            Spacer(Modifier.height(AppTokens.dp.screen.verticalPadding))
                         }
                     }
                 }

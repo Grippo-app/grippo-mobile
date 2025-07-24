@@ -40,6 +40,8 @@ internal fun DatePickerScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
+        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.date_picker_title),
@@ -67,6 +69,8 @@ internal fun DatePickerScreen(
             style = ButtonStyle.Primary,
             onClick = contract::submit
         )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
     }
 }
 

@@ -48,6 +48,9 @@ internal fun ExerciseScreen(
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
     ) {
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+
         Text(
             modifier = Modifier
                 .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
@@ -144,6 +147,8 @@ internal fun ExerciseScreen(
                 color = AppTokens.colors.text.primary,
             )
         }
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
     }
 }
 
