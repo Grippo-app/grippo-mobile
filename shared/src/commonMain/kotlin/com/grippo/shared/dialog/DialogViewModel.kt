@@ -45,33 +45,31 @@ internal class DialogViewModel(
 
     // Hide bottom-sheet inside of component
     override fun dismiss(pendingResult: (() -> Unit)?) {
-        update { it.copy(process = Process.DISMISS, pendingResult = pendingResult) }
-    }
-
-    override fun dismiss() {
-        update { it.copy(process = Process.DISMISS, pendingResult = null) }
+        popOrElse {
+            update { it.copy(process = Process.DISMISS, pendingResult = pendingResult) }
+        }
     }
 
     // Show previous config from Backstack or release
     override fun back() {
-        val current = state.value
-        val stack = current.stack
+        popOrElse {
+            val config = state.value.stack.current ?: return@popOrElse
+            release(config)
+        }
+    }
+
+    private fun popOrElse(lambda: () -> Unit) {
+        val stack = state.value.stack
 
         if (stack.stack.size > 1) {
             val newStack = stack.pop()
-            val prevConfig = newStack.current
+            val prevConfig = newStack.current ?: return
 
-            update {
-                it.copy(
-                    process = Process.SHOW,
-                    stack = newStack,
-                    pendingResult = null
-                )
-            }
+            update { it.copy(process = Process.SHOW, stack = newStack, pendingResult = null) }
 
-            navigateTo(DialogDirection.Activate(prevConfig!!))
+            navigateTo(DialogDirection.Activate(prevConfig))
         } else {
-            release(stack.current ?: return)
+            lambda.invoke()
         }
     }
 

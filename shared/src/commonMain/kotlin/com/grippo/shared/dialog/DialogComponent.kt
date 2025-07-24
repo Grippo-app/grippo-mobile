@@ -52,7 +52,7 @@ internal class DialogComponent(
         DialogViewModel(dialogProvider = getKoin().get())
     }
 
-    private val backCallback = BackCallback(onBack = viewModel::dismiss)
+    private val backCallback = BackCallback(onBack = { viewModel.dismiss(null) })
 
     init {
         backHandler.register(backCallback)
@@ -82,7 +82,7 @@ internal class DialogComponent(
                     componentContext = context,
                     initial = router.initial,
                     onResult = { viewModel.dismiss { router.onResult.invoke(it) } },
-                    back = viewModel::dismiss
+                    back = { viewModel.dismiss(null) }
                 )
             )
 
@@ -91,7 +91,7 @@ internal class DialogComponent(
                     componentContext = context,
                     initial = router.initial,
                     onResult = { viewModel.dismiss { router.onResult.invoke(it) } },
-                    back = viewModel::dismiss
+                    back = { viewModel.dismiss(null) }
                 )
             )
 
@@ -100,7 +100,7 @@ internal class DialogComponent(
                     componentContext = context,
                     title = router.title,
                     description = router.description,
-                    back = viewModel::dismiss
+                    back = { viewModel.dismiss(null) }
                 )
             )
 
@@ -108,7 +108,7 @@ internal class DialogComponent(
                 ExerciseExampleComponent(
                     componentContext = context,
                     id = router.id,
-                    back = viewModel::dismiss
+                    back = { viewModel.dismiss(null) }
                 )
             )
 
@@ -117,7 +117,7 @@ internal class DialogComponent(
                     componentContext = context,
                     initial = router.initial,
                     onResult = { viewModel.dismiss { router.onResult.invoke(it) } },
-                    back = viewModel::dismiss
+                    back = { viewModel.dismiss(null) }
                 )
             )
 
@@ -125,7 +125,7 @@ internal class DialogComponent(
                 ExerciseComponent(
                     componentContext = context,
                     id = router.id,
-                    back = viewModel::dismiss
+                    back = { viewModel.dismiss(null) }
                 )
             )
         }
