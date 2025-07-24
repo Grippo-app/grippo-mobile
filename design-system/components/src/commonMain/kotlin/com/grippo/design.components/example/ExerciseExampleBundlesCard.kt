@@ -2,29 +2,31 @@ package com.grippo.design.components.example
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.grippo.design.components.cards.information.InformationCard
 import com.grippo.design.components.chart.PieChart
+import com.grippo.design.components.chip.Chip
+import com.grippo.design.components.chip.Trailing
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.Res
-import com.grippo.design.resources.percent
 import com.grippo.presentation.api.exercise.example.models.ExerciseExampleBundleState
 import com.grippo.presentation.api.exercise.example.models.stubExerciseExample
 import com.grippo.presentation.api.muscles.factory.MuscleColorStrategy
@@ -50,10 +52,16 @@ public fun ExerciseExampleBundlesCard(
         internalList.map { it.muscle.type.color(preset) to it.percentage.toLong() }
     }
 
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier
+            .padding(vertical = AppTokens.dp.contentPadding.content),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+    ) {
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally)
         ) {
@@ -79,48 +87,40 @@ public fun ExerciseExampleBundlesCard(
             )
         }
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
-        internalList.forEachIndexed { index, item ->
-            InformationCard(
-                modifier = Modifier.fillMaxWidth(),
-                label = item.muscle.name,
-                trailing = {
-                    Spacer(
-                        modifier = Modifier
-                            .size(14.dp)
-                            .background(
-                                item.muscle.type.color(preset),
-                                RoundedCornerShape(4.dp)
-                            ),
-                    )
-                    Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
-                },
-                value = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(2.dp)
-                    ) {
-                        Text(
-                            text = item.percentage.toString(),
-                            style = AppTokens.typography.b14Bold(),
-                            color = AppTokens.colors.text.secondary
-                        )
-
-                        Text(
-                            text = AppTokens.strings.res(Res.string.percent),
-                            style = AppTokens.typography.b14Semi(),
-                            color = AppTokens.colors.text.secondary
-                        )
-                    }
+        Row(
+            modifier = Modifier
+                .horizontalScroll(rememberScrollState())
+                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+        ) {
+            internalList.forEach { item ->
+                val color = remember(item.id) {
+                    item.muscle.type.color(preset)
                 }
-            )
 
-            if (index < internalList.lastIndex) {
-                HorizontalDivider(
-                    modifier = Modifier.fillMaxWidth(),
-                    color = AppTokens.colors.divider.primary
-                )
+                key(item.muscle.id) {
+                    Chip(
+                        modifier = modifier,
+                        label = item.muscle.name,
+                        value = item.percentage.toString(),
+                        trailing = Trailing.Content {
+                            Spacer(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(
+                                        item.muscle.type.color(preset),
+                                        RoundedCornerShape(4.dp)
+                                    ),
+                            )
+                        },
+                        contentColor = AppTokens.colors.text.inverted,
+                        borderColor = Color.Transparent,
+                        brush = Brush.horizontalGradient(
+                            colors = listOf(color.copy(alpha = 0.7f), color)
+                        )
+                    )
+                }
             }
         }
     }

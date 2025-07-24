@@ -28,7 +28,7 @@ public fun TonnageChip(
         modifier = modifier,
         label = AppTokens.strings.res(Res.string.tonnage),
         value = displayValue,
-        icon = AppTokens.icons.Weight,
+        trailing = Trailing.Icon(AppTokens.icons.Weight),
         contentColor = colors.contentColor,
         borderColor = colors.borderColor,
         brush = Brush.horizontalGradient(

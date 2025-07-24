@@ -251,7 +251,7 @@ public data object AppDp {
         val horizontalPadding: Dp = padding.medium
         val verticalPadding: Dp = padding.small
         val radius: Dp = AppDp.radius.large
-        val iconSize: Dp = icon.small
+        val trailingSize: Dp = icon.small
         val spaceBetween: Dp = padding.small
     }
 }

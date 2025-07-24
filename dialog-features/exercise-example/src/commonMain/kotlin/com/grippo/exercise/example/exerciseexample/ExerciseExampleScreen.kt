@@ -1,5 +1,6 @@
 package com.grippo.exercise.example.exerciseexample
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -7,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -34,11 +34,12 @@ internal fun ExerciseExampleScreen(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+            .verticalScroll(rememberScrollState()),
     ) {
         Text(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                .fillMaxWidth(),
             text = example.value.name,
             style = AppTokens.typography.h1(),
             color = AppTokens.colors.text.primary,
@@ -47,7 +48,9 @@ internal fun ExerciseExampleScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Text(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                .fillMaxWidth(),
             text = example.value.description,
             style = AppTokens.typography.b14Reg(),
             color = AppTokens.colors.text.primary,
@@ -55,29 +58,19 @@ internal fun ExerciseExampleScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
 
-        HorizontalDivider(
-            modifier = Modifier.fillMaxWidth(),
-            color = AppTokens.colors.divider.primary
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
-
         EquipmentsCard(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                .fillMaxWidth(),
             value = example.equipments
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
 
-        HorizontalDivider(
-            modifier = Modifier.fillMaxWidth(),
-            color = AppTokens.colors.divider.primary
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
-
         ExerciseExampleBundlesCard(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .background(AppTokens.colors.background.primary)
+                .fillMaxWidth(),
             value = example.bundles
         )
     }

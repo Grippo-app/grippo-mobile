@@ -28,7 +28,7 @@ public fun IntensityChip(
         modifier = modifier,
         label = AppTokens.strings.res(Res.string.intensity),
         value = displayValue,
-        icon = AppTokens.icons.FireFlame,
+        trailing = Trailing.Icon(AppTokens.icons.FireFlame),
         contentColor = colors.contentColor,
         borderColor = colors.borderColor,
         brush = Brush.horizontalGradient(

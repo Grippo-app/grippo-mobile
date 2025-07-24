@@ -21,7 +21,7 @@ public fun RepetitionsChip(
         modifier = modifier,
         label = AppTokens.strings.res(Res.string.repetitions),
         value = value.toString(),
-        icon = AppTokens.icons.Repeat,
+        trailing = Trailing.Icon(AppTokens.icons.Repeat),
         contentColor = colors.contentColor,
         borderColor = colors.borderColor,
         brush = Brush.horizontalGradient(

@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -23,19 +24,32 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.icons.Weight
 
+@Stable
+public sealed interface Trailing {
+    @Stable
+    public data class Content(
+        val lambda: @Composable () -> Unit
+    ) : Trailing
+
+    @Stable
+    public data class Icon(
+        val icon: ImageVector,
+    ) : Trailing
+}
+
 @Composable
 public fun Chip(
     modifier: Modifier = Modifier,
     label: String,
     value: String,
-    icon: ImageVector,
+    trailing: Trailing,
     contentColor: Color,
     borderColor: Color = Color.Transparent,
     brush: Brush,
 ) {
     val shape = RoundedCornerShape(AppTokens.dp.chip.radius)
 
-    Box(
+    Row(
         modifier = modifier
             .border(
                 width = 1.dp,
@@ -49,26 +63,43 @@ public fun Chip(
             .padding(
                 horizontal = AppTokens.dp.chip.horizontalPadding,
                 vertical = AppTokens.dp.chip.verticalPadding
-            )
+            ),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                modifier = Modifier.size(AppTokens.dp.chip.iconSize),
-                imageVector = icon,
-                contentDescription = null,
-                tint = contentColor
-            )
 
-            Spacer(modifier = Modifier.width(AppTokens.dp.chip.spaceBetween))
+        Box(modifier = Modifier.size(AppTokens.dp.chip.trailingSize)) {
+            when (trailing) {
+                is Trailing.Content -> {
+                    trailing.lambda.invoke()
+                }
 
-            Text(
-                text = "$label: $value",
-                style = AppTokens.typography.b14Semi(),
-                color = contentColor
-            )
+                is Trailing.Icon -> {
+                    Icon(
+                        modifier = Modifier.size(AppTokens.dp.chip.trailingSize),
+                        imageVector = trailing.icon,
+                        contentDescription = null,
+                        tint = contentColor
+                    )
+                }
+            }
         }
+
+
+        Spacer(modifier = Modifier.width(AppTokens.dp.chip.spaceBetween))
+
+        Text(
+            text = label,
+            style = AppTokens.typography.b14Semi(),
+            color = contentColor
+        )
+
+        Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.text))
+
+        Text(
+            text = value,
+            style = AppTokens.typography.b14Bold(),
+            color = contentColor
+        )
     }
 }
 
@@ -79,7 +110,7 @@ private fun ChipPreview() {
         Chip(
             label = "Basic",
             value = "Value",
-            icon = AppTokens.icons.Weight,
+            trailing = Trailing.Icon(AppTokens.icons.Weight),
             brush = Brush.linearGradient(),
             contentColor = Color.Black
         )
