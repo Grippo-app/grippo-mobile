@@ -5,7 +5,7 @@ import com.grippo.database.entity.ColorMode as ColorModeEntity
 
 public fun ColorModeEntity.toDomain(): ColorMode {
     return when (this) {
-        ColorModeEntity.Light -> ColorMode.Light
-        ColorModeEntity.Dark -> ColorMode.Dark
+        ColorModeEntity.LIGHT -> ColorMode.LIGHT
+        ColorModeEntity.DARK -> ColorMode.DARK
     }
 }

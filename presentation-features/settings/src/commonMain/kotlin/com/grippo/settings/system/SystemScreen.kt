@@ -11,13 +11,13 @@ import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.settings.ColorCard
-import com.grippo.design.components.settings.ColorCardStyle
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.system
+import com.grippo.presentation.api.settings.models.ColorModeState
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -51,15 +51,15 @@ internal fun SystemScreen(
             ) {
                 ColorCard(
                     modifier = Modifier.weight(1f).aspectRatio(1f),
-                    isSelected = false,
-                    style = ColorCardStyle.Light,
+                    isSelected = state.colorMode == ColorModeState.LIGHT,
+                    style = ColorModeState.LIGHT,
                     onClick = {}
                 )
 
                 ColorCard(
                     modifier = Modifier.weight(1f).aspectRatio(1f),
-                    isSelected = false,
-                    style = ColorCardStyle.Dark,
+                    isSelected = state.colorMode == ColorModeState.DARK,
+                    style = ColorModeState.DARK,
                     onClick = {}
                 )
             }
@@ -72,7 +72,9 @@ internal fun SystemScreen(
 private fun ScreenPreview() {
     PreviewContainer {
         SystemScreen(
-            state = SystemState,
+            state = SystemState(
+                colorMode = ColorModeState.LIGHT
+            ),
             loaders = persistentSetOf(),
             contract = SystemContract.Empty
         )

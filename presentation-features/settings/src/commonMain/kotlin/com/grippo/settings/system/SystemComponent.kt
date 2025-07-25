@@ -13,7 +13,9 @@ internal class SystemComponent(
 ) : BaseComponent<SystemDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        SystemViewModel()
+        SystemViewModel(
+            settingsFeature = getKoin().get()
+        )
     }
 
     private val backCallback = BackCallback(onBack = viewModel::back)
