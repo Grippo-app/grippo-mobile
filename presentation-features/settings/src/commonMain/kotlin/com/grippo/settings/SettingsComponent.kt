@@ -13,7 +13,7 @@ import com.grippo.core.collectAsStateMultiplatform
 import com.grippo.presentation.api.settings.SettingsRouter
 import com.grippo.settings.system.SystemComponent
 
-internal class SettingsComponent(
+public class SettingsComponent(
     initial: SettingsRouter,
     componentContext: ComponentContext,
     private val back: () -> Unit
@@ -23,7 +23,7 @@ internal class SettingsComponent(
         data class System(override val component: SystemComponent) : Child(component)
     }
 
-    override val viewModel = componentContext.retainedInstance {
+    override val viewModel: SettingsViewModel = componentContext.retainedInstance {
         SettingsViewModel()
     }
 

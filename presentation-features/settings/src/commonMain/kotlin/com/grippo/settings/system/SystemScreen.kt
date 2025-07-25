@@ -1,10 +1,17 @@
 package com.grippo.settings.system
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
+import com.grippo.design.components.settings.ColorCard
+import com.grippo.design.components.settings.ColorCardStyle
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -26,6 +33,38 @@ internal fun SystemScreen(
         title = AppTokens.strings.res(Res.string.system),
         onBack = contract::back,
     )
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f),
+        contentPadding = PaddingValues(
+            horizontal = AppTokens.dp.screen.horizontalPadding,
+            vertical = AppTokens.dp.contentPadding.content
+        ),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+    ) {
+        item(key = "color_mode") {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+            ) {
+                ColorCard(
+                    modifier = Modifier.weight(1f).aspectRatio(1f),
+                    isSelected = false,
+                    style = ColorCardStyle.Light,
+                    onClick = {}
+                )
+
+                ColorCard(
+                    modifier = Modifier.weight(1f).aspectRatio(1f),
+                    isSelected = false,
+                    style = ColorCardStyle.Dark,
+                    onClick = {}
+                )
+            }
+        }
+    }
 }
 
 @AppPreview

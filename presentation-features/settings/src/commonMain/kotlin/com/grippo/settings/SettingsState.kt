@@ -3,4 +3,4 @@ package com.grippo.settings
 import androidx.compose.runtime.Immutable
 
 @Immutable
-internal data object SettingsState
+public data object SettingsState

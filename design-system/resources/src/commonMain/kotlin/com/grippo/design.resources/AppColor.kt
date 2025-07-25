@@ -19,6 +19,7 @@ public interface AppColor {
     public val segment: SegmentColors
     public val konfetti: Konfetti
     public val chip: ChipColors
+    public val themeColors: ThemeColors
 
     public interface DividerColors {
         public val primary: Color
@@ -176,5 +177,14 @@ public interface AppColor {
             public val contentColor: Color
             public val borderColor: Color
         }
+    }
+
+    public interface ThemeColors {
+        public val lightText: Color
+        public val lightBackground1: Color
+        public val lightBackground2: Color
+        public val darkText: Color
+        public val darkBackground1: Color
+        public val darkBackground2: Color
     }
 }

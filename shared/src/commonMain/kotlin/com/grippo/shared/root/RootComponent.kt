@@ -21,7 +21,9 @@ import com.grippo.presentation.api.RootRouter
 import com.grippo.presentation.api.auth.AuthRouter
 import com.grippo.presentation.api.bottom.navigation.BottomNavigationRouter
 import com.grippo.presentation.api.profile.ProfileRouter
+import com.grippo.presentation.api.settings.SettingsRouter
 import com.grippo.profile.ProfileComponent
+import com.grippo.settings.SettingsComponent
 import com.grippo.shared.dialog.DialogComponent
 import com.grippo.shared.root.RootComponent.Child.Authorization
 import com.grippo.shared.root.RootComponent.Child.Home
@@ -38,6 +40,7 @@ public class RootComponent(
         public data class Home(override val component: BottomNavigationComponent) : Child(component)
         public data class Profile(override val component: ProfileComponent) : Child(component)
         public data class Debug(override val component: DebugComponent) : Child(component)
+        public data class Settings(override val component: SettingsComponent) : Child(component)
     }
 
     override val viewModel: RootViewModel = componentContext.retainedInstance {
@@ -93,7 +96,7 @@ public class RootComponent(
                     toExcludedMuscles = { navigation.push(RootRouter.Profile(ProfileRouter.Muscles)) },
                     toDebug = { navigation.push(RootRouter.Debug) },
                     toWorkout = { navigation.push(RootRouter.Workout) },
-                    toSystemSettings = {},
+                    toSystemSettings = { navigation.push(RootRouter.Settings(SettingsRouter.System)) },
                     toExerciseLibrary = {},
                     back = finish
                 )
@@ -118,6 +121,14 @@ public class RootComponent(
                 // Handle Workout router if needed
                 throw NotImplementedError("Workout router is not implemented yet")
             }
+
+            is RootRouter.Settings -> Child.Settings(
+                SettingsComponent(
+                    componentContext = context,
+                    initial = router.value,
+                    back = navigation::pop,
+                )
+            )
         }
     }
 

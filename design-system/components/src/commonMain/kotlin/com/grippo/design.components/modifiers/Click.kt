@@ -34,7 +34,7 @@ public fun Modifier.scalableClick(
 
     val scale by animateFloatAsState(
         targetValue = if (pressed) scaleDown else 1f,
-        label = "ClickScale"
+        label = "clickScale"
     )
 
     return this

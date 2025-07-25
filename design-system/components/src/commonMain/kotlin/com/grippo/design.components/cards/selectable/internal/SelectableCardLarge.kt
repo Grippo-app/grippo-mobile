@@ -42,17 +42,17 @@ internal fun SelectableCardLarge(
 
     val borderColor by animateColorAsState(
         if (isSelected) AppTokens.colors.border.focus else AppTokens.colors.border.defaultPrimary,
-        label = "mediumBorder"
+        label = "border"
     )
 
     val shadowColor by animateColorAsState(
         if (isSelected) AppTokens.colors.overlay.accentShadow else AppTokens.colors.overlay.defaultShadow,
-        label = "mediumShadow"
+        label = "shadow"
     )
 
     val iconTint by animateColorAsState(
         if (isSelected) AppTokens.colors.icon.accent else AppTokens.colors.icon.primary,
-        label = "mediumIconTint"
+        label = "iconTint"
     )
 
     Row(

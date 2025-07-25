@@ -70,6 +70,15 @@ public object LightColor : AppColor {
         override val inverted = White
     }
 
+    override val themeColors: AppColor.ThemeColors = object : AppColor.ThemeColors {
+        override val lightText: Color = Color(0xFF000000)
+        override val lightBackground1: Color = Color(0xFFF6F9FF)
+        override val lightBackground2: Color = Color(0xFFFFFFFF)
+        override val darkText: Color = Color(0xFFFFFFFF)
+        override val darkBackground1: Color = Color(0xFF121212)
+        override val darkBackground2: Color = Color(0xFF181818)
+    }
+
     override val toggle: AppColor.ToggleColors = object : AppColor.ToggleColors {
         override val checkedThumb = White
         override val checkedTrack = Primary500

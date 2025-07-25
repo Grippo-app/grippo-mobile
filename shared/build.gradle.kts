@@ -41,6 +41,7 @@ kotlin {
         implementation(projects.presentationFeatures.authorization)
         implementation(projects.presentationFeatures.home)
         implementation(projects.presentationFeatures.profile)
+        implementation(projects.presentationFeatures.settings)
         implementation(projects.presentationFeatures.debug)
 
         implementation(projects.dialogFeatures.dialogApi)

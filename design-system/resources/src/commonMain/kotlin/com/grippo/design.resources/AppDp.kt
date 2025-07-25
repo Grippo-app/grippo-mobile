@@ -243,6 +243,12 @@ public data object AppDp {
         val radius: Dp = AppDp.radius.large
     }
 
+    public data object ColorCard {
+        val horizontalPadding: Dp = padding.large
+        val verticalPadding: Dp = padding.large
+        val radius: Dp = AppDp.radius.large
+    }
+
     public data object Chart {
         val pie: Pie = Pie
 

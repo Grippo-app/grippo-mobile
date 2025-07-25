@@ -185,6 +185,15 @@ public object DarkColor : AppColor {
         override val secondary: Color = Neutral400
     }
 
+    override val themeColors: AppColor.ThemeColors = object : AppColor.ThemeColors {
+        override val lightText: Color = Color(0xFF000000)
+        override val lightBackground1: Color = Color(0xFFF6F9FF)
+        override val lightBackground2: Color = Color(0xFFFFFFFF)
+        override val darkText: Color = Color(0xFFFFFFFF)
+        override val darkBackground1: Color = Color(0xFF121212)
+        override val darkBackground2: Color = Color(0xFF181818)
+    }
+
     override val konfetti: AppColor.Konfetti = object : AppColor.Konfetti {
         override val confettiColor1 = Success
         override val confettiColor2 = Warning
