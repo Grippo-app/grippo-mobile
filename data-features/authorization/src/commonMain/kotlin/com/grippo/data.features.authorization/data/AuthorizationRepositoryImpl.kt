@@ -5,7 +5,7 @@ import com.grippo.data.features.authorization.domain.AuthorizationRepository
 import com.grippo.database.dao.TokenDao
 import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.entity.UserActiveEntity
-import com.grippo.domain.mapper.user.toDto
+import com.grippo.domain.mapper.user.toBody
 import com.grippo.network.Api
 import com.grippo.network.dto.auth.AuthBody
 import com.grippo.network.mapper.user.toEntityOrNull
@@ -36,7 +36,7 @@ internal class AuthorizationRepositoryImpl(
     }
 
     override suspend fun register(registration: SetRegistration): Result<Unit> {
-        val response = api.register(registration.toDto())
+        val response = api.register(registration.toBody())
 
         response.onSuccess { r ->
             val entity = r.toEntityOrNull() ?: return@onSuccess

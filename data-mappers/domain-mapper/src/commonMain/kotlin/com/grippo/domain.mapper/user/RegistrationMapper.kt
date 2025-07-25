@@ -3,7 +3,7 @@ package com.grippo.domain.mapper.user
 import com.grippo.data.features.api.authorization.models.SetRegistration
 import com.grippo.network.dto.auth.RegisterBody
 
-public fun SetRegistration.toDto(): RegisterBody {
+public fun SetRegistration.toBody(): RegisterBody {
     return RegisterBody(
         email = email,
         password = password,

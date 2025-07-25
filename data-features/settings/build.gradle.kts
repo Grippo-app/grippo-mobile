@@ -1,17 +1,16 @@
 plugins {
     id("android.library.convention")
     id("kotlin.multiplatform.convention")
+    id("koin.annotation.convention")
 }
 
 kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.dataFeatures.featureApi)
-        implementation(projects.presentationFeatures.presentationApi)
-        implementation(projects.dataServices.network)
         implementation(projects.dataServices.database)
-        implementation(projects.common.logger)
+        implementation(projects.dataMappers.domainMapper)
+        implementation(projects.dataMappers.databaseMapper)
 
-        implementation(libs.immutable.collections)
-        implementation(libs.datetime)
+        implementation(libs.kotlinx.coroutines.core)
     }
 }
