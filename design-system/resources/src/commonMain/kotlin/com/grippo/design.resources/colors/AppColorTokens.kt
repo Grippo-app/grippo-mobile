@@ -7,7 +7,7 @@ internal object AppColorTokens {
     object Common {
         val White = Color(0xFFFFFFFF)
         val Black = Color(0xFF000000)
-        val Accent = Color(0xFF3366FF) // Общий акцент
+        val Accent = Color(0xFF3366FF)
     }
 
     object Semantic {
@@ -20,6 +20,7 @@ internal object AppColorTokens {
         val P100 = Color(0xFFE6ECFF)
         val P150 = Color(0xFFD4DFFF)
         val P200 = Color(0xFFC2D1FF)
+        val P250 = Color(0xFFB0C4FF)
         val P300 = Color(0xFF99B2FF)
         val P400 = Color(0xFF7090FF)
         val P500 = Color(0xFF3366FF)
@@ -47,8 +48,11 @@ internal object AppColorTokens {
         val N200 = Color(0xFF202020)
         val N250 = Color(0xFF252525)
         val N300 = Color(0xFF303030)
+        val N350 = Color(0xFF3A3A3A)
         val N400 = Color(0xFF404040)
+        val N450 = Color(0xFF4D4D4D)
         val N500 = Color(0xFF707070)
+        val N550 = Color(0xFF6A6A6A)
         val N600 = Color(0xFFA0A0A0)
         val N700 = Color(0xFFD0D0D0)
     }
