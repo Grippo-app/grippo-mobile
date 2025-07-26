@@ -3,12 +3,17 @@ package com.grippo.shared.root
 import com.grippo.connectivity.Connectivity
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.authorization.AuthorizationFeature
+import com.grippo.data.features.api.settings.SettingsFeature
+import com.grippo.data.features.api.settings.models.Settings
+import com.grippo.domain.mapper.settings.toState
+import com.grippo.presentation.api.settings.models.ThemeState
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 public class RootViewModel(
     authorizationFeature: AuthorizationFeature,
-    connectivity: Connectivity
+    settingsFeature: SettingsFeature,
+    connectivity: Connectivity,
 ) : BaseViewModel<RootState, RootDirection, RootLoader>(RootState()), RootContract {
 
     init {
@@ -17,10 +22,20 @@ public class RootViewModel(
             .onEach { if (it == null) navigateTo(RootDirection.Login) }
             .safeLaunch()
 
+        settingsFeature
+            .observeSettings()
+            .onEach(::provideSettings)
+            .safeLaunch()
+
         connectivity
             .statusUpdates
             .onEach(::provideConnectionStatus)
             .launchIn(coroutineScope)
+    }
+
+    private fun provideSettings(value: Settings?) {
+        val theme = value?.theme?.toState() ?: ThemeState.LIGHT
+        update { it.copy(theme = theme) }
     }
 
     private fun provideConnectionStatus(value: Connectivity.Status) {

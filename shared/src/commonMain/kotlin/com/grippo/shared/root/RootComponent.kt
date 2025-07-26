@@ -22,6 +22,7 @@ import com.grippo.presentation.api.auth.AuthRouter
 import com.grippo.presentation.api.bottom.navigation.BottomNavigationRouter
 import com.grippo.presentation.api.profile.ProfileRouter
 import com.grippo.presentation.api.settings.SettingsRouter
+import com.grippo.presentation.api.settings.models.ThemeState
 import com.grippo.profile.ProfileComponent
 import com.grippo.settings.SettingsComponent
 import com.grippo.shared.dialog.DialogComponent
@@ -46,6 +47,7 @@ public class RootComponent(
     override val viewModel: RootViewModel = componentContext.retainedInstance {
         RootViewModel(
             authorizationFeature = getKoin().get(),
+            settingsFeature = getKoin().get(),
             connectivity = getKoin().get()
         )
     }
@@ -134,11 +136,11 @@ public class RootComponent(
 
     @Composable
     override fun Render() {
-        AppTheme {
-            val state = viewModel.state.collectAsStateMultiplatform()
-            val loaders = viewModel.loaders.collectAsStateMultiplatform()
-            RootScreen(this, state.value, loaders.value, viewModel)
+        val state = viewModel.state.collectAsStateMultiplatform()
+        val loaders = viewModel.loaders.collectAsStateMultiplatform()
 
+        AppTheme(darkTheme = state.value.theme == ThemeState.DARK) {
+            RootScreen(this, state.value, loaders.value, viewModel)
             dialogComponent.Render()
         }
     }

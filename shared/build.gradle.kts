@@ -38,6 +38,8 @@ kotlin {
         implementation(projects.dataFeatures.trainings)
         implementation(projects.dataFeatures.exerciseExamples)
 
+        implementation(projects.dataMappers.domainMapper)
+
         implementation(projects.presentationFeatures.presentationApi)
         implementation(projects.presentationFeatures.authorization)
         implementation(projects.presentationFeatures.home)

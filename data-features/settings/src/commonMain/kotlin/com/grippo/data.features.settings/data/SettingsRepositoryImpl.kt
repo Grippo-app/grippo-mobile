@@ -1,9 +1,10 @@
 package com.grippo.data.features.settings.data
 
-import com.grippo.data.features.api.settings.models.Theme
 import com.grippo.data.features.api.settings.models.Settings
+import com.grippo.data.features.api.settings.models.Theme
 import com.grippo.data.features.settings.domain.SettingsRepository
 import com.grippo.database.dao.SettingsDao
+import com.grippo.database.entity.SettingsEntity
 import com.grippo.database.mapper.settings.toDomain
 import com.grippo.domain.mapper.settings.toEntity
 import kotlinx.coroutines.flow.Flow
@@ -24,7 +25,7 @@ internal class SettingsRepositoryImpl(
     override suspend fun setTheme(theme: Theme): Result<Unit> {
         val updated = settingsDao.get().firstOrNull()
             ?.copy(theme = theme.toEntity())
-            ?: return Result.success(Unit)
+            ?: SettingsEntity(theme = theme.toEntity())
 
         settingsDao.insertOrReplace(updated)
 

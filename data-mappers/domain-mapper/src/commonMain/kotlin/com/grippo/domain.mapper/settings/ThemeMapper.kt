@@ -11,6 +11,13 @@ public fun Theme.toEntity(): ThemeEntity {
     }
 }
 
+public fun ThemeState.toDomain(): Theme {
+    return when (this) {
+        ThemeState.LIGHT -> Theme.LIGHT
+        ThemeState.DARK -> Theme.DARK
+    }
+}
+
 public fun Theme.toState(): ThemeState {
     return when (this) {
         Theme.LIGHT -> ThemeState.LIGHT
