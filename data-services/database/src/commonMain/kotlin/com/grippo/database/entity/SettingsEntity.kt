@@ -6,10 +6,10 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "settings")
 public data class SettingsEntity(
     @PrimaryKey val id: Int = 0,
-    val colorMode: ColorMode = ColorMode.LIGHT
+    val theme: Theme = Theme.LIGHT
 )
 
-public enum class ColorMode {
+public enum class Theme {
     LIGHT,
     DARK
 }

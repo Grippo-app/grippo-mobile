@@ -7,17 +7,18 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
-import com.grippo.design.components.settings.ColorCard
+import com.grippo.design.components.settings.ThemeCard
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.system
-import com.grippo.presentation.api.settings.models.ColorModeState
+import com.grippo.presentation.api.settings.models.ThemeState
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -49,18 +50,27 @@ internal fun SystemScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
             ) {
-                ColorCard(
+
+                val lightClickProvider = remember {
+                    { contract.onThemeClick(ThemeState.LIGHT) }
+                }
+
+                ThemeCard(
                     modifier = Modifier.weight(1f).aspectRatio(1f),
-                    isSelected = state.colorMode == ColorModeState.LIGHT,
-                    style = ColorModeState.LIGHT,
-                    onClick = {}
+                    isSelected = state.theme == ThemeState.LIGHT,
+                    style = ThemeState.LIGHT,
+                    onClick = lightClickProvider
                 )
 
-                ColorCard(
+                val darkClickProvider = remember {
+                    { contract.onThemeClick(ThemeState.DARK) }
+                }
+
+                ThemeCard(
                     modifier = Modifier.weight(1f).aspectRatio(1f),
-                    isSelected = state.colorMode == ColorModeState.DARK,
-                    style = ColorModeState.DARK,
-                    onClick = {}
+                    isSelected = state.theme == ThemeState.DARK,
+                    style = ThemeState.DARK,
+                    onClick = darkClickProvider
                 )
             }
         }
@@ -73,7 +83,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         SystemScreen(
             state = SystemState(
-                colorMode = ColorModeState.LIGHT
+                theme = ThemeState.LIGHT
             ),
             loaders = persistentSetOf(),
             contract = SystemContract.Empty

@@ -4,6 +4,7 @@ import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.settings.SettingsFeature
 import com.grippo.data.features.api.settings.models.Settings
 import com.grippo.domain.mapper.settings.toState
+import com.grippo.presentation.api.settings.models.ThemeState
 import kotlinx.coroutines.flow.onEach
 
 internal class SystemViewModel(
@@ -17,9 +18,13 @@ internal class SystemViewModel(
             .safeLaunch()
     }
 
+    override fun onThemeClick(theme: ThemeState) {
+        update { it.copy(theme = theme) }
+    }
+
     private fun provideSettings(value: Settings?) {
-        val colorMode = value?.colorMode?.toState() ?: return
-        update { it.copy(colorMode = colorMode) }
+        val theme = value?.theme?.toState() ?: ThemeState.LIGHT
+        update { it.copy(theme = theme) }
     }
 
     override fun back() {

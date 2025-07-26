@@ -81,10 +81,23 @@ public object DarkColor : AppColor {
 
         override val disabledCheckedThumb = Neutral600
         override val disabledCheckedTrack = Neutral300
-
         override val disabledUncheckedThumb = Neutral500
         override val disabledUncheckedTrack = Neutral300
         override val disabledUncheckedBorder = Neutral400
+    }
+
+    override val radio: AppColor.RadioColors = object : AppColor.RadioColors {
+        override val selectedThumb = Primary600
+        override val selectedTrack = Primary600
+
+        override val unselectedTrack = Neutral400
+        override val unselectedThumb = White
+
+        override val disabledSelectedThumb = Neutral300
+        override val disabledSelectedTrack = Neutral300
+        override val disabledUnselectedThumb = Neutral300
+        override val disabledUnselectedTrack = Neutral300
+        override val disabledUnselectedBorder = Neutral300
     }
 
     override val input: AppColor.InputColors = object : AppColor.InputColors {
@@ -185,7 +198,7 @@ public object DarkColor : AppColor {
         override val secondary: Color = Neutral400
     }
 
-    override val themeColors: AppColor.ThemeColors = object : AppColor.ThemeColors {
+    override val theme: AppColor.ThemeColors = object : AppColor.ThemeColors {
         override val lightText: Color = Color(0xFF000000)
         override val lightBackground1: Color = Color(0xFFF6F9FF)
         override val lightBackground2: Color = Color(0xFFFFFFFF)

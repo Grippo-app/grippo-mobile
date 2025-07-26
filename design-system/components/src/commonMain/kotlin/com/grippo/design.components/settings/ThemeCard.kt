@@ -17,45 +17,45 @@ import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.modifiers.shadowDefault
-import com.grippo.design.components.toggle.Toggle
+import com.grippo.design.components.selectors.Radio
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.dark
 import com.grippo.design.resources.light
-import com.grippo.presentation.api.settings.models.ColorModeState
+import com.grippo.presentation.api.settings.models.ThemeState
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
-public fun ColorCard(
+public fun ThemeCard(
     modifier: Modifier = Modifier,
-    style: ColorModeState,
+    style: ThemeState,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val shape = RoundedCornerShape(AppTokens.dp.selectableCard.large.radius)
+    val shape = RoundedCornerShape(AppTokens.dp.themeCard.radius)
 
     val background = when (style) {
-        ColorModeState.LIGHT -> persistentListOf(
-            AppTokens.colors.themeColors.lightBackground1,
-            AppTokens.colors.themeColors.lightBackground2
+        ThemeState.LIGHT -> persistentListOf(
+            AppTokens.colors.theme.lightBackground1,
+            AppTokens.colors.theme.lightBackground2
         )
 
-        ColorModeState.DARK -> persistentListOf(
-            AppTokens.colors.themeColors.darkBackground1,
-            AppTokens.colors.themeColors.darkBackground2
+        ThemeState.DARK -> persistentListOf(
+            AppTokens.colors.theme.darkBackground1,
+            AppTokens.colors.theme.darkBackground2
         )
     }
 
     val text = when (style) {
-        ColorModeState.LIGHT -> AppTokens.strings.res(Res.string.light)
-        ColorModeState.DARK -> AppTokens.strings.res(Res.string.dark)
+        ThemeState.LIGHT -> AppTokens.strings.res(Res.string.light)
+        ThemeState.DARK -> AppTokens.strings.res(Res.string.dark)
     }
 
     val textColor = when (style) {
-        ColorModeState.LIGHT -> AppTokens.colors.themeColors.lightText
-        ColorModeState.DARK -> AppTokens.colors.themeColors.darkText
+        ThemeState.LIGHT -> AppTokens.colors.theme.lightText
+        ThemeState.DARK -> AppTokens.colors.theme.darkText
     }
 
     val borderColor by animateColorAsState(
@@ -79,8 +79,8 @@ public fun ColorCard(
             .background(Brush.verticalGradient(colors = background), shape)
             .border(1.dp, borderColor, shape)
             .padding(
-                horizontal = AppTokens.dp.selectableCard.large.horizontalPadding,
-                vertical = AppTokens.dp.selectableCard.large.verticalPadding
+                horizontal = AppTokens.dp.themeCard.horizontalPadding,
+                vertical = AppTokens.dp.themeCard.verticalPadding
             ),
     ) {
         Text(
@@ -90,28 +90,28 @@ public fun ColorCard(
             color = textColor
         )
 
-        Toggle(
+        Radio(
             modifier = Modifier.align(Alignment.BottomEnd),
-            checked = isSelected,
-            onCheckedChange = onClick
+            selected = isSelected,
+            onSelectedChange = onClick
         )
     }
 }
 
 @AppPreview
 @Composable
-private fun ColorCardLightPreview() {
+private fun ThemeCardLightPreview() {
     PreviewContainer {
-        ColorCard(
+        ThemeCard(
             modifier = Modifier.size(100.dp),
-            style = ColorModeState.LIGHT,
+            style = ThemeState.LIGHT,
             isSelected = true,
             onClick = {}
         )
 
-        ColorCard(
+        ThemeCard(
             modifier = Modifier.size(100.dp),
-            style = ColorModeState.LIGHT,
+            style = ThemeState.LIGHT,
             isSelected = false,
             onClick = {}
         )
@@ -120,18 +120,18 @@ private fun ColorCardLightPreview() {
 
 @AppPreview
 @Composable
-private fun ColorCardDarkPreview() {
+private fun ThemeCardDarkPreview() {
     PreviewContainer {
-        ColorCard(
+        ThemeCard(
             modifier = Modifier.size(100.dp),
-            style = ColorModeState.DARK,
+            style = ThemeState.DARK,
             isSelected = true,
             onClick = {}
         )
 
-        ColorCard(
+        ThemeCard(
             modifier = Modifier.size(100.dp),
-            style = ColorModeState.DARK,
+            style = ThemeState.DARK,
             isSelected = false,
             onClick = {}
         )

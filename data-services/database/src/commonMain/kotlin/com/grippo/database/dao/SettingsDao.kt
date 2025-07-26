@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 public interface SettingsDao {
 
     @Query("SELECT * FROM settings WHERE id = 0")
-    public fun get(): Flow<SettingsEntity>
+    public fun get(): Flow<SettingsEntity?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public suspend fun insertOrReplace(settings: SettingsEntity)

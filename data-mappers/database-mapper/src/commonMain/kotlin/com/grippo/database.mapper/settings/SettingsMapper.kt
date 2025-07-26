@@ -5,6 +5,6 @@ import com.grippo.database.entity.SettingsEntity
 
 public fun SettingsEntity.toDomain(): Settings {
     return Settings(
-        colorMode = colorMode.toDomain()
+        theme = theme.toDomain()
     )
 }

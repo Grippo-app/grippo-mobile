@@ -72,6 +72,9 @@ public data object AppDp {
     val iterationCard: IterationCard = IterationCard
     val chip: Chip = Chip
     val connectionSnackbar: ConnectionSnackbar = ConnectionSnackbar
+    val toggle: Toggle = Toggle
+    val radio: Radio = Radio
+    val themeCard: ThemeCard = ThemeCard
 
     public data object Screen {
         val toolbar: Toolbar = Toolbar
@@ -164,6 +167,20 @@ public data object AppDp {
         val height: Dp = size.medium
     }
 
+    public data object Toggle {
+        val width: Dp = 51.dp
+        val height: Dp = 31.dp
+        val radius: Dp = 18.dp
+        val thumbRadius: Dp = 13.5.dp
+        val horizontalPadding: Dp = 16.dp
+    }
+
+    public data object Radio {
+        val size: Dp = 31.dp
+        val borderWidth: Dp = 2.dp
+        val innerCircleRadius: Dp = 7.75.dp
+    }
+
     public data object ExerciseCard {
         val radius: Dp = AppDp.radius.xLarge
         val icon: Dp = AppDp.icon.medium
@@ -243,10 +260,10 @@ public data object AppDp {
         val radius: Dp = AppDp.radius.large
     }
 
-    public data object ColorCard {
+    public data object ThemeCard {
         val horizontalPadding: Dp = padding.large
         val verticalPadding: Dp = padding.large
-        val radius: Dp = AppDp.radius.large
+        val radius: Dp = AppDp.radius.xxLarge
     }
 
     public data object Chart {

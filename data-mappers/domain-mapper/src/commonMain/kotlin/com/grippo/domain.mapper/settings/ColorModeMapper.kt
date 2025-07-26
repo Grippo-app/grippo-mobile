@@ -1,19 +1,19 @@
 package com.grippo.domain.mapper.settings
 
-import com.grippo.data.features.api.settings.models.ColorMode
-import com.grippo.presentation.api.settings.models.ColorModeState
-import com.grippo.database.entity.ColorMode as ColorModeEntity
+import com.grippo.data.features.api.settings.models.Theme
+import com.grippo.presentation.api.settings.models.ThemeState
+import com.grippo.database.entity.Theme as ThemeEntity
 
-public fun ColorMode.toEntity(): ColorModeEntity {
+public fun Theme.toEntity(): ThemeEntity {
     return when (this) {
-        ColorMode.LIGHT -> ColorModeEntity.LIGHT
-        ColorMode.DARK -> ColorModeEntity.DARK
+        Theme.LIGHT -> ThemeEntity.LIGHT
+        Theme.DARK -> ThemeEntity.DARK
     }
 }
 
-public fun ColorMode.toState(): ColorModeState {
+public fun Theme.toState(): ThemeState {
     return when (this) {
-        ColorMode.LIGHT -> ColorModeState.LIGHT
-        ColorMode.DARK -> ColorModeState.DARK
+        Theme.LIGHT -> ThemeState.LIGHT
+        Theme.DARK -> ThemeState.DARK
     }
 }

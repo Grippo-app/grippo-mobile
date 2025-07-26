@@ -19,7 +19,8 @@ public interface AppColor {
     public val segment: SegmentColors
     public val konfetti: Konfetti
     public val chip: ChipColors
-    public val themeColors: ThemeColors
+    public val theme: ThemeColors
+    public val radio: RadioColors
 
     public interface DividerColors {
         public val primary: Color
@@ -59,6 +60,21 @@ public interface AppColor {
         public val disabledUncheckedThumb: Color
         public val disabledUncheckedTrack: Color
         public val disabledUncheckedBorder: Color
+    }
+
+    public interface RadioColors {
+        public val selectedThumb: Color
+        public val selectedTrack: Color
+
+        public val unselectedThumb: Color
+        public val unselectedTrack: Color
+
+        public val disabledSelectedThumb: Color
+        public val disabledSelectedTrack: Color
+
+        public val disabledUnselectedThumb: Color
+        public val disabledUnselectedTrack: Color
+        public val disabledUnselectedBorder: Color
     }
 
     public interface InputColors {

@@ -1,6 +1,6 @@
 package com.grippo.data.features.settings.data
 
-import com.grippo.data.features.api.settings.models.ColorMode
+import com.grippo.data.features.api.settings.models.Theme
 import com.grippo.data.features.api.settings.models.Settings
 import com.grippo.data.features.settings.domain.SettingsRepository
 import com.grippo.database.dao.SettingsDao
@@ -18,12 +18,12 @@ internal class SettingsRepositoryImpl(
 
     override fun observeSettings(): Flow<Settings?> {
         return settingsDao.get()
-            .map { it.toDomain() }
+            .map { it?.toDomain() }
     }
 
-    override suspend fun setColorMode(mode: ColorMode): Result<Unit> {
+    override suspend fun setTheme(theme: Theme): Result<Unit> {
         val updated = settingsDao.get().firstOrNull()
-            ?.copy(colorMode = mode.toEntity())
+            ?.copy(theme = theme.toEntity())
             ?: return Result.success(Unit)
 
         settingsDao.insertOrReplace(updated)

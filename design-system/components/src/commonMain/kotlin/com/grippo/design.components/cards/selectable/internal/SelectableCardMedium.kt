@@ -26,7 +26,7 @@ import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.components.modifiers.shimmerAnimation
-import com.grippo.design.components.toggle.Toggle
+import com.grippo.design.components.selectors.Toggle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
