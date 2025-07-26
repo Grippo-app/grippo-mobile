@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -56,7 +57,8 @@ public fun DatePicker(
                 )
                 .background(AppTokens.colors.background.primary, shape)
                 .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
-                .size(AppTokens.dp.datePicker.icon),
+                .size(AppTokens.dp.datePicker.icon)
+                .padding(2.dp),
             imageVector = AppTokens.icons.NavArrowDown,
             tint = AppTokens.colors.icon.primary,
             contentDescription = null

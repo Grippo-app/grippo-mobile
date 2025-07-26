@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
@@ -64,7 +65,8 @@ public fun ExerciseCard(
                     )
                     .background(AppTokens.colors.background.primary, shape)
                     .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
-                    .size(AppTokens.dp.exerciseCard.icon),
+                    .size(AppTokens.dp.exerciseCard.icon)
+                    .padding(2.dp),
                 imageVector = AppTokens.icons.NavArrowRight,
                 tint = AppTokens.colors.icon.primary,
                 contentDescription = null
