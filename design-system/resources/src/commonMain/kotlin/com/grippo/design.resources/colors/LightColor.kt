@@ -21,10 +21,10 @@ public object LightColor : AppColor {
         override val backgroundPrimaryDisabled = AppColorTokens.NeutralLight.N200
         override val contentPrimaryDisabled = AppColorTokens.NeutralLight.N500
 
-        override val backgroundSecondary = AppColorTokens.NeutralLight.N200
+        override val backgroundSecondary = Color.Transparent
         override val textSecondary = AppColorTokens.Common.Black
         override val iconSecondary = AppColorTokens.Common.Accent
-        override val borderSecondary = AppColorTokens.Primary.P150
+        override val borderSecondary = AppColorTokens.Primary.P250
         override val backgroundSecondaryDisabled = AppColorTokens.NeutralLight.N200
         override val contentSecondaryDisabled = AppColorTokens.NeutralLight.N500
 

@@ -22,10 +22,10 @@ public object DarkColor : AppColor {
         override val backgroundPrimaryDisabled = Color(0xFF303030)
         override val contentPrimaryDisabled = Color(0xFFA0A0A0)
 
-        override val backgroundSecondary = Color(0xFF303030)
+        override val backgroundSecondary = Color.Transparent
         override val textSecondary = AppColorTokens.Common.White
         override val iconSecondary = AppColorTokens.Common.Accent
-        override val borderSecondary = AppColorTokens.Primary.P300
+        override val borderSecondary = AppColorTokens.Common.Accent
         override val backgroundSecondaryDisabled = Color(0xFF303030)
         override val contentSecondaryDisabled = AppColorTokens.NeutralDark.N500
 
