@@ -81,7 +81,7 @@ internal fun BodyItem(
 
         VerticalDivider(
             modifier = Modifier.fillMaxHeight(),
-            color = AppTokens.colors.divider.secondary
+            color = AppTokens.colors.divider.primary
         )
 
         Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))

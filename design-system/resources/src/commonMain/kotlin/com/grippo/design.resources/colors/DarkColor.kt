@@ -71,8 +71,8 @@ public object DarkColor : AppColor {
     }
 
     override val divider: AppColor.DividerColors = object : AppColor.DividerColors {
-        override val primary = Color(0xFF2A2A2A)
-        override val secondary = Color(0xFF3A3A3A)
+        override val primary = AppColorTokens.NeutralDark.N250
+        override val secondary = AppColorTokens.NeutralDark.N200
     }
 
     override val input: AppColor.InputColors = object : AppColor.InputColors {
@@ -185,8 +185,8 @@ public object DarkColor : AppColor {
     }
 
     override val equipment: AppColor.EquipmentColors = object : AppColor.EquipmentColors {
-        override val background: Color = Color(0xFF1A2B1D)
-        override val border: Color = Color(0xFF4C7A51)
+        override val background: Color = AppColorTokens.Primary.P900
+        override val border: Color = AppColorTokens.Primary.P300
     }
 
     override val muscle: AppColor.MuscleColors = object : AppColor.MuscleColors {

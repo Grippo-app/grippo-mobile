@@ -123,18 +123,18 @@ internal fun LoginScreen(
         ) {
             HorizontalDivider(
                 modifier = Modifier.weight(1f),
-                color = AppTokens.colors.divider.secondary
+                color = AppTokens.colors.divider.primary
             )
 
             Text(
                 text = AppTokens.strings.res(Res.string.or),
                 style = AppTokens.typography.b14Reg(),
-                color = AppTokens.colors.text.secondary,
+                color = AppTokens.colors.text.primary,
             )
 
             HorizontalDivider(
                 modifier = Modifier.weight(1f),
-                color = AppTokens.colors.divider.secondary
+                color = AppTokens.colors.divider.primary
             )
         }
 

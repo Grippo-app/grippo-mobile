@@ -87,7 +87,7 @@ internal fun DialogScreen(
 
                             HorizontalDivider(
                                 modifier = Modifier.fillMaxWidth(),
-                                color = AppTokens.colors.divider.primary
+                                color = AppTokens.colors.divider.secondary
                             )
 
                             Spacer(Modifier.height(AppTokens.dp.screen.verticalPadding))
