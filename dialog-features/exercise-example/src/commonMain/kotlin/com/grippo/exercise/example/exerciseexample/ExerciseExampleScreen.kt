@@ -68,9 +68,7 @@ internal fun ExerciseExampleScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
 
         EquipmentsCard(
-            modifier = Modifier
-                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             value = example.equipments
         )
 

@@ -195,7 +195,6 @@ public data object AppDp {
     public data object EquipmentsCard {
         val horizontalPadding: Dp = padding.extraLarge
         val verticalPadding: Dp = padding.extraLarge
-        val radius: Dp = AppDp.radius.xLarge
     }
 
     public data object ExerciseExampleBundlesCard

@@ -2,16 +2,15 @@ package com.grippo.design.resources.colors
 
 import androidx.compose.ui.graphics.Color
 import com.grippo.design.resources.AppColor
-import com.grippo.design.resources.AppColor.DividerColors
 
 public object DarkColor : AppColor {
 
     override val border: AppColor.BorderColors = object : AppColor.BorderColors {
-        override val defaultPrimary = AppColorTokens.NeutralDark.N300
+        override val defaultPrimary = AppColorTokens.NeutralDark.N200
         override val disabledPrimary = Color(0xFF2A2A2A)
         override val defaultSecondary = AppColorTokens.Primary.P250
         override val disabledSecondary = Color(0xFF2A2A2A)
-        override val inverted = AppColorTokens.Common.Black
+        override val inverted = AppColorTokens.NeutralDark.N100
         override val focus = AppColorTokens.Common.Accent
         override val error = AppColorTokens.Semantic.Error
     }
@@ -183,6 +182,11 @@ public object DarkColor : AppColor {
                 override val contentColor = AppColorTokens.Common.White
                 override val borderColor = startColor.copy(alpha = 0.5f)
             }
+    }
+
+    override val equipment: AppColor.EquipmentColors = object : AppColor.EquipmentColors {
+        override val background: Color = Color(0xFF1A2B1D)
+        override val border: Color = Color(0xFF4C7A51)
     }
 
     override val muscle: AppColor.MuscleColors = object : AppColor.MuscleColors {

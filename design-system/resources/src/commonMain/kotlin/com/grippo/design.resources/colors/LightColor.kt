@@ -2,7 +2,6 @@ package com.grippo.design.resources.colors
 
 import androidx.compose.ui.graphics.Color
 import com.grippo.design.resources.AppColor
-import com.grippo.design.resources.AppColor.DividerColors
 
 public object LightColor : AppColor {
     override val border: AppColor.BorderColors = object : AppColor.BorderColors {
@@ -183,6 +182,11 @@ public object LightColor : AppColor {
                 override val contentColor = AppColorTokens.Common.White
                 override val borderColor = startColor.copy(alpha = 0.5f)
             }
+    }
+
+    override val equipment: AppColor.EquipmentColors = object : AppColor.EquipmentColors {
+        override val background: Color = Color(0xFFD1E8D1)
+        override val border: Color = Color(0xFFA4D075)
     }
 
     override val muscle: AppColor.MuscleColors = object : AppColor.MuscleColors {
