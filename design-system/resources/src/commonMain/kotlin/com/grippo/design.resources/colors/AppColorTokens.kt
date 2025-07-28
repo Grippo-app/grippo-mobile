@@ -5,8 +5,8 @@ import androidx.compose.ui.graphics.Color
 internal object AppColorTokens {
 
     object Common {
-        val White = Color(0xFFFFFFFF)
-        val Black = Color(0xFF000000)
+        val White = Color(0xFFFAFAFA)
+        val Black = Color(0xFF121212)
         val Accent = Color(0xFF3366FF)
     }
 
@@ -31,29 +31,29 @@ internal object AppColorTokens {
     }
 
     object NeutralLight {
-        val N100 = Color(0xFFF9FBFE)
-        val N150 = Color(0xFFF6F9FF)
-        val N200 = Color(0xFFE9EFF8)
-        val N250 = Color(0xFFE1EAF6)
-        val N300 = Color(0xFFC5D2E6)
-        val N400 = Color(0xFFA7B8D1)
-        val N500 = Color(0xFF8294B3)
-        val N600 = Color(0xFF5F6C88)
-        val N700 = Color(0xFF3E4961)
+        val N100 = Color(0xFFFAFBFD)
+        val N150 = Color(0xFFF4F6F9)
+        val N200 = Color(0xFFE7EAF0)
+        val N250 = Color(0xFFDBDEE6)
+        val N300 = Color(0xFFC3C9D4)
+        val N400 = Color(0xFFA7ADB9)
+        val N500 = Color(0xFF89909D)
+        val N600 = Color(0xFF6C7382)
+        val N700 = Color(0xFF4E5564)
     }
 
     object NeutralDark {
-        val N100 = Color(0xFF121212)
-        val N150 = Color(0xFF181818)
-        val N200 = Color(0xFF202020)
-        val N250 = Color(0xFF252525)
-        val N300 = Color(0xFF303030)
-        val N350 = Color(0xFF3A3A3A)
-        val N400 = Color(0xFF404040)
-        val N450 = Color(0xFF4D4D4D)
-        val N500 = Color(0xFF707070)
-        val N550 = Color(0xFF6A6A6A)
-        val N600 = Color(0xFFA0A0A0)
-        val N700 = Color(0xFFD0D0D0)
+        val N100 = Color(0xFF181A1F)
+        val N150 = Color(0xFF1F2228)
+        val N200 = Color(0xFF262A31)
+        val N250 = Color(0xFF2E333B)
+        val N300 = Color(0xFF373D47)
+        val N350 = Color(0xFF404856)
+        val N400 = Color(0xFF4C5566)
+        val N450 = Color(0xFF5A6477)
+        val N500 = Color(0xFF6A768C)
+        val N550 = Color(0xFF7F8CA3)
+        val N600 = Color(0xFFA1ADC3)
+        val N700 = Color(0xFFBECADC)
     }
 }
