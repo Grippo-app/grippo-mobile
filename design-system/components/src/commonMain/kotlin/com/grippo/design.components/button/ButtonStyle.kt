@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.grippo.design.core.AppTokens
 
-internal data class ButtonColorTokens(
+public data class ButtonColorTokens(
     val background: Color,
     val content: Color,
     val border: Color,
@@ -40,6 +40,8 @@ internal fun resolveButtonColors(
                 border = Color.Transparent,
                 icon = colors.contentTransparentDisabled
             )
+
+            is ButtonStyle.Custom -> style.disabled
         }
 
         else -> when (style) {
@@ -63,6 +65,8 @@ internal fun resolveButtonColors(
                 border = Color.Transparent,
                 icon = colors.iconTransparent,
             )
+
+            is ButtonStyle.Custom -> style.enabled
         }
     }
 }

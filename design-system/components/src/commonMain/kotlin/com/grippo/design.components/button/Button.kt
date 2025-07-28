@@ -1,5 +1,6 @@
 package com.grippo.design.components.button
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -23,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -40,7 +42,15 @@ import com.grippo.design.resources.icons.SystemRestart
 public enum class ButtonSize { Small, Medium, Large }
 
 @Immutable
-public enum class ButtonStyle { Primary, Secondary, Transparent }
+public sealed interface ButtonStyle {
+    public data object Primary : ButtonStyle
+    public data object Secondary : ButtonStyle
+    public data object Transparent : ButtonStyle
+    public data class Custom(
+        val enabled: ButtonColorTokens,
+        val disabled: ButtonColorTokens,
+    ) : ButtonStyle
+}
 
 @Immutable
 public enum class ButtonState { Enabled, Loading, Disabled; }
@@ -99,56 +109,66 @@ public fun Button(
         contentAlignment = Alignment.Center
     ) {
         Row(
+            modifier = Modifier.animateContentSize(),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (state == ButtonState.Loading) {
-                val angle = rememberInfiniteTransition().animateFloat(
-                    initialValue = 0f,
-                    targetValue = 360f,
-                    animationSpec = infiniteRepeatable(
-                        animation = tween(durationMillis = 1000, easing = LinearEasing),
-                        repeatMode = RepeatMode.Restart,
+            val iconSize = AppTokens.dp.button.icon
+
+            when (state) {
+                ButtonState.Loading -> {
+                    val angle by rememberInfiniteTransition().animateFloat(
+                        initialValue = 0f,
+                        targetValue = 360f,
+                        animationSpec = infiniteRepeatable(
+                            animation = tween(durationMillis = 1000, easing = LinearEasing),
+                            repeatMode = RepeatMode.Restart,
+                        )
                     )
-                )
+
+                    Icon(
+                        modifier = Modifier
+                            .size(iconSize)
+                            .rotate(angle),
+                        imageVector = AppTokens.icons.SystemRestart,
+                        tint = colorTokens.icon,
+                        contentDescription = null,
+                    )
+
+                    Spacer(modifier = Modifier.width(iconPadding))
+                }
+
+                else -> {
+                    if (startIcon != null) {
+                        Icon(
+                            modifier = Modifier.size(iconSize),
+                            imageVector = startIcon,
+                            tint = colorTokens.icon,
+                            contentDescription = null,
+                        )
+
+                        Spacer(modifier = Modifier.width(iconPadding))
+                    }
+                }
+            }
+
+            Text(
+                text = text,
+                color = colorTokens.content,
+                style = textStyle,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+
+            if (endIcon != null) {
+                Spacer(modifier = Modifier.width(iconPadding))
+
                 Icon(
-                    modifier = Modifier
-                        .size(AppTokens.dp.button.icon)
-                        .rotate(angle.value),
-                    imageVector = AppTokens.icons.SystemRestart,
+                    modifier = Modifier.size(iconSize),
+                    imageVector = endIcon,
                     tint = colorTokens.icon,
                     contentDescription = null,
                 )
-            } else {
-                if (startIcon != null) {
-                    Icon(
-                        modifier = Modifier.size(AppTokens.dp.button.icon),
-                        imageVector = startIcon,
-                        tint = colorTokens.icon,
-                        contentDescription = null
-                    )
-
-                    Spacer(modifier = Modifier.width(iconPadding))
-                }
-
-                Text(
-                    text = text,
-                    color = colorTokens.content,
-                    style = textStyle,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-
-                if (endIcon != null) {
-                    Spacer(modifier = Modifier.width(iconPadding))
-
-                    Icon(
-                        modifier = Modifier.size(AppTokens.dp.button.icon),
-                        imageVector = endIcon,
-                        tint = colorTokens.icon,
-                        contentDescription = null
-                    )
-                }
             }
         }
     }
