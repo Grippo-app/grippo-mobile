@@ -1,7 +1,7 @@
 package com.grippo.domain.mapper.training
 
 import com.grippo.data.features.api.training.models.Training
-import com.grippo.presentation.api.trainings.models.TrainingState
+import com.grippo.state.trainings.TrainingState
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 

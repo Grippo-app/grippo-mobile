@@ -10,8 +10,8 @@ import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.presentation.api.equipment.models.EquipmentState
-import com.grippo.presentation.api.equipment.models.stubEquipments
+import com.grippo.state.equipments.EquipmentState
+import com.grippo.state.equipments.stubEquipments
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 

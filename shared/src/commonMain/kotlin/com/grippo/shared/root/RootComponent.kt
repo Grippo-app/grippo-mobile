@@ -22,12 +22,12 @@ import com.grippo.presentation.api.auth.AuthRouter
 import com.grippo.presentation.api.bottom.navigation.BottomNavigationRouter
 import com.grippo.presentation.api.profile.ProfileRouter
 import com.grippo.presentation.api.settings.SettingsRouter
-import com.grippo.presentation.api.settings.models.ThemeState
 import com.grippo.profile.ProfileComponent
 import com.grippo.settings.SettingsComponent
 import com.grippo.shared.dialog.DialogComponent
 import com.grippo.shared.root.RootComponent.Child.Authorization
 import com.grippo.shared.root.RootComponent.Child.Home
+import com.grippo.state.settings.ThemeState
 
 public class RootComponent(
     componentContext: ComponentContext,

@@ -21,8 +21,8 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.kg
 import com.grippo.design.resources.reps
-import com.grippo.presentation.api.trainings.models.IterationState
-import com.grippo.presentation.api.trainings.models.stubIteration
+import com.grippo.state.trainings.IterationState
+import com.grippo.state.trainings.stubIteration
 
 @Composable
 public fun IterationCard(

@@ -19,6 +19,7 @@ kotlin {
 
         implementation(projects.common.platformCore)
         implementation(projects.common.core)
+        implementation(projects.common.state)
         implementation(projects.common.logger)
         implementation(projects.common.connectivity)
         implementation(projects.common.error.errorProviderImpl)
@@ -51,6 +52,7 @@ kotlin {
         implementation(projects.dialogFeatures.weightPicker)
         implementation(projects.dialogFeatures.heightPicker)
         implementation(projects.dialogFeatures.datePicker)
+        implementation(projects.dialogFeatures.periodPicker)
         implementation(projects.dialogFeatures.errorDisplay)
         implementation(projects.dialogFeatures.exerciseExample)
         implementation(projects.dialogFeatures.exercise)

@@ -2,7 +2,7 @@ package com.grippo.home.trainings
 
 import androidx.compose.runtime.Immutable
 import com.grippo.date.utils.DateTimeUtils
-import com.grippo.presentation.api.trainings.models.TrainingListValue
+import com.grippo.state.trainings.TrainingListValue
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDateTime

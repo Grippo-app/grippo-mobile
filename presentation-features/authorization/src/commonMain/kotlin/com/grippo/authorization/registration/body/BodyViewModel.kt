@@ -3,8 +3,8 @@ package com.grippo.authorization.registration.body
 import com.grippo.core.BaseViewModel
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
-import com.grippo.presentation.api.profile.models.HeightFormatState
-import com.grippo.presentation.api.profile.models.WeightFormatState
+import com.grippo.state.profile.HeightFormatState
+import com.grippo.state.profile.WeightFormatState
 
 internal class BodyViewModel(
     private val dialogController: DialogController

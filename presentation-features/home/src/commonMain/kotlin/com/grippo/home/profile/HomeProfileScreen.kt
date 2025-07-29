@@ -31,7 +31,7 @@ import com.grippo.design.resources.icons.Rocket
 import com.grippo.design.resources.logout_btn
 import com.grippo.design.resources.profile
 import com.grippo.design.resources.start_workout
-import com.grippo.presentation.api.profile.models.stubUser
+import com.grippo.state.profile.stubUser
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList

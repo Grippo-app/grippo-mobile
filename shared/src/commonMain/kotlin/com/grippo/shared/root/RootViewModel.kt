@@ -6,7 +6,7 @@ import com.grippo.data.features.api.authorization.AuthorizationFeature
 import com.grippo.data.features.api.settings.SettingsFeature
 import com.grippo.data.features.api.settings.models.Settings
 import com.grippo.domain.mapper.settings.toState
-import com.grippo.presentation.api.settings.models.ThemeState
+import com.grippo.state.settings.ThemeState
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 

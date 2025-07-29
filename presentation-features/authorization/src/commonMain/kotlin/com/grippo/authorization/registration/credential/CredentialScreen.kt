@@ -29,8 +29,8 @@ import com.grippo.design.resources.Res
 import com.grippo.design.resources.next_btn
 import com.grippo.design.resources.registration_credential_description
 import com.grippo.design.resources.registration_credential_title
-import com.grippo.presentation.api.auth.models.EmailFormatState
-import com.grippo.presentation.api.profile.models.PasswordFormatState
+import com.grippo.state.auth.EmailFormatState
+import com.grippo.state.profile.PasswordFormatState
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 

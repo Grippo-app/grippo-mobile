@@ -10,6 +10,7 @@ kotlin {
         implementation(projects.dataServices.network)
         implementation(projects.dataServices.database)
         implementation(projects.common.logger)
+        implementation(projects.common.state)
 
         implementation(libs.immutable.collections)
         implementation(libs.datetime)

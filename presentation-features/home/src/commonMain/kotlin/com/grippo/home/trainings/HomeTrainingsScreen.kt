@@ -36,8 +36,8 @@ import com.grippo.home.trainings.factory.exerciseOf
 import com.grippo.home.trainings.factory.shapeFor
 import com.grippo.home.trainings.factory.sidesFor
 import com.grippo.home.trainings.factory.timelineStyle
-import com.grippo.presentation.api.trainings.models.TrainingListValue
-import com.grippo.presentation.api.trainings.models.stubTraining
+import com.grippo.state.trainings.TrainingListValue
+import com.grippo.state.trainings.stubTraining
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf

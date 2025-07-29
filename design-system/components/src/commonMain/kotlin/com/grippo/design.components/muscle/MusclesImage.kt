@@ -4,8 +4,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.grippo.presentation.api.muscles.models.MuscleGroupState
-import com.grippo.presentation.api.muscles.models.MuscleRepresentationState
+import com.grippo.state.muscles.MuscleGroupState
+import com.grippo.state.muscles.MuscleRepresentationState
 import kotlinx.collections.immutable.ImmutableList
 
 @Composable

@@ -1,8 +1,8 @@
 package com.grippo.domain.mapper.training
 
-import com.grippo.presentation.api.trainings.models.TrainingListValue
-import com.grippo.presentation.api.trainings.models.TrainingPosition
-import com.grippo.presentation.api.trainings.models.TrainingState
+import com.grippo.state.trainings.TrainingListValue
+import com.grippo.state.trainings.TrainingPosition
+import com.grippo.state.trainings.TrainingState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 

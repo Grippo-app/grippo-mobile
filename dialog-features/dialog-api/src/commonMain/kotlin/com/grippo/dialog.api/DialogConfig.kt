@@ -1,5 +1,6 @@
 package com.grippo.dialog.api
 
+import com.grippo.state.datetime.PeriodState
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 
@@ -38,5 +39,11 @@ public sealed class DialogConfig(public open val onDismiss: (() -> Unit)?) {
     public data class DatePicker(
         val initial: LocalDateTime,
         val onResult: (value: LocalDateTime) -> Unit,
+    ) : DialogConfig(null)
+
+    @Serializable
+    public data class PeriodPicker(
+        val initial: PeriodState,
+        val onResult: (value: PeriodState) -> Unit,
     ) : DialogConfig(null)
 }

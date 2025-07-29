@@ -8,8 +8,8 @@ import androidx.compose.ui.Modifier
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.presentation.api.trainings.models.IterationState
-import com.grippo.presentation.api.trainings.models.stubIteration
+import com.grippo.state.trainings.IterationState
+import com.grippo.state.trainings.stubIteration
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 

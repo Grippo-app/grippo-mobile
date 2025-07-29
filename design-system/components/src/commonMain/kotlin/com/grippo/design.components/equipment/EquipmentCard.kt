@@ -23,8 +23,8 @@ import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.presentation.api.equipment.models.EquipmentState
-import com.grippo.presentation.api.equipment.models.stubEquipments
+import com.grippo.state.equipments.EquipmentState
+import com.grippo.state.equipments.stubEquipments
 
 @Composable
 public fun EquipmentCard(

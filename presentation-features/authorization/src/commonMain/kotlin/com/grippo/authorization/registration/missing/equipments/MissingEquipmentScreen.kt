@@ -36,7 +36,7 @@ import com.grippo.design.resources.Res
 import com.grippo.design.resources.continue_btn
 import com.grippo.design.resources.registration_equipment_description
 import com.grippo.design.resources.registration_equipment_title
-import com.grippo.presentation.api.equipment.models.stubEquipments
+import com.grippo.state.equipments.stubEquipments
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf

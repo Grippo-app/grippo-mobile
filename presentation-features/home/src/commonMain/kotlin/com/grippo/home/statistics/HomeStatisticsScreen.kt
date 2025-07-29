@@ -2,6 +2,7 @@ package com.grippo.home.statistics
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -12,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
+import com.grippo.design.components.datetime.PeriodPicker
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -31,6 +33,22 @@ internal fun HomeStatisticsScreen(
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.statistics),
+        content = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        bottom = AppTokens.dp.contentPadding.content,
+                        start = AppTokens.dp.screen.horizontalPadding,
+                        end = AppTokens.dp.screen.horizontalPadding
+                    ),
+            ) {
+                PeriodPicker(
+                    value = state.period,
+                    onClick = contract::selectPeriod
+                )
+            }
+        }
     )
 
     Column(
@@ -54,7 +72,7 @@ internal fun HomeStatisticsScreen(
 private fun ScreenPreview() {
     PreviewContainer {
         HomeStatisticsScreen(
-            state = HomeStatisticsState,
+            state = HomeStatisticsState(),
             loaders = persistentSetOf(),
             contract = HomeStatisticsContract.Empty
         )

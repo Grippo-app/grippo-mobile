@@ -1,7 +1,7 @@
 package com.grippo.authorization.registration.name
 
 import com.grippo.core.BaseViewModel
-import com.grippo.presentation.api.auth.models.NameFormatState
+import com.grippo.state.auth.NameFormatState
 
 internal class NameViewModel : BaseViewModel<NameState, NameDirection, NameLoader>(NameState()),
     NameContract {

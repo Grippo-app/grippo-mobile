@@ -8,6 +8,7 @@ plugins {
 kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.common.core)
+        implementation(projects.common.state)
         implementation(projects.presentationFeatures.presentationApi)
         implementation(projects.dataMappers.domainMapper)
         implementation(projects.dataFeatures.featureApi)

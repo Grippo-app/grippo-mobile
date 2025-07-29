@@ -1,6 +1,6 @@
 package com.grippo.authorization.registration.experience
 
-import com.grippo.presentation.api.profile.models.ExperienceEnumState
+import com.grippo.state.profile.ExperienceEnumState
 
 internal interface ExperienceContract {
     fun select(value: ExperienceEnumState)

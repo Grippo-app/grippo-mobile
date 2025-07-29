@@ -30,7 +30,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.apply_btn
 import com.grippo.design.resources.equipments
-import com.grippo.presentation.api.equipment.models.stubEquipments
+import com.grippo.state.equipments.stubEquipments
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList

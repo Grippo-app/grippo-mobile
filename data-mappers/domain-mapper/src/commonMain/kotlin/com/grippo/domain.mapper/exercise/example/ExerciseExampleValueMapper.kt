@@ -2,7 +2,7 @@ package com.grippo.domain.mapper.exercise.example
 
 import com.grippo.data.features.api.exercise.example.models.ExerciseExampleValue
 import com.grippo.domain.mapper.user.toState
-import com.grippo.presentation.api.exercise.example.models.ExerciseExampleValueState
+import com.grippo.state.exercise.examples.ExerciseExampleValueState
 
 public fun ExerciseExampleValue.toState(): ExerciseExampleValueState {
     return ExerciseExampleValueState(

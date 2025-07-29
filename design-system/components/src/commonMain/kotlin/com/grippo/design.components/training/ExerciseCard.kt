@@ -20,8 +20,8 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.icons.NavArrowRight
-import com.grippo.presentation.api.trainings.models.ExerciseState
-import com.grippo.presentation.api.trainings.models.stubExercise
+import com.grippo.state.trainings.ExerciseState
+import com.grippo.state.trainings.stubExercise
 
 @Composable
 public fun ExerciseCard(

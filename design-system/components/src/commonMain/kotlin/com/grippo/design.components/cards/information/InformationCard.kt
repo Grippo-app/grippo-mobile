@@ -15,7 +15,7 @@ import com.grippo.design.components.training.IterationCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.presentation.api.trainings.models.stubIteration
+import com.grippo.state.trainings.stubIteration
 
 @Composable
 public fun InformationCard(

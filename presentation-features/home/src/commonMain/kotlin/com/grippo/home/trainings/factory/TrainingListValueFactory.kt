@@ -5,9 +5,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.models.Side
 import com.grippo.design.components.timeline.TimeLinePointStyle
-import com.grippo.presentation.api.trainings.models.ExerciseState
-import com.grippo.presentation.api.trainings.models.TrainingListValue
-import com.grippo.presentation.api.trainings.models.TrainingPosition
+import com.grippo.state.trainings.ExerciseState
+import com.grippo.state.trainings.TrainingListValue
+import com.grippo.state.trainings.TrainingPosition
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 

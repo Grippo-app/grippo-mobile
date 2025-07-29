@@ -30,7 +30,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.icons.NavArrowRight
 import com.grippo.design.resources.overview
-import com.grippo.presentation.api.trainings.models.stubExercise
+import com.grippo.state.trainings.stubExercise
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 

@@ -27,10 +27,10 @@ import com.grippo.design.components.chip.Trailing
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.presentation.api.exercise.example.models.ExerciseExampleBundleState
-import com.grippo.presentation.api.exercise.example.models.stubExerciseExample
-import com.grippo.presentation.api.muscles.factory.MuscleColorStrategy
-import com.grippo.presentation.api.muscles.factory.MuscleEngine
+import com.grippo.state.exercise.examples.ExerciseExampleBundleState
+import com.grippo.state.exercise.examples.stubExerciseExample
+import com.grippo.state.muscles.factory.MuscleColorStrategy
+import com.grippo.state.muscles.factory.MuscleEngine
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 

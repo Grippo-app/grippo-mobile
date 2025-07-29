@@ -1,7 +1,7 @@
 package com.grippo.domain.mapper.exercise.example
 
 import com.grippo.data.features.api.exercise.example.models.Tutorial
-import com.grippo.presentation.api.exercise.example.models.TutorialState
+import com.grippo.state.exercise.examples.TutorialState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 

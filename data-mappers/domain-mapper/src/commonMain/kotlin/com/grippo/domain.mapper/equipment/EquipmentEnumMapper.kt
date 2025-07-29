@@ -1,7 +1,7 @@
 package com.grippo.domain.mapper.equipment
 
 import com.grippo.data.features.api.equipment.models.EquipmentEnum
-import com.grippo.presentation.api.equipment.models.EquipmentEnumState
+import com.grippo.state.equipments.EquipmentEnumState
 
 public fun EquipmentEnum.toState(): EquipmentEnumState {
     return when (this) {

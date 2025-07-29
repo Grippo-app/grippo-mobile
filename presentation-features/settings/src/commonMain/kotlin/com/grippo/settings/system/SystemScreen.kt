@@ -18,7 +18,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.system
-import com.grippo.presentation.api.settings.models.ThemeState
+import com.grippo.state.settings.ThemeState
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 

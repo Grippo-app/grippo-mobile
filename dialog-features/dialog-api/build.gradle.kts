@@ -9,7 +9,7 @@ plugins {
 kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.common.core)
-        implementation(projects.common.validation)
+        implementation(projects.common.state)
 
         implementation(libs.kotlinx.serialization.json)
         implementation(libs.datetime)

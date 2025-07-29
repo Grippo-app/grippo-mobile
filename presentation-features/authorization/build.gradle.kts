@@ -11,6 +11,7 @@ kotlin {
         implementation(projects.common.validation)
         implementation(projects.common.platformCore)
         implementation(projects.common.dateUtils)
+        implementation(projects.common.state)
         implementation(projects.dataMappers.domainMapper)
         implementation(projects.dialogFeatures.dialogApi)
         implementation(projects.presentationFeatures.presentationApi)

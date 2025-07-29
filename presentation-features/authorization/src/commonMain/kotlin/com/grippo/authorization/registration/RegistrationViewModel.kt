@@ -1,7 +1,7 @@
 package com.grippo.authorization.registration
 
 import com.grippo.core.BaseViewModel
-import com.grippo.presentation.api.profile.models.ExperienceEnumState
+import com.grippo.state.profile.ExperienceEnumState
 import kotlinx.collections.immutable.toPersistentList
 
 internal class RegistrationViewModel :

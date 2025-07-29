@@ -32,8 +32,8 @@ import com.grippo.design.resources.user_card_no_workouts_yet
 import com.grippo.design.resources.user_card_value_in_a_row
 import com.grippo.design.resources.user_card_value_personal_records
 import com.grippo.design.resources.user_card_value_workouts
-import com.grippo.presentation.api.profile.models.UserState
-import com.grippo.presentation.api.profile.models.stubUser
+import com.grippo.state.profile.UserState
+import com.grippo.state.profile.stubUser
 
 @Immutable
 public sealed interface UserCardStyle {

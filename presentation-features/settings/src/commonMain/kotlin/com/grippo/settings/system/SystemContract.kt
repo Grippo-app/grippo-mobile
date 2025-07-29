@@ -1,6 +1,6 @@
 package com.grippo.settings.system
 
-import com.grippo.presentation.api.settings.models.ThemeState
+import com.grippo.state.settings.ThemeState
 
 internal interface SystemContract {
     fun onThemeClick(theme: ThemeState)

@@ -5,7 +5,7 @@ import com.grippo.data.features.api.settings.SettingsFeature
 import com.grippo.data.features.api.settings.models.Settings
 import com.grippo.domain.mapper.settings.toDomain
 import com.grippo.domain.mapper.settings.toState
-import com.grippo.presentation.api.settings.models.ThemeState
+import com.grippo.state.settings.ThemeState
 import kotlinx.coroutines.flow.onEach
 
 internal class SystemViewModel(

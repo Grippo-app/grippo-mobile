@@ -17,7 +17,7 @@ import com.grippo.design.resources.profile_menu_exercise_library
 import com.grippo.design.resources.profile_menu_missing_equipment
 import com.grippo.design.resources.settings
 import com.grippo.design.resources.system
-import com.grippo.presentation.api.profile.models.UserState
+import com.grippo.state.profile.UserState
 
 @Immutable
 internal data class HomeProfileState(

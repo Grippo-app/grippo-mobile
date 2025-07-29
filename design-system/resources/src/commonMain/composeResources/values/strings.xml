@@ -61,6 +61,7 @@
     <string name="height_picker_description">This will help us personalize your workout recommendations.</string>
 
     <string name="date_picker_title">Select date</string>
+    <string name="period_picker_title">Select period</string>
 
     <string name="weight_picker_title">Select your weight</string>
     <string name="weight_picker_description">Used for calculating stats like BMI and optimizing your workouts.</string>
@@ -116,4 +117,7 @@
     <string name="no_internet_connection">No internet connection</string>
     <string name="dark">Dark</string>
     <string name="light">Light</string>
+    <string name="daily">Daily</string>
+    <string name="weekly">Weekly</string>
+    <string name="monthly">Monthly</string>
 </resources>

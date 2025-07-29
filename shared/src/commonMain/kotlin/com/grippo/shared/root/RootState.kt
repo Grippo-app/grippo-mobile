@@ -1,7 +1,7 @@
 package com.grippo.shared.root
 
 import androidx.compose.runtime.Immutable
-import com.grippo.presentation.api.settings.models.ThemeState
+import com.grippo.state.settings.ThemeState
 
 @Immutable
 public data class RootState(

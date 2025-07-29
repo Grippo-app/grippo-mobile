@@ -1,7 +1,7 @@
 package com.grippo.settings.system
 
 import androidx.compose.runtime.Immutable
-import com.grippo.presentation.api.settings.models.ThemeState
+import com.grippo.state.settings.ThemeState
 
 @Immutable
 internal data class SystemState(

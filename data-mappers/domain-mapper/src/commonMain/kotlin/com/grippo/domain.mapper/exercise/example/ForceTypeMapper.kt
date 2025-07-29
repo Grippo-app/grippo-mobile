@@ -1,7 +1,7 @@
 package com.grippo.domain.mapper.exercise.example
 
 import com.grippo.data.features.api.exercise.example.models.ForceTypeEnum
-import com.grippo.presentation.api.exercise.example.models.ForceTypeEnumState
+import com.grippo.state.exercise.examples.ForceTypeEnumState
 
 public fun ForceTypeEnum.toState(): ForceTypeEnumState {
     return when (this) {

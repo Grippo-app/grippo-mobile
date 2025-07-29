@@ -14,6 +14,7 @@ kotlin {
         implementation(projects.composeLibs.chart)
         implementation(projects.presentationFeatures.presentationApi)
         implementation(projects.common.dateUtils)
+        implementation(projects.common.state)
 
         implementation(compose.foundation)
         implementation(compose.runtime)

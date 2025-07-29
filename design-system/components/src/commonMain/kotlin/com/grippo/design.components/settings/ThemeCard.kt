@@ -24,7 +24,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.dark
 import com.grippo.design.resources.light
-import com.grippo.presentation.api.settings.models.ThemeState
+import com.grippo.state.settings.ThemeState
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable

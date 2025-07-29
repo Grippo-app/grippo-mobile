@@ -1,7 +1,7 @@
 package com.grippo.domain.mapper.muscles
 
 import com.grippo.data.features.api.muscle.models.MuscleGroupEnum
-import com.grippo.presentation.api.muscles.models.MuscleGroupEnumState
+import com.grippo.state.muscles.MuscleGroupEnumState
 
 public fun MuscleGroupEnum.toState(): MuscleGroupEnumState {
     return when (this) {

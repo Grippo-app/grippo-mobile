@@ -18,9 +18,13 @@ import com.grippo.error.display.ErrorDisplayComponent
 import com.grippo.exercise.ExerciseComponent
 import com.grippo.exercise.example.exerciseexample.ExerciseExampleComponent
 import com.grippo.height.picker.HeightPickerComponent
+import com.grippo.period.picker.PeriodPickerComponent
+import com.grippo.shared.dialog.DialogComponent.Dialog.DatePicker
 import com.grippo.shared.dialog.DialogComponent.Dialog.ErrorDisplay
+import com.grippo.shared.dialog.DialogComponent.Dialog.Exercise
 import com.grippo.shared.dialog.DialogComponent.Dialog.ExerciseExample
 import com.grippo.shared.dialog.DialogComponent.Dialog.HeightPicker
+import com.grippo.shared.dialog.DialogComponent.Dialog.PeriodPicker
 import com.grippo.shared.dialog.DialogComponent.Dialog.WeightPicker
 import com.grippo.weight.picker.WeightPickerComponent
 
@@ -45,6 +49,9 @@ internal class DialogComponent(
             Dialog(component)
 
         data class DatePicker(override val component: DatePickerComponent) :
+            Dialog(component)
+
+        data class PeriodPicker(override val component: PeriodPickerComponent) :
             Dialog(component)
     }
 
@@ -112,7 +119,7 @@ internal class DialogComponent(
                 )
             )
 
-            is DialogConfig.DatePicker -> Dialog.DatePicker(
+            is DialogConfig.DatePicker -> DatePicker(
                 DatePickerComponent(
                     componentContext = context,
                     initial = router.initial,
@@ -121,10 +128,19 @@ internal class DialogComponent(
                 )
             )
 
-            is DialogConfig.Exercise -> Dialog.Exercise(
+            is DialogConfig.Exercise -> Exercise(
                 ExerciseComponent(
                     componentContext = context,
                     id = router.id,
+                    back = { viewModel.dismiss(null) }
+                )
+            )
+
+            is DialogConfig.PeriodPicker -> PeriodPicker(
+                PeriodPickerComponent(
+                    componentContext = context,
+                    initial = router.initial,
+                    onResult = { viewModel.dismiss { router.onResult.invoke(it) } },
                     back = { viewModel.dismiss(null) }
                 )
             )

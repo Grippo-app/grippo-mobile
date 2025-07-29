@@ -32,7 +32,7 @@ import com.grippo.design.resources.Res
 import com.grippo.design.resources.continue_btn
 import com.grippo.design.resources.registration_muscles_description
 import com.grippo.design.resources.registration_muscles_title
-import com.grippo.presentation.api.muscles.models.stubMuscles
+import com.grippo.state.muscles.stubMuscles
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -91,7 +91,9 @@ internal fun ExcludedMusclesScreen(
         ) {
             itemsIndexed(
                 state.suggestions,
-                key = { _, item -> item.id }) { index, group ->
+                key = { _, item -> item.id },
+                contentType = { _, item -> item::class }
+            ) { index, group ->
                 val isEven = index % 2 == 0
 
                 Row(

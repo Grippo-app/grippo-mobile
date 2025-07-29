@@ -1,8 +1,8 @@
 package com.grippo.profile.muscles
 
 import androidx.compose.runtime.Immutable
-import com.grippo.presentation.api.muscles.models.MuscleGroupState
-import com.grippo.presentation.api.muscles.models.MuscleRepresentationState
+import com.grippo.state.muscles.MuscleGroupState
+import com.grippo.state.muscles.MuscleRepresentationState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
