@@ -184,11 +184,6 @@ public object LightColor : AppColor {
             }
     }
 
-    override val equipment: AppColor.EquipmentColors = object : AppColor.EquipmentColors {
-        override val background: Color = AppColorTokens.Primary.P100
-        override val border: Color = AppColorTokens.Primary.P300
-    }
-
     override val muscle: AppColor.MuscleColors = object : AppColor.MuscleColors {
         override val focused = AppColorTokens.Primary.P600
         override val active = AppColorTokens.Primary.P400

@@ -1,7 +1,6 @@
 package com.grippo.design.components.training
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,9 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.scalableClick
-import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer

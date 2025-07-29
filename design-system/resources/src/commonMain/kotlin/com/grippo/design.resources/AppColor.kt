@@ -21,7 +21,6 @@ public interface AppColor {
     public val chip: ChipColors
     public val theme: ThemeColors
     public val radio: RadioColors
-    public val equipment: EquipmentColors
 
     public interface DividerColors {
         public val primary: Color
@@ -149,11 +148,6 @@ public interface AppColor {
         public val disabled: Color
         public val accent: Color
         public val inverted: Color
-    }
-
-    public interface EquipmentColors {
-        public val background: Color
-        public val border: Color
     }
 
     public interface MuscleColors {

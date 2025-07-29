@@ -1,7 +1,6 @@
 package com.grippo.design.components.datetime
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -16,9 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.grippo.date.utils.DateCompose
 import com.grippo.date.utils.DateFormat
-import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.scalableClick
-import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
