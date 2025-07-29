@@ -6,7 +6,7 @@ import com.grippo.design.resources.AppColor
 public object DarkColor : AppColor {
 
     override val border: AppColor.BorderColors = object : AppColor.BorderColors {
-        override val defaultPrimary = AppColorTokens.NeutralDark.N200
+        override val defaultPrimary = AppColorTokens.NeutralDark.N100
         override val disabledPrimary = Color(0xFF2A2A2A)
         override val defaultSecondary = AppColorTokens.Primary.P250
         override val disabledSecondary = Color(0xFF2A2A2A)

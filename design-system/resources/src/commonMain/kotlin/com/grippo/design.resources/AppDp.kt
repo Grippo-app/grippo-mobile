@@ -187,9 +187,9 @@ public data object AppDp {
 
     public data object EquipmentCard {
         val icon: Dp = size.xLarge
-        val horizontalPadding: Dp = padding.small
-        val verticalPadding: Dp = padding.small
-        val radius: Dp = AppDp.radius.medium
+        val horizontalPadding: Dp = padding.large
+        val verticalPadding: Dp = padding.medium
+        val radius: Dp = AppDp.radius.large
     }
 
     public data object ExerciseExampleBundlesCard

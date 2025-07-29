@@ -38,7 +38,6 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
-import com.grippo.design.resources.background_trainings
 import com.grippo.design.resources.get_started_btn
 import com.grippo.design.resources.icons.Check
 import com.grippo.design.resources.registration_completed_title
@@ -52,9 +51,7 @@ internal fun CompletedScreen(
     state: CompletedState,
     loaders: ImmutableSet<CompletedLoader>,
     contract: CompletedContract
-) = BaseComposeScreen(
-    ScreenBackground.Painter(AppTokens.drawables.res(Res.drawable.background_trainings))
-) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
 
     if (loaders.contains(CompletedLoader.Registration)) {
         Loader(modifier = Modifier.fillMaxSize())

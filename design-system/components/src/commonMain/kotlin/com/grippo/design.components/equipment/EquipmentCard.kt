@@ -2,6 +2,7 @@ package com.grippo.design.components.equipment
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -16,6 +17,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import com.grippo.design.components.modifiers.ShadowElevation
+import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -29,11 +33,19 @@ public fun EquipmentCard(
 ) {
     Column(
         modifier = modifier
+            .shadowDefault(
+                elevation = ShadowElevation.Card,
+                shape = RoundedCornerShape(AppTokens.dp.equipmentCard.radius),
+                color = AppTokens.colors.overlay.defaultShadow,
+            )
             .background(
                 color = AppTokens.colors.background.primary,
                 shape = RoundedCornerShape(AppTokens.dp.equipmentCard.radius)
-            )
-            .width(intrinsicSize = IntrinsicSize.Max)
+            ).border(
+                width = 1.dp,
+                color = AppTokens.colors.border.defaultPrimary,
+                shape = RoundedCornerShape(AppTokens.dp.equipmentCard.radius)
+            ).width(intrinsicSize = IntrinsicSize.Max)
             .padding(
                 horizontal = AppTokens.dp.equipmentCard.horizontalPadding,
                 vertical = AppTokens.dp.equipmentCard.verticalPadding
