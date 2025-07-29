@@ -1,6 +1,7 @@
 package com.grippo.exercise.example.exerciseexample
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -17,6 +18,8 @@ import com.grippo.design.components.example.ExerciseExampleBundlesCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.Res
+import com.grippo.design.resources.required_equipment
 import com.grippo.presentation.api.exercise.example.models.stubExerciseExample
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -67,9 +70,19 @@ internal fun ExerciseExampleScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
 
+        Text(
+            modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+            text = AppTokens.strings.res(Res.string.required_equipment),
+            style = AppTokens.typography.h4(),
+            color = AppTokens.colors.text.primary
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
         EquipmentsCard(
             modifier = Modifier.fillMaxWidth(),
-            value = example.equipments
+            value = example.equipments,
+            contentPadding = PaddingValues(horizontal = AppTokens.dp.screen.horizontalPadding)
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))

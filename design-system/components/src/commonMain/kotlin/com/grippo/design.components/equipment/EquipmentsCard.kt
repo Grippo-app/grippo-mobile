@@ -1,13 +1,12 @@
 package com.grippo.design.components.equipment
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -19,20 +18,13 @@ import kotlinx.collections.immutable.toPersistentList
 @Composable
 public fun EquipmentsCard(
     modifier: Modifier = Modifier,
-    value: ImmutableList<EquipmentState>
+    value: ImmutableList<EquipmentState>,
+    contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
-
     LazyRow(
-        modifier = modifier
-            .background(AppTokens.colors.background.primary)
-           .padding(
-                horizontal = AppTokens.dp.equipmentsCard.horizontalPadding,
-                vertical = AppTokens.dp.equipmentsCard.verticalPadding,
-            ),
-        horizontalArrangement = Arrangement.spacedBy(
-            AppTokens.dp.contentPadding.subContent,
-            Alignment.CenterHorizontally
-        ),
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+        contentPadding = contentPadding
     ) {
         items(items = value, key = { it.id }, contentType = { it::class }) { item ->
             EquipmentCard(

@@ -63,7 +63,6 @@ public data object AppDp {
     val bodyDetails: BodyDetails = BodyDetails
     val overviewCard: OverviewCard = OverviewCard
     val equipmentCard: EquipmentCard = EquipmentCard
-    val equipmentsCard: EquipmentsCard = EquipmentsCard
     val exerciseExampleBundlesCard: ExerciseExampleBundlesCard = ExerciseExampleBundlesCard
     val timeline: Timeline = Timeline
     val timeLabel: TimeLabel = TimeLabel
@@ -190,11 +189,7 @@ public data object AppDp {
         val icon: Dp = size.xLarge
         val horizontalPadding: Dp = padding.small
         val verticalPadding: Dp = padding.small
-    }
-
-    public data object EquipmentsCard {
-        val horizontalPadding: Dp = padding.extraLarge
-        val verticalPadding: Dp = padding.extraLarge
+        val radius: Dp = AppDp.radius.medium
     }
 
     public data object ExerciseExampleBundlesCard
