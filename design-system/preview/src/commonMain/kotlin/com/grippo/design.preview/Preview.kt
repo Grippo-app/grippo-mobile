@@ -17,16 +17,27 @@ public annotation class AppPreview
 
 @Composable
 public fun PreviewContainer(
-    modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    AppTheme {
-        Column(
-            modifier = modifier
-                .background(Color.White)
-                .padding(12.dp),
-            content = content,
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        )
+    Column {
+        AppTheme(darkTheme = false) {
+            Column(
+                modifier = Modifier
+                    .background(Color.White)
+                    .padding(12.dp),
+                content = content,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            )
+        }
+
+        AppTheme(darkTheme = true) {
+            Column(
+                modifier = Modifier
+                    .background(Color.Black)
+                    .padding(12.dp),
+                content = content,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            )
+        }
     }
 }

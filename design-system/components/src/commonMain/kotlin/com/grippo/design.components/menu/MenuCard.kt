@@ -1,9 +1,11 @@
 package com.grippo.design.components.menu
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,10 +51,15 @@ public fun MenuCard(
             color = AppTokens.colors.text.primary
         )
 
+        val shape = CircleShape
+
         Icon(
-            modifier = Modifier.size(AppTokens.dp.menu.item.icon),
+            modifier = Modifier
+                .background(AppTokens.colors.background.primary, shape)
+                .size(AppTokens.dp.menu.item.icon)
+                .padding(2.dp),
             imageVector = AppTokens.icons.NavArrowRight,
-            tint = AppTokens.colors.icon.primary,
+            tint = AppTokens.colors.icon.secondary,
             contentDescription = null
         )
     }

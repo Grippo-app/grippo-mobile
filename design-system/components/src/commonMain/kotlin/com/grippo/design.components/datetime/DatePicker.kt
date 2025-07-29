@@ -50,17 +50,11 @@ public fun DatePicker(
 
         Icon(
             modifier = Modifier
-                .shadowDefault(
-                    elevation = ShadowElevation.Card,
-                    shape = shape,
-                    color = AppTokens.colors.overlay.defaultShadow
-                )
                 .background(AppTokens.colors.background.primary, shape)
-                .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
                 .size(AppTokens.dp.datePicker.icon)
                 .padding(2.dp),
             imageVector = AppTokens.icons.NavArrowDown,
-            tint = AppTokens.colors.icon.primary,
+            tint = AppTokens.colors.icon.secondary,
             contentDescription = null
         )
     }
