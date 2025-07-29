@@ -60,14 +60,14 @@ internal fun MissingEquipmentsScreen(
             .navigationBarsPadding()
             .fillMaxWidth()
             .weight(1f)
-            .padding(
-                horizontal = AppTokens.dp.screen.horizontalPadding,
-                vertical = AppTokens.dp.contentPadding.content
-            ).imePadding(),
+            .padding(vertical = AppTokens.dp.contentPadding.content)
+            .imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                .fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.registration_equipment_title),
             style = AppTokens.typography.h2(),
             color = AppTokens.colors.text.primary,
@@ -77,7 +77,9 @@ internal fun MissingEquipmentsScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Text(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                .fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.registration_equipment_description),
             style = AppTokens.typography.b14Med(),
             color = AppTokens.colors.text.secondary,
@@ -95,6 +97,7 @@ internal fun MissingEquipmentsScreen(
             Segment(
                 modifier = Modifier
                     .horizontalScroll(rememberScrollState())
+                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
                     .fillMaxWidth(),
                 items = segmentItems,
                 selected = state.selectedGroupId,
@@ -108,6 +111,7 @@ internal fun MissingEquipmentsScreen(
 
             LazyColumn(
                 modifier = Modifier
+                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
                     .fillMaxWidth()
                     .weight(1f),
                 contentPadding = PaddingValues(
@@ -131,7 +135,9 @@ internal fun MissingEquipmentsScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         Button(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                .fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.continue_btn),
             style = ButtonStyle.Primary,
             onClick = contract::next
