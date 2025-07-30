@@ -4,8 +4,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.grippo.design.components.cards.selectable.SelectableCard
-import com.grippo.design.components.cards.selectable.SelectableCardStyle
+import com.grippo.design.components.cards.selectable.MultiSelectableCard
+import com.grippo.design.components.cards.selectable.MultiSelectableCardStyle
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.state.equipments.EquipmentState
@@ -27,9 +27,9 @@ public fun EquipmentRow(
         selectedEquipmentIds.contains(equipment.id)
     }
 
-    SelectableCard(
+    MultiSelectableCard(
         modifier = Modifier.fillMaxWidth(),
-        style = SelectableCardStyle.Medium(
+        style = MultiSelectableCardStyle.Medium(
             title = equipment.name,
             icon = equipment.image(),
         ),

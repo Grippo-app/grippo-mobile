@@ -1,5 +1,6 @@
 package com.grippo.period.picker
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeDialog
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
@@ -60,13 +62,14 @@ internal fun PeriodPickerScreen(
         LazyColumn(modifier = Modifier.fillMaxWidth()) {
             items(
                 items = list,
-                key = { it },
+                key = { it.hashCode() },
                 contentType = { it::class }
             ) { item ->
-
                 remember { { contract.select(item) } }
                 remember(state.initial) { state.initial == item }
+                Box(Modifier.size(100.dp)) {
 
+                }
             }
         }
 

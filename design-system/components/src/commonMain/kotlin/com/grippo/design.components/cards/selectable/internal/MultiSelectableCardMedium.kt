@@ -4,9 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -20,21 +18,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.grippo.design.components.cards.selectable.SelectableCardStyle
-import com.grippo.design.components.cards.selectable.SelectableCardVariants
+import com.grippo.design.components.cards.selectable.MultiSelectableCardStyle
+import com.grippo.design.components.cards.selectable.MultiSelectableCardVariants
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.modifiers.shadowDefault
-import com.grippo.design.components.modifiers.shimmerAnimation
 import com.grippo.design.components.selectors.Toggle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
 @Composable
-internal fun SelectableCardMedium(
+internal fun MultiSelectableCardMedium(
     modifier: Modifier,
-    style: SelectableCardStyle.Medium,
+    style: MultiSelectableCardStyle.Medium,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
@@ -84,41 +81,15 @@ internal fun SelectableCardMedium(
     }
 }
 
-@Composable
-internal fun SelectableCardMediumSkeleton(modifier: Modifier) {
-    val radius = AppTokens.dp.selectableCard.medium.radius
-
-    Box(
-        modifier = modifier
-            .shimmerAnimation(visible = true, radius = radius)
-            .shadowDefault(
-                elevation = ShadowElevation.Card,
-                shape = RoundedCornerShape(radius),
-                color = AppTokens.colors.overlay.defaultShadow
-            )
-            .background(AppTokens.colors.background.secondary, RoundedCornerShape(radius))
-            .border(1.dp, AppTokens.colors.border.defaultPrimary, RoundedCornerShape(radius))
-            .padding(
-                horizontal = AppTokens.dp.selectableCard.medium.horizontalPadding,
-                vertical = AppTokens.dp.selectableCard.medium.verticalPadding,
-            )
-            .height(AppTokens.dp.selectableCard.medium.height),
-    )
-}
-
 @AppPreview
 @Composable
-private fun SelectableCardMediumPreview() {
+private fun MultiSelectableCardMediumPreview() {
     PreviewContainer {
-        SelectableCardVariants(
-            SelectableCardStyle.Medium(
+        MultiSelectableCardVariants(
+            MultiSelectableCardStyle.Medium(
                 title = "Test Title",
                 icon = Icons.Filled.Done
             )
-        )
-
-        SelectableCardMediumSkeleton(
-            modifier = Modifier.fillMaxWidth()
         )
     }
 }

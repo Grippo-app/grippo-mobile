@@ -9,8 +9,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.grippo.design.components.cards.selectable.SelectableCard
-import com.grippo.design.components.cards.selectable.SelectableCardStyle
+import com.grippo.design.components.cards.selectable.MultiSelectableCard
+import com.grippo.design.components.cards.selectable.MultiSelectableCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -48,9 +48,9 @@ public fun MusclesColumn(
                 selectedIds.contains(muscle.value.id)
             }
 
-            SelectableCard(
+            MultiSelectableCard(
                 modifier = Modifier.fillMaxWidth(),
-                style = SelectableCardStyle.Small(
+                style = MultiSelectableCardStyle.Small(
                     title = muscle.value.name
                 ),
                 isSelected = isSelected,

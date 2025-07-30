@@ -4,11 +4,8 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,7 +23,6 @@ import com.grippo.design.components.cards.selectable.SelectableCardVariants
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.modifiers.shadowDefault
-import com.grippo.design.components.modifiers.shimmerAnimation
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -97,29 +93,6 @@ internal fun SelectableCardLarge(
     }
 }
 
-@Composable
-internal fun SelectableCardLargeSkeleton(modifier: Modifier) {
-    val shape = AppTokens.dp.selectableCard.large.radius
-
-    Box(
-        modifier = modifier
-            .shimmerAnimation(visible = true, radius = shape)
-            .shadowDefault(
-                elevation = ShadowElevation.Card,
-                shape = RoundedCornerShape(shape),
-                color = AppTokens.colors.overlay.defaultShadow,
-            )
-            .background(AppTokens.colors.background.secondary, RoundedCornerShape(shape))
-            .border(1.dp, AppTokens.colors.border.defaultPrimary, RoundedCornerShape(shape))
-            .padding(
-                horizontal = AppTokens.dp.selectableCard.large.horizontalPadding,
-                vertical = AppTokens.dp.selectableCard.large.verticalPadding
-            ).height(
-                AppTokens.dp.selectableCard.large.icon
-            ),
-    )
-}
-
 @AppPreview
 @Composable
 private fun SelectableCardLargePreview() {
@@ -130,10 +103,6 @@ private fun SelectableCardLargePreview() {
                 description = "Test Description with big text for all cases and more options to do somethig!",
                 icon = Icons.Filled.Done
             )
-        )
-
-        SelectableCardLargeSkeleton(
-            modifier = Modifier.fillMaxWidth()
         )
     }
 }
