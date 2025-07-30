@@ -4,7 +4,7 @@ import com.grippo.data.features.api.user.models.User
 import com.grippo.data.features.user.domain.UserRepository
 import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.dao.UserDao
-import com.grippo.entity.domain.user.toDomain
+import com.grippo.database.domain.user.toDomain
 import com.grippo.network.Api
 import com.grippo.network.mapper.user.toEntityOrNull
 import kotlinx.coroutines.flow.Flow

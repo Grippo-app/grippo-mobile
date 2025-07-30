@@ -3,7 +3,7 @@ package com.grippo.data.features.exercise.examples.data
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.exercise.examples.domain.ExerciseExampleRepository
 import com.grippo.database.dao.ExerciseExampleDao
-import com.grippo.entity.domain.exercise.equipment.toDomain
+import com.grippo.database.domain.exercise.equipment.toDomain
 import com.grippo.network.Api
 import com.grippo.network.mapper.exercise.example.toEntities
 import com.grippo.network.mapper.exercise.example.toEntityOrNull

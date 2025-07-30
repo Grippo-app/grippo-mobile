@@ -5,7 +5,7 @@ import com.grippo.data.features.excluded.equipments.domain.ExcludedEquipmentsRep
 import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.dao.UserDao
 import com.grippo.database.entity.UserExcludedEquipmentEntity
-import com.grippo.entity.domain.equipment.toDomain
+import com.grippo.database.domain.equipment.toDomain
 import com.grippo.network.Api
 import com.grippo.network.mapper.equipment.toEntities
 import com.grippo.network.user.IdsBody

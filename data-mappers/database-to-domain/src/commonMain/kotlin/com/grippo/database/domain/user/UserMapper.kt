@@ -1,4 +1,4 @@
-package com.grippo.entity.domain.user
+package com.grippo.database.domain.user
 
 import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
 import com.grippo.data.features.api.user.models.User

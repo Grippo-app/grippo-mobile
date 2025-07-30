@@ -10,7 +10,7 @@ kotlin {
         implementation(projects.dataServices.database)
         implementation(projects.dataServices.network)
         implementation(projects.dataMappers.domainMapper)
-        implementation(projects.dataMappers.entityToDomain)
+        implementation(projects.dataMappers.databaseToDomain)
         implementation(projects.dataMappers.networkMapper)
 
         implementation(libs.kotlinx.coroutines.core)

@@ -1,4 +1,4 @@
-package com.grippo.entity.domain.muscles
+package com.grippo.database.domain.muscles
 
 import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.data.features.api.muscle.models.MuscleGroupEnum

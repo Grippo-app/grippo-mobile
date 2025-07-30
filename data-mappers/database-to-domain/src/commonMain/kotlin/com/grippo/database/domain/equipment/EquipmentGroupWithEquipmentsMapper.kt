@@ -1,4 +1,4 @@
-package com.grippo.entity.domain.equipment
+package com.grippo.database.domain.equipment
 
 import com.grippo.data.features.api.equipment.models.EquipmentGroup
 import com.grippo.database.models.EquipmentGroupWithEquipments

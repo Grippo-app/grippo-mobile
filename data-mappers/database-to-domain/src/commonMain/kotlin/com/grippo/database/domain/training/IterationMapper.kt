@@ -1,4 +1,4 @@
-package com.grippo.entity.domain.training
+package com.grippo.database.domain.training
 
 import com.grippo.data.features.api.training.models.Iteration
 import com.grippo.database.entity.IterationEntity

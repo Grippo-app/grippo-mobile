@@ -5,7 +5,7 @@ import com.grippo.data.features.api.training.models.Training
 import com.grippo.data.features.trainings.domain.TrainingRepository
 import com.grippo.database.dao.TrainingDao
 import com.grippo.date.utils.DateTimeUtils
-import com.grippo.entity.domain.training.toDomain
+import com.grippo.database.domain.training.toDomain
 import com.grippo.network.Api
 import com.grippo.network.mapper.training.toEntities
 import com.grippo.network.mapper.training.toEntityOrNull
