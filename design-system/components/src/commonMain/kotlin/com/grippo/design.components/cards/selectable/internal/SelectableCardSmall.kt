@@ -20,9 +20,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.cards.selectable.SelectableCardStyle
 import com.grippo.design.components.cards.selectable.SelectableCardVariants
-import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.scalableClick
-import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -42,19 +40,9 @@ internal fun SelectableCardSmall(
         label = "border"
     )
 
-    val shadowColor by animateColorAsState(
-        if (isSelected) AppTokens.colors.overlay.accentShadow else AppTokens.colors.overlay.defaultShadow,
-        label = "shadow"
-    )
-
     Row(
         modifier = modifier
             .scalableClick(onClick = onClick)
-            .shadowDefault(
-                elevation = ShadowElevation.Card,
-                shape = shape,
-                color = shadowColor
-            )
             .border(1.dp, borderColor, shape)
             .background(AppTokens.colors.background.primary, shape)
             .padding(horizontal = AppTokens.dp.selectableCard.small.horizontalPadding)

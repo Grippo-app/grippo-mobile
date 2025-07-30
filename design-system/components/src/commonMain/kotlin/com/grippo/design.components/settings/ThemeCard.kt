@@ -14,9 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
-import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.scalableClick
-import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.components.selectors.Radio
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -63,19 +61,9 @@ public fun ThemeCard(
         label = "border"
     )
 
-    val shadowColor by animateColorAsState(
-        if (isSelected) AppTokens.colors.overlay.accentShadow else AppTokens.colors.overlay.defaultShadow,
-        label = "shadow"
-    )
-
     Box(
         modifier = modifier
             .scalableClick(onClick = onClick)
-            .shadowDefault(
-                elevation = ShadowElevation.Card,
-                shape = shape,
-                color = shadowColor
-            )
             .background(Brush.verticalGradient(colors = background), shape)
             .border(1.dp, borderColor, shape)
             .padding(

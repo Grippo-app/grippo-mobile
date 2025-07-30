@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.grippo.design.components.cards.selectable.MultiSelectableCard
 import com.grippo.design.components.cards.selectable.MultiSelectableCardStyle
 import com.grippo.design.core.AppTokens
@@ -29,7 +28,7 @@ public fun MusclesColumn(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
         Text(
             modifier = Modifier.fillMaxWidth(),

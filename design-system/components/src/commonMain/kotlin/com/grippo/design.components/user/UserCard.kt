@@ -17,8 +17,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.grippo.date.utils.DateCompose
-import com.grippo.design.components.modifiers.ShadowElevation
-import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.components.user.internal.OverviewCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -64,11 +62,6 @@ public fun UserCard(
 
     Column(
         modifier = modifier
-            .shadowDefault(
-                elevation = ShadowElevation.Card,
-                shape = shape,
-                color = AppTokens.colors.overlay.defaultShadow
-            )
             .background(gradient, shape)
             .border(2.dp, AppTokens.colors.border.inverted, shape)
             .padding(

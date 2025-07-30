@@ -19,9 +19,7 @@ import com.grippo.design.components.chip.IntensityChip
 import com.grippo.design.components.chip.RepetitionsChip
 import com.grippo.design.components.chip.TonnageChip
 import com.grippo.design.components.datetime.DatePicker
-import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.border
-import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.components.timeline.TimeLabel
 import com.grippo.design.components.timeline.TimelineIndicator
 import com.grippo.design.components.toolbar.Toolbar
@@ -101,11 +99,7 @@ internal fun HomeTrainingsScreen(
                 if (value is TrainingListValue.TrainingSummary) {
                     Column(
                         modifier = Modifier
-                            .shadowDefault(
-                                shape = shape,
-                                elevation = ShadowElevation.Card,
-                                sides = sides
-                            ).border(
+                            .border(
                                 width = 1.dp,
                                 color = AppTokens.colors.border.defaultPrimary,
                                 shape = shape,
@@ -143,11 +137,7 @@ internal fun HomeTrainingsScreen(
                 if (exercise != null) {
                     ExerciseCard(
                         modifier = Modifier
-                            .shadowDefault(
-                                shape = shape,
-                                elevation = ShadowElevation.Card,
-                                sides = sides
-                            ).border(
+                            .border(
                                 width = 1.dp,
                                 color = AppTokens.colors.border.defaultPrimary,
                                 shape = shape,

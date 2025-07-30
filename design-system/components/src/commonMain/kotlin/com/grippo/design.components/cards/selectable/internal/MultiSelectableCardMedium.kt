@@ -20,9 +20,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.cards.selectable.MultiSelectableCardStyle
 import com.grippo.design.components.cards.selectable.MultiSelectableCardVariants
-import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.scalableClick
-import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.components.selectors.Toggle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -40,11 +38,6 @@ internal fun MultiSelectableCardMedium(
     Row(
         modifier = modifier
             .scalableClick(onClick = onClick)
-            .shadowDefault(
-                elevation = ShadowElevation.Card,
-                shape = shape,
-                color = AppTokens.colors.overlay.defaultShadow
-            )
             .background(AppTokens.colors.background.secondary, shape)
             .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
             .padding(

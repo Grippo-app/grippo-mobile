@@ -1,6 +1,5 @@
 package com.grippo.design.components.internal
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -37,8 +36,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.lerp
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.grippo.design.components.modifiers.ShadowElevation
-import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -134,15 +131,6 @@ internal fun Input(
         animationSpec = tween(durationMillis = 100),
     )
 
-    val shadowColor = animateColorAsState(
-        targetValue = if (hasFocus.value) {
-            AppTokens.colors.overlay.accentShadow
-        } else {
-            AppTokens.colors.overlay.defaultShadow
-        },
-        label = "shadowColor"
-    )
-
     val interactionSource = remember { MutableInteractionSource() }
 
     if (interactionSource.collectIsPressedAsState().value) {
@@ -151,11 +139,6 @@ internal fun Input(
 
     BasicTextField(
         modifier = modifier
-            .shadowDefault(
-                elevation = ShadowElevation.Container,
-                shape = shape,
-                color = shadowColor.value
-            )
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,

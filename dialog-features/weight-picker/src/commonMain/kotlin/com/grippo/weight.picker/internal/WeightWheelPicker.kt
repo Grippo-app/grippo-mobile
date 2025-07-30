@@ -32,7 +32,7 @@ internal fun WeightWheelPicker(
             enabled = true,
             shape = RoundedCornerShape(AppTokens.dp.wheelPicker.radius),
             color = AppTokens.colors.background.primary,
-            border = BorderStroke(1.dp, AppTokens.colors.border.defaultPrimary)
+            border = BorderStroke(1.dp, AppTokens.colors.border.focus)
         ),
         columns = listOf(
             WheelColumn(

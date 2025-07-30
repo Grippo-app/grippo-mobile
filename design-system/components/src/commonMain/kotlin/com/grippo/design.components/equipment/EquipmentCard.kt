@@ -18,8 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.grippo.design.components.modifiers.ShadowElevation
-import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -33,11 +31,6 @@ public fun EquipmentCard(
 ) {
     Column(
         modifier = modifier
-            .shadowDefault(
-                elevation = ShadowElevation.Card,
-                shape = RoundedCornerShape(AppTokens.dp.equipmentCard.radius),
-                color = AppTokens.colors.overlay.defaultShadow,
-            )
             .background(
                 color = AppTokens.colors.background.primary,
                 shape = RoundedCornerShape(AppTokens.dp.equipmentCard.radius)
