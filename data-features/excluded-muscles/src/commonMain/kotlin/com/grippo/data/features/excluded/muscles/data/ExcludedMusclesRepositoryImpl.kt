@@ -4,10 +4,10 @@ import com.grippo.data.features.api.muscle.models.Muscle
 import com.grippo.data.features.excluded.muscles.domain.ExcludedMusclesRepository
 import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.dao.UserDao
-import com.grippo.database.entity.UserExcludedMuscleEntity
 import com.grippo.database.domain.muscles.toDomain
+import com.grippo.database.entity.UserExcludedMuscleEntity
 import com.grippo.network.Api
-import com.grippo.network.mapper.muscles.toEntities
+import com.grippo.network.database.muscles.toEntities
 import com.grippo.network.user.IdsBody
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull

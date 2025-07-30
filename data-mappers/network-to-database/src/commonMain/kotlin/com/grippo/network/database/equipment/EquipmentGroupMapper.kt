@@ -1,35 +1,35 @@
-package com.grippo.network.mapper.muscles
+package com.grippo.network.database.equipment
 
-import com.grippo.database.entity.MuscleGroupEntity
+import com.grippo.database.entity.EquipmentGroupEntity
 import com.grippo.logger.AppLogger
-import com.grippo.network.dto.muscle.MuscleGroupResponse
+import com.grippo.network.dto.equipment.EquipmentGroupResponse
 
-public fun List<MuscleGroupResponse>.toEntities(): List<MuscleGroupEntity> {
+public fun List<EquipmentGroupResponse>.toEntities(): List<EquipmentGroupEntity> {
     return mapNotNull { it.toEntityOrNull() }
 }
 
-public fun MuscleGroupResponse.toEntityOrNull(): MuscleGroupEntity? {
+public fun EquipmentGroupResponse.toEntityOrNull(): EquipmentGroupEntity? {
     val entityId = AppLogger.Mapping.log(id) {
-        "MuscleGroupResponse.id is null"
+        "EquipmentGroupResponse.id is null"
     } ?: return null
 
     val entityName = AppLogger.Mapping.log(name) {
-        "MuscleGroupResponse.name is null"
+        "EquipmentGroupResponse.name is null"
     } ?: return null
 
     val entityType = AppLogger.Mapping.log(type) {
-        "MuscleGroupResponse.type is null"
+        "EquipmentGroupResponse.type is null"
     } ?: return null
 
     val entityCreatedAt = AppLogger.Mapping.log(createdAt) {
-        "MuscleGroupResponse.createdAt is null"
+        "EquipmentGroupResponse.createdAt is null"
     } ?: return null
 
     val entityUpdatedAt = AppLogger.Mapping.log(updatedAt) {
-        "MuscleGroupResponse.updatedAt is null"
+        "EquipmentGroupResponse.updatedAt is null"
     } ?: return null
 
-    return MuscleGroupEntity(
+    return EquipmentGroupEntity(
         id = entityId,
         name = entityName,
         type = entityType,

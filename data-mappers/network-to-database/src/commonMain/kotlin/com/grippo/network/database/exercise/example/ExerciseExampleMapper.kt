@@ -1,4 +1,4 @@
-package com.grippo.network.mapper.exercise.example
+package com.grippo.network.database.exercise.example
 
 import com.grippo.database.entity.ExerciseExampleEntity
 import com.grippo.logger.AppLogger

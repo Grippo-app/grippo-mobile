@@ -1,4 +1,4 @@
-package com.grippo.network.mapper.training
+package com.grippo.network.database.training
 
 import com.grippo.database.entity.IterationEntity
 import com.grippo.logger.AppLogger
