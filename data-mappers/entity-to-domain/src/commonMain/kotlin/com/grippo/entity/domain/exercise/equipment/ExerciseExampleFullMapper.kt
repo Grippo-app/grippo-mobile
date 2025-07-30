@@ -1,4 +1,4 @@
-package com.grippo.database.mapper.exercise.equipment
+package com.grippo.entity.domain.exercise.equipment
 
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.database.models.ExerciseExamplePack

@@ -1,12 +1,11 @@
 package com.grippo.data.features.excluded.equipments.data
 
 import com.grippo.data.features.api.equipment.models.Equipment
-import com.grippo.data.features.api.excluded.equipments.ExcludedEquipmentsFeature
 import com.grippo.data.features.excluded.equipments.domain.ExcludedEquipmentsRepository
 import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.dao.UserDao
 import com.grippo.database.entity.UserExcludedEquipmentEntity
-import com.grippo.database.mapper.equipment.toDomain
+import com.grippo.entity.domain.equipment.toDomain
 import com.grippo.network.Api
 import com.grippo.network.mapper.equipment.toEntities
 import com.grippo.network.user.IdsBody

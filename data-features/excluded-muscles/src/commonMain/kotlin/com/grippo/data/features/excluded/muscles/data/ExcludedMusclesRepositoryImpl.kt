@@ -5,7 +5,7 @@ import com.grippo.data.features.excluded.muscles.domain.ExcludedMusclesRepositor
 import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.dao.UserDao
 import com.grippo.database.entity.UserExcludedMuscleEntity
-import com.grippo.database.mapper.muscles.toDomain
+import com.grippo.entity.domain.muscles.toDomain
 import com.grippo.network.Api
 import com.grippo.network.mapper.muscles.toEntities
 import com.grippo.network.user.IdsBody

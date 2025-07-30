@@ -89,6 +89,6 @@ include(":compose-libs:segment-control")
 include(":compose-libs:konfetti")
 include(":compose-libs:chart")
 
-include(":data-mappers:database-mapper")
+include(":data-mappers:entity-to-domain")
 include(":data-mappers:network-mapper")
 include(":data-mappers:domain-mapper")

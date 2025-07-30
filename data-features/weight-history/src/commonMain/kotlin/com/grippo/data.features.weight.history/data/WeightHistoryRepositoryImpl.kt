@@ -3,7 +3,7 @@ package com.grippo.data.features.weight.history.data
 import com.grippo.data.features.api.weight.history.models.WeightHistory
 import com.grippo.data.features.weight.history.domain.WeightHistoryRepository
 import com.grippo.database.dao.WeightHistoryDao
-import com.grippo.database.mapper.user.toDomain
+import com.grippo.entity.domain.user.toDomain
 import com.grippo.network.Api
 import com.grippo.network.mapper.user.toEntities
 import kotlinx.coroutines.flow.Flow

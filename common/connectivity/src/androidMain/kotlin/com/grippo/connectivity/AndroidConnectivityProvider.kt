@@ -40,7 +40,6 @@ internal class AndroidConnectivityProvider(private val context: Context) : Conne
             }
 
             try {
-                println("Using registerDefaultNetworkCallback")
                 manager.registerDefaultNetworkCallback(networkCallback)
 
                 val initialStatus = manager.initialStatus()

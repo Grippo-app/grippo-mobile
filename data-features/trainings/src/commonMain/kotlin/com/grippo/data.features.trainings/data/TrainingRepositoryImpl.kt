@@ -4,8 +4,8 @@ import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.data.features.trainings.domain.TrainingRepository
 import com.grippo.database.dao.TrainingDao
-import com.grippo.database.mapper.training.toDomain
 import com.grippo.date.utils.DateTimeUtils
+import com.grippo.entity.domain.training.toDomain
 import com.grippo.network.Api
 import com.grippo.network.mapper.training.toEntities
 import com.grippo.network.mapper.training.toEntityOrNull
@@ -27,10 +27,7 @@ internal class TrainingRepositoryImpl(
 
     override fun observeExercise(id: String): Flow<Exercise?> {
         return trainingDao.getExerciseById(id)
-            .map {
-                println("KWKWKWKWKWK = ${it}")
-                it?.toDomain()
-            }
+            .map { it?.toDomain() }
     }
 
     override fun observeTrainings(

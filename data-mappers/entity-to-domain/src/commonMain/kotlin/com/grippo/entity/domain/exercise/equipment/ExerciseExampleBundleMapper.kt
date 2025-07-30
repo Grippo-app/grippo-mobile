@@ -1,8 +1,8 @@
-package com.grippo.database.mapper.exercise.equipment
+package com.grippo.entity.domain.exercise.equipment
 
 import com.grippo.data.features.api.exercise.example.models.ExerciseExampleBundle
-import com.grippo.database.mapper.muscles.toDomain
 import com.grippo.database.models.ExerciseExampleBundleWithMuscle
+import com.grippo.entity.domain.muscles.toDomain
 import com.grippo.logger.AppLogger
 
 public fun List<ExerciseExampleBundleWithMuscle>.toDomain(): List<ExerciseExampleBundle> {

@@ -1,8 +1,8 @@
-package com.grippo.database.mapper.training
+package com.grippo.entity.domain.training
 
 import com.grippo.data.features.api.training.models.Exercise
-import com.grippo.database.mapper.exercise.equipment.toDomain
 import com.grippo.database.models.ExercisePack
+import com.grippo.entity.domain.exercise.equipment.toDomain
 
 public fun List<ExercisePack>.toDomain(): List<Exercise> {
     return map { it.toDomain() }
