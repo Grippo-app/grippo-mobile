@@ -41,12 +41,12 @@ public fun PeriodPicker(
             color = AppTokens.colors.text.primary
         )
 
-        Spacer(Modifier.width(AppTokens.dp.datePicker.spacer))
+        Spacer(Modifier.width(AppTokens.dp.periodPicker.spacer))
 
         Icon(
             modifier = Modifier
                 .background(AppTokens.colors.background.primary, shape)
-                .size(AppTokens.dp.datePicker.icon)
+                .size(AppTokens.dp.periodPicker.icon)
                 .padding(2.dp),
             imageVector = AppTokens.icons.NavArrowDown,
             tint = AppTokens.colors.icon.secondary,

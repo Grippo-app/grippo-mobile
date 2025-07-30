@@ -56,6 +56,7 @@ public data object AppDp {
     val tab: Tab = Tab
     val menu: Menu = Menu
     val selectableCard: SelectableCard = SelectableCard
+    val multiSelectableCard: MultiSelectableCard = MultiSelectableCard
     val informationCard: InformationCard = InformationCard
     val wheelPicker: WheelPicker = WheelPicker
     val chart: Chart = Chart
@@ -67,6 +68,7 @@ public data object AppDp {
     val timeline: Timeline = Timeline
     val timeLabel: TimeLabel = TimeLabel
     val datePicker: DatePicker = DatePicker
+    val periodPicker: PeriodPicker = PeriodPicker
     val exerciseCard: ExerciseCard = ExerciseCard
     val iterationCard: IterationCard = IterationCard
     val chip: Chip = Chip
@@ -147,6 +149,11 @@ public data object AppDp {
         val spacer: Dp = padding.small
     }
 
+    public data object PeriodPicker {
+        val icon: Dp = AppDp.icon.medium
+        val spacer: Dp = padding.small
+    }
+
     public data object TimeLabel {
         val icon: Dp = AppDp.icon.medium
         val spacer: Dp = padding.extraSmall
@@ -194,17 +201,9 @@ public data object AppDp {
 
     public data object ExerciseExampleBundlesCard
 
-    public data object SelectableCard {
-        val large: Large = Large
+    public data object MultiSelectableCard {
         val medium: Medium = Medium
         val small: Small = Small
-
-        public data object Large {
-            val horizontalPadding: Dp = padding.large
-            val verticalPadding: Dp = padding.large
-            val radius: Dp = AppDp.radius.large
-            val icon: Dp = AppDp.icon.large
-        }
 
         public data object Medium {
             val height: Dp = size.medium
@@ -214,10 +213,30 @@ public data object AppDp {
             val icon: Dp = size.large
         }
 
+
         public data object Small {
             val height: Dp = size.medium
             val horizontalPadding: Dp = padding.medium
             val radius: Dp = AppDp.radius.medium
+        }
+    }
+
+    public data object SelectableCard {
+        val large: Large = Large
+        val small: Small = Small
+
+        public data object Large {
+            val horizontalPadding: Dp = padding.large
+            val verticalPadding: Dp = padding.large
+            val radius: Dp = AppDp.radius.large
+            val icon: Dp = AppDp.icon.large
+        }
+
+        public data object Small {
+            val height: Dp = size.medium
+            val horizontalPadding: Dp = padding.medium
+            val radius: Dp = AppDp.radius.medium
+            val icon: Dp = AppDp.icon.large
         }
     }
 

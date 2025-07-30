@@ -7,6 +7,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.components.cards.selectable.internal.SelectableCardLarge
+import com.grippo.design.components.cards.selectable.internal.SelectableCardSmall
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
@@ -14,6 +15,11 @@ import com.grippo.design.preview.PreviewContainer
 public sealed class SelectableCardStyle(
     public open val title: String
 ) {
+    @Immutable
+    public data class Small(
+        override val title: String
+    ) : SelectableCardStyle(title)
+
     @Immutable
     public data class Large(
         override val title: String,
@@ -36,6 +42,13 @@ public fun SelectableCard(
             isSelected = isSelected,
             onClick = onSelect
         )
+
+        is SelectableCardStyle.Small -> SelectableCardSmall(
+            modifier = modifier,
+            style = style,
+            isSelected = isSelected,
+            onClick = onSelect
+        )
     }
 }
 
@@ -48,6 +61,18 @@ private fun SelectableCardLargePreview() {
                 title = "Test Title",
                 description = "Test Description",
                 icon = Icons.Filled.Done
+            )
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun SelectableCardSmallPreview() {
+    PreviewContainer {
+        SelectableCardVariants(
+            SelectableCardStyle.Small(
+                title = "Test Title",
             )
         )
     }

@@ -1,6 +1,6 @@
 package com.grippo.period.picker
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,11 +14,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeDialog
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.cards.selectable.SelectableCard
+import com.grippo.design.components.cards.selectable.SelectableCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -59,17 +60,26 @@ internal fun PeriodPickerScreen(
             state.list
         }
 
-        LazyColumn(modifier = Modifier.fillMaxWidth()) {
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+        ) {
             items(
                 items = list,
                 key = { it.hashCode() },
                 contentType = { it::class }
             ) { item ->
-                remember { { contract.select(item) } }
-                remember(state.initial) { state.initial == item }
-                Box(Modifier.size(100.dp)) {
+                val clickProvider = remember { { contract.select(item) } }
+                val isSelected = remember(state.initial) { state.initial == item }
 
-                }
+                SelectableCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    isSelected = isSelected,
+                    onSelect = clickProvider,
+                    style = SelectableCardStyle.Small(
+                        title = item.text()
+                    )
+                )
             }
         }
 

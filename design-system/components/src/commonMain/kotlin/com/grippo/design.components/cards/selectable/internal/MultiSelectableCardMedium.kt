@@ -35,7 +35,7 @@ internal fun MultiSelectableCardMedium(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val shape = RoundedCornerShape(AppTokens.dp.selectableCard.medium.radius)
+    val shape = RoundedCornerShape(AppTokens.dp.multiSelectableCard.medium.radius)
 
     Row(
         modifier = modifier
@@ -48,17 +48,17 @@ internal fun MultiSelectableCardMedium(
             .background(AppTokens.colors.background.secondary, shape)
             .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
             .padding(
-                horizontal = AppTokens.dp.selectableCard.medium.horizontalPadding,
-                vertical = AppTokens.dp.selectableCard.medium.verticalPadding,
+                horizontal = AppTokens.dp.multiSelectableCard.medium.horizontalPadding,
+                vertical = AppTokens.dp.multiSelectableCard.medium.verticalPadding,
             )
-            .height(AppTokens.dp.selectableCard.medium.height),
+            .height(AppTokens.dp.multiSelectableCard.medium.height),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Image(
             imageVector = style.icon,
             contentDescription = null,
-            modifier = Modifier.size(AppTokens.dp.selectableCard.medium.icon),
+            modifier = Modifier.size(AppTokens.dp.multiSelectableCard.medium.icon),
             colorFilter = when (isSelected) {
                 true -> null
                 false -> ColorFilter.tint(color = AppTokens.colors.icon.disabled)

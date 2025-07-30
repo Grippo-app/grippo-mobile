@@ -34,6 +34,7 @@ public fun Modifier.shadowDefault(
     sides: ImmutableList<Side> = Side.entries.toPersistentList(),
     color: Color = AppTokens.colors.overlay.defaultShadow,
 ): Modifier {
+
     if (elevation == ShadowElevation.Non) return this
 
     val spotColor = color.copy(alpha = (color.alpha * 1.5F).coerceIn(0f, 1f))

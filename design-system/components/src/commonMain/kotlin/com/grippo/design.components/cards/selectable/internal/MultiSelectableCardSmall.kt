@@ -30,7 +30,7 @@ internal fun MultiSelectableCardSmall(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val shape = RoundedCornerShape(AppTokens.dp.selectableCard.small.radius)
+    val shape = RoundedCornerShape(AppTokens.dp.multiSelectableCard.small.radius)
 
     Row(
         modifier = modifier
@@ -42,8 +42,8 @@ internal fun MultiSelectableCardSmall(
             )
             .background(AppTokens.colors.background.secondary, shape)
             .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
-            .padding(horizontal = AppTokens.dp.selectableCard.small.horizontalPadding)
-            .height(AppTokens.dp.selectableCard.small.height),
+            .padding(horizontal = AppTokens.dp.multiSelectableCard.small.horizontalPadding)
+            .height(AppTokens.dp.multiSelectableCard.small.height),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
