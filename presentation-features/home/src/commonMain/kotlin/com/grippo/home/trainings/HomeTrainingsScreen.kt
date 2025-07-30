@@ -31,7 +31,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.trainings
-import com.grippo.domain.mapper.training.transformToTrainingListValue
+import com.grippo.domain.state.training.transformToTrainingListValue
 import com.grippo.home.trainings.factory.exerciseOf
 import com.grippo.home.trainings.factory.shapeFor
 import com.grippo.home.trainings.factory.sidesFor

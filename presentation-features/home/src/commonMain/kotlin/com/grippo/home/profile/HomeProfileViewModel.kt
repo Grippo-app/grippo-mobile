@@ -4,7 +4,7 @@ import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.authorization.AuthorizationFeature
 import com.grippo.data.features.api.user.UserFeature
 import com.grippo.data.features.api.user.models.User
-import com.grippo.domain.mapper.user.toState
+import com.grippo.domain.state.user.toState
 import kotlinx.coroutines.flow.onEach
 
 internal class HomeProfileViewModel(

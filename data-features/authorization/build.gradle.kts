@@ -9,7 +9,7 @@ kotlin {
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.dataServices.database)
         implementation(projects.dataServices.network)
-        implementation(projects.dataMappers.domainMapper)
+        implementation(projects.dataMappers.domainToState)
         implementation(projects.dataMappers.databaseToDomain)
         implementation(projects.dataMappers.networkToDatabase)
 

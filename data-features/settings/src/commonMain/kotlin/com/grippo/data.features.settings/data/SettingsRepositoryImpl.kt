@@ -5,7 +5,7 @@ import com.grippo.data.features.api.settings.models.Theme
 import com.grippo.data.features.settings.domain.SettingsRepository
 import com.grippo.database.dao.SettingsDao
 import com.grippo.database.entity.SettingsEntity
-import com.grippo.domain.mapper.settings.toEntity
+import com.grippo.domain.state.settings.toEntity
 import com.grippo.database.domain.settings.toDomain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull

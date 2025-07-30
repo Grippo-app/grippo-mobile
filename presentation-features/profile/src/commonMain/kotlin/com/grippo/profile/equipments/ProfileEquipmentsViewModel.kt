@@ -5,7 +5,7 @@ import com.grippo.data.features.api.equipment.EquipmentFeature
 import com.grippo.data.features.api.equipment.models.Equipment
 import com.grippo.data.features.api.equipment.models.EquipmentGroup
 import com.grippo.data.features.api.excluded.equipments.ExcludedEquipmentsFeature
-import com.grippo.domain.mapper.equipment.toState
+import com.grippo.domain.state.equipment.toState
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.combine

@@ -10,7 +10,7 @@ kotlin {
         implementation(projects.common.core)
         implementation(projects.common.state)
         implementation(projects.presentationFeatures.presentationApi)
-        implementation(projects.dataMappers.domainMapper)
+        implementation(projects.dataMappers.domainToState)
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.dialogFeatures.dialogApi)
         implementation(projects.designSystem.core)

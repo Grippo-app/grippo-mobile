@@ -5,8 +5,8 @@ import com.grippo.data.features.api.authorization.RegisterUseCase
 import com.grippo.data.features.api.authorization.models.SetRegistration
 import com.grippo.data.features.api.user.UserFeature
 import com.grippo.data.features.api.user.models.User
-import com.grippo.domain.mapper.user.toDomain
-import com.grippo.domain.mapper.user.toState
+import com.grippo.domain.state.user.toDomain
+import com.grippo.domain.state.user.toState
 import com.grippo.state.profile.ExperienceEnumState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.onEach

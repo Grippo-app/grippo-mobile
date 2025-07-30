@@ -3,7 +3,7 @@ package com.grippo.exercise.example.exerciseexample
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
-import com.grippo.domain.mapper.exercise.example.toState
+import com.grippo.domain.state.exercise.example.toState
 import kotlinx.coroutines.flow.onEach
 
 public class ExerciseExampleViewModel(
