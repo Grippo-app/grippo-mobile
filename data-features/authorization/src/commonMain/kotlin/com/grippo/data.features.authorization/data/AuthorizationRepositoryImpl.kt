@@ -5,7 +5,7 @@ import com.grippo.data.features.authorization.domain.AuthorizationRepository
 import com.grippo.database.dao.TokenDao
 import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.entity.UserActiveEntity
-import com.grippo.domain.state.user.toBody
+import com.grippo.domain.network.user.toBody
 import com.grippo.network.Api
 import com.grippo.network.dto.auth.AuthBody
 import com.grippo.network.database.user.toEntityOrNull
