@@ -1,4 +1,4 @@
-package com.grippo.domain.state.user
+package com.grippo.domain.network.user
 
 import com.grippo.data.features.api.authorization.models.SetRegistration
 import com.grippo.network.dto.auth.RegisterBody

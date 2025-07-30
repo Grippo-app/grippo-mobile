@@ -6,7 +6,6 @@ plugins {
 kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.dataFeatures.featureApi)
-        implementation(projects.presentationFeatures.presentationApi)
         implementation(projects.dataServices.network)
         implementation(projects.dataServices.database)
         implementation(projects.common.logger)
