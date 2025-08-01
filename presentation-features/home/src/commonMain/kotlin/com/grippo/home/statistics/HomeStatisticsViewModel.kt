@@ -4,7 +4,6 @@ import com.grippo.core.BaseViewModel
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.state.datetime.PeriodState
-import kotlinx.collections.immutable.persistentListOf
 
 internal class HomeStatisticsViewModel(
     private val dialogController: DialogController
@@ -13,12 +12,16 @@ internal class HomeStatisticsViewModel(
 ), HomeStatisticsContract {
 
     override fun selectPeriod() {
-        persistentListOf(
-            PeriodState.DAILY
+        val available = listOf(
+            PeriodState.DAILY,
+            PeriodState.WEEKLY,
+            PeriodState.MONTHLY,
+            PeriodState.CUSTOM(range = state.value.period.range),
         )
+
         val dialog = DialogConfig.PeriodPicker(
             initial = state.value.period,
-            available = persistentListOf(),
+            available = available,
             onResult = { value -> update { it.copy(period = value) } }
         )
 

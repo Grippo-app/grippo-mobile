@@ -223,7 +223,7 @@ public data object AppDp {
 
     public data object SelectableCard {
         val large: Large = Large
-        val small: Small = Small
+        val medium: Medium = Medium
 
         public data object Large {
             val horizontalPadding: Dp = padding.large
@@ -232,11 +232,10 @@ public data object AppDp {
             val icon: Dp = AppDp.icon.large
         }
 
-        public data object Small {
-            val height: Dp = size.medium
-            val horizontalPadding: Dp = padding.medium
-            val radius: Dp = AppDp.radius.medium
-            val icon: Dp = AppDp.icon.large
+        public data object Medium {
+            val horizontalPadding: Dp = padding.large
+            val verticalPadding: Dp = padding.large
+            val radius: Dp = AppDp.radius.large
         }
     }
 

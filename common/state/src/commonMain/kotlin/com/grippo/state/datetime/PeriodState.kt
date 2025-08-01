@@ -39,9 +39,7 @@ public sealed interface PeriodState {
 
     @Serializable
     @Immutable
-    public data class CUSTOM(
-        override val range: DateRange,
-    ) : PeriodState
+    public data class CUSTOM(override val range: DateRange) : PeriodState
 
     @Composable
     public fun text(): String = when (this) {
@@ -52,7 +50,7 @@ public sealed interface PeriodState {
     }
 
     @Composable
-    public fun rangeText(): String {
+    public fun range(): String {
         val from = DateCompose.rememberFormat(range.from, DateFormat.MM_d)
         val to = DateCompose.rememberFormat(range.to, DateFormat.MM_d)
         return "$from - $to"

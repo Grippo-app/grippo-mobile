@@ -65,7 +65,7 @@ internal fun SelectableCardLarge(
 
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
         ) {
             Text(
                 text = style.title,

@@ -16,10 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.BaseComposeDialog
 import com.grippo.core.ScreenBackground
+import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.cards.selectable.SelectableCard
 import com.grippo.design.components.cards.selectable.SelectableCardStyle
+import com.grippo.design.components.datetime.DateRangeSelector
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -28,6 +30,7 @@ import com.grippo.design.resources.period_picker_title
 import com.grippo.design.resources.submit_btn
 import com.grippo.state.datetime.PeriodState
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
@@ -69,15 +72,28 @@ internal fun PeriodPickerScreen(
                 key = { it.hashCode() },
                 contentType = { it::class }
             ) { item ->
-                val clickProvider = remember { { contract.select(item) } }
+                val clickProvider = remember { { contract.onSelectClick(item) } }
                 val isSelected = remember(state.initial) { state.initial == item }
 
                 SelectableCard(
                     modifier = Modifier.fillMaxWidth(),
                     isSelected = isSelected,
                     onSelect = clickProvider,
-                    style = SelectableCardStyle.Small(
-                        title = item.text()
+                    style = SelectableCardStyle.Medium(
+                        title = item.text(),
+                        description = item.range(),
+                        subContent = if (item is PeriodState.CUSTOM && isSelected) {
+                            {
+                                DateRangeSelector(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    value = item.range,
+                                    onFromClick = contract::onFromClick,
+                                    onToClick = contract::onToClick
+                                )
+                            }
+                        } else {
+                            null
+                        }
                     )
                 )
             }
@@ -102,7 +118,13 @@ private fun ScreenPreview() {
     PreviewContainer {
         PeriodPickerScreen(
             state = PeriodPickerState(
-                initial = PeriodState.DAILY
+                initial = PeriodState.WEEKLY,
+                list = persistentListOf(
+                    PeriodState.DAILY,
+                    PeriodState.WEEKLY,
+                    PeriodState.MONTHLY,
+                    PeriodState.CUSTOM(DateTimeUtils.thisDay()),
+                )
             ),
             loaders = persistentSetOf(),
             contract = PeriodPickerContract.Empty

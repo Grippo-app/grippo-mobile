@@ -78,7 +78,7 @@ internal fun DateWheelPicker(
             enabled = true,
             shape = RoundedCornerShape(AppTokens.dp.wheelPicker.radius),
             color = AppTokens.colors.background.primary,
-            border = BorderStroke(1.dp, AppTokens.colors.border.focus)
+            border = BorderStroke(1.dp, AppTokens.colors.border.defaultPrimary)
         ),
         columns = listOf(
             WheelColumn(

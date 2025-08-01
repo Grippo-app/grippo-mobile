@@ -121,4 +121,6 @@
     <string name="weekly">Weekly</string>
     <string name="monthly">Monthly</string>
     <string name="custom">Custom</string>
+    <string name="from_value">From %1$s</string>
+    <string name="to_value">To %1$s</string>
 </resources>

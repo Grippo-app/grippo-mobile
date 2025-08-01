@@ -17,7 +17,11 @@ public class PeriodPickerComponent(
 ) : BaseComponent<PeriodPickerDirection>(componentContext) {
 
     override val viewModel: PeriodPickerViewModel = componentContext.retainedInstance {
-        PeriodPickerViewModel(initial, available)
+        PeriodPickerViewModel(
+            initial = initial,
+            available = available,
+            dialogController = getKoin().get()
+        )
     }
 
     private val backCallback = BackCallback(onBack = viewModel::dismiss)
