@@ -5,7 +5,7 @@ import com.grippo.core.BaseViewModel
 public class AuthViewModel : BaseViewModel<AuthState, AuthDirection, AuthLoader>(AuthState),
     AuthContract {
 
-    override fun back() {
+    override fun onBack() {
         navigateTo(AuthDirection.Back)
     }
 }

@@ -27,7 +27,7 @@ internal class ExcludedMusclesViewModel(
         update { it.copy(suggestions = suggestions, selectedMuscleIds = selectedIds) }
     }
 
-    override fun select(id: String) {
+    override fun onSelectMuscle(id: String) {
         update {
             val newList: PersistentList<String> = it.selectedMuscleIds
                 .toMutableList()
@@ -38,7 +38,7 @@ internal class ExcludedMusclesViewModel(
         }
     }
 
-    override fun next() {
+    override fun onNextClick() {
         val formattedList = state.value.suggestions
             .flatMap { it.muscles }
             .map { it.value.id } - state.value.selectedMuscleIds
@@ -49,7 +49,7 @@ internal class ExcludedMusclesViewModel(
         navigateTo(direction)
     }
 
-    override fun back() {
+    override fun onBack() {
         navigateTo(ExcludedMusclesDirection.Back)
     }
 }

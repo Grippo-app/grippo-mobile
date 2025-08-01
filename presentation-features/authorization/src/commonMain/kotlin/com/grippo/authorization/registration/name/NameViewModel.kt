@@ -6,18 +6,18 @@ import com.grippo.state.auth.NameFormatState
 internal class NameViewModel : BaseViewModel<NameState, NameDirection, NameLoader>(NameState()),
     NameContract {
 
-    override fun setName(value: String) {
+    override fun onNameChange(value: String) {
         update { it.copy(name = NameFormatState.of(value)) }
     }
 
-    override fun next() {
+    override fun onNextClick() {
         val direction = NameDirection.Body(
             name = state.value.name.value
         )
         navigateTo(direction)
     }
 
-    override fun back() {
+    override fun onBack() {
         navigateTo(NameDirection.Back)
     }
 }

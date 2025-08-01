@@ -7,18 +7,18 @@ internal class ExperienceViewModel :
     BaseViewModel<ExperienceState, ExperienceDirection, ExperienceLoader>(ExperienceState()),
     ExperienceContract {
 
-    override fun select(value: ExperienceEnumState) {
+    override fun onExperienceClick(value: ExperienceEnumState) {
         update { it.copy(selected = value) }
     }
 
-    override fun next() {
+    override fun onNextClick() {
         val direction = ExperienceDirection.ExcludedMuscles(
             experience = state.value.selected ?: return
         )
         navigateTo(direction)
     }
 
-    override fun back() {
+    override fun onBack() {
         navigateTo(ExperienceDirection.Back)
     }
 }

@@ -1,9 +1,9 @@
 package com.grippo.authorization.auth.process
 
 internal interface AuthProcessContract {
-    fun back()
+    fun onBack()
 
     companion object Empty : AuthProcessContract {
-        override fun back() {}
+        override fun onBack() {}
     }
 }

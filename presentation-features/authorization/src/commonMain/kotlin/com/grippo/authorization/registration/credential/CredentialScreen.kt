@@ -43,7 +43,7 @@ internal fun CredentialScreen(
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
-        onBack = contract::back,
+        onBack = contract::onBack,
         style = ToolbarStyle.Transparent
     )
 
@@ -81,14 +81,14 @@ internal fun CredentialScreen(
 
         InputEmail(
             value = state.email.value,
-            onValueChange = contract::setEmail
+            onValueChange = contract::onEmailChange
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         InputPassword(
             value = state.password.value,
-            onValueChange = contract::setPassword
+            onValueChange = contract::onPasswordChange
         )
 
         Spacer(modifier = Modifier.weight(1f))
@@ -105,7 +105,7 @@ internal fun CredentialScreen(
             text = AppTokens.strings.res(Res.string.next_btn),
             state = buttonState,
             style = ButtonStyle.Primary,
-            onClick = contract::next
+            onClick = contract::onNextClick
         )
     }
 }

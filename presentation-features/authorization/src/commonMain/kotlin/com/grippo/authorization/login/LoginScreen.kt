@@ -86,14 +86,14 @@ internal fun LoginScreen(
 
         InputEmail(
             value = state.email.value,
-            onValueChange = contract::setEmail
+            onValueChange = contract::onEmailChange
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         InputPassword(
             value = state.password.value,
-            onValueChange = contract::setPassword
+            onValueChange = contract::onPasswordChange
         )
 
         Spacer(modifier = Modifier.weight(1f))
@@ -111,7 +111,7 @@ internal fun LoginScreen(
             text = AppTokens.strings.res(Res.string.login_button_login),
             state = buttonState,
             style = ButtonStyle.Primary,
-            onClick = contract::login
+            onClick = contract::onLoginClick
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
@@ -157,7 +157,7 @@ internal fun LoginScreen(
             Button(
                 text = AppTokens.strings.res(Res.string.login_button_registration),
                 style = ButtonStyle.Transparent,
-                onClick = contract::register
+                onClick = contract::onRegisterClick
             )
         }
     }

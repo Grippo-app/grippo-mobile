@@ -1,15 +1,15 @@
 package com.grippo.authorization.registration.credential
 
 internal interface CredentialContract {
-    fun setEmail(value: String)
-    fun setPassword(value: String)
-    fun next()
-    fun back()
+    fun onEmailChange(value: String)
+    fun onPasswordChange(value: String)
+    fun onNextClick()
+    fun onBack()
 
     companion object Empty : CredentialContract {
-        override fun setEmail(value: String) {}
-        override fun setPassword(value: String) {}
-        override fun next() {}
-        override fun back() {}
+        override fun onEmailChange(value: String) {}
+        override fun onPasswordChange(value: String) {}
+        override fun onNextClick() {}
+        override fun onBack() {}
     }
 }

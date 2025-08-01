@@ -34,7 +34,7 @@ public class AuthComponent(
         AuthViewModel()
     }
 
-    private val backCallback = BackCallback(onBack = viewModel::back)
+    private val backCallback = BackCallback(onBack = viewModel::onBack)
 
     init {
         backHandler.register(backCallback)

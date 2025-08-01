@@ -7,15 +7,15 @@ import com.grippo.state.profile.PasswordFormatState
 internal class CredentialViewModel :
     BaseViewModel<CredentialState, CredentialDirection, CredentialLoader>(CredentialState()),
     CredentialContract {
-    override fun setEmail(value: String) {
+    override fun onEmailChange(value: String) {
         update { it.copy(email = EmailFormatState.of(value)) }
     }
 
-    override fun setPassword(value: String) {
+    override fun onPasswordChange(value: String) {
         update { it.copy(password = PasswordFormatState.of(value)) }
     }
 
-    override fun next() {
+    override fun onNextClick() {
         val direction = CredentialDirection.Name(
             email = state.value.email.value,
             password = state.value.password.value
@@ -23,7 +23,7 @@ internal class CredentialViewModel :
         navigateTo(direction)
     }
 
-    override fun back() {
+    override fun onBack() {
         navigateTo(CredentialDirection.Back)
     }
 }

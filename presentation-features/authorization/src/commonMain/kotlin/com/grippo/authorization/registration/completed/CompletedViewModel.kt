@@ -53,11 +53,11 @@ internal class CompletedViewModel(
         update { it.copy(user = user) }
     }
 
-    override fun complete() {
+    override fun onCompleteClick() {
         navigateTo(CompletedDirection.Home)
     }
 
-    override fun back() {
+    override fun onBack() {
         navigateTo(CompletedDirection.Back)
     }
 }

@@ -1,15 +1,15 @@
 package com.grippo.authorization.registration.body
 
 internal interface BodyContract {
-    fun openWeightPicker()
-    fun openHeightPicker()
-    fun next()
-    fun back()
+    fun onWeightPickerClick()
+    fun onHeightPickerClick()
+    fun onNextClick()
+    fun onBack()
 
     companion object Empty : BodyContract {
-        override fun openWeightPicker() {}
-        override fun openHeightPicker() {}
-        override fun next() {}
-        override fun back() {}
+        override fun onWeightPickerClick() {}
+        override fun onHeightPickerClick() {}
+        override fun onNextClick() {}
+        override fun onBack() {}
     }
 }

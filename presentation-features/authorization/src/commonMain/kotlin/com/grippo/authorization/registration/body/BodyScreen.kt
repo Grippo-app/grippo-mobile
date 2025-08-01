@@ -41,7 +41,7 @@ internal fun BodyScreen(
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
-        onBack = contract::back,
+        onBack = contract::onBack,
         style = ToolbarStyle.Transparent
     )
 
@@ -79,14 +79,14 @@ internal fun BodyScreen(
 
         InputWeight(
             value = state.weight.value,
-            onClick = contract::openWeightPicker
+            onClick = contract::onWeightPickerClick
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         InputHeight(
             value = state.height.value,
-            onClick = contract::openHeightPicker
+            onClick = contract::onHeightPickerClick
         )
 
         Spacer(modifier = Modifier.weight(1f))
@@ -95,7 +95,7 @@ internal fun BodyScreen(
             modifier = Modifier.fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.continue_btn),
             style = ButtonStyle.Primary,
-            onClick = contract::next
+            onClick = contract::onNextClick
         )
     }
 }

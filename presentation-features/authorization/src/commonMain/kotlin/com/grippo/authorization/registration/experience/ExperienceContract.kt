@@ -3,13 +3,13 @@ package com.grippo.authorization.registration.experience
 import com.grippo.state.profile.ExperienceEnumState
 
 internal interface ExperienceContract {
-    fun select(value: ExperienceEnumState)
-    fun next()
-    fun back()
+    fun onExperienceClick(value: ExperienceEnumState)
+    fun onNextClick()
+    fun onBack()
 
     companion object Empty : ExperienceContract {
-        override fun select(value: ExperienceEnumState) {}
-        override fun next() {}
-        override fun back() {}
+        override fun onExperienceClick(value: ExperienceEnumState) {}
+        override fun onNextClick() {}
+        override fun onBack() {}
     }
 }

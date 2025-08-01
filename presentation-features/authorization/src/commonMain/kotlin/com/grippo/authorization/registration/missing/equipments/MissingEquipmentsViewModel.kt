@@ -33,11 +33,11 @@ internal class MissingEquipmentsViewModel(
         }
     }
 
-    override fun selectGroup(id: String) {
+    override fun onGroupClick(id: String) {
         update { it.copy(selectedGroupId = id) }
     }
 
-    override fun selectEquipment(id: String) {
+    override fun onEquipmentClick(id: String) {
         update {
             val newList: PersistentList<String> = it.selectedEquipmentIds
                 .toMutableList()
@@ -48,7 +48,7 @@ internal class MissingEquipmentsViewModel(
         }
     }
 
-    override fun next() {
+    override fun onNextClick() {
         val formattedList = state.value.suggestions
             .flatMap { it.equipments }
             .map { it.id } - state.value.selectedEquipmentIds
@@ -59,7 +59,7 @@ internal class MissingEquipmentsViewModel(
         navigateTo(direction)
     }
 
-    override fun back() {
+    override fun onBack() {
         navigateTo(MissingEquipmentsDirection.Back)
     }
 }

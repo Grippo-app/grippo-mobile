@@ -10,15 +10,15 @@ internal class LoginViewModel(
 ) : BaseViewModel<LoginState, LoginDirection, LoginLoader>(LoginState()),
     LoginContract {
 
-    override fun setEmail(value: String) {
+    override fun onEmailChange(value: String) {
         update { it.copy(email = EmailFormatState.of(value)) }
     }
 
-    override fun setPassword(value: String) {
+    override fun onPasswordChange(value: String) {
         update { it.copy(password = PasswordFormatState.of(value)) }
     }
 
-    override fun login() {
+    override fun onLoginClick() {
         safeLaunch(loader = LoginLoader.LoginButton) {
             loginUseCase.execute(
                 email = state.value.email.value,
@@ -29,11 +29,11 @@ internal class LoginViewModel(
         }
     }
 
-    override fun register() {
+    override fun onRegisterClick() {
         navigateTo(LoginDirection.Registration)
     }
 
-    override fun back() {
+    override fun onBack() {
         navigateTo(LoginDirection.Back)
     }
 }

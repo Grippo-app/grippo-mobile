@@ -9,7 +9,7 @@ internal interface RegistrationContract {
     fun saveExperience(experience: ExperienceEnumState)
     fun saveExcludedMuscleIds(ids: List<String>)
     fun saveMissingEquipmentIds(ids: List<String>)
-    fun back()
+    fun onBack()
 
     companion object Empty : RegistrationContract {
         override fun saveCredentials(email: String, password: String) {}
@@ -18,6 +18,6 @@ internal interface RegistrationContract {
         override fun saveExperience(experience: ExperienceEnumState) {}
         override fun saveExcludedMuscleIds(ids: List<String>) {}
         override fun saveMissingEquipmentIds(ids: List<String>) {}
-        override fun back() {}
+        override fun onBack() {}
     }
 }

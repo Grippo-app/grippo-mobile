@@ -1,17 +1,17 @@
 package com.grippo.authorization.login
 
 internal interface LoginContract {
-    fun setEmail(value: String)
-    fun setPassword(value: String)
-    fun login()
-    fun register()
-    fun back()
+    fun onEmailChange(value: String)
+    fun onPasswordChange(value: String)
+    fun onLoginClick()
+    fun onRegisterClick()
+    fun onBack()
 
     companion object Empty : LoginContract {
-        override fun setEmail(value: String) {}
-        override fun setPassword(value: String) {}
-        override fun login() {}
-        override fun register() {}
-        override fun back() {}
+        override fun onEmailChange(value: String) {}
+        override fun onPasswordChange(value: String) {}
+        override fun onLoginClick() {}
+        override fun onRegisterClick() {}
+        override fun onBack() {}
     }
 }

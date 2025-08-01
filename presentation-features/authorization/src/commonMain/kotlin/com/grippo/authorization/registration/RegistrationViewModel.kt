@@ -34,7 +34,7 @@ internal class RegistrationViewModel :
         update { it.copy(missingEquipmentIds = list) }
     }
 
-    override fun back() {
+    override fun onBack() {
         navigateTo(RegistrationDirection.Back)
     }
 }

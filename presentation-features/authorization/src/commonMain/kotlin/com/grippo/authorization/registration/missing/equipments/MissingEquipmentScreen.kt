@@ -51,7 +51,7 @@ internal fun MissingEquipmentsScreen(
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
-        onBack = contract::back,
+        onBack = contract::onBack,
         style = ToolbarStyle.Transparent
     )
 
@@ -101,7 +101,7 @@ internal fun MissingEquipmentsScreen(
                     .fillMaxWidth(),
                 items = segmentItems,
                 selected = state.selectedGroupId,
-                onSelect = contract::selectGroup,
+                onSelect = contract::onGroupClick,
                 segmentWidth = SegmentWidth.Unspecified,
             )
 
@@ -126,7 +126,7 @@ internal fun MissingEquipmentsScreen(
                     EquipmentRow(
                         equipment = equipment,
                         selectedEquipmentIds = state.selectedEquipmentIds,
-                        selectEquipment = contract::selectEquipment,
+                        selectEquipment = contract::onEquipmentClick,
                     )
                 }
             }
@@ -140,7 +140,7 @@ internal fun MissingEquipmentsScreen(
                 .fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.continue_btn),
             style = ButtonStyle.Primary,
-            onClick = contract::next
+            onClick = contract::onNextClick
         )
     }
 }

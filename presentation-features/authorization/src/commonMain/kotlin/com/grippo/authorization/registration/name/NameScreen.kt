@@ -41,7 +41,7 @@ internal fun NameScreen(
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
-        onBack = contract::back,
+        onBack = contract::onBack,
         style = ToolbarStyle.Transparent
     )
 
@@ -79,7 +79,7 @@ internal fun NameScreen(
 
         InputName(
             value = state.name.value,
-            onValueChange = contract::setName
+            onValueChange = contract::onNameChange
         )
 
         Spacer(modifier = Modifier.weight(1f))
@@ -96,7 +96,7 @@ internal fun NameScreen(
             text = AppTokens.strings.res(Res.string.continue_btn),
             state = buttonState,
             style = ButtonStyle.Primary,
-            onClick = contract::next
+            onClick = contract::onNextClick
         )
     }
 }

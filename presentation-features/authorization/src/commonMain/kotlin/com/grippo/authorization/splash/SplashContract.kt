@@ -1,9 +1,9 @@
 package com.grippo.authorization.splash
 
 internal interface SplashContract {
-    fun back()
+    fun onBack()
 
     companion object Empty : SplashContract {
-        override fun back() {}
+        override fun onBack() {}
     }
 }

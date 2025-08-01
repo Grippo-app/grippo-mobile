@@ -45,7 +45,7 @@ internal fun ExperienceScreen(
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
-        onBack = contract::back,
+        onBack = contract::onBack,
         style = ToolbarStyle.Transparent
     )
 
@@ -93,7 +93,7 @@ internal fun ExperienceScreen(
                 key = { it.ordinal },
                 contentType = { it::class }
             ) { item ->
-                val selectProvider = remember { { contract.select(item) } }
+                val selectProvider = remember { { contract.onExperienceClick(item) } }
                 val isSelected = remember(state.selected) { state.selected == item }
 
                 SelectableCard(
@@ -123,7 +123,7 @@ internal fun ExperienceScreen(
             text = AppTokens.strings.res(Res.string.continue_btn),
             state = buttonState,
             style = ButtonStyle.Primary,
-            onClick = contract::next
+            onClick = contract::onNextClick
         )
     }
 }

@@ -17,7 +17,7 @@ internal class BodyComponent(
         BodyViewModel(dialogController = getKoin().get())
     }
 
-    private val backCallback = BackCallback(onBack = viewModel::back)
+    private val backCallback = BackCallback(onBack = viewModel::onBack)
 
     init {
         backHandler.register(backCallback)

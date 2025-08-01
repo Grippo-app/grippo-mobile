@@ -47,7 +47,7 @@ internal fun ExcludedMusclesScreen(
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
-        onBack = contract::back,
+        onBack = contract::onBack,
         style = ToolbarStyle.Transparent
     )
 
@@ -106,7 +106,7 @@ internal fun ExcludedMusclesScreen(
                             modifier = Modifier.weight(1f),
                             item = group,
                             selectedIds = state.selectedMuscleIds,
-                            onSelect = contract::select
+                            onSelect = contract::onSelectMuscle
                         )
                         MusclesImage(
                             modifier = Modifier.weight(1f),
@@ -123,7 +123,7 @@ internal fun ExcludedMusclesScreen(
                             modifier = Modifier.weight(1f),
                             item = group,
                             selectedIds = state.selectedMuscleIds,
-                            onSelect = contract::select
+                            onSelect = contract::onSelectMuscle
                         )
                     }
                 }
@@ -136,7 +136,7 @@ internal fun ExcludedMusclesScreen(
             modifier = Modifier.fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.continue_btn),
             style = ButtonStyle.Primary,
-            onClick = contract::next
+            onClick = contract::onNextClick
         )
     }
 }
