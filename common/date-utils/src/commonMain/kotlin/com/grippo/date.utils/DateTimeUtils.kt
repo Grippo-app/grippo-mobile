@@ -7,6 +7,7 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atTime
 import kotlinx.datetime.format
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
@@ -21,24 +22,41 @@ public object DateTimeUtils {
 
     private val timeZone: TimeZone = TimeZone.currentSystemDefault()
 
-    public fun thisDay(): LocalDateTime {
+    public fun now(): LocalDateTime {
         return Clock.System.now().toLocalDateTime(timeZone)
     }
 
-    public fun thisWeek(): Pair<LocalDate, LocalDate> {
+    public fun thisDay(): DateRange {
+        val date = Clock.System.now().toLocalDateTime(timeZone).date
+
+        return DateRange(
+            from = date.atTime(DayTime.StartOfDay.localTime),
+            to = date.atTime(DayTime.EndOfDay.localTime)
+        )
+    }
+
+    public fun thisWeek(): DateRange {
         val today = Clock.System.now().toLocalDateTime(timeZone).date
         val daysToStartOfWeek = today.dayOfWeek.ordinal
         val startOfWeek = today.minus(DatePeriod(days = daysToStartOfWeek))
         val daysToEndOfWeek = DayOfWeek.SUNDAY.ordinal - today.dayOfWeek.ordinal
         val endOfWeek = today.plus(DatePeriod(days = daysToEndOfWeek))
-        return Pair(startOfWeek, endOfWeek)
+
+        return DateRange(
+            from = startOfWeek.atTime(DayTime.StartOfDay.localTime),
+            to = endOfWeek.atTime(DayTime.EndOfDay.localTime)
+        )
     }
 
-    public fun thisMonth(): Pair<LocalDate, LocalDate> {
+    public fun thisMonth(): DateRange {
         val today = Clock.System.now().toLocalDateTime(timeZone).date
         val startOfMonth = LocalDate(today.year, today.month, 1)
         val lastDayOfMonth = startOfMonth.plus(DatePeriod(months = 1)).minus(DatePeriod(days = 1))
-        return Pair(startOfMonth, lastDayOfMonth)
+
+        return DateRange(
+            from = startOfMonth.atTime(DayTime.StartOfDay.localTime),
+            to = lastDayOfMonth.atTime(DayTime.EndOfDay.localTime)
+        )
     }
 
     /* * * * * * * * * * *

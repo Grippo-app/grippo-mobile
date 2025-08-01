@@ -19,7 +19,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.icons.NavArrowDown
 import com.grippo.state.datetime.PeriodState
-import kotlinx.datetime.LocalDateTime
 
 @Composable
 public fun PeriodPicker(
@@ -59,8 +58,8 @@ public fun PeriodPicker(
 @Composable
 private fun DatePickerPreview() {
     PreviewContainer {
-        DatePicker(
-            value = LocalDateTime(2025, 7, 9, 14, 30),
+        PeriodPicker(
+            value = PeriodState.DAILY,
             onClick = {}
         )
     }

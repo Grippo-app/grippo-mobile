@@ -44,6 +44,7 @@ public sealed class DialogConfig(public open val onDismiss: (() -> Unit)?) {
     @Serializable
     public data class PeriodPicker(
         val initial: PeriodState,
+        val available: List<PeriodState>,
         val onResult: (value: PeriodState) -> Unit,
     ) : DialogConfig(null)
 }

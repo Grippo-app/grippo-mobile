@@ -11,12 +11,13 @@ import com.grippo.state.datetime.PeriodState
 public class PeriodPickerComponent(
     componentContext: ComponentContext,
     private val initial: PeriodState,
+    private val available: List<PeriodState>,
     private val onResult: (value: PeriodState) -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<PeriodPickerDirection>(componentContext) {
 
     override val viewModel: PeriodPickerViewModel = componentContext.retainedInstance {
-        PeriodPickerViewModel(initial)
+        PeriodPickerViewModel(initial, available)
     }
 
     private val backCallback = BackCallback(onBack = viewModel::dismiss)

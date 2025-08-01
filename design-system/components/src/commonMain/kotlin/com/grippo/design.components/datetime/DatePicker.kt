@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.grippo.date.utils.DateCompose
 import com.grippo.date.utils.DateFormat
+import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -62,7 +63,7 @@ public fun DatePicker(
 private fun DatePickerPreview() {
     PreviewContainer {
         DatePicker(
-            value = LocalDateTime(2025, 7, 9, 14, 30),
+            value = DateTimeUtils.now(),
             onClick = {}
         )
     }

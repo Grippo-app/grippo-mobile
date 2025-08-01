@@ -7,10 +7,6 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 public data class PeriodPickerState(
-    val list: ImmutableList<PeriodState> = persistentListOf(
-        PeriodState.DAILY,
-        PeriodState.WEEKLY,
-        PeriodState.MONTHLY,
-    ),
+    val list: ImmutableList<PeriodState> = persistentListOf(),
     val initial: PeriodState
 )

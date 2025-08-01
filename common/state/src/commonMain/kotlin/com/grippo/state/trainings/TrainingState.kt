@@ -22,7 +22,7 @@ public data class TrainingState(
 public fun stubTraining(): TrainingState = TrainingState(
     id = Uuid.random().toString(),
     duration = 10000L,
-    createdAt = DateTimeUtils.thisDay(),
+    createdAt = DateTimeUtils.thisDay().from,
     volume = Random.nextInt(1000, 10000).toFloat(),
     intensity = Random.nextInt(20, 100).toFloat(),
     repetitions = Random.nextInt(20, 100),

@@ -140,6 +140,7 @@ internal class DialogComponent(
                 PeriodPickerComponent(
                     componentContext = context,
                     initial = router.initial,
+                    available = router.available,
                     onResult = { viewModel.dismiss { router.onResult.invoke(it) } },
                     back = { viewModel.dismiss(null) }
                 )
