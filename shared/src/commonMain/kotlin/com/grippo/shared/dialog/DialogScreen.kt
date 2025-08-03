@@ -80,10 +80,10 @@ internal fun DialogScreen(
                     Column {
                         Column(
                             modifier = Modifier.weight(1f, false),
-                            content = { it.first.Render() }
+                            content = { component.Render() }
                         )
 
-                        it.second?.let { back ->
+                        backProvider?.let { back ->
 
                             HorizontalDivider(
                                 modifier = Modifier.fillMaxWidth(),

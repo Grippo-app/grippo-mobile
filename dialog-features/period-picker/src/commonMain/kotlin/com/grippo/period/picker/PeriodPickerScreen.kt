@@ -69,14 +69,7 @@ internal fun PeriodPickerScreen(
                 contentType = { it::class }
             ) { item ->
                 val clickProvider = remember(item) { { contract.onSelectClick(item) } }
-                val isSelected = remember(state.initial) {
-                    when (item) {
-                        is PeriodState.DAILY -> state.initial is PeriodState.DAILY
-                        is PeriodState.WEEKLY -> state.initial is PeriodState.WEEKLY
-                        is PeriodState.MONTHLY -> state.initial is PeriodState.MONTHLY
-                        is PeriodState.CUSTOM -> state.initial is PeriodState.CUSTOM
-                    }
-                }
+                val isSelected = remember(state.initial) { state.initial == item }
 
                 SelectableCard(
                     modifier = Modifier.fillMaxWidth(),
@@ -108,7 +101,7 @@ internal fun PeriodPickerScreen(
             modifier = Modifier.fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.submit_btn),
             style = ButtonStyle.Primary,
-            onClick = contract::submit
+            onClick = contract::onSubmitClick
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))

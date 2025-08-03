@@ -65,7 +65,7 @@ internal fun WeightPickerScreen(
             modifier = Modifier.fillMaxWidth(),
             suggestions = state.suggestions,
             value = state.initial,
-            select = contract::select
+            select = contract::onSelectWeight
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
@@ -74,7 +74,7 @@ internal fun WeightPickerScreen(
             modifier = Modifier.fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.submit_btn),
             style = ButtonStyle.Primary,
-            onClick = contract::submit
+            onClick = contract::onSubmitClick
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))

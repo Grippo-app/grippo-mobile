@@ -57,7 +57,7 @@ internal fun DatePickerScreen(
                 .height(AppTokens.dp.wheelPicker.height)
                 .fillMaxWidth(),
             initial = state.initial,
-            select = contract::select,
+            select = contract::onSelectDate,
             limitations = state.limitations
         )
 
@@ -67,7 +67,7 @@ internal fun DatePickerScreen(
             modifier = Modifier.fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.submit_btn),
             style = ButtonStyle.Primary,
-            onClick = contract::submit
+            onClick = contract::onSubmitClick
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))

@@ -9,15 +9,15 @@ public class DatePickerViewModel(
     DatePickerState(initial = initial)
 ), DatePickerContract {
 
-    override fun select(value: LocalDateTime) {
+    override fun onSelectDate(value: LocalDateTime) {
         update { it.copy(initial = value) }
     }
 
-    override fun submit() {
+    override fun onSubmitClick() {
         navigateTo(DatePickerDirection.BackWithResult(state.value.initial))
     }
 
-    override fun dismiss() {
+    override fun onDismiss() {
         navigateTo(DatePickerDirection.Back)
     }
 }

@@ -8,15 +8,15 @@ public class WeightPickerViewModel(
     WeightPickerState(initial = initial)
 ), WeightPickerContract {
 
-    override fun select(value: Float) {
+    override fun onSelectWeight(value: Float) {
         update { it.copy(initial = value) }
     }
 
-    override fun submit() {
+    override fun onSubmitClick() {
         navigateTo(WeightPickerDirection.BackWithResult(state.value.initial))
     }
 
-    override fun dismiss() {
+    override fun onDismiss() {
         navigateTo(WeightPickerDirection.Back)
     }
 }

@@ -17,7 +17,7 @@ public class WeightPickerComponent(
     override val viewModel: WeightPickerViewModel = componentContext.retainedInstance {
         WeightPickerViewModel(initial)
     }
-    private val backCallback = BackCallback(onBack = viewModel::dismiss)
+    private val backCallback = BackCallback(onBack = viewModel::onDismiss)
 
     init {
         backHandler.register(backCallback)

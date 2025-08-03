@@ -1,13 +1,13 @@
 package com.grippo.height.picker
 
 internal interface HeightPickerContract {
-    fun select(value: Int)
-    fun submit()
-    fun dismiss()
+    fun onSelectHeight(value: Int)
+    fun onSubmitClick()
+    fun onDismiss()
 
     companion object Empty : HeightPickerContract {
-        override fun select(value: Int) {}
-        override fun submit() {}
-        override fun dismiss() {}
+        override fun onSelectHeight(value: Int) {}
+        override fun onSubmitClick() {}
+        override fun onDismiss() {}
     }
 }

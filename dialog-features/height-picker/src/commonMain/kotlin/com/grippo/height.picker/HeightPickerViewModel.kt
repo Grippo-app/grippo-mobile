@@ -8,15 +8,15 @@ public class HeightPickerViewModel(
     HeightPickerState(initial = initial)
 ), HeightPickerContract {
 
-    override fun select(value: Int) {
+    override fun onSelectHeight(value: Int) {
         update { it.copy(initial = value) }
     }
 
-    override fun submit() {
+    override fun onSubmitClick() {
         navigateTo(HeightPickerDirection.BackWithResult(state.value.initial))
     }
 
-    override fun dismiss() {
+    override fun onDismiss() {
         navigateTo(HeightPickerDirection.Back)
     }
 }

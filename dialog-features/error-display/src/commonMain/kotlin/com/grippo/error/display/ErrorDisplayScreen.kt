@@ -82,7 +82,7 @@ internal fun ErrorDisplayScreen(
             modifier = Modifier.fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.got_it_btn),
             style = ButtonStyle.Primary,
-            onClick = contract::dismiss
+            onClick = contract::onDismiss
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
