@@ -6,12 +6,16 @@ import androidx.compose.runtime.Immutable
 internal data class DialogState(
     val process: Process = Process.RELEASE,
     val pendingResult: (() -> Unit)? = null,
-    val stack: DialogStack = DialogStack()
 )
 
 @Immutable
-internal enum class Process {
-    SHOW,
-    DISMISS,
-    RELEASE,
+internal sealed class Process(open val count: Int) {
+    @Immutable
+    data class SHOW(override val count: Int) : Process(count)
+
+    @Immutable
+    data object DISMISS : Process(0)
+
+    @Immutable
+    data object RELEASE : Process(0)
 }

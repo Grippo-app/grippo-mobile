@@ -5,10 +5,9 @@ import com.grippo.core.BaseViewModel
 internal class DialogContentViewModel :
     BaseViewModel<DialogContentState, DialogContentDirection, DialogContentLoader>(
         DialogContentState
-    ),
-    DialogContentContract {
+    ), DialogContentContract {
 
     override fun onBack() {
-        navigateTo(DialogContentDirection.Back)
+        navigateTo(DialogContentDirection.Back())
     }
 }

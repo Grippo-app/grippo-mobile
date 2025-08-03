@@ -32,7 +32,7 @@ import kotlinx.collections.immutable.ImmutableSet
 
 @Composable
 internal fun DialogScreen(
-    slot: Value<ChildSlot<DialogConfig, DialogComponent.Dialog>>,
+    slot: Value<ChildSlot<DialogConfig, DialogComponent.Child>>,
     state: DialogState,
     loaders: ImmutableSet<DialogLoader>,
     contract: DialogContract
@@ -45,9 +45,9 @@ internal fun DialogScreen(
     if (component != null) {
         val config = child.configuration
 
-        val backProvider = remember(state.stack.stack.size) {
-            if (state.stack.stack.size > 1) {
-                { contract.back() }
+        val backProvider = remember(state.process.count) {
+            if (state.process.count > 1) {
+                { contract.pop() }
             } else null
         }
 

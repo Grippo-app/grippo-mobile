@@ -1,8 +1,6 @@
 package com.grippo.shared.dialog.content
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.core.AppTokens
@@ -18,7 +16,6 @@ internal fun DialogContentScreen(
     contract: DialogContentContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
     ChildStackCompose(
-        modifier = Modifier.fillMaxSize(),
         stack = component.childStack,
         animation = platformAnimation(),
         content = { child -> child.instance.component.Render() }

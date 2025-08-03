@@ -17,13 +17,12 @@ import com.grippo.exercise.ExerciseComponent
 import com.grippo.exercise.example.exerciseexample.ExerciseExampleComponent
 import com.grippo.height.picker.HeightPickerComponent
 import com.grippo.period.picker.PeriodPickerComponent
-import com.grippo.shared.dialog.empty.EmptyComponent
 import com.grippo.weight.picker.WeightPickerComponent
 
 internal class DialogContentComponent(
     initial: DialogConfig,
     componentContext: ComponentContext,
-    private val back: () -> Unit
+    private val back: (pendingResult: (() -> Unit)?) -> Unit
 ) : BaseComponent<DialogContentDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
@@ -38,11 +37,11 @@ internal class DialogContentComponent(
 
     override suspend fun eventListener(direction: DialogContentDirection) {
         when (direction) {
-            DialogContentDirection.Back -> back.invoke()
+            is DialogContentDirection.Back -> back.invoke(direction.pendingResult)
         }
     }
 
-    private val navigation = StackNavigation<DialogConfig>()
+    internal val navigation = StackNavigation<DialogConfig>()
 
     internal val childStack: Value<ChildStack<DialogConfig, Child>> = childStack(
         source = navigation,
@@ -59,8 +58,8 @@ internal class DialogContentComponent(
                 WeightPickerComponent(
                     componentContext = context,
                     initial = router.initial,
-                    onResult = { /*viewModel.dismiss { router.onResult.invoke(it) }*/ },
-                    back = { /*viewModel.dismiss(null)*/ }
+                    onResult = { back.invoke { router.onResult.invoke(it) } },
+                    back = { back.invoke(null) }
                 )
             )
 
@@ -68,8 +67,8 @@ internal class DialogContentComponent(
                 HeightPickerComponent(
                     componentContext = context,
                     initial = router.initial,
-                    onResult = { /*viewModel.dismiss { router.onResult.invoke(it) }*/ },
-                    back = { /*viewModel.dismiss(null)*/ }
+                    onResult = { back.invoke { router.onResult.invoke(it) } },
+                    back = { back.invoke(null) }
                 )
             )
 
@@ -78,7 +77,7 @@ internal class DialogContentComponent(
                     componentContext = context,
                     title = router.title,
                     description = router.description,
-                    back = { /*viewModel.dismiss(null)*/ }
+                    back = { back.invoke(null) }
                 )
             )
 
@@ -86,7 +85,7 @@ internal class DialogContentComponent(
                 ExerciseExampleComponent(
                     componentContext = context,
                     id = router.id,
-                    back = { /*viewModel.dismiss(null)*/ }
+                    back = { back.invoke(null) }
                 )
             )
 
@@ -94,8 +93,8 @@ internal class DialogContentComponent(
                 DatePickerComponent(
                     componentContext = context,
                     initial = router.initial,
-                    onResult = { /*viewModel.dismiss { router.onResult.invoke(it) }*/ },
-                    back = {/* viewModel.dismiss(null)*/ }
+                    onResult = { back.invoke { router.onResult.invoke(it) } },
+                    back = { back.invoke(null) }
                 )
             )
 
@@ -103,7 +102,7 @@ internal class DialogContentComponent(
                 ExerciseComponent(
                     componentContext = context,
                     id = router.id,
-                    back = { /*viewModel.dismiss(null)*/ }
+                    back = { back.invoke(null) }
                 )
             )
 
@@ -112,8 +111,8 @@ internal class DialogContentComponent(
                     componentContext = context,
                     initial = router.initial,
                     available = router.available,
-                    onResult = { /*viewModel.dismiss { router.onResult.invoke(it) }*/ },
-                    back = { /*viewModel.dismiss(null)*/ }
+                    onResult = { back.invoke { router.onResult.invoke(it) } },
+                    back = { back.invoke(null) }
                 )
             )
         }
@@ -146,9 +145,6 @@ internal class DialogContentComponent(
             Child(component)
 
         data class PeriodPicker(override val component: PeriodPickerComponent) :
-            Child(component)
-
-        data class Empty(override val component: EmptyComponent) :
             Child(component)
     }
 }
