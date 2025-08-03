@@ -37,7 +37,7 @@ internal class DialogComponent(
         when (direction) {
             is DialogDirection.Activate -> dialog.activate(direction.config)
             DialogDirection.Dismiss -> dialog.dismiss().also { content = null }
-            DialogDirection.Pop -> content?.navigation?.pop()
+            is DialogDirection.Pop -> content?.navigation?.pop(onComplete = { direction.pendingResult?.invoke() })
             is DialogDirection.Push -> content?.navigation?.push(direction.config)
         }
     }

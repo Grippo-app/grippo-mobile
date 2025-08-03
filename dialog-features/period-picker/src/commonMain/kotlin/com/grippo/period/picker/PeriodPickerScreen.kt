@@ -59,21 +59,24 @@ internal fun PeriodPickerScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-        val list = remember(state.list) {
-            state.list
-        }
-
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
         ) {
             items(
-                items = list,
+                items = state.list,
                 key = { it.hashCode() },
                 contentType = { it::class }
             ) { item ->
-                val clickProvider = remember { { contract.onSelectClick(item) } }
-                val isSelected = remember(state.initial) { state.initial == item }
+                val clickProvider = remember(item) { { contract.onSelectClick(item) } }
+                val isSelected = remember(state.initial) {
+                    when (item) {
+                        is PeriodState.DAILY -> state.initial is PeriodState.DAILY
+                        is PeriodState.WEEKLY -> state.initial is PeriodState.WEEKLY
+                        is PeriodState.MONTHLY -> state.initial is PeriodState.MONTHLY
+                        is PeriodState.CUSTOM -> state.initial is PeriodState.CUSTOM
+                    }
+                }
 
                 SelectableCard(
                     modifier = Modifier.fillMaxWidth(),

@@ -4,7 +4,6 @@ import com.grippo.core.BaseViewModel
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogProvider
 import kotlinx.coroutines.flow.onEach
-import kotlin.reflect.KClass
 
 internal class DialogViewModel(
     dialogProvider: DialogProvider
@@ -16,36 +15,27 @@ internal class DialogViewModel(
             .safeLaunch()
     }
 
-    companion object {
-        private val singleDialogPresets: Set<KClass<out DialogConfig>> = setOf(
-            DialogConfig.ErrorDisplay::class,
-        )
-    }
-
     private fun show(config: DialogConfig) {
-        val isSingle = config::class in singleDialogPresets
-        val currentStack = state.value.stack
-        val newEntry = DialogEntry(config, pendingResult = if (isSingle) null else null)
-        val newStack = currentStack + newEntry
+        val stack = state.value.stack
+        val newEntry = DialogEntry(config, pendingResult = null)
+        val newStack = stack + newEntry
 
         val destination = when {
-            isSingle || state.value.process == Process.RELEASE -> DialogDirection.Activate(config)
+            state.value.process == Process.RELEASE -> DialogDirection.Activate(config)
             else -> DialogDirection.Push(config)
         }
 
         logBlock("Show Dialog") {
             log("📥 Received config: ${config::class.simpleName}")
-            log("📦 Stack size: ${currentStack.size} → ${newStack.size}")
+            log("📦 Stack size: ${stack.size} → ${newStack.size}")
             log("📌 Destination: ${destination::class.simpleName}")
+            log("🧾 Full stack (top to bottom):")
+            newStack.reversed().forEachIndexed { index, entry ->
+                log("   ${index + 1}) ${entry.config::class.simpleName} → pendingResult: ${entry.pendingResult != null}")
+            }
         }
 
-        update {
-            it.copy(
-                stack = newStack,
-                process = Process.SHOW
-            )
-        }
-
+        update { it.copy(stack = newStack, process = Process.SHOW) }
         navigateTo(destination)
     }
 
@@ -56,28 +46,26 @@ internal class DialogViewModel(
             log("📦 Stack size: ${stack.size}")
             log("⏱ Should wait for release: ${stack.size == 1}")
             log("💾 Saving pendingResult: ${pendingResult != null}")
+            log("🧾 Full stack (top to bottom):")
+            stack.reversed().forEachIndexed { index, entry ->
+                log("   ${index + 1}) ${entry.config::class.simpleName} → pendingResult: ${entry.pendingResult != null}")
+            }
         }
 
-        if (stack.size > 1) {
-            popDialog()
-        } else {
-            val last = stack.lastOrNull()
+        if (stack.isEmpty()) return
 
-            if (last != null && pendingResult != null) {
-                val replaced = last.copy(pendingResult = pendingResult)
-                update {
-                    it.copy(
-                        stack = listOf(replaced),
-                        process = Process.DISMISS
-                    )
-                }
-                log("✅ Updated process to DISMISS with pendingResult stored")
-            } else {
-                update {
-                    it.copy(process = Process.DISMISS)
-                }
-                log("✅ Updated process to DISMISS (no result)")
-            }
+        val last = stack.last()
+        val newEntry = last.copy(pendingResult = pendingResult)
+        val newStack = stack.dropLast(1) + newEntry
+
+        val process = if (newStack.size == 1) Process.DISMISS else Process.SHOW
+
+        update { it.copy(stack = newStack, process = process) }
+
+        if (newStack.size == 1) {
+            log("✅ Updated process to DISMISS with pendingResult stored")
+        } else {
+            popDialog()
         }
     }
 
@@ -100,22 +88,20 @@ internal class DialogViewModel(
         if (stack.isEmpty()) return
 
         val last = stack.last()
-
         val newStack = stack.dropLast(1)
 
         logBlock("Pop Dialog") {
             log("📤 Triggered pendingResult from: ${last.config::class.simpleName}")
             log("📦 Stack size: ${stack.size} → ${newStack.size}")
+            log("📌 pendingResult for removed entry: ${last.pendingResult != null}")
+            log("🧾 Full stack (top to bottom):")
+            stack.reversed().forEachIndexed { index, entry ->
+                log("   ${index + 1}) ${entry.config::class.simpleName} → pendingResult: ${entry.pendingResult != null}")
+            }
         }
 
-        update {
-            it.copy(
-                stack = newStack,
-                process = Process.SHOW
-            )
-        }
-
-        navigateTo(DialogDirection.Pop)
+        update { it.copy(stack = newStack, process = Process.SHOW) }
+        navigateTo(DialogDirection.Pop(last.pendingResult))
     }
 
     // Release dialog component from the graph
@@ -128,18 +114,16 @@ internal class DialogViewModel(
             log("🔚 Releasing config: ${config::class.simpleName}")
             log("💥 Triggering pendingResult: ${last?.pendingResult != null}")
             log("📭 onDismiss present: ${config.onDismiss != null}")
+            log("🧾 Full stack (top to bottom):")
+            stack.reversed().forEachIndexed { index, entry ->
+                log("   ${index + 1}) ${entry.config::class.simpleName} → pendingResult: ${entry.pendingResult != null}")
+            }
         }
 
         last?.pendingResult?.invoke()
         config.onDismiss?.invoke()
 
-        update {
-            it.copy(
-                stack = emptyList(),
-                process = Process.RELEASE
-            )
-        }
-
+        update { it.copy(stack = emptyList(), process = Process.RELEASE) }
         navigateTo(DialogDirection.Dismiss)
     }
 

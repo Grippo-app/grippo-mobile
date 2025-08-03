@@ -27,6 +27,7 @@ public class PeriodPickerViewModel(
         val dialog = DialogConfig.DatePicker(
             initial = custom.range.from,
             onResult = { value ->
+                println("📅 onFromClick → received date: $value")
                 val range = custom.range.copy(from = value)
                 update { it.copy(initial = custom.copy(range = range)) }
             }
@@ -41,6 +42,7 @@ public class PeriodPickerViewModel(
         val dialog = DialogConfig.DatePicker(
             initial = custom.range.to,
             onResult = { value ->
+                println("📅 onToClick → received date: $value")
                 val range = custom.range.copy(to = value)
                 update { it.copy(initial = custom.copy(range = range)) }
             }
