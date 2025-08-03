@@ -66,7 +66,7 @@ internal class DialogComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        DialogScreen(childSlot, state.value, loaders.value, viewModel)
+        DialogScreen(this, state.value, loaders.value, viewModel)
     }
 
     internal sealed class Child(open val component: BaseComponent<*>) {

@@ -17,8 +17,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.arkivanov.decompose.router.slot.ChildSlot
-import com.arkivanov.decompose.value.Value
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
@@ -27,17 +25,16 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.back
 import com.grippo.design.resources.icons.NavArrowLeft
-import com.grippo.dialog.api.DialogConfig
 import kotlinx.collections.immutable.ImmutableSet
 
 @Composable
 internal fun DialogScreen(
-    slot: Value<ChildSlot<DialogConfig, DialogComponent.Child>>,
+    component: DialogComponent,
     state: DialogState,
     loaders: ImmutableSet<DialogLoader>,
     contract: DialogContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
-    val slotState = slot.subscribeAsState()
+    val slotState = component.childSlot.subscribeAsState()
 
     val child = slotState.value.child
     val component = child?.instance?.component
