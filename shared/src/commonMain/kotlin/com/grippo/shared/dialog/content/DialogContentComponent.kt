@@ -29,7 +29,7 @@ internal class DialogContentComponent(
         DialogContentViewModel()
     }
 
-    private val backCallback = BackCallback(onBack = viewModel::onBack)
+    private val backCallback = BackCallback(onBack = { viewModel.onBack(null) })
 
     init {
         backHandler.register(backCallback)
@@ -47,7 +47,7 @@ internal class DialogContentComponent(
         source = navigation,
         serializer = DialogConfig.serializer(),
         initialStack = { listOf(initial) },
-        key = "DialogConfig",
+        key = "DialogContentComponent",
         handleBackButton = true,
         childFactory = ::createChild,
     )
@@ -58,8 +58,8 @@ internal class DialogContentComponent(
                 WeightPickerComponent(
                     componentContext = context,
                     initial = router.initial,
-                    onResult = { back.invoke { router.onResult.invoke(it) } },
-                    back = { back.invoke(null) }
+                    onResult = { viewModel.onBack { router.onResult.invoke(it) } },
+                    back = { viewModel.onBack(null) }
                 )
             )
 
@@ -67,8 +67,8 @@ internal class DialogContentComponent(
                 HeightPickerComponent(
                     componentContext = context,
                     initial = router.initial,
-                    onResult = { back.invoke { router.onResult.invoke(it) } },
-                    back = { back.invoke(null) }
+                    onResult = { viewModel.onBack { router.onResult.invoke(it) } },
+                    back = { viewModel.onBack(null) }
                 )
             )
 
@@ -77,7 +77,7 @@ internal class DialogContentComponent(
                     componentContext = context,
                     title = router.title,
                     description = router.description,
-                    back = { back.invoke(null) }
+                    back = { viewModel.onBack(null) }
                 )
             )
 
@@ -85,16 +85,7 @@ internal class DialogContentComponent(
                 ExerciseExampleComponent(
                     componentContext = context,
                     id = router.id,
-                    back = { back.invoke(null) }
-                )
-            )
-
-            is DialogConfig.DatePicker -> Child.DatePicker(
-                DatePickerComponent(
-                    componentContext = context,
-                    initial = router.initial,
-                    onResult = { back.invoke { router.onResult.invoke(it) } },
-                    back = { back.invoke(null) }
+                    back = { viewModel.onBack(null) }
                 )
             )
 
@@ -102,7 +93,16 @@ internal class DialogContentComponent(
                 ExerciseComponent(
                     componentContext = context,
                     id = router.id,
-                    back = { back.invoke(null) }
+                    back = { viewModel.onBack(null) }
+                )
+            )
+
+            is DialogConfig.DatePicker -> Child.DatePicker(
+                DatePickerComponent(
+                    componentContext = context,
+                    initial = router.initial,
+                    onResult = { viewModel.onBack { router.onResult.invoke(it) } },
+                    back = { viewModel.onBack(null) }
                 )
             )
 
@@ -111,8 +111,8 @@ internal class DialogContentComponent(
                     componentContext = context,
                     initial = router.initial,
                     available = router.available,
-                    onResult = { back.invoke { router.onResult.invoke(it) } },
-                    back = { back.invoke(null) }
+                    onResult = { viewModel.onBack { router.onResult.invoke(it) } },
+                    back = { viewModel.onBack(null) }
                 )
             )
         }

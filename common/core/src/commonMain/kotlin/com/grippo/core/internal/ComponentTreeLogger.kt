@@ -9,7 +9,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 
 @OptIn(FlowPreview::class)
@@ -21,7 +20,7 @@ internal object ComponentTreeLogger {
     init {
         eventChannel.receiveAsFlow()
             .debounce(1000)
-            .onEach { printNavigationTree() }
+//            .onEach { printNavigationTree() }
             .launchIn(coroutineScope)
     }
 

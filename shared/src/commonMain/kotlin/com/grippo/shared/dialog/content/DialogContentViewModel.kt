@@ -7,7 +7,7 @@ internal class DialogContentViewModel :
         DialogContentState
     ), DialogContentContract {
 
-    override fun onBack() {
-        navigateTo(DialogContentDirection.Back())
+    override fun onBack(pendingResult: (() -> Unit)?) {
+        navigateTo(DialogContentDirection.Back(pendingResult))
     }
 }

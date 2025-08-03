@@ -22,84 +22,96 @@ internal class DialogViewModel(
         )
     }
 
-    // Show component and bottom-sheet
     private fun show(config: DialogConfig) {
-        val isSingleDialog = config::class in singleDialogPresets
-        val currentProcess = state.value.process
+        val isSingle = config::class in singleDialogPresets
+        val currentStack = state.value.stack
+        val newEntry = DialogEntry(config, pendingResult = if (isSingle) null else null)
+        val newStack = currentStack + newEntry
 
         val destination = when {
-            isSingleDialog -> DialogDirection.Activate(config)
-            currentProcess == Process.RELEASE -> DialogDirection.Activate(config)
+            isSingle || state.value.process == Process.RELEASE -> DialogDirection.Activate(config)
             else -> DialogDirection.Push(config)
         }
 
-        val newProcess = when (currentProcess) {
-            Process.DISMISS, Process.RELEASE -> Process.SHOW(1)
-            is Process.SHOW -> Process.SHOW(currentProcess.count + 1)
+        logBlock("Show Dialog") {
+            log("📥 Received config: ${config::class.simpleName}")
+            log("📦 Stack size: ${currentStack.size} → ${newStack.size}")
+            log("📌 Destination: ${destination::class.simpleName}")
         }
-
-        log(
-            """
-            ┌───── Show Dialog ─────
-            │ Config      = ${config::class.simpleName}
-            │ Type        = ${if (isSingleDialog) "Single" else "Stacked"}
-            │ From        = $currentProcess
-            │ To          = $newProcess
-            │ Destination = ${destination::class.simpleName}
-            └───────────────────────
-            """.trimIndent()
-        )
 
         update {
             it.copy(
-                process = newProcess,
-                pendingResult = if (isSingleDialog) null else it.pendingResult,
+                stack = newStack,
+                process = Process.SHOW
             )
         }
 
         navigateTo(destination)
     }
 
-    // Hide bottom-sheet inside of component
     override fun dismiss(pendingResult: (() -> Unit)?) {
-        log("🔻 Dismiss called. Saving pendingResult = ${pendingResult != null}")
+        val stack = state.value.stack
 
-        if (state.value.process.count > 1) {
+        logBlock("Dismiss") {
+            log("📦 Stack size: ${stack.size}")
+            log("⏱ Should wait for release: ${stack.size == 1}")
+            log("💾 Saving pendingResult: ${pendingResult != null}")
+        }
+
+        if (stack.size > 1) {
             popDialog()
         } else {
-            log("🔚 No more dialogs to pop. Moving to DISMISS state")
-            update {
-                it.copy(
-                    process = Process.DISMISS,
-                    pendingResult = pendingResult
-                )
+            val last = stack.lastOrNull()
+
+            if (last != null && pendingResult != null) {
+                val replaced = last.copy(pendingResult = pendingResult)
+                update {
+                    it.copy(
+                        stack = listOf(replaced),
+                        process = Process.DISMISS
+                    )
+                }
+                log("✅ Updated process to DISMISS with pendingResult stored")
+            } else {
+                update {
+                    it.copy(process = Process.DISMISS)
+                }
+                log("✅ Updated process to DISMISS (no result)")
             }
         }
     }
 
-    // Show previous config from Backstack or release
     override fun pop() {
-        log("⬅️ Pop called")
+        val stack = state.value.stack
 
-        if (state.value.process.count > 1) {
+        logBlock("Pop") {
+            log("📦 Stack size: ${stack.size}")
+        }
+
+        if (stack.size > 1) {
             popDialog()
         } else {
-            log("🛑 Nothing to pop. Ignored.")
-            // val config = state.value.stack.current ?: return
-            // release(config)
+            log("🛑 Nothing to pop — stack size is 1")
         }
     }
 
     private fun popDialog() {
-        val currentCount = state.value.process.count
-        val newCount = currentCount - 1
+        val stack = state.value.stack
+        if (stack.isEmpty()) return
 
-        log("⬅️ Popping dialog. Stack size: $currentCount → $newCount")
+        val last = stack.last()
+
+        val newStack = stack.dropLast(1)
+
+        logBlock("Pop Dialog") {
+            log("📤 Triggered pendingResult from: ${last.config::class.simpleName}")
+            log("📦 Stack size: ${stack.size} → ${newStack.size}")
+        }
 
         update {
             it.copy(
-                process = Process.SHOW(newCount),
-                pendingResult = null
+                stack = newStack,
+                process = Process.SHOW
             )
         }
 
@@ -108,23 +120,36 @@ internal class DialogViewModel(
 
     // Release dialog component from the graph
     override fun release(config: DialogConfig) {
-        log(
-            """
-            🔓 Releasing dialog
-            │ Config     = ${config::class.simpleName}
-            │ HasResult  = ${state.value.pendingResult != null}
-            │ HasDismiss = ${config.onDismiss != null}
-            """.trimIndent()
-        )
+        val stack = state.value.stack
+        val last = stack.lastOrNull()
 
-        state.value.pendingResult?.invoke()
+        logBlock("Release Dialog") {
+            log("📦 Stack size: ${stack.size}")
+            log("🔚 Releasing config: ${config::class.simpleName}")
+            log("💥 Triggering pendingResult: ${last?.pendingResult != null}")
+            log("📭 onDismiss present: ${config.onDismiss != null}")
+        }
+
+        last?.pendingResult?.invoke()
         config.onDismiss?.invoke()
 
-        update { it.copy(process = Process.RELEASE, pendingResult = null) }
-        navigateTo(DialogDirection.Dismiss(config))
+        update {
+            it.copy(
+                stack = emptyList(),
+                process = Process.RELEASE
+            )
+        }
+
+        navigateTo(DialogDirection.Dismiss)
     }
 
     private fun log(message: String) {
-        println(message)
+        println("│ $message")
+    }
+
+    private inline fun logBlock(title: String, block: () -> Unit) {
+        println("┌───── $title ─────")
+        block()
+        println("└──────────────────────")
     }
 }

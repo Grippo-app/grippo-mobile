@@ -45,8 +45,8 @@ internal fun DialogScreen(
     if (component != null) {
         val config = child.configuration
 
-        val backProvider = remember(state.process.count) {
-            if (state.process.count > 1) {
+        val backProvider = remember(state.stack.size) {
+            if (state.stack.size > 1) {
                 { contract.pop() }
             } else null
         }

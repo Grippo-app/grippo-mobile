@@ -14,7 +14,7 @@ internal fun DialogContentScreen(
     state: DialogContentState,
     loaders: ImmutableSet<DialogContentLoader>,
     contract: DialogContentContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.secondary)) {
     ChildStackCompose(
         stack = component.childStack,
         animation = platformAnimation(),

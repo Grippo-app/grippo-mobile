@@ -36,7 +36,7 @@ internal class DialogComponent(
     override suspend fun eventListener(direction: DialogDirection) {
         when (direction) {
             is DialogDirection.Activate -> dialog.activate(direction.config)
-            is DialogDirection.Dismiss -> dialog.dismiss().also { content = null }
+            DialogDirection.Dismiss -> dialog.dismiss().also { content = null }
             DialogDirection.Pop -> content?.navigation?.pop()
             is DialogDirection.Push -> content?.navigation?.push(direction.config)
         }
@@ -70,7 +70,6 @@ internal class DialogComponent(
     }
 
     internal sealed class Child(open val component: BaseComponent<*>) {
-        data class Content(override val component: DialogContentComponent) :
-            Child(component)
+        data class Content(override val component: DialogContentComponent) : Child(component)
     }
 }
