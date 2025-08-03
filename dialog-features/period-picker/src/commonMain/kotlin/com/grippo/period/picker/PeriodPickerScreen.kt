@@ -14,7 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import com.grippo.core.BaseComposeDialog
+import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.components.button.Button
@@ -38,7 +38,7 @@ internal fun PeriodPickerScreen(
     state: PeriodPickerState,
     loaders: ImmutableSet<PeriodPickerLoader>,
     contract: PeriodPickerContract
-) = BaseComposeDialog(ScreenBackground.Color(AppTokens.colors.background.secondary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.secondary)) {
 
     Column(
         modifier = Modifier

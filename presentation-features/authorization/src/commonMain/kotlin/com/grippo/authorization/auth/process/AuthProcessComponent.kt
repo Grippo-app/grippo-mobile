@@ -22,11 +22,6 @@ internal class AuthProcessComponent(
     private val back: () -> Unit
 ) : BaseComponent<AuthProcessDirection>(componentContext) {
 
-    internal sealed class Child(open val component: BaseComponent<*>) {
-        data class Login(override val component: LoginComponent) : Child(component)
-        data class Registration(override val component: RegistrationComponent) : Child(component)
-    }
-
     override val viewModel = componentContext.retainedInstance {
         AuthProcessViewModel()
     }
@@ -80,5 +75,10 @@ internal class AuthProcessComponent(
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
         AuthProcessScreen(this, state.value, loaders.value, viewModel)
+    }
+
+    internal sealed class Child(open val component: BaseComponent<*>) {
+        data class Login(override val component: LoginComponent) : Child(component)
+        data class Registration(override val component: RegistrationComponent) : Child(component)
     }
 }

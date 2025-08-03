@@ -36,14 +36,6 @@ public class RootComponent(
 
     private val dialogComponent = DialogComponent(componentContext)
 
-    public sealed class Child(public open val component: BaseComponent<*>) {
-        public data class Authorization(override val component: AuthComponent) : Child(component)
-        public data class Home(override val component: BottomNavigationComponent) : Child(component)
-        public data class Profile(override val component: ProfileComponent) : Child(component)
-        public data class Debug(override val component: DebugComponent) : Child(component)
-        public data class Settings(override val component: SettingsComponent) : Child(component)
-    }
-
     override val viewModel: RootViewModel = componentContext.retainedInstance {
         RootViewModel(
             authorizationFeature = getKoin().get(),
@@ -143,5 +135,13 @@ public class RootComponent(
             RootScreen(this, state.value, loaders.value, viewModel)
             dialogComponent.Render()
         }
+    }
+
+    public sealed class Child(public open val component: BaseComponent<*>) {
+        public data class Authorization(override val component: AuthComponent) : Child(component)
+        public data class Home(override val component: BottomNavigationComponent) : Child(component)
+        public data class Profile(override val component: ProfileComponent) : Child(component)
+        public data class Debug(override val component: DebugComponent) : Child(component)
+        public data class Settings(override val component: SettingsComponent) : Child(component)
     }
 }

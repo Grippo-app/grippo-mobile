@@ -27,29 +27,6 @@ internal class RegistrationComponent(
     private val back: () -> Unit,
 ) : BaseComponent<RegistrationDirection>(componentContext) {
 
-    internal sealed class Child(open val component: BaseComponent<*>) {
-        data class Credential(override val component: CredentialComponent) :
-            Child(component)
-
-        data class Name(override val component: NameComponent) :
-            Child(component)
-
-        data class Body(override val component: BodyComponent) :
-            Child(component)
-
-        data class Experience(override val component: ExperienceComponent) :
-            Child(component)
-
-        data class ExcludedMuscles(override val component: ExcludedMusclesComponent) :
-            Child(component)
-
-        data class MussingEquipments(override val component: MissingEquipmentsComponent) :
-            Child(component)
-
-        data class Completed(override val component: CompletedComponent) :
-            Child(component)
-    }
-
     override val viewModel = componentContext.retainedInstance {
         RegistrationViewModel()
     }
@@ -168,5 +145,28 @@ internal class RegistrationComponent(
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
         RegistrationScreen(this, state.value, loaders.value, viewModel)
+    }
+
+    internal sealed class Child(open val component: BaseComponent<*>) {
+        data class Credential(override val component: CredentialComponent) :
+            Child(component)
+
+        data class Name(override val component: NameComponent) :
+            Child(component)
+
+        data class Body(override val component: BodyComponent) :
+            Child(component)
+
+        data class Experience(override val component: ExperienceComponent) :
+            Child(component)
+
+        data class ExcludedMuscles(override val component: ExcludedMusclesComponent) :
+            Child(component)
+
+        data class MussingEquipments(override val component: MissingEquipmentsComponent) :
+            Child(component)
+
+        data class Completed(override val component: CompletedComponent) :
+            Child(component)
     }
 }

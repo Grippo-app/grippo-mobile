@@ -25,11 +25,6 @@ public class AuthComponent(
     private val back: () -> Unit,
 ) : BaseComponent<AuthDirection>(componentContext) {
 
-    internal sealed class Child(open val component: BaseComponent<*>) {
-        data class Splash(override val component: SplashComponent) : Child(component)
-        data class AuthProcess(override val component: AuthProcessComponent) : Child(component)
-    }
-
     override val viewModel: AuthViewModel = componentContext.retainedInstance {
         AuthViewModel()
     }
@@ -84,5 +79,10 @@ public class AuthComponent(
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
         AuthScreen(this, state.value, loaders.value, viewModel)
+    }
+
+    internal sealed class Child(open val component: BaseComponent<*>) {
+        data class Splash(override val component: SplashComponent) : Child(component)
+        data class AuthProcess(override val component: AuthProcessComponent) : Child(component)
     }
 }

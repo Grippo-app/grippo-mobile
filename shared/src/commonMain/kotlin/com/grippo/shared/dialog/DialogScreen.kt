@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.value.Value
-import com.grippo.core.BaseComposeDialog
+import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
@@ -36,7 +36,7 @@ internal fun DialogScreen(
     state: DialogState,
     loaders: ImmutableSet<DialogLoader>,
     contract: DialogContract
-) = BaseComposeDialog(ScreenBackground.Color(AppTokens.colors.background.primary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
     val slotState = slot.subscribeAsState()
 
     val child = slotState.value.child

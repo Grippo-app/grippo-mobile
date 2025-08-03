@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import com.grippo.core.BaseComposeDialog
+import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
@@ -30,7 +30,7 @@ internal fun WeightPickerScreen(
     state: WeightPickerState,
     loaders: ImmutableSet<WeightPickerLoader>,
     contract: WeightPickerContract
-) = BaseComposeDialog(ScreenBackground.Color(AppTokens.colors.background.secondary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.secondary)) {
 
     Column(
         modifier = Modifier
