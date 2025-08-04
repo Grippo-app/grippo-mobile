@@ -81,11 +81,12 @@ internal fun PeriodPickerScreen(
                         description = item.range(DateFormat.uuuu_MM_d),
                         icon = item.icon(),
                         style = SelectableCardStyle.Large.ColorStyle.TERTIARY,
-                        subContent = if (item is PeriodState.CUSTOM && isSelected) {
+                        subContent = if (item is PeriodState.CUSTOM) {
                             {
                                 DateRangeSelector(
                                     modifier = Modifier.fillMaxWidth(),
                                     value = item.range,
+                                    enabled = isSelected,
                                     onFromClick = contract::onFromClick,
                                     onToClick = contract::onToClick
                                 )

@@ -20,6 +20,7 @@ import com.grippo.design.resources.to
 public fun DateRangeSelector(
     modifier: Modifier = Modifier,
     value: DateRange,
+    enabled: Boolean,
     onFromClick: () -> Unit,
     onToClick: () -> Unit
 ) {
@@ -34,6 +35,7 @@ public fun DateRangeSelector(
             modifier = Modifier.weight(1f),
             inputStyle = InputStyle.Clickable(onClick = onFromClick),
             value = formattedFrom,
+            enabled = enabled,
             placeholder = PlaceHolder.OverInput(AppTokens.strings.res(Res.string.from))
         )
 
@@ -43,6 +45,7 @@ public fun DateRangeSelector(
             modifier = Modifier.weight(1f),
             inputStyle = InputStyle.Clickable(onClick = onToClick),
             value = formattedTo,
+            enabled = enabled,
             placeholder = PlaceHolder.OverInput(AppTokens.strings.res(Res.string.to))
         )
     }

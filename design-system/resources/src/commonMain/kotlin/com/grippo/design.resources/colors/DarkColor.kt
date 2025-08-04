@@ -66,7 +66,7 @@ public object DarkColor : AppColor {
     }
 
     override val input: AppColor.InputColors = object : AppColor.InputColors {
-        override val background = AppColorTokens.NeutralDark.N200
+        override val background = AppColorTokens.NeutralDark.N150
         override val border = AppColorTokens.NeutralDark.N250
         override val placeholder = AppColorTokens.NeutralDark.N450
         override val label = AppColorTokens.NeutralDark.N550
@@ -78,7 +78,7 @@ public object DarkColor : AppColor {
         override val backgroundDisabled = AppColorTokens.NeutralDark.N300
         override val borderDisabled = AppColorTokens.NeutralDark.N300
         override val textDisabled = AppColorTokens.NeutralDark.N450
-        override val placeholderDisabled = AppColorTokens.NeutralDark.N350
+        override val placeholderDisabled = AppColorTokens.NeutralDark.N450
     }
 
     override val background: AppColor.BackgroundColors = object : AppColor.BackgroundColors {
