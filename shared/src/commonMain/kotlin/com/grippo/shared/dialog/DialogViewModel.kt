@@ -32,7 +32,6 @@ internal class DialogViewModel(
         }
     }
 
-    // Release dialog component from the graph
     override fun onRelease(config: DialogConfig) {
         val stack = state.value.stack
         val last = stack.lastOrNull()
