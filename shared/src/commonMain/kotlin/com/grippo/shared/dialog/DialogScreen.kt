@@ -35,7 +35,7 @@ internal fun DialogScreen(
     val contentComponent = (child.instance.component as? DialogContentComponent)
         ?: return@BaseComposeScreen
 
-    DialogSheet(
+    BottomSheet(
         config = child.configuration,
         stackSize = state.stack.size,
         process = state.process,
@@ -47,7 +47,7 @@ internal fun DialogScreen(
 }
 
 @Composable
-private fun DialogSheet(
+private fun BottomSheet(
     config: DialogConfig,
     stackSize: Int,
     process: Process,
