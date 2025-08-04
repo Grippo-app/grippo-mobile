@@ -47,27 +47,16 @@ public object LightColor : AppColor {
 
         override val uncheckedThumb = AppColorTokens.Common.White
         override val uncheckedTrack = AppColorTokens.NeutralLight.N200
-
-        override val disabledCheckedThumb = AppColorTokens.NeutralLight.N500
-        override val disabledCheckedTrack = AppColorTokens.NeutralLight.N200
-
-        override val disabledUncheckedThumb = AppColorTokens.NeutralLight.N300
-        override val disabledUncheckedTrack = AppColorTokens.NeutralLight.N200
-        override val disabledUncheckedBorder = AppColorTokens.NeutralLight.N200
     }
 
     override val radio: AppColor.RadioColors = object : AppColor.RadioColors {
         override val selectedThumb = AppColorTokens.Common.Accent
         override val selectedTrack = AppColorTokens.Common.Accent
 
-        override val unselectedThumb = AppColorTokens.Common.White
         override val unselectedTrack = AppColorTokens.NeutralLight.N200
 
         override val disabledSelectedThumb = AppColorTokens.NeutralLight.N500
-        override val disabledSelectedTrack = AppColorTokens.NeutralLight.N200
-        override val disabledUnselectedThumb = AppColorTokens.NeutralLight.N300
         override val disabledUnselectedTrack = AppColorTokens.NeutralLight.N200
-        override val disabledUnselectedBorder = AppColorTokens.NeutralLight.N200
     }
 
     override val input: AppColor.InputColors = object : AppColor.InputColors {

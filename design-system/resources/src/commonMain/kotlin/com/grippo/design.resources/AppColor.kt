@@ -53,28 +53,16 @@ public interface AppColor {
 
         public val uncheckedThumb: Color
         public val uncheckedTrack: Color
-
-        public val disabledCheckedThumb: Color
-        public val disabledCheckedTrack: Color
-
-        public val disabledUncheckedThumb: Color
-        public val disabledUncheckedTrack: Color
-        public val disabledUncheckedBorder: Color
     }
 
     public interface RadioColors {
         public val selectedThumb: Color
         public val selectedTrack: Color
 
-        public val unselectedThumb: Color
         public val unselectedTrack: Color
 
         public val disabledSelectedThumb: Color
-        public val disabledSelectedTrack: Color
-
-        public val disabledUnselectedThumb: Color
         public val disabledUnselectedTrack: Color
-        public val disabledUnselectedBorder: Color
     }
 
     public interface InputColors {

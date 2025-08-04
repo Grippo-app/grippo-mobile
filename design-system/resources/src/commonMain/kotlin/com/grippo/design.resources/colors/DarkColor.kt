@@ -48,12 +48,6 @@ public object DarkColor : AppColor {
 
         override val uncheckedThumb = AppColorTokens.Common.White
         override val uncheckedTrack = Color(0xFF3A3A3A)
-
-        override val disabledCheckedThumb = Color(0xFFA0A0A0)
-        override val disabledCheckedTrack = Color(0xFF2A2A2A)
-        override val disabledUncheckedThumb = Color(0xFF4D4D4D)
-        override val disabledUncheckedTrack = Color(0xFF2A2A2A)
-        override val disabledUncheckedBorder = Color(0xFF3A3A3A)
     }
 
     override val radio: AppColor.RadioColors = object : AppColor.RadioColors {
@@ -61,13 +55,9 @@ public object DarkColor : AppColor {
         override val selectedTrack = AppColorTokens.Common.Accent
 
         override val unselectedTrack = Color(0xFF3A3A3A)
-        override val unselectedThumb = AppColorTokens.Common.White
 
         override val disabledSelectedThumb = Color(0xFF2A2A2A)
-        override val disabledSelectedTrack = Color(0xFF2A2A2A)
-        override val disabledUnselectedThumb = Color(0xFF2A2A2A)
         override val disabledUnselectedTrack = Color(0xFF2A2A2A)
-        override val disabledUnselectedBorder = Color(0xFF2A2A2A)
     }
 
     override val divider: AppColor.DividerColors = object : AppColor.DividerColors {
