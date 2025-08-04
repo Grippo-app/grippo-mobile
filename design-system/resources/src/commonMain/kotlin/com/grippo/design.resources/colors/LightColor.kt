@@ -78,8 +78,8 @@ public object LightColor : AppColor {
     override val background: AppColor.BackgroundColors = object : AppColor.BackgroundColors {
         override val primary = AppColorTokens.NeutralLight.N150
         override val secondary = AppColorTokens.Common.White
+        override val tertiary = AppColorTokens.NeutralLight.N100
         override val accent = AppColorTokens.Common.Accent
-        override val tertiary = AppColorTokens.NeutralLight.N250
     }
 
     override val dialog: AppColor.DialogColors = object : AppColor.DialogColors {

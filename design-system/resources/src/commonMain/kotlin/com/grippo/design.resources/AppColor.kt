@@ -84,8 +84,8 @@ public interface AppColor {
     public interface BackgroundColors {
         public val primary: Color
         public val secondary: Color
-        public val accent: Color
         public val tertiary: Color
+        public val accent: Color
     }
 
     public interface DialogColors {

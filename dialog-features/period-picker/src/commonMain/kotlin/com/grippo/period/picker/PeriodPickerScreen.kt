@@ -80,7 +80,7 @@ internal fun PeriodPickerScreen(
                         title = item.text(),
                         description = item.range(DateFormat.uuuu_MM_d),
                         icon = item.icon(),
-                        style = SelectableCardStyle.Large.ColorStyle.PRIMARY,
+                        style = SelectableCardStyle.Large.ColorStyle.TERTIARY,
                         subContent = if (item is PeriodState.CUSTOM && isSelected) {
                             {
                                 DateRangeSelector(

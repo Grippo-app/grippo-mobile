@@ -31,7 +31,7 @@ internal object AppColorTokens {
     }
 
     object NeutralLight {
-        val N100 = Color(0xFFF9FAFC)
+        val N100 = Color(0xFFF5F7FA)
         val N150 = Color(0xFFF2F4F8)
         val N200 = Color(0xFFE3E7ED)
         val N250 = Color(0xFFD6DAE2)

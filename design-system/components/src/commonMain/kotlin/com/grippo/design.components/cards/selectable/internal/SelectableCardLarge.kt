@@ -52,6 +52,7 @@ internal fun SelectableCardLarge(
     val background = when (style.style) {
         SelectableCardStyle.Large.ColorStyle.PRIMARY -> AppTokens.colors.background.primary
         SelectableCardStyle.Large.ColorStyle.SECONDARY -> AppTokens.colors.background.secondary
+        SelectableCardStyle.Large.ColorStyle.TERTIARY -> AppTokens.colors.background.tertiary
     }
 
     Column(

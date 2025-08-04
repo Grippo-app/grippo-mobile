@@ -33,7 +33,8 @@ public sealed class SelectableCardStyle(
         @Immutable
         public enum class ColorStyle {
             PRIMARY,
-            SECONDARY
+            SECONDARY,
+            TERTIARY
         }
     }
 }
