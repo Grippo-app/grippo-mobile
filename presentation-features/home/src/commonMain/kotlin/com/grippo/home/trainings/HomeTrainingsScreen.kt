@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
+import com.grippo.date.utils.DateFormat
 import com.grippo.design.components.chip.IntensityChip
 import com.grippo.design.components.chip.RepetitionsChip
 import com.grippo.design.components.chip.TonnageChip
@@ -28,6 +29,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
+import com.grippo.design.resources.selected
 import com.grippo.design.resources.trainings
 import com.grippo.domain.state.training.transformToTrainingListValue
 import com.grippo.home.trainings.factory.exerciseOf
@@ -61,7 +63,9 @@ internal fun HomeTrainingsScreen(
                     ),
             ) {
                 DatePicker(
+                    title = AppTokens.strings.res(Res.string.selected),
                     value = state.date,
+                    format = DateFormat.uuuu_MM_d,
                     onClick = contract::selectDate
                 )
             }

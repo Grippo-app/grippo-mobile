@@ -94,7 +94,7 @@ public fun UserCard(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         HorizontalDivider(
-            modifier = Modifier.fillMaxWidth(1f),
+            modifier = Modifier.fillMaxWidth(),
             color = AppTokens.colors.divider.primary
         )
 

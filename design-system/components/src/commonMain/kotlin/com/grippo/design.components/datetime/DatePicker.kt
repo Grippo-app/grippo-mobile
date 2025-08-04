@@ -1,6 +1,7 @@
 package com.grippo.design.components.datetime
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -12,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.grippo.date.utils.DateCompose
 import com.grippo.date.utils.DateFormat
@@ -26,34 +28,66 @@ import kotlinx.datetime.LocalDateTime
 @Composable
 public fun DatePicker(
     modifier: Modifier = Modifier,
+    title: String,
     value: LocalDateTime,
+    format: DateFormat,
+    enabled: Boolean = true,
     onClick: () -> Unit
 ) {
-    val text = DateCompose.rememberFormat(value, DateFormat.uuuu_MM_d)
+    val text = DateCompose.rememberFormat(value, format)
 
     val shape = CircleShape
 
-    Row(
-        modifier = modifier.scalableClick(onClick = onClick),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+    val titleColor = when (enabled) {
+        true -> AppTokens.colors.text.primary
+        false -> AppTokens.colors.text.disabled
+    }
+
+    val descriptionColor = when (enabled) {
+        true -> AppTokens.colors.text.secondary
+        false -> AppTokens.colors.text.disabled
+    }
+
+
+    val iconColor = when (enabled) {
+        true -> AppTokens.colors.icon.secondary
+        false -> AppTokens.colors.icon.disabled
+    }
+
+    val backgroundIconColor = when (enabled) {
+        true -> AppTokens.colors.background.primary
+        false -> Color.Transparent
+    }
+
+    Column(modifier = modifier.scalableClick(enabled = enabled, onClick = onClick)) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = title,
+                style = AppTokens.typography.b16Bold(),
+                color = titleColor
+            )
+
+            Spacer(Modifier.width(AppTokens.dp.periodPicker.spacer))
+
+            Icon(
+                modifier = Modifier
+                    .background(backgroundIconColor, shape)
+                    .size(AppTokens.dp.periodPicker.icon)
+                    .padding(2.dp),
+                imageVector = AppTokens.icons.NavArrowDown,
+                tint = iconColor,
+                contentDescription = null
+            )
+        }
+
+        Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
 
         Text(
             text = text,
-            style = AppTokens.typography.b16Bold(),
-            color = AppTokens.colors.text.primary
-        )
-
-        Spacer(Modifier.width(AppTokens.dp.datePicker.spacer))
-
-        Icon(
-            modifier = Modifier
-                .background(AppTokens.colors.background.primary, shape)
-                .size(AppTokens.dp.datePicker.icon)
-                .padding(2.dp),
-            imageVector = AppTokens.icons.NavArrowDown,
-            tint = AppTokens.colors.icon.secondary,
-            contentDescription = null
+            style = AppTokens.typography.b13Med(),
+            color = descriptionColor
         )
     }
 }
@@ -64,6 +98,17 @@ private fun DatePickerPreview() {
     PreviewContainer {
         DatePicker(
             value = DateTimeUtils.now(),
+            format = DateFormat.uuuu_MM_d,
+            title = "Text",
+            enabled = true,
+            onClick = {}
+        )
+
+        DatePicker(
+            value = DateTimeUtils.now(),
+            format = DateFormat.uuuu_MM_d,
+            title = "Text",
+            enabled = false,
             onClick = {}
         )
     }

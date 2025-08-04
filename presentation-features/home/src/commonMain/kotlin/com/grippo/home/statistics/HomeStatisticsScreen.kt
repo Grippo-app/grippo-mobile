@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
+import com.grippo.date.utils.DateFormat
 import com.grippo.design.components.datetime.PeriodPicker
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
@@ -45,6 +46,7 @@ internal fun HomeStatisticsScreen(
             ) {
                 PeriodPicker(
                     value = state.period,
+                    format = DateFormat.MM_d,
                     onClick = contract::selectPeriod
                 )
             }

@@ -11,15 +11,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.scale
 
 @Composable
 public fun Modifier.scalableClick(
     enabled: Boolean = true,
     onClick: () -> Unit
-): Modifier {
+): Modifier = composed {
+    if (!enabled) return@composed this
 
-    val interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
+    val interactionSource = remember { MutableInteractionSource() }
     val scaleDown = 0.97f
     var pressed by remember { mutableStateOf(false) }
 
@@ -37,11 +39,10 @@ public fun Modifier.scalableClick(
         label = "clickScale"
     )
 
-    return this
+    this
         .scale(scale)
         .clickable(
             interactionSource = interactionSource,
-            enabled = enabled,
             indication = null,
             onClick = onClick
         )

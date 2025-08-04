@@ -85,6 +85,7 @@ public interface AppColor {
         public val primary: Color
         public val secondary: Color
         public val tertiary: Color
+        public val disabled: Color
         public val accent: Color
     }
 
@@ -130,7 +131,6 @@ public interface AppColor {
     public interface IconColors {
         public val primary: Color
         public val secondary: Color
-        public val disabled: Color
         public val accent: Color
         public val inverted: Color
     }

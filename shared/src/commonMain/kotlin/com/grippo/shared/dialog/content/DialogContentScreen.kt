@@ -3,6 +3,8 @@ package com.grippo.shared.dialog.content
 import androidx.compose.animation.animateContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.arkivanov.decompose.extensions.compose.experimental.stack.animation.fade
+import com.arkivanov.decompose.extensions.compose.experimental.stack.animation.stackAnimation
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.core.AppTokens
@@ -21,6 +23,7 @@ internal fun DialogContentScreen(
             .weight(1f, false)
             .animateContentSize(),
         stack = component.childStack,
+        animation = stackAnimation(animator = fade()),
         content = { child -> child.instance.component.Render() }
     )
 }

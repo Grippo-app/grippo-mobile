@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -94,7 +95,14 @@ internal fun SelectableCardLarge(
             }
         }
 
+
         style.subContent?.let { subContent ->
+            Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+
+            HorizontalDivider(
+                modifier = Modifier.fillMaxWidth(),
+                color = AppTokens.colors.divider.primary
+            )
 
             Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
 

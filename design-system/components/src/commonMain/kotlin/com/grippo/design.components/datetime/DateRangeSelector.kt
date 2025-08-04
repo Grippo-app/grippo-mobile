@@ -5,12 +5,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.grippo.date.utils.DateCompose
 import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateRange
-import com.grippo.design.components.internal.Input
-import com.grippo.design.components.internal.InputStyle
-import com.grippo.design.components.internal.PlaceHolder
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.from
@@ -29,24 +25,22 @@ public fun DateRangeSelector(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
-        val formattedFrom = DateCompose.rememberFormat(value = value.from, DateFormat.uuuu_MM_d)
-
-        Input(
+        DatePicker(
             modifier = Modifier.weight(1f),
-            inputStyle = InputStyle.Clickable(onClick = onFromClick),
-            value = formattedFrom,
+            title = AppTokens.strings.res(Res.string.from),
+            value = value.from,
+            format = DateFormat.uuuu_MM_d,
             enabled = enabled,
-            placeholder = PlaceHolder.OverInput(AppTokens.strings.res(Res.string.from))
+            onClick = onFromClick
         )
 
-        val formattedTo = DateCompose.rememberFormat(value = value.to, DateFormat.uuuu_MM_d)
-
-        Input(
+        DatePicker(
             modifier = Modifier.weight(1f),
-            inputStyle = InputStyle.Clickable(onClick = onToClick),
-            value = formattedTo,
+            title = AppTokens.strings.res(Res.string.to),
+            value = value.to,
+            format = DateFormat.uuuu_MM_d,
             enabled = enabled,
-            placeholder = PlaceHolder.OverInput(AppTokens.strings.res(Res.string.to))
+            onClick = onToClick
         )
     }
 }
