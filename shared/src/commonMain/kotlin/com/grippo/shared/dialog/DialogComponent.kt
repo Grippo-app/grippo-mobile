@@ -27,7 +27,7 @@ internal class DialogComponent(
 
     var content: DialogContentComponent? = null
 
-    private val backCallback = BackCallback(onBack = { viewModel.dismiss(null) })
+    private val backCallback = BackCallback(onBack = { viewModel.onDismiss(null) })
 
     init {
         backHandler.register(backCallback)
@@ -56,7 +56,7 @@ internal class DialogComponent(
         val component = content ?: DialogContentComponent(
             initial = router,
             componentContext = context,
-            back = viewModel::dismiss,
+            back = viewModel::onDismiss,
         ).also { content = it }
 
         return Child.Content(component)

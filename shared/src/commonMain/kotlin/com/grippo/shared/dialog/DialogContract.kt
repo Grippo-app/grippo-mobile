@@ -3,13 +3,11 @@ package com.grippo.shared.dialog
 import com.grippo.dialog.api.DialogConfig
 
 internal interface DialogContract {
-    fun dismiss(pendingResult: (() -> Unit)?)
-    fun release(config: DialogConfig)
-    fun pop()
+    fun onDismiss(pendingResult: (() -> Unit)?)
+    fun onRelease(config: DialogConfig)
 
     companion object Empty : DialogContract {
-        override fun dismiss(pendingResult: (() -> Unit)?) {}
-        override fun pop() {}
-        override fun release(config: DialogConfig) {}
+        override fun onDismiss(pendingResult: (() -> Unit)?) {}
+        override fun onRelease(config: DialogConfig) {}
     }
 }
