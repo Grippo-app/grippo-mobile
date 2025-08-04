@@ -26,8 +26,16 @@ public sealed class SelectableCardStyle(
         override val title: String,
         val description: String,
         val icon: ImageVector,
+        val style: ColorStyle,
         val subContent: (@Composable ColumnScope.() -> Unit)?,
-    ) : SelectableCardStyle(title)
+    ) : SelectableCardStyle(title) {
+
+        @Immutable
+        public enum class ColorStyle {
+            PRIMARY,
+            SECONDARY
+        }
+    }
 }
 
 @Composable
@@ -56,6 +64,7 @@ private fun SelectableCardLargePreview() {
                 title = "Test Title",
                 description = "Test Description",
                 icon = Icons.Filled.Done,
+                style = SelectableCardStyle.Large.ColorStyle.PRIMARY,
                 subContent = {
                     Box(modifier = Modifier.size(40.dp).background(Color.Green))
                 }
@@ -67,6 +76,7 @@ private fun SelectableCardLargePreview() {
                 title = "Test Title",
                 description = "Test Description",
                 icon = Icons.Filled.Done,
+                style = SelectableCardStyle.Large.ColorStyle.SECONDARY,
                 subContent = null
             )
         )

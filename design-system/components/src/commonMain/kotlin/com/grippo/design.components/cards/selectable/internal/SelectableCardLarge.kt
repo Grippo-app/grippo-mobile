@@ -40,7 +40,7 @@ internal fun SelectableCardLarge(
     val shape = RoundedCornerShape(AppTokens.dp.selectableCard.large.radius)
 
     val borderColor by animateColorAsState(
-        if (isSelected) AppTokens.colors.border.focus else AppTokens.colors.border.primary,
+        if (isSelected) AppTokens.colors.border.focus else AppTokens.colors.border.default,
         label = "border"
     )
 
@@ -49,10 +49,15 @@ internal fun SelectableCardLarge(
         label = "iconTint"
     )
 
+    val background = when (style.style) {
+        SelectableCardStyle.Large.ColorStyle.PRIMARY -> AppTokens.colors.background.primary
+        SelectableCardStyle.Large.ColorStyle.SECONDARY -> AppTokens.colors.background.secondary
+    }
+
     Column(
         modifier = modifier
             .scalableClick(onClick = onClick)
-            .background(AppTokens.colors.background.secondary, shape)
+            .background(background, shape)
             .border(1.dp, borderColor, shape)
             .padding(
                 horizontal = AppTokens.dp.selectableCard.large.horizontalPadding,
@@ -106,6 +111,7 @@ private fun SelectableCardLargePreview() {
                 title = "Test Title",
                 description = "Test Description with big text for all cases and more options to do somethig!",
                 icon = Icons.Filled.Done,
+                style = SelectableCardStyle.Large.ColorStyle.PRIMARY,
                 subContent = {
                     Box(modifier = Modifier.size(40.dp).background(Color.Green))
                 }
@@ -117,6 +123,7 @@ private fun SelectableCardLargePreview() {
                 title = "Test Title",
                 description = "Test Description with big text for all cases and more options to do somethig!",
                 icon = Icons.Filled.Done,
+                style = SelectableCardStyle.Large.ColorStyle.SECONDARY,
                 subContent = null
             )
         )

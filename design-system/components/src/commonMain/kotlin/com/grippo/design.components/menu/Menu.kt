@@ -35,7 +35,7 @@ public fun <KEY> Menu(
         modifier = modifier
             .fillMaxWidth()
             .background(AppTokens.colors.background.secondary, shape)
-            .border(1.dp, AppTokens.colors.border.primary, shape)
+            .border(1.dp, AppTokens.colors.border.default, shape)
     ) {
 
         items.forEachIndexed { index, item ->

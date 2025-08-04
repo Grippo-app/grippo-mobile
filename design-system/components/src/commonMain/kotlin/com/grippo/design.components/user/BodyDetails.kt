@@ -40,7 +40,7 @@ internal fun BodyItem(
             )
             .border(
                 1.dp,
-                color = AppTokens.colors.border.primary,
+                color = AppTokens.colors.border.default,
                 shape = RoundedCornerShape(AppTokens.dp.bodyDetails.radius)
             )
             .height(intrinsicSize = IntrinsicSize.Min)

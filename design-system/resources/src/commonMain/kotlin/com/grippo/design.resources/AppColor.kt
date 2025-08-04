@@ -116,7 +116,7 @@ public interface AppColor {
     }
 
     public interface BorderColors {
-        public val primary: Color
+        public val default: Color
         public val inverted: Color
         public val focus: Color
         public val error: Color

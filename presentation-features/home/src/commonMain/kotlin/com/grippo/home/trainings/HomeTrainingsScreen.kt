@@ -101,7 +101,7 @@ internal fun HomeTrainingsScreen(
                         modifier = Modifier
                             .border(
                                 width = 1.dp,
-                                color = AppTokens.colors.border.primary,
+                                color = AppTokens.colors.border.default,
                                 shape = shape,
                                 sides = sides
                             )
@@ -139,7 +139,7 @@ internal fun HomeTrainingsScreen(
                         modifier = Modifier
                             .border(
                                 width = 1.dp,
-                                color = AppTokens.colors.border.primary,
+                                color = AppTokens.colors.border.default,
                                 shape = shape,
                                 sides = sides
                             )
