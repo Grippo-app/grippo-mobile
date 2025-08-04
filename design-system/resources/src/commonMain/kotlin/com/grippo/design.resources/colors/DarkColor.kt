@@ -37,6 +37,7 @@ public object DarkColor : AppColor {
     override val icon: AppColor.IconColors = object : AppColor.IconColors {
         override val primary = AppColorTokens.NeutralDark.N700
         override val secondary = AppColorTokens.NeutralDark.N600
+        override val disabled = AppColorTokens.NeutralDark.N450
         override val accent = AppColorTokens.Common.Accent
         override val inverted = AppColorTokens.Common.Black
     }
@@ -84,7 +85,6 @@ public object DarkColor : AppColor {
         override val primary = AppColorTokens.NeutralDark.N100
         override val secondary = AppColorTokens.NeutralDark.N150
         override val tertiary = AppColorTokens.NeutralDark.N200
-        override val disabled = AppColorTokens.NeutralDark.N400
         override val accent = AppColorTokens.Common.Accent
     }
 
