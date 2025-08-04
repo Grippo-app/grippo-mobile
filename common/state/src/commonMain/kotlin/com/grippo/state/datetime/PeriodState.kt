@@ -2,6 +2,7 @@ package com.grippo.state.datetime
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.date.utils.DateCompose
 import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateRange
@@ -10,6 +11,8 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.custom
 import com.grippo.design.resources.daily
+import com.grippo.design.resources.icons.Calendar
+import com.grippo.design.resources.icons.Settings
 import com.grippo.design.resources.monthly
 import com.grippo.design.resources.weekly
 import kotlinx.serialization.Serializable
@@ -49,10 +52,19 @@ public sealed interface PeriodState {
         is MONTHLY -> AppTokens.strings.res(Res.string.monthly)
     }
 
+
     @Composable
-    public fun range(): String {
-        val from = DateCompose.rememberFormat(range.from, DateFormat.MM_d)
-        val to = DateCompose.rememberFormat(range.to, DateFormat.MM_d)
+    public fun icon(): ImageVector = when (this) {
+        is CUSTOM -> AppTokens.icons.Settings
+        is DAILY -> AppTokens.icons.Calendar
+        is WEEKLY -> AppTokens.icons.Calendar
+        is MONTHLY -> AppTokens.icons.Calendar
+    }
+
+    @Composable
+    public fun range(format: DateFormat): String {
+        val from = DateCompose.rememberFormat(range.from, format)
+        val to = DateCompose.rememberFormat(range.to, format)
         return "$from - $to"
     }
 }

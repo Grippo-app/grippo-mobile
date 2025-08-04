@@ -103,7 +103,8 @@ internal fun ExperienceScreen(
                     style = SelectableCardStyle.Large(
                         title = item.title(),
                         description = item.description(),
-                        icon = item.icon()
+                        icon = item.icon(),
+                        subContent = null
                     ),
                 )
             }

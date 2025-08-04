@@ -86,9 +86,9 @@ internal fun Input(
 
     val borderColor = when {
         error is InputError.Error -> colors.semantic.error
-        !enabled -> Color.Transparent
+        !enabled -> colors.input.borderDisabled
         hasFocus.value -> colors.border.focus
-        else -> colors.border.defaultPrimary
+        else -> colors.input.border
     }
 
     val backgroundColor = when (enabled) {

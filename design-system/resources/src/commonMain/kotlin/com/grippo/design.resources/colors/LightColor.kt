@@ -72,7 +72,7 @@ public object LightColor : AppColor {
 
     override val input: AppColor.InputColors = object : AppColor.InputColors {
         override val background = AppColorTokens.Common.White
-        override val border = AppColorTokens.NeutralLight.N400
+        override val border = AppColorTokens.NeutralLight.N200
         override val placeholder = AppColorTokens.NeutralLight.N400
         override val label = AppColorTokens.NeutralLight.N500
         override val text = AppColorTokens.Common.Black
@@ -81,7 +81,7 @@ public object LightColor : AppColor {
         override val trailing = AppColorTokens.NeutralLight.N700
 
         override val backgroundDisabled = AppColorTokens.NeutralLight.N200
-        override val borderDisabled = AppColorTokens.NeutralLight.N400
+        override val borderDisabled = AppColorTokens.NeutralLight.N200
         override val textDisabled = AppColorTokens.NeutralLight.N400
         override val placeholderDisabled = AppColorTokens.NeutralLight.N400
     }

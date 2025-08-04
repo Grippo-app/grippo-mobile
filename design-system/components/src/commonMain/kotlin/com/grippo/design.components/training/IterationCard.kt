@@ -34,7 +34,7 @@ public fun IterationCard(
             .height(intrinsicSize = IntrinsicSize.Min)
             .border(
                 width = 1.dp,
-                color = AppTokens.colors.border.defaultPrimary,
+                color = AppTokens.colors.border.primary,
                 shape = RoundedCornerShape(AppTokens.dp.iterationCard.radius),
             )
             .padding(

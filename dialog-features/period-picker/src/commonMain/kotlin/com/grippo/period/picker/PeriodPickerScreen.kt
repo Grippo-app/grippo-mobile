@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
+import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
@@ -75,9 +76,10 @@ internal fun PeriodPickerScreen(
                     modifier = Modifier.fillMaxWidth(),
                     isSelected = isSelected,
                     onSelect = clickProvider,
-                    style = SelectableCardStyle.Medium(
+                    style = SelectableCardStyle.Large(
                         title = item.text(),
-                        description = item.range(),
+                        description = item.range(DateFormat.uuuu_MM_d),
+                        icon = item.icon(),
                         subContent = if (item is PeriodState.CUSTOM && isSelected) {
                             {
                                 DateRangeSelector(

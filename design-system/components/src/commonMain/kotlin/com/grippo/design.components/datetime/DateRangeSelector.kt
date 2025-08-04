@@ -8,12 +8,13 @@ import androidx.compose.ui.Modifier
 import com.grippo.date.utils.DateCompose
 import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateRange
-import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.internal.Input
+import com.grippo.design.components.internal.InputStyle
+import com.grippo.design.components.internal.PlaceHolder
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
-import com.grippo.design.resources.from_value
-import com.grippo.design.resources.to_value
+import com.grippo.design.resources.from
+import com.grippo.design.resources.to
 
 @Composable
 public fun DateRangeSelector(
@@ -27,24 +28,22 @@ public fun DateRangeSelector(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
-        val formattedFrom = DateCompose.rememberFormat(value = value.from, DateFormat.MM_d)
-        val from = AppTokens.strings.res(Res.string.from_value, formattedFrom)
+        val formattedFrom = DateCompose.rememberFormat(value = value.from, DateFormat.uuuu_MM_d)
 
-        Button(
+        Input(
             modifier = Modifier.weight(1f),
-            style = ButtonStyle.Secondary,
-            onClick = onFromClick,
-            text = from
+            inputStyle = InputStyle.Clickable(onClick = onFromClick),
+            value = formattedFrom,
+            placeholder = PlaceHolder.OverInput(AppTokens.strings.res(Res.string.from))
         )
 
-        val formattedTo = DateCompose.rememberFormat(value = value.to, DateFormat.MM_d)
-        val to = AppTokens.strings.res(Res.string.to_value, formattedTo)
+        val formattedTo = DateCompose.rememberFormat(value = value.to, DateFormat.uuuu_MM_d)
 
-        Button(
+        Input(
             modifier = Modifier.weight(1f),
-            style = ButtonStyle.Secondary,
-            onClick = onToClick,
-            text = to
+            inputStyle = InputStyle.Clickable(onClick = onToClick),
+            value = formattedTo,
+            placeholder = PlaceHolder.OverInput(AppTokens.strings.res(Res.string.to))
         )
     }
 }
