@@ -10,34 +10,34 @@ import androidx.compose.ui.graphics.Shape
 
 public interface SelectorProperties {
     @Composable
-    public fun enabled(): State<Boolean>
-
-    @Composable
     public fun shape(): State<Shape>
 
     @Composable
     public fun color(): State<Color>
 
     @Composable
-    public fun border(): State<BorderStroke?>
+    public fun border(): State<BorderStroke>
 }
 
 @Immutable
 public class DefaultSelectorProperties(
-    private val enabled: Boolean,
     private val shape: Shape,
     private val color: Color,
-    private val border: BorderStroke?
+    private val border: BorderStroke
 ) : SelectorProperties {
-    @Composable
-    override fun enabled(): State<Boolean> = rememberUpdatedState(enabled)
 
     @Composable
-    override fun shape(): State<Shape> = rememberUpdatedState(shape)
+    override fun shape(): State<Shape> {
+        return rememberUpdatedState(shape)
+    }
 
     @Composable
-    override fun color(): State<Color> = rememberUpdatedState(color)
+    override fun color(): State<Color> {
+        return rememberUpdatedState(color)
+    }
 
     @Composable
-    override fun border(): State<BorderStroke?> = rememberUpdatedState(border)
+    override fun border(): State<BorderStroke> {
+        return rememberUpdatedState(border)
+    }
 }

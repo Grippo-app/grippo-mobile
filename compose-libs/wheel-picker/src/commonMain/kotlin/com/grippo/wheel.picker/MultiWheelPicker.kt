@@ -12,15 +12,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.key
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 
 @Immutable
 public data class MultiWheelPickerConfig(
-    val spacing: Dp = 8.dp,
     val rowCount: Int = 3,
 )
 
@@ -37,40 +33,30 @@ public fun MultiWheelPicker(
         val background = selectorProperties.color().value
         val shape = selectorProperties.shape().value
         val border = selectorProperties.border().value
-        val enabled = selectorProperties.enabled().value
 
-        val wheelConfig = remember(config.rowCount, itemHeight) {
-            WheelConfig(
-                rowCount = config.rowCount,
-                itemHeight = itemHeight,
-            )
-        }
-
-        if (enabled) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(itemHeight)
-                    .align(Alignment.Center)
-                    .background(background, shape)
-                    .let { if (border != null) it.border(border, shape) else it }
-            )
-        }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(itemHeight)
+                .align(Alignment.Center)
+                .background(background, shape)
+                .border(border, shape)
+        )
 
         Row(
             modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.spacedBy(config.spacing),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            content = {
-                columns.forEach { column ->
-                    key(column.id) {
-                        column.Content(
-                            modifier = modifier.weight(1f),
-                            config = wheelConfig,
-                        )
-                    }
+        ) {
+            columns.forEach { column ->
+                key(column.id) {
+                    column.Content(
+                        modifier = Modifier.weight(1f),
+                        height = itemHeight,
+                        rowCount = config.rowCount
+                    )
                 }
             }
-        )
+        }
     }
 }
