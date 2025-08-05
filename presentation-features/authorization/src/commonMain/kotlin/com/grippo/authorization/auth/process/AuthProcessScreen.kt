@@ -16,7 +16,7 @@ internal fun AuthProcessScreen(
     state: AuthProcessState,
     loaders: ImmutableSet<AuthProcessLoader>,
     contract: AuthProcessContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
     ChildStackCompose(
         modifier = Modifier.fillMaxSize(),
         stack = component.childStack,

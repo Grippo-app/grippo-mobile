@@ -29,7 +29,7 @@ internal fun HomeStatisticsScreen(
     state: HomeStatisticsState,
     loaders: ImmutableSet<HomeStatisticsLoader>,
     contract: HomeStatisticsContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),

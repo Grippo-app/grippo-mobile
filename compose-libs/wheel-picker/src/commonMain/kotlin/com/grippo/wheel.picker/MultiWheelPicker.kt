@@ -1,7 +1,6 @@
 package com.grippo.wheel.picker
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -32,7 +31,6 @@ public fun MultiWheelPicker(
 
         val background = selectorProperties.color().value
         val shape = selectorProperties.shape().value
-        val border = selectorProperties.border().value
 
         Box(
             modifier = Modifier
@@ -40,7 +38,6 @@ public fun MultiWheelPicker(
                 .height(itemHeight)
                 .align(Alignment.Center)
                 .background(background, shape)
-                .border(border, shape)
         )
 
         Row(

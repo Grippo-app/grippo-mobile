@@ -18,7 +18,7 @@ internal fun SplashScreen(
     state: SplashState,
     loaders: ImmutableSet<SplashLoader>,
     contract: SplashContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
     Box(Modifier.fillMaxSize()) {
         if (loaders.contains(SplashLoader.AppContent)) {
             Loader(modifier = Modifier.fillMaxSize())

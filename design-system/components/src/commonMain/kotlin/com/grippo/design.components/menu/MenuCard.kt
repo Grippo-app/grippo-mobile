@@ -55,7 +55,7 @@ public fun MenuCard(
 
         Icon(
             modifier = Modifier
-                .background(AppTokens.colors.background.primary, shape)
+                .background(AppTokens.colors.background.screen, shape)
                 .size(AppTokens.dp.menu.item.icon)
                 .padding(2.dp),
             imageVector = AppTokens.icons.NavArrowRight,

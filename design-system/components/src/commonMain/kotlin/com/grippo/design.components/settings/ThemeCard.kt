@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.selectors.Radio
@@ -57,7 +58,7 @@ public fun ThemeCard(
     }
 
     val borderColor by animateColorAsState(
-        if (isSelected) AppTokens.colors.border.focus else AppTokens.colors.border.default,
+        if (isSelected) AppTokens.colors.border.focus else Color.Transparent,
         label = "border"
     )
 

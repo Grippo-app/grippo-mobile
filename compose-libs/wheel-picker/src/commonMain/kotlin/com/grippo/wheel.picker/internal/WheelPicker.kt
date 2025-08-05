@@ -1,6 +1,5 @@
 package com.grippo.wheel.picker.internal
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -132,10 +131,8 @@ internal object WheelPickerDefaults {
     fun selectorProperties(
         shape: Shape = RoundedCornerShape(16.dp),
         color: Color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
-        border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
     ): SelectorProperties = DefaultSelectorProperties(
         shape = shape,
         color = color,
-        border = border
     )
 }

@@ -27,7 +27,7 @@ internal fun SystemScreen(
     state: SystemState,
     loaders: ImmutableSet<SystemLoader>,
     contract: SystemContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),

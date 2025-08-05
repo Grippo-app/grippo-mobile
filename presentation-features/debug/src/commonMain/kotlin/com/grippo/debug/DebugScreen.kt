@@ -27,7 +27,7 @@ internal fun DebugScreen(
     state: DebugState,
     loaders: ImmutableSet<DebugLoader>,
     contract: DebugContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
 
     val segmentItems = remember {
         DebugMenu.entries.map { it to UiText.Str(it.name) }.toPersistentList()

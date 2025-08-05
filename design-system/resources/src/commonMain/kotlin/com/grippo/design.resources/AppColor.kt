@@ -67,7 +67,6 @@ public interface AppColor {
 
     public interface InputColors {
         public val background: Color
-        public val border: Color
         public val placeholder: Color
         public val label: Color
         public val text: Color
@@ -76,15 +75,14 @@ public interface AppColor {
         public val trailing: Color
 
         public val backgroundDisabled: Color
-        public val borderDisabled: Color
         public val textDisabled: Color
         public val placeholderDisabled: Color
     }
 
     public interface BackgroundColors {
-        public val primary: Color
-        public val secondary: Color
-        public val tertiary: Color
+        public val screen: Color
+        public val dialog: Color
+        public val card: Color
         public val accent: Color
     }
 
@@ -172,7 +170,6 @@ public interface AppColor {
             public val startColor: Color
             public val endColor: Color
             public val contentColor: Color
-            public val borderColor: Color
         }
     }
 

@@ -41,7 +41,7 @@ internal fun SelectableCardLarge(
     val shape = RoundedCornerShape(AppTokens.dp.selectableCard.large.radius)
 
     val borderColor by animateColorAsState(
-        if (isSelected) AppTokens.colors.border.focus else AppTokens.colors.border.default,
+        if (isSelected) AppTokens.colors.border.focus else Color.Transparent,
         label = "border"
     )
 
@@ -50,16 +50,10 @@ internal fun SelectableCardLarge(
         label = "iconTint"
     )
 
-    val background = when (style.style) {
-        SelectableCardStyle.Large.ColorStyle.PRIMARY -> AppTokens.colors.background.primary
-        SelectableCardStyle.Large.ColorStyle.SECONDARY -> AppTokens.colors.background.secondary
-        SelectableCardStyle.Large.ColorStyle.TERTIARY -> AppTokens.colors.background.tertiary
-    }
-
     Column(
         modifier = modifier
             .scalableClick(onClick = onClick)
-            .background(background, shape)
+            .background(AppTokens.colors.background.card, shape)
             .border(1.dp, borderColor, shape)
             .padding(
                 horizontal = AppTokens.dp.selectableCard.large.horizontalPadding,
@@ -87,6 +81,7 @@ internal fun SelectableCardLarge(
                     style = AppTokens.typography.b14Bold(),
                     color = AppTokens.colors.text.primary
                 )
+
                 Text(
                     text = style.description,
                     style = AppTokens.typography.b13Semi(),
@@ -120,7 +115,6 @@ private fun SelectableCardLargePreview() {
                 title = "Test Title",
                 description = "Test Description with big text for all cases and more options to do somethig!",
                 icon = Icons.Filled.Done,
-                style = SelectableCardStyle.Large.ColorStyle.PRIMARY,
                 subContent = {
                     Box(modifier = Modifier.size(40.dp).background(Color.Green))
                 }
@@ -132,7 +126,6 @@ private fun SelectableCardLargePreview() {
                 title = "Test Title",
                 description = "Test Description with big text for all cases and more options to do somethig!",
                 icon = Icons.Filled.Done,
-                style = SelectableCardStyle.Large.ColorStyle.SECONDARY,
                 subContent = null
             )
         )

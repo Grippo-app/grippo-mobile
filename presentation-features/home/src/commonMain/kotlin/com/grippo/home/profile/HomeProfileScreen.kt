@@ -41,7 +41,7 @@ internal fun HomeProfileScreen(
     state: HomeProfileState,
     loaders: ImmutableSet<HomeProfileLoader>,
     contract: HomeProfileContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
@@ -63,7 +63,7 @@ internal fun HomeProfileScreen(
             .verticalScroll(rememberScrollState())
             .padding(
                 horizontal = AppTokens.dp.screen.horizontalPadding,
-                vertical = AppTokens.dp.contentPadding.content
+                vertical = AppTokens.dp.screen.verticalPadding
             ).imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

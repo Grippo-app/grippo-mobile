@@ -47,7 +47,7 @@ internal fun MissingEquipmentsScreen(
     state: MissingEquipmentsState,
     loaders: ImmutableSet<MissingEquipmentsLoader>,
     contract: MissingEquipmentsContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),

@@ -24,7 +24,7 @@ internal fun BottomNavigationScreen(
     state: BottomNavigationState,
     loaders: ImmutableSet<BottomNavigationLoader>,
     contract: BottomNavigationContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
 
     val tabs = BottomBarMenu.entries
         .map { it.ordinal to TabItem(text = it.title(), icon = it.icon()) }
@@ -60,7 +60,7 @@ private fun ScreenPreview() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
-                        .background(AppTokens.colors.background.primary)
+                        .background(AppTokens.colors.background.screen)
                 )
             }
         )

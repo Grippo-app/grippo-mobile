@@ -30,7 +30,6 @@ public fun IntensityChip(
         value = displayValue,
         trailing = Trailing.Icon(AppTokens.icons.FireFlame),
         contentColor = colors.contentColor,
-        borderColor = colors.borderColor,
         brush = Brush.horizontalGradient(
             colors = listOf(colors.startColor, colors.endColor)
         )

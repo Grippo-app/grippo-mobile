@@ -41,7 +41,7 @@ internal fun ExperienceScreen(
     state: ExperienceState,
     loaders: ImmutableSet<ExperienceLoader>,
     contract: ExperienceContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
@@ -104,7 +104,6 @@ internal fun ExperienceScreen(
                         title = item.title(),
                         description = item.description(),
                         icon = item.icon(),
-                        style = SelectableCardStyle.Large.ColorStyle.SECONDARY,
                         subContent = null,
                     ),
                 )

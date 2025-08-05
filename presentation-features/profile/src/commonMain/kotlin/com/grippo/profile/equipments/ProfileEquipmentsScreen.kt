@@ -40,7 +40,7 @@ internal fun ProfileEquipmentsScreen(
     state: ProfileEquipmentsState,
     loaders: ImmutableSet<ProfileEquipmentsLoader>,
     contract: ProfileEquipmentsContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
 
     val segmentItems = remember(state.suggestions) {
         state.suggestions.map { it.id to UiText.Str(it.name) }.toPersistentList()

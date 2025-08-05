@@ -45,7 +45,7 @@ public fun Toolbar(
 ) {
 
     val color = when (style) {
-        ToolbarStyle.Default -> AppTokens.colors.background.secondary
+        ToolbarStyle.Default -> AppTokens.colors.background.dialog
         ToolbarStyle.Transparent -> Color.Transparent
     }
 

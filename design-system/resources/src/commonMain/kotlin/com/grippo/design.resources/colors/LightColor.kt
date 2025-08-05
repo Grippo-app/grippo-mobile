@@ -33,7 +33,7 @@ public object LightColor : AppColor {
     override val icon: AppColor.IconColors = object : AppColor.IconColors {
         override val primary = AppColorTokens.NeutralLight.N700
         override val secondary = AppColorTokens.NeutralLight.N600
-        override val disabled = AppColorTokens.NeutralLight.N300
+        override val disabled = AppColorTokens.NeutralLight.N400
         override val accent = AppColorTokens.Common.Accent
         override val inverted = AppColorTokens.Common.White
     }
@@ -57,8 +57,7 @@ public object LightColor : AppColor {
     }
 
     override val input: AppColor.InputColors = object : AppColor.InputColors {
-        override val background = AppColorTokens.Common.White
-        override val border = AppColorTokens.NeutralLight.N200
+        override val background = AppColorTokens.NeutralLight.N150
         override val placeholder = AppColorTokens.NeutralLight.N400
         override val label = AppColorTokens.NeutralLight.N500
         override val text = AppColorTokens.Common.Black
@@ -66,16 +65,15 @@ public object LightColor : AppColor {
         override val leading = AppColorTokens.NeutralLight.N700
         override val trailing = AppColorTokens.NeutralLight.N700
 
-        override val backgroundDisabled = AppColorTokens.NeutralLight.N200
-        override val borderDisabled = AppColorTokens.NeutralLight.N200
+        override val backgroundDisabled = AppColorTokens.NeutralLight.N300
         override val textDisabled = AppColorTokens.NeutralLight.N400
         override val placeholderDisabled = AppColorTokens.NeutralLight.N400
     }
 
     override val background: AppColor.BackgroundColors = object : AppColor.BackgroundColors {
-        override val primary = AppColorTokens.NeutralLight.N150
-        override val secondary = AppColorTokens.Common.White
-        override val tertiary = AppColorTokens.NeutralLight.N100
+        override val screen = AppColorTokens.NeutralLight.N050
+        override val dialog = AppColorTokens.Common.White
+        override val card = AppColorTokens.NeutralLight.N150
         override val accent = AppColorTokens.Common.Accent
     }
 
@@ -125,10 +123,10 @@ public object LightColor : AppColor {
     override val theme: AppColor.ThemeColors = object : AppColor.ThemeColors {
         override val lightText = AppColorTokens.Common.Black
         override val lightBackground1 = AppColorTokens.NeutralLight.N150
-        override val lightBackground2 = AppColorTokens.Common.White
+        override val lightBackground2 = AppColorTokens.NeutralLight.N150
         override val darkText = AppColorTokens.Common.White
-        override val darkBackground1 = AppColorTokens.NeutralDark.N100
-        override val darkBackground2 = AppColorTokens.NeutralDark.N150
+        override val darkBackground1 = AppColorTokens.NeutralDark.N200
+        override val darkBackground2 = AppColorTokens.NeutralDark.N200
     }
 
     override val konfetti: AppColor.Konfetti = object : AppColor.Konfetti {
@@ -150,7 +148,6 @@ public object LightColor : AppColor {
                 override val startColor = Color(0xFFFF5757)
                 override val endColor = Color(0xFFFF8C29)
                 override val contentColor = AppColorTokens.Common.White
-                override val borderColor = startColor.copy(alpha = 0.5f)
             }
 
         override val tonnage: AppColor.ChipColors.GradientColors =
@@ -158,7 +155,6 @@ public object LightColor : AppColor {
                 override val startColor = Color(0xFF2B7FFF)
                 override val endColor = Color(0xFF00C2FF)
                 override val contentColor = AppColorTokens.Common.White
-                override val borderColor = startColor.copy(alpha = 0.5f)
             }
 
         override val repetitions: AppColor.ChipColors.GradientColors =
@@ -166,7 +162,6 @@ public object LightColor : AppColor {
                 override val startColor = Color(0xFF8C52FF)
                 override val endColor = Color(0xFFAF5CF7)
                 override val contentColor = AppColorTokens.Common.White
-                override val borderColor = startColor.copy(alpha = 0.5f)
             }
     }
 

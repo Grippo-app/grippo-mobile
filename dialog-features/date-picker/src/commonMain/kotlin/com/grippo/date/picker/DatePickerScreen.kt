@@ -31,7 +31,7 @@ internal fun DatePickerScreen(
     state: DatePickerState,
     loaders: ImmutableSet<DatePickerLoader>,
     contract: DatePickerContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.secondary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
     Column(
         modifier = Modifier

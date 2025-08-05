@@ -30,7 +30,7 @@ internal fun ExerciseExampleScreen(
     state: ExerciseExampleState,
     loaders: ImmutableSet<ExerciseExampleLoader>,
     contract: ExerciseExampleContract
-) = BaseComposeScreen(background = ScreenBackground.Color(AppTokens.colors.background.secondary)) {
+) = BaseComposeScreen(background = ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
     val example = state.example ?: return@BaseComposeScreen
 

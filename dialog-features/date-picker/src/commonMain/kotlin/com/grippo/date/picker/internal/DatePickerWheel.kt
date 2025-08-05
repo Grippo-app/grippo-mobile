@@ -1,6 +1,5 @@
 package com.grippo.date.picker.internal
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,7 +11,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.grippo.date.utils.DateRange
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.core.AppTokens
@@ -88,8 +86,7 @@ internal fun DateWheelPicker(
             .height(AppTokens.dp.wheelPicker.height),
         selectorProperties = DefaultSelectorProperties(
             shape = RoundedCornerShape(AppTokens.dp.wheelPicker.radius),
-            color = AppTokens.colors.background.tertiary,
-            border = BorderStroke(1.dp, AppTokens.colors.border.default)
+            color = AppTokens.colors.background.card,
         ),
         columns = listOf(
             WheelColumn(

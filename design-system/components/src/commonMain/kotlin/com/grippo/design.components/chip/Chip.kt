@@ -17,8 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
-import com.grippo.design.components.modifiers.border
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -44,18 +42,12 @@ public fun Chip(
     value: String,
     trailing: Trailing,
     contentColor: Color,
-    borderColor: Color = Color.Transparent,
     brush: Brush,
 ) {
     val shape = RoundedCornerShape(AppTokens.dp.chip.radius)
 
     Row(
         modifier = modifier
-            .border(
-                width = 1.dp,
-                color = borderColor,
-                shape = shape
-            )
             .background(
                 brush = brush,
                 shape = shape
@@ -111,7 +103,7 @@ private fun ChipPreview() {
             label = "Basic",
             value = "Value",
             trailing = Trailing.Icon(AppTokens.icons.Weight),
-            brush = Brush.linearGradient(),
+            brush = Brush.linearGradient(listOf(Color.Gray, Color.LightGray)),
             contentColor = Color.Black
         )
     }

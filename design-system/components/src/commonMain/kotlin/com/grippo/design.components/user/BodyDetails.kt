@@ -35,7 +35,7 @@ internal fun BodyItem(
     Row(
         modifier = modifier
             .background(
-                AppTokens.colors.background.primary,
+                AppTokens.colors.background.screen,
                 RoundedCornerShape(AppTokens.dp.bodyDetails.radius)
             )
             .border(

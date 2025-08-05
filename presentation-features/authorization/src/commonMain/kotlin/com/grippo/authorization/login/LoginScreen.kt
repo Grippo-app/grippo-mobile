@@ -45,7 +45,7 @@ internal fun LoginScreen(
     state: LoginState,
     loaders: ImmutableSet<LoginLoader>,
     contract: LoginContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),

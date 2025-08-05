@@ -30,7 +30,7 @@ internal fun HeightPickerScreen(
     state: HeightPickerState,
     loaders: ImmutableSet<HeightPickerLoader>,
     contract: HeightPickerContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.secondary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
     Column(
         modifier = Modifier

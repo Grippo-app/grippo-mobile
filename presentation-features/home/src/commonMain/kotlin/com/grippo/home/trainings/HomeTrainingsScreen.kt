@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.date.utils.DateFormat
@@ -20,7 +19,6 @@ import com.grippo.design.components.chip.IntensityChip
 import com.grippo.design.components.chip.RepetitionsChip
 import com.grippo.design.components.chip.TonnageChip
 import com.grippo.design.components.datetime.DatePicker
-import com.grippo.design.components.modifiers.border
 import com.grippo.design.components.timeline.TimeLabel
 import com.grippo.design.components.timeline.TimelineIndicator
 import com.grippo.design.components.toolbar.Toolbar
@@ -47,7 +45,7 @@ internal fun HomeTrainingsScreen(
     state: HomeTrainingsState,
     loaders: ImmutableSet<HomeTrainingsLoader>,
     contract: HomeTrainingsContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
@@ -87,7 +85,7 @@ internal fun HomeTrainingsScreen(
             val radius = AppTokens.dp.exerciseCard.radius
             val style = remember(value) { timelineStyle(value) }
             val shape = remember(value) { shapeFor(value, radius) }
-            val sides = remember(value) { sidesFor(value) }
+            remember(value) { sidesFor(value) }
             val exercise = remember(value) { exerciseOf(value) }
 
             TimelineIndicator(style = style) {
@@ -103,13 +101,7 @@ internal fun HomeTrainingsScreen(
                 if (value is TrainingListValue.TrainingSummary) {
                     Column(
                         modifier = Modifier
-                            .border(
-                                width = 1.dp,
-                                color = AppTokens.colors.border.default,
-                                shape = shape,
-                                sides = sides
-                            )
-                            .background(AppTokens.colors.background.secondary, shape)
+                            .background(AppTokens.colors.background.card, shape)
                             .fillMaxWidth()
                             .padding(
                                 horizontal = AppTokens.dp.contentPadding.content,
@@ -141,13 +133,7 @@ internal fun HomeTrainingsScreen(
                 if (exercise != null) {
                     ExerciseCard(
                         modifier = Modifier
-                            .border(
-                                width = 1.dp,
-                                color = AppTokens.colors.border.default,
-                                shape = shape,
-                                sides = sides
-                            )
-                            .background(AppTokens.colors.background.secondary, shape)
+                            .background(AppTokens.colors.background.card, shape)
                             .fillMaxWidth()
                             .padding(AppTokens.dp.contentPadding.content),
                         value = exercise,

@@ -33,7 +33,7 @@ internal fun ErrorDisplayScreen(
     state: ErrorDisplayState,
     loaders: ImmutableSet<ErrorDisplayLoader>,
     contract: ErrorDisplayContract
-) = BaseComposeScreen(background = ScreenBackground.Color(AppTokens.colors.background.secondary)) {
+) = BaseComposeScreen(background = ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
     Column(
         modifier = Modifier

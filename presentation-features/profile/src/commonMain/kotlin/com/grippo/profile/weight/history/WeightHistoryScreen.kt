@@ -30,7 +30,7 @@ internal fun WeightHistoryScreen(
     state: WeightHistoryState,
     loaders: ImmutableSet<WeightHistoryLoader>,
     contract: WeightHistoryContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),

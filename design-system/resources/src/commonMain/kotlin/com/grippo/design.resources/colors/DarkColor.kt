@@ -63,8 +63,7 @@ public object DarkColor : AppColor {
     }
 
     override val input: AppColor.InputColors = object : AppColor.InputColors {
-        override val background = AppColorTokens.NeutralDark.N150
-        override val border = AppColorTokens.NeutralDark.N250
+        override val background = AppColorTokens.NeutralDark.N200
         override val placeholder = AppColorTokens.NeutralDark.N450
         override val label = AppColorTokens.NeutralDark.N550
         override val text = AppColorTokens.Common.White
@@ -73,15 +72,14 @@ public object DarkColor : AppColor {
         override val trailing = AppColorTokens.NeutralDark.N700
 
         override val backgroundDisabled = AppColorTokens.NeutralDark.N300
-        override val borderDisabled = AppColorTokens.NeutralDark.N300
         override val textDisabled = AppColorTokens.NeutralDark.N450
         override val placeholderDisabled = AppColorTokens.NeutralDark.N450
     }
 
     override val background: AppColor.BackgroundColors = object : AppColor.BackgroundColors {
-        override val primary = AppColorTokens.NeutralDark.N100
-        override val secondary = AppColorTokens.NeutralDark.N150
-        override val tertiary = AppColorTokens.NeutralDark.N200
+        override val screen = AppColorTokens.NeutralDark.N100
+        override val dialog = AppColorTokens.NeutralDark.N150
+        override val card = AppColorTokens.NeutralDark.N200
         override val accent = AppColorTokens.Common.Accent
     }
 
@@ -126,10 +124,10 @@ public object DarkColor : AppColor {
     override val theme: AppColor.ThemeColors = object : AppColor.ThemeColors {
         override val lightText = AppColorTokens.Common.Black
         override val lightBackground1 = AppColorTokens.NeutralLight.N150
-        override val lightBackground2 = AppColorTokens.Common.White
+        override val lightBackground2 = AppColorTokens.NeutralLight.N150
         override val darkText = AppColorTokens.Common.White
-        override val darkBackground1 = AppColorTokens.NeutralDark.N100
-        override val darkBackground2 = AppColorTokens.NeutralDark.N150
+        override val darkBackground1 = AppColorTokens.NeutralDark.N200
+        override val darkBackground2 = AppColorTokens.NeutralDark.N200
     }
 
     override val konfetti: AppColor.Konfetti = object : AppColor.Konfetti {
@@ -151,7 +149,6 @@ public object DarkColor : AppColor {
                 override val startColor = Color(0xFFFF6B6B)
                 override val endColor = Color(0xFFFF9F4F)
                 override val contentColor = AppColorTokens.Common.White
-                override val borderColor = startColor.copy(alpha = 0.5f)
             }
 
         override val tonnage: AppColor.ChipColors.GradientColors =
@@ -159,7 +156,6 @@ public object DarkColor : AppColor {
                 override val startColor = Color(0xFF4A8FFF)
                 override val endColor = Color(0xFF33D2FF)
                 override val contentColor = AppColorTokens.Common.White
-                override val borderColor = startColor.copy(alpha = 0.5f)
             }
 
         override val repetitions: AppColor.ChipColors.GradientColors =
@@ -167,7 +163,6 @@ public object DarkColor : AppColor {
                 override val startColor = Color(0xFFA56FFF)
                 override val endColor = Color(0xFFC87AFF)
                 override val contentColor = AppColorTokens.Common.White
-                override val borderColor = startColor.copy(alpha = 0.5f)
             }
     }
 

@@ -1,13 +1,11 @@
 package com.grippo.height.picker.internal
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -30,8 +28,7 @@ internal fun HeightWheelPicker(
             .height(AppTokens.dp.wheelPicker.height),
         selectorProperties = DefaultSelectorProperties(
             shape = RoundedCornerShape(AppTokens.dp.wheelPicker.radius),
-            color = AppTokens.colors.background.tertiary,
-            border = BorderStroke(1.dp, AppTokens.colors.border.default)
+            color = AppTokens.colors.background.card,
         ),
         columns = listOf(
             WheelColumn(

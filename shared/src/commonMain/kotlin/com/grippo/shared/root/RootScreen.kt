@@ -19,7 +19,7 @@ internal fun RootScreen(
     state: RootState,
     loaders: ImmutableSet<RootLoader>,
     contract: RootContract,
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
 
     val connectionState = remember(state.isConnectedToInternet) {
         when (state.isConnectedToInternet) {

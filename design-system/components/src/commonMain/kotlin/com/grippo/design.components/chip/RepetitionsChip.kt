@@ -23,7 +23,6 @@ public fun RepetitionsChip(
         value = value.toString(),
         trailing = Trailing.Icon(AppTokens.icons.Repeat),
         contentColor = colors.contentColor,
-        borderColor = colors.borderColor,
         brush = Brush.horizontalGradient(
             colors = listOf(colors.startColor, colors.endColor)
         )

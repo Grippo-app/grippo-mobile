@@ -16,7 +16,7 @@ internal fun RegistrationScreen(
     state: RegistrationState,
     loaders: ImmutableSet<RegistrationLoader>,
     contract: RegistrationContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
     ChildStackCompose(
         modifier = Modifier.fillMaxSize(),
         stack = component.childStack,

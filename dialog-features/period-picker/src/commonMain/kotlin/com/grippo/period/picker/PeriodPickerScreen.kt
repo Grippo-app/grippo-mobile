@@ -39,7 +39,7 @@ internal fun PeriodPickerScreen(
     state: PeriodPickerState,
     loaders: ImmutableSet<PeriodPickerLoader>,
     contract: PeriodPickerContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.secondary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
     Column(
         modifier = Modifier
@@ -80,7 +80,6 @@ internal fun PeriodPickerScreen(
                         title = item.text(),
                         description = item.range(DateFormat.uuuu_MM_d),
                         icon = item.icon(),
-                        style = SelectableCardStyle.Large.ColorStyle.TERTIARY,
                         subContent = if (item is PeriodState.CUSTOM) {
                             {
                                 DateRangeSelector(

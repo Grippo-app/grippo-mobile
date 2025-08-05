@@ -28,7 +28,7 @@ internal fun DialogScreen(
     state: DialogState,
     loaders: ImmutableSet<DialogLoader>,
     contract: DialogContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
     val slotState = component.childSlot.subscribeAsState()
     val child = slotState.value.child ?: return@BaseComposeScreen
 

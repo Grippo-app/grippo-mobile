@@ -37,7 +37,7 @@ internal fun BodyScreen(
     state: BodyState,
     loaders: ImmutableSet<BodyLoader>,
     contract: BodyContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),

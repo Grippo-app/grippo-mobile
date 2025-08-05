@@ -14,6 +14,7 @@ import com.grippo.design.components.modifiers.models.Side
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 
+@Deprecated("avoid borders in project")
 public fun Modifier.border(
     width: Dp,
     color: Color,

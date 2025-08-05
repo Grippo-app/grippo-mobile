@@ -30,7 +30,6 @@ public fun TonnageChip(
         value = displayValue,
         trailing = Trailing.Icon(AppTokens.icons.Weight),
         contentColor = colors.contentColor,
-        borderColor = colors.borderColor,
         brush = Brush.horizontalGradient(
             colors = listOf(colors.startColor, colors.endColor)
         )

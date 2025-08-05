@@ -1,7 +1,6 @@
 package com.grippo.design.components.cards.selectable.internal
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
@@ -33,8 +32,7 @@ internal fun MultiSelectableCardSmall(
     Row(
         modifier = modifier
             .scalableClick(onClick = onClick)
-            .background(AppTokens.colors.background.secondary, shape)
-            .border(1.dp, AppTokens.colors.border.default, shape)
+            .background(AppTokens.colors.background.card, shape)
             .padding(horizontal = AppTokens.dp.multiSelectableCard.small.horizontalPadding)
             .height(AppTokens.dp.multiSelectableCard.small.height),
         verticalAlignment = Alignment.CenterVertically,

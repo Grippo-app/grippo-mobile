@@ -37,7 +37,7 @@ internal fun NameScreen(
     state: NameState,
     loaders: ImmutableSet<NameLoader>,
     contract: NameContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),

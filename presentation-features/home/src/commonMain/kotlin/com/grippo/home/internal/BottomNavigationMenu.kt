@@ -45,7 +45,7 @@ internal fun BottomNavigationMenu(
                     elevation = ShadowElevation.Container,
                     sides = persistentListOf(Side.TOP)
                 )
-                .background(AppTokens.colors.background.secondary)
+                .background(AppTokens.colors.background.dialog)
                 .navigationBarsPadding()
                 .fillMaxWidth(),
             items = items,

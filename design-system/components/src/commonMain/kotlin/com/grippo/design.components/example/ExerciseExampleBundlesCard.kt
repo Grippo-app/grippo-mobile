@@ -19,7 +19,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.chart.PieChart
 import com.grippo.design.components.chip.Chip
@@ -110,7 +109,6 @@ public fun ExerciseExampleBundlesCard(
                             )
                         },
                         contentColor = AppTokens.colors.text.inverted,
-                        borderColor = Color.Transparent,
                         brush = Brush.horizontalGradient(
                             colors = listOf(color.copy(alpha = 0.7f), color)
                         )

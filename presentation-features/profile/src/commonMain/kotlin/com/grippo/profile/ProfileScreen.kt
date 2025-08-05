@@ -16,7 +16,7 @@ internal fun ProfileScreen(
     state: ProfileState,
     loaders: ImmutableSet<ProfileLoader>,
     contract: ProfileContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
     ChildStackCompose(
         modifier = Modifier.fillMaxSize(),
         stack = component.childStack,

@@ -31,7 +31,7 @@ internal fun DialogContentScreen(
     state: DialogContentState,
     loaders: ImmutableSet<DialogContentLoader>,
     contract: DialogContentContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.secondary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
     val stackState by component.childStack.subscribeAsState()
     val active = stackState.active
