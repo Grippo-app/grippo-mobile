@@ -101,6 +101,7 @@ internal class DialogContentComponent(
                 DatePickerComponent(
                     componentContext = context,
                     initial = router.initial,
+                    limitations = router.limitations,
                     onResult = { viewModel.onBack { router.onResult.invoke(it) } },
                     back = { viewModel.onBack(null) }
                 )

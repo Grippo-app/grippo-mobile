@@ -59,6 +59,16 @@ public object DateTimeUtils {
         )
     }
 
+    public fun trailingYear(): DateRange {
+        val today = Clock.System.now().toLocalDateTime(timeZone).date
+        val oneYearAgo = today.minus(DatePeriod(years = 1))
+
+        return DateRange(
+            from = oneYearAgo.atTime(DayTime.StartOfDay.localTime),
+            to = today.atTime(DayTime.EndOfDay.localTime)
+        )
+    }
+
     /* * * * * * * * * * *
      * Parsing via TimeZone
      * * * * * * * * * * */

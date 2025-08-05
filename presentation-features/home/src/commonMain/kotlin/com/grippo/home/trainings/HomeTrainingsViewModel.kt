@@ -3,6 +3,7 @@ package com.grippo.home.trainings
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
+import com.grippo.date.utils.DateTimeUtils
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState
@@ -57,6 +58,7 @@ internal class HomeTrainingsViewModel(
     override fun selectDate() {
         val dialog = DialogConfig.DatePicker(
             initial = state.value.date,
+            limitations = DateTimeUtils.trailingYear(),
             onResult = { value -> update { it.copy(date = value) } }
         )
 

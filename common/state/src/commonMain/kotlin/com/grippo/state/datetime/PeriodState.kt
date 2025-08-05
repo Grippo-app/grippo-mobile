@@ -42,7 +42,10 @@ public sealed interface PeriodState {
 
     @Serializable
     @Immutable
-    public data class CUSTOM(override val range: DateRange) : PeriodState
+    public data class CUSTOM(
+        override val range: DateRange,
+        val limitations: DateRange
+    ) : PeriodState
 
     @Composable
     public fun text(): String = when (this) {
@@ -51,7 +54,6 @@ public sealed interface PeriodState {
         is WEEKLY -> AppTokens.strings.res(Res.string.weekly)
         is MONTHLY -> AppTokens.strings.res(Res.string.monthly)
     }
-
 
     @Composable
     public fun icon(): ImageVector = when (this) {

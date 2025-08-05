@@ -7,51 +7,63 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.grippo.date.utils.DateRange
+import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.wheel.picker.DefaultSelectorProperties
 import com.grippo.wheel.picker.MultiWheelPicker
 import com.grippo.wheel.picker.WheelColumn
-import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.Month
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atTime
 import kotlinx.datetime.minus
-import kotlinx.datetime.plus
-import kotlinx.datetime.toLocalDateTime
-import kotlin.enums.EnumEntries
 
 @Composable
 internal fun DateWheelPicker(
     modifier: Modifier = Modifier,
     initial: LocalDateTime,
-    limitations: Pair<LocalDateTime, LocalDateTime>,
+    limitations: DateRange,
     select: (LocalDateTime) -> Unit,
 ) {
-    val months: EnumEntries<Month> = Month.entries
-    val years: List<Int> = (limitations.first.year..limitations.second.year).toList()
-
     var selectedYear by remember { mutableStateOf(initial.year) }
     var selectedMonth by remember { mutableStateOf(initial.month) }
     var selectedDay by remember { mutableStateOf(initial.dayOfMonth) }
 
-    val daysInMonth by remember(selectedYear, selectedMonth) {
-        derivedStateOf { (1..getDaysInMonth(selectedYear, selectedMonth)).toList() }
+    val years = remember(limitations) {
+        (limitations.from.year..limitations.to.year).toList()
+    }
+
+    val months = remember(selectedYear, limitations) {
+        val allMonths = Month.entries
+        when (selectedYear) {
+            limitations.from.year -> allMonths.slice(limitations.from.month.ordinal..11)
+            limitations.to.year -> allMonths.slice(0..limitations.to.month.ordinal)
+            else -> allMonths
+        }
+    }
+
+    val daysInMonth = remember(selectedYear, selectedMonth, limitations) {
+        val maxDay = getDaysInMonth(selectedYear, selectedMonth)
+        val minDay =
+            if (selectedYear == limitations.from.year && selectedMonth == limitations.from.month)
+                limitations.from.dayOfMonth else 1
+        val maxValidDay =
+            if (selectedYear == limitations.to.year && selectedMonth == limitations.to.month)
+                minOf(limitations.to.dayOfMonth, maxDay) else maxDay
+        (minDay..maxValidDay).toList()
     }
 
     val safeDay = remember(selectedDay, daysInMonth) {
-        minOf(selectedDay, daysInMonth.last())
+        selectedDay.coerceIn(daysInMonth.first(), daysInMonth.last())
     }
 
     LaunchedEffect(selectedYear, selectedMonth, safeDay) {
@@ -66,12 +78,12 @@ internal fun DateWheelPicker(
         }.getOrNull()
 
         localDate
-            ?.takeIf { it in limitations.first..limitations.second }
+            ?.takeIf { it in limitations.from..limitations.to }
             ?.let(select)
     }
 
     MultiWheelPicker(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(AppTokens.dp.wheelPicker.height),
         selectorProperties = DefaultSelectorProperties(
@@ -136,13 +148,9 @@ private fun getDaysInMonth(year: Int, month: Month): Int {
 @Composable
 private fun DateWheelPickerPreview() {
     PreviewContainer {
-        val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-        val start = now.date.minus(DatePeriod(years = 1)).atTime(now.time)
-        val end = now.date.plus(DatePeriod(years = 1)).atTime(now.time)
-
         DateWheelPicker(
-            initial = now,
-            limitations = start to end,
+            initial = DateTimeUtils.now(),
+            limitations = DateTimeUtils.trailingYear(),
             select = {}
         )
     }

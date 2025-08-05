@@ -1,12 +1,14 @@
 package com.grippo.date.picker
 
 import com.grippo.core.BaseViewModel
+import com.grippo.date.utils.DateRange
 import kotlinx.datetime.LocalDateTime
 
 public class DatePickerViewModel(
-    initial: LocalDateTime
+    initial: LocalDateTime,
+    limitations: DateRange
 ) : BaseViewModel<DatePickerState, DatePickerDirection, DatePickerLoader>(
-    DatePickerState(initial = initial)
+    DatePickerState(initial = initial, limitations = limitations)
 ), DatePickerContract {
 
     override fun onSelectDate(value: LocalDateTime) {

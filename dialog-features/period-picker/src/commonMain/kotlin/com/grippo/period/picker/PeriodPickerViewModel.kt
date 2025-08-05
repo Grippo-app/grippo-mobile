@@ -27,6 +27,7 @@ public class PeriodPickerViewModel(
 
         val dialog = DialogConfig.DatePicker(
             initial = custom.range.from,
+            limitations = custom.limitations.copy(to = custom.range.to),
             onResult = { value ->
                 val range = custom.range.copy(from = value)
                 val newValue = custom.copy(range = range)
@@ -42,6 +43,7 @@ public class PeriodPickerViewModel(
 
         val dialog = DialogConfig.DatePicker(
             initial = custom.range.to,
+            limitations = custom.limitations.copy(from = custom.range.from),
             onResult = { value ->
                 val range = custom.range.copy(to = value)
                 val newValue = custom.copy(range = range)

@@ -1,6 +1,7 @@
 package com.grippo.home.statistics
 
 import com.grippo.core.BaseViewModel
+import com.grippo.date.utils.DateTimeUtils
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.state.datetime.PeriodState
@@ -12,11 +13,16 @@ internal class HomeStatisticsViewModel(
 ), HomeStatisticsContract {
 
     override fun selectPeriod() {
+        val custom = (state.value.period as? PeriodState.CUSTOM) ?: PeriodState.CUSTOM(
+            range = DateTimeUtils.thisDay(),
+            limitations = DateTimeUtils.trailingYear()
+        )
+
         val available = listOf(
             PeriodState.DAILY,
             PeriodState.WEEKLY,
             PeriodState.MONTHLY,
-            PeriodState.CUSTOM(range = state.value.period.range),
+            custom
         )
 
         val dialog = DialogConfig.PeriodPicker(

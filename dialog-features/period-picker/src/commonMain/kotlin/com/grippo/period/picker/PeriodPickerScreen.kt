@@ -123,7 +123,10 @@ private fun ScreenPreview() {
                     PeriodState.DAILY,
                     PeriodState.WEEKLY,
                     PeriodState.MONTHLY,
-                    PeriodState.CUSTOM(DateTimeUtils.thisDay()),
+                    PeriodState.CUSTOM(
+                        range = DateTimeUtils.thisDay(),
+                        limitations = DateTimeUtils.trailingYear()
+                    ),
                 )
             ),
             loaders = persistentSetOf(),
