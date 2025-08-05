@@ -24,12 +24,6 @@ public class ProfileComponent(
     private val back: () -> Unit
 ) : BaseComponent<ProfileDirection>(componentContext) {
 
-    internal sealed class Child(open val component: BaseComponent<*>) {
-        data class Muscles(override val component: ProfileMusclesComponent) : Child(component)
-        data class Equipments(override val component: ProfileEquipmentsComponent) : Child(component)
-        data class WeightHistory(override val component: WeightHistoryComponent) : Child(component)
-    }
-
     override val viewModel: ProfileViewModel = componentContext.retainedInstance {
         ProfileViewModel()
     }
@@ -87,5 +81,11 @@ public class ProfileComponent(
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
         ProfileScreen(this, state.value, loaders.value, viewModel)
+    }
+
+    internal sealed class Child(open val component: BaseComponent<*>) {
+        data class Muscles(override val component: ProfileMusclesComponent) : Child(component)
+        data class Equipments(override val component: ProfileEquipmentsComponent) : Child(component)
+        data class WeightHistory(override val component: WeightHistoryComponent) : Child(component)
     }
 }

@@ -19,10 +19,6 @@ public class SettingsComponent(
     private val back: () -> Unit
 ) : BaseComponent<SettingsDirection>(componentContext) {
 
-    internal sealed class Child(open val component: BaseComponent<*>) {
-        data class System(override val component: SystemComponent) : Child(component)
-    }
-
     override val viewModel: SettingsViewModel = componentContext.retainedInstance {
         SettingsViewModel()
     }
@@ -70,5 +66,9 @@ public class SettingsComponent(
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
         SettingsScreen(this, state.value, loaders.value, viewModel)
+    }
+
+    internal sealed class Child(open val component: BaseComponent<*>) {
+        data class System(override val component: SystemComponent) : Child(component)
     }
 }

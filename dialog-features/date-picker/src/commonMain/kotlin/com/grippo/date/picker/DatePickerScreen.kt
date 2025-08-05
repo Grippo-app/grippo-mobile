@@ -11,9 +11,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import com.grippo.core.BaseComposeDialog
+import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.date.picker.internal.DateWheelPicker
+import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
@@ -24,14 +25,13 @@ import com.grippo.design.resources.date_picker_title
 import com.grippo.design.resources.submit_btn
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.datetime.LocalDateTime
 
 @Composable
 internal fun DatePickerScreen(
     state: DatePickerState,
     loaders: ImmutableSet<DatePickerLoader>,
     contract: DatePickerContract
-) = BaseComposeDialog(ScreenBackground.Color(AppTokens.colors.background.secondary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.secondary)) {
 
     Column(
         modifier = Modifier
@@ -57,7 +57,7 @@ internal fun DatePickerScreen(
                 .height(AppTokens.dp.wheelPicker.height)
                 .fillMaxWidth(),
             initial = state.initial,
-            select = contract::select,
+            select = contract::onSelectDate,
             limitations = state.limitations
         )
 
@@ -67,7 +67,7 @@ internal fun DatePickerScreen(
             modifier = Modifier.fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.submit_btn),
             style = ButtonStyle.Primary,
-            onClick = contract::submit
+            onClick = contract::onSubmitClick
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
@@ -80,7 +80,8 @@ private fun ScreenPreview() {
     PreviewContainer {
         DatePickerScreen(
             state = DatePickerState(
-                initial = LocalDateTime(2025, 7, 9, 14, 30),
+                initial = DateTimeUtils.now(),
+                limitations = DateTimeUtils.trailingYear()
             ),
             loaders = persistentSetOf(),
             contract = DatePickerContract.Empty

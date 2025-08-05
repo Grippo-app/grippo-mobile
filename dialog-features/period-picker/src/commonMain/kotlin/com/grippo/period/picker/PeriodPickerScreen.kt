@@ -14,8 +14,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import com.grippo.core.BaseComposeDialog
+import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
+import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
@@ -38,7 +39,7 @@ internal fun PeriodPickerScreen(
     state: PeriodPickerState,
     loaders: ImmutableSet<PeriodPickerLoader>,
     contract: PeriodPickerContract
-) = BaseComposeDialog(ScreenBackground.Color(AppTokens.colors.background.secondary)) {
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.secondary)) {
 
     Column(
         modifier = Modifier
@@ -59,34 +60,33 @@ internal fun PeriodPickerScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-        val list = remember(state.list) {
-            state.list
-        }
-
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
         ) {
             items(
-                items = list,
+                items = state.list,
                 key = { it.hashCode() },
                 contentType = { it::class }
             ) { item ->
-                val clickProvider = remember { { contract.onSelectClick(item) } }
+                val clickProvider = remember(item) { { contract.onSelectClick(item) } }
                 val isSelected = remember(state.initial) { state.initial == item }
 
                 SelectableCard(
                     modifier = Modifier.fillMaxWidth(),
                     isSelected = isSelected,
                     onSelect = clickProvider,
-                    style = SelectableCardStyle.Medium(
+                    style = SelectableCardStyle.Large(
                         title = item.text(),
-                        description = item.range(),
-                        subContent = if (item is PeriodState.CUSTOM && isSelected) {
+                        description = item.range(DateFormat.uuuu_MM_d),
+                        icon = item.icon(),
+                        style = SelectableCardStyle.Large.ColorStyle.TERTIARY,
+                        subContent = if (item is PeriodState.CUSTOM) {
                             {
                                 DateRangeSelector(
                                     modifier = Modifier.fillMaxWidth(),
                                     value = item.range,
+                                    enabled = isSelected,
                                     onFromClick = contract::onFromClick,
                                     onToClick = contract::onToClick
                                 )
@@ -105,7 +105,7 @@ internal fun PeriodPickerScreen(
             modifier = Modifier.fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.submit_btn),
             style = ButtonStyle.Primary,
-            onClick = contract::submit
+            onClick = contract::onSubmitClick
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
@@ -118,12 +118,15 @@ private fun ScreenPreview() {
     PreviewContainer {
         PeriodPickerScreen(
             state = PeriodPickerState(
-                initial = PeriodState.WEEKLY,
+                initial = PeriodState.ThisWeek,
                 list = persistentListOf(
-                    PeriodState.DAILY,
-                    PeriodState.WEEKLY,
-                    PeriodState.MONTHLY,
-                    PeriodState.CUSTOM(DateTimeUtils.thisDay()),
+                    PeriodState.ThisDay,
+                    PeriodState.ThisWeek,
+                    PeriodState.ThisMonth,
+                    PeriodState.CUSTOM(
+                        range = DateTimeUtils.thisDay(),
+                        limitations = DateTimeUtils.trailingYear()
+                    ),
                 )
             ),
             loaders = persistentSetOf(),

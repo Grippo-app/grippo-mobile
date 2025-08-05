@@ -4,7 +4,6 @@ import com.grippo.core.BaseViewModel
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogProvider
 import kotlinx.coroutines.flow.onEach
-import kotlin.reflect.KClass
 
 internal class DialogViewModel(
     dialogProvider: DialogProvider
@@ -16,68 +15,56 @@ internal class DialogViewModel(
             .safeLaunch()
     }
 
-    companion object {
-        private val soloDialogPresets: Set<KClass<out DialogConfig>> = setOf(
-            DialogConfig.ErrorDisplay::class,
-        )
-    }
-
-    // Show component and bottom-sheet
-    private fun show(config: DialogConfig) {
-        val isSoloDialog = config::class in soloDialogPresets
-
-        val newStack = when {
-            isSoloDialog -> DialogStack(listOf(config))
-            state.value.process == Process.RELEASE -> DialogStack(listOf(config))
-            else -> state.value.stack.push(config)
-        }
-
-        update {
-            it.copy(
-                process = Process.SHOW,
-                stack = newStack,
-                pendingResult = if (isSoloDialog) null else it.pendingResult
-            )
-        }
-
-        navigateTo(DialogDirection.Activate(config))
-    }
-
-    // Hide bottom-sheet inside of component
-    override fun dismiss(pendingResult: (() -> Unit)?) {
-        popOrElse {
-            update { it.copy(process = Process.DISMISS, pendingResult = pendingResult) }
-        }
-    }
-
-    // Show previous config from Backstack or release
-    override fun back() {
-        popOrElse {
-            val config = state.value.stack.current ?: return@popOrElse
-            release(config)
-        }
-    }
-
-    private fun popOrElse(lambda: () -> Unit) {
+    override fun onDismiss(pendingResult: (() -> Unit)?) {
         val stack = state.value.stack
+        if (stack.isEmpty()) return
 
-        if (stack.stack.size > 1) {
-            val newStack = stack.pop()
-            val prevConfig = newStack.current ?: return
+        val last = stack.last()
+        val newEntry = last.copy(pendingResult = pendingResult)
+        val newStack = stack.dropLast(1) + newEntry
 
-            update { it.copy(process = Process.SHOW, stack = newStack, pendingResult = null) }
+        val process = if (newStack.size == 1) Process.DISMISS else Process.SHOW
 
-            navigateTo(DialogDirection.Activate(prevConfig))
-        } else {
-            lambda.invoke()
+        update { it.copy(stack = newStack, process = process) }
+
+        if (newStack.size > 1) {
+            pop()
         }
     }
 
-    // Release dialog component from the graph
-    override fun release(config: DialogConfig) {
-        state.value.pendingResult?.invoke()
+    override fun onRelease(config: DialogConfig) {
+        val stack = state.value.stack
+        val last = stack.lastOrNull()
+
+        last?.pendingResult?.invoke()
         config.onDismiss?.invoke()
-        update { it.copy(process = Process.RELEASE, pendingResult = null) }
-        navigateTo(DialogDirection.Dismiss(config))
+
+        update { it.copy(stack = emptyList(), process = Process.RELEASE) }
+        navigateTo(DialogDirection.Dismiss)
+    }
+
+    private fun show(config: DialogConfig) {
+        val stack = state.value.stack
+        val newEntry = DialogEntry(config, pendingResult = null)
+        val newStack = stack + newEntry
+
+        val destination = when {
+            state.value.process == Process.RELEASE -> DialogDirection.Activate(config)
+            else -> DialogDirection.Push(config)
+        }
+
+        update { it.copy(stack = newStack, process = Process.SHOW) }
+        navigateTo(destination)
+    }
+
+    private fun pop() {
+        val stack = state.value.stack
+        if (stack.isEmpty()) return
+
+        val last = stack.last()
+        val newStack = stack.dropLast(1)
+
+        update { it.copy(stack = newStack, process = Process.SHOW) }
+        navigateTo(DialogDirection.Pop(last.pendingResult))
     }
 }

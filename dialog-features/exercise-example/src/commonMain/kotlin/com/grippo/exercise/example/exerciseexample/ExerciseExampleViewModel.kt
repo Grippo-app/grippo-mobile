@@ -27,7 +27,7 @@ public class ExerciseExampleViewModel(
         update { it.copy(example = value?.toState()) }
     }
 
-    override fun dismiss() {
+    override fun onDismiss() {
         navigateTo(ExerciseExampleDirection.Back)
     }
 }

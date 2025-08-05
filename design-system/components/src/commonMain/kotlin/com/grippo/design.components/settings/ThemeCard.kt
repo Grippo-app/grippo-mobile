@@ -57,7 +57,7 @@ public fun ThemeCard(
     }
 
     val borderColor by animateColorAsState(
-        if (isSelected) AppTokens.colors.border.focus else AppTokens.colors.border.defaultPrimary,
+        if (isSelected) AppTokens.colors.border.focus else AppTokens.colors.border.default,
         label = "border"
     )
 

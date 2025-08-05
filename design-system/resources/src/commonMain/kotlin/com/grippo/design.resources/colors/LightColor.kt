@@ -5,10 +5,7 @@ import com.grippo.design.resources.AppColor
 
 public object LightColor : AppColor {
     override val border: AppColor.BorderColors = object : AppColor.BorderColors {
-        override val defaultPrimary = AppColorTokens.NeutralLight.N200
-        override val disabledPrimary = AppColorTokens.NeutralLight.N200
-        override val defaultSecondary = AppColorTokens.Primary.P150
-        override val disabledSecondary = AppColorTokens.NeutralLight.N200
+        override val default = AppColorTokens.NeutralLight.N200
         override val inverted = AppColorTokens.Common.White
         override val focus = AppColorTokens.Common.Accent
         override val error = AppColorTokens.Semantic.Error
@@ -47,32 +44,21 @@ public object LightColor : AppColor {
 
         override val uncheckedThumb = AppColorTokens.Common.White
         override val uncheckedTrack = AppColorTokens.NeutralLight.N200
-
-        override val disabledCheckedThumb = AppColorTokens.NeutralLight.N500
-        override val disabledCheckedTrack = AppColorTokens.NeutralLight.N200
-
-        override val disabledUncheckedThumb = AppColorTokens.NeutralLight.N300
-        override val disabledUncheckedTrack = AppColorTokens.NeutralLight.N200
-        override val disabledUncheckedBorder = AppColorTokens.NeutralLight.N200
     }
 
     override val radio: AppColor.RadioColors = object : AppColor.RadioColors {
         override val selectedThumb = AppColorTokens.Common.Accent
         override val selectedTrack = AppColorTokens.Common.Accent
 
-        override val unselectedThumb = AppColorTokens.Common.White
         override val unselectedTrack = AppColorTokens.NeutralLight.N200
 
         override val disabledSelectedThumb = AppColorTokens.NeutralLight.N500
-        override val disabledSelectedTrack = AppColorTokens.NeutralLight.N200
-        override val disabledUnselectedThumb = AppColorTokens.NeutralLight.N300
         override val disabledUnselectedTrack = AppColorTokens.NeutralLight.N200
-        override val disabledUnselectedBorder = AppColorTokens.NeutralLight.N200
     }
 
     override val input: AppColor.InputColors = object : AppColor.InputColors {
         override val background = AppColorTokens.Common.White
-        override val border = AppColorTokens.NeutralLight.N400
+        override val border = AppColorTokens.NeutralLight.N200
         override val placeholder = AppColorTokens.NeutralLight.N400
         override val label = AppColorTokens.NeutralLight.N500
         override val text = AppColorTokens.Common.Black
@@ -81,7 +67,7 @@ public object LightColor : AppColor {
         override val trailing = AppColorTokens.NeutralLight.N700
 
         override val backgroundDisabled = AppColorTokens.NeutralLight.N200
-        override val borderDisabled = AppColorTokens.NeutralLight.N400
+        override val borderDisabled = AppColorTokens.NeutralLight.N200
         override val textDisabled = AppColorTokens.NeutralLight.N400
         override val placeholderDisabled = AppColorTokens.NeutralLight.N400
     }
@@ -89,8 +75,8 @@ public object LightColor : AppColor {
     override val background: AppColor.BackgroundColors = object : AppColor.BackgroundColors {
         override val primary = AppColorTokens.NeutralLight.N150
         override val secondary = AppColorTokens.Common.White
+        override val tertiary = AppColorTokens.NeutralLight.N100
         override val accent = AppColorTokens.Common.Accent
-        override val tertiary = AppColorTokens.NeutralLight.N250
     }
 
     override val dialog: AppColor.DialogColors = object : AppColor.DialogColors {

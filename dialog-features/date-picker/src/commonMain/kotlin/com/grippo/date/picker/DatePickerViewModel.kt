@@ -1,23 +1,25 @@
 package com.grippo.date.picker
 
 import com.grippo.core.BaseViewModel
+import com.grippo.date.utils.DateRange
 import kotlinx.datetime.LocalDateTime
 
 public class DatePickerViewModel(
-    initial: LocalDateTime
+    initial: LocalDateTime,
+    limitations: DateRange
 ) : BaseViewModel<DatePickerState, DatePickerDirection, DatePickerLoader>(
-    DatePickerState(initial = initial)
+    DatePickerState(initial = initial, limitations = limitations)
 ), DatePickerContract {
 
-    override fun select(value: LocalDateTime) {
+    override fun onSelectDate(value: LocalDateTime) {
         update { it.copy(initial = value) }
     }
 
-    override fun submit() {
+    override fun onSubmitClick() {
         navigateTo(DatePickerDirection.BackWithResult(state.value.initial))
     }
 
-    override fun dismiss() {
+    override fun onDismiss() {
         navigateTo(DatePickerDirection.Back)
     }
 }

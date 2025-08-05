@@ -27,7 +27,7 @@ public class ExerciseViewModel(
         update { it.copy(exercise = exercise) }
     }
 
-    override fun dismiss() {
+    override fun onDismiss() {
         navigateTo(ExerciseDirection.Back)
     }
 

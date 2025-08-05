@@ -3,13 +3,13 @@ package com.grippo.date.picker
 import kotlinx.datetime.LocalDateTime
 
 internal interface DatePickerContract {
-    fun select(value: LocalDateTime)
-    fun submit()
-    fun dismiss()
+    fun onSelectDate(value: LocalDateTime)
+    fun onSubmitClick()
+    fun onDismiss()
 
     companion object Empty : DatePickerContract {
-        override fun select(value: LocalDateTime) {}
-        override fun submit() {}
-        override fun dismiss() {}
+        override fun onSelectDate(value: LocalDateTime) {}
+        override fun onSubmitClick() {}
+        override fun onDismiss() {}
     }
 }

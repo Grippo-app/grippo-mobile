@@ -29,12 +29,6 @@ public class BottomNavigationComponent(
     private val back: () -> Unit,
 ) : BaseComponent<BottomNavigationDirection>(componentContext) {
 
-    internal sealed class Child(open val component: BaseComponent<*>) {
-        data class Profile(override val component: HomeProfileComponent) : Child(component)
-        data class Trainings(override val component: HomeTrainingsComponent) : Child(component)
-        data class Statistics(override val component: HomeStatisticsComponent) : Child(component)
-    }
-
     override val viewModel: BottomNavigationViewModel = componentContext.retainedInstance {
         BottomNavigationViewModel(
             initial = initial
@@ -104,5 +98,11 @@ public class BottomNavigationComponent(
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
         BottomNavigationScreen(this, state.value, loaders.value, viewModel)
+    }
+
+    internal sealed class Child(open val component: BaseComponent<*>) {
+        data class Profile(override val component: HomeProfileComponent) : Child(component)
+        data class Trainings(override val component: HomeTrainingsComponent) : Child(component)
+        data class Statistics(override val component: HomeStatisticsComponent) : Child(component)
     }
 }

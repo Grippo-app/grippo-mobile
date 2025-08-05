@@ -31,15 +31,15 @@ internal object AppColorTokens {
     }
 
     object NeutralLight {
-        val N100 = Color(0xFFFAFBFD)
-        val N150 = Color(0xFFF4F6F9)
-        val N200 = Color(0xFFE7EAF0)
-        val N250 = Color(0xFFDBDEE6)
-        val N300 = Color(0xFFC3C9D4)
-        val N400 = Color(0xFFA7ADB9)
-        val N500 = Color(0xFF89909D)
-        val N600 = Color(0xFF6C7382)
-        val N700 = Color(0xFF4E5564)
+        val N100 = Color(0xFFF5F7FA)
+        val N150 = Color(0xFFF2F4F8)
+        val N200 = Color(0xFFE3E7ED)
+        val N250 = Color(0xFFD6DAE2)
+        val N300 = Color(0xFFBDC3CF)
+        val N400 = Color(0xFFA2A9B7)
+        val N500 = Color(0xFF8890A0)
+        val N600 = Color(0xFF6F788A)
+        val N700 = Color(0xFF545D6D)
     }
 
     object NeutralDark {

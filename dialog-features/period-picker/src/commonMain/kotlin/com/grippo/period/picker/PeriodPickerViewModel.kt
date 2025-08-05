@@ -4,6 +4,7 @@ import com.grippo.core.BaseViewModel
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.state.datetime.PeriodState
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 
 public class PeriodPickerViewModel(
@@ -18,7 +19,7 @@ public class PeriodPickerViewModel(
 ), PeriodPickerContract {
 
     override fun onSelectClick(value: PeriodState) {
-        update { it.copy(initial = value) }
+        update { it.copy(initial = value, list = it.list.synchronize(value)) }
     }
 
     override fun onFromClick() {
@@ -26,9 +27,11 @@ public class PeriodPickerViewModel(
 
         val dialog = DialogConfig.DatePicker(
             initial = custom.range.from,
+            limitations = custom.limitations.copy(to = custom.range.to),
             onResult = { value ->
                 val range = custom.range.copy(from = value)
-                update { it.copy(initial = custom.copy(range = range)) }
+                val newValue = custom.copy(range = range)
+                update { it.copy(initial = newValue, list = it.list.synchronize(newValue)) }
             }
         )
 
@@ -40,20 +43,28 @@ public class PeriodPickerViewModel(
 
         val dialog = DialogConfig.DatePicker(
             initial = custom.range.to,
+            limitations = custom.limitations.copy(from = custom.range.from),
             onResult = { value ->
                 val range = custom.range.copy(to = value)
-                update { it.copy(initial = custom.copy(range = range)) }
+                val newValue = custom.copy(range = range)
+                update { it.copy(initial = newValue, list = it.list.synchronize(newValue)) }
             }
         )
 
         dialogController.show(dialog)
     }
 
-    override fun submit() {
+    override fun onSubmitClick() {
         navigateTo(PeriodPickerDirection.BackWithResult(state.value.initial))
     }
 
-    override fun dismiss() {
+    override fun onDismiss() {
         navigateTo(PeriodPickerDirection.Back)
+    }
+
+    private fun List<PeriodState>.synchronize(value: PeriodState): ImmutableList<PeriodState> {
+        return map { item ->
+            if (item::class == value::class) value else item
+        }.toPersistentList()
     }
 }

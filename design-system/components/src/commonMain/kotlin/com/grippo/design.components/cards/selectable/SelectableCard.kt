@@ -13,27 +13,30 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.cards.selectable.internal.SelectableCardLarge
-import com.grippo.design.components.cards.selectable.internal.SelectableCardMedium
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+
 
 @Immutable
 public sealed class SelectableCardStyle(
     public open val title: String
 ) {
     @Immutable
-    public data class Medium(
-        override val title: String,
-        val description: String,
-        val subContent: (@Composable ColumnScope.() -> Unit)?,
-    ) : SelectableCardStyle(title)
-
-    @Immutable
     public data class Large(
         override val title: String,
         val description: String,
         val icon: ImageVector,
-    ) : SelectableCardStyle(title)
+        val style: ColorStyle,
+        val subContent: (@Composable ColumnScope.() -> Unit)?,
+    ) : SelectableCardStyle(title) {
+
+        @Immutable
+        public enum class ColorStyle {
+            PRIMARY,
+            SECONDARY,
+            TERTIARY
+        }
+    }
 }
 
 @Composable
@@ -50,13 +53,6 @@ public fun SelectableCard(
             isSelected = isSelected,
             onClick = onSelect
         )
-
-        is SelectableCardStyle.Medium -> SelectableCardMedium(
-            modifier = modifier,
-            style = style,
-            isSelected = isSelected,
-            onClick = onSelect,
-        )
     }
 }
 
@@ -68,30 +64,21 @@ private fun SelectableCardLargePreview() {
             SelectableCardStyle.Large(
                 title = "Test Title",
                 description = "Test Description",
-                icon = Icons.Filled.Done
-            )
-        )
-    }
-}
-
-@AppPreview
-@Composable
-private fun SelectableCardMediumPreview() {
-    PreviewContainer {
-        SelectableCardVariants(
-            SelectableCardStyle.Medium(
-                title = "Test Title",
-                description = "from - to",
-                subContent = null
-            )
-        )
-        SelectableCardVariants(
-            SelectableCardStyle.Medium(
-                title = "Test Title",
-                description = "from - to",
+                icon = Icons.Filled.Done,
+                style = SelectableCardStyle.Large.ColorStyle.PRIMARY,
                 subContent = {
                     Box(modifier = Modifier.size(40.dp).background(Color.Green))
                 }
+            )
+        )
+
+        SelectableCardVariants(
+            SelectableCardStyle.Large(
+                title = "Test Title",
+                description = "Test Description",
+                icon = Icons.Filled.Done,
+                style = SelectableCardStyle.Large.ColorStyle.SECONDARY,
+                subContent = null
             )
         )
     }

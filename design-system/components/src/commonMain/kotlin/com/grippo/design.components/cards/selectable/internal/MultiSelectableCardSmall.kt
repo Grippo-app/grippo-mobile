@@ -34,7 +34,7 @@ internal fun MultiSelectableCardSmall(
         modifier = modifier
             .scalableClick(onClick = onClick)
             .background(AppTokens.colors.background.secondary, shape)
-            .border(1.dp, AppTokens.colors.border.defaultPrimary, shape)
+            .border(1.dp, AppTokens.colors.border.default, shape)
             .padding(horizontal = AppTokens.dp.multiSelectableCard.small.horizontalPadding)
             .height(AppTokens.dp.multiSelectableCard.small.height),
         verticalAlignment = Alignment.CenterVertically,

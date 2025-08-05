@@ -4,6 +4,7 @@
     <string name="percent">%</string>
     <string name="reps">reps</string>
     <string name="back">Back</string>
+    <string name="selected">Selected</string>
     <string name="cm">cm</string>
     <string name="source">Source</string>
     <string name="next_btn">Next</string>
@@ -117,10 +118,12 @@
     <string name="no_internet_connection">No internet connection</string>
     <string name="dark">Dark</string>
     <string name="light">Light</string>
-    <string name="daily">Daily</string>
-    <string name="weekly">Weekly</string>
-    <string name="monthly">Monthly</string>
-    <string name="custom">Custom</string>
+    <string name="this_day">This day</string>
+    <string name="this_week">This week</string>
+    <string name="this_month">This month</string>
+    <string name="custom_range">Custom range</string>
+    <string name="from">From</string>
+    <string name="to">To</string>
     <string name="from_value">From %1$s</string>
     <string name="to_value">To %1$s</string>
 </resources>

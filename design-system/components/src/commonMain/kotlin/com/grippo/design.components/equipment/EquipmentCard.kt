@@ -36,7 +36,7 @@ public fun EquipmentCard(
                 shape = RoundedCornerShape(AppTokens.dp.equipmentCard.radius)
             ).border(
                 width = 1.dp,
-                color = AppTokens.colors.border.defaultPrimary,
+                color = AppTokens.colors.border.default,
                 shape = RoundedCornerShape(AppTokens.dp.equipmentCard.radius)
             ).width(intrinsicSize = IntrinsicSize.Max)
             .padding(

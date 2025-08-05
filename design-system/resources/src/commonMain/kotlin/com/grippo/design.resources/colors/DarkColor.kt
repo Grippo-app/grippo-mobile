@@ -6,10 +6,7 @@ import com.grippo.design.resources.AppColor
 public object DarkColor : AppColor {
 
     override val border: AppColor.BorderColors = object : AppColor.BorderColors {
-        override val defaultPrimary = AppColorTokens.NeutralDark.N100
-        override val disabledPrimary = Color(0xFF2A2A2A)
-        override val defaultSecondary = AppColorTokens.Primary.P250
-        override val disabledSecondary = Color(0xFF2A2A2A)
+        override val default = AppColorTokens.NeutralDark.N200
         override val inverted = AppColorTokens.NeutralDark.N100
         override val focus = AppColorTokens.Common.Accent
         override val error = AppColorTokens.Semantic.Error
@@ -37,7 +34,7 @@ public object DarkColor : AppColor {
     override val icon: AppColor.IconColors = object : AppColor.IconColors {
         override val primary = AppColorTokens.NeutralDark.N700
         override val secondary = AppColorTokens.NeutralDark.N600
-        override val disabled = AppColorTokens.NeutralDark.N400
+        override val disabled = AppColorTokens.NeutralDark.N450
         override val accent = AppColorTokens.Common.Accent
         override val inverted = AppColorTokens.Common.Black
     }
@@ -48,12 +45,6 @@ public object DarkColor : AppColor {
 
         override val uncheckedThumb = AppColorTokens.Common.White
         override val uncheckedTrack = Color(0xFF3A3A3A)
-
-        override val disabledCheckedThumb = Color(0xFFA0A0A0)
-        override val disabledCheckedTrack = Color(0xFF2A2A2A)
-        override val disabledUncheckedThumb = Color(0xFF4D4D4D)
-        override val disabledUncheckedTrack = Color(0xFF2A2A2A)
-        override val disabledUncheckedBorder = Color(0xFF3A3A3A)
     }
 
     override val radio: AppColor.RadioColors = object : AppColor.RadioColors {
@@ -61,13 +52,9 @@ public object DarkColor : AppColor {
         override val selectedTrack = AppColorTokens.Common.Accent
 
         override val unselectedTrack = Color(0xFF3A3A3A)
-        override val unselectedThumb = AppColorTokens.Common.White
 
         override val disabledSelectedThumb = Color(0xFF2A2A2A)
-        override val disabledSelectedTrack = Color(0xFF2A2A2A)
-        override val disabledUnselectedThumb = Color(0xFF2A2A2A)
         override val disabledUnselectedTrack = Color(0xFF2A2A2A)
-        override val disabledUnselectedBorder = Color(0xFF2A2A2A)
     }
 
     override val divider: AppColor.DividerColors = object : AppColor.DividerColors {
@@ -76,8 +63,8 @@ public object DarkColor : AppColor {
     }
 
     override val input: AppColor.InputColors = object : AppColor.InputColors {
-        override val background = AppColorTokens.NeutralDark.N200
-        override val border = AppColorTokens.NeutralDark.N400
+        override val background = AppColorTokens.NeutralDark.N150
+        override val border = AppColorTokens.NeutralDark.N250
         override val placeholder = AppColorTokens.NeutralDark.N450
         override val label = AppColorTokens.NeutralDark.N550
         override val text = AppColorTokens.Common.White
@@ -86,16 +73,16 @@ public object DarkColor : AppColor {
         override val trailing = AppColorTokens.NeutralDark.N700
 
         override val backgroundDisabled = AppColorTokens.NeutralDark.N300
-        override val borderDisabled = AppColorTokens.NeutralDark.N350
+        override val borderDisabled = AppColorTokens.NeutralDark.N300
         override val textDisabled = AppColorTokens.NeutralDark.N450
-        override val placeholderDisabled = AppColorTokens.NeutralDark.N350
+        override val placeholderDisabled = AppColorTokens.NeutralDark.N450
     }
 
     override val background: AppColor.BackgroundColors = object : AppColor.BackgroundColors {
         override val primary = AppColorTokens.NeutralDark.N100
         override val secondary = AppColorTokens.NeutralDark.N150
-        override val accent = AppColorTokens.Common.Accent
         override val tertiary = AppColorTokens.NeutralDark.N200
+        override val accent = AppColorTokens.Common.Accent
     }
 
     override val dialog: AppColor.DialogColors = object : AppColor.DialogColors {

@@ -18,7 +18,7 @@ public class HeightPickerComponent(
         HeightPickerViewModel(initial)
     }
 
-    private val backCallback = BackCallback(onBack = viewModel::dismiss)
+    private val backCallback = BackCallback(onBack = viewModel::onDismiss)
 
     init {
         backHandler.register(backCallback)

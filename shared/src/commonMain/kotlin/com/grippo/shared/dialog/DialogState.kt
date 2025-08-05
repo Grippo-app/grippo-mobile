@@ -1,17 +1,27 @@
 package com.grippo.shared.dialog
 
 import androidx.compose.runtime.Immutable
+import com.grippo.dialog.api.DialogConfig
 
-@Immutable
 internal data class DialogState(
+    val stack: List<DialogEntry> = emptyList(),
     val process: Process = Process.RELEASE,
-    val pendingResult: (() -> Unit)? = null,
-    val stack: DialogStack = DialogStack()
 )
 
 @Immutable
-internal enum class Process {
-    SHOW,
-    DISMISS,
-    RELEASE,
+internal data class DialogEntry(
+    val config: DialogConfig,
+    val pendingResult: (() -> Unit)? = null
+)
+
+@Immutable
+internal sealed class Process {
+    @Immutable
+    data object SHOW : Process()
+
+    @Immutable
+    data object DISMISS : Process()
+
+    @Immutable
+    data object RELEASE : Process()
 }

@@ -16,7 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.grippo.core.BaseComposeDialog
+import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
@@ -39,9 +39,9 @@ internal fun ExerciseScreen(
     state: ExerciseState,
     loaders: ImmutableSet<ExerciseLoader>,
     contract: ExerciseContract
-) = BaseComposeDialog(background = ScreenBackground.Color(AppTokens.colors.background.secondary)) {
+) = BaseComposeScreen(background = ScreenBackground.Color(AppTokens.colors.background.secondary)) {
 
-    val exercise = state.exercise ?: return@BaseComposeDialog
+    val exercise = state.exercise ?: return@BaseComposeScreen
 
     Column(
         modifier = Modifier

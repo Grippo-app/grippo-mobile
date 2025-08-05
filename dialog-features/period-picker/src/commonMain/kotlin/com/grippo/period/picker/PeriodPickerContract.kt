@@ -6,14 +6,14 @@ internal interface PeriodPickerContract {
     fun onSelectClick(value: PeriodState)
     fun onFromClick()
     fun onToClick()
-    fun submit()
-    fun dismiss()
+    fun onSubmitClick()
+    fun onDismiss()
 
     companion object Empty : PeriodPickerContract {
         override fun onSelectClick(value: PeriodState) {}
         override fun onFromClick() {}
         override fun onToClick() {}
-        override fun submit() {}
-        override fun dismiss() {}
+        override fun onSubmitClick() {}
+        override fun onDismiss() {}
     }
 }

@@ -53,28 +53,16 @@ public interface AppColor {
 
         public val uncheckedThumb: Color
         public val uncheckedTrack: Color
-
-        public val disabledCheckedThumb: Color
-        public val disabledCheckedTrack: Color
-
-        public val disabledUncheckedThumb: Color
-        public val disabledUncheckedTrack: Color
-        public val disabledUncheckedBorder: Color
     }
 
     public interface RadioColors {
         public val selectedThumb: Color
         public val selectedTrack: Color
 
-        public val unselectedThumb: Color
         public val unselectedTrack: Color
 
         public val disabledSelectedThumb: Color
-        public val disabledSelectedTrack: Color
-
-        public val disabledUnselectedThumb: Color
         public val disabledUnselectedTrack: Color
-        public val disabledUnselectedBorder: Color
     }
 
     public interface InputColors {
@@ -96,8 +84,8 @@ public interface AppColor {
     public interface BackgroundColors {
         public val primary: Color
         public val secondary: Color
-        public val accent: Color
         public val tertiary: Color
+        public val accent: Color
     }
 
     public interface DialogColors {
@@ -128,10 +116,7 @@ public interface AppColor {
     }
 
     public interface BorderColors {
-        public val defaultPrimary: Color
-        public val disabledPrimary: Color
-        public val defaultSecondary: Color
-        public val disabledSecondary: Color
+        public val default: Color
         public val inverted: Color
         public val focus: Color
         public val error: Color

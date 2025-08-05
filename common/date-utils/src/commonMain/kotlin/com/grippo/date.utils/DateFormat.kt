@@ -7,5 +7,5 @@ import androidx.compose.runtime.Immutable
 public enum class DateFormat(internal val value: String) {
     HH_mm("HH:mm"),
     uuuu_MM_d("uuuu, MM d"),
-    MM_d("uuuu, MM d")
+    MM_d("MM, d")
 }

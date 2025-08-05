@@ -1,9 +1,9 @@
 package com.grippo.exercise.example.exerciseexample
 
 internal interface ExerciseExampleContract {
-    fun dismiss()
+    fun onDismiss()
 
     companion object Empty : ExerciseExampleContract {
-        override fun dismiss() {}
+        override fun onDismiss() {}
     }
 }

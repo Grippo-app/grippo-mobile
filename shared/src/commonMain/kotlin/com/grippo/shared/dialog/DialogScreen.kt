@@ -1,112 +1,98 @@
 package com.grippo.shared.dialog
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.arkivanov.decompose.router.slot.ChildSlot
-import com.arkivanov.decompose.value.Value
-import com.grippo.core.BaseComposeDialog
+import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
-import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.bottom.sheet.BottomSheetBackButton
 import com.grippo.design.core.AppTokens
-import com.grippo.design.resources.Res
-import com.grippo.design.resources.back
-import com.grippo.design.resources.icons.NavArrowLeft
 import com.grippo.dialog.api.DialogConfig
+import com.grippo.shared.dialog.content.DialogContentComponent
 import kotlinx.collections.immutable.ImmutableSet
 
 @Composable
 internal fun DialogScreen(
-    slot: Value<ChildSlot<DialogConfig, DialogComponent.Dialog>>,
+    component: DialogComponent,
     state: DialogState,
     loaders: ImmutableSet<DialogLoader>,
     contract: DialogContract
-) = BaseComposeDialog(ScreenBackground.Color(AppTokens.colors.background.primary)) {
-    val slotState = slot.subscribeAsState()
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.primary)) {
+    val slotState = component.childSlot.subscribeAsState()
+    val child = slotState.value.child ?: return@BaseComposeScreen
 
-    val child = slotState.value.child
-    val component = child?.instance?.component
+    val contentComponent = (child.instance.component as? DialogContentComponent)
+        ?: return@BaseComposeScreen
 
-    if (component != null) {
-        val config = child.configuration
+    BottomSheet(
+        config = child.configuration,
+        stackSize = state.stack.size,
+        process = state.process,
+        component = contentComponent,
+        onBack = { contract.onDismiss(null) },
+        onDismiss = { contract.onRelease(child.configuration) },
+        onDismissComplete = { contract.onRelease(child.configuration) }
+    )
+}
 
-        val backProvider = remember(state.stack.stack.size) {
-            if (state.stack.stack.size > 1) {
-                { contract.back() }
-            } else null
+@Composable
+private fun BottomSheet(
+    config: DialogConfig,
+    stackSize: Int,
+    process: Process,
+    component: DialogContentComponent,
+    onBack: () -> Unit,
+    onDismiss: () -> Unit,
+    onDismissComplete: () -> Unit
+) {
+    val modalSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+        confirmValueChange = { true },
+    )
+
+    // Trigger hide + release only once when process is DISMISS
+    LaunchedEffect(process) {
+        if (process == Process.DISMISS) {
+            modalSheetState.hide()
+            onDismissComplete()
         }
+    }
 
-        val modalBottomSheetState = rememberModalBottomSheetState(
-            skipPartiallyExpanded = true,
-            confirmValueChange = { true },
-        )
+    ModalBottomSheet(
+        modifier = Modifier.statusBarsPadding(),
+        onDismissRequest = onDismiss,
+        sheetState = modalSheetState,
+        scrimColor = AppTokens.colors.dialog.scrim,
+        properties = ModalBottomSheetProperties(shouldDismissOnBackPress = true),
+        containerColor = AppTokens.colors.dialog.background,
+        dragHandle = null,
+        shape = RoundedCornerShape(
+            topStart = AppTokens.dp.bottomSheet.radius,
+            topEnd = AppTokens.dp.bottomSheet.radius
+        ),
+    ) {
+        component.Render()
 
-        LaunchedEffect(state.process) {
-            if (state.process == Process.DISMISS) {
-                modalBottomSheetState.hide()
-                contract.release(config)
-            }
-        }
-
-        ModalBottomSheet(
-            modifier = Modifier.statusBarsPadding(),
-            onDismissRequest = { contract.release(config) },
-            sheetState = modalBottomSheetState,
-            scrimColor = AppTokens.colors.dialog.scrim,
-            properties = ModalBottomSheetProperties(shouldDismissOnBackPress = true),
-            containerColor = AppTokens.colors.dialog.background,
-            dragHandle = null,
-            shape = RoundedCornerShape(
-                topStart = AppTokens.dp.bottomSheet.radius,
-                topEnd = AppTokens.dp.bottomSheet.radius
-            ),
-            content = {
-                AnimatedContent(targetState = component to backProvider) {
-                    Column {
-                        Column(
-                            modifier = Modifier.weight(1f, false),
-                            content = { it.first.Render() }
-                        )
-
-                        it.second?.let { back ->
-
-                            HorizontalDivider(
-                                modifier = Modifier.fillMaxWidth(),
-                                color = AppTokens.colors.divider.secondary
-                            )
-
-                            Spacer(Modifier.height(AppTokens.dp.screen.verticalPadding))
-
-                            Button(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-                                text = AppTokens.strings.res(Res.string.back),
-                                startIcon = AppTokens.icons.NavArrowLeft,
-                                style = ButtonStyle.Transparent,
-                                onClick = back
-                            )
-
-                            Spacer(Modifier.height(AppTokens.dp.screen.verticalPadding))
-                        }
-                    }
-                }
+        AnimatedContent(
+            targetState = stackSize > 1,
+            label = "BackButtonAnimation",
+            transitionSpec = {
+                fadeIn() togetherWith fadeOut() using SizeTransform(clip = false)
             },
+            content = { show ->
+                if (show) BottomSheetBackButton(onClick = onBack)
+            }
         )
     }
 }

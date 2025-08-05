@@ -39,9 +39,6 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.icons.SystemRestart
 
 @Immutable
-public enum class ButtonSize { Small, Medium, Large }
-
-@Immutable
 public sealed interface ButtonStyle {
     public data object Primary : ButtonStyle
     public data object Secondary : ButtonStyle
