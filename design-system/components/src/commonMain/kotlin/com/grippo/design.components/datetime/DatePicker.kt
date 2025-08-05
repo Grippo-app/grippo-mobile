@@ -41,7 +41,6 @@ public fun DatePicker(
         false -> AppTokens.colors.text.disabled
     }
 
-
     val iconColor = when (enabled) {
         true -> AppTokens.colors.icon.secondary
         false -> AppTokens.colors.icon.disabled
