@@ -5,5 +5,5 @@ import com.grippo.state.datetime.PeriodState
 
 @Immutable
 internal data class HomeStatisticsState(
-    val period: PeriodState = PeriodState.DAILY
+    val period: PeriodState = PeriodState.ThisDay
 )

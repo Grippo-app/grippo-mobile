@@ -1,20 +1,15 @@
 package com.grippo.design.components.datetime
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import com.grippo.date.utils.DateFormat
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
@@ -32,8 +27,6 @@ public fun PeriodPicker(
     onClick: () -> Unit
 ) {
 
-    val shape = CircleShape
-
     val titleColor = when (enabled) {
         true -> AppTokens.colors.text.primary
         false -> AppTokens.colors.text.disabled
@@ -50,11 +43,6 @@ public fun PeriodPicker(
         false -> AppTokens.colors.icon.disabled
     }
 
-    val backgroundIconColor = when (enabled) {
-        true -> AppTokens.colors.background.primary
-        false -> Color.Transparent
-    }
-
     Column(modifier = modifier.scalableClick(onClick = onClick)) {
         Row(
             verticalAlignment = Alignment.CenterVertically
@@ -69,9 +57,7 @@ public fun PeriodPicker(
 
             Icon(
                 modifier = Modifier
-                    .background(backgroundIconColor, shape)
-                    .size(AppTokens.dp.periodPicker.icon)
-                    .padding(2.dp),
+                    .size(AppTokens.dp.periodPicker.icon),
                 imageVector = AppTokens.icons.NavArrowDown,
                 tint = iconColor,
                 contentDescription = null
@@ -93,14 +79,14 @@ public fun PeriodPicker(
 private fun DatePickerPreview() {
     PreviewContainer {
         PeriodPicker(
-            value = PeriodState.DAILY,
+            value = PeriodState.ThisDay,
             format = DateFormat.MM_d,
             enabled = true,
             onClick = {}
         )
 
         PeriodPicker(
-            value = PeriodState.DAILY,
+            value = PeriodState.ThisDay,
             format = DateFormat.MM_d,
             enabled = false,
             onClick = {}

@@ -19,9 +19,9 @@ internal class HomeStatisticsViewModel(
         )
 
         val available = listOf(
-            PeriodState.DAILY,
-            PeriodState.WEEKLY,
-            PeriodState.MONTHLY,
+            PeriodState.ThisDay,
+            PeriodState.ThisWeek,
+            PeriodState.ThisMonth,
             custom
         )
 

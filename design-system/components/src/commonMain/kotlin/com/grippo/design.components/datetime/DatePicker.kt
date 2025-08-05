@@ -1,20 +1,15 @@
 package com.grippo.design.components.datetime
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import com.grippo.date.utils.DateCompose
 import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateTimeUtils
@@ -36,8 +31,6 @@ public fun DatePicker(
 ) {
     val text = DateCompose.rememberFormat(value, format)
 
-    val shape = CircleShape
-
     val titleColor = when (enabled) {
         true -> AppTokens.colors.text.primary
         false -> AppTokens.colors.text.disabled
@@ -54,11 +47,6 @@ public fun DatePicker(
         false -> AppTokens.colors.icon.disabled
     }
 
-    val backgroundIconColor = when (enabled) {
-        true -> AppTokens.colors.background.primary
-        false -> Color.Transparent
-    }
-
     Column(modifier = modifier.scalableClick(enabled = enabled, onClick = onClick)) {
         Row(
             verticalAlignment = Alignment.CenterVertically
@@ -73,9 +61,7 @@ public fun DatePicker(
 
             Icon(
                 modifier = Modifier
-                    .background(backgroundIconColor, shape)
-                    .size(AppTokens.dp.periodPicker.icon)
-                    .padding(2.dp),
+                    .size(AppTokens.dp.periodPicker.icon),
                 imageVector = AppTokens.icons.NavArrowDown,
                 tint = iconColor,
                 contentDescription = null

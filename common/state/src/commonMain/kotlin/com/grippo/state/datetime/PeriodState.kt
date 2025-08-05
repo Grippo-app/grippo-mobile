@@ -9,12 +9,12 @@ import com.grippo.date.utils.DateRange
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.Res
-import com.grippo.design.resources.custom
-import com.grippo.design.resources.daily
+import com.grippo.design.resources.custom_range
 import com.grippo.design.resources.icons.Calendar
 import com.grippo.design.resources.icons.Settings
-import com.grippo.design.resources.monthly
-import com.grippo.design.resources.weekly
+import com.grippo.design.resources.this_day
+import com.grippo.design.resources.this_month
+import com.grippo.design.resources.this_week
 import kotlinx.serialization.Serializable
 
 @Immutable
@@ -24,19 +24,19 @@ public sealed interface PeriodState {
 
     @Serializable
     @Immutable
-    public data object DAILY : PeriodState {
+    public data object ThisDay : PeriodState {
         override val range: DateRange = DateTimeUtils.thisDay()
     }
 
     @Serializable
     @Immutable
-    public data object WEEKLY : PeriodState {
+    public data object ThisWeek : PeriodState {
         override val range: DateRange = DateTimeUtils.thisWeek()
     }
 
     @Serializable
     @Immutable
-    public data object MONTHLY : PeriodState {
+    public data object ThisMonth : PeriodState {
         override val range: DateRange = DateTimeUtils.thisMonth()
     }
 
@@ -49,18 +49,18 @@ public sealed interface PeriodState {
 
     @Composable
     public fun text(): String = when (this) {
-        is CUSTOM -> AppTokens.strings.res(Res.string.custom)
-        is DAILY -> AppTokens.strings.res(Res.string.daily)
-        is WEEKLY -> AppTokens.strings.res(Res.string.weekly)
-        is MONTHLY -> AppTokens.strings.res(Res.string.monthly)
+        is CUSTOM -> AppTokens.strings.res(Res.string.custom_range)
+        is ThisDay -> AppTokens.strings.res(Res.string.this_day)
+        is ThisWeek -> AppTokens.strings.res(Res.string.this_week)
+        is ThisMonth -> AppTokens.strings.res(Res.string.this_month)
     }
 
     @Composable
     public fun icon(): ImageVector = when (this) {
         is CUSTOM -> AppTokens.icons.Settings
-        is DAILY -> AppTokens.icons.Calendar
-        is WEEKLY -> AppTokens.icons.Calendar
-        is MONTHLY -> AppTokens.icons.Calendar
+        is ThisDay -> AppTokens.icons.Calendar
+        is ThisWeek -> AppTokens.icons.Calendar
+        is ThisMonth -> AppTokens.icons.Calendar
     }
 
     @Composable

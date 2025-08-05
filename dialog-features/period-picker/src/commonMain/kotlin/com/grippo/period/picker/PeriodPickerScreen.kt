@@ -118,11 +118,11 @@ private fun ScreenPreview() {
     PreviewContainer {
         PeriodPickerScreen(
             state = PeriodPickerState(
-                initial = PeriodState.WEEKLY,
+                initial = PeriodState.ThisWeek,
                 list = persistentListOf(
-                    PeriodState.DAILY,
-                    PeriodState.WEEKLY,
-                    PeriodState.MONTHLY,
+                    PeriodState.ThisDay,
+                    PeriodState.ThisWeek,
+                    PeriodState.ThisMonth,
                     PeriodState.CUSTOM(
                         range = DateTimeUtils.thisDay(),
                         limitations = DateTimeUtils.trailingYear()
