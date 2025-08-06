@@ -52,7 +52,7 @@ public fun MenuCard(
         Icon(
             modifier = Modifier.size(AppTokens.dp.menu.item.icon),
             imageVector = AppTokens.icons.NavArrowRight,
-            tint = AppTokens.colors.icon.primary,
+            tint = AppTokens.colors.icon.secondary,
             contentDescription = null
         )
     }

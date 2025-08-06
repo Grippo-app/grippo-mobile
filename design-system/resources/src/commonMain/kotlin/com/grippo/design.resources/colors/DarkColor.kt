@@ -101,8 +101,7 @@ public object DarkColor : AppColor {
     }
 
     override val overlay: AppColor.OverlayColors = object : AppColor.OverlayColors {
-        override val defaultShadow = Color(0x40000000)
-        override val accentShadow = AppColorTokens.Common.Accent.copy(alpha = 0.35f)
+        override val defaultShadow = AppColorTokens.Common.Black.copy(alpha = 0.2f)
     }
 
     override val skeleton: AppColor.SkeletonColors = object : AppColor.SkeletonColors {
@@ -121,7 +120,7 @@ public object DarkColor : AppColor {
         override val lightBackground1 = AppColorTokens.Common.White
         override val lightBackground2 = AppColorTokens.Common.White
         override val darkText = AppColorTokens.NeutralDark.N800
-        override val darkBackground1 =AppColorTokens.NeutralDark.N150
+        override val darkBackground1 = AppColorTokens.NeutralDark.N150
         override val darkBackground2 = AppColorTokens.NeutralDark.N150
     }
 

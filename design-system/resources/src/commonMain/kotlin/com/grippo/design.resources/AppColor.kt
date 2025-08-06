@@ -106,7 +106,6 @@ public interface AppColor {
 
     public interface OverlayColors {
         public val defaultShadow: Color
-        public val accentShadow: Color
     }
 
     public interface BorderColors {

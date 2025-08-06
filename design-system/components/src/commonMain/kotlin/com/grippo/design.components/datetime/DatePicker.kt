@@ -47,20 +47,17 @@ public fun DatePicker(
     }
 
     Column(modifier = modifier.scalableClick(enabled = enabled, onClick = onClick)) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = title,
                 style = AppTokens.typography.b16Bold(),
                 color = titleColor
             )
 
-            Spacer(Modifier.width(AppTokens.dp.periodPicker.spacer))
+            Spacer(Modifier.width(AppTokens.dp.datePicker.spacer))
 
             Icon(
-                modifier = Modifier
-                    .size(AppTokens.dp.periodPicker.icon),
+                modifier = Modifier.size(AppTokens.dp.datePicker.icon),
                 imageVector = AppTokens.icons.NavArrowDown,
                 tint = iconColor,
                 contentDescription = null

@@ -50,7 +50,7 @@ public fun ExerciseCard(
             Icon(
                 modifier = Modifier.size(AppTokens.dp.exerciseCard.icon),
                 imageVector = AppTokens.icons.NavArrowRight,
-                tint = AppTokens.colors.icon.primary,
+                tint = AppTokens.colors.icon.secondary,
                 contentDescription = null
             )
         }
