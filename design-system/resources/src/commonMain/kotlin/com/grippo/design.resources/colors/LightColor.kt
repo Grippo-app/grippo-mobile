@@ -69,7 +69,7 @@ public object LightColor : AppColor {
 
     override val background: AppColor.BackgroundColors = object : AppColor.BackgroundColors {
         override val screen = AppColorTokens.NeutralLight.N150
-        override val dialog = AppColorTokens.NeutralLight.N150
+        override val dialog = AppColorTokens.NeutralLight.N100
         override val card = AppColorTokens.Common.White
         override val accent = AppColorTokens.Common.Accent
     }
@@ -120,7 +120,7 @@ public object LightColor : AppColor {
         override val lightBackground1 = AppColorTokens.Common.White
         override val lightBackground2 = AppColorTokens.Common.White
         override val darkText = AppColorTokens.NeutralDark.N800
-        override val darkBackground1 =AppColorTokens.NeutralDark.N150
+        override val darkBackground1 = AppColorTokens.NeutralDark.N150
         override val darkBackground2 = AppColorTokens.NeutralDark.N150
     }
 

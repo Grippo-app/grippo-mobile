@@ -31,18 +31,18 @@ internal object AppColorTokens {
     }
 
     object NeutralLight {
-        val N050 = Color(0xFFFCFCFD) // screen background
-        val N100 = Color(0xFFF7F9FB) // card background
-        val N150 = Color(0xFFF1F3F6) // container background
-        val N200 = Color(0xFFE4E7EC) // border default
-        val N250 = Color(0xFFD6DAE2) // divider
-        val N300 = Color(0xFFBDC3CF) // disabled text, skeleton
-        val N400 = Color(0xFFA2A9B7) // tertiary text
-        val N500 = Color(0xFF8890A0) // secondary text
-        val N550 = Color(0xFF7A8391) // between secondary text and icons
-        val N600 = Color(0xFF6F788A) // icons
-        val N700 = Color(0xFF3E4450) // primary text
-        val N800 = Color(0xFF1F232B) // darker text
+        val N050 = Color(0xFFF9FAFB) // screen background
+        val N100 = Color(0xFFF2F4F6) // card background
+        val N150 = Color(0xFFEDEFF2) // container background
+        val N200 = Color(0xFFDDE1E7) // border default
+        val N250 = Color(0xFFCED3DB) // divider
+        val N300 = Color(0xFFAEB5C2) // disabled text, skeleton
+        val N400 = Color(0xFF949CAD) // tertiary text
+        val N500 = Color(0xFF788191) // secondary text
+        val N550 = Color(0xFF6A7382) // между secondary text и icons
+        val N600 = Color(0xFF5F687A) // icons
+        val N700 = Color(0xFF2F343F) // primary text
+        val N800 = Color(0xFF14171E) // darker text
     }
 
     object NeutralDark {
