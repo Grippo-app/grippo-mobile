@@ -71,7 +71,10 @@ public fun ExerciseExampleBundlesCard(
 
             PieChart(
                 modifier = Modifier.weight(1f).aspectRatio(1f),
-                data = pie
+                data = pie,
+                textStyle = AppTokens.typography.b11Bold().copy(
+                    color = AppTokens.colors.muscle.text
+                )
             )
 
             Image(
@@ -108,7 +111,7 @@ public fun ExerciseExampleBundlesCard(
                                     ),
                             )
                         },
-                        contentColor = AppTokens.colors.text.inverted,
+                        contentColor = AppTokens.colors.muscle.text,
                         brush = Brush.horizontalGradient(
                             colors = listOf(color.copy(alpha = 0.7f), color)
                         )

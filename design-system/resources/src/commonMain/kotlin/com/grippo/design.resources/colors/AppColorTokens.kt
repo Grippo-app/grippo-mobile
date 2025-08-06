@@ -31,30 +31,32 @@ internal object AppColorTokens {
     }
 
     object NeutralLight {
-        val N050 = Color(0xFFF9FAFB)
-        val N100 = Color(0xFFF5F7FA)
-        val N150 = Color(0xFFF2F4F8)
-        val N200 = Color(0xFFE3E7ED)
-        val N250 = Color(0xFFD6DAE2)
-        val N300 = Color(0xFFBDC3CF)
-        val N400 = Color(0xFFA2A9B7)
-        val N500 = Color(0xFF8890A0)
-        val N600 = Color(0xFF6F788A)
-        val N700 = Color(0xFF545D6D)
+        val N050 = Color(0xFFFCFCFD) // screen background
+        val N100 = Color(0xFFF7F9FB) // card background
+        val N150 = Color(0xFFF1F3F6) // container background
+        val N200 = Color(0xFFE4E7EC) // border default
+        val N250 = Color(0xFFD6DAE2) // divider
+        val N300 = Color(0xFFBDC3CF) // disabled text, skeleton
+        val N400 = Color(0xFFA2A9B7) // tertiary text
+        val N500 = Color(0xFF8890A0) // secondary text
+        val N550 = Color(0xFF7A8391) // between secondary text and icons
+        val N600 = Color(0xFF6F788A) // icons
+        val N700 = Color(0xFF3E4450) // primary text
+        val N800 = Color(0xFF1F232B) // darker text
     }
 
     object NeutralDark {
-        val N100 = Color(0xFF181A1F)
-        val N150 = Color(0xFF1F2228)
-        val N200 = Color(0xFF262A31)
-        val N250 = Color(0xFF2E333B)
-        val N300 = Color(0xFF373D47)
-        val N350 = Color(0xFF404856)
-        val N400 = Color(0xFF4C5566)
-        val N450 = Color(0xFF5A6477)
-        val N500 = Color(0xFF6A768C)
-        val N550 = Color(0xFF7F8CA3)
-        val N600 = Color(0xFFA1ADC3)
-        val N700 = Color(0xFFBECADC)
+        val N050 = Color(0xFF0F1115) // screen background (deepest)
+        val N100 = Color(0xFF181A1F) // base background
+        val N150 = Color(0xFF1F2228) // card background
+        val N200 = Color(0xFF262A31) // container background
+        val N250 = Color(0xFF2E333B) // border default
+        val N300 = Color(0xFF373D47) // divider, elevated surfaces
+        val N400 = Color(0xFF4C5566) // tertiary text
+        val N500 = Color(0xFF6A768C) // secondary text
+        val N550 = Color(0xFF7F8CA3) // between secondary text and icons
+        val N600 = Color(0xFFA1ADC3) // icons
+        val N700 = Color(0xFFBECADC) // primary text
+        val N800 = Color(0xFFF4F7FA) // lightest text (near white)
     }
 }

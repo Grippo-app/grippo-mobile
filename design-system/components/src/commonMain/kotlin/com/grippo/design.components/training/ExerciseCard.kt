@@ -1,20 +1,16 @@
 package com.grippo.design.components.training
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -51,15 +47,10 @@ public fun ExerciseCard(
                 color = AppTokens.colors.text.primary,
             )
 
-            val shape = CircleShape
-
             Icon(
-                modifier = Modifier
-                    .background(AppTokens.colors.background.screen, shape)
-                    .size(AppTokens.dp.exerciseCard.icon)
-                    .padding(2.dp),
+                modifier = Modifier.size(AppTokens.dp.exerciseCard.icon),
                 imageVector = AppTokens.icons.NavArrowRight,
-                tint = AppTokens.colors.icon.secondary,
+                tint = AppTokens.colors.icon.primary,
                 contentDescription = null
             )
         }

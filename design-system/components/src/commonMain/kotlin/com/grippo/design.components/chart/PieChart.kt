@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.grippo.chart.pie.PieChart
 import com.grippo.chart.pie.PieStyle
@@ -16,16 +17,13 @@ import com.grippo.design.preview.PreviewContainer
 public fun PieChart(
     modifier: Modifier = Modifier,
     data: List<Pair<Color, Long>>,
+    textStyle: TextStyle
 ) {
     PieChart(
         modifier = modifier,
         data = data,
         style = PieStyle(
-            pieText = PieText(
-                textStyle = AppTokens.typography.b11Bold().copy(
-                    color = AppTokens.colors.text.inverted
-                )
-            ),
+            pieText = PieText(textStyle = textStyle),
             chartBarWidth = AppTokens.dp.chart.pie.width
         )
     )
@@ -42,8 +40,10 @@ private fun PieChartPreview() {
                 Color(0xFFF44336) to 20L, // Red
                 Color(0xFF2196F3) to 10L  // Blue
             ),
-            modifier = Modifier
-                .size(120.dp)
+            modifier = Modifier.size(120.dp),
+            textStyle = AppTokens.typography.b11Bold().copy(
+                color = AppTokens.colors.muscle.text
+            )
         )
     }
 }

@@ -139,6 +139,8 @@ public interface AppColor {
         public val inactive: Color
         public val background: Color
         public val outline: Color
+
+        public val text: Color
         public val palette: List<Color>
     }
 
