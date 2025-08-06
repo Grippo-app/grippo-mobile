@@ -75,7 +75,7 @@ private fun BottomSheet(
         sheetState = modalSheetState,
         scrimColor = AppTokens.colors.dialog.scrim,
         properties = ModalBottomSheetProperties(shouldDismissOnBackPress = true),
-        containerColor = AppTokens.colors.dialog.background,
+        containerColor = AppTokens.colors.background.dialog,
         dragHandle = null,
         shape = RoundedCornerShape(
             topStart = AppTokens.dp.bottomSheet.radius,

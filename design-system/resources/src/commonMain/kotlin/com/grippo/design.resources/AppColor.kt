@@ -43,7 +43,6 @@ public interface AppColor {
         public val contentTransparentDisabled: Color
         public val textTransparent: Color
         public val iconTransparent: Color
-
     }
 
     public interface ToggleColors {
@@ -65,7 +64,6 @@ public interface AppColor {
     }
 
     public interface InputColors {
-        public val background: Color
         public val placeholder: Color
         public val label: Color
         public val text: Color
@@ -86,7 +84,6 @@ public interface AppColor {
     }
 
     public interface DialogColors {
-        public val background: Color
         public val handle: Color
         public val scrim: Color
     }

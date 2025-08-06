@@ -92,7 +92,7 @@ internal fun Input(
     }
 
     val backgroundColor = when (enabled) {
-        true -> colors.input.background
+        true -> colors.background.card
         else -> colors.input.backgroundDisabled
     }
 

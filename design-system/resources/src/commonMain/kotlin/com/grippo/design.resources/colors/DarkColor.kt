@@ -32,7 +32,7 @@ public object DarkColor : AppColor {
     override val icon: AppColor.IconColors = object : AppColor.IconColors {
         override val primary = AppColorTokens.NeutralDark.N700
         override val secondary = AppColorTokens.NeutralDark.N600
-        override val disabled = AppColorTokens.NeutralDark.N400
+        override val disabled = AppColorTokens.NeutralDark.N300
         override val accent = AppColorTokens.Common.Accent
         override val inverted = AppColorTokens.Common.Black
     }
@@ -60,7 +60,6 @@ public object DarkColor : AppColor {
     }
 
     override val input: AppColor.InputColors = object : AppColor.InputColors {
-        override val background = AppColorTokens.NeutralDark.N200
         override val placeholder = AppColorTokens.NeutralDark.N500
         override val label = AppColorTokens.NeutralDark.N500
         override val text = AppColorTokens.NeutralDark.N800
@@ -81,7 +80,6 @@ public object DarkColor : AppColor {
     }
 
     override val dialog: AppColor.DialogColors = object : AppColor.DialogColors {
-        override val background = AppColorTokens.NeutralDark.N100
         override val handle = AppColorTokens.NeutralDark.N400
         override val scrim = Color(0xB3000000)
     }

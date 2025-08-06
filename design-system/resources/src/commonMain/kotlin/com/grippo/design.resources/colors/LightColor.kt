@@ -31,7 +31,7 @@ public object LightColor : AppColor {
     override val icon: AppColor.IconColors = object : AppColor.IconColors {
         override val primary = AppColorTokens.NeutralLight.N700
         override val secondary = AppColorTokens.NeutralLight.N600
-        override val disabled = AppColorTokens.NeutralLight.N400
+        override val disabled = AppColorTokens.NeutralLight.N200
         override val accent = AppColorTokens.Common.Accent
         override val inverted = AppColorTokens.Common.White
     }
@@ -55,7 +55,6 @@ public object LightColor : AppColor {
     }
 
     override val input: AppColor.InputColors = object : AppColor.InputColors {
-        override val background = AppColorTokens.NeutralLight.N150
         override val placeholder = AppColorTokens.NeutralLight.N400
         override val label = AppColorTokens.NeutralLight.N550
         override val text = AppColorTokens.Common.Black
@@ -69,14 +68,13 @@ public object LightColor : AppColor {
     }
 
     override val background: AppColor.BackgroundColors = object : AppColor.BackgroundColors {
-        override val screen = AppColorTokens.NeutralLight.N050
-        override val dialog = AppColorTokens.Common.White
-        override val card = AppColorTokens.NeutralLight.N150
+        override val screen = AppColorTokens.NeutralLight.N150
+        override val dialog = AppColorTokens.NeutralLight.N150
+        override val card = AppColorTokens.Common.White
         override val accent = AppColorTokens.Common.Accent
     }
 
     override val dialog: AppColor.DialogColors = object : AppColor.DialogColors {
-        override val background = AppColorTokens.Common.White
         override val handle = AppColorTokens.NeutralLight.N500
         override val scrim = Color(0x80000000)
     }
