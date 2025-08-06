@@ -25,7 +25,7 @@ public fun BottomSheetBackButton(
     Column(modifier = modifier) {
         HorizontalDivider(
             modifier = Modifier.fillMaxWidth(),
-            color = AppTokens.colors.divider.secondary
+            color = AppTokens.colors.divider.default
         )
 
         Spacer(Modifier.height(AppTokens.dp.screen.verticalPadding))

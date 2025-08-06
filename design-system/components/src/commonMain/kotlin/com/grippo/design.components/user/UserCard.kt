@@ -1,6 +1,7 @@
 package com.grippo.design.components.user
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +15,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import com.grippo.date.utils.DateCompose
 import com.grippo.design.components.user.internal.OverviewCard
 import com.grippo.design.core.AppTokens
@@ -61,6 +63,7 @@ public fun UserCard(
     Column(
         modifier = modifier
             .background(gradient, shape)
+            .border(width = 2.dp, color = AppTokens.colors.background.card, shape = shape)
             .padding(
                 horizontal = AppTokens.dp.userCard.horizontalPadding,
                 vertical = AppTokens.dp.userCard.verticalPadding
@@ -92,7 +95,7 @@ public fun UserCard(
 
         HorizontalDivider(
             modifier = Modifier.fillMaxWidth(),
-            color = AppTokens.colors.divider.primary
+            color = AppTokens.colors.divider.default
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))

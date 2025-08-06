@@ -96,7 +96,7 @@ internal fun SelectableCardLarge(
 
             HorizontalDivider(
                 modifier = Modifier.fillMaxWidth(),
-                color = AppTokens.colors.divider.primary
+                color = AppTokens.colors.divider.default
             )
 
             Spacer(Modifier.height(AppTokens.dp.contentPadding.content))

@@ -62,7 +62,7 @@ public fun IterationCard(
 
         VerticalDivider(
             modifier = Modifier.fillMaxHeight(),
-            color = AppTokens.colors.divider.secondary
+            color = AppTokens.colors.divider.default
         )
 
         Spacer(Modifier.width(AppTokens.dp.contentPadding.text))

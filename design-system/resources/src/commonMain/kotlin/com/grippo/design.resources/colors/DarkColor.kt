@@ -58,8 +58,7 @@ public object DarkColor : AppColor {
     }
 
     override val divider: AppColor.DividerColors = object : AppColor.DividerColors {
-        override val primary = AppColorTokens.NeutralDark.N250
-        override val secondary = AppColorTokens.NeutralDark.N200
+        override val default = AppColorTokens.NeutralDark.N200
     }
 
     override val input: AppColor.InputColors = object : AppColor.InputColors {

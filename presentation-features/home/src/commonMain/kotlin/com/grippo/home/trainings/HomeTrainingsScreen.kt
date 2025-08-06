@@ -95,7 +95,7 @@ internal fun HomeTrainingsScreen(
 
                 if (value is TrainingListValue.DateTime) {
                     TimeLabel(
-                        modifier = Modifier.padding(vertical = AppTokens.dp.contentPadding.content),
+                        modifier = Modifier.padding(vertical = contentPadding),
                         value = value.date
                     )
                     return@TimelineIndicator
@@ -106,14 +106,11 @@ internal fun HomeTrainingsScreen(
                         modifier = Modifier
                             .background(AppTokens.colors.background.card, shape)
                             .fillMaxWidth()
-                            .padding(
-                                horizontal = AppTokens.dp.contentPadding.content,
-                                vertical = AppTokens.dp.contentPadding.content,
-                            ),
-                        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+                            .padding(contentPadding),
+                        verticalArrangement = Arrangement.spacedBy(contentPadding)
                     ) {
 
-                        Row(horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(contentPadding)) {
                             TonnageChip(
                                 modifier = Modifier.weight(1f),
                                 value = value.training.volume

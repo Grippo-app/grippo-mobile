@@ -111,7 +111,7 @@ internal fun ExerciseScreen(
                 modifier = Modifier
                     .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
                     .fillMaxWidth(),
-                color = AppTokens.colors.divider.secondary
+                color = AppTokens.colors.divider.default
             )
 
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))

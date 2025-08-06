@@ -116,8 +116,7 @@ public object LightColor : AppColor {
     }
 
     override val divider: AppColor.DividerColors = object : AppColor.DividerColors {
-        override val primary = AppColorTokens.NeutralLight.N250
-        override val secondary = AppColorTokens.NeutralLight.N200
+        override val default = AppColorTokens.NeutralLight.N200
     }
 
     override val theme: AppColor.ThemeColors = object : AppColor.ThemeColors {

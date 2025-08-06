@@ -23,8 +23,7 @@ public interface AppColor {
     public val radio: RadioColors
 
     public interface DividerColors {
-        public val primary: Color
-        public val secondary: Color
+        public val default: Color
     }
 
     public interface ButtonColors {

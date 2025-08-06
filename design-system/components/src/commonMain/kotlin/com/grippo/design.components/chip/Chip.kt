@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -82,6 +83,8 @@ public fun Chip(
         Text(
             text = label,
             style = AppTokens.typography.b14Semi(),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             color = contentColor
         )
 
@@ -90,6 +93,8 @@ public fun Chip(
         Text(
             text = value,
             style = AppTokens.typography.b14Bold(),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             color = contentColor
         )
     }
