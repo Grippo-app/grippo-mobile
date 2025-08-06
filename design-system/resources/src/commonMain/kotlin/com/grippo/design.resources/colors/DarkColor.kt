@@ -118,10 +118,10 @@ public object DarkColor : AppColor {
 
     override val theme: AppColor.ThemeColors = object : AppColor.ThemeColors {
         override val lightText = AppColorTokens.NeutralLight.N800
-        override val lightBackground1 = AppColorTokens.NeutralLight.N150
-        override val lightBackground2 = AppColorTokens.NeutralLight.N150
+        override val lightBackground1 = AppColorTokens.Common.White
+        override val lightBackground2 = AppColorTokens.Common.White
         override val darkText = AppColorTokens.NeutralDark.N800
-        override val darkBackground1 = AppColorTokens.NeutralDark.N150
+        override val darkBackground1 =AppColorTokens.NeutralDark.N150
         override val darkBackground2 = AppColorTokens.NeutralDark.N150
     }
 
