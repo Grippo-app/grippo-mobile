@@ -33,7 +33,7 @@ public fun IterationCard(
 
         Text(
             text = value.volume.short(),
-            style = AppTokens.typography.b12Bold(),
+            style = AppTokens.typography.b13Bold(),
             color = AppTokens.colors.text.primary
         )
 
@@ -41,7 +41,7 @@ public fun IterationCard(
 
         Text(
             text = value.repetitions.short(),
-            style = AppTokens.typography.b12Bold(),
+            style = AppTokens.typography.b13Semi(),
             color = AppTokens.colors.text.secondary
         )
     }

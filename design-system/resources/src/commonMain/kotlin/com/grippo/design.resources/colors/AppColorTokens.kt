@@ -31,28 +31,28 @@ internal object AppColorTokens {
     }
 
     object NeutralLight {
-        val N050 = Color(0xFFF9FAFB) // screen background
-        val N100 = Color(0xFFF2F4F6) // card background
-        val N150 = Color(0xFFEDEFF2) // container background
-        val N200 = Color(0xFFDDE1E7) // border default
-        val N250 = Color(0xFFCED3DB) // divider
-        val N300 = Color(0xFFAEB5C2) // disabled text, skeleton
-        val N400 = Color(0xFF949CAD) // tertiary text
-        val N500 = Color(0xFF788191) // secondary text
-        val N550 = Color(0xFF6A7382) // между secondary text и icons
-        val N600 = Color(0xFF5F687A) // icons
-        val N700 = Color(0xFF2F343F) // primary text
-        val N800 = Color(0xFF14171E) // darker text
+        val N050 = Color(0xFFFAFBFC)
+        val N100 = Color(0xFFEDEFF1)
+        val N150 = Color(0xFFE7E9ED)
+        val N200 = Color(0xFFD9DDE4)
+        val N250 = Color(0xFFCBD0D8)
+        val N300 = Color(0xFFADB3BF)
+        val N400 = Color(0xFF939AAA)
+        val N500 = Color(0xFF798292)
+        val N550 = Color(0xFF6B7484)
+        val N600 = Color(0xFF606A7B)
+        val N700 = Color(0xFF2F353F)
+        val N800 = Color(0xFF15181F)
     }
 
     object NeutralDark {
-        val N050 = Color(0xFF0F1115) // screen background (deepest)
-        val N100 = Color(0xFF181A1F) // base background
-        val N150 = Color(0xFF1F2228) // card background
-        val N200 = Color(0xFF262A31) // container background
-        val N250 = Color(0xFF2E333B) // border default
-        val N300 = Color(0xFF373D47) // divider, elevated surfaces
-        val N400 = Color(0xFF4C5566) // tertiary text
+        val N050 = Color(0xFF0F1115)
+        val N100 = Color(0xFF181A1F)
+        val N150 = Color(0xFF1F2228)
+        val N200 = Color(0xFF262A31)
+        val N250 = Color(0xFF2E333B)
+        val N300 = Color(0xFF373D47)
+        val N400 = Color(0xFF4C5566)
         val N500 = Color(0xFF6A768C) // secondary text
         val N550 = Color(0xFF7F8CA3) // between secondary text and icons
         val N600 = Color(0xFFA1ADC3) // icons
