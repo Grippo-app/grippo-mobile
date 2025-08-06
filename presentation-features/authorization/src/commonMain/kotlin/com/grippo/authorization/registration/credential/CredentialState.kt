@@ -1,8 +1,8 @@
 package com.grippo.authorization.registration.credential
 
 import androidx.compose.runtime.Immutable
-import com.grippo.state.auth.EmailFormatState
-import com.grippo.state.profile.PasswordFormatState
+import com.grippo.state.formatters.EmailFormatState
+import com.grippo.state.formatters.PasswordFormatState
 
 @Immutable
 internal data class CredentialState(

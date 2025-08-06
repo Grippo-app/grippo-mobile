@@ -3,7 +3,7 @@ package com.grippo.profile.weight.history
 import com.grippo.core.BaseViewModel
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
-import com.grippo.state.profile.WeightFormatState
+import com.grippo.state.formatters.WeightFormatState
 
 internal class WeightHistoryViewModel(
     private val dialogController: DialogController

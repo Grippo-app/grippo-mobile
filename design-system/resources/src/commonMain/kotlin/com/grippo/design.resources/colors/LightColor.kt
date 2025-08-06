@@ -144,7 +144,7 @@ public object LightColor : AppColor {
                 override val contentColor = AppColorTokens.Common.White
             }
 
-        override val tonnage: AppColor.ChipColors.GradientColors =
+        override val volume: AppColor.ChipColors.GradientColors =
             object : AppColor.ChipColors.GradientColors {
                 override val startColor = Color(0xFF2B7FFF)
                 override val endColor = Color(0xFF00C2FF)

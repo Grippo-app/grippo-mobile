@@ -3,21 +3,16 @@ package com.grippo.design.components.training
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.Res
-import com.grippo.design.resources.kg
-import com.grippo.design.resources.reps
 import com.grippo.state.trainings.IterationState
 import com.grippo.state.trainings.stubIteration
 
@@ -37,7 +32,7 @@ public fun IterationCard(
     ) {
 
         Text(
-            text = value.weight.toString(),
+            text = value.volume.short(),
             style = AppTokens.typography.b12Bold(),
             color = AppTokens.colors.text.primary
         )
@@ -45,31 +40,8 @@ public fun IterationCard(
         Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
 
         Text(
-            text = AppTokens.strings.res(Res.string.kg),
-            style = AppTokens.typography.b12Reg(),
-            color = AppTokens.colors.text.secondary
-        )
-
-        Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
-
-        VerticalDivider(
-            modifier = Modifier.fillMaxHeight(),
-            color = AppTokens.colors.divider.default
-        )
-
-        Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
-
-        Text(
-            text = value.repetitions.toString(),
+            text = value.repetitions.short(),
             style = AppTokens.typography.b12Bold(),
-            color = AppTokens.colors.text.primary
-        )
-
-        Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
-
-        Text(
-            text = AppTokens.strings.res(Res.string.reps),
-            style = AppTokens.typography.b12Reg(),
             color = AppTokens.colors.text.secondary
         )
     }

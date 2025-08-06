@@ -2,6 +2,9 @@ package com.grippo.domain.state.training
 
 import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.domain.state.exercise.example.toState
+import com.grippo.state.formatters.IntensityFormatState
+import com.grippo.state.formatters.RepetitionsFormatState
+import com.grippo.state.formatters.VolumeFormatState
 import com.grippo.state.trainings.ExerciseState
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
@@ -15,9 +18,9 @@ public fun Exercise.toState(): ExerciseState {
         id = id,
         name = name,
         iterations = iterations.toState(),
-        volume = volume,
-        repetitions = repetitions,
-        intensity = intensity,
+        volume = VolumeFormatState(volume),
+        repetitions = RepetitionsFormatState(repetitions),
+        intensity = IntensityFormatState(intensity),
         exerciseExample = exerciseExample?.toState()
     )
 }

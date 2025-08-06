@@ -1,6 +1,7 @@
 package com.grippo.state.exercise.examples
 
 import androidx.compose.runtime.Immutable
+import com.grippo.state.formatters.PercentageFormatState
 import com.grippo.state.muscles.MuscleState
 import com.grippo.state.muscles.stubMuscles
 import kotlinx.collections.immutable.ImmutableList
@@ -12,7 +13,7 @@ import kotlin.uuid.Uuid
 public data class ExerciseExampleBundleState(
     val id: String,
     val muscle: MuscleState,
-    val percentage: Int
+    val percentage: PercentageFormatState
 )
 
 public fun stubExerciseExampleBundles(): ImmutableList<ExerciseExampleBundleState> {
@@ -20,7 +21,7 @@ public fun stubExerciseExampleBundles(): ImmutableList<ExerciseExampleBundleStat
         ExerciseExampleBundleState(
             id = Uuid.random().toString(),
             muscle = m.value,
-            percentage = Random.nextInt(1, 20)
+            percentage = PercentageFormatState(Random.nextInt(1, 20))
         )
     }.toPersistentList()
 }
@@ -29,6 +30,6 @@ public fun stubExerciseExampleBundle(): ExerciseExampleBundleState {
     return ExerciseExampleBundleState(
         id = Uuid.random().toString(),
         muscle = stubMuscles().random().muscles.random().value,
-        percentage = Random.nextInt(5, 60)
+        percentage = PercentageFormatState(Random.nextInt(1, 20))
     )
 }

@@ -1,4 +1,4 @@
-package com.grippo.state.auth
+package com.grippo.state.formatters
 
 import androidx.compose.runtime.Immutable
 import com.grippo.validation.EmailValidator

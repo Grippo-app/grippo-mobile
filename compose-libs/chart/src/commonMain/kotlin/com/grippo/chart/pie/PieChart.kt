@@ -3,6 +3,7 @@ package com.grippo.chart.pie
 import androidx.annotation.FloatRange
 import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
@@ -19,26 +20,32 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import kotlin.math.PI
 import kotlin.math.asin
 import kotlin.math.cos
-import kotlin.math.roundToInt
 import kotlin.math.sin
+
+@Immutable
+public data class PieChartData(
+    val text: String,
+    val color: Color,
+    val value: Long,
+)
 
 // https://medium.com/@developerchunk/create-custom-pie-chart-with-animations-in-jetpack-compose-android-studio-kotlin-49cf95ef321e
 @Composable
 public fun PieChart(
     modifier: Modifier = Modifier,
-    data: List<Pair<Color, Long>>,
+    data: List<PieChartData>,
     style: PieStyle,
 ) {
     val textMeasurer = rememberTextMeasurer()
 
     Canvas(modifier = modifier) {
         val minAngle = (2 * style.paddingAngle + style.minVisibleAngle)
-        val totalSum = data.sumOf { it.second }
+        val totalSum = data.sumOf { it.value }
         val floatValue = mutableListOf<Float>()
         var difference = 0f
 
-        data.forEachIndexed { index, values ->
-            val sectionAngle = 360 * values.second.toFloat() / totalSum.toFloat()
+        data.forEachIndexed { index, item ->
+            val sectionAngle = 360 * item.value.toFloat() / totalSum.toFloat()
             val safeSectionAngle = sectionAngle.coerceAtLeast(minAngle)
             if (safeSectionAngle > sectionAngle) {
                 difference += safeSectionAngle - sectionAngle
@@ -63,7 +70,7 @@ public fun PieChart(
             val centerRadius = (outerRadius + innerRadius) / 2f
 
             drawRoundedArc(
-                color = data.getOrNull(index)?.first ?: Color.Transparent,
+                color = data.getOrNull(index)?.color ?: Color.Transparent,
                 startAngle = startAngle,
                 sweepAngle = sweepAngle,
                 width = style.chartBarWidth.toPx(),
@@ -76,8 +83,7 @@ public fun PieChart(
                 val x = (center.x + centerRadius * cos(angleRad))
                 val y = (center.y + centerRadius * sin(angleRad))
 
-                val percent = (100 * data[index].second.toFloat() / totalSum).roundToInt()
-                val label = "$percent%"
+                val label = data[index].text
 
                 val layout = textMeasurer.measure(
                     text = AnnotatedString(label),

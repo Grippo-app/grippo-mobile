@@ -10,7 +10,7 @@ public fun List<IterationEntity>.toDomain(): List<Iteration> {
 public fun IterationEntity.toDomain(): Iteration {
     return Iteration(
         id = id,
-        weight = weight,
+        volume = volume,
         repetitions = repetitions
     )
 }

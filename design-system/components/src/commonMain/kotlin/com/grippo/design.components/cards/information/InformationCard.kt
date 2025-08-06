@@ -51,7 +51,7 @@ private fun InformationCardPreview() {
     PreviewContainer {
         InformationCard(
             modifier = Modifier.fillMaxWidth(),
-            label = "Tonnage",
+            label = "Volume",
             value = {
                 Text(
                     text = "Value"
@@ -61,7 +61,7 @@ private fun InformationCardPreview() {
 
         InformationCard(
             modifier = Modifier.fillMaxWidth(),
-            label = "Tonnage",
+            label = "Volume",
             value = {
                 IterationCard(
                     value = stubIteration()

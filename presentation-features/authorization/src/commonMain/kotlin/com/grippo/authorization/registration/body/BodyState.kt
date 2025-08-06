@@ -1,8 +1,8 @@
 package com.grippo.authorization.registration.body
 
 import androidx.compose.runtime.Immutable
-import com.grippo.state.profile.HeightFormatState
-import com.grippo.state.profile.WeightFormatState
+import com.grippo.state.formatters.HeightFormatState
+import com.grippo.state.formatters.WeightFormatState
 
 @Immutable
 internal data class BodyState(

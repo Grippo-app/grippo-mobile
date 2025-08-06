@@ -27,8 +27,8 @@ import com.grippo.design.resources.Res
 import com.grippo.design.resources.continue_btn
 import com.grippo.design.resources.registration_body_description
 import com.grippo.design.resources.registration_body_title
-import com.grippo.state.profile.HeightFormatState
-import com.grippo.state.profile.WeightFormatState
+import com.grippo.state.formatters.HeightFormatState
+import com.grippo.state.formatters.WeightFormatState
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 

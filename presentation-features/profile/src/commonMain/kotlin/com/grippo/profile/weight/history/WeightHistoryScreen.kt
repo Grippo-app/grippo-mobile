@@ -21,7 +21,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.weight_history
-import com.grippo.state.profile.WeightFormatState
+import com.grippo.state.formatters.WeightFormatState
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 

@@ -156,7 +156,7 @@ public object MuscleEngine {
     ): List<Pair<ExerciseExampleBundleState, Color>> {
         if (bundles.isEmpty()) return emptyList()
 
-        val sorted = remember(bundles) { bundles.sortedByDescending { it.percentage } }
+        val sorted = remember(bundles) { bundles.sortedByDescending { it.percentage.value } }
 
         val alphas = remember(sorted) {
             if (sorted.size <= 1) listOf(1f)

@@ -11,8 +11,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.icons.FireFlame
 import com.grippo.design.resources.intensity_chip
-import com.grippo.design.resources.percent
-import kotlin.math.roundToInt
+import com.grippo.state.formatters.IntensityFormatState
 
 @Immutable
 public enum class IntensityChipStyle {
@@ -23,15 +22,9 @@ public enum class IntensityChipStyle {
 @Composable
 public fun IntensityChip(
     modifier: Modifier = Modifier,
-    value: Float,
+    value: IntensityFormatState,
     style: IntensityChipStyle
 ) {
-    val displayValue = if (value == value.roundToInt().toFloat()) {
-        value.toInt().toString()
-    } else {
-        ((value * 10).roundToInt() / 10.0).toString()
-    }
-
     val colors = AppTokens.colors.chip.intensity
 
     val text = when (style) {
@@ -44,12 +37,10 @@ public fun IntensityChip(
         IntensityChipStyle.LONG -> Trailing.Icon(AppTokens.icons.FireFlame)
     }
 
-    val percent = AppTokens.strings.res(Res.string.percent)
-
     Chip(
         modifier = modifier,
         label = text,
-        value = "${displayValue}${percent}",
+        value = value.short(),
         trailing = trailing,
         contentColor = colors.contentColor,
         brush = Brush.horizontalGradient(
@@ -60,15 +51,15 @@ public fun IntensityChip(
 
 @AppPreview
 @Composable
-private fun ChipPreview() {
+private fun IntensityChipPreview() {
     PreviewContainer {
         IntensityChip(
-            value = 85f,
+            value = IntensityFormatState(85f),
             style = IntensityChipStyle.LONG
         )
 
         IntensityChip(
-            value = 85f,
+            value = IntensityFormatState(85f),
             style = IntensityChipStyle.SHORT
         )
     }

@@ -10,46 +10,37 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.icons.Weight
-import com.grippo.design.resources.kg
 import com.grippo.design.resources.tonnage_chip
-import kotlin.math.roundToInt
+import com.grippo.state.formatters.VolumeFormatState
 
 @Immutable
-public enum class TonnageChipStyle {
+public enum class VolumeChipStyle {
     SHORT,
     LONG
 }
 
 @Composable
-public fun TonnageChip(
+public fun VolumeChip(
     modifier: Modifier = Modifier,
-    value: Float,
-    style: TonnageChipStyle
+    value: VolumeFormatState,
+    style: VolumeChipStyle
 ) {
-    val displayValue = if (value == value.roundToInt().toFloat()) {
-        value.toInt().toString()
-    } else {
-        ((value * 10).roundToInt() / 10.0).toString()
-    }
-
-    val colors = AppTokens.colors.chip.tonnage
+    val colors = AppTokens.colors.chip.volume
 
     val text = when (style) {
-        TonnageChipStyle.SHORT -> Label.Empty
-        TonnageChipStyle.LONG -> Label.Text(UiText.Str(AppTokens.strings.res(Res.string.tonnage_chip)))
+        VolumeChipStyle.SHORT -> Label.Empty
+        VolumeChipStyle.LONG -> Label.Text(UiText.Str(AppTokens.strings.res(Res.string.tonnage_chip)))
     }
 
     val trailing = when (style) {
-        TonnageChipStyle.SHORT -> Trailing.Icon(AppTokens.icons.Weight)
-        TonnageChipStyle.LONG -> Trailing.Icon(AppTokens.icons.Weight)
+        VolumeChipStyle.SHORT -> Trailing.Icon(AppTokens.icons.Weight)
+        VolumeChipStyle.LONG -> Trailing.Icon(AppTokens.icons.Weight)
     }
-
-    val kg = AppTokens.strings.res(Res.string.kg)
 
     Chip(
         modifier = modifier,
         label = text,
-        value = "${displayValue}$kg",
+        value = value.short(),
         trailing = trailing,
         contentColor = colors.contentColor,
         brush = Brush.horizontalGradient(
@@ -60,16 +51,16 @@ public fun TonnageChip(
 
 @AppPreview
 @Composable
-private fun ChipPreview() {
+private fun VolumeChipPreview() {
     PreviewContainer {
-        TonnageChip(
-            value = 1250.5f,
-            style = TonnageChipStyle.LONG
+        VolumeChip(
+            value = VolumeFormatState(1250.5f),
+            style = VolumeChipStyle.LONG
         )
 
-        TonnageChip(
-            value = 1250.5f,
-            style = TonnageChipStyle.SHORT
+        VolumeChip(
+            value = VolumeFormatState(1250.5f),
+            style = VolumeChipStyle.SHORT
         )
     }
 }

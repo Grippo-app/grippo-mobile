@@ -28,7 +28,7 @@ import com.grippo.design.resources.Res
 import com.grippo.design.resources.continue_btn
 import com.grippo.design.resources.registration_name_description
 import com.grippo.design.resources.registration_name_title
-import com.grippo.state.auth.NameFormatState
+import com.grippo.state.formatters.NameFormatState
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 

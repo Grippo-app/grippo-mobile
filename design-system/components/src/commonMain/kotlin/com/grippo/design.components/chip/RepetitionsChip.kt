@@ -11,6 +11,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.icons.Repeat
 import com.grippo.design.resources.repetitions_chip
+import com.grippo.state.formatters.RepetitionsFormatState
 
 @Immutable
 public enum class RepetitionsChipStyle {
@@ -21,7 +22,7 @@ public enum class RepetitionsChipStyle {
 @Composable
 public fun RepetitionsChip(
     modifier: Modifier = Modifier,
-    value: Int,
+    value: RepetitionsFormatState,
     style: RepetitionsChipStyle
 ) {
     val colors = AppTokens.colors.chip.repetitions
@@ -39,7 +40,7 @@ public fun RepetitionsChip(
     Chip(
         modifier = modifier,
         label = text,
-        value = "$value",
+        value = value.short(),
         trailing = trailing,
         contentColor = colors.contentColor,
         brush = Brush.horizontalGradient(
@@ -50,15 +51,15 @@ public fun RepetitionsChip(
 
 @AppPreview
 @Composable
-private fun ChipPreview() {
+private fun RepetitionsChipPreview() {
     PreviewContainer {
         RepetitionsChip(
-            value = 12,
+            value = RepetitionsFormatState(12),
             style = RepetitionsChipStyle.LONG
         )
 
         RepetitionsChip(
-            value = 12,
+            value = RepetitionsFormatState(12),
             style = RepetitionsChipStyle.SHORT
         )
     }

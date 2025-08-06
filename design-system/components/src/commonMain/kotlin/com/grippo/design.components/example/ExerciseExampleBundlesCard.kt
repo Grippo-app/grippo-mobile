@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
+import com.grippo.chart.pie.PieChartData
 import com.grippo.design.components.chart.PieChart
 import com.grippo.design.components.chip.Chip
 import com.grippo.design.components.chip.Label
@@ -28,6 +29,8 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.core.UiText
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.Res
+import com.grippo.design.resources.percent
 import com.grippo.state.exercise.examples.ExerciseExampleBundleState
 import com.grippo.state.exercise.examples.stubExerciseExample
 import com.grippo.state.muscles.factory.MuscleColorStrategy
@@ -42,15 +45,23 @@ public fun ExerciseExampleBundlesCard(
 ) {
 
     val internalList = remember(value) {
-        value.sortedByDescending { it.percentage }.toPersistentList()
+        value.sortedByDescending { it.percentage.value }.toPersistentList()
     }
 
     val preset = MuscleEngine.generatePreset(MuscleColorStrategy.ByUniqueColor(internalList))
 
     val (front, back) = MuscleEngine.generateImages(preset, internalList)
 
+    val percent = AppTokens.strings.res(Res.string.percent)
+
     val pie = remember(internalList) {
-        internalList.map { it.muscle.type.color(preset) to it.percentage.toLong() }
+        internalList.map {
+            PieChartData(
+                color = it.muscle.type.color(preset),
+                value = it.percentage.value.toLong(),
+                text = "${it.percentage.value}$percent"
+            )
+        }
     }
 
     Column(
@@ -102,7 +113,7 @@ public fun ExerciseExampleBundlesCard(
                     Chip(
                         modifier = modifier,
                         label = Label.Text(UiText.Str(item.muscle.name)),
-                        value = "${item.percentage}%",
+                        value = item.percentage.short(),
                         trailing = Trailing.Content {
                             Spacer(
                                 modifier = Modifier

@@ -22,7 +22,7 @@ import androidx.room.PrimaryKey
 public data class IterationEntity(
     @PrimaryKey val id: String,
     val exerciseId: String,
-    val weight: Float,
+    val volume: Float,
     val repetitions: Int,
     val createdAt: String,
     val updatedAt: String,

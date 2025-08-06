@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.grippo.chart.pie.PieChart
+import com.grippo.chart.pie.PieChartData
 import com.grippo.chart.pie.PieStyle
 import com.grippo.chart.pie.PieText
 import com.grippo.design.core.AppTokens
@@ -16,7 +17,7 @@ import com.grippo.design.preview.PreviewContainer
 @Composable
 public fun PieChart(
     modifier: Modifier = Modifier,
-    data: List<Pair<Color, Long>>,
+    data: List<PieChartData>,
     textStyle: TextStyle
 ) {
     PieChart(
@@ -35,10 +36,10 @@ private fun PieChartPreview() {
     PreviewContainer {
         PieChart(
             data = listOf(
-                Color(0xFF4CAF50) to 40L, // Green
-                Color(0xFFFFC107) to 30L, // Amber
-                Color(0xFFF44336) to 20L, // Red
-                Color(0xFF2196F3) to 10L  // Blue
+                PieChartData("Green", Color(0xFF4CAF50), 40L),
+                PieChartData("Amber", Color(0xFFFFC107), 30L),
+                PieChartData("Red", Color(0xFFF44336), 20L),
+                PieChartData("Blue", Color(0xFF2196F3), 10L),
             ),
             modifier = Modifier.size(120.dp),
             textStyle = AppTokens.typography.b11Bold().copy(

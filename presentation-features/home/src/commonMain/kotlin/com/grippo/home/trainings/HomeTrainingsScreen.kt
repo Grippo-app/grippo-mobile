@@ -18,8 +18,8 @@ import com.grippo.design.components.chip.IntensityChip
 import com.grippo.design.components.chip.IntensityChipStyle
 import com.grippo.design.components.chip.RepetitionsChip
 import com.grippo.design.components.chip.RepetitionsChipStyle
-import com.grippo.design.components.chip.TonnageChip
-import com.grippo.design.components.chip.TonnageChipStyle
+import com.grippo.design.components.chip.VolumeChip
+import com.grippo.design.components.chip.VolumeChipStyle
 import com.grippo.design.components.datetime.DatePicker
 import com.grippo.design.components.timeline.TimeLabel
 import com.grippo.design.components.timeline.TimelineIndicator
@@ -111,20 +111,17 @@ internal fun HomeTrainingsScreen(
                             .padding(contentPadding),
                         horizontalArrangement = Arrangement.spacedBy(contentPadding)
                     ) {
-                        TonnageChip(
-                            modifier = Modifier.weight(1f),
+                        VolumeChip(
                             value = value.training.volume,
-                            style = TonnageChipStyle.SHORT
+                            style = VolumeChipStyle.SHORT
                         )
 
                         IntensityChip(
-                            modifier = Modifier.weight(1f),
                             value = value.training.intensity,
                             style = IntensityChipStyle.SHORT
                         )
 
                         RepetitionsChip(
-                            modifier = Modifier.weight(1f),
                             value = value.training.repetitions,
                             style = RepetitionsChipStyle.SHORT
                         )

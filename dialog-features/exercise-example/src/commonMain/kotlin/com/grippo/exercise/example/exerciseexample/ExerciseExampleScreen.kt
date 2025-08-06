@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -70,15 +69,6 @@ internal fun ExerciseExampleScreen(
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
-
-        HorizontalDivider(
-            modifier = Modifier
-                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                .fillMaxWidth(),
-            color = AppTokens.colors.divider.default
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Text(
             modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),

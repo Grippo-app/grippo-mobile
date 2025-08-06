@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -24,8 +23,8 @@ import com.grippo.design.components.chip.IntensityChip
 import com.grippo.design.components.chip.IntensityChipStyle
 import com.grippo.design.components.chip.RepetitionsChip
 import com.grippo.design.components.chip.RepetitionsChipStyle
-import com.grippo.design.components.chip.TonnageChip
-import com.grippo.design.components.chip.TonnageChipStyle
+import com.grippo.design.components.chip.VolumeChip
+import com.grippo.design.components.chip.VolumeChipStyle
 import com.grippo.design.components.training.IterationsCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -83,10 +82,10 @@ internal fun ExerciseScreen(
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
             ) {
-                TonnageChip(
+                VolumeChip(
                     modifier = Modifier,
                     value = exercise.volume,
-                    style = TonnageChipStyle.LONG
+                    style = VolumeChipStyle.LONG
                 )
 
                 IntensityChip(
@@ -99,8 +98,6 @@ internal fun ExerciseScreen(
                     style = RepetitionsChipStyle.LONG
                 )
             }
-
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
         }
 
         val example = exercise.exerciseExample
@@ -111,14 +108,7 @@ internal fun ExerciseScreen(
                 { contract.onExampleDetailsClick(example.id) }
             }
 
-            HorizontalDivider(
-                modifier = Modifier
-                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                    .fillMaxWidth(),
-                color = AppTokens.colors.divider.default
-            )
-
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
             Row(
                 modifier = Modifier

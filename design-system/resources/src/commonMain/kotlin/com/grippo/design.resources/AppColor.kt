@@ -158,7 +158,7 @@ public interface AppColor {
 
     public interface ChipColors {
         public val intensity: GradientColors
-        public val tonnage: GradientColors
+        public val volume: GradientColors
         public val repetitions: GradientColors
 
         public interface GradientColors {

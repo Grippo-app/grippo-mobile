@@ -36,7 +36,7 @@ public fun IterationResponse.toEntityOrNull(): IterationEntity? {
     return IterationEntity(
         id = entityId,
         exerciseId = entityExerciseId,
-        weight = entityWeight,
+        volume = entityWeight,
         repetitions = entityRepetitions,
         createdAt = entityCreatedAt,
         updatedAt = entityUpdatedAt,
