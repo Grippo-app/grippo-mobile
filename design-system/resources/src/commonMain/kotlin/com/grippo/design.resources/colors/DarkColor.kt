@@ -7,9 +7,7 @@ public object DarkColor : AppColor {
 
     override val border: AppColor.BorderColors = object : AppColor.BorderColors {
         override val default = AppColorTokens.NeutralDark.N250
-        override val inverted = AppColorTokens.NeutralDark.N100
         override val focus = AppColorTokens.Common.Accent
-        override val error = AppColorTokens.Semantic.Error
     }
 
     override val button: AppColor.ButtonColors = object : AppColor.ButtonColors {

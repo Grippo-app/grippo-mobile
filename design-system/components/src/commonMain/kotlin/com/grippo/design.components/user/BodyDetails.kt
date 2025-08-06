@@ -1,7 +1,6 @@
 package com.grippo.design.components.user
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,11 +36,6 @@ internal fun BodyItem(
             .background(
                 AppTokens.colors.background.screen,
                 RoundedCornerShape(AppTokens.dp.bodyDetails.radius)
-            )
-            .border(
-                1.dp,
-                color = AppTokens.colors.border.default,
-                shape = RoundedCornerShape(AppTokens.dp.bodyDetails.radius)
             )
             .height(intrinsicSize = IntrinsicSize.Min)
             .padding(

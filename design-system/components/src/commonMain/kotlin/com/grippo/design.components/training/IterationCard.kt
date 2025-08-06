@@ -7,14 +7,11 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.grippo.design.components.modifiers.border
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -32,11 +29,6 @@ public fun IterationCard(
     Row(
         modifier = modifier
             .height(intrinsicSize = IntrinsicSize.Min)
-            .border(
-                width = 1.dp,
-                color = AppTokens.colors.border.default,
-                shape = RoundedCornerShape(AppTokens.dp.iterationCard.radius),
-            )
             .padding(
                 vertical = AppTokens.dp.iterationCard.verticalPadding,
                 horizontal = AppTokens.dp.iterationCard.horizontalPadding

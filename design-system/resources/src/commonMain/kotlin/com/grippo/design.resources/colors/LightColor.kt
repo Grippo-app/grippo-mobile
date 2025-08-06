@@ -6,9 +6,7 @@ import com.grippo.design.resources.AppColor
 public object LightColor : AppColor {
     override val border: AppColor.BorderColors = object : AppColor.BorderColors {
         override val default = AppColorTokens.NeutralLight.N200
-        override val inverted = AppColorTokens.Common.White
         override val focus = AppColorTokens.Common.Accent
-        override val error = AppColorTokens.Semantic.Error
     }
 
     override val button: AppColor.ButtonColors = object : AppColor.ButtonColors {
