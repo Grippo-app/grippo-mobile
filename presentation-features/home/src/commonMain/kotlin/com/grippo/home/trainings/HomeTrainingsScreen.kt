@@ -2,7 +2,6 @@ package com.grippo.home.trainings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,8 +15,11 @@ import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.date.utils.DateFormat
 import com.grippo.design.components.chip.IntensityChip
+import com.grippo.design.components.chip.IntensityChipStyle
 import com.grippo.design.components.chip.RepetitionsChip
+import com.grippo.design.components.chip.RepetitionsChipStyle
 import com.grippo.design.components.chip.TonnageChip
+import com.grippo.design.components.chip.TonnageChipStyle
 import com.grippo.design.components.datetime.DatePicker
 import com.grippo.design.components.timeline.TimeLabel
 import com.grippo.design.components.timeline.TimelineIndicator
@@ -102,30 +104,30 @@ internal fun HomeTrainingsScreen(
                 }
 
                 if (value is TrainingListValue.TrainingSummary) {
-                    Column(
+                    Row(
                         modifier = Modifier
                             .background(AppTokens.colors.background.card, shape)
                             .fillMaxWidth()
                             .padding(contentPadding),
-                        verticalArrangement = Arrangement.spacedBy(contentPadding)
+                        horizontalArrangement = Arrangement.spacedBy(contentPadding)
                     ) {
-
-                        Row(horizontalArrangement = Arrangement.spacedBy(contentPadding)) {
-                            TonnageChip(
-                                modifier = Modifier.weight(1f),
-                                value = value.training.volume
-                            )
-                            RepetitionsChip(
-                                modifier = Modifier.weight(1f),
-                                value = value.training.repetitions
-                            )
-                        }
-
-                        IntensityChip(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = value.training.intensity
+                        TonnageChip(
+                            modifier = Modifier.weight(1f),
+                            value = value.training.volume,
+                            style = TonnageChipStyle.SHORT
                         )
 
+                        IntensityChip(
+                            modifier = Modifier.weight(1f),
+                            value = value.training.intensity,
+                            style = IntensityChipStyle.SHORT
+                        )
+
+                        RepetitionsChip(
+                            modifier = Modifier.weight(1f),
+                            value = value.training.repetitions,
+                            style = RepetitionsChipStyle.SHORT
+                        )
                     }
                     return@TimelineIndicator
                 }

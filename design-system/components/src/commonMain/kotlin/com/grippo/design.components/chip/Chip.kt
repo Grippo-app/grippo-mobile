@@ -1,6 +1,7 @@
 package com.grippo.design.components.chip
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.design.core.AppTokens
+import com.grippo.design.core.UiText
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.icons.Weight
@@ -34,12 +36,24 @@ public sealed interface Trailing {
     public data class Icon(
         val icon: ImageVector,
     ) : Trailing
+
+    @Stable
+    public data object Empty : Trailing
+}
+
+@Stable
+public sealed interface Label {
+    @Stable
+    public data class Text(val uiText: UiText) : Label
+
+    @Stable
+    public data object Empty : Label
 }
 
 @Composable
 public fun Chip(
     modifier: Modifier = Modifier,
-    label: String,
+    label: Label,
     value: String,
     trailing: Trailing,
     contentColor: Color,
@@ -57,40 +71,56 @@ public fun Chip(
                 horizontal = AppTokens.dp.chip.horizontalPadding,
                 vertical = AppTokens.dp.chip.verticalPadding
             ),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
 
-        Box(modifier = Modifier.size(AppTokens.dp.chip.trailingSize)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             when (trailing) {
                 is Trailing.Content -> {
-                    trailing.lambda.invoke()
+                    Box(modifier = Modifier.size(AppTokens.dp.chip.trailingSize)) {
+                        trailing.lambda.invoke()
+                    }
+                    Spacer(modifier = Modifier.width(AppTokens.dp.chip.spaceBetween))
                 }
 
                 is Trailing.Icon -> {
-                    Icon(
-                        modifier = Modifier.size(AppTokens.dp.chip.trailingSize),
-                        imageVector = trailing.icon,
-                        contentDescription = null,
-                        tint = contentColor
+                    Box(modifier = Modifier.size(AppTokens.dp.chip.trailingSize)) {
+                        Icon(
+                            modifier = Modifier.size(AppTokens.dp.chip.trailingSize),
+                            imageVector = trailing.icon,
+                            contentDescription = null,
+                            tint = contentColor
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(AppTokens.dp.chip.spaceBetween))
+                }
+
+                Trailing.Empty -> {
+                    // Empty
+                }
+            }
+
+            when (label) {
+                is Label.Text -> {
+                    Text(
+                        text = label.uiText.text(),
+                        style = AppTokens.typography.b14Semi(),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = contentColor
                     )
+                    Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.text))
+                }
+
+                Label.Empty -> {
+                    // Empty
                 }
             }
         }
 
-
-        Spacer(modifier = Modifier.width(AppTokens.dp.chip.spaceBetween))
-
         Text(
-            text = label,
-            style = AppTokens.typography.b14Semi(),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            color = contentColor
-        )
-
-        Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.text))
-
-        Text(
+            modifier = Modifier,
             text = value,
             style = AppTokens.typography.b14Bold(),
             maxLines = 1,
@@ -105,7 +135,7 @@ public fun Chip(
 private fun ChipPreview() {
     PreviewContainer {
         Chip(
-            label = "Basic",
+            label = Label.Text(UiText.Str(value = "Basic")),
             value = "Value",
             trailing = Trailing.Icon(AppTokens.icons.Weight),
             brush = Brush.linearGradient(listOf(Color.Gray, Color.LightGray)),

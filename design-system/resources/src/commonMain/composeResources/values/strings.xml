@@ -83,8 +83,6 @@
     <string name="user_card_value_personal_records">%1$s Personal Records</string>
     <string name="user_card_no_records_yet">No records yet</string>
 
-    <string name="tonnage">Tonnage</string>
-    <string name="intensity">Intensity</string>
     <string name="set_value">Set %1$s</string>
 
     <string name="exercise_example_description">Description</string>
@@ -108,7 +106,6 @@
     <string name="debug">Debug</string>
     <string name="settings">Settings</string>
     <string name="activity">Activity</string>
-    <string name="repetitions">Repetitions</string>
     <string name="overview">Overview</string>
     <string name="muscles_in_use">Muscles in use</string>
     <string name="exercise_details">Exercise details</string>
@@ -126,4 +123,14 @@
     <string name="to">To</string>
     <string name="from_value">From %1$s</string>
     <string name="to_value">To %1$s</string>
+    <string name="r">R</string>
+    <string name="tonnage_chip">Tonnage</string>
+    <string name="intensity_chip">Intensity</string>
+    <string name="repetitions_chip">Repetitions</string>
+    <string name="ton_chip">Ton</string>
+    <string name="t_chip">T</string>
+    <string name="reps_chip">Reps</string>
+    <string name="r_chip">R</string>
+    <string name="int_chip">Int</string>
+    <string name="i_chip">I</string>
 </resources>

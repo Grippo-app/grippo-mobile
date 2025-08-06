@@ -21,8 +21,11 @@ import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.chip.IntensityChip
+import com.grippo.design.components.chip.IntensityChipStyle
 import com.grippo.design.components.chip.RepetitionsChip
+import com.grippo.design.components.chip.RepetitionsChipStyle
 import com.grippo.design.components.chip.TonnageChip
+import com.grippo.design.components.chip.TonnageChipStyle
 import com.grippo.design.components.training.IterationsCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -82,17 +85,18 @@ internal fun ExerciseScreen(
             ) {
                 TonnageChip(
                     modifier = Modifier,
-                    value = exercise.volume
+                    value = exercise.volume,
+                    style = TonnageChipStyle.LONG
                 )
 
                 IntensityChip(
-                    modifier = Modifier,
-                    value = exercise.intensity
+                    value = exercise.intensity,
+                    style = IntensityChipStyle.LONG
                 )
 
                 RepetitionsChip(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = exercise.repetitions
+                    value = exercise.repetitions,
+                    style = RepetitionsChipStyle.LONG
                 )
             }
 
