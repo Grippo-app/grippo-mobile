@@ -1,5 +1,6 @@
 package com.grippo.home.trainings.factory
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -42,6 +43,38 @@ internal fun shapeFor(value: TrainingListValue, radius: Dp): RoundedCornerShape 
     )
 
     else -> RoundedCornerShape(0.dp)
+}
+
+internal fun paddingFor(value: TrainingListValue, padding: Dp) = when (value) {
+    is TrainingListValue.FirstExercise -> PaddingValues(
+        start = padding,
+        end = padding,
+        top = padding,
+        bottom = padding / 2
+    )
+
+    is TrainingListValue.SingleExercise -> PaddingValues(
+        start = padding,
+        end = padding,
+        top = padding,
+        bottom = padding
+    )
+
+    is TrainingListValue.MiddleExercise -> PaddingValues(
+        start = padding,
+        end = padding,
+        top = padding / 2,
+        bottom = padding / 2
+    )
+
+    is TrainingListValue.LastExercise -> PaddingValues(
+        start = padding,
+        end = padding,
+        top = padding / 2,
+        bottom = padding
+    )
+
+    else -> PaddingValues(0.dp)
 }
 
 internal fun sidesFor(value: TrainingListValue): ImmutableList<Side> = when (value) {

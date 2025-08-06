@@ -31,6 +31,7 @@ import com.grippo.design.resources.selected
 import com.grippo.design.resources.trainings
 import com.grippo.domain.state.training.transformToTrainingListValue
 import com.grippo.home.trainings.factory.exerciseOf
+import com.grippo.home.trainings.factory.paddingFor
 import com.grippo.home.trainings.factory.shapeFor
 import com.grippo.home.trainings.factory.sidesFor
 import com.grippo.home.trainings.factory.timelineStyle
@@ -83,8 +84,10 @@ internal fun HomeTrainingsScreen(
             contentType = { it::class }
         ) { value ->
             val radius = AppTokens.dp.exerciseCard.radius
+            val contentPadding = AppTokens.dp.contentPadding.content
             val style = remember(value) { timelineStyle(value) }
             val shape = remember(value) { shapeFor(value, radius) }
+            val paddings = remember(value) { paddingFor(value, contentPadding) }
             remember(value) { sidesFor(value) }
             val exercise = remember(value) { exerciseOf(value) }
 
@@ -135,7 +138,7 @@ internal fun HomeTrainingsScreen(
                         modifier = Modifier
                             .background(AppTokens.colors.background.card, shape)
                             .fillMaxWidth()
-                            .padding(AppTokens.dp.contentPadding.content),
+                            .padding(paddings),
                         value = exercise,
                         onExerciseExampleClick = contract::openExerciseExample,
                         onExerciseClick = contract::openExercise

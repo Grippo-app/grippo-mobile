@@ -188,7 +188,7 @@ public data object AppDp {
     }
 
     public data object ExerciseCard {
-        val radius: Dp = AppDp.radius.xLarge
+        val radius: Dp = AppDp.radius.large
         val icon: Dp = AppDp.icon.medium
     }
 
