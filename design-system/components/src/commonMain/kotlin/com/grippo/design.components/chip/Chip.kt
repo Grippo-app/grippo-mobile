@@ -26,36 +26,36 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.icons.Weight
 
 @Stable
-public sealed interface Trailing {
+public sealed interface ChipLabel {
+    @Stable
+    public data class Text(val uiText: UiText) : ChipLabel
+
+    @Stable
+    public data object Empty : ChipLabel
+}
+
+@Stable
+public sealed interface ChipTrailing {
     @Stable
     public data class Content(
         val lambda: @Composable () -> Unit
-    ) : Trailing
+    ) : ChipTrailing
 
     @Stable
     public data class Icon(
         val icon: ImageVector,
-    ) : Trailing
+    ) : ChipTrailing
 
     @Stable
-    public data object Empty : Trailing
-}
-
-@Stable
-public sealed interface Label {
-    @Stable
-    public data class Text(val uiText: UiText) : Label
-
-    @Stable
-    public data object Empty : Label
+    public data object Empty : ChipTrailing
 }
 
 @Composable
 public fun Chip(
     modifier: Modifier = Modifier,
-    label: Label,
+    label: ChipLabel,
     value: String,
-    trailing: Trailing,
+    trailing: ChipTrailing,
     contentColor: Color,
     brush: Brush,
 ) {
@@ -77,14 +77,14 @@ public fun Chip(
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             when (trailing) {
-                is Trailing.Content -> {
+                is ChipTrailing.Content -> {
                     Box(modifier = Modifier.size(AppTokens.dp.chip.trailingSize)) {
                         trailing.lambda.invoke()
                     }
                     Spacer(modifier = Modifier.width(AppTokens.dp.chip.spaceBetween))
                 }
 
-                is Trailing.Icon -> {
+                is ChipTrailing.Icon -> {
                     Box(modifier = Modifier.size(AppTokens.dp.chip.trailingSize)) {
                         Icon(
                             modifier = Modifier.size(AppTokens.dp.chip.trailingSize),
@@ -96,13 +96,13 @@ public fun Chip(
                     Spacer(modifier = Modifier.width(AppTokens.dp.chip.spaceBetween))
                 }
 
-                Trailing.Empty -> {
+                ChipTrailing.Empty -> {
                     // Empty
                 }
             }
 
             when (label) {
-                is Label.Text -> {
+                is ChipLabel.Text -> {
                     Text(
                         text = label.uiText.text(),
                         style = AppTokens.typography.b14Semi(),
@@ -113,7 +113,7 @@ public fun Chip(
                     Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.text))
                 }
 
-                Label.Empty -> {
+                ChipLabel.Empty -> {
                     // Empty
                 }
             }
@@ -135,9 +135,9 @@ public fun Chip(
 private fun ChipPreview() {
     PreviewContainer {
         Chip(
-            label = Label.Text(UiText.Str(value = "Basic")),
+            label = ChipLabel.Text(UiText.Str(value = "Basic")),
             value = "Value",
-            trailing = Trailing.Icon(AppTokens.icons.Weight),
+            trailing = ChipTrailing.Icon(AppTokens.icons.Weight),
             brush = Brush.linearGradient(listOf(Color.Gray, Color.LightGray)),
             contentColor = Color.Black
         )

@@ -23,8 +23,8 @@ import androidx.compose.ui.unit.dp
 import com.grippo.chart.pie.PieChartData
 import com.grippo.design.components.chart.PieChart
 import com.grippo.design.components.chip.Chip
-import com.grippo.design.components.chip.Label
-import com.grippo.design.components.chip.Trailing
+import com.grippo.design.components.chip.ChipLabel
+import com.grippo.design.components.chip.ChipTrailing
 import com.grippo.design.core.AppTokens
 import com.grippo.design.core.UiText
 import com.grippo.design.preview.AppPreview
@@ -112,9 +112,9 @@ public fun ExerciseExampleBundlesCard(
                 key(item.muscle.id) {
                     Chip(
                         modifier = modifier,
-                        label = Label.Text(UiText.Str(item.muscle.name)),
+                        label = ChipLabel.Text(UiText.Str(item.muscle.name)),
                         value = item.percentage.short(),
-                        trailing = Trailing.Content {
+                        trailing = ChipTrailing.Content {
                             Spacer(
                                 modifier = Modifier
                                     .fillMaxSize()

@@ -28,13 +28,13 @@ public fun RepetitionsChip(
     val colors = AppTokens.colors.chip.repetitions
 
     val text = when (style) {
-        RepetitionsChipStyle.SHORT -> Label.Empty
-        RepetitionsChipStyle.LONG -> Label.Text(UiText.Str(AppTokens.strings.res(Res.string.repetitions_chip)))
+        RepetitionsChipStyle.SHORT -> ChipLabel.Empty
+        RepetitionsChipStyle.LONG -> ChipLabel.Text(UiText.Str(AppTokens.strings.res(Res.string.repetitions_chip)))
     }
 
     val trailing = when (style) {
-        RepetitionsChipStyle.SHORT -> Trailing.Icon(AppTokens.icons.Repeat)
-        RepetitionsChipStyle.LONG -> Trailing.Icon(AppTokens.icons.Repeat)
+        RepetitionsChipStyle.SHORT -> ChipTrailing.Icon(AppTokens.icons.Repeat)
+        RepetitionsChipStyle.LONG -> ChipTrailing.Icon(AppTokens.icons.Repeat)
     }
 
     Chip(

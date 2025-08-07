@@ -121,7 +121,7 @@ public data object AppDp {
         public data object Item {
             val horizontalPadding: Dp = padding.large
             val verticalPadding: Dp = padding.large
-            val icon: Dp = AppDp.icon.medium
+            val trailing: Dp = icon.medium
         }
     }
 
@@ -188,7 +188,6 @@ public data object AppDp {
 
     public data object ExerciseCard {
         val radius: Dp = AppDp.radius.large
-        val icon: Dp = AppDp.icon.medium
     }
 
     public data object EquipmentCard {

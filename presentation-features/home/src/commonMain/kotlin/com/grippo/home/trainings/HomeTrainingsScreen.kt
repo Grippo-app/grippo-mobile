@@ -4,28 +4,29 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.date.utils.DateFormat
-import com.grippo.design.components.chip.IntensityChip
-import com.grippo.design.components.chip.IntensityChipStyle
-import com.grippo.design.components.chip.RepetitionsChip
-import com.grippo.design.components.chip.RepetitionsChipStyle
 import com.grippo.design.components.chip.VolumeChip
 import com.grippo.design.components.chip.VolumeChipStyle
 import com.grippo.design.components.datetime.DatePicker
+import com.grippo.design.components.menu.MenuCard
+import com.grippo.design.components.menu.MenuTrailing
 import com.grippo.design.components.timeline.TimeLabel
 import com.grippo.design.components.timeline.TimelineIndicator
 import com.grippo.design.components.toolbar.Toolbar
-import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.core.AppTokens
+import com.grippo.design.core.UiText
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
@@ -35,7 +36,6 @@ import com.grippo.domain.state.training.transformToTrainingListValue
 import com.grippo.home.trainings.factory.exerciseOf
 import com.grippo.home.trainings.factory.paddingFor
 import com.grippo.home.trainings.factory.shapeFor
-import com.grippo.home.trainings.factory.sidesFor
 import com.grippo.home.trainings.factory.timelineStyle
 import com.grippo.state.trainings.TrainingListValue
 import com.grippo.state.trainings.stubTraining
@@ -89,57 +89,50 @@ internal fun HomeTrainingsScreen(
             val contentPadding = AppTokens.dp.contentPadding.content
             val style = remember(value) { timelineStyle(value) }
             val shape = remember(value) { shapeFor(value, radius) }
-            val paddings = remember(value) { paddingFor(value, contentPadding) }
-            remember(value) { sidesFor(value) }
+            remember(value) { paddingFor(value, contentPadding) }
             val exercise = remember(value) { exerciseOf(value) }
 
             TimelineIndicator(style = style) {
 
                 if (value is TrainingListValue.DateTime) {
-                    TimeLabel(
-                        modifier = Modifier.padding(vertical = contentPadding),
-                        value = value.date
-                    )
-                    return@TimelineIndicator
-                }
-
-                if (value is TrainingListValue.TrainingSummary) {
                     Row(
-                        modifier = Modifier
-                            .background(AppTokens.colors.background.card, shape)
-                            .fillMaxWidth()
-                            .padding(contentPadding),
+                        modifier = Modifier.padding(vertical = contentPadding),
+                        verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(contentPadding)
                     ) {
+                        TimeLabel(value = value.date)
+
+                        Spacer(Modifier.weight(1f))
+
                         VolumeChip(
-                            value = value.training.volume,
+                            value = value.volume,
                             style = VolumeChipStyle.SHORT
                         )
-
-                        IntensityChip(
-                            value = value.training.intensity,
-                            style = IntensityChipStyle.SHORT
-                        )
-
-                        RepetitionsChip(
-                            value = value.training.repetitions,
-                            style = RepetitionsChipStyle.SHORT
-                        )
                     }
-                    return@TimelineIndicator
                 }
 
                 if (exercise != null) {
-                    ExerciseCard(
+                    val clickProvider = remember {
+                        { contract.openExercise(exercise.id) }
+                    }
+                    MenuCard(
                         modifier = Modifier
                             .background(AppTokens.colors.background.card, shape)
-                            .fillMaxWidth()
-                            .padding(paddings),
-                        value = exercise,
-                        onExerciseExampleClick = contract::openExerciseExample,
-                        onExerciseClick = contract::openExercise
+                            .fillMaxWidth(),
+                        title = exercise.name,
+                        trailing = MenuTrailing.Text(UiText.Str("1.")),
+                        onClick = clickProvider
                     )
-                    return@TimelineIndicator
+                }
+
+                if (value is TrainingListValue.BetweenExercises) {
+                    HorizontalDivider(
+                        modifier = Modifier
+                            .background(AppTokens.colors.background.card, shape)
+                            .padding(horizontal = AppTokens.dp.menu.item.horizontalPadding)
+                            .fillMaxWidth(),
+                        color = AppTokens.colors.divider.default
+                    )
                 }
             }
         }

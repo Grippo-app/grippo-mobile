@@ -41,7 +41,7 @@ public fun <KEY> Menu(
             MenuCard(
                 modifier = Modifier.fillMaxWidth(),
                 title = item.second.title.text(),
-                icon = item.second.icon,
+                trailing = MenuTrailing.Icon(item.second.icon),
                 onClick = onClickProvider
             )
 

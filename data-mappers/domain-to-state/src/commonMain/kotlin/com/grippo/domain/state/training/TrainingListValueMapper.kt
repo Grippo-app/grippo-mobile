@@ -24,7 +24,9 @@ public fun List<TrainingState>.transformToTrainingListValue(): ImmutableList<Tra
         result += TrainingListValue.DateTime(
             date = training.createdAt,
             position = trainingPosition,
-            id = "date-${training.id}"
+            id = "date-${training.id}",
+            volume = training.volume,
+            repetitions = training.repetitions
         )
 
         when (exercises.size) {
@@ -93,12 +95,6 @@ public fun List<TrainingState>.transformToTrainingListValue(): ImmutableList<Tra
                 )
             }
         }
-
-        result += TrainingListValue.TrainingSummary(
-            training = training,
-            position = trainingPosition,
-            id = "summary-${training.id}"
-        )
     }
 
     return result.toPersistentList()

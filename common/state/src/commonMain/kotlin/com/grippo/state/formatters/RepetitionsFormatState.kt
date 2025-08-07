@@ -13,6 +13,6 @@ public data class RepetitionsFormatState(
     @Composable
     public fun short(): String {
         val times = AppTokens.strings.res(Res.string.x)
-        return "$value$times"
+        return "$times$value"
     }
 }

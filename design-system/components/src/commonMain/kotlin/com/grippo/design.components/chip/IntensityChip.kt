@@ -28,13 +28,13 @@ public fun IntensityChip(
     val colors = AppTokens.colors.chip.intensity
 
     val text = when (style) {
-        IntensityChipStyle.SHORT -> Label.Empty
-        IntensityChipStyle.LONG -> Label.Text(UiText.Str(AppTokens.strings.res(Res.string.intensity_chip)))
+        IntensityChipStyle.SHORT -> ChipLabel.Empty
+        IntensityChipStyle.LONG -> ChipLabel.Text(UiText.Str(AppTokens.strings.res(Res.string.intensity_chip)))
     }
 
     val trailing = when (style) {
-        IntensityChipStyle.SHORT -> Trailing.Icon(AppTokens.icons.FireFlame)
-        IntensityChipStyle.LONG -> Trailing.Icon(AppTokens.icons.FireFlame)
+        IntensityChipStyle.SHORT -> ChipTrailing.Icon(AppTokens.icons.FireFlame)
+        IntensityChipStyle.LONG -> ChipTrailing.Icon(AppTokens.icons.FireFlame)
     }
 
     Chip(

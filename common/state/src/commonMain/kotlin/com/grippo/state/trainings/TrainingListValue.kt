@@ -1,6 +1,8 @@
 package com.grippo.state.trainings
 
 import androidx.compose.runtime.Immutable
+import com.grippo.state.formatters.RepetitionsFormatState
+import com.grippo.state.formatters.VolumeFormatState
 import kotlinx.datetime.LocalDateTime
 
 @Immutable
@@ -48,19 +50,14 @@ public sealed class TrainingListValue(
     @Immutable
     public data class DateTime(
         val date: LocalDateTime,
+        val volume: VolumeFormatState,
+        val repetitions: RepetitionsFormatState,
         override val position: TrainingPosition,
-        override val id: String
+        override val id: String,
     ) : TrainingListValue(id, position)
 
     @Immutable
     public data class BetweenExercises(
-        override val position: TrainingPosition,
-        override val id: String
-    ) : TrainingListValue(id, position)
-
-    @Immutable
-    public data class TrainingSummary(
-        val training: TrainingState,
         override val position: TrainingPosition,
         override val id: String
     ) : TrainingListValue(id, position)

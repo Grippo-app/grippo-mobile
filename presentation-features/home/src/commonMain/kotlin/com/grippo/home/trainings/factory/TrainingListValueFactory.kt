@@ -4,13 +4,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.grippo.design.components.modifiers.models.Side
 import com.grippo.design.components.timeline.TimeLinePointStyle
 import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.TrainingListValue
 import com.grippo.state.trainings.TrainingPosition
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 
 internal fun timelineStyle(value: TrainingListValue): TimeLinePointStyle = when (value) {
     is TrainingListValue.DateTime -> when (value.position) {
@@ -34,10 +31,12 @@ internal fun shapeFor(value: TrainingListValue, radius: Dp): RoundedCornerShape 
 
     is TrainingListValue.SingleExercise -> RoundedCornerShape(
         topStart = radius,
-        topEnd = radius
+        topEnd = radius,
+        bottomEnd = radius,
+        bottomStart = radius
     )
 
-    is TrainingListValue.TrainingSummary -> RoundedCornerShape(
+    is TrainingListValue.LastExercise -> RoundedCornerShape(
         bottomStart = radius,
         bottomEnd = radius
     )
@@ -75,15 +74,6 @@ internal fun paddingFor(value: TrainingListValue, padding: Dp) = when (value) {
     )
 
     else -> PaddingValues(0.dp)
-}
-
-internal fun sidesFor(value: TrainingListValue): ImmutableList<Side> = when (value) {
-    is TrainingListValue.FirstExercise -> persistentListOf(Side.TOP, Side.LEFT, Side.RIGHT)
-    is TrainingListValue.SingleExercise -> persistentListOf(Side.TOP, Side.LEFT, Side.RIGHT)
-    is TrainingListValue.LastExercise -> persistentListOf(Side.LEFT, Side.RIGHT)
-    is TrainingListValue.MiddleExercise -> persistentListOf(Side.LEFT, Side.RIGHT)
-    is TrainingListValue.TrainingSummary -> persistentListOf(Side.BOTTOM, Side.LEFT, Side.RIGHT)
-    else -> persistentListOf()
 }
 
 internal fun exerciseOf(value: TrainingListValue): ExerciseState? = when (value) {
