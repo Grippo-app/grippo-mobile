@@ -1,12 +1,8 @@
 package com.grippo.design.components.segment
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -17,7 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.scalableClick
-import com.grippo.design.components.modifiers.shimmerAnimation
 import com.grippo.design.core.AppTokens
 import com.grippo.design.core.UiText
 import com.grippo.design.preview.AppPreview
@@ -88,26 +83,6 @@ public fun <KEY> Segment(
             }
         }
     )
-}
-
-@Composable
-public fun SegmentSkeleton(modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        repeat(4) {
-            Box(
-                modifier = Modifier
-                    .shimmerAnimation(
-                        visible = true,
-                        radius = AppTokens.dp.segment.radius
-                    )
-                    .height(AppTokens.dp.segment.height)
-                    .width(140.dp)
-            )
-        }
-    }
 }
 
 @AppPreview

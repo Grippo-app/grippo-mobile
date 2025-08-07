@@ -71,6 +71,7 @@ public data object AppDp {
     val periodPicker: PeriodPicker = PeriodPicker
     val exerciseCard: ExerciseCard = ExerciseCard
     val iterationCard: IterationCard = IterationCard
+    val iterationsCard: IterationsCard = IterationsCard
     val chip: Chip = Chip
     val connectionSnackbar: ConnectionSnackbar = ConnectionSnackbar
     val toggle: Toggle = Toggle
@@ -128,7 +129,7 @@ public data object AppDp {
     public data object UserCard {
         val horizontalPadding: Dp = padding.extraLarge
         val verticalPadding: Dp = padding.extraLarge
-        val radius: Dp = AppDp.radius.xLarge
+        val radius: Dp = AppDp.radius.large
     }
 
     public data object BodyDetails {
@@ -161,6 +162,10 @@ public data object AppDp {
 
     public data object Timeline {
         val dot: Dp = 10.dp
+    }
+
+    public data object IterationsCard {
+        val radius: Dp = AppDp.radius.large
     }
 
     public data object IterationCard {
@@ -207,7 +212,7 @@ public data object AppDp {
             val height: Dp = size.medium
             val horizontalPadding: Dp = padding.medium
             val verticalPadding: Dp = padding.extraSmall
-            val radius: Dp = AppDp.radius.medium
+            val radius: Dp = AppDp.radius.large
             val icon: Dp = size.large
         }
 
@@ -215,7 +220,7 @@ public data object AppDp {
         public data object Small {
             val height: Dp = size.medium
             val horizontalPadding: Dp = padding.medium
-            val radius: Dp = AppDp.radius.medium
+            val radius: Dp = AppDp.radius.large
         }
     }
 
@@ -239,7 +244,6 @@ public data object AppDp {
     }
 
     public data object Segment {
-        val radius: Dp = AppDp.radius.medium
         val height: Dp = size.medium
         val horizontalPadding: Dp = padding.large
     }

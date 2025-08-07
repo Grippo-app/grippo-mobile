@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.scalableClick
-import com.grippo.design.components.modifiers.shimmerAnimation
 import com.grippo.design.core.AppTokens
 import com.grippo.design.core.UiText
 import com.grippo.design.preview.AppPreview
@@ -118,10 +117,6 @@ public fun SegmentSkeleton(modifier: Modifier = Modifier) {
         repeat(4) {
             Box(
                 modifier = Modifier
-                    .shimmerAnimation(
-                        visible = true,
-                        radius = AppTokens.dp.segment.radius
-                    )
                     .height(AppTokens.dp.segment.height)
                     .width(140.dp)
             )

@@ -8,7 +8,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -24,7 +23,10 @@ public fun IterationsCard(
 ) {
     FlowRow(
         modifier = modifier
-            .background(color = AppTokens.colors.background.card, shape = RoundedCornerShape(12.dp))
+            .background(
+                color = AppTokens.colors.background.card,
+                shape = RoundedCornerShape(AppTokens.dp.iterationsCard.radius)
+            )
             .padding(AppTokens.dp.contentPadding.content),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
