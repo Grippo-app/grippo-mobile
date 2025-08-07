@@ -23,28 +23,32 @@ public sealed class TrainingListValue(
     public data class FirstExercise(
         val exerciseState: ExerciseState,
         override val position: TrainingPosition,
-        override val id: String
+        override val id: String,
+        val indexInTraining: Int
     ) : TrainingListValue(id, position)
 
     @Immutable
     public data class MiddleExercise(
         val exerciseState: ExerciseState,
         override val position: TrainingPosition,
-        override val id: String
+        override val id: String,
+        val indexInTraining: Int
     ) : TrainingListValue(id, position)
 
     @Immutable
     public data class LastExercise(
         val exerciseState: ExerciseState,
         override val position: TrainingPosition,
-        override val id: String
+        override val id: String,
+        val indexInTraining: Int
     ) : TrainingListValue(id, position)
 
     @Immutable
     public data class SingleExercise(
         val exerciseState: ExerciseState,
         override val position: TrainingPosition,
-        override val id: String
+        override val id: String,
+        val indexInTraining: Int
     ) : TrainingListValue(id, position)
 
     @Immutable

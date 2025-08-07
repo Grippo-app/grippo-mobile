@@ -34,7 +34,7 @@ import com.grippo.design.resources.selected
 import com.grippo.design.resources.trainings
 import com.grippo.domain.state.training.transformToTrainingListValue
 import com.grippo.home.trainings.factory.exerciseOf
-import com.grippo.home.trainings.factory.paddingFor
+import com.grippo.home.trainings.factory.indexFor
 import com.grippo.home.trainings.factory.shapeFor
 import com.grippo.home.trainings.factory.timelineStyle
 import com.grippo.state.trainings.TrainingListValue
@@ -89,8 +89,8 @@ internal fun HomeTrainingsScreen(
             val contentPadding = AppTokens.dp.contentPadding.content
             val style = remember(value) { timelineStyle(value) }
             val shape = remember(value) { shapeFor(value, radius) }
-            remember(value) { paddingFor(value, contentPadding) }
             val exercise = remember(value) { exerciseOf(value) }
+            val index = remember(value) { indexFor(value) }
 
             TimelineIndicator(style = style) {
 
@@ -115,12 +115,17 @@ internal fun HomeTrainingsScreen(
                     val clickProvider = remember {
                         { contract.openExercise(exercise.id) }
                     }
+
+                    val trailing = index?.let {
+                        MenuTrailing.Text(UiText.Str("$it."))
+                    } ?: MenuTrailing.Empty
+
                     MenuCard(
                         modifier = Modifier
                             .background(AppTokens.colors.background.card, shape)
                             .fillMaxWidth(),
                         title = exercise.name,
-                        trailing = MenuTrailing.Text(UiText.Str("1.")),
+                        trailing = trailing,
                         onClick = clickProvider
                     )
                 }

@@ -39,14 +39,6 @@ internal class HomeTrainingsViewModel(
         update { it.copy(trainings = trainings) }
     }
 
-    override fun openExerciseExample(id: String) {
-        val dialog = DialogConfig.ExerciseExample(
-            id = id,
-        )
-
-        dialogController.show(dialog)
-    }
-
     override fun openExercise(id: String) {
         val dialog = DialogConfig.Exercise(
             id = id,

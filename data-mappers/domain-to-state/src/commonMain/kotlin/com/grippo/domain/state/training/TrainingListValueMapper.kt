@@ -35,7 +35,8 @@ public fun List<TrainingState>.transformToTrainingListValue(): ImmutableList<Tra
                 result += TrainingListValue.SingleExercise(
                     exerciseState = ex,
                     position = trainingPosition,
-                    id = "single-${training.id}-${ex.id}"
+                    id = "single-${training.id}-${ex.id}",
+                    indexInTraining = 1
                 )
             }
 
@@ -45,7 +46,8 @@ public fun List<TrainingState>.transformToTrainingListValue(): ImmutableList<Tra
                 result += TrainingListValue.FirstExercise(
                     exerciseState = first,
                     position = trainingPosition,
-                    id = "first-${training.id}-${first.id}"
+                    id = "first-${training.id}-${first.id}",
+                    indexInTraining = 1
                 )
                 result += TrainingListValue.BetweenExercises(
                     position = trainingPosition,
@@ -54,7 +56,8 @@ public fun List<TrainingState>.transformToTrainingListValue(): ImmutableList<Tra
                 result += TrainingListValue.LastExercise(
                     exerciseState = last,
                     position = trainingPosition,
-                    id = "last-${training.id}-${last.id}"
+                    id = "last-${training.id}-${last.id}",
+                    indexInTraining = 2
                 )
             }
 
@@ -66,21 +69,26 @@ public fun List<TrainingState>.transformToTrainingListValue(): ImmutableList<Tra
                 result += TrainingListValue.FirstExercise(
                     exerciseState = first,
                     position = trainingPosition,
-                    id = "first-${training.id}-${first.id}"
+                    id = "first-${training.id}-${first.id}",
+                    indexInTraining = 1
                 )
+
                 result += TrainingListValue.BetweenExercises(
                     position = trainingPosition,
                     id = "between-${training.id}-${first.id}-${middle.first().id}"
                 )
+
                 middle.forEachIndexed { i, ex ->
+                    val indexInTraining = i + 2 // +2 потому что 1 — это First, 2+ — это Middle
+
                     result += TrainingListValue.MiddleExercise(
                         exerciseState = ex,
                         position = trainingPosition,
-                        id = "middle-${training.id}-${ex.id}"
+                        id = "middle-${training.id}-${ex.id}",
+                        indexInTraining = indexInTraining
                     )
 
-                    val next = middle.getOrNull(i + 1)
-                        ?: last
+                    val next = middle.getOrNull(i + 1) ?: last
 
                     result += TrainingListValue.BetweenExercises(
                         position = trainingPosition,
@@ -91,7 +99,8 @@ public fun List<TrainingState>.transformToTrainingListValue(): ImmutableList<Tra
                 result += TrainingListValue.LastExercise(
                     exerciseState = last,
                     position = trainingPosition,
-                    id = "last-${training.id}-${last.id}"
+                    id = "last-${training.id}-${last.id}",
+                    indexInTraining = exercises.size
                 )
             }
         }
