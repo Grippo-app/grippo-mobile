@@ -51,7 +51,7 @@ internal fun ErrorDisplayScreen(
             contentDescription = null
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         Text(
             modifier = Modifier.fillMaxWidth(),
@@ -76,7 +76,7 @@ internal fun ErrorDisplayScreen(
             )
         }
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         Button(
             modifier = Modifier.fillMaxWidth(),

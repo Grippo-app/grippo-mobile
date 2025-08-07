@@ -61,14 +61,14 @@ internal fun ExerciseExampleScreen(
             color = AppTokens.colors.text.primary,
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         ExerciseExampleBundlesCard(
             modifier = Modifier.fillMaxWidth(),
             value = example.bundles
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         Text(
             modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
