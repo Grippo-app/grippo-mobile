@@ -5,6 +5,7 @@ import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ModalBottomSheet
@@ -82,7 +83,10 @@ private fun BottomSheet(
             topEnd = AppTokens.dp.bottomSheet.radius
         ),
     ) {
-        component.Render()
+        Column(
+            modifier = Modifier.weight(weight = 1f, fill = false),
+            content = { component.Render() }
+        )
 
         AnimatedContent(
             targetState = stackSize > 1,

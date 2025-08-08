@@ -6,6 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -46,7 +47,7 @@ internal fun DialogContentScreen(
     holder.retainStates(stackState.items.mapTo(HashSet(), Child<*, *>::keyHashString))
 
     AnimatedContent(
-        modifier = Modifier.weight(weight = 1f, fill = false),
+        modifier = Modifier.fillMaxWidth(),
         targetState = visibleChild.value,
         transitionSpec = {
             fadeIn(tween(200)) togetherWith fadeOut(tween(200)) using SizeTransform(clip = false)
