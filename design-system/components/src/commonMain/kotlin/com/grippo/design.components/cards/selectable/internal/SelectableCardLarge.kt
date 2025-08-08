@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
@@ -90,18 +91,26 @@ internal fun SelectableCardLarge(
             }
         }
 
-
         style.subContent?.let { subContent ->
             Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
 
-            HorizontalDivider(
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                color = AppTokens.colors.divider.default
-            )
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.selectableCard.large.horizontalPadding),
+            ) {
+                Spacer(modifier = Modifier.width(AppTokens.dp.selectableCard.large.icon))
 
-            Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+                Column(modifier = Modifier.weight(1f)) {
+                    HorizontalDivider(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = AppTokens.colors.divider.default
+                    )
 
-            subContent.invoke(this)
+                    Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+
+                    subContent.invoke(this)
+                }
+            }
         }
     }
 }
