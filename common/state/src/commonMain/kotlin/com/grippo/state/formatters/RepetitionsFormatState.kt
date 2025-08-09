@@ -7,9 +7,7 @@ import com.grippo.design.resources.Res
 import com.grippo.design.resources.x
 
 @Immutable
-public data class RepetitionsFormatState(
-    val value: Int
-) {
+public data class RepetitionsFormatState(val value: Int) {
     @Composable
     public fun short(): String {
         val times = AppTokens.strings.res(Res.string.x)

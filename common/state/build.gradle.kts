@@ -7,7 +7,6 @@ plugins {
 
 kotlin {
     sourceSets.commonMain.dependencies {
-        implementation(projects.common.validation)
         implementation(projects.common.dateUtils)
         implementation(projects.designSystem.core)
         implementation(projects.designSystem.resources)

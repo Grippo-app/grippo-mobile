@@ -7,5 +7,5 @@ import kotlinx.collections.immutable.toPersistentList
 @Immutable
 public data class HeightPickerState(
     public val suggestions: PersistentList<Int> = (100..250).toPersistentList(),
-    val initial: Int
+    val value: Int
 )

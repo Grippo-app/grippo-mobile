@@ -64,7 +64,7 @@ internal fun WeightPickerScreen(
         WeightWheelPicker(
             modifier = Modifier.fillMaxWidth(),
             suggestions = state.suggestions,
-            value = state.initial,
+            value = state.value,
             select = contract::onSelectWeight
         )
 
@@ -87,7 +87,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         WeightPickerScreen(
             state = WeightPickerState(
-                initial = 55.4F
+                value = 55.4F
             ),
             contract = WeightPickerContract.Empty,
             loaders = persistentSetOf()

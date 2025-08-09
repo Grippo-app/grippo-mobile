@@ -1,14 +1,15 @@
 package com.grippo.state.formatters
 
 import androidx.compose.runtime.Immutable
-import com.grippo.validation.HeightValidator
 
 @Immutable
 public sealed class HeightFormatState(public open val value: Int) {
+    @Immutable
     public data class Valid(
         override val value: Int
     ) : HeightFormatState(value = value)
 
+    @Immutable
     public data class Invalid(
         override val value: Int
     ) : HeightFormatState(value = value)
@@ -21,5 +22,13 @@ public sealed class HeightFormatState(public open val value: Int) {
                 Invalid(value)
             }
         }
+    }
+}
+
+private object HeightValidator {
+
+    fun isValid(value: Int): Boolean {
+        val withinRange = value in 100..250
+        return withinRange
     }
 }

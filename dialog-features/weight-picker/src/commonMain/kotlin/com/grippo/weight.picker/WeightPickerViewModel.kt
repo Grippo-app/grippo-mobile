@@ -5,15 +5,15 @@ import com.grippo.core.BaseViewModel
 public class WeightPickerViewModel(
     initial: Float
 ) : BaseViewModel<WeightPickerState, WeightPickerDirection, WeightPickerLoader>(
-    WeightPickerState(initial = initial)
+    WeightPickerState(value = initial)
 ), WeightPickerContract {
 
     override fun onSelectWeight(value: Float) {
-        update { it.copy(initial = value) }
+        update { it.copy(value = value) }
     }
 
     override fun onSubmitClick() {
-        navigateTo(WeightPickerDirection.BackWithResult(state.value.initial))
+        navigateTo(WeightPickerDirection.BackWithResult(state.value.value))
     }
 
     override fun onDismiss() {

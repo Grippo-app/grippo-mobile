@@ -11,5 +11,5 @@ public data class WeightPickerState(
             add(i / 10f)
         }
     }.toPersistentList(),
-    val initial: Float
+    val value: Float
 )

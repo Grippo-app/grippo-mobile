@@ -81,7 +81,6 @@ include(":common:core")
 include(":common:connectivity")
 include(":common:error:error-provider-impl")
 include(":common:error:error-provider")
-include(":common:validation")
 include(":common:date-utils")
 
 include(":compose-libs:wheel-picker")

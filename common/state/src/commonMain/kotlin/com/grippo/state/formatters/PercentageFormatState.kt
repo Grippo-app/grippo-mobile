@@ -7,9 +7,7 @@ import com.grippo.design.resources.Res
 import com.grippo.design.resources.percent
 
 @Immutable
-public data class PercentageFormatState(
-    val value: Int
-) {
+public data class PercentageFormatState(val value: Int) {
     @Composable
     public fun short(): String {
         val percent = AppTokens.strings.res(Res.string.percent)

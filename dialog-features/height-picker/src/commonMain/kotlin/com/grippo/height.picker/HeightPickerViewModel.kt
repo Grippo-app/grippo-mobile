@@ -5,15 +5,15 @@ import com.grippo.core.BaseViewModel
 public class HeightPickerViewModel(
     initial: Int
 ) : BaseViewModel<HeightPickerState, HeightPickerDirection, HeightPickerLoader>(
-    HeightPickerState(initial = initial)
+    HeightPickerState(value = initial)
 ), HeightPickerContract {
 
     override fun onSelectHeight(value: Int) {
-        update { it.copy(initial = value) }
+        update { it.copy(value = value) }
     }
 
     override fun onSubmitClick() {
-        navigateTo(HeightPickerDirection.BackWithResult(state.value.initial))
+        navigateTo(HeightPickerDirection.BackWithResult(state.value.value))
     }
 
     override fun onDismiss() {

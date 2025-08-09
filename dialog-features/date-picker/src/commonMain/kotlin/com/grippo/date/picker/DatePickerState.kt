@@ -2,10 +2,10 @@ package com.grippo.date.picker
 
 import androidx.compose.runtime.Immutable
 import com.grippo.date.utils.DateRange
-import kotlinx.datetime.LocalDateTime
+import com.grippo.state.formatters.DateFormatState
 
 @Immutable
 public data class DatePickerState(
     public val limitations: DateRange,
-    val initial: LocalDateTime
+    val value: DateFormatState
 )

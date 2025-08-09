@@ -8,9 +8,7 @@ import com.grippo.design.resources.percent
 import kotlin.math.roundToInt
 
 @Immutable
-public data class IntensityFormatState(
-    val value: Float
-) {
+public data class IntensityFormatState(val value: Float) {
     @Composable
     public fun short(): String {
         val percent = AppTokens.strings.res(Res.string.percent)

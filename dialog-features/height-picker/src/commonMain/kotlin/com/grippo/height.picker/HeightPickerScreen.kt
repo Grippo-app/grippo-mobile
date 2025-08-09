@@ -64,7 +64,7 @@ internal fun HeightPickerScreen(
         HeightWheelPicker(
             modifier = Modifier.fillMaxWidth(),
             suggestions = state.suggestions,
-            value = state.initial,
+            value = state.value,
             select = contract::onSelectHeight
         )
 
@@ -87,7 +87,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         HeightPickerScreen(
             state = HeightPickerState(
-                initial = 155
+                value = 155
             ),
             contract = HeightPickerContract.Empty,
             loaders = persistentSetOf()

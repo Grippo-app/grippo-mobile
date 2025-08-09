@@ -70,7 +70,7 @@ internal fun PeriodPickerScreen(
                 contentType = { it::class }
             ) { item ->
                 val clickProvider = remember(item) { { contract.onSelectClick(item) } }
-                val isSelected = remember(state.initial) { state.initial == item }
+                val isSelected = remember(state.value) { state.value == item }
 
                 SelectableCard(
                     modifier = Modifier.fillMaxWidth(),
@@ -117,7 +117,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         PeriodPickerScreen(
             state = PeriodPickerState(
-                initial = PeriodState.ThisWeek,
+                value = PeriodState.ThisWeek,
                 list = persistentListOf(
                     PeriodState.ThisDay,
                     PeriodState.ThisWeek,

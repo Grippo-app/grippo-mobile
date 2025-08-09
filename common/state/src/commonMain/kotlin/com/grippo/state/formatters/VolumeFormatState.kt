@@ -10,10 +10,7 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 
 @Immutable
-public data class VolumeFormatState(
-    val value: Float
-) {
-
+public data class VolumeFormatState(val value: Float) {
     @Composable
     public fun short(): String {
         val kg = AppTokens.strings.res(Res.string.kg)
