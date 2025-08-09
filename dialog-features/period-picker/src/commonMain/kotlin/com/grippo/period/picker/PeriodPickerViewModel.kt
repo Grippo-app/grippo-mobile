@@ -1,6 +1,10 @@
 package com.grippo.period.picker
 
 import com.grippo.core.BaseViewModel
+import com.grippo.design.resources.Res
+import com.grippo.design.resources.StringProvider
+import com.grippo.design.resources.from
+import com.grippo.design.resources.to
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.state.datetime.PeriodState
@@ -10,7 +14,8 @@ import kotlinx.collections.immutable.toPersistentList
 public class PeriodPickerViewModel(
     initial: PeriodState,
     available: List<PeriodState>,
-    private val dialogController: DialogController
+    private val dialogController: DialogController,
+    private val stringProvider: StringProvider
 ) : BaseViewModel<PeriodPickerState, PeriodPickerDirection, PeriodPickerLoader>(
     PeriodPickerState(
         value = initial,
@@ -25,35 +30,39 @@ public class PeriodPickerViewModel(
     override fun onFromClick() {
         val custom = (state.value.value as? PeriodState.CUSTOM) ?: return
 
-        val dialog = DialogConfig.DatePicker(
-            title = "Select from",
-            initial = custom.range.from,
-            limitations = custom.limitations.copy(to = custom.range.to),
-            onResult = { value ->
-                val range = custom.range.copy(from = value)
-                val newValue = custom.copy(range = range)
-                update { it.copy(value = newValue, list = it.list.synchronize(newValue)) }
-            }
-        )
+        safeLaunch {
+            val dialog = DialogConfig.DatePicker(
+                title = stringProvider.get(Res.string.from),
+                initial = custom.range.from,
+                limitations = custom.limitations.copy(to = custom.range.to),
+                onResult = { value ->
+                    val range = custom.range.copy(from = value)
+                    val newValue = custom.copy(range = range)
+                    update { it.copy(value = newValue, list = it.list.synchronize(newValue)) }
+                }
+            )
 
-        dialogController.show(dialog)
+            dialogController.show(dialog)
+        }
     }
 
     override fun onToClick() {
         val custom = (state.value.value as? PeriodState.CUSTOM) ?: return
 
-        val dialog = DialogConfig.DatePicker(
-            title = "Select to",
-            initial = custom.range.to,
-            limitations = custom.limitations.copy(from = custom.range.from),
-            onResult = { value ->
-                val range = custom.range.copy(to = value)
-                val newValue = custom.copy(range = range)
-                update { it.copy(value = newValue, list = it.list.synchronize(newValue)) }
-            }
-        )
+        safeLaunch {
+            val dialog = DialogConfig.DatePicker(
+                title = stringProvider.get(Res.string.to),
+                initial = custom.range.to,
+                limitations = custom.limitations.copy(from = custom.range.from),
+                onResult = { value ->
+                    val range = custom.range.copy(to = value)
+                    val newValue = custom.copy(range = range)
+                    update { it.copy(value = newValue, list = it.list.synchronize(newValue)) }
+                }
+            )
 
-        dialogController.show(dialog)
+            dialogController.show(dialog)
+        }
     }
 
     override fun onSubmitClick() {

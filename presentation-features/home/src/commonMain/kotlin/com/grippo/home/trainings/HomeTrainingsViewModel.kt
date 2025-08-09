@@ -4,6 +4,9 @@ import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.date.utils.DateTimeUtils
+import com.grippo.design.resources.Res
+import com.grippo.design.resources.StringProvider
+import com.grippo.design.resources.date_picker_title
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState
@@ -13,7 +16,8 @@ import kotlinx.datetime.LocalDateTime
 
 internal class HomeTrainingsViewModel(
     private val trainingFeature: TrainingFeature,
-    private val dialogController: DialogController
+    private val dialogController: DialogController,
+    private val stringProvider: StringProvider
 ) : BaseViewModel<HomeTrainingsState, HomeTrainingsDirection, HomeTrainingsLoader>(
     HomeTrainingsState()
 ), HomeTrainingsContract {
@@ -48,14 +52,16 @@ internal class HomeTrainingsViewModel(
     }
 
     override fun selectDate() {
-        val dialog = DialogConfig.DatePicker(
-            title = "Select date",
-            initial = state.value.date,
-            limitations = DateTimeUtils.trailingYear(),
-            onResult = { value -> update { it.copy(date = value) } }
-        )
+        safeLaunch {
+            val dialog = DialogConfig.DatePicker(
+                title = stringProvider.get(Res.string.date_picker_title),
+                initial = state.value.date,
+                limitations = DateTimeUtils.trailingYear(),
+                onResult = { value -> update { it.copy(date = value) } }
+            )
 
-        dialogController.show(dialog)
+            dialogController.show(dialog)
+        }
     }
 
     override fun back() {

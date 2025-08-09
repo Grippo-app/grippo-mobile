@@ -15,7 +15,8 @@ internal class HomeTrainingsComponent(
     override val viewModel = componentContext.retainedInstance {
         HomeTrainingsViewModel(
             trainingFeature = getKoin().get(),
-            dialogController = getKoin().get()
+            dialogController = getKoin().get(),
+            stringProvider = getKoin().get(),
         )
     }
 

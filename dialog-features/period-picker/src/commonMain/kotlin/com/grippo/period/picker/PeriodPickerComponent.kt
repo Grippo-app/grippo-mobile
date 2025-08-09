@@ -20,7 +20,8 @@ public class PeriodPickerComponent(
         PeriodPickerViewModel(
             initial = initial,
             available = available,
-            dialogController = getKoin().get()
+            dialogController = getKoin().get(),
+            stringProvider = getKoin().get(),
         )
     }
 
