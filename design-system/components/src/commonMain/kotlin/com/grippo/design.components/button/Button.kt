@@ -1,5 +1,6 @@
 package com.grippo.design.components.button
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -7,12 +8,20 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -27,8 +36,13 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -63,110 +77,90 @@ public fun Button(
     endIcon: ImageVector? = null,
     textStyle: TextStyle = AppTokens.typography.b14Bold(),
 ) {
-    val colorTokens = resolveButtonColors(
-        style = style,
-        state = state,
-    )
-
+    val colorTokens = resolveButtonColors(style = style, state = state)
     val shape = RoundedCornerShape(AppTokens.dp.button.radius)
+    val iconSize = AppTokens.dp.button.icon
+    val isLoading = state == ButtonState.Loading
 
-    val height = when (style) {
-        ButtonStyle.Transparent -> null
-        else -> AppTokens.dp.button.height
-    }
+    // Calculate the size-related properties
+    val height = if (style == ButtonStyle.Transparent) null else AppTokens.dp.button.height
+    val horizontalPadding = if (style == ButtonStyle.Transparent) null else AppTokens.dp.button.horizontalPadding
+    val iconPadding = if (style == ButtonStyle.Transparent) AppTokens.dp.button.spaceTransparent else AppTokens.dp.button.space
 
-    val horizontalPadding = when (style) {
-        ButtonStyle.Transparent -> null
-        else -> AppTokens.dp.button.horizontalPadding
-    }
-
-    val iconPadding = when (style) {
-        ButtonStyle.Transparent -> AppTokens.dp.button.spaceTransparent
-        else -> AppTokens.dp.button.space
-    }
-
+    // Base modifier
     val baseModifier = modifier
-        .scalableClick(
-            enabled = state == ButtonState.Enabled,
-            onClick = onClick
-        )
+        .scalableClick(enabled = state == ButtonState.Enabled, onClick = onClick)
         .background(colorTokens.background, shape)
         .border(1.dp, colorTokens.border, shape)
 
-    val paddedModifier = horizontalPadding?.let {
-        baseModifier.padding(horizontal = it)
-    } ?: baseModifier
+    // Apply padding and height modifications
+    val finalModifier = baseModifier
+        .then(horizontalPadding?.let { Modifier.padding(horizontal = it) } ?: Modifier)
+        .then(height?.let { Modifier.height(it) } ?: Modifier)
 
-    val finalModifier = height?.let {
-        paddedModifier.height(it)
-    } ?: paddedModifier
-
-    Box(
+    // Row that contains the content
+    Row(
         modifier = finalModifier,
-        contentAlignment = Alignment.Center
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = Modifier.animateContentSize(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            val iconSize = AppTokens.dp.button.icon
-
-            when (state) {
-                ButtonState.Loading -> {
-                    val angle by rememberInfiniteTransition().animateFloat(
-                        initialValue = 0f,
-                        targetValue = 360f,
-                        animationSpec = infiniteRepeatable(
-                            animation = tween(durationMillis = 1000, easing = LinearEasing),
-                            repeatMode = RepeatMode.Restart,
-                        )
+        // Animated loading icon
+        AnimatedContent(
+            targetState = isLoading,
+            transitionSpec = { fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut() },
+            label = "icon_animation"
+        ) { loading ->
+            if (loading) {
+                val angle by rememberInfiniteTransition().animateFloat(
+                    initialValue = 0f, targetValue = 360f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(durationMillis = 1000, easing = LinearEasing),
+                        repeatMode = RepeatMode.Restart
                     )
-
-                    Icon(
-                        modifier = Modifier
-                            .size(iconSize)
-                            .rotate(angle),
-                        imageVector = AppTokens.icons.SystemRestart,
-                        tint = colorTokens.icon,
-                        contentDescription = null,
-                    )
-
-                    Spacer(modifier = Modifier.width(iconPadding))
-                }
-
-                else -> {
-                    if (startIcon != null) {
-                        Icon(
-                            modifier = Modifier.size(iconSize),
-                            imageVector = startIcon,
-                            tint = colorTokens.icon,
-                            contentDescription = null,
-                        )
-
-                        Spacer(modifier = Modifier.width(iconPadding))
-                    }
-                }
-            }
-
-            Text(
-                text = text,
-                color = colorTokens.content,
-                style = textStyle,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-
-            if (endIcon != null) {
-                Spacer(modifier = Modifier.width(iconPadding))
-
-                Icon(
-                    modifier = Modifier.size(iconSize),
-                    imageVector = endIcon,
-                    tint = colorTokens.icon,
-                    contentDescription = null,
                 )
+                Icon(
+                    modifier = Modifier
+                        .size(iconSize)
+                        .graphicsLayer { rotationZ = angle },
+                    imageVector = AppTokens.icons.SystemRestart,
+                    tint = colorTokens.icon,
+                    contentDescription = null
+                )
+            } else {
+                startIcon?.let {
+                    Icon(
+                        modifier = Modifier.size(iconSize),
+                        imageVector = it,
+                        tint = colorTokens.icon,
+                        contentDescription = null
+                    )
+                }
             }
+        }
+
+        // Spacer for icon padding
+        if (startIcon != null || isLoading) Spacer(modifier = Modifier.width(iconPadding))
+
+        // Text
+        Text(
+            text = text,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            color = colorTokens.content,
+            style = textStyle
+        )
+
+        // Spacer for end icon
+        if (endIcon != null) Spacer(modifier = Modifier.width(iconPadding))
+
+        // End icon
+        endIcon?.let {
+            Icon(
+                modifier = Modifier.size(iconSize),
+                imageVector = it,
+                tint = colorTokens.icon,
+                contentDescription = null
+            )
         }
     }
 }
