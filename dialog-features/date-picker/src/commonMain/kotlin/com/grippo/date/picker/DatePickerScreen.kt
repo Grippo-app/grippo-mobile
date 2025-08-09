@@ -23,7 +23,6 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
-import com.grippo.design.resources.date_picker_title
 import com.grippo.design.resources.submit_btn
 import com.grippo.state.formatters.DateFormatState
 import kotlinx.collections.immutable.ImmutableSet
@@ -47,7 +46,7 @@ internal fun DatePickerScreen(
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.date_picker_title),
+            text = state.title,
             style = AppTokens.typography.h3(),
             color = AppTokens.colors.text.primary,
             textAlign = TextAlign.Center
@@ -92,7 +91,8 @@ private fun ScreenPreview() {
         DatePickerScreen(
             state = DatePickerState(
                 value = DateFormatState.of(DateTimeUtils.now(), DateTimeUtils.thisWeek()),
-                limitations = DateTimeUtils.trailingYear()
+                limitations = DateTimeUtils.trailingYear(),
+                title = "Select date",
             ),
             loaders = persistentSetOf(),
             contract = DatePickerContract.Empty

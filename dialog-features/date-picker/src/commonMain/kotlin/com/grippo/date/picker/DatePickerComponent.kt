@@ -11,6 +11,7 @@ import kotlinx.datetime.LocalDateTime
 
 public class DatePickerComponent(
     componentContext: ComponentContext,
+    private val title: String,
     private val initial: LocalDateTime,
     private val limitations: DateRange,
     private val onResult: (value: LocalDateTime) -> Unit,
@@ -20,7 +21,8 @@ public class DatePickerComponent(
     override val viewModel: DatePickerViewModel = componentContext.retainedInstance {
         DatePickerViewModel(
             initial = initial,
-            limitations = limitations
+            limitations = limitations,
+            title = title
         )
     }
 

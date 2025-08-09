@@ -26,6 +26,7 @@ public class PeriodPickerViewModel(
         val custom = (state.value.value as? PeriodState.CUSTOM) ?: return
 
         val dialog = DialogConfig.DatePicker(
+            title = "Select from",
             initial = custom.range.from,
             limitations = custom.limitations.copy(to = custom.range.to),
             onResult = { value ->
@@ -42,6 +43,7 @@ public class PeriodPickerViewModel(
         val custom = (state.value.value as? PeriodState.CUSTOM) ?: return
 
         val dialog = DialogConfig.DatePicker(
+            title = "Select to",
             initial = custom.range.to,
             limitations = custom.limitations.copy(from = custom.range.from),
             onResult = { value ->

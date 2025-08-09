@@ -1,8 +1,9 @@
-package com.grippo.design.core
+package com.grippo.state.formatters
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
+import com.grippo.design.core.AppTokens
 import org.jetbrains.compose.resources.StringResource
 
 @Stable

@@ -12,7 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.core.AppTokens
-import com.grippo.design.core.UiText
+import com.grippo.state.formatters.UiText
 import kotlinx.collections.immutable.ImmutableList
 
 @Immutable

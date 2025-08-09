@@ -18,11 +18,11 @@ import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.components.tab.Tab
 import com.grippo.design.components.tab.TabItem
 import com.grippo.design.core.AppTokens
-import com.grippo.design.core.UiText
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.icons.Box
 import com.grippo.home.BottomBarMenu
+import com.grippo.state.formatters.UiText
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList

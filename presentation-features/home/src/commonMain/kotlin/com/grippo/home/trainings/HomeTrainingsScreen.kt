@@ -26,7 +26,6 @@ import com.grippo.design.components.timeline.TimeLabel
 import com.grippo.design.components.timeline.TimelineIndicator
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
-import com.grippo.design.core.UiText
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
@@ -37,6 +36,7 @@ import com.grippo.home.trainings.factory.exerciseOf
 import com.grippo.home.trainings.factory.indexFor
 import com.grippo.home.trainings.factory.shapeFor
 import com.grippo.home.trainings.factory.timelineStyle
+import com.grippo.state.formatters.UiText
 import com.grippo.state.trainings.TrainingListValue
 import com.grippo.state.trainings.stubTraining
 import kotlinx.collections.immutable.ImmutableSet

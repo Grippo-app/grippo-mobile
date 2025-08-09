@@ -49,6 +49,7 @@ internal class HomeTrainingsViewModel(
 
     override fun selectDate() {
         val dialog = DialogConfig.DatePicker(
+            title = "Select date",
             initial = state.value.date,
             limitations = DateTimeUtils.trailingYear(),
             onResult = { value -> update { it.copy(date = value) } }

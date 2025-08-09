@@ -19,11 +19,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
-import com.grippo.design.core.UiText
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.icons.NavArrowRight
 import com.grippo.design.resources.icons.User
+import com.grippo.state.formatters.UiText
 
 @Stable
 public sealed interface MenuTrailing {

@@ -41,6 +41,7 @@ public sealed class DialogConfig(public open val onDismiss: (() -> Unit)?) {
     public data class DatePicker(
         val initial: LocalDateTime,
         val limitations: DateRange,
+        val title: String,
         @Transient val onResult: (value: LocalDateTime) -> Unit = {},
     ) : DialogConfig(null)
 

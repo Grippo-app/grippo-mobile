@@ -5,13 +5,13 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import com.grippo.design.core.AppTokens
-import com.grippo.design.core.UiText
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.Res
 import com.grippo.design.resources.icons.Repeat
 import com.grippo.design.resources.repetitions_chip
 import com.grippo.state.formatters.RepetitionsFormatState
+import com.grippo.state.formatters.UiText
 
 @Immutable
 public enum class RepetitionsChipStyle {
