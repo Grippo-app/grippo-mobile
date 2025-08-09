@@ -17,6 +17,7 @@ public data class WheelColumn<T : Comparable<T>>(
     val initial: T,
     val onValueChange: (T) -> Unit,
     val itemContent: @Composable (T) -> Unit,
+    val onFinish: ((snappedIndex: Int) -> Int?)? = null,
 ) : IWheelColumn {
 
     @Composable
@@ -36,8 +37,10 @@ public data class WheelColumn<T : Comparable<T>>(
             ),
             selectorProperties = WheelPickerDefaults.selectorProperties(),
             onScrollFinished = { index ->
-                items.getOrNull(index)?.let { onValueChange(it) }
-                null
+                val target = onFinish?.invoke(index)
+                val finalIndex = target ?: index
+                items.getOrNull(finalIndex)?.let { onValueChange(it) }
+                target
             },
             content = { index ->
                 itemContent(items[index])

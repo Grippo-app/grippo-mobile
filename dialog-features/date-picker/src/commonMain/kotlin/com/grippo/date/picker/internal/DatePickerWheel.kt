@@ -92,6 +92,22 @@ internal fun DateWheelPicker(
                             minute = initial.minute
                         )
                     )
+                },
+                onFinish = { idx ->
+                    nearestValidIndex(
+                        items = daysInMonth,
+                        fromIndex = idx,
+                        isValid = { day ->
+                            checkDayValidity(
+                                year = selectedYear,
+                                month = selectedMonth,
+                                day = day,
+                                limitations = limitations,
+                                hour = initial.hour,
+                                minute = initial.minute
+                            )
+                        }
+                    )
                 }
             ),
             WheelColumn(
@@ -108,6 +124,19 @@ internal fun DateWheelPicker(
                             limitations = limitations
                         )
                     )
+                },
+                onFinish = { idx ->
+                    nearestValidIndex(
+                        items = months,
+                        fromIndex = idx,
+                        isValid = { month ->
+                            checkMonthValidity(
+                                year = selectedYear,
+                                month = month,
+                                limitations = limitations
+                            )
+                        }
+                    )
                 }
             ),
             WheelColumn(
@@ -123,10 +152,39 @@ internal fun DateWheelPicker(
                             limitations = limitations
                         )
                     )
+                },
+                onFinish = { idx ->
+                    nearestValidIndex(
+                        items = years,
+                        fromIndex = idx,
+                        isValid = { year ->
+                            checkYearValidity(
+                                year = year,
+                                limitations = limitations
+                            )
+                        }
+                    )
                 }
             )
         )
     )
+}
+
+private fun <T> nearestValidIndex(
+    items: List<T>,
+    fromIndex: Int,
+    isValid: (T) -> Boolean
+): Int? {
+    if (fromIndex !in items.indices) return null
+    if (isValid(items[fromIndex])) return null
+    var left = fromIndex - 1
+    var right = fromIndex + 1
+    while (left >= 0 || right < items.size) {
+        if (left >= 0 && isValid(items[left])) return left
+        if (right < items.size && isValid(items[right])) return right
+        left--; right++
+    }
+    return null
 }
 
 private fun checkDayValidity(
