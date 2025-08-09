@@ -23,10 +23,10 @@ import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.Res
-import com.grippo.design.resources.continue_btn
-import com.grippo.design.resources.registration_body_description
-import com.grippo.design.resources.registration_body_title
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.continue_btn
+import com.grippo.design.resources.provider.registration_body_description
+import com.grippo.design.resources.provider.registration_body_title
 import com.grippo.state.formatters.HeightFormatState
 import com.grippo.state.formatters.WeightFormatState
 import kotlinx.collections.immutable.ImmutableSet

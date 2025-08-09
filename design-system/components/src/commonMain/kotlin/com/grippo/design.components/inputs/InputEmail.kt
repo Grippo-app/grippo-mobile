@@ -27,9 +27,9 @@ import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.Res
-import com.grippo.design.resources.email_placeholder
 import com.grippo.design.resources.icons.Cancel
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.email_placeholder
 
 @Composable
 public fun InputEmail(

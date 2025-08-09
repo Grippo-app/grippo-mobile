@@ -28,9 +28,9 @@ import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.Res
-import com.grippo.design.resources.selected
-import com.grippo.design.resources.trainings
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.selected
+import com.grippo.design.resources.provider.trainings
 import com.grippo.domain.state.training.transformToTrainingListValue
 import com.grippo.home.trainings.factory.exerciseOf
 import com.grippo.home.trainings.factory.indexFor

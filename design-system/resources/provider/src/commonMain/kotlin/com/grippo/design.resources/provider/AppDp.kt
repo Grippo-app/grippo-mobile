@@ -1,4 +1,4 @@
-package com.grippo.design.resources
+package com.grippo.design.resources.provider
 
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp

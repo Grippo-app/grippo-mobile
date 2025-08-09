@@ -8,9 +8,9 @@ import androidx.compose.ui.Modifier
 import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateRange
 import com.grippo.design.core.AppTokens
-import com.grippo.design.resources.Res
-import com.grippo.design.resources.from
-import com.grippo.design.resources.to
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.from
+import com.grippo.design.resources.provider.to
 
 @Composable
 public fun DateRangeSelector(

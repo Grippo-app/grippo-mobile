@@ -16,7 +16,7 @@ kotlin {
         implementation(projects.presentationFeatures.presentationApi)
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.designSystem.core)
-        implementation(projects.designSystem.resources)
+        implementation(projects.designSystem.resources.provider)
         implementation(projects.designSystem.components)
         implementation(projects.designSystem.preview)
 

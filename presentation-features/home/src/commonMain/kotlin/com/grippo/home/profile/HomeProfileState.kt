@@ -4,19 +4,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.core.AppTokens
-import com.grippo.design.resources.Res
-import com.grippo.design.resources.activity
-import com.grippo.design.resources.debug
 import com.grippo.design.resources.icons.Flask
 import com.grippo.design.resources.icons.Gym
 import com.grippo.design.resources.icons.Repository
 import com.grippo.design.resources.icons.Settings
 import com.grippo.design.resources.icons.Waist
-import com.grippo.design.resources.profile_menu_excluded_muscles
-import com.grippo.design.resources.profile_menu_exercise_library
-import com.grippo.design.resources.profile_menu_missing_equipment
-import com.grippo.design.resources.settings
-import com.grippo.design.resources.system
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.activity
+import com.grippo.design.resources.provider.debug
+import com.grippo.design.resources.provider.profile_menu_excluded_muscles
+import com.grippo.design.resources.provider.profile_menu_exercise_library
+import com.grippo.design.resources.provider.profile_menu_missing_equipment
+import com.grippo.design.resources.provider.settings
+import com.grippo.design.resources.provider.system
 import com.grippo.state.profile.UserState
 
 @Immutable

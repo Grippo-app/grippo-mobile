@@ -1,10 +1,10 @@
 package com.grippo.period.picker
 
 import com.grippo.core.BaseViewModel
-import com.grippo.design.resources.Res
 import com.grippo.design.resources.StringProvider
-import com.grippo.design.resources.from
-import com.grippo.design.resources.to
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.from
+import com.grippo.design.resources.provider.to
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.state.datetime.PeriodState

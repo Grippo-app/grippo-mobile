@@ -4,13 +4,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.core.AppTokens
-import com.grippo.design.resources.Res
 import com.grippo.design.resources.icons.Gym
 import com.grippo.design.resources.icons.Reports
 import com.grippo.design.resources.icons.User
-import com.grippo.design.resources.profile
-import com.grippo.design.resources.statistics
-import com.grippo.design.resources.trainings
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.profile
+import com.grippo.design.resources.provider.statistics
+import com.grippo.design.resources.provider.trainings
 import com.grippo.presentation.api.bottom.navigation.BottomNavigationRouter
 import com.grippo.state.formatters.UiText
 

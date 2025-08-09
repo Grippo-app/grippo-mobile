@@ -7,7 +7,7 @@ plugins {
 
 compose.resources {
     publicResClass = true
-    packageOfResClass = "com.grippo.design.resources"
+    packageOfResClass = "com.grippo.design.resources.provider"
     generateResClass = always
 }
 

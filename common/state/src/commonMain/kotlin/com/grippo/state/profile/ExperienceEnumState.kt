@@ -4,19 +4,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.core.AppTokens
-import com.grippo.design.resources.Res
-import com.grippo.design.resources.experience_advanced_description
-import com.grippo.design.resources.experience_advanced_title
-import com.grippo.design.resources.experience_beginner_description
-import com.grippo.design.resources.experience_beginner_title
-import com.grippo.design.resources.experience_intermediate_description
-import com.grippo.design.resources.experience_intermediate_title
-import com.grippo.design.resources.experience_pro_description
-import com.grippo.design.resources.experience_pro_title
 import com.grippo.design.resources.icons.Emoji
 import com.grippo.design.resources.icons.EmojiLookTop
 import com.grippo.design.resources.icons.EmojiSatisfied
 import com.grippo.design.resources.icons.EmojiTalkingHappy
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.experience_advanced_description
+import com.grippo.design.resources.provider.experience_advanced_title
+import com.grippo.design.resources.provider.experience_beginner_description
+import com.grippo.design.resources.provider.experience_beginner_title
+import com.grippo.design.resources.provider.experience_intermediate_description
+import com.grippo.design.resources.provider.experience_intermediate_title
+import com.grippo.design.resources.provider.experience_pro_description
+import com.grippo.design.resources.provider.experience_pro_title
 
 @Immutable
 public enum class ExperienceEnumState {

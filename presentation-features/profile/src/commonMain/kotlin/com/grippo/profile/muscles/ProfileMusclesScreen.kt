@@ -24,9 +24,9 @@ import com.grippo.design.components.muscle.MusclesColumn
 import com.grippo.design.components.muscle.MusclesImage
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
-import com.grippo.design.resources.Res
-import com.grippo.design.resources.apply_btn
-import com.grippo.design.resources.muscles
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.apply_btn
+import com.grippo.design.resources.provider.muscles
 import kotlinx.collections.immutable.ImmutableSet
 
 @Composable

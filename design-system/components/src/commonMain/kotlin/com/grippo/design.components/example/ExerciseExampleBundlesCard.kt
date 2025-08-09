@@ -28,8 +28,8 @@ import com.grippo.design.components.chip.ChipTrailing
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.Res
-import com.grippo.design.resources.percent
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.percent
 import com.grippo.state.exercise.examples.ExerciseExampleBundleState
 import com.grippo.state.exercise.examples.stubExerciseExample
 import com.grippo.state.formatters.UiText

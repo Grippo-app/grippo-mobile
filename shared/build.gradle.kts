@@ -14,7 +14,7 @@ kotlin {
         api(libs.decompose.state.keeper)
 
         implementation(projects.designSystem.core)
-        implementation(projects.designSystem.resources)
+        implementation(projects.designSystem.resources.provider)
         implementation(projects.designSystem.components)
 
         implementation(projects.common.platformCore)

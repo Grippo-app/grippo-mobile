@@ -1,7 +1,7 @@
 package com.grippo.design.resources.colors
 
 import androidx.compose.ui.graphics.Color
-import com.grippo.design.resources.AppColor
+import com.grippo.design.resources.provider.AppColor
 
 public object LightColor : AppColor {
     override val border: AppColor.BorderColors = object : AppColor.BorderColors {

@@ -6,7 +6,7 @@ import org.jetbrains.compose.resources.getPluralString
 import org.jetbrains.compose.resources.getString
 import org.koin.core.annotation.Single
 
-@Single
+@Single(binds = [StringProvider::class])
 internal class StringProviderImpl : StringProvider {
     override suspend fun get(id: StringResource, vararg args: Any): String {
         return getString(id, *args)

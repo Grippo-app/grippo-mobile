@@ -4,14 +4,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import com.grippo.design.core.AppTokens
-import com.grippo.design.resources.Res
-import com.grippo.design.resources.time_ago_day
-import com.grippo.design.resources.time_ago_days
-import com.grippo.design.resources.time_ago_less_than_day
-import com.grippo.design.resources.time_ago_month
-import com.grippo.design.resources.time_ago_months
-import com.grippo.design.resources.time_ago_year
-import com.grippo.design.resources.time_ago_years
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.time_ago_day
+import com.grippo.design.resources.provider.time_ago_days
+import com.grippo.design.resources.provider.time_ago_less_than_day
+import com.grippo.design.resources.provider.time_ago_month
+import com.grippo.design.resources.provider.time_ago_months
+import com.grippo.design.resources.provider.time_ago_year
+import com.grippo.design.resources.provider.time_ago_years
 import kotlinx.datetime.LocalDateTime
 
 @Stable

@@ -3,8 +3,8 @@ package com.grippo.state.formatters
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import com.grippo.design.core.AppTokens
-import com.grippo.design.resources.Res
-import com.grippo.design.resources.kg
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.kg
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.roundToInt

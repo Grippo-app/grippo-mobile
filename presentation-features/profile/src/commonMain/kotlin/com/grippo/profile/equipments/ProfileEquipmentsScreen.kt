@@ -26,9 +26,9 @@ import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.Res
-import com.grippo.design.resources.apply_btn
-import com.grippo.design.resources.equipments
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.apply_btn
+import com.grippo.design.resources.provider.equipments
 import com.grippo.state.equipments.stubEquipments
 import com.grippo.state.formatters.UiText
 import kotlinx.collections.immutable.ImmutableSet

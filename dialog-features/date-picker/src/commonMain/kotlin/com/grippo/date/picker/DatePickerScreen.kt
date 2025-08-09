@@ -22,8 +22,8 @@ import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.Res
-import com.grippo.design.resources.submit_btn
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.submit_btn
 import com.grippo.state.formatters.DateFormatState
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf

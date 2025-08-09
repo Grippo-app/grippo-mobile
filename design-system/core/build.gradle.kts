@@ -6,7 +6,7 @@ plugins {
 
 kotlin {
     sourceSets.commonMain.dependencies {
-        implementation(projects.designSystem.resources)
+        implementation(projects.designSystem.resources.provider)
 
         implementation(compose.foundation)
         implementation(compose.runtime)

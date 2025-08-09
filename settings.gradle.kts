@@ -40,7 +40,8 @@ include(":shared")
 
 include(":design-system:preview")
 include(":design-system:core")
-include(":design-system:resources")
+include(":design-system:resources:provider")
+include(":design-system:resources:provider-impl")
 include(":design-system:components")
 
 include(":data-services:network")

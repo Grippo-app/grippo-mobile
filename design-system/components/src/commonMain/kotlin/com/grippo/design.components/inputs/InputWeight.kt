@@ -19,9 +19,9 @@ import com.grippo.design.components.internal.PlaceHolder
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.Res
-import com.grippo.design.resources.kg
-import com.grippo.design.resources.weight_placeholder
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.kg
+import com.grippo.design.resources.provider.weight_placeholder
 
 @Composable
 public fun InputWeight(

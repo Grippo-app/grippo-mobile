@@ -4,9 +4,9 @@ import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.date.utils.DateTimeUtils
-import com.grippo.design.resources.Res
 import com.grippo.design.resources.StringProvider
-import com.grippo.design.resources.date_picker_title
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.date_picker_title
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState

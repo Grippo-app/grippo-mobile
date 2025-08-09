@@ -5,6 +5,14 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.manrope_bold
+import com.grippo.design.resources.provider.manrope_extra_bold
+import com.grippo.design.resources.provider.manrope_extra_light
+import com.grippo.design.resources.provider.manrope_light
+import com.grippo.design.resources.provider.manrope_medium
+import com.grippo.design.resources.provider.manrope_regular
+import com.grippo.design.resources.provider.manrope_semi_bold
 import org.jetbrains.compose.resources.Font
 
 private typealias AppFont = Res.font

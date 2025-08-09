@@ -37,10 +37,10 @@ import com.grippo.design.components.user.UserCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.Res
-import com.grippo.design.resources.get_started_btn
 import com.grippo.design.resources.icons.Check
-import com.grippo.design.resources.registration_completed_title
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.get_started_btn
+import com.grippo.design.resources.provider.registration_completed_title
 import com.grippo.state.profile.stubUser
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf

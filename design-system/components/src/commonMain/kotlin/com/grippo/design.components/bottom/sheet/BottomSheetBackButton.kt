@@ -13,9 +13,9 @@ import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.Res
-import com.grippo.design.resources.back
 import com.grippo.design.resources.icons.NavArrowLeft
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.back
 
 @Composable
 public fun BottomSheetBackButton(

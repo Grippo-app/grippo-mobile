@@ -7,8 +7,8 @@ import com.grippo.design.core.internal.LocalAppDrawables
 import com.grippo.design.core.internal.LocalAppIcons
 import com.grippo.design.core.internal.LocalAppStrings
 import com.grippo.design.core.internal.LocalAppTypography
-import com.grippo.design.resources.AppColor
-import com.grippo.design.resources.AppDp
+import com.grippo.design.resources.provider.AppColor
+import com.grippo.design.resources.provider.AppDp
 import com.grippo.design.resources.AppDrawable
 import com.grippo.design.resources.AppIcon
 import com.grippo.design.resources.AppString

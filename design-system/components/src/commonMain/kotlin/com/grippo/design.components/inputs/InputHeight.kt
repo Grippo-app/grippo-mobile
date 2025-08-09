@@ -19,9 +19,9 @@ import com.grippo.design.components.internal.PlaceHolder
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.Res
-import com.grippo.design.resources.cm
-import com.grippo.design.resources.height_placeholder
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.cm
+import com.grippo.design.resources.provider.height_placeholder
 
 @Composable
 public fun InputHeight(

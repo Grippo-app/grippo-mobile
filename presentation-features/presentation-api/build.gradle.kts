@@ -10,7 +10,7 @@ kotlin {
         implementation(projects.common.core)
         implementation(projects.common.dateUtils)
         implementation(projects.designSystem.core)
-        implementation(projects.designSystem.resources)
+        implementation(projects.designSystem.resources.provider)
 
         implementation(libs.kotlinx.serialization.json)
         implementation(libs.datetime)

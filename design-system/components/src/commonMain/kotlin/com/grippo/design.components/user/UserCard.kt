@@ -21,15 +21,15 @@ import com.grippo.design.components.user.internal.OverviewCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.Res
 import com.grippo.design.resources.icons.Calendar
 import com.grippo.design.resources.icons.Gym
 import com.grippo.design.resources.icons.Trophy
-import com.grippo.design.resources.user_card_no_records_yet
-import com.grippo.design.resources.user_card_no_workouts_yet
-import com.grippo.design.resources.user_card_value_in_a_row
-import com.grippo.design.resources.user_card_value_personal_records
-import com.grippo.design.resources.user_card_value_workouts
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.user_card_no_records_yet
+import com.grippo.design.resources.provider.user_card_no_workouts_yet
+import com.grippo.design.resources.provider.user_card_value_in_a_row
+import com.grippo.design.resources.provider.user_card_value_personal_records
+import com.grippo.design.resources.provider.user_card_value_workouts
 import com.grippo.state.profile.UserState
 import com.grippo.state.profile.stubUser
 

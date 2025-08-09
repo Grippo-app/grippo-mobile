@@ -19,11 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
-import com.grippo.design.resources.Res
-import com.grippo.design.resources.cm
 import com.grippo.design.resources.icons.ExpandLines
 import com.grippo.design.resources.icons.Weight
-import com.grippo.design.resources.kg
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.cm
+import com.grippo.design.resources.provider.kg
 
 @Composable
 internal fun BodyItem(

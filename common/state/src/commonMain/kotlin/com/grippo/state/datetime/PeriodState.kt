@@ -8,13 +8,13 @@ import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateRange
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.core.AppTokens
-import com.grippo.design.resources.Res
-import com.grippo.design.resources.custom_range
 import com.grippo.design.resources.icons.Calendar
 import com.grippo.design.resources.icons.Settings
-import com.grippo.design.resources.this_day
-import com.grippo.design.resources.this_month
-import com.grippo.design.resources.this_week
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.custom_range
+import com.grippo.design.resources.provider.this_day
+import com.grippo.design.resources.provider.this_month
+import com.grippo.design.resources.provider.this_week
 import kotlinx.serialization.Serializable
 
 @Immutable

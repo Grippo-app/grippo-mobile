@@ -20,9 +20,9 @@ import com.grippo.design.components.selectors.Radio
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.Res
-import com.grippo.design.resources.dark
-import com.grippo.design.resources.light
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.dark
+import com.grippo.design.resources.provider.light
 import com.grippo.state.settings.ThemeState
 import kotlinx.collections.immutable.persistentListOf
 
