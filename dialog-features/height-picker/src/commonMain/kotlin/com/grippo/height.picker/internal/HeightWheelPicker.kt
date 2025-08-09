@@ -2,6 +2,7 @@ package com.grippo.height.picker.internal
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -22,6 +23,23 @@ internal fun HeightWheelPicker(
     value: Int,
     select: (Int) -> Unit
 ) {
+    val heightListState = rememberLazyListState()
+
+    val heighColumn = WheelColumn(
+        id = "height",
+        items = suggestions,
+        selected = value,
+        onSelect = select,
+        isValid = { true },
+        itemContent = { item, _ ->
+            WheelItem(
+                text = item.toString(),
+                isValid = true
+            )
+        },
+        listState = heightListState
+    )
+
     MultiWheelPicker(
         modifier = Modifier
             .fillMaxWidth()
@@ -30,20 +48,7 @@ internal fun HeightWheelPicker(
             shape = RoundedCornerShape(AppTokens.dp.wheelPicker.radius),
             color = AppTokens.colors.background.card,
         ),
-        columns = listOf(
-            WheelColumn(
-                id = "height",
-                initial = value,
-                onValueChange = select,
-                items = suggestions,
-                itemContent = {
-                    WheelItem(
-                        text = it.toString(),
-                        isValid = true
-                    )
-                }
-            )
-        )
+        columns = listOf(heighColumn)
     )
 }
 

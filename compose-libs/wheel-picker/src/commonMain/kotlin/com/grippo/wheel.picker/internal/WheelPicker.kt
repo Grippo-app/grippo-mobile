@@ -9,11 +9,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -31,65 +29,35 @@ import kotlin.math.abs
 @Composable
 internal fun WheelPicker(
     modifier: Modifier = Modifier,
-    startIndex: Int = 0,
     count: Int,
     rowCount: Int,
-    size: DpSize = DpSize(128.dp, 128.dp),
+    size: DpSize,
     selectorProperties: SelectorProperties = WheelPickerDefaults.selectorProperties(),
-    onScrollFinished: (snappedIndex: Int) -> Int? = { null },
     content: @Composable LazyItemScope.(index: Int) -> Unit,
+    listState: LazyListState,
 ) {
-    val lazyListState = rememberLazyListState(startIndex)
-    val flingBehavior = rememberSnapFlingBehavior(lazyListState)
-    val isScrollInProgress = lazyListState.isScrollInProgress
-
-    LaunchedEffect(isScrollInProgress, count) {
-        if (!isScrollInProgress) {
-            onScrollFinished(calculateSnappedItemIndex(lazyListState))?.let {
-                lazyListState.scrollToItem(it)
-            }
-        }
-    }
+    val flingBehavior = rememberSnapFlingBehavior(listState)
 
     LazyColumn(
         modifier = modifier
             .height(size.height)
             .width(size.width),
-        state = lazyListState,
+        state = listState,
         contentPadding = PaddingValues(vertical = size.height / rowCount * ((rowCount - 1) / 2)),
         flingBehavior = flingBehavior
     ) {
         items(count) { index ->
-            val (newAlpha, newRotationX) = calculateAnimatedAlphaAndRotationX(
-                lazyListState = lazyListState,
-                index = index,
-                rowCount = rowCount
-            )
-
+            val (alpha, rotX) = calculateAnimatedAlphaAndRotationX(listState, index, rowCount)
             Box(
                 modifier = Modifier
                     .height(size.height / rowCount)
                     .fillMaxWidth()
-                    .alpha(newAlpha)
-                    .graphicsLayer { rotationX = newRotationX },
+                    .alpha(alpha)
+                    .graphicsLayer { rotationX = rotX },
                 contentAlignment = Alignment.Center,
                 content = { content(index) }
             )
         }
-    }
-}
-
-private fun calculateSnappedItemIndex(lazyListState: LazyListState): Int {
-    val currentItemIndex = lazyListState.firstVisibleItemIndex
-    val itemCount = lazyListState.layoutInfo.totalItemsCount
-    val offset = lazyListState.firstVisibleItemScrollOffset
-    val itemHeight =
-        lazyListState.layoutInfo.visibleItemsInfo.firstOrNull()?.size ?: return currentItemIndex
-
-    return if (offset > itemHeight / 2 && currentItemIndex < itemCount - 1) {
-        currentItemIndex + 1
-    } else {
-        currentItemIndex
     }
 }
 

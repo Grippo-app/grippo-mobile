@@ -6,6 +6,7 @@ import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
 import kotlinx.datetime.format
@@ -129,5 +130,18 @@ public object DateTimeUtils {
     public fun isPast(date: LocalDate): Boolean {
         val today = Clock.System.todayIn(timeZone)
         return date < today
+    }
+
+    /* * * * * * * * * * *
+    * Static
+    * * * * * * * * * * */
+
+    public fun getDaysInMonth(year: Int, month: Month): Int {
+        val nextMonth =
+            if (month == Month.DECEMBER) Month.JANUARY else Month.entries[month.ordinal + 1]
+        val nextYear = if (month == Month.DECEMBER) year + 1 else year
+        val firstOfNextMonth = LocalDate(nextYear, nextMonth, 1)
+        val lastDayOfThisMonth = firstOfNextMonth.minus(DatePeriod(days = 1))
+        return lastDayOfThisMonth.dayOfMonth
     }
 }
