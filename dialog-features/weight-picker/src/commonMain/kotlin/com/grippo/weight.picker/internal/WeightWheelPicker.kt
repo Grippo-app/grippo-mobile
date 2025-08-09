@@ -3,9 +3,9 @@ package com.grippo.weight.picker.internal
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.grippo.design.components.wheel.WheelItem
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -37,10 +37,9 @@ internal fun WeightWheelPicker(
                 onValueChange = select,
                 items = suggestions,
                 itemContent = {
-                    Text(
+                    WheelItem(
                         text = it.toString(),
-                        style = AppTokens.typography.b16Bold(),
-                        color = AppTokens.colors.text.primary
+                        isValid = true
                     )
                 }
             )

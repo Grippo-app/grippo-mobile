@@ -3,7 +3,6 @@ package com.grippo.date.picker.internal
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -13,10 +12,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.grippo.date.utils.DateRange
 import com.grippo.date.utils.DateTimeUtils
+import com.grippo.design.components.wheel.WheelItem
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.state.formatters.DateFormatState
 import com.grippo.wheel.picker.DefaultSelectorProperties
 import com.grippo.wheel.picker.MultiWheelPicker
 import com.grippo.wheel.picker.WheelColumn
@@ -37,38 +36,14 @@ internal fun DateWheelPicker(
     var selectedMonth by remember { mutableStateOf(initial.month) }
     var selectedDay by remember { mutableStateOf(initial.dayOfMonth) }
 
-    val years = remember(selectedMonth, selectedYear, limitations) {
-        when (selectedMonth) {
-            limitations.from.month -> {
-                (limitations.from.year..limitations.to.year).toList()
-            }
-            limitations.to.month -> {
-                (limitations.from.year..limitations.to.year).toList()
-            }
-            else -> {
-                (limitations.from.year..limitations.to.year).toList()
-            }
-        }
+    val years = remember(limitations) {
+        (limitations.from.year..limitations.to.year).toList()
     }
 
-    val months = remember(selectedYear, limitations) {
-        val allMonths = Month.entries
-        when (selectedYear) {
-            limitations.from.year -> allMonths.slice(limitations.from.month.ordinal..11)
-            limitations.to.year -> allMonths.slice(0..limitations.to.month.ordinal)
-            else -> allMonths
-        }
-    }
+    val months = remember { Month.entries }
 
-    val daysInMonth = remember(selectedYear, selectedMonth, limitations) {
-        val maxDay = getDaysInMonth(selectedYear, selectedMonth)
-        val minDay =
-            if (selectedYear == limitations.from.year && selectedMonth == limitations.from.month)
-                limitations.from.dayOfMonth else 1
-        val maxValidDay =
-            if (selectedYear == limitations.to.year && selectedMonth == limitations.to.month)
-                minOf(limitations.to.dayOfMonth, maxDay) else maxDay
-        (minDay..maxValidDay).toList()
+    val daysInMonth = remember(selectedYear, selectedMonth) {
+        (1..getDaysInMonth(selectedYear, selectedMonth)).toList()
     }
 
     val safeDay = remember(selectedDay, daysInMonth) {
@@ -105,11 +80,17 @@ internal fun DateWheelPicker(
                 items = daysInMonth,
                 initial = selectedDay,
                 onValueChange = { selectedDay = it },
-                itemContent = {
-                    Text(
-                        text = it.toString(),
-                        style = AppTokens.typography.b16Bold(),
-                        color = AppTokens.colors.text.primary
+                itemContent = { day ->
+                    WheelItem(
+                        text = day.toString(),
+                        isValid = checkDayValidity(
+                            year = selectedYear,
+                            month = selectedMonth,
+                            day = day,
+                            limitations = limitations,
+                            hour = initial.hour,
+                            minute = initial.minute
+                        )
                     )
                 }
             ),
@@ -118,11 +99,14 @@ internal fun DateWheelPicker(
                 items = months,
                 initial = selectedMonth,
                 onValueChange = { selectedMonth = it },
-                itemContent = {
-                    Text(
-                        text = it.name.lowercase().replaceFirstChar(Char::titlecase),
-                        style = AppTokens.typography.b16Bold(),
-                        color = AppTokens.colors.text.primary
+                itemContent = { month ->
+                    WheelItem(
+                        text = month.name.lowercase().replaceFirstChar(Char::titlecase),
+                        isValid = checkMonthValidity(
+                            year = selectedYear,
+                            month = month,
+                            limitations = limitations
+                        )
                     )
                 }
             ),
@@ -131,16 +115,45 @@ internal fun DateWheelPicker(
                 items = years,
                 initial = selectedYear,
                 onValueChange = { selectedYear = it },
-                itemContent = {
-                    Text(
-                        text = it.toString(),
-                        style = AppTokens.typography.b16Bold(),
-                        color = AppTokens.colors.text.primary
+                itemContent = { year ->
+                    WheelItem(
+                        text = year.toString(),
+                        isValid = checkYearValidity(
+                            year = year,
+                            limitations = limitations
+                        )
                     )
                 }
             )
         )
     )
+}
+
+private fun checkDayValidity(
+    year: Int,
+    month: Month,
+    day: Int,
+    limitations: DateRange,
+    hour: Int,
+    minute: Int,
+): Boolean {
+    if (!checkMonthValidity(year, month, limitations)) return false
+
+    val dt =
+        runCatching { LocalDateTime(year, month, day, hour, minute) }.getOrNull() ?: return false
+    return dt in limitations.from..limitations.to
+}
+
+private fun checkMonthValidity(year: Int, month: Month, limitations: DateRange): Boolean {
+    return when (year) {
+        limitations.from.year -> month.ordinal >= limitations.from.month.ordinal
+        limitations.to.year -> month.ordinal <= limitations.to.month.ordinal
+        else -> true
+    }
+}
+
+private fun checkYearValidity(year: Int, limitations: DateRange): Boolean {
+    return year in limitations.from.year..limitations.to.year
 }
 
 private fun getDaysInMonth(year: Int, month: Month): Int {
@@ -150,6 +163,7 @@ private fun getDaysInMonth(year: Int, month: Month): Int {
     val lastDayOfThisMonth = firstOfNextMonth.minus(DatePeriod(days = 1))
     return lastDayOfThisMonth.dayOfMonth
 }
+
 
 @AppPreview
 @Composable
