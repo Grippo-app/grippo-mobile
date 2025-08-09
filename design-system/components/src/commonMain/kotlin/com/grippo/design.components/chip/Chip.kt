@@ -22,7 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.icons.Weight
+import com.grippo.design.resources.provider.icons.Weight
 import com.grippo.state.formatters.UiText
 
 @Stable

@@ -3,10 +3,10 @@ package com.grippo.state.muscles
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.grippo.design.resources.icons.muscles.bodyBack
-import com.grippo.design.resources.icons.muscles.bodyFront
-import com.grippo.design.resources.icons.muscles.bodySplit
-import com.grippo.design.resources.icons.muscles.legsSplit
+import com.grippo.design.resources.provider.icons.muscles.bodyBack
+import com.grippo.design.resources.provider.icons.muscles.bodyFront
+import com.grippo.design.resources.provider.icons.muscles.bodySplit
+import com.grippo.design.resources.provider.icons.muscles.legsSplit
 import com.grippo.state.muscles.factory.MuscleColorStrategy
 import com.grippo.state.muscles.factory.MuscleEngine
 import kotlinx.collections.immutable.ImmutableList

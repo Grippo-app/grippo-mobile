@@ -2,7 +2,7 @@ package com.grippo.state.muscles
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
-import com.grippo.design.resources.icons.muscles.MuscleColorPreset
+import com.grippo.design.resources.provider.icons.muscles.MuscleColorPreset
 
 @Immutable
 public enum class MuscleEnumState {

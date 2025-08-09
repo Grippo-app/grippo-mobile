@@ -7,8 +7,8 @@ import androidx.compose.ui.graphics.Brush
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.icons.Repeat
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.icons.Repeat
 import com.grippo.design.resources.provider.repetitions_chip
 import com.grippo.state.formatters.RepetitionsFormatState
 import com.grippo.state.formatters.UiText

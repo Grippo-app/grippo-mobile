@@ -6,12 +6,12 @@ import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.grippo.design.resources.provider.AppColor
 import com.grippo.design.resources.provider.AppDp
-import com.grippo.design.resources.AppDrawable
-import com.grippo.design.resources.AppIcon
-import com.grippo.design.resources.AppString
-import com.grippo.design.resources.AppTypography
-import com.grippo.design.resources.colors.DarkColor
-import com.grippo.design.resources.colors.LightColor
+import com.grippo.design.resources.provider.AppDrawable
+import com.grippo.design.resources.provider.AppIcon
+import com.grippo.design.resources.provider.AppString
+import com.grippo.design.resources.provider.AppTypography
+import com.grippo.design.resources.provider.colors.DarkColor
+import com.grippo.design.resources.provider.colors.LightColor
 
 @Composable
 internal fun ProvideResources(

@@ -24,9 +24,9 @@ import com.grippo.design.components.user.UserCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.icons.LogOut
-import com.grippo.design.resources.icons.Rocket
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.icons.LogOut
+import com.grippo.design.resources.provider.icons.Rocket
 import com.grippo.design.resources.provider.logout_btn
 import com.grippo.design.resources.provider.profile
 import com.grippo.design.resources.provider.start_workout

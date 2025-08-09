@@ -9,10 +9,10 @@ import com.grippo.design.core.internal.LocalAppStrings
 import com.grippo.design.core.internal.LocalAppTypography
 import com.grippo.design.resources.provider.AppColor
 import com.grippo.design.resources.provider.AppDp
-import com.grippo.design.resources.AppDrawable
-import com.grippo.design.resources.AppIcon
-import com.grippo.design.resources.AppString
-import com.grippo.design.resources.AppTypography
+import com.grippo.design.resources.provider.AppDrawable
+import com.grippo.design.resources.provider.AppIcon
+import com.grippo.design.resources.provider.AppString
+import com.grippo.design.resources.provider.AppTypography
 
 public object AppTokens {
     public val colors: AppColor

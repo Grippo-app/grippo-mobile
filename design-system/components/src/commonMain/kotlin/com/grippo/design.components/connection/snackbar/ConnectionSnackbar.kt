@@ -24,8 +24,8 @@ import androidx.compose.ui.Modifier
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.icons.WifiOff
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.icons.WifiOff
 import com.grippo.design.resources.provider.no_internet_connection
 
 @Immutable

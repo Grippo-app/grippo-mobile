@@ -5,9 +5,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.core.AppTokens
-import com.grippo.design.resources.icons.muscles.MuscleColorPreset
-import com.grippo.design.resources.icons.muscles.fullBack
-import com.grippo.design.resources.icons.muscles.fullFront
+import com.grippo.design.resources.provider.icons.muscles.MuscleColorPreset
+import com.grippo.design.resources.provider.icons.muscles.fullBack
+import com.grippo.design.resources.provider.icons.muscles.fullFront
 import com.grippo.state.exercise.examples.ExerciseExampleBundleState
 import com.grippo.state.muscles.MuscleEnumState
 import com.grippo.state.muscles.MuscleGroupState

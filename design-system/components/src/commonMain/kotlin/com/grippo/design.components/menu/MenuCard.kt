@@ -21,8 +21,8 @@ import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.icons.NavArrowRight
-import com.grippo.design.resources.icons.User
+import com.grippo.design.resources.provider.icons.NavArrowRight
+import com.grippo.design.resources.provider.icons.User
 import com.grippo.state.formatters.UiText
 
 @Stable

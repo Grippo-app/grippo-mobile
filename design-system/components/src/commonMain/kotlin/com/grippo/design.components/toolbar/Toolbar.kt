@@ -26,7 +26,7 @@ import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.icons.NavArrowLeft
+import com.grippo.design.resources.provider.icons.NavArrowLeft
 import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
