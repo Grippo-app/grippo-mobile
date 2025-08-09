@@ -16,6 +16,7 @@ import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.state.formatters.DateFormatState
 import com.grippo.wheel.picker.DefaultSelectorProperties
 import com.grippo.wheel.picker.MultiWheelPicker
 import com.grippo.wheel.picker.WheelColumn
@@ -36,8 +37,18 @@ internal fun DateWheelPicker(
     var selectedMonth by remember { mutableStateOf(initial.month) }
     var selectedDay by remember { mutableStateOf(initial.dayOfMonth) }
 
-    val years = remember(limitations) {
-        (limitations.from.year..limitations.to.year).toList()
+    val years = remember(selectedMonth, selectedYear, limitations) {
+        when (selectedMonth) {
+            limitations.from.month -> {
+                (limitations.from.year..limitations.to.year).toList()
+            }
+            limitations.to.month -> {
+                (limitations.from.year..limitations.to.year).toList()
+            }
+            else -> {
+                (limitations.from.year..limitations.to.year).toList()
+            }
+        }
     }
 
     val months = remember(selectedYear, limitations) {
