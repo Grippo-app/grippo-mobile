@@ -1,4 +1,4 @@
-package com.grippo.logger.internal
+package com.grippo.logger.platform
 
 internal actual fun getCallerLocation(depth: Int): String {
     return "(native)"
