@@ -2,8 +2,8 @@ package com.grippo.period.picker
 
 import com.grippo.core.BaseViewModel
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.StringProvider
 import com.grippo.design.resources.provider.from
+import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.design.resources.provider.to
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController

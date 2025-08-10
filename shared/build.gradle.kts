@@ -15,6 +15,7 @@ kotlin {
 
         implementation(projects.designSystem.core)
         implementation(projects.designSystem.resources.provider)
+        implementation(projects.designSystem.resources.providerImpl)
         implementation(projects.designSystem.components)
 
         implementation(projects.common.platformCore)

@@ -14,7 +14,7 @@ import com.grippo.data.features.trainings.TrainingsFeatureModule
 import com.grippo.data.features.user.UserFeatureModule
 import com.grippo.data.features.weight.history.WeightHistoryFeatureModule
 import com.grippo.database.DatabaseModule
-import com.grippo.design.resources.StringsModule
+import com.grippo.design.resources.provider.impl.StringsModule
 import com.grippo.dialog.api.DialogModule
 import com.grippo.error.provider.impl.ErrorModule
 import com.grippo.network.NetworkModule

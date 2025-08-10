@@ -1,6 +1,6 @@
-package com.grippo.design.resources
+package com.grippo.design.resources.provider.impl
 
-import com.grippo.design.resources.provider.StringProvider
+import com.grippo.design.resources.provider.providers.StringProvider
 import org.jetbrains.compose.resources.PluralStringResource
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getPluralString
