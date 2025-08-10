@@ -1,24 +1,34 @@
 package com.grippo.shared.dialog
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalBottomSheetProperties
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
-import com.grippo.design.components.bottom.sheet.BottomSheetBackButton
+import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.toolbar.BottomSheetToolbar
+import com.grippo.design.components.toolbar.BottomSheetToolbarActionButton
 import com.grippo.design.core.AppTokens
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.back
+import com.grippo.design.resources.provider.close
+import com.grippo.design.resources.provider.icons.NavArrowLeft
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.shared.dialog.content.DialogContentComponent
 import kotlinx.collections.immutable.ImmutableSet
@@ -30,8 +40,8 @@ internal fun DialogScreen(
     loaders: ImmutableSet<DialogLoader>,
     contract: DialogContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
-    val slotState = component.childSlot.subscribeAsState()
-    val child = slotState.value.child ?: return@BaseComposeScreen
+    val slotState by component.childSlot.subscribeAsState()
+    val child = slotState.child ?: return@BaseComposeScreen
 
     val contentComponent = (child.instance.component as? DialogContentComponent)
         ?: return@BaseComposeScreen
@@ -39,9 +49,10 @@ internal fun DialogScreen(
     BottomSheet(
         config = child.configuration,
         stackSize = state.stack.size,
-        process = state.process,
+        phase = state.phase,
         component = contentComponent,
         onBack = { contract.onDismiss(null) },
+        onClose = contract::onClose,
         onDismiss = { contract.onRelease(child.configuration) },
         onDismissComplete = { contract.onRelease(child.configuration) }
     )
@@ -51,31 +62,43 @@ internal fun DialogScreen(
 private fun BottomSheet(
     config: DialogConfig,
     stackSize: Int,
-    process: Process,
+    phase: SheetPhase,
     component: DialogContentComponent,
     onBack: () -> Unit,
+    onClose: () -> Unit,
     onDismiss: () -> Unit,
     onDismissComplete: () -> Unit
 ) {
-    val modalSheetState = rememberModalBottomSheetState(
+    val onDismissCompleteRef = rememberUpdatedState(onDismissComplete)
+
+    val showBackButton = stackSize > 1
+    val isSwipeDismissEnabled = config.dismissBySwipe
+    val programmaticDismiss = phase == SheetPhase.DISMISSING
+    val showHeader = showBackButton || isSwipeDismissEnabled.not()
+
+    val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
-        confirmValueChange = { true },
+        confirmValueChange = { target ->
+            if (target == SheetValue.Hidden && !isSwipeDismissEnabled) return@rememberModalBottomSheetState false
+            true
+        },
     )
 
-    // Trigger hide + release only once when process is DISMISS
-    LaunchedEffect(process) {
-        if (process == Process.DISMISS) {
-            modalSheetState.hide()
-            onDismissComplete()
+    LaunchedEffect(phase) {
+        if (programmaticDismiss && sheetState.currentValue != SheetValue.Hidden) {
+            sheetState.hide()
+            onDismissCompleteRef.value()
         }
     }
 
     ModalBottomSheet(
         modifier = Modifier.statusBarsPadding(),
-        onDismissRequest = onDismiss,
-        sheetState = modalSheetState,
+        onDismissRequest = { if (isSwipeDismissEnabled) onDismiss() },
+        sheetState = sheetState,
         scrimColor = AppTokens.colors.dialog.scrim,
-        properties = ModalBottomSheetProperties(shouldDismissOnBackPress = true),
+        properties = ModalBottomSheetProperties(
+            shouldDismissOnBackPress = isSwipeDismissEnabled,
+        ),
         containerColor = AppTokens.colors.background.dialog,
         dragHandle = null,
         shape = RoundedCornerShape(
@@ -83,20 +106,31 @@ private fun BottomSheet(
             topEnd = AppTokens.dp.bottomSheet.radius
         ),
     ) {
+        AnimatedVisibility(
+            visible = showHeader,
+            enter = fadeIn() + expandVertically(),
+            exit = fadeOut() + shrinkVertically()
+        ) {
+            BottomSheetToolbar(
+                modifier = Modifier.fillMaxWidth(),
+                start = if (showBackButton) BottomSheetToolbarActionButton(
+                    text = AppTokens.strings.res(Res.string.back),
+                    startIcon = AppTokens.icons.NavArrowLeft,
+                    style = ButtonStyle.Transparent,
+                    onClick = onBack
+                ) else null,
+                end = if (isSwipeDismissEnabled.not()) BottomSheetToolbarActionButton(
+                    text = AppTokens.strings.res(Res.string.close),
+                    startIcon = null,
+                    style = ButtonStyle.Transparent,
+                    onClick = onClose
+                ) else null,
+            )
+        }
+
         Column(
             modifier = Modifier.weight(weight = 1f, fill = false),
             content = { component.Render() }
-        )
-
-        AnimatedContent(
-            targetState = stackSize > 1,
-            label = "BackButtonAnimation",
-            transitionSpec = {
-                fadeIn() togetherWith fadeOut() using SizeTransform(clip = false)
-            },
-            content = { show ->
-                if (show) BottomSheetBackButton(onClick = onBack)
-            }
         )
     }
 }

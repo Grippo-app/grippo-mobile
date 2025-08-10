@@ -7,35 +7,54 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
 @Serializable
-public sealed class DialogConfig(public open val onDismiss: (() -> Unit)?) {
+public sealed class DialogConfig(
+    public open val onDismiss: (() -> Unit)?,
+    public open val dismissBySwipe: Boolean,
+
+    ) {
     @Serializable
     public data class ErrorDisplay(
         val title: String,
         val description: String?,
         @Transient val onClose: () -> Unit = {},
-    ) : DialogConfig(onClose)
+    ) : DialogConfig(
+        onDismiss = onClose,
+        dismissBySwipe = true
+    )
 
     @Serializable
     public data class ExerciseExample(
         val id: String,
-    ) : DialogConfig(null)
+    ) : DialogConfig(
+        onDismiss = null,
+        dismissBySwipe = true
+    )
 
     @Serializable
     public data class Exercise(
         val id: String,
-    ) : DialogConfig(null)
+    ) : DialogConfig(
+        onDismiss = null,
+        dismissBySwipe = true
+    )
 
     @Serializable
     public data class WeightPicker(
         val initial: Float,
         @Transient val onResult: (value: Float) -> Unit = {},
-    ) : DialogConfig(null)
+    ) : DialogConfig(
+        onDismiss = null,
+        dismissBySwipe = false
+    )
 
     @Serializable
     public data class HeightPicker(
         val initial: Int,
         @Transient val onResult: (value: Int) -> Unit = {},
-    ) : DialogConfig(null)
+    ) : DialogConfig(
+        onDismiss = null,
+        dismissBySwipe = false
+    )
 
     @Serializable
     public data class DatePicker(
@@ -43,12 +62,18 @@ public sealed class DialogConfig(public open val onDismiss: (() -> Unit)?) {
         val limitations: DateRange,
         val title: String,
         @Transient val onResult: (value: LocalDateTime) -> Unit = {},
-    ) : DialogConfig(null)
+    ) : DialogConfig(
+        onDismiss = null,
+        dismissBySwipe = false
+    )
 
     @Serializable
     public data class PeriodPicker(
         val initial: PeriodState,
         val available: List<PeriodState>,
         @Transient val onResult: (value: PeriodState) -> Unit = {},
-    ) : DialogConfig(null)
+    ) : DialogConfig(
+        onDismiss = null,
+        dismissBySwipe = true
+    )
 }

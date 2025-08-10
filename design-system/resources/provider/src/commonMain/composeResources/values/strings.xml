@@ -134,4 +134,5 @@
     <string name="r_chip">R</string>
     <string name="int_chip">Int</string>
     <string name="i_chip">I</string>
+    <string name="close">Close</string>
 </resources>

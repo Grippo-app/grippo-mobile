@@ -16,44 +16,43 @@ internal class DialogViewModel(
     }
 
     override fun onDismiss(pendingResult: (() -> Unit)?) {
-        val stack = state.value.stack
-        if (stack.isEmpty()) return
+        val oldStack = state.value.stack
+        if (oldStack.isEmpty()) return
 
-        val last = stack.last()
-        val newEntry = last.copy(pendingResult = pendingResult)
-        val newStack = stack.dropLast(1) + newEntry
+        val updatedTop = oldStack.last().copy(pendingResult = pendingResult)
+        val newStack = oldStack.dropLast(1) + updatedTop
+        val nextPhase = if (newStack.size == 1) SheetPhase.DISMISSING else SheetPhase.PRESENT
 
-        val process = if (newStack.size == 1) Process.DISMISS else Process.SHOW
+        update { it.copy(stack = newStack, phase = nextPhase) }
 
-        update { it.copy(stack = newStack, process = process) }
+        if (newStack.size > 1) pop()
+    }
 
-        if (newStack.size > 1) {
-            pop()
-        }
+    override fun onClose() {
+        if (state.value.stack.isEmpty()) return
+        update { it.copy(stack = emptyList(), phase = SheetPhase.DISMISSING) }
     }
 
     override fun onRelease(config: DialogConfig) {
-        val stack = state.value.stack
-        val last = stack.lastOrNull()
+        val current = state.value
+        if (current.phase == SheetPhase.RELEASED) return
 
-        last?.pendingResult?.invoke()
+        current.stack.lastOrNull()?.pendingResult?.invoke()
         config.onDismiss?.invoke()
 
-        update { it.copy(stack = emptyList(), process = Process.RELEASE) }
+        update { prev -> prev.copy(stack = emptyList(), phase = SheetPhase.RELEASED) }
         navigateTo(DialogDirection.Dismiss)
     }
 
     private fun show(config: DialogConfig) {
         val stack = state.value.stack
-        val newEntry = DialogEntry(config, pendingResult = null)
-        val newStack = stack + newEntry
+        val newStack = stack + DialogEntry(config, pendingResult = null)
 
-        val destination = when {
-            state.value.process == Process.RELEASE -> DialogDirection.Activate(config)
-            else -> DialogDirection.Push(config)
-        }
+        val destination =
+            if (state.value.phase == SheetPhase.RELEASED) DialogDirection.Activate(config)
+            else DialogDirection.Push(config)
 
-        update { it.copy(stack = newStack, process = Process.SHOW) }
+        update { it.copy(stack = newStack, phase = SheetPhase.PRESENT) }
         navigateTo(destination)
     }
 
@@ -64,7 +63,7 @@ internal class DialogViewModel(
         val last = stack.last()
         val newStack = stack.dropLast(1)
 
-        update { it.copy(stack = newStack, process = Process.SHOW) }
+        update { it.copy(stack = newStack, phase = SheetPhase.PRESENT) }
         navigateTo(DialogDirection.Pop(last.pendingResult))
     }
 }

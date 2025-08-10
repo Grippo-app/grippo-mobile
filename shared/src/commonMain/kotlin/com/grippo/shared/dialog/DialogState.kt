@@ -3,9 +3,10 @@ package com.grippo.shared.dialog
 import androidx.compose.runtime.Immutable
 import com.grippo.dialog.api.DialogConfig
 
+@Immutable
 internal data class DialogState(
     val stack: List<DialogEntry> = emptyList(),
-    val process: Process = Process.RELEASE,
+    val phase: SheetPhase = SheetPhase.RELEASED,
 )
 
 @Immutable
@@ -15,13 +16,13 @@ internal data class DialogEntry(
 )
 
 @Immutable
-internal sealed class Process {
+internal sealed class SheetPhase {
     @Immutable
-    data object SHOW : Process()
+    data object PRESENT : SheetPhase()
 
     @Immutable
-    data object DISMISS : Process()
+    data object DISMISSING : SheetPhase()
 
     @Immutable
-    data object RELEASE : Process()
+    data object RELEASED : SheetPhase()
 }

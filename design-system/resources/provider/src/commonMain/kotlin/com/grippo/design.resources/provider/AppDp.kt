@@ -93,6 +93,11 @@ public data object AppDp {
 
     public data object BottomSheet {
         val radius: Dp = AppDp.radius.large
+        val toolbar: Toolbar = Toolbar
+
+        public data object Toolbar {
+            val height: Dp = size.tiny
+        }
     }
 
     public data object Input {
