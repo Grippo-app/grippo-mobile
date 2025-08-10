@@ -90,6 +90,10 @@ public object DateTimeUtils {
 
     @OptIn(FormatStringsInDatetimeFormats::class)
     public fun format(value: LocalDateTime, format: DateFormat): String {
+        // use it
+        // return DateFormatting.current.format(value, format.value, null)
+
+        // deprecated
         return value.format(LocalDateTime.Format { byUnicodePattern(format.value) })
     }
 
