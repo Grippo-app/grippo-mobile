@@ -37,19 +37,49 @@ internal fun DateWheelPicker(
     val years = remember(limitations) {
         (limitations.from.year..limitations.to.year).toList()
     }
-
     val months = remember { Month.entries }
 
     val daysInMonth = remember(selectedYear, selectedMonth) {
-        (1..DateTimeUtils.getDaysInMonth(selectedYear, selectedMonth)).toList()
+        (1..getDaysIn(selectedYear, selectedMonth)).toList()
     }
 
-    val safeDay = remember(selectedDay, daysInMonth) {
-        selectedDay.coerceIn(daysInMonth.first(), daysInMonth.last())
+    // Keep selectedDay within actual month length first (e.g., 31 -> Feb)
+    LaunchedEffect(daysInMonth) {
+        if (selectedDay !in daysInMonth) {
+            selectedDay = daysInMonth.last()
+        }
     }
 
-    LaunchedEffect(selectedYear, selectedMonth, safeDay) {
-        val localDate = runCatching {
+    // Year changed: clamp month to allowed bounds for that year, then clamp day to allowed range.
+    LaunchedEffect(selectedYear) {
+        val clampedMonth = clampMonthToBounds(selectedYear, selectedMonth, limitations)
+        if (clampedMonth != selectedMonth) {
+            selectedMonth = clampedMonth
+        }
+        val dayRange = validDayRange(selectedYear, clampedMonth, limitations)
+        if (selectedDay !in dayRange) {
+            selectedDay = nearestInRange(selectedDay, dayRange)
+        }
+    }
+
+    // Month changed: if month is out of bounds for current year, snap to nearest allowed month.
+    // Then clamp the day to valid range for that (year, month).
+    LaunchedEffect(selectedMonth, selectedYear) {
+        val clampedMonth = clampMonthToBounds(selectedYear, selectedMonth, limitations)
+        if (clampedMonth != selectedMonth) {
+            selectedMonth = clampedMonth
+            return@LaunchedEffect // next effect run will handle days
+        }
+        val dayRange = validDayRange(selectedYear, selectedMonth, limitations)
+        if (selectedDay !in dayRange) {
+            selectedDay = nearestInRange(selectedDay, dayRange)
+        }
+    }
+
+    // Emit only valid selections (hour/min preserved)
+    LaunchedEffect(selectedYear, selectedMonth, selectedDay) {
+        val safeDay = selectedDay.coerceIn(daysInMonth.first(), daysInMonth.last())
+        val dt = runCatching {
             LocalDateTime(
                 year = selectedYear,
                 month = selectedMonth,
@@ -59,9 +89,7 @@ internal fun DateWheelPicker(
             )
         }.getOrNull()
 
-        localDate
-            ?.takeIf { it in limitations.from..limitations.to }
-            ?.let(select)
+        dt?.takeIf { it in limitations.from..limitations.to }?.let(select)
     }
 
     val dayState = rememberLazyListState()
@@ -73,21 +101,18 @@ internal fun DateWheelPicker(
         items = daysInMonth,
         selected = selectedDay,
         onSelect = { selectedDay = it },
-        isValid = { day ->
+        isValid = { d ->
             checkDayValidity(
-                selectedYear,
-                selectedMonth,
-                day,
-                limitations,
-                initial.hour,
-                initial.minute
+                year = selectedYear,
+                month = selectedMonth,
+                day = d,
+                limitations = limitations,
+                hour = initial.hour,
+                minute = initial.minute
             )
         },
-        itemContent = { day, valid ->
-            WheelItem(
-                text = day.toString(),
-                isValid = valid
-            )
+        itemContent = { d, valid ->
+            WheelItem(text = d.toString(), isValid = valid)
         },
         listState = dayState
     )
@@ -114,10 +139,7 @@ internal fun DateWheelPicker(
         onSelect = { selectedYear = it },
         isValid = { y -> checkYearValidity(y, limitations) },
         itemContent = { y, valid ->
-            WheelItem(
-                text = y.toString(),
-                isValid = valid
-            )
+            WheelItem(text = y.toString(), isValid = valid)
         },
         listState = yearState
     )
@@ -134,6 +156,43 @@ internal fun DateWheelPicker(
     )
 }
 
+/* ===== Helpers (private, no nested defs) ===== */
+
+// Inclusive allowed month bounds for the given year
+private fun monthBounds(year: Int, limits: DateRange): Pair<Month, Month> {
+    val min = if (year == limits.from.year) limits.from.month else Month.JANUARY
+    val max = if (year == limits.to.year) limits.to.month else Month.DECEMBER
+    return min to max
+}
+
+// Clamp month into allowed bounds for the given year
+private fun clampMonthToBounds(year: Int, month: Month, limits: DateRange): Month {
+    val (minM, maxM) = monthBounds(year, limits)
+    return when {
+        month.ordinal < minM.ordinal -> minM
+        month.ordinal > maxM.ordinal -> maxM
+        else -> month
+    }
+}
+
+private fun getDaysIn(year: Int, month: Month): Int =
+    DateTimeUtils.getDaysInMonth(year, month)
+
+// Valid day window for (year, month) considering edge months of the limits.
+// If both edges are the same month, it becomes from.day..to.day.
+private fun validDayRange(year: Int, month: Month, limits: DateRange): IntRange {
+    val maxDays = getDaysIn(year, month)
+    val minDay = if (year == limits.from.year && month == limits.from.month)
+        limits.from.dayOfMonth else 1
+    val maxDay = if (year == limits.to.year && month == limits.to.month)
+        minOf(limits.to.dayOfMonth, maxDays) else maxDays
+    return minDay.coerceAtMost(maxDay)..maxDay
+}
+
+private fun nearestInRange(value: Int, range: IntRange): Int =
+    value.coerceIn(range.first, range.last)
+
+// Used for tinting invalid items
 private fun checkDayValidity(
     year: Int,
     month: Month,
@@ -149,11 +208,8 @@ private fun checkDayValidity(
 }
 
 private fun checkMonthValidity(year: Int, month: Month, limitations: DateRange): Boolean {
-    return when (year) {
-        limitations.from.year -> month.ordinal >= limitations.from.month.ordinal
-        limitations.to.year -> month.ordinal <= limitations.to.month.ordinal
-        else -> true
-    }
+    val (minM, maxM) = monthBounds(year, limitations)
+    return month.ordinal in minM.ordinal..maxM.ordinal
 }
 
 private fun checkYearValidity(year: Int, limitations: DateRange): Boolean {

@@ -3,7 +3,11 @@ package com.grippo.wheel.picker.internal
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -22,9 +26,11 @@ internal fun <T> BindWheel(
     val onSelectRef = rememberUpdatedState(onSelect)
     val isValidRef = rememberUpdatedState(isValid)
 
+    // First sync should be instant; subsequent ones animated.
+    var firstSync by remember(listState) { mutableStateOf(true) }
+
     // --- Sync the wheel position to the current `selected` item.
-    // We wait for the list to have layout info (at least 1 item) so snapped index is meaningful.
-    // If the snapped index differs from the target, scroll to the target.
+    // Wait for layout; if snapped != target -> first time: scroll (no anim), then: animate.
     LaunchedEffect(items, selected, listState) {
         if (items.isEmpty()) return@LaunchedEffect
 
@@ -32,12 +38,23 @@ internal fun <T> BindWheel(
             .first { it > 0 }
 
         val target = items.indexOf(selected)
-        if (target < 0) return@LaunchedEffect
+        if (target < 0) {
+            firstSync = false // mark done to avoid re-running as "first"
+            return@LaunchedEffect
+        }
 
         val snapped = calculateSnappedItemIndex(listState)
-        if (snapped == target) return@LaunchedEffect
+        if (snapped == target) {
+            firstSync = false
+            return@LaunchedEffect
+        }
 
-        listState.scrollToItem(target)
+        if (firstSync) {
+            listState.scrollToItem(target) // no animation on the very first sync
+            firstSync = false
+        } else {
+            listState.animateScrollToItem(target)
+        }
     }
 
     // --- After the user scrolls and the list snaps, ensure the snapped item is valid.
