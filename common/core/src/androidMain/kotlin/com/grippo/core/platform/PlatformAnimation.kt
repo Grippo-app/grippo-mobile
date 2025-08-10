@@ -1,4 +1,4 @@
-package com.grippo.platform.core
+package com.grippo.core.platform
 
 import com.arkivanov.decompose.extensions.compose.experimental.stack.animation.StackAnimation
 import com.arkivanov.decompose.extensions.compose.experimental.stack.animation.fade

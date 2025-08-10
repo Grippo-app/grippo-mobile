@@ -10,7 +10,7 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
-import com.grippo.core.collectAsStateMultiplatform
+import com.grippo.core.platform.collectAsStateMultiplatform
 import com.grippo.home.profile.HomeProfileComponent
 import com.grippo.home.statistics.HomeStatisticsComponent
 import com.grippo.home.trainings.HomeTrainingsComponent

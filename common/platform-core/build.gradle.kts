@@ -7,9 +7,6 @@ plugins {
 
 kotlin {
     sourceSets.commonMain.dependencies {
-        implementation(libs.decompose.core)
-        implementation(libs.decompose.extensions)
-
         implementation(compose.foundation)
     }
 }

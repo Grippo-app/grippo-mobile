@@ -9,7 +9,6 @@ kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.common.core)
         implementation(projects.common.dateUtils)
-        implementation(projects.common.platformCore)
         implementation(projects.common.state)
         implementation(projects.dataMappers.domainToState)
         implementation(projects.dataMappers.stateToDomain)

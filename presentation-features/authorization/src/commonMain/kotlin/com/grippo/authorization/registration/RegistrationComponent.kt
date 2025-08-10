@@ -18,7 +18,7 @@ import com.grippo.authorization.registration.experience.ExperienceComponent
 import com.grippo.authorization.registration.missing.equipments.MissingEquipmentsComponent
 import com.grippo.authorization.registration.name.NameComponent
 import com.grippo.core.BaseComponent
-import com.grippo.core.collectAsStateMultiplatform
+import com.grippo.core.platform.collectAsStateMultiplatform
 import com.grippo.presentation.api.auth.RegistrationRouter
 
 internal class RegistrationComponent(

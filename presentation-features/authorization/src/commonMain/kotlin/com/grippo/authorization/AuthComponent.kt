@@ -15,7 +15,7 @@ import com.grippo.authorization.AuthComponent.Child.Splash
 import com.grippo.authorization.auth.process.AuthProcessComponent
 import com.grippo.authorization.splash.SplashComponent
 import com.grippo.core.BaseComponent
-import com.grippo.core.collectAsStateMultiplatform
+import com.grippo.core.platform.collectAsStateMultiplatform
 import com.grippo.presentation.api.auth.AuthRouter
 
 public class AuthComponent(

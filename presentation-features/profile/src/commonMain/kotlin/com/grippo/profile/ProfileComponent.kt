@@ -9,7 +9,7 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
-import com.grippo.core.collectAsStateMultiplatform
+import com.grippo.core.platform.collectAsStateMultiplatform
 import com.grippo.presentation.api.profile.ProfileRouter
 import com.grippo.profile.ProfileComponent.Child.Equipments
 import com.grippo.profile.ProfileComponent.Child.Muscles

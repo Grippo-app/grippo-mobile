@@ -1,4 +1,4 @@
-package com.grippo.platform.core
+package com.grippo.core.platform
 
 import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.tween

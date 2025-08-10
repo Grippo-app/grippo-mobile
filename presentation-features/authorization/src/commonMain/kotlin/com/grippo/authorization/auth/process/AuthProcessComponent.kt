@@ -13,7 +13,7 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.authorization.login.LoginComponent
 import com.grippo.authorization.registration.RegistrationComponent
 import com.grippo.core.BaseComponent
-import com.grippo.core.collectAsStateMultiplatform
+import com.grippo.core.platform.collectAsStateMultiplatform
 import com.grippo.presentation.api.auth.AuthProcessRouter
 
 internal class AuthProcessComponent(

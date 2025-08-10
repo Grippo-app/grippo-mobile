@@ -1,4 +1,4 @@
-package com.grippo.core
+package com.grippo.core.platform
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
