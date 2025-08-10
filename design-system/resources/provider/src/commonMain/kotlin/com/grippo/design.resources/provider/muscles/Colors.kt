@@ -1,4 +1,4 @@
-package com.grippo.design.resources.provider.icons.muscles
+package com.grippo.design.resources.provider.muscles
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color

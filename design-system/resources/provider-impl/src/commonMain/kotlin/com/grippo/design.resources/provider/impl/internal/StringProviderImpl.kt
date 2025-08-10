@@ -1,4 +1,4 @@
-package com.grippo.design.resources.provider.impl
+package com.grippo.design.resources.provider.impl.internal
 
 import com.grippo.design.resources.provider.providers.StringProvider
 import org.jetbrains.compose.resources.PluralStringResource
