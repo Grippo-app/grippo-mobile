@@ -10,7 +10,7 @@ public data class PieStyle(
     val chartBarWidth: Dp = 22.dp,
     val paddingAngle: Float = 2f,
     val cornerRadius: Dp = 6.dp,
-    val minVisibleAngle: Float = 6f,
+    val minVisibleAngle: Float = 14f,
     val pieText: PieText? = null
 )
 
