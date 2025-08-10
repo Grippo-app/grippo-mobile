@@ -135,4 +135,6 @@
     <string name="int_chip">Int</string>
     <string name="i_chip">I</string>
     <string name="close">Close</string>
+    <string name="from">From</string>
+    <string name="to">To</string>
 </resources>
