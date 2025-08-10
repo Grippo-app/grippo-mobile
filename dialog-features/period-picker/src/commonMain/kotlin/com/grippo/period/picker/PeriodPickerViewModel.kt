@@ -2,9 +2,9 @@ package com.grippo.period.picker
 
 import com.grippo.core.BaseViewModel
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.from
 import com.grippo.design.resources.provider.providers.StringProvider
-import com.grippo.design.resources.provider.to
+import com.grippo.design.resources.provider.select_end_date
+import com.grippo.design.resources.provider.select_start_date
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.state.datetime.PeriodState
@@ -32,7 +32,7 @@ public class PeriodPickerViewModel(
 
         safeLaunch {
             val dialog = DialogConfig.DatePicker(
-                title = stringProvider.get(Res.string.from),
+                title = stringProvider.get(Res.string.select_start_date),
                 initial = custom.range.from,
                 limitations = custom.limitations.copy(to = custom.range.to),
                 onResult = { value ->
@@ -51,7 +51,7 @@ public class PeriodPickerViewModel(
 
         safeLaunch {
             val dialog = DialogConfig.DatePicker(
-                title = stringProvider.get(Res.string.to),
+                title = stringProvider.get(Res.string.select_end_date),
                 initial = custom.range.to,
                 limitations = custom.limitations.copy(from = custom.range.from),
                 onResult = { value ->

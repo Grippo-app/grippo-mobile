@@ -119,8 +119,8 @@
     <string name="this_week">This week</string>
     <string name="this_month">This month</string>
     <string name="custom_range">Custom range</string>
-    <string name="from">From</string>
-    <string name="to">To</string>
+    <string name="select_start_date">Select start date</string>
+    <string name="select_end_date">Select end date</string>
     <string name="from_value">From %1$s</string>
     <string name="to_value">To %1$s</string>
     <string name="r">R</string>

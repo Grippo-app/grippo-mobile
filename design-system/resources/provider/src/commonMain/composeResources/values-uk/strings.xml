@@ -117,4 +117,6 @@
     <string name="int_chip">Інт.</string>
     <string name="i_chip">I</string>
     <string name="close">Закрити</string>
+    <string name="select_start_date">Оберіть дату початку</string>
+    <string name="select_end_date">Оберіть дату завершення</string>
 </resources>
