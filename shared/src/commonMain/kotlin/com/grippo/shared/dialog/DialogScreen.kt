@@ -48,7 +48,7 @@ internal fun DialogScreen(
 
     BottomSheet(
         config = child.configuration,
-        stackSize = state.stack.size,
+        stack = state.stack,
         phase = state.phase,
         component = contentComponent,
         onBack = { contract.onDismiss(null) },
@@ -61,7 +61,7 @@ internal fun DialogScreen(
 @Composable
 private fun BottomSheet(
     config: DialogConfig,
-    stackSize: Int,
+    stack: List<DialogEntry>,
     phase: SheetPhase,
     component: DialogContentComponent,
     onBack: () -> Unit,
@@ -71,15 +71,20 @@ private fun BottomSheet(
 ) {
     val onDismissCompleteRef = rememberUpdatedState(onDismissComplete)
 
-    val showBackButton = stackSize > 1
-    val isSwipeDismissEnabled = config.dismissBySwipe
+    // Compute the current flag from the top entry
+    val isSwipeDismissEnabled = stack.lastOrNull()?.config?.dismissBySwipe ?: true
+    // Keep the latest value for lambdas captured once
+    val isSwipeRef = rememberUpdatedState(isSwipeDismissEnabled)
+
+    val showBackButton = stack.size > 1
     val programmaticDismiss = phase == SheetPhase.DISMISSING
-    val showHeader = showBackButton || isSwipeDismissEnabled.not()
+    val showHeader = showBackButton || !isSwipeDismissEnabled
 
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
         confirmValueChange = { target ->
-            if (target == SheetValue.Hidden && !isSwipeDismissEnabled) return@rememberModalBottomSheetState false
+            // Use the latest flag; do not rely on a stale capture
+            if (target == SheetValue.Hidden && !isSwipeRef.value) return@rememberModalBottomSheetState false
             true
         },
     )
@@ -93,11 +98,11 @@ private fun BottomSheet(
 
     ModalBottomSheet(
         modifier = Modifier.statusBarsPadding(),
-        onDismissRequest = { if (isSwipeDismissEnabled) onDismiss() },
+        onDismissRequest = { if (isSwipeRef.value) onDismiss() }, // latest flag
         sheetState = sheetState,
         scrimColor = AppTokens.colors.dialog.scrim,
         properties = ModalBottomSheetProperties(
-            shouldDismissOnBackPress = isSwipeDismissEnabled,
+            shouldDismissOnBackPress = isSwipeDismissEnabled, // recomposes with new flag
         ),
         containerColor = AppTokens.colors.background.dialog,
         dragHandle = null,
