@@ -9,66 +9,70 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 import com.grippo.design.resources.provider.AppIcon
 
-public val AppIcon.ZoomIn: ImageVector
+public val AppIcon.Week: ImageVector
     get() {
-        if (_ZoomIn != null) {
-            return _ZoomIn!!
-        }
-        _ZoomIn = ImageVector.Builder(
-            name = "ZoomIn",
+        if (_Week != null) return _Week!!
+        _Week = ImageVector.Builder(
+            name = "Week",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
+            // Binder rings
             path(
                 stroke = SolidColor(Color(0xFF0F172A)),
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(11f, 11f)
-                verticalLineTo(13f)
-                moveTo(9f, 11f)
-                horizontalLineTo(11f)
-                horizontalLineTo(9f)
-                close()
-                moveTo(13f, 11f)
-                horizontalLineTo(11f)
-                horizontalLineTo(13f)
-                close()
-                moveTo(11f, 11f)
-                verticalLineTo(9f)
-                verticalLineTo(11f)
+                moveTo(8f, 2f); verticalLineTo(6f)
+                moveTo(16f, 2f); verticalLineTo(6f)
+            }
+
+            // Outer square frame
+            path(
+                stroke = SolidColor(Color(0xFF0F172A)),
+                strokeLineWidth = 1.5f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round
+            ) {
+                moveTo(3f, 6f)
+                horizontalLineTo(21f)
+                verticalLineTo(20f)
+                horizontalLineTo(3f)
+                verticalLineTo(6f)
                 close()
             }
+
+            // Header separator
             path(
                 stroke = SolidColor(Color(0xFF0F172A)),
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(16f, 16f)
-                lineTo(20f, 20f)
+                moveTo(3f, 9f)
+                horizontalLineTo(21f)
             }
+
+            // Week row highlight (outlined)
             path(
                 stroke = SolidColor(Color(0xFF0F172A)),
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(4f, 11f)
-                curveTo(4f, 14.866f, 7.134f, 18f, 11f, 18f)
-                curveTo(12.936f, 18f, 14.689f, 17.214f, 15.956f, 15.943f)
-                curveTo(17.219f, 14.677f, 18f, 12.93f, 18f, 11f)
-                curveTo(18f, 7.134f, 14.866f, 4f, 11f, 4f)
-                curveTo(7.134f, 4f, 4f, 7.134f, 4f, 11f)
+                moveTo(5f, 12f)
+                horizontalLineTo(19f)
+                verticalLineTo(15f)
+                horizontalLineTo(5f)
+                verticalLineTo(12f)
                 close()
             }
         }.build()
-
-        return _ZoomIn!!
+        return _Week!!
     }
 
 @Suppress("ObjectPropertyName")
-private var _ZoomIn: ImageVector? = null
+private var _Week: ImageVector? = null

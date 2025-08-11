@@ -9,10 +9,12 @@ import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateRange
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.core.AppTokens
-import com.grippo.design.resources.provider.icons.Calendar
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.custom_range
+import com.grippo.design.resources.provider.icons.Calendar
+import com.grippo.design.resources.provider.icons.Day
 import com.grippo.design.resources.provider.icons.Settings
+import com.grippo.design.resources.provider.icons.Week
 import com.grippo.design.resources.provider.this_day
 import com.grippo.design.resources.provider.this_month
 import com.grippo.design.resources.provider.this_week
@@ -59,8 +61,8 @@ public sealed interface PeriodState {
     @Composable
     public fun icon(): ImageVector = when (this) {
         is CUSTOM -> AppTokens.icons.Settings
-        is ThisDay -> AppTokens.icons.Calendar
-        is ThisWeek -> AppTokens.icons.Calendar
+        is ThisDay -> AppTokens.icons.Day
+        is ThisWeek -> AppTokens.icons.Week
         is ThisMonth -> AppTokens.icons.Calendar
     }
 
