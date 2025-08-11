@@ -1,4 +1,4 @@
-package com.grippo.design.resources.icons
+package com.grippo.design.resources.provider.icons
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor

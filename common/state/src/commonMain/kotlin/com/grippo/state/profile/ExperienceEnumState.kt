@@ -4,10 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.core.AppTokens
-import com.grippo.design.resources.icons.Emoji
-import com.grippo.design.resources.icons.EmojiLookTop
-import com.grippo.design.resources.icons.EmojiSatisfied
-import com.grippo.design.resources.icons.EmojiTalkingHappy
+import com.grippo.design.resources.provider.icons.Emoji
+import com.grippo.design.resources.provider.icons.EmojiLookTop
+import com.grippo.design.resources.provider.icons.EmojiSatisfied
+import com.grippo.design.resources.provider.icons.EmojiTalkingHappy
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.experience_advanced_description
 import com.grippo.design.resources.provider.experience_advanced_title

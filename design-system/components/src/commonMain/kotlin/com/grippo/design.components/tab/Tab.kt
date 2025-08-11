@@ -23,7 +23,7 @@ import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.icons.Box
+import com.grippo.design.resources.provider.icons.Box
 import com.grippo.design.resources.provider.icons.Settings
 import com.grippo.segment.control.SegmentBox
 import com.grippo.segment.control.SegmentSizing

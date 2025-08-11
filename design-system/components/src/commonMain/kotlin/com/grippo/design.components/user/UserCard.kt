@@ -21,7 +21,7 @@ import com.grippo.design.components.user.internal.OverviewCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.icons.Calendar
+import com.grippo.design.resources.provider.icons.Calendar
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.Gym
 import com.grippo.design.resources.provider.icons.Trophy

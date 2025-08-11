@@ -9,7 +9,7 @@ import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateRange
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.core.AppTokens
-import com.grippo.design.resources.icons.Calendar
+import com.grippo.design.resources.provider.icons.Calendar
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.custom_range
 import com.grippo.design.resources.provider.icons.Settings

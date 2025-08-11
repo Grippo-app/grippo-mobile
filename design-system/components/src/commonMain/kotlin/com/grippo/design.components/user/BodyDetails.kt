@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
-import com.grippo.design.resources.icons.ExpandLines
+import com.grippo.design.resources.provider.icons.ExpandLines
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.cm
 import com.grippo.design.resources.provider.icons.Weight
