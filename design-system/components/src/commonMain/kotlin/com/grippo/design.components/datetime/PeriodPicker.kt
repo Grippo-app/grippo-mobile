@@ -79,14 +79,14 @@ private fun DatePickerPreview() {
     PreviewContainer {
         PeriodPicker(
             value = PeriodState.ThisDay,
-            format = DateFormat.MM_d,
+            format = DateFormat.MMM_d,
             enabled = true,
             onClick = {}
         )
 
         PeriodPicker(
             value = PeriodState.ThisDay,
-            format = DateFormat.MM_d,
+            format = DateFormat.MMM_d,
             enabled = false,
             onClick = {}
         )

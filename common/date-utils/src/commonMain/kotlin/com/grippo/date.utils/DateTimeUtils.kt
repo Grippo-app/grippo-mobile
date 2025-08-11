@@ -9,9 +9,7 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
-import kotlinx.datetime.format
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
-import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
@@ -90,11 +88,7 @@ public object DateTimeUtils {
 
     @OptIn(FormatStringsInDatetimeFormats::class)
     public fun format(value: LocalDateTime, format: DateFormat): String {
-        // use it
-        // return DateFormatting.current.format(value, format.value, null)
-
-        // deprecated
-        return value.format(LocalDateTime.Format { byUnicodePattern(format.value) })
+        return DateFormatting.current.format(value, format.value, null) ?: "-"
     }
 
     public fun ago(value: LocalDateTime): Duration {

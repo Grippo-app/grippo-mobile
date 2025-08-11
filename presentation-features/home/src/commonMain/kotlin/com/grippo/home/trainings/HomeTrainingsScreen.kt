@@ -66,7 +66,7 @@ internal fun HomeTrainingsScreen(
                 DatePicker(
                     title = AppTokens.strings.res(Res.string.selected),
                     value = state.date,
-                    format = DateFormat.uuuu_MM_d,
+                    format = DateFormat.uuuu_MMM_d,
                     onClick = contract::selectDate
                 )
             }

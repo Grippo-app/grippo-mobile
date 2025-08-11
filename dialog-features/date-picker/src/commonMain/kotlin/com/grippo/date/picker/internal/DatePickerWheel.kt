@@ -11,6 +11,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.grippo.date.utils.DateCompose.rememberFormat
+import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateRange
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.components.wheel.WheelItem
@@ -124,8 +126,13 @@ internal fun DateWheelPicker(
         onSelect = { selectedMonth = it },
         isValid = { m -> checkMonthValidity(selectedYear, m, limitations) },
         itemContent = { m, valid ->
+            val template = remember(m) {
+                LocalDateTime(selectedYear, m.ordinal + 1, 1, 0, 0)
+            }
+            val monthName = rememberFormat(value = template, format = DateFormat.MMMM)
+
             WheelItem(
-                text = m.name.lowercase().replaceFirstChar(Char::titlecase),
+                text = monthName,
                 isValid = valid
             )
         },
@@ -155,8 +162,6 @@ internal fun DateWheelPicker(
         columns = listOf(dayColumn, monthColumn, yearColumn)
     )
 }
-
-/* ===== Helpers (private, no nested defs) ===== */
 
 // Inclusive allowed month bounds for the given year
 private fun monthBounds(year: Int, limits: DateRange): Pair<Month, Month> {
