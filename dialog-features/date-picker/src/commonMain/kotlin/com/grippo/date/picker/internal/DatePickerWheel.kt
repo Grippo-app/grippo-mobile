@@ -42,7 +42,7 @@ internal fun DateWheelPicker(
     val months = remember { Month.entries }
 
     val daysInMonth = remember(selectedYear, selectedMonth) {
-        (1..getDaysIn(selectedYear, selectedMonth)).toList()
+        (1..DateTimeUtils.getDaysInMonth(selectedYear, selectedMonth)).toList()
     }
 
     // Keep selectedDay within actual month length first (e.g., 31 -> Feb)
@@ -180,13 +180,10 @@ private fun clampMonthToBounds(year: Int, month: Month, limits: DateRange): Mont
     }
 }
 
-private fun getDaysIn(year: Int, month: Month): Int =
-    DateTimeUtils.getDaysInMonth(year, month)
-
 // Valid day window for (year, month) considering edge months of the limits.
 // If both edges are the same month, it becomes from.day..to.day.
 private fun validDayRange(year: Int, month: Month, limits: DateRange): IntRange {
-    val maxDays = getDaysIn(year, month)
+    val maxDays = DateTimeUtils.getDaysInMonth(year, month)
     val minDay = if (year == limits.from.year && month == limits.from.month)
         limits.from.dayOfMonth else 1
     val maxDay = if (year == limits.to.year && month == limits.to.month)
@@ -197,7 +194,6 @@ private fun validDayRange(year: Int, month: Month, limits: DateRange): IntRange 
 private fun nearestInRange(value: Int, range: IntRange): Int =
     value.coerceIn(range.first, range.last)
 
-// Used for tinting invalid items
 private fun checkDayValidity(
     year: Int,
     month: Month,
