@@ -67,7 +67,7 @@ public fun PeriodPicker(
 
         Text(
             text = value.range(format),
-            style = AppTokens.typography.b13Med(),
+            style = AppTokens.typography.b13Semi(),
             color = descriptionColor
         )
     }
@@ -79,14 +79,14 @@ private fun DatePickerPreview() {
     PreviewContainer {
         PeriodPicker(
             value = PeriodState.ThisDay,
-            format = DateFormat.MMM_d,
+            format = DateFormat.MMM_dd,
             enabled = true,
             onClick = {}
         )
 
         PeriodPicker(
             value = PeriodState.ThisDay,
-            format = DateFormat.MMM_d,
+            format = DateFormat.MMM_dd,
             enabled = false,
             onClick = {}
         )

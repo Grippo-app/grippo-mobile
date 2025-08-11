@@ -68,7 +68,7 @@ public fun DatePicker(
 
         Text(
             text = text,
-            style = AppTokens.typography.b13Med(),
+            style = AppTokens.typography.b13Semi(),
             color = descriptionColor
         )
     }
@@ -80,7 +80,7 @@ private fun DatePickerPreview() {
     PreviewContainer {
         DatePicker(
             value = DateTimeUtils.now(),
-            format = DateFormat.uuuu_MMM_d,
+            format = DateFormat.MMM_dd_yyyy,
             title = "Text",
             enabled = true,
             onClick = {}
@@ -88,7 +88,7 @@ private fun DatePickerPreview() {
 
         DatePicker(
             value = DateTimeUtils.now(),
-            format = DateFormat.uuuu_MMM_d,
+            format = DateFormat.MMM_dd_yyyy,
             title = "Text",
             enabled = false,
             onClick = {}

@@ -2,6 +2,7 @@ package com.grippo.state.datetime
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.date.utils.DateCompose
 import com.grippo.date.utils.DateFormat
@@ -65,8 +66,33 @@ public sealed interface PeriodState {
 
     @Composable
     public fun range(format: DateFormat): String {
-        val from = DateCompose.rememberFormat(range.from, format)
-        val to = DateCompose.rememberFormat(range.to, format)
-        return "$from - $to"
+        when (this) {
+            ThisDay -> {
+                val from = DateCompose.rememberFormat(range.from, format)
+                return from
+            }
+
+            ThisWeek -> {
+                val from = DateCompose.rememberFormat(range.from, format)
+                val to = DateCompose.rememberFormat(range.to, format)
+                return "$from - $to"
+            }
+
+            ThisMonth -> {
+                val from = DateCompose.rememberFormat(range.from, format)
+                val to = DateCompose.rememberFormat(range.to, format)
+                return "$from - $to"
+            }
+
+            is CUSTOM -> {
+                val sameDay = remember(range.from, range.to) { range.from.date == range.to.date }
+
+                val from = DateCompose.rememberFormat(range.from, format)
+                if (sameDay) return from
+
+                val to = DateCompose.rememberFormat(range.to, format)
+                return "$from - $to"
+            }
+        }
     }
 }

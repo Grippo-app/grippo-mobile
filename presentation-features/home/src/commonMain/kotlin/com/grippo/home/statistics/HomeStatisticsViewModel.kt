@@ -14,7 +14,7 @@ internal class HomeStatisticsViewModel(
 
     override fun selectPeriod() {
         val custom = (state.value.period as? PeriodState.CUSTOM) ?: PeriodState.CUSTOM(
-            range = DateTimeUtils.thisDay(),
+            range = DateTimeUtils.thisWeek(),
             limitations = DateTimeUtils.trailingYear()
         )
 
