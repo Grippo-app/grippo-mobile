@@ -17,8 +17,6 @@ import kotlinx.datetime.LocalDateTime
 @Stable
 public object DateCompose {
 
-    private val dateUtils = DateTimeUtils
-
     @Composable
     public fun rememberAgo(value: LocalDateTime): String {
         val daysRes = AppTokens.strings.res(Res.string.time_ago_days)
@@ -30,7 +28,7 @@ public object DateCompose {
         val lessThanDayRes = AppTokens.strings.res(Res.string.time_ago_less_than_day)
 
         return remember(value) {
-            val duration = dateUtils.ago(value)
+            val duration = DateTimeUtils.ago(value)
 
             val days = duration.inWholeDays
             val months = days / 30
@@ -60,6 +58,6 @@ public object DateCompose {
     @Composable
     public fun rememberFormat(value: LocalDateTime, format: DateFormat): String =
         remember(value, format) {
-            dateUtils.format(value, format)
+            DateTimeUtils.format(value, format)
         }
 }

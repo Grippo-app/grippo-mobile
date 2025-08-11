@@ -1,6 +1,6 @@
 package com.grippo.date.utils.platform
 
-import com.grippo.date.utils.DateFormatter
+import com.grippo.date.utils.internal.DateFormatter
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.toJavaLocalDateTime
 import java.time.format.DateTimeFormatter
