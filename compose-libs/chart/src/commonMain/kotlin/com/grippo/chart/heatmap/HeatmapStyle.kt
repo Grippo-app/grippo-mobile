@@ -9,59 +9,59 @@ import kotlin.math.roundToInt
 
 @Immutable
 public data class HeatmapStyle(
-    val rows: Int,
-    val cols: Int,
+    val layout: Layout = Layout(),
+    val labels: Labels = Labels(),
+    val legend: Legend = Legend(),
+    val palette: Palette = Palette(),
+    val cells: Cells = Cells(),
+    val values: Values = Values(),
+) {
+    @Immutable
+    public data class Layout(
+        val padding: Dp = 12.dp,
+        val gap: Dp = 6.dp,
+        val corner: Dp = 6.dp,
+        val labelPadding: Dp = 6.dp,
+    )
 
-    // layout
-    val padding: Dp = 12.dp,
-    val gap: Dp = 6.dp,
-    val corner: Dp = 6.dp,
-    val labelPadding: Dp = 6.dp,
+    @Immutable
+    public data class Labels(
+        val showRowLabels: Boolean = true,
+        val showColLabels: Boolean = true,
+        val textStyle: TextStyle = TextStyle(color = Color(0x66FFFFFF)),
+    )
 
-    // labels
-    val rowLabels: List<String> = emptyList(), // size == rows (optional)
-    val colLabels: List<String> = emptyList(), // size == cols (optional)
-    val labelStyle: TextStyle = TextStyle(color = Color(0x66FFFFFF)),
+    @Immutable
+    public data class Legend(
+        val show: Boolean = true,
+        val height: Dp = 12.dp,
+        val stops: List<Pair<Float, Color>>? = null, // 0..1
+        val labelStyle: TextStyle = TextStyle(color = Color(0x66FFFFFF)),
+        val minText: ((Float) -> String)? = null,
+        val maxText: ((Float) -> String)? = null,
+    )
 
-    // legend
-    val showLegend: Boolean = true,
-    val legendHeight: Dp = 12.dp,
-    val legendStops: List<Pair<Float, Color>>? = null, // normalized 0..1 stops; if null uses default cool-warm
-    val legendLabelStyle: TextStyle = TextStyle(color = Color(0x66FFFFFF)),
-    val legendMinText: ((Float) -> String)? = null, // if null, shows 0%
-    val legendMaxText: ((Float) -> String)? = null, // if null, shows 100%
+    @Immutable
+    public data class Palette(
+        val colorScale: (Float) -> Color = { v -> defaultCoolWarm(v) },
+        val autoNormalize: Boolean = false,
+        val missingCellColor: Color? = Color(0x11FFFFFF),
+    )
 
-    // color scale
-    val colorScale: (Float) -> Color = { v -> defaultCoolWarm(v) },
-    val autoNormalize: Boolean = false, // if true, normalize values by detected min/max
-    val missingCellColor: Color? = Color(0x11111111), // background for missing cells; null disables
+    @Immutable
+    public data class Cells(
+        val showBorders: Boolean = false,
+        val borderColor: Color = Color(0x22FFFFFF),
+        val borderWidth: Dp = 1.dp,
+    )
 
-    // cells
-    val showCellBorders: Boolean = false,
-    val borderColor: Color = Color(0x22FFFFFF),
-    val borderWidth: Dp = 1.dp,
-
-    // values in cells
-    val showValues: Boolean = false,
-    val valueTextStyle: TextStyle = TextStyle(color = Color.White),
-    val valueFormatter: (Float) -> String = { p -> "${(p * 100f).roundToInt()}%" },
-)
-
-// Default cool→magenta→warm palette used only by this chart
-public fun defaultCoolWarm(vIn: Float): Color {
-    val v = vIn.coerceIn(0f, 1f)
-    val c1 = Color(0xFF3A86FF) // blue
-    val c2 = Color(0xFFB049F8) // magenta
-    val c3 = Color(0xFFFF7A33) // orange
-    return if (v < 0.5f) lerpColor(c1, c2, v * 2f) else lerpColor(c2, c3, (v - 0.5f) * 2f)
-}
-
-private fun lerpColor(a: Color, b: Color, t: Float): Color {
-    val k = t.coerceIn(0f, 1f)
-    return Color(
-        red = (a.red + (b.red - a.red) * k),
-        green = (a.green + (b.green - a.green) * k),
-        blue = (a.blue + (b.blue - a.blue) * k),
-        alpha = (a.alpha + (b.alpha - a.alpha) * k)
+    @Immutable
+    public data class Values(
+        val show: Boolean = false,
+        val textStyle: TextStyle = TextStyle(color = Color.White),
+        val formatter: (Float, HeatmapData) -> String = { p, d ->
+            val pct = (p * 100f).roundToInt().toString() + "%"
+            d.valueUnit?.let { "$pct $it" } ?: pct
+        },
     )
 }

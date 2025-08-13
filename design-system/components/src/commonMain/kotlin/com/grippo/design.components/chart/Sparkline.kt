@@ -12,6 +12,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.grippo.chart.sparkline.Sparkline
+import com.grippo.chart.sparkline.SparklineData
+import com.grippo.chart.sparkline.SparklinePoint
 import com.grippo.chart.sparkline.SparklineStyle
 import com.grippo.design.preview.AppPreview
 
@@ -22,43 +24,55 @@ public fun Sparkline(
     val values = listOf(4f, 6f, 5f, 8f, 9f, 7f, 12f, 10f, 13f, 11f, 16f)
 
     val style = SparklineStyle(
-        stroke = 2.dp,
-        color = Color(0xFF6AA9FF),
-        lineBrush = { rect ->
-            Brush.horizontalGradient(
-                listOf(Color(0xFF6AA9FF), Color(0xFF00E6A7)),
-                startX = rect.left,
-                endX = rect.right
-            )
-        },
-        curved = true,
-        curveSmoothness = 0.25f,
-        clampOvershoot = true,
-        fill = { rect ->
-            Brush.verticalGradient(
-                0f to Color(0xFF6AA9FF).copy(alpha = 0.18f),
-                1f to Color(0xFF6AA9FF).copy(alpha = 0f),
-                startY = rect.top,
-                endY = rect.bottom
-            )
-        },
-        showBaseline = false,
-        baselineValue = null,
-        baselineColor = Color(0x33FFFFFF),
-        baselineWidth = 1.dp,
-        showDots = false,
-        dotRadius = 2.dp,
-        dotColor = null,
-        showMinMax = true,
-        minColor = Color(0xFFFF7A33),
-        maxColor = Color(0xFF00E6A7),
-        minMaxRadius = 3.dp,
-        padding = 6.dp,
+        layout = SparklineStyle.Layout(
+            padding = 6.dp,
+        ),
+        line = SparklineStyle.Line(
+            stroke = 2.dp,
+            color = Color(0xFF6AA9FF),
+            brush = { rect ->
+                Brush.horizontalGradient(
+                    listOf(Color(0xFF6AA9FF), Color(0xFF00E6A7)),
+                    startX = rect.left,
+                    endX = rect.right
+                )
+            },
+            curved = true,
+            curveSmoothness = 0.25f,
+            clampOvershoot = true,
+        ),
+        fill = SparklineStyle.Fill(
+            provider = { rect ->
+                Brush.verticalGradient(
+                    0f to Color(0xFF6AA9FF).copy(alpha = 0.18f),
+                    1f to Color(0xFF6AA9FF).copy(alpha = 0f),
+                    startY = rect.top,
+                    endY = rect.bottom
+                )
+            }
+        ),
+        baseline = SparklineStyle.Baseline(
+            show = false,
+            value = null,
+            color = Color(0x33FFFFFF),
+            width = 1.dp,
+        ),
+        dots = SparklineStyle.Dots(
+            show = false,
+            radius = 2.dp,
+            color = null,
+        ),
+        extremes = SparklineStyle.Extremes(
+            show = true,
+            minColor = Color(0xFFFF7A33),
+            maxColor = Color(0xFF00E6A7),
+            radius = 3.dp,
+        )
     )
 
     Sparkline(
         modifier = modifier,
-        values = values,
+        data = SparklineData(points = values.mapIndexed { i, v -> SparklinePoint(i.toFloat(), v) }),
         style = style
     )
 }
@@ -69,38 +83,50 @@ private fun SparklinePreview() {
     val values = listOf(4f, 6f, 5f, 8f, 9f, 7f, 12f, 10f, 13f, 11f, 16f)
 
     val style = SparklineStyle(
-        stroke = 2.dp,
-        color = Color(0xFF6AA9FF),
-        lineBrush = { rect ->
-            Brush.horizontalGradient(
-                listOf(Color(0xFF6AA9FF), Color(0xFF00E6A7)),
-                startX = rect.left,
-                endX = rect.right
-            )
-        },
-        curved = true,
-        curveSmoothness = 0.25f,
-        clampOvershoot = true,
-        fill = { rect ->
-            Brush.verticalGradient(
-                0f to Color(0xFF6AA9FF).copy(alpha = 0.18f),
-                1f to Color(0xFF6AA9FF).copy(alpha = 0f),
-                startY = rect.top,
-                endY = rect.bottom
-            )
-        },
-        showBaseline = false,
-        baselineValue = null,
-        baselineColor = Color(0x33FFFFFF),
-        baselineWidth = 1.dp,
-        showDots = false,
-        dotRadius = 2.dp,
-        dotColor = null,
-        showMinMax = true,
-        minColor = Color(0xFFFF7A33),
-        maxColor = Color(0xFF00E6A7),
-        minMaxRadius = 3.dp,
-        padding = 6.dp,
+        layout = SparklineStyle.Layout(
+            padding = 6.dp,
+        ),
+        line = SparklineStyle.Line(
+            stroke = 2.dp,
+            color = Color(0xFF6AA9FF),
+            brush = { rect ->
+                Brush.horizontalGradient(
+                    listOf(Color(0xFF6AA9FF), Color(0xFF00E6A7)),
+                    startX = rect.left,
+                    endX = rect.right
+                )
+            },
+            curved = true,
+            curveSmoothness = 0.25f,
+            clampOvershoot = true,
+        ),
+        fill = SparklineStyle.Fill(
+            provider = { rect ->
+                Brush.verticalGradient(
+                    0f to Color(0xFF6AA9FF).copy(alpha = 0.18f),
+                    1f to Color(0xFF6AA9FF).copy(alpha = 0f),
+                    startY = rect.top,
+                    endY = rect.bottom
+                )
+            }
+        ),
+        baseline = SparklineStyle.Baseline(
+            show = false,
+            value = null,
+            color = Color(0x33FFFFFF),
+            width = 1.dp,
+        ),
+        dots = SparklineStyle.Dots(
+            show = false,
+            radius = 2.dp,
+            color = null,
+        ),
+        extremes = SparklineStyle.Extremes(
+            show = true,
+            minColor = Color(0xFFFF7A33),
+            maxColor = Color(0xFF00E6A7),
+            radius = 3.dp,
+        )
     )
 
     Box(
@@ -112,7 +138,12 @@ private fun SparklinePreview() {
     ) {
         Sparkline(
             modifier = Modifier.fillMaxSize(),
-            values = values,
+            data = SparklineData(points = values.mapIndexed { i, v ->
+                SparklinePoint(
+                    i.toFloat(),
+                    v
+                )
+            }),
             style = style
         )
     }

@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.grippo.chart.bar.BarChart
+import com.grippo.chart.bar.BarData
 import com.grippo.chart.bar.BarEntry
 import com.grippo.chart.bar.BarStyle
 import com.grippo.design.preview.AppPreview
@@ -33,42 +34,59 @@ public fun BarChart(
         BarEntry("Sun", 9f, Color(0xFFFF5E8A)),
     )
 
+    val data = BarData(
+        items = entries,
+        xName = "Day",
+        yName = "Volume",
+        yUnit = null,
+    )
+
     val style = BarStyle(
-        padding = 12.dp,
-        barWidth = 18.dp,
-        spacing = 10.dp,
-        corner = 10.dp,
-        labelPadding = 6.dp,
-        showGrid = true,
-        gridColor = Color(0x22FFFFFF),
-        gridStrokeWidth = 1.dp,
-        showYAxis = true,
-        yAxisTicks = 5,
-        yAxisTextStyle = TextStyle(color = Color(0x77FFFFFF)),
-        yValueFormatter = { v -> "${v.roundToInt()}" },
-        showYAxisLine = true,
-        axisLineColor = Color(0x33FFFFFF),
-        axisLineWidth = 1.dp,
-        showXLabels = true,
-        xAxisTextStyle = TextStyle(color = Color(0x66FFFFFF)),
-        barBrush = { entry, _, rect ->
-            Brush.verticalGradient(
-                0f to entry.color.copy(alpha = 0.95f),
-                1f to entry.color.copy(alpha = 0.65f),
-                startY = rect.top,
-                endY = rect.bottom
-            )
-        },
-        barStrokeWidth = 0.dp,
-        barStrokeColor = Color(0x22FFFFFF),
-        showValueLabels = true,
-        valueLabelTextStyle = TextStyle(color = Color(0xCCFFFFFF)),
-        valueFormatter = { v -> "${v.roundToInt()}" },
+        layout = BarStyle.Layout(padding = 12.dp, labelPadding = 6.dp),
+        grid = BarStyle.Grid(show = true, color = Color(0x22FFFFFF), strokeWidth = 1.dp),
+        yAxis = BarStyle.YAxis(
+            show = true,
+            ticks = 5,
+            textStyle = TextStyle(color = Color(0x77FFFFFF)),
+            showLine = true,
+            axisLineColor = Color(0x33FFFFFF),
+            axisLineWidth = 1.dp,
+            formatter = { v, _ -> v.roundToInt().toString() }
+        ),
+        xAxis = BarStyle.XAxis(
+            show = true,
+            textStyle = TextStyle(color = Color(0x66FFFFFF)),
+            showBaseline = true
+        ),
+        bars = BarStyle.Bars(
+            width = 18.dp,
+            spacing = 10.dp,
+            corner = 10.dp,
+            brushProvider = { entry, _, rect ->
+                Brush.verticalGradient(
+                    0f to entry.color.copy(alpha = 0.95f),
+                    1f to entry.color.copy(alpha = 0.65f),
+                    startY = rect.top,
+                    endY = rect.bottom
+                )
+            },
+            strokeWidth = 0.dp,
+            strokeColor = Color(0x22FFFFFF)
+        ),
+        values = BarStyle.Values(
+            show = true,
+            textStyle = TextStyle(color = Color(0xCCFFFFFF)),
+            formatter = { v, _ -> v.roundToInt().toString() },
+            placement = BarStyle.ValuePlacement.Above,
+            minInnerPadding = 6.dp,
+            insideColor = null,
+        ),
+        target = null
     )
 
     BarChart(
         modifier = modifier,
-        data = entries,
+        data = data,
         style = style
     )
 }
@@ -87,37 +105,54 @@ private fun BarChartPreview() {
             BarEntry("Sun", 9f, Color(0xFFFF5E8A)),
         )
 
+        val data = BarData(
+            items = entries,
+            xName = "Day",
+            yName = "Volume",
+            yUnit = null,
+        )
+
         val style = BarStyle(
-            padding = 12.dp,
-            barWidth = 18.dp,
-            spacing = 10.dp,
-            corner = 10.dp,
-            labelPadding = 6.dp,
-            showGrid = true,
-            gridColor = Color(0x22FFFFFF),
-            gridStrokeWidth = 1.dp,
-            showYAxis = true,
-            yAxisTicks = 5,
-            yAxisTextStyle = TextStyle(color = Color(0x77FFFFFF)),
-            yValueFormatter = { v -> "${v.roundToInt()}" },
-            showYAxisLine = true,
-            axisLineColor = Color(0x33FFFFFF),
-            axisLineWidth = 1.dp,
-            showXLabels = true,
-            xAxisTextStyle = TextStyle(color = Color(0x66FFFFFF)),
-            barBrush = { entry, _, rect ->
-                Brush.verticalGradient(
-                    0f to entry.color.copy(alpha = 0.95f),
-                    1f to entry.color.copy(alpha = 0.65f),
-                    startY = rect.top,
-                    endY = rect.bottom
-                )
-            },
-            barStrokeWidth = 0.dp,
-            barStrokeColor = Color(0x22FFFFFF),
-            showValueLabels = true,
-            valueLabelTextStyle = TextStyle(color = Color(0xCCFFFFFF)),
-            valueFormatter = { v -> "${v.roundToInt()}" },
+            layout = BarStyle.Layout(padding = 12.dp, labelPadding = 6.dp),
+            grid = BarStyle.Grid(show = true, color = Color(0x22FFFFFF), strokeWidth = 1.dp),
+            yAxis = BarStyle.YAxis(
+                show = true,
+                ticks = 5,
+                textStyle = TextStyle(color = Color(0x77FFFFFF)),
+                showLine = true,
+                axisLineColor = Color(0x33FFFFFF),
+                axisLineWidth = 1.dp,
+                formatter = { v, _ -> v.roundToInt().toString() }
+            ),
+            xAxis = BarStyle.XAxis(
+                show = true,
+                textStyle = TextStyle(color = Color(0x66FFFFFF)),
+                showBaseline = true
+            ),
+            bars = BarStyle.Bars(
+                width = 18.dp,
+                spacing = 10.dp,
+                corner = 10.dp,
+                brushProvider = { entry, _, rect ->
+                    Brush.verticalGradient(
+                        0f to entry.color.copy(alpha = 0.95f),
+                        1f to entry.color.copy(alpha = 0.65f),
+                        startY = rect.top,
+                        endY = rect.bottom
+                    )
+                },
+                strokeWidth = 0.dp,
+                strokeColor = Color(0x22FFFFFF)
+            ),
+            values = BarStyle.Values(
+                show = true,
+                textStyle = TextStyle(color = Color(0xCCFFFFFF)),
+                formatter = { v, _ -> v.roundToInt().toString() },
+                placement = BarStyle.ValuePlacement.Above,
+                minInnerPadding = 6.dp,
+                insideColor = null,
+            ),
+            target = null
         )
 
         Box(
@@ -129,7 +164,7 @@ private fun BarChartPreview() {
         ) {
             BarChart(
                 modifier = Modifier.fillMaxSize(),
-                data = entries,
+                data = data,
                 style = style
             )
         }

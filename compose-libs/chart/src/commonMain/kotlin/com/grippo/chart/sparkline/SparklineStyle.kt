@@ -9,41 +9,60 @@ import androidx.compose.ui.unit.dp
 
 @Immutable
 public data class SparklineStyle(
-    // line
-    val stroke: Dp = 2.dp,
-    val color: Color = Color(0xFF6AA9FF),
-    val lineBrush: ((Rect) -> Brush)? = null, // overrides color
-    val curved: Boolean = true,
-    val curveSmoothness: Float = 0.25f, // Catmull–Rom → Bezier factor (0..0.5)
-    val clampOvershoot: Boolean = true,
+    val layout: Layout = Layout(),
+    val line: Line = Line(),
+    val fill: Fill = Fill(),
+    val baseline: Baseline = Baseline(),
+    val dots: Dots = Dots(),
+    val extremes: Extremes = Extremes(),
+) {
+    @Immutable
+    public data class Layout(
+        val padding: Dp = 6.dp,
+    )
 
-    // fill under line; set to null to disable
-    val fill: ((Rect) -> Brush)? = { rect ->
-        Brush.verticalGradient(
-            0f to Color(0xFF6AA9FF).copy(alpha = 0.18f),
-            1f to Color(0xFF6AA9FF).copy(alpha = 0.00f),
-            startY = rect.top,
-            endY = rect.bottom
-        )
-    },
+    @Immutable
+    public data class Line(
+        val stroke: Dp = 2.dp,
+        val color: Color = Color(0xFF6AA9FF),
+        val brush: ((Rect) -> Brush)? = null, // overrides color
+        val curved: Boolean = true,
+        val curveSmoothness: Float = 0.25f, // 0..0.5
+        val clampOvershoot: Boolean = true,
+    )
 
-    // baseline (subtle reference line)
-    val showBaseline: Boolean = false,
-    val baselineValue: Float? = null, // null → min value
-    val baselineColor: Color = Color(0x33FFFFFF),
-    val baselineWidth: Dp = 1.dp,
+    @Immutable
+    public data class Fill(
+        val provider: ((Rect) -> Brush)? = { rect ->
+            Brush.verticalGradient(
+                0f to Color(0xFF6AA9FF).copy(alpha = 0.18f),
+                1f to Color(0xFF6AA9FF).copy(alpha = 0.00f),
+                startY = rect.top,
+                endY = rect.bottom
+            )
+        }
+    )
 
-    // dots
-    val showDots: Boolean = false,
-    val dotRadius: Dp = 2.dp,
-    val dotColor: Color? = null,
+    @Immutable
+    public data class Baseline(
+        val show: Boolean = false,
+        val value: Float? = null, // null -> min value
+        val color: Color = Color(0x33FFFFFF),
+        val width: Dp = 1.dp,
+    )
 
-    // min/max markers
-    val showMinMax: Boolean = true,
-    val minColor: Color = Color(0xFFFF7A33),
-    val maxColor: Color = Color(0xFF00E6A7),
-    val minMaxRadius: Dp = 2.5.dp,
+    @Immutable
+    public data class Dots(
+        val show: Boolean = false,
+        val radius: Dp = 2.dp,
+        val color: Color? = null, // null -> line color
+    )
 
-    // layout
-    val padding: Dp = 6.dp,
-)
+    @Immutable
+    public data class Extremes(
+        val show: Boolean = true,
+        val minColor: Color = Color(0xFFFF7A33),
+        val maxColor: Color = Color(0xFF00E6A7),
+        val radius: Dp = 2.5.dp,
+    )
+}

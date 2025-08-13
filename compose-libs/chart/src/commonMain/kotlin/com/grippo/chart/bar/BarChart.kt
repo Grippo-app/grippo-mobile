@@ -1,48 +1,45 @@
 package com.grippo.chart.bar
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
+import com.grippo.chart.utils.chooseContrastingText
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.log10
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.pow
-
-@Immutable
-public data class BarEntry(
-    val label: String,
-    val value: Float,
-    val color: Color
-)
 
 @Composable
 public fun BarChart(
     modifier: Modifier = Modifier,
-    data: List<BarEntry>,
+    data: BarData,
     style: BarStyle = BarStyle(),
 ) {
     val measurer = rememberTextMeasurer()
 
     androidx.compose.foundation.Canvas(modifier) {
-        if (data.isEmpty()) return@Canvas
+        if (data.items.isEmpty()) return@Canvas
 
-        // ----- Y scale (nice 1/2/5 × 10^k) -----
-        val rawMaxY = max(1f, data.maxOf { it.value })
-        val ticksY = max(1, style.yAxisTicks)
-        fun niceStep(maxVal: Float, ticks: Int): Float {
-            val raw = maxVal / ticks
-            val exp = floor(log10(max(raw.toDouble(), 1.0))).toInt()
+        // ----- Domain (include zero, nice ticks) -----
+        val minVal = data.items.minOf { it.value }
+        val maxVal = data.items.maxOf { it.value }
+        val yMinTarget = min(0f, minVal)
+        val yMaxTarget = max(0f, maxVal)
+
+        val ticksY = max(1, style.yAxis.ticks)
+        fun niceStep(span: Float, ticks: Int): Float {
+            val raw = (span / ticks).coerceAtLeast(1e-6f)
+            val exp = floor(log10(raw.toDouble())).toInt()
             val base = 10.0.pow(exp.toDouble()).toFloat()
             val mul = (raw / base).toFloat()
             val niceMul = when {
@@ -54,101 +51,137 @@ public fun BarChart(
             return niceMul * base
         }
 
-        val yStep = niceStep(rawMaxY, ticksY)
-        val maxY = ceil(rawMaxY / yStep) * yStep
-        val minY = 0f
+        val spanRaw = (yMaxTarget - yMinTarget).coerceAtLeast(1e-6f)
+        val yStep = niceStep(spanRaw, ticksY)
+        val minY = floor(yMinTarget / yStep) * yStep
+        val maxY = ceil(yMaxTarget / yStep) * yStep
+        val spanY = (maxY - minY).coerceAtLeast(1e-6f)
 
-        // ----- Layout gutters (reserve space for labels) -----
-        val pad = style.padding.toPx()
-        val labelPadPx = style.labelPadding.toPx()
+        // ----- Gutters -----
+        val pad = style.layout.padding.toPx()
+        val labelPad = style.layout.labelPadding.toPx()
 
         var leftGutter = pad
-        if (style.showYAxis) {
-            val maxLabelWidth = (0..ticksY).maxOf { i ->
-                val t = style.yValueFormatter(i * yStep)
-                val layout = measurer.measure(AnnotatedString(t), style.yAxisTextStyle)
+        if (style.yAxis.show) {
+            val maxLabelW = (0..ticksY).maxOf { i ->
+                val t = style.yAxis.formatter(minY + i * yStep, data)
+                val layout = measurer.measure(AnnotatedString(t), style.yAxis.textStyle)
                 layout.size.width
             }
-            leftGutter += maxLabelWidth + labelPadPx
+            leftGutter += maxLabelW + labelPad
         }
 
         var bottomGutter = pad
-        if (style.showXLabels) {
-            val maxH = data.maxOf { e ->
-                measurer.measure(AnnotatedString(e.label), style.xAxisTextStyle).size.height
+        if (style.xAxis.show) {
+            val maxH = data.items.maxOf { e ->
+                measurer.measure(AnnotatedString(e.label), style.xAxis.textStyle).size.height
             }
-            bottomGutter += maxH + labelPadPx
+            bottomGutter += maxH + labelPad
         }
 
         var topGutter = pad
-        if (style.showValueLabels) {
-            val maxH = data.maxOf { e ->
-                val t = style.valueFormatter(e.value)
-                measurer.measure(AnnotatedString(t), style.valueLabelTextStyle).size.height
+        if (style.values.show && style.values.placement == BarStyle.ValuePlacement.Above) {
+            val maxH = data.items.maxOf { e ->
+                val t = style.values.formatter(e.value, data)
+                measurer.measure(AnnotatedString(t), style.values.textStyle).size.height
             }
-            topGutter += maxH + labelPadPx
+            topGutter += maxH + labelPad
         }
 
-        val chart = Rect(leftGutter, topGutter, size.width - pad, size.height - bottomGutter)
+        var rightGutter = pad
+        if (style.values.show && style.values.placement == BarStyle.ValuePlacement.Outside) {
+            val maxW = data.items.maxOf { e ->
+                val t = style.values.formatter(e.value, data)
+                measurer.measure(AnnotatedString(t), style.values.textStyle).size.width
+            }
+            rightGutter += maxW + labelPad
+        }
 
-        fun mapY(y: Float): Float =
-            chart.bottom - (y - minY) / (maxY - minY).coerceAtLeast(1e-3f) * chart.height
+        val chart =
+            Rect(leftGutter, topGutter, size.width - rightGutter, size.height - bottomGutter)
+        val chartW = chart.width.coerceAtLeast(0f)
+        val chartH = chart.height.coerceAtLeast(0f)
+        if (chartW <= 0f || chartH <= 0f) return@Canvas
 
-        // ----- Grid (horizontal lines) & Y axis -----
-        if (style.showGrid) {
-            val gw = style.gridStrokeWidth.toPx()
+        fun mapY(v: Float): Float = chart.bottom - (v - minY) / spanY * chartH
+
+        // ----- Grid & axes -----
+        if (style.grid.show) {
+            val gw = style.grid.strokeWidth.toPx()
             for (i in 0..ticksY) {
-                val yVal = i * yStep
+                val yVal = minY + i * yStep
                 val y = mapY(yVal)
-                drawLine(style.gridColor, Offset(chart.left, y), Offset(chart.right, y), gw)
+                drawLine(style.grid.color, Offset(chart.left, y), Offset(chart.right, y), gw)
             }
         }
-        if (style.showYAxis) {
+        if (style.yAxis.show) {
             for (i in 0..ticksY) {
-                val yVal = i * yStep
+                val yVal = minY + i * yStep
                 val y = mapY(yVal)
-                val text = style.yValueFormatter(yVal)
-                val layout = measurer.measure(AnnotatedString(text), style.yAxisTextStyle)
+                val text = style.yAxis.formatter(yVal, data)
+                val layout = measurer.measure(AnnotatedString(text), style.yAxis.textStyle)
                 drawText(
                     layout,
                     topLeft = Offset(
-                        x = chart.left - labelPadPx - layout.size.width,
+                        x = chart.left - labelPad - layout.size.width,
                         y = y - layout.size.height / 2f
                     )
                 )
-                // tick
                 drawLine(
-                    color = style.axisLineColor,
+                    color = style.yAxis.axisLineColor,
                     start = Offset(chart.left - 4.dp.toPx(), y),
                     end = Offset(chart.left, y),
-                    strokeWidth = style.axisLineWidth.toPx()
+                    strokeWidth = style.yAxis.axisLineWidth.toPx()
                 )
             }
-            if (style.showYAxisLine) {
+            if (style.yAxis.showLine) {
                 drawLine(
-                    color = style.axisLineColor,
+                    color = style.yAxis.axisLineColor,
                     start = Offset(chart.left, chart.top),
                     end = Offset(chart.left, chart.bottom),
-                    strokeWidth = style.axisLineWidth.toPx()
+                    strokeWidth = style.yAxis.axisLineWidth.toPx()
                 )
             }
         }
+        if (style.xAxis.show && style.xAxis.showBaseline) {
+            val baseY = mapY(0f)
+            drawLine(
+                color = style.xAxis.baselineColor,
+                start = Offset(chart.left, baseY),
+                end = Offset(chart.right, baseY),
+                strokeWidth = style.xAxis.baselineWidth.toPx()
+            )
+        }
+
+        // Optional target line (horizontal at some Y value)
+        style.target?.let { t ->
+            val y = mapY(t.value)
+            drawLine(
+                color = t.color,
+                start = Offset(chart.left, y),
+                end = Offset(chart.right, y),
+                strokeWidth = t.width.toPx()
+            )
+        }
 
         // ----- Bars -----
-        val bw = style.barWidth.toPx()
-        val sp = style.spacing.toPx()
-        val totalW = data.size * bw + (data.size - 1) * sp
-        val startX = chart.left + (chart.width - totalW).coerceAtLeast(0f) / 2f
-        val rx = style.corner.toPx()
-        val barStrokeW = style.barStrokeWidth.toPx()
+        val bw = style.bars.width.toPx()
+        val sp = style.bars.spacing.toPx()
+        val totalW = data.items.size * bw + (data.items.size - 1) * sp
+        val startX = chart.left + (chartW - totalW).coerceAtLeast(0f) / 2f
+        val rx = style.bars.corner.toPx()
+        val strokeW = style.bars.strokeWidth.toPx()
+        val baseY = mapY(0f)
 
-        data.forEachIndexed { i, e ->
-            chart.height * (e.value / maxY)
+        data.items.forEachIndexed { i, e ->
             val left = startX + i * (bw + sp)
-            val top = mapY(e.value)
-            val barRect = Rect(left, top, left + bw, chart.bottom)
+            val yVal = e.value
+            val top = if (yVal >= 0f) mapY(yVal) else baseY
+            val bottom = if (yVal >= 0f) baseY else mapY(yVal)
+            val barRect = Rect(left, top, left + bw, bottom)
 
-            val brush = style.barBrush?.invoke(e, size, barRect)
+            // track shape is not typical for bars; draw only foreground
+            val brush = style.bars.brushProvider?.invoke(e, size, barRect)
             if (brush != null) {
                 drawRoundRect(
                     brush = brush,
@@ -165,30 +198,67 @@ public fun BarChart(
                 )
             }
 
-            if (barStrokeW > 0f) {
+            if (strokeW > 0f) {
                 drawRoundRect(
-                    color = style.barStrokeColor,
+                    color = style.bars.strokeColor,
                     topLeft = Offset(barRect.left, barRect.top),
                     size = Size(barRect.width, barRect.height),
                     cornerRadius = CornerRadius(rx, rx),
-                    style = Stroke(width = barStrokeW)
+                    style = Stroke(width = strokeW)
                 )
             }
 
-            // Value label above bar
-            if (style.showValueLabels) {
-                val valueText = style.valueFormatter(e.value)
-                val layout = measurer.measure(AnnotatedString(valueText), style.valueLabelTextStyle)
-                val x = left + (bw - layout.size.width) / 2f
-                val y = (barRect.top - labelPadPx - layout.size.height).coerceAtLeast(chart.top)
-                drawText(layout, topLeft = Offset(x, y))
+            // Value label
+            if (style.values.show) {
+                val txt = style.values.formatter(e.value, data)
+                val layout = measurer.measure(AnnotatedString(txt), style.values.textStyle)
+                when (style.values.placement) {
+                    BarStyle.ValuePlacement.Above -> {
+                        val x = left + (bw - layout.size.width) / 2f
+                        val y =
+                            (top - style.layout.labelPadding.toPx() - layout.size.height).coerceAtLeast(
+                                chart.top
+                            )
+                        drawText(layout, topLeft = Offset(x, y))
+                    }
+
+                    BarStyle.ValuePlacement.Outside -> {
+                        val x = barRect.right + style.layout.labelPadding.toPx()
+                        val centerY = (top + bottom) / 2f
+                        val y = centerY - layout.size.height / 2f
+                        drawText(layout, topLeft = Offset(x, y))
+                    }
+
+                    BarStyle.ValuePlacement.Inside -> {
+                        val innerPad = style.values.minInnerPadding.toPx()
+                        val fits = (bw - 2f * innerPad) >= layout.size.width
+                        if (fits) {
+                            val x = left + bw - innerPad - layout.size.width
+                            val centerY = (top + bottom) / 2f
+                            val y = centerY - layout.size.height / 2f
+                            val insideColor = style.values.insideColor ?: chooseContrastingText(
+                                e.color, style.values.textStyle.color
+                            )
+                            val insideLayout = measurer.measure(
+                                AnnotatedString(txt),
+                                style.values.textStyle.copy(color = insideColor)
+                            )
+                            drawText(insideLayout, topLeft = Offset(x, y))
+                        } else {
+                            val x = barRect.right + style.layout.labelPadding.toPx()
+                            val centerY = (top + bottom) / 2f
+                            val y = centerY - layout.size.height / 2f
+                            drawText(layout, topLeft = Offset(x, y))
+                        }
+                    }
+                }
             }
 
-            // X label under bar
-            if (style.showXLabels) {
-                val layout = measurer.measure(AnnotatedString(e.label), style.xAxisTextStyle)
+            // X label
+            if (style.xAxis.show) {
+                val layout = measurer.measure(AnnotatedString(e.label), style.xAxis.textStyle)
                 val x = left + (bw - layout.size.width) / 2f
-                val y = chart.bottom + labelPadPx / 2f
+                val y = chart.bottom + style.layout.labelPadding.toPx() / 2f
                 drawText(layout, topLeft = Offset(x, y))
             }
         }

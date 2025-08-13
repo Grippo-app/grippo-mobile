@@ -1,14 +1,11 @@
 package com.grippo.chart.progress
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.drawText
@@ -16,87 +13,88 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import com.grippo.chart.utils.chooseContrastingText
 import kotlin.math.max
 
-@Immutable
-public data class ProgressChartData(val label: String, val value: Float, val color: Color)
-
 @Composable
 public fun ProgressChart(
     modifier: Modifier = Modifier,
-    data: List<ProgressChartData>,
+    data: ProgressData,
     style: ProgressStyle = ProgressStyle(),
 ) {
     val measurer = rememberTextMeasurer()
 
     androidx.compose.foundation.Canvas(modifier) {
-        if (data.isEmpty()) return@Canvas
+        if (data.items.isEmpty()) return@Canvas
 
         // ----- Domain -----
-        val autoMax = if (style.normalized) 1f else max(1f, data.maxOf { it.value })
-        val maxV = style.maxValue?.takeIf { it > 0f } ?: autoMax
+        val autoMax = if (style.domain.normalized) 1f else max(1f, data.items.maxOf { it.value })
+        val maxV = style.domain.maxValue?.takeIf { it > 0f } ?: autoMax
 
         // ----- Gutters -----
-        val pad = style.padding.toPx()
-        val labelPad = style.labelPadding.toPx()
+        val pad = style.layout.padding.toPx()
+        val labelPad = style.layout.labelPadding.toPx()
 
-        // Left gutter for labels
-        val maxLabelW = data.maxOf { e ->
-            measurer.measure(AnnotatedString(e.label), style.labelTextStyle).size.width
+        // left gutter for labels
+        val maxLabelW = data.items.maxOf { e ->
+            measurer.measure(AnnotatedString(e.label), style.labels.textStyle).size.width
         }
         val leftGutter = pad + maxLabelW + labelPad
 
-        // Reserve right gutter only if values are outside
-        val sampleValues = if (style.showValue && !style.placeValueInside) {
-            data.map { e ->
-                style.valueFormatter(if (style.normalized) e.value.coerceIn(0f, 1f) else e.value)
+        // right gutter only if values are outside
+        val sampleValues = if (style.values.show && !style.values.placeInside) {
+            data.items.map { e ->
+                val disp =
+                    if (style.domain.normalized && style.values.preferNormalizedLabels) e.value.coerceIn(
+                        0f,
+                        1f
+                    ) else e.value
+                style.values.formatter(disp, data)
             }
         } else emptyList()
         val maxValueW = sampleValues.maxOfOrNull { t ->
-            measurer.measure(AnnotatedString(t), style.valueTextStyle).size.width
+            measurer.measure(AnnotatedString(t), style.values.textStyle).size.width
         } ?: 0
         val rightGutter =
-            pad + if (style.showValue && !style.placeValueInside) maxValueW + labelPad else 0f
+            pad + if (style.values.show && !style.values.placeInside) maxValueW + labelPad else 0f
 
-        // Chart rect
         val chart = Rect(leftGutter, pad, size.width - rightGutter, size.height - pad)
 
-        // Bail out if not enough room
-        val chartW = (chart.width).coerceAtLeast(0f)
-        val chartH = (chart.height).coerceAtLeast(0f)
+        // bail out if not enough room
+        val chartW = chart.width.coerceAtLeast(0f)
+        val chartH = chart.height.coerceAtLeast(0f)
         if (chartW <= 0f || chartH <= 0f) return@Canvas
 
-        // Geometry
-        val h = style.barHeight.toPx()
-        val gap = style.spacing.toPx()
-        val rx = style.corner.toPx()
-        val strokeW = style.barStrokeWidth.toPx()
+        // geometry
+        val h = style.layout.barHeight.toPx()
+        val gap = style.layout.spacing.toPx()
+        val rx = style.layout.corner.toPx()
+        val strokeW = style.bars.strokeWidth.toPx()
 
-        val totalH = data.size * h + (data.size - 1) * gap
+        val totalH = data.items.size * h + (data.items.size - 1) * gap
         val startY = chart.top + (chartH - totalH).coerceAtLeast(0f) / 2f
 
         fun mapX(v: Float): Float {
-            val vv = if (style.normalized) v.coerceIn(0f, 1f) else v
+            val vv = if (style.domain.normalized) v.coerceIn(0f, 1f) else v
             val cw = chartW.coerceAtLeast(1e-3f)
             val domain = maxV.coerceAtLeast(1e-3f)
             return chart.left + (vv / domain) * cw
         }
 
-        // Optional target marker
-        style.targetValue?.let { tVal ->
-            val x = mapX(if (style.normalized) tVal.coerceIn(0f, 1f) else tVal)
+        // target marker
+        style.target?.let { t ->
+            val x = mapX(if (style.domain.normalized) t.value.coerceIn(0f, 1f) else t.value)
             drawLine(
-                color = style.targetColor,
+                color = t.color,
                 start = Offset(x, chart.top),
                 end = Offset(x, chart.bottom),
-                strokeWidth = style.targetWidth.toPx()
+                strokeWidth = t.width.toPx()
             )
         }
 
-        // Draw bars
-        data.forEachIndexed { i, e ->
+        // bars
+        data.items.forEachIndexed { i, e ->
             val y = startY + i * (h + gap)
 
-            // Track (full width)
-            style.trackColor?.let { tc ->
+            // track
+            style.bars.trackColor?.let { tc ->
                 drawRoundRect(
                     color = tc,
                     topLeft = Offset(chart.left, y),
@@ -105,11 +103,10 @@ public fun ProgressChart(
                 )
             }
 
-            // Foreground bar
+            // foreground bar
             val w = (mapX(e.value) - chart.left).coerceIn(0f, chartW)
             val barRect = Rect(chart.left, y, chart.left + w, y + h)
-
-            val brush = style.barBrush?.invoke(e, size, barRect)
+            val brush = style.bars.brushProvider?.invoke(e, size, barRect)
             if (brush != null) {
                 drawRoundRect(
                     brush = brush,
@@ -128,7 +125,7 @@ public fun ProgressChart(
 
             if (strokeW > 0f && w > 0f) {
                 drawRoundRect(
-                    color = style.barStrokeColor,
+                    color = style.bars.strokeColor,
                     topLeft = Offset(barRect.left, barRect.top),
                     size = Size(barRect.width, barRect.height),
                     cornerRadius = CornerRadius(rx, rx),
@@ -136,44 +133,41 @@ public fun ProgressChart(
                 )
             }
 
-            // Left label (vertically centered)
-            val labelLayout = measurer.measure(AnnotatedString(e.label), style.labelTextStyle)
+            // left label
+            val labelLayout = measurer.measure(AnnotatedString(e.label), style.labels.textStyle)
             val labelX = chart.left - labelPad - labelLayout.size.width
             val labelY = y + (h - labelLayout.size.height) / 2f
             drawText(labelLayout, topLeft = Offset(labelX, labelY))
 
-            // Value label
-            if (style.showValue) {
-                val txt = style.valueFormatter(
-                    if (style.normalized) e.value.coerceIn(0f, 1f) else e.value
-                )
-                val valueLayout = measurer.measure(AnnotatedString(txt), style.valueTextStyle)
+            // value label
+            if (style.values.show) {
+                val display =
+                    if (style.domain.normalized && style.values.preferNormalizedLabels) e.value.coerceIn(
+                        0f,
+                        1f
+                    ) else e.value
+                val txt = style.values.formatter(display, data)
+                val valueLayout = measurer.measure(AnnotatedString(txt), style.values.textStyle)
                 val insideFits =
-                    style.placeValueInside && w >= valueLayout.size.width + 2f * style.minInnerPadding.toPx()
+                    style.values.placeInside && w >= valueLayout.size.width + 2f * style.values.minInnerPadding.toPx()
                 if (insideFits) {
-                    // Inside: right-aligned with padding and auto-contrast
-                    val vx = barRect.right - style.minInnerPadding.toPx() - valueLayout.size.width
+                    val vx =
+                        barRect.right - style.values.minInnerPadding.toPx() - valueLayout.size.width
                     val vy = y + (h - valueLayout.size.height) / 2f
-                    val insideColor = style.valueInsideColor ?: chooseContrastingText(
-                        sampleBarColor(e, brush), style.valueTextStyle.color
+                    val insideColor = style.values.insideColor ?: chooseContrastingText(
+                        e.color, style.values.textStyle.color
                     )
                     val insideLayout = measurer.measure(
                         AnnotatedString(txt),
-                        style.valueTextStyle.copy(color = insideColor)
+                        style.values.textStyle.copy(color = insideColor)
                     )
                     drawText(insideLayout, topLeft = Offset(vx, vy))
                 } else {
-                    // Outside: to the right of the bar
-                    val vx = chart.left + w + style.labelPadding.toPx()
+                    val vx = chart.left + w + style.layout.labelPadding.toPx()
                     val vy = y + (h - valueLayout.size.height) / 2f
                     drawText(valueLayout, topLeft = Offset(vx, vy))
                 }
             }
         }
     }
-}
-
-private fun sampleBarColor(e: ProgressChartData, brush: Brush?): Color {
-    // Simple sample: if brush provided, approximate by midpoint sampling is not trivial here; fallback to entry color
-    return e.color
 }

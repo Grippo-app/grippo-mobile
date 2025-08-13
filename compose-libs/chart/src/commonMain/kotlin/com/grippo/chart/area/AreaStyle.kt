@@ -11,56 +11,89 @@ import kotlin.math.roundToInt
 
 @Immutable
 public data class AreaStyle(
-    // line
-    val strokeWidth: Dp = 2.dp,
-    val lineColor: Color = Color(0xFF00E6A7),
-    val lineBrush: ((Size) -> Brush)? = null, // if provided, overrides lineColor
-    val curved: Boolean = true,
-    val curveSmoothness: Float = 0.20f, // Catmull–Rom → Bezier factor (0..0.5)
-    val clampOvershoot: Boolean = true, // try to keep curves monotone-ish
+    val layout: Layout = Layout(),
+    val grid: Grid = Grid(),
+    val yAxis: YAxis = YAxis(),
+    val xAxis: XAxis = XAxis(),
+    val line: Line = Line(),
+    val glow: Glow = Glow(),
+    val fill: Fill? = Fill(),            // null to disable fill
+    val dots: Dots = Dots(),
+    val extrema: Extrema = Extrema(),
+) {
+    @Immutable
+    public data class Layout(
+        val padding: Dp = 12.dp,
+        val labelPadding: Dp = 6.dp,
+    )
 
-    // line glow (soft halo for dark themes). Set width to 0.dp to disable
-    val lineGlowWidth: Dp = 8.dp,
-    val lineGlowColor: Color? = null, // if null, uses lineColor with low alpha
+    @Immutable
+    public data class Grid(
+        val show: Boolean = true,
+        val color: Color = Color(0x22FFFFFF),
+        val strokeWidth: Dp = 1.dp,
+    )
 
-    // fill under the line; set to null to disable
-    val fill: ((Size) -> Brush)? = { sz ->
-        Brush.verticalGradient(
-            0f to Color(0xFF00E6A7).copy(alpha = 0.22f),
-            1f to Color(0xFF00E6A7).copy(alpha = 0.00f),
-            startY = 0f,
-            endY = sz.height
-        )
-    },
+    @Immutable
+    public data class YAxis(
+        val show: Boolean = true,
+        val ticks: Int = 4,
+        val textStyle: TextStyle = TextStyle(color = Color(0x66FFFFFF)),
+        val showLine: Boolean = false,
+        val axisLineColor: Color = Color(0x33FFFFFF),
+        val axisLineWidth: Dp = 1.dp,
+        val formatter: (Float, AreaData) -> String = { v, d ->
+            val unit = d.yUnit?.let { " ${it}" } ?: ""
+            v.roundToInt().toString() + unit
+        },
+    )
 
-    // grid
-    val showGrid: Boolean = true,
-    val gridColor: Color = Color(0x22FFFFFF),
-    val gridStrokeWidth: Dp = 1.dp,
+    @Immutable
+    public data class XAxis(
+        val show: Boolean = false,
+        val textStyle: TextStyle = TextStyle(color = Color(0x66FFFFFF)),
+    )
 
-    // axes (no Material deps)
-    val showYAxis: Boolean = true,
-    val yAxisTicks: Int = 4,
-    val yAxisTextStyle: TextStyle = TextStyle(color = Color(0x66FFFFFF)),
-    val yValueFormatter: (Float) -> String = { v -> v.roundToInt().toString() },
-    val showYAxisLine: Boolean = false,
-    val axisLineColor: Color = Color(0x33FFFFFF),
-    val axisLineWidth: Dp = 1.dp,
+    @Immutable
+    public data class Line(
+        val strokeWidth: Dp = 2.dp,
+        val color: Color = Color(0xFF00E6A7),
+        val brushProvider: ((Size) -> Brush)? = null, // overrides color
+        val curved: Boolean = true,
+        val curveSmoothness: Float = 0.20f, // 0..0.5
+        val clampOvershoot: Boolean = true,
+    )
 
-    val showXAxis: Boolean = false,
-    val xAxisTextStyle: TextStyle = TextStyle(color = Color(0x66FFFFFF)),
-    val xLabels: List<Pair<Float, String>> = emptyList(), // pairs of x-value to label text
+    @Immutable
+    public data class Glow(
+        val width: Dp = 8.dp,                 // 0.dp to disable
+        val color: Color? = null,             // null -> use line.color with low alpha
+    )
 
-    // layout
-    val padding: Dp = 12.dp,
-    val labelPadding: Dp = 6.dp,
+    @Immutable
+    public data class Fill(
+        val brushProvider: (Size) -> Brush = { sz ->
+            Brush.verticalGradient(
+                0f to Color(0xFF00E6A7).copy(alpha = 0.22f),
+                1f to Color(0xFF00E6A7).copy(alpha = 0.00f),
+                startY = 0f,
+                endY = sz.height
+            )
+        },
+    )
 
-    // points
-    val showDots: Boolean = false,
-    val dotRadius: Dp = 2.dp,
-    val dotColor: Color? = null,
+    @Immutable
+    public data class Dots(
+        val show: Boolean = false,
+        val radius: Dp = 2.dp,
+        val color: Color? = null,
+    )
 
-    // extrema markers
-    val showExtrema: Boolean = true,
-    val extremaTextStyle: TextStyle = TextStyle(color = Color(0xCCFFFFFF)),
-)
+    @Immutable
+    public data class Extrema(
+        val show: Boolean = true,
+        val textStyle: TextStyle = TextStyle(color = Color(0xCCFFFFFF)),
+        val markerRadius: Dp = 3.dp,
+        val markerColor: Color? = null,
+    )
+}

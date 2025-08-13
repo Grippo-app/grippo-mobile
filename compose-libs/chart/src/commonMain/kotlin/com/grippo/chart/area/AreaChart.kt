@@ -1,7 +1,6 @@
 package com.grippo.chart.area
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
@@ -19,35 +18,31 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 
-@Immutable
-public data class AreaPoint(
-    val x: Float,
-    val y: Float
-)
-
 @Composable
 public fun AreaChart(
     modifier: Modifier = Modifier,
-    data: List<AreaPoint>,
+    data: AreaData,
     style: AreaStyle = AreaStyle(),
 ) {
     val measurer = rememberTextMeasurer()
 
     androidx.compose.foundation.Canvas(modifier) {
-        if (data.isEmpty()) return@Canvas
+        if (data.points.isEmpty()) return@Canvas
 
         // ----- Domain -----
-        val minX = data.minOf { it.x }
-        val maxX = data.maxOf { it.x }
-        val rawMaxY = max(1f, data.maxOf { it.y })
-        val ticksY = max(1, style.yAxisTicks)
+        val minX = data.points.minOf { it.x }
+        val maxX = data.points.maxOf { it.x }
 
-        // Nice Y scale (1/2/5 × 10^k)
-        fun niceStep(maxVal: Float, ticks: Int): Float {
-            val raw = maxVal / ticks
+        val dataMinY = data.points.minOf { it.y }
+        val dataMaxY = data.points.maxOf { it.y }
+
+        // Expand to include zero and snap to nice ticks
+        val ticksY = max(1, style.yAxis.ticks)
+        fun niceStep(span: Float, ticks: Int): Float {
+            val raw = (span / ticks).coerceAtLeast(1e-6f)
             val exp = floor(log10(raw.toDouble())).toInt()
             val base = 10.0.pow(exp.toDouble()).toFloat()
-            val mul = raw / base
+            val mul = (raw / base)
             val niceMul = when {
                 mul <= 1f -> 1f
                 mul <= 2f -> 2f
@@ -57,63 +52,67 @@ public fun AreaChart(
             return niceMul * base
         }
 
-        val yStep = niceStep(rawMaxY, ticksY)
-        val maxY = ceil(rawMaxY / yStep) * yStep
-        val minY = 0f
+        val yMinTarget = min(0f, dataMinY)
+        val yMaxTarget = max(0f, dataMaxY)
+        val spanRaw = (yMaxTarget - yMinTarget).coerceAtLeast(1e-6f)
+        val yStep = niceStep(spanRaw, ticksY)
+        val minY = floor(yMinTarget / yStep) * yStep
+        val maxY = ceil(yMaxTarget / yStep) * yStep
+        val spanY = (maxY - minY).coerceAtLeast(1e-6f)
 
         // ----- Layout with axis labels reservation -----
-        val pad = style.padding.toPx()
-        val labelPadPx = style.labelPadding.toPx()
+        val pad = style.layout.padding.toPx()
+        val labelPadPx = style.layout.labelPadding.toPx()
 
-        // Measure Y labels to reserve left gutter
         var leftGutter = pad
-        if (style.showYAxis) {
+        if (style.yAxis.show) {
             val maxLabelWidth = (0..ticksY).maxOf { i ->
-                val t = style.yValueFormatter(i * yStep)
-                val layout = measurer.measure(AnnotatedString(t), style.yAxisTextStyle)
+                val t = style.yAxis.formatter(minY + i * yStep, data)
+                val layout = measurer.measure(AnnotatedString(t), style.yAxis.textStyle)
                 layout.size.width
             }
             leftGutter += maxLabelWidth + labelPadPx
         }
 
-        // Measure X labels to reserve bottom gutter (if enabled)
         var bottomGutter = pad
-        if (style.showXAxis && style.xLabels.isNotEmpty()) {
-            val maxH = style.xLabels.maxOf { (_, text) ->
-                measurer.measure(AnnotatedString(text), style.xAxisTextStyle).size.height
+        if (style.xAxis.show && data.xLabels.isNotEmpty()) {
+            val maxH = data.xLabels.maxOf { (_, text) ->
+                measurer.measure(AnnotatedString(text), style.xAxis.textStyle).size.height
             }
             bottomGutter += maxH + labelPadPx
         }
 
         val chart = Rect(leftGutter, pad, size.width - pad, size.height - bottomGutter)
+        val chartW = chart.width.coerceAtLeast(0f)
+        val chartH = chart.height.coerceAtLeast(0f)
+        if (chartW <= 0f || chartH <= 0f) return@Canvas
 
         fun mapX(x: Float): Float =
-            chart.left + (x - minX) / (maxX - minX).coerceAtLeast(1e-3f) * chart.width
+            chart.left + (x - minX) / (maxX - minX).coerceAtLeast(1e-3f) * chartW
 
         fun mapY(y: Float): Float =
-            chart.bottom - (y - minY) / (maxY - minY).coerceAtLeast(1e-3f) * chart.height
+            chart.bottom - (y - minY) / spanY * chartH
 
         // Mapped points
-        val pts = data.map { Offset(mapX(it.x), mapY(it.y)) }
+        val pts = data.points.map { Offset(mapX(it.x), mapY(it.y)) }
 
         // ----- Grid (horizontal only) -----
-        if (style.showGrid) {
-            val gw = style.gridStrokeWidth.toPx()
+        if (style.grid.show) {
+            val gw = style.grid.strokeWidth.toPx()
             for (i in 0..ticksY) {
-                val yVal = i * yStep
+                val yVal = minY + i * yStep
                 val y = mapY(yVal)
-                drawLine(style.gridColor, Offset(chart.left, y), Offset(chart.right, y), gw)
+                drawLine(style.grid.color, Offset(chart.left, y), Offset(chart.right, y), gw)
             }
         }
 
-        // ----- Axes -----
-        if (style.showYAxis) {
-            // Labels
+        // ----- Y axis -----
+        if (style.yAxis.show) {
             for (i in 0..ticksY) {
-                val yVal = i * yStep
+                val yVal = minY + i * yStep
                 val y = mapY(yVal)
-                val text = style.yValueFormatter(yVal)
-                val layout = measurer.measure(AnnotatedString(text), style.yAxisTextStyle)
+                val text = style.yAxis.formatter(yVal, data)
+                val layout = measurer.measure(AnnotatedString(text), style.yAxis.textStyle)
                 drawText(
                     layout,
                     topLeft = Offset(
@@ -121,29 +120,29 @@ public fun AreaChart(
                         y = y - layout.size.height / 2f
                     )
                 )
-                // Small tick
+                // tick
                 drawLine(
-                    color = style.axisLineColor,
+                    color = style.yAxis.axisLineColor,
                     start = Offset(chart.left - 4.dp.toPx(), y),
                     end = Offset(chart.left, y),
-                    strokeWidth = style.axisLineWidth.toPx()
+                    strokeWidth = style.yAxis.axisLineWidth.toPx()
                 )
             }
-            // Axis line
-            if (style.showYAxisLine) {
+            if (style.yAxis.showLine) {
                 drawLine(
-                    color = style.axisLineColor,
+                    color = style.yAxis.axisLineColor,
                     start = Offset(chart.left, chart.top),
                     end = Offset(chart.left, chart.bottom),
-                    strokeWidth = style.axisLineWidth.toPx()
+                    strokeWidth = style.yAxis.axisLineWidth.toPx()
                 )
             }
         }
 
-        if (style.showXAxis && style.xLabels.isNotEmpty()) {
-            style.xLabels.forEach { (xVal, label) ->
+        // ----- X axis labels -----
+        if (style.xAxis.show && data.xLabels.isNotEmpty()) {
+            data.xLabels.forEach { (xVal, label) ->
                 val x = mapX(xVal)
-                val layout = measurer.measure(AnnotatedString(label), style.xAxisTextStyle)
+                val layout = measurer.measure(AnnotatedString(label), style.xAxis.textStyle)
                 drawText(
                     layout,
                     topLeft = Offset(
@@ -158,12 +157,12 @@ public fun AreaChart(
         fun buildLinePath(points: List<Offset>): Path {
             val path = Path()
             if (points.isEmpty()) return path
-            if (!style.curved || points.size < 3) {
+            if (!style.line.curved || points.size < 3) {
                 path.moveTo(points.first().x, points.first().y)
                 for (i in 1 until points.size) path.lineTo(points[i].x, points[i].y)
                 return path
             }
-            val s = style.curveSmoothness.coerceIn(0f, 0.5f)
+            val s = style.line.curveSmoothness.coerceIn(0f, 0.5f)
             val p = points
             path.moveTo(p.first().x, p.first().y)
             for (i in 0 until p.lastIndex) {
@@ -180,7 +179,7 @@ public fun AreaChart(
                     p2.x - (p3.x - p1.x) * s,
                     p2.y - (p3.y - p1.y) * s
                 )
-                if (style.clampOvershoot) {
+                if (style.line.clampOvershoot) {
                     val minYp = min(p0.y, min(p1.y, p2.y))
                     val maxYp = max(p0.y, max(p1.y, p2.y))
                     c1 = c1.copy(y = c1.y.coerceIn(minYp, maxYp))
@@ -203,53 +202,53 @@ public fun AreaChart(
                 lineTo(pts.first().x, chart.bottom)
                 close()
             }
-            drawPath(area, brush = provider(size))
+            drawPath(area, brush = provider.brushProvider(size))
         }
 
-        // ----- Glow (drawn beneath the main stroke) -----
-        if (style.lineGlowWidth.value > 0f) {
-            val glowColor = (style.lineGlowColor ?: style.lineColor).copy(alpha = 0.25f)
+        // ----- Glow (beneath main stroke) -----
+        if (style.glow.width.value > 0f) {
+            val gc = (style.glow.color ?: style.line.color).copy(alpha = 0.25f)
             drawPath(
                 linePath,
-                color = glowColor,
-                style = Stroke(width = style.lineGlowWidth.toPx())
+                color = gc,
+                style = Stroke(width = style.glow.width.toPx())
             )
         }
 
         // ----- Main stroke -----
-        val stroke = Stroke(width = style.strokeWidth.toPx(), cap = StrokeCap.Round)
-        val lineBrush = style.lineBrush?.invoke(size)
-        if (lineBrush != null) {
-            drawPath(linePath, brush = lineBrush, style = stroke)
-        } else {
-            drawPath(linePath, color = style.lineColor, style = stroke)
+        val stroke = Stroke(width = style.line.strokeWidth.toPx(), cap = StrokeCap.Round)
+        style.line.brushProvider?.let { br ->
+            drawPath(linePath, brush = br(size), style = stroke)
+        } ?: run {
+            drawPath(linePath, color = style.line.color, style = stroke)
         }
 
         // ----- Dots -----
-        if (style.showDots) {
-            val r = style.dotRadius.toPx()
-            val c = style.dotColor ?: style.lineColor
+        if (style.dots.show) {
+            val r = style.dots.radius.toPx()
+            val c = style.dots.color ?: style.line.color
             pts.forEach { drawCircle(color = c, radius = r, center = it) }
         }
 
-        // ----- Extrema labels (min & max points) -----
-        if (style.showExtrema && pts.isNotEmpty()) {
-            val maxIdx = data.indices.maxBy { data[it].y }
-            val minIdx = data.indices.minBy { data[it].y }
+        // ----- Extrema labels (min & max) -----
+        if (style.extrema.show && pts.isNotEmpty()) {
+            val maxIdx = data.points.indices.maxBy { data.points[it].y }
+            val minIdx = data.points.indices.minBy { data.points[it].y }
             fun drawTag(idx: Int) {
                 val p = pts[idx]
-                val value = data[idx].y
-                val label = style.yValueFormatter(value)
-                val layout = measurer.measure(AnnotatedString(label), style.extremaTextStyle)
-                4.dp.toPx()
+                val value = data.points[idx].y
+                val label = style.yAxis.formatter(value, data)
+                val layout = measurer.measure(AnnotatedString(label), style.extrema.textStyle)
                 val x = (p.x - layout.size.width / 2f).coerceIn(
                     chart.left,
                     chart.right - layout.size.width
                 )
                 val y = (p.y - layout.size.height - 6.dp.toPx()).coerceAtLeast(chart.top)
-                // small marker dot
-                drawCircle(color = style.lineColor, radius = 3.dp.toPx(), center = p)
-                // text tag
+                drawCircle(
+                    color = (style.extrema.markerColor ?: style.line.color),
+                    radius = style.extrema.markerRadius.toPx(),
+                    center = p
+                )
                 drawText(layout, topLeft = Offset(x, y))
             }
             drawTag(maxIdx)

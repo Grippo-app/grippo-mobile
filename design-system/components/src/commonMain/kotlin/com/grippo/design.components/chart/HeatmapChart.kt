@@ -13,6 +13,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.grippo.chart.heatmap.HeatmapCell
 import com.grippo.chart.heatmap.HeatmapChart
+import com.grippo.chart.heatmap.HeatmapData
 import com.grippo.chart.heatmap.HeatmapStyle
 import com.grippo.chart.heatmap.defaultCoolWarm
 import com.grippo.design.preview.AppPreview
@@ -28,7 +29,6 @@ public fun HeatmapChart(
     val labelsRow = listOf("Chest", "Back", "Legs", "Shoulders", "Arms", "Core")
     val labelsCol = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 
-    // Sample values 0..1 (higher = hotter)
     val cells = buildList {
         for (r in 0 until rows) {
             for (c in 0 until cols) {
@@ -39,36 +39,55 @@ public fun HeatmapChart(
         }
     }
 
-    val style = HeatmapStyle(
+    val data = HeatmapData(
         rows = rows,
         cols = cols,
-        padding = 12.dp,
-        gap = 6.dp,
-        corner = 6.dp,
-        labelPadding = 6.dp,
+        cells = cells,
         rowLabels = labelsRow,
         colLabels = labelsCol,
-        labelStyle = TextStyle(color = Color(0x77FFFFFF)),
-        showLegend = true,
-        legendHeight = 12.dp,
-        legendStops = null,
-        legendLabelStyle = TextStyle(color = Color(0x66FFFFFF)),
-        legendMinText = { _ -> "0%" },
-        legendMaxText = { _ -> "100%" },
-        colorScale = { v -> defaultCoolWarm(v) },
-        autoNormalize = false,
-        missingCellColor = Color(0x11FFFFFF),
-        showCellBorders = false,
-        borderColor = Color(0x22FFFFFF),
-        borderWidth = 1.dp,
-        showValues = false,
-        valueTextStyle = TextStyle(color = Color.White),
-        valueFormatter = { p -> "${(p * 100f).roundToInt()}%" },
+        rowDim = "Muscle Group",
+        colDim = "Day",
+        valueUnit = null,
+    )
+
+    val style = HeatmapStyle(
+        layout = HeatmapStyle.Layout(
+            padding = 12.dp,
+            gap = 6.dp,
+            corner = 6.dp,
+            labelPadding = 6.dp
+        ),
+        labels = HeatmapStyle.Labels(
+            showRowLabels = true,
+            showColLabels = true,
+            textStyle = TextStyle(color = Color(0x77FFFFFF))
+        ),
+        legend = HeatmapStyle.Legend(
+            show = true,
+            height = 12.dp,
+            stops = null,
+            labelStyle = TextStyle(color = Color(0x66FFFFFF)),
+            minText = { "0%" },
+            maxText = { "100%" }),
+        palette = HeatmapStyle.Palette(
+            colorScale = { v -> defaultCoolWarm(v) },
+            autoNormalize = false,
+            missingCellColor = Color(0x11FFFFFF)
+        ),
+        cells = HeatmapStyle.Cells(
+            showBorders = false,
+            borderColor = Color(0x22FFFFFF),
+            borderWidth = 1.dp
+        ),
+        values = HeatmapStyle.Values(
+            show = false,
+            textStyle = TextStyle(color = Color.White),
+            formatter = { p, _ -> "${(p * 100f).roundToInt()}%" })
     )
 
     HeatmapChart(
         modifier = modifier,
-        cells = cells,
+        data = data,
         style = style
     )
 }
@@ -82,7 +101,6 @@ private fun HeatmapChartPreview() {
         val labelsRow = listOf("Chest", "Back", "Legs", "Shoulders", "Arms", "Core")
         val labelsCol = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 
-        // Sample values 0..1 (higher = hotter)
         val cells = buildList {
             for (r in 0 until rows) {
                 for (c in 0 until cols) {
@@ -93,31 +111,50 @@ private fun HeatmapChartPreview() {
             }
         }
 
-        val style = HeatmapStyle(
+        val data = HeatmapData(
             rows = rows,
             cols = cols,
-            padding = 12.dp,
-            gap = 6.dp,
-            corner = 6.dp,
-            labelPadding = 6.dp,
+            cells = cells,
             rowLabels = labelsRow,
             colLabels = labelsCol,
-            labelStyle = TextStyle(color = Color(0x77FFFFFF)),
-            showLegend = true,
-            legendHeight = 12.dp,
-            legendStops = null,
-            legendLabelStyle = TextStyle(color = Color(0x66FFFFFF)),
-            legendMinText = { _ -> "0%" },
-            legendMaxText = { _ -> "100%" },
-            colorScale = { v -> defaultCoolWarm(v) },
-            autoNormalize = false,
-            missingCellColor = Color(0x11FFFFFF),
-            showCellBorders = false,
-            borderColor = Color(0x22FFFFFF),
-            borderWidth = 1.dp,
-            showValues = false,
-            valueTextStyle = TextStyle(color = Color.White),
-            valueFormatter = { p -> "${(p * 100f).roundToInt()}%" },
+            rowDim = "Muscle Group",
+            colDim = "Day",
+            valueUnit = null,
+        )
+
+        val style = HeatmapStyle(
+            layout = HeatmapStyle.Layout(
+                padding = 12.dp,
+                gap = 6.dp,
+                corner = 6.dp,
+                labelPadding = 6.dp
+            ),
+            labels = HeatmapStyle.Labels(
+                showRowLabels = true,
+                showColLabels = true,
+                textStyle = TextStyle(color = Color(0x77FFFFFF))
+            ),
+            legend = HeatmapStyle.Legend(
+                show = true,
+                height = 12.dp,
+                stops = null,
+                labelStyle = TextStyle(color = Color(0x66FFFFFF)),
+                minText = { "0%" },
+                maxText = { "100%" }),
+            palette = HeatmapStyle.Palette(
+                colorScale = { v -> defaultCoolWarm(v) },
+                autoNormalize = false,
+                missingCellColor = Color(0x11FFFFFF)
+            ),
+            cells = HeatmapStyle.Cells(
+                showBorders = false,
+                borderColor = Color(0x22FFFFFF),
+                borderWidth = 1.dp
+            ),
+            values = HeatmapStyle.Values(
+                show = false,
+                textStyle = TextStyle(color = Color.White),
+                formatter = { p, _ -> "${(p * 100f).roundToInt()}%" })
         )
 
         Box(
@@ -129,7 +166,7 @@ private fun HeatmapChartPreview() {
         ) {
             HeatmapChart(
                 modifier = Modifier.fillMaxSize(),
-                cells = cells,
+                data = data,
                 style = style
             )
         }

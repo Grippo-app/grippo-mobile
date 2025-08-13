@@ -12,38 +12,58 @@ import kotlin.math.roundToInt
 
 @Immutable
 public data class ProgressStyle(
-    // layout
-    val padding: Dp = 12.dp,
-    val barHeight: Dp = 16.dp,
-    val spacing: Dp = 10.dp,
-    val corner: Dp = 10.dp,
-    val labelPadding: Dp = 6.dp,
+    val layout: Layout = Layout(),
+    val domain: Domain = Domain(),
+    val bars: Bars = Bars(),
+    val labels: Labels = Labels(),
+    val values: Values = Values(),
+    val target: Target? = null,
+) {
+    @Immutable
+    public data class Layout(
+        val padding: Dp = 12.dp,
+        val barHeight: Dp = 16.dp,
+        val spacing: Dp = 10.dp,
+        val corner: Dp = 10.dp,
+        val labelPadding: Dp = 6.dp,
+    )
 
-    // values domain
-    val normalized: Boolean = false,            // if true, values expected in 0..1
-    val maxValue: Float? = null,                // optional manual max; ignored if <=0
+    @Immutable
+    public data class Domain(
+        val normalized: Boolean = false,   // if true, values expected in 0..1
+        val maxValue: Float? = null,       // optional manual max; ignored if <= 0
+    )
 
-    // bar visuals
-    val trackColor: Color? = Color(0x14FFFFFF), // background behind each bar; null disables
-    val barBrush: ((ProgressChartData, Size, Rect) -> Brush)? = null, // overrides data.color
-    val barStrokeWidth: Dp = 0.dp,
-    val barStrokeColor: Color = Color.Transparent,
+    @Immutable
+    public data class Bars(
+        val trackColor: Color? = Color(0x14FFFFFF),
+        val brushProvider: ((ProgressChartData, Size, Rect) -> Brush)? = null, // overrides data.color
+        val strokeWidth: Dp = 0.dp,
+        val strokeColor: Color = Color.Transparent,
+    )
 
-    // labels
-    val labelTextStyle: TextStyle = TextStyle(color = Color(0x77FFFFFF)),
+    @Immutable
+    public data class Labels(
+        val textStyle: TextStyle = TextStyle(color = Color(0x77FFFFFF)),
+    )
 
-    // value labels
-    val showValue: Boolean = true,
-    val valueTextStyle: TextStyle = TextStyle(color = Color(0xCCFFFFFF)),
-    val valueFormatter: (Float) -> String = { v ->
-        if (normalized) "${(v * 100f).roundToInt()}%" else v.roundToInt().toString()
-    },
-    val placeValueInside: Boolean = true,
-    val minInnerPadding: Dp = 6.dp,
-    val valueInsideColor: Color? = null, // if null, auto-contrast with bar color/brush sample
+    @Immutable
+    public data class Values(
+        val show: Boolean = true,
+        val textStyle: TextStyle = TextStyle(color = Color(0xCCFFFFFF)),
+        val formatter: (Float, ProgressData) -> String = { v, d ->
+            d.valueUnit?.let { "${v.roundToInt()} ${it}" } ?: v.roundToInt().toString()
+        },
+        val placeInside: Boolean = true,
+        val minInnerPadding: Dp = 6.dp,
+        val insideColor: Color? = null, // null -> auto contrast
+        val preferNormalizedLabels: Boolean = true, // when domain.normalized
+    )
 
-    // optional target marker (vertical line)
-    val targetValue: Float? = null,
-    val targetColor: Color = Color(0x44FFFFFF),
-    val targetWidth: Dp = 1.dp,
-)
+    @Immutable
+    public data class Target(
+        val value: Float,
+        val color: Color = Color(0x44FFFFFF),
+        val width: Dp = 1.dp,
+    )
+}
