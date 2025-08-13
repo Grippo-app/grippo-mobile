@@ -175,4 +175,38 @@ public object LightColor : AppColor {
             Color(0xFF4FC3F7), Color(0xFF90A4AE)
         )
     }
+
+    override val charts: AppColor.Charts = object : AppColor.Charts {
+        override val surface = object : AppColor.Charts.SurfaceColors {
+            override val grid = AppColorTokens.Chart.SurfaceLight.Grid
+            override val axis = AppColorTokens.Chart.SurfaceLight.Axis
+            override val labelPrimary = AppColorTokens.Chart.SurfaceLight.LabelPrimary
+            override val labelSecondary = AppColorTokens.Chart.SurfaceLight.LabelSecondary
+            override val extremaLabel = AppColorTokens.Chart.SurfaceLight.ExtremaLabel
+        }
+        override val area = object : AppColor.Charts.AreaColors {
+            override val lineA = AppColorTokens.Chart.Area.LineA
+            override val lineB = AppColorTokens.Chart.Area.LineB
+            override val fillBase = AppColorTokens.Chart.Area.FillBase
+            override val glow = AppColorTokens.Chart.Area.Glow
+            override val dot = AppColorTokens.Chart.Area.Dot
+        }
+        override val bar = object : AppColor.Charts.BarColors {
+            override val stroke = AppColorTokens.Chart.Bar.StrokeOnLight
+        }
+        override val categorical = object : AppColor.Charts.CategoricalColors {
+            override val palette = AppColorTokens.Chart.Categorical.Palette32
+        }
+        override val pie = object : AppColor.Charts.PieColors {
+            override val labelText = AppColorTokens.Chart.Pie.LabelTextOnLight
+            override val leader = AppColorTokens.Chart.Pie.LeaderOnLight
+        }
+        override val heatmap: AppColor.Charts.HeatmapColors =
+            object : AppColor.Charts.HeatmapColors {
+                override val scaleStops = AppColorTokens.Chart.Heatmap.StopsCoolWarm
+                override val missingCell = AppColorTokens.Chart.Heatmap.Light.Missing
+                override val border = AppColorTokens.Chart.Heatmap.Light.Border
+                override val valueText = AppColorTokens.Chart.Heatmap.Light.ValueText
+            }
+    }
 }

@@ -7,81 +7,76 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import kotlin.math.roundToInt
 
 @Immutable
 public data class BarStyle(
-    val layout: Layout = Layout(),
-    val grid: Grid = Grid(),
-    val yAxis: YAxis = YAxis(),
-    val xAxis: XAxis = XAxis(),
-    val bars: Bars = Bars(),
-    val values: Values = Values(),
-    val target: Target? = null,
+    val layout: Layout,
+    val grid: Grid,
+    val yAxis: YAxis,
+    val xAxis: XAxis,
+    val bars: Bars,
+    val values: Values,
+    val target: Target?,
 ) {
     @Immutable
     public data class Layout(
-        val padding: Dp = 12.dp,
-        val labelPadding: Dp = 6.dp,
+        val padding: Dp,
+        val labelPadding: Dp,
     )
 
     @Immutable
     public data class Grid(
-        val show: Boolean = true,
-        val color: Color = Color(0x22FFFFFF),
-        val strokeWidth: Dp = 1.dp,
+        val show: Boolean,
+        val color: Color,
+        val strokeWidth: Dp,
     )
 
     @Immutable
     public data class YAxis(
-        val show: Boolean = true,
-        val ticks: Int = 4,
-        val textStyle: TextStyle = TextStyle(color = Color(0x66FFFFFF)),
-        val showLine: Boolean = false,
-        val axisLineColor: Color = Color(0x33FFFFFF),
-        val axisLineWidth: Dp = 1.dp,
-        val formatter: (Float, BarData) -> String = { v, d ->
-            val unit = d.yUnit?.let { " ${it}" } ?: ""
-            v.roundToInt().toString() + unit
-        },
+        val show: Boolean,
+        val ticks: Int,
+        val textStyle: TextStyle,
+        val showLine: Boolean,
+        val axisLineColor: Color,
+        val axisLineWidth: Dp,
+        val formatter: (Float, BarData) -> String,
     )
 
     @Immutable
     public data class XAxis(
-        val show: Boolean = true,
-        val textStyle: TextStyle = TextStyle(color = Color(0x66FFFFFF)),
-        val showBaseline: Boolean = false,
-        val baselineColor: Color = Color(0x33FFFFFF),
-        val baselineWidth: Dp = 1.dp,
+        val show: Boolean,
+        val textStyle: TextStyle,
+        val showBaseline: Boolean,
+        val baselineColor: Color,
+        val baselineWidth: Dp,
     )
 
     @Immutable
     public data class Bars(
-        val width: Dp = 16.dp,
-        val spacing: Dp = 8.dp,
-        val corner: Dp = 8.dp,
-        val brushProvider: ((BarEntry, Size, Rect) -> Brush)? = null, // overrides entry.color
-        val strokeWidth: Dp = 0.dp,
-        val strokeColor: Color = Color.Transparent,
+        val width: Dp,
+        val spacing: Dp,
+        val corner: Dp,
+        val brushProvider: ((BarEntry, Size, Rect) -> Brush)?,
+        val strokeWidth: Dp,
+        val strokeColor: Color,
     )
 
     public enum class ValuePlacement { Inside, Outside, Above }
 
     @Immutable
     public data class Values(
-        val show: Boolean = true,
-        val textStyle: TextStyle = TextStyle(color = Color(0xCCFFFFFF)),
-        val formatter: (Float, BarData) -> String = { v, _ -> v.roundToInt().toString() },
-        val placement: ValuePlacement = ValuePlacement.Above,
-        val minInnerPadding: Dp = 6.dp,
-        val insideColor: Color? = null, // null -> auto contrast
+        val show: Boolean,
+        val textStyle: TextStyle,
+        val formatter: (Float, BarData) -> String,
+        val placement: ValuePlacement,
+        val minInnerPadding: Dp,
+        val insideColor: Color?,
     )
 
     @Immutable
     public data class Target(
         val value: Float,
-        val color: Color = Color(0x44FFFFFF),
-        val width: Dp = 1.dp,
+        val color: Color,
+        val width: Dp,
     )
 }

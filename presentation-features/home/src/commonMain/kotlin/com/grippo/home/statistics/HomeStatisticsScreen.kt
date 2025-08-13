@@ -76,7 +76,7 @@ internal fun HomeStatisticsScreen(
     ) {
 
         LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
+            columns = GridCells.Fixed(1),
             modifier = Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),

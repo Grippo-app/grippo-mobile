@@ -21,6 +21,7 @@ public interface AppColor {
     public val chip: ChipColors
     public val theme: ThemeColors
     public val radio: RadioColors
+    public val charts: Charts
 
     public interface DividerColors {
         public val default: Color
@@ -175,5 +176,50 @@ public interface AppColor {
         public val darkText: Color
         public val darkBackground1: Color
         public val darkBackground2: Color
+    }
+
+    public interface Charts {
+        public val surface: SurfaceColors
+        public val area: AreaColors
+        public val bar: BarColors
+        public val pie: PieColors
+        public val categorical: CategoricalColors
+        public val heatmap: HeatmapColors
+
+        public interface HeatmapColors {
+            public val scaleStops: List<Pair<Float, Color>>
+            public val missingCell: Color
+            public val border: Color
+            public val valueText: Color
+        }
+
+        public interface SurfaceColors {
+            public val grid: Color
+            public val axis: Color
+            public val labelPrimary: Color
+            public val labelSecondary: Color
+            public val extremaLabel: Color
+        }
+
+        public interface AreaColors {
+            public val lineA: Color
+            public val lineB: Color
+            public val fillBase: Color
+            public val glow: Color
+            public val dot: Color
+        }
+
+        public interface PieColors {
+            public val labelText: Color
+            public val leader: Color?
+        }
+
+        public interface BarColors {
+            public val stroke: Color
+        }
+
+        public interface CategoricalColors {
+            public val palette: List<Color>
+        }
     }
 }

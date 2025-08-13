@@ -23,7 +23,7 @@ import kotlin.math.pow
 public fun BarChart(
     modifier: Modifier = Modifier,
     data: BarData,
-    style: BarStyle = BarStyle(),
+    style: BarStyle,
 ) {
     val measurer = rememberTextMeasurer()
 

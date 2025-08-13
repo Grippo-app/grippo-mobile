@@ -22,7 +22,7 @@ import kotlin.math.pow
 public fun AreaChart(
     modifier: Modifier = Modifier,
     data: AreaData,
-    style: AreaStyle = AreaStyle(),
+    style: AreaStyle,
 ) {
     val measurer = rememberTextMeasurer()
 

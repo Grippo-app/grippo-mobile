@@ -26,7 +26,7 @@ import kotlin.math.sin
 public fun PieChart(
     modifier: Modifier = Modifier,
     data: PieData,
-    style: PieStyle = PieStyle(),
+    style: PieStyle,
 ) {
     val textMeasurer = rememberTextMeasurer()
 

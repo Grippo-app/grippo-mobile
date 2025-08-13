@@ -176,4 +176,38 @@ public object DarkColor : AppColor {
             Color(0xFF4FC3F7), Color(0xFFB0BEC5)
         )
     }
+
+    override val charts: AppColor.Charts = object : AppColor.Charts {
+        override val surface = object : AppColor.Charts.SurfaceColors {
+            override val grid = AppColorTokens.Chart.SurfaceDark.Grid
+            override val axis = AppColorTokens.Chart.SurfaceDark.Axis
+            override val labelPrimary = AppColorTokens.Chart.SurfaceDark.LabelPrimary
+            override val labelSecondary = AppColorTokens.Chart.SurfaceDark.LabelSecondary
+            override val extremaLabel = AppColorTokens.Chart.SurfaceDark.ExtremaLabel
+        }
+        override val area = object : AppColor.Charts.AreaColors {
+            override val lineA = AppColorTokens.Chart.Area.LineA
+            override val lineB = AppColorTokens.Chart.Area.LineB
+            override val fillBase = AppColorTokens.Chart.Area.FillBase
+            override val glow = AppColorTokens.Chart.Area.Glow
+            override val dot = AppColorTokens.Chart.Area.Dot
+        }
+        override val heatmap: AppColor.Charts.HeatmapColors =
+            object : AppColor.Charts.HeatmapColors {
+                override val scaleStops = AppColorTokens.Chart.Heatmap.StopsCoolWarm
+                override val missingCell = AppColorTokens.Chart.Heatmap.Dark.Missing
+                override val border = AppColorTokens.Chart.Heatmap.Dark.Border
+                override val valueText = AppColorTokens.Chart.Heatmap.Dark.ValueText
+            }
+        override val bar = object : AppColor.Charts.BarColors {
+            override val stroke = AppColorTokens.Chart.Bar.StrokeOnDark
+        }
+        override val categorical = object : AppColor.Charts.CategoricalColors {
+            override val palette = AppColorTokens.Chart.Categorical.Palette32
+        }
+        override val pie = object : AppColor.Charts.PieColors {
+            override val labelText = AppColorTokens.Chart.Pie.LabelTextOnDark
+            override val leader = AppColorTokens.Chart.Pie.LeaderOnDark
+        }
+    }
 }

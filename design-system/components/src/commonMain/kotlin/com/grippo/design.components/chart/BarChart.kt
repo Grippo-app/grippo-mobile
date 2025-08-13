@@ -1,11 +1,6 @@
 package com.grippo.design.components.chart
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -16,6 +11,7 @@ import com.grippo.chart.bar.BarChart
 import com.grippo.chart.bar.BarData
 import com.grippo.chart.bar.BarEntry
 import com.grippo.chart.bar.BarStyle
+import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import kotlin.math.roundToInt
@@ -24,15 +20,24 @@ import kotlin.math.roundToInt
 public fun BarChart(
     modifier: Modifier = Modifier
 ) {
+    val charts = AppTokens.colors.charts
+    val palette = charts.categorical.palette
+
     val entries = listOf(
-        BarEntry("Mon", 6f, Color(0xFF6AA9FF)),
-        BarEntry("Tue", 10f, Color(0xFF00E6A7)),
-        BarEntry("Wed", 4f, Color(0xFFFF7A33)),
-        BarEntry("Thu", 12f, Color(0xFFB049F8)),
-        BarEntry("Fri", 8f, Color(0xFFFFC53D)),
-        BarEntry("Sat", 14f, Color(0xFF3A86FF)),
-        BarEntry("Sun", 9f, Color(0xFFFF5E8A)),
-    )
+        "Mon" to 6f,
+        "Tue" to 10f,
+        "Wed" to 4f,
+        "Thu" to 12f,
+        "Fri" to 8f,
+        "Sat" to 14f,
+        "Sun" to 9f,
+    ).mapIndexed { i, (label, value) ->
+        BarEntry(
+            label = label,
+            value = value,
+            color = palette[i % palette.size]
+        )
+    }
 
     val data = BarData(
         items = entries,
@@ -42,21 +47,30 @@ public fun BarChart(
     )
 
     val style = BarStyle(
-        layout = BarStyle.Layout(padding = 12.dp, labelPadding = 6.dp),
-        grid = BarStyle.Grid(show = true, color = Color(0x22FFFFFF), strokeWidth = 1.dp),
+        layout = BarStyle.Layout(
+            padding = 12.dp,
+            labelPadding = 6.dp
+        ),
+        grid = BarStyle.Grid(
+            show = true,
+            color = charts.surface.grid,
+            strokeWidth = 1.dp
+        ),
         yAxis = BarStyle.YAxis(
             show = true,
             ticks = 5,
-            textStyle = TextStyle(color = Color(0x77FFFFFF)),
+            textStyle = TextStyle(color = charts.surface.labelPrimary),
             showLine = true,
-            axisLineColor = Color(0x33FFFFFF),
+            axisLineColor = charts.surface.axis,
             axisLineWidth = 1.dp,
             formatter = { v, _ -> v.roundToInt().toString() }
         ),
         xAxis = BarStyle.XAxis(
             show = true,
-            textStyle = TextStyle(color = Color(0x66FFFFFF)),
-            showBaseline = true
+            textStyle = TextStyle(color = charts.surface.labelSecondary),
+            showBaseline = true,
+            baselineColor = charts.surface.axis,
+            baselineWidth = 3.dp
         ),
         bars = BarStyle.Bars(
             width = 18.dp,
@@ -71,11 +85,11 @@ public fun BarChart(
                 )
             },
             strokeWidth = 0.dp,
-            strokeColor = Color(0x22FFFFFF)
+            strokeColor = charts.bar.stroke
         ),
         values = BarStyle.Values(
             show = true,
-            textStyle = TextStyle(color = Color(0xCCFFFFFF)),
+            textStyle = TextStyle(color = charts.surface.extremaLabel),
             formatter = { v, _ -> v.roundToInt().toString() },
             placement = BarStyle.ValuePlacement.Above,
             minInnerPadding = 6.dp,
@@ -105,68 +119,15 @@ private fun BarChartPreview() {
             BarEntry("Sun", 9f, Color(0xFFFF5E8A)),
         )
 
-        val data = BarData(
+        BarData(
             items = entries,
             xName = "Day",
             yName = "Volume",
             yUnit = null,
         )
 
-        val style = BarStyle(
-            layout = BarStyle.Layout(padding = 12.dp, labelPadding = 6.dp),
-            grid = BarStyle.Grid(show = true, color = Color(0x22FFFFFF), strokeWidth = 1.dp),
-            yAxis = BarStyle.YAxis(
-                show = true,
-                ticks = 5,
-                textStyle = TextStyle(color = Color(0x77FFFFFF)),
-                showLine = true,
-                axisLineColor = Color(0x33FFFFFF),
-                axisLineWidth = 1.dp,
-                formatter = { v, _ -> v.roundToInt().toString() }
-            ),
-            xAxis = BarStyle.XAxis(
-                show = true,
-                textStyle = TextStyle(color = Color(0x66FFFFFF)),
-                showBaseline = true
-            ),
-            bars = BarStyle.Bars(
-                width = 18.dp,
-                spacing = 10.dp,
-                corner = 10.dp,
-                brushProvider = { entry, _, rect ->
-                    Brush.verticalGradient(
-                        0f to entry.color.copy(alpha = 0.95f),
-                        1f to entry.color.copy(alpha = 0.65f),
-                        startY = rect.top,
-                        endY = rect.bottom
-                    )
-                },
-                strokeWidth = 0.dp,
-                strokeColor = Color(0x22FFFFFF)
-            ),
-            values = BarStyle.Values(
-                show = true,
-                textStyle = TextStyle(color = Color(0xCCFFFFFF)),
-                formatter = { v, _ -> v.roundToInt().toString() },
-                placement = BarStyle.ValuePlacement.Above,
-                minInnerPadding = 6.dp,
-                insideColor = null,
-            ),
-            target = null
+        BarChart(
+            modifier = Modifier.size(300.dp)
         )
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(260.dp)
-                .background(Color(0xFF0F172A))
-                .padding(16.dp)
-        ) {
-            BarChart(
-                modifier = Modifier.fillMaxSize(),
-                data = data,
-                style = style
-            )
-        }
     }
 }

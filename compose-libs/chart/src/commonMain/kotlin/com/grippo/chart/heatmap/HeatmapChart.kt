@@ -19,7 +19,7 @@ import com.grippo.chart.utils.chooseContrastingText
 public fun HeatmapChart(
     modifier: Modifier = Modifier,
     data: HeatmapData,
-    style: HeatmapStyle = HeatmapStyle(),
+    style: HeatmapStyle,
 ) {
     val measurer = rememberTextMeasurer()
 
