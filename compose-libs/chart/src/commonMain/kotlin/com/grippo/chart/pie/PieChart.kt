@@ -1,9 +1,6 @@
 package com.grippo.chart.pie
 
-import androidx.annotation.FloatRange
-import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -22,69 +19,68 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.PI
 import kotlin.math.asin
 import kotlin.math.cos
+import kotlin.math.min
 import kotlin.math.sin
-
-@Immutable
-public data class PieChartData(
-    val text: String,
-    val color: Color,
-    val value: Long,
-)
 
 @Composable
 public fun PieChart(
     modifier: Modifier = Modifier,
-    data: List<PieChartData>,
-    style: PieStyle,
+    data: PieData,
+    style: PieStyle = PieStyle(),
 ) {
     val textMeasurer = rememberTextMeasurer()
 
+    val slices = data.slices
     // Precompute totals and base sweeps (true proportions, no distortion)
-    val (sweeps, percents) = remember(data) {
-        val total = data.sumOf { it.value }.toFloat()
-        if (total <= 0f || data.isEmpty()) {
+    val (sweeps, percents) = remember(slices) {
+        val total = slices.sumOf { it.value.toDouble() }.toFloat()
+        if (total <= 0f || slices.isEmpty()) {
             FloatArray(0) to IntArray(0)
         } else {
-            val base = FloatArray(data.size) { i ->
-                360f * (data[i].value / total)
+            val base = FloatArray(slices.size) { i ->
+                360f * (slices[i].value / total)
             }
-            val pc = IntArray(data.size) { i ->
-                // Round to int for clean UI
-                ((data[i].value / total) * 100f).toInt()
+            val pc = IntArray(slices.size) { i ->
+                ((slices[i].value / total) * 100f).toInt()
             }
             base to pc
         }
     }
 
-    // Pre-build labels (name + percent)
-    val labelLayouts = remember(textMeasurer, style.pieText?.textStyle, data, percents) {
-        if (style.pieText == null || sweeps.isEmpty()) emptyList()
-        else data.indices.map { i ->
-            val label = data[i].text
+    // Build label layouts via formatter
+    val labelLayouts = remember(textMeasurer, style.labels.textStyle, slices, percents) {
+        if (sweeps.isEmpty()) emptyList()
+        else slices.indices.map { i ->
+            val label = style.labels.formatter(slices[i], percents.getOrElse(i) { 0 })
             textMeasurer.measure(
                 text = AnnotatedString(label),
-                style = style.pieText.textStyle
+                style = style.labels.textStyle
             )
         }
     }
 
-    Canvas(modifier = modifier) {
+    androidx.compose.foundation.Canvas(modifier = modifier) {
         if (sweeps.isEmpty()) return@Canvas
 
-        // Convert dp → px once per frame
-        val widthPx = style.chartBarWidth.toPx()
-        val cornerRadiusPx = style.cornerRadius.toPx()
-        val connectorWidthPx = 1.dp.toPx()
-        val labelRadiusExtra = 8.dp.toPx()      // how far labels sit outside the ring
-        val labelPaddingH = 6.dp.toPx()         // horizontal padding from leader end to text
-        val minOutsideAngle = 5f                // below this angle we skip outside labels
-        val epsDeg = 0.1f                       // geometric epsilon
+        // Layout rect and radii
+        val pad = style.layout.padding.toPx()
+        val chart = Rect(pad, pad, size.width - pad, size.height - pad)
+        if (chart.width <= 0f || chart.height <= 0f) return@Canvas
 
-        val outerRadius = size.minDimension / 2f
+        val widthPx = style.arc.width.toPx()
+        val cornerRadiusPx = style.arc.cornerRadius.toPx()
+        val connectorWidthPx = style.leaders.lineWidth.toPx()
+        val labelRadiusExtra = style.leaders.offset.toPx()
+        val labelPaddingH = style.labels.labelPadding.toPx()
+        val minOutsideAngle = style.labels.outsideMinAngleDeg
+        val epsDeg = 0.1f
+
+        val center = Offset(chart.left + chart.width / 2f, chart.top + chart.height / 2f)
+        val outerRadius = min(chart.width, chart.height) / 2f
         val innerRadius = outerRadius - widthPx
         val centerRadius = (outerRadius + innerRadius) / 2f
 
-        var acc = 0f
+        var acc = style.layout.startAngleDeg
 
         // Collect candidates for outside labels to resolve overlaps per hemisphere
         data class OutsideLabel(
@@ -100,8 +96,8 @@ public fun PieChart(
 
         // First pass: draw arcs and prepare label positions
         sweeps.forEachIndexed { i, baseSweep ->
-            // Use local padding limited by slice size to avoid "eating" tiny slices
-            val localPad = style.paddingAngle
+            // Local padding limited by slice size to avoid eating tiny slices
+            val localPad = style.arc.paddingAngleDeg
                 .coerceAtMost(baseSweep / 2f - epsDeg)
                 .coerceAtLeast(0f)
 
@@ -109,10 +105,10 @@ public fun PieChart(
             val drawSweep = (baseSweep - 2f * localPad).coerceAtLeast(0f)
             val mid = start + drawSweep / 2f
 
-            // Draw rounded arc if there is something visible
+            // Draw rounded arc if visible
             if (drawSweep >= epsDeg) {
                 drawRoundedArc(
-                    color = data[i].color,
+                    color = slices[i].color,
                     startAngle = start,
                     sweepAngle = drawSweep,
                     width = widthPx,
@@ -122,9 +118,9 @@ public fun PieChart(
                 )
             }
 
-            // Labels: inside for big slices, outside for small slices
-            style.pieText?.let {
-                if (baseSweep >= style.minVisibleAngle && labelLayouts.isNotEmpty()) {
+            // Labels: inside for big slices, outside for smaller ones
+            if (labelLayouts.isNotEmpty()) {
+                if (baseSweep >= style.labels.insideMinAngleDeg) {
                     // Inside label
                     val layout = labelLayouts[i]
                     val midRad = mid * PI.toFloat() / 180f
@@ -137,7 +133,7 @@ public fun PieChart(
                             y - layout.size.height / 2f
                         )
                     )
-                } else if (baseSweep >= minOutsideAngle && labelLayouts.isNotEmpty()) {
+                } else if (baseSweep >= minOutsideAngle && style.leaders.show) {
                     // Prepare outside label (position resolved in second pass)
                     val layout = labelLayouts[i]
                     val midRad = mid * PI.toFloat() / 180f
@@ -158,12 +154,11 @@ public fun PieChart(
         }
 
         // Second pass: resolve outside label overlaps per hemisphere and draw leaders + text
-        if (outside.isNotEmpty() && style.pieText != null) {
+        if (outside.isNotEmpty() && style.leaders.show) {
             fun layoutSide(rightSide: Boolean) {
                 val side = outside.filter { it.rightSide == rightSide }
                     .sortedBy { it.y }
                     .toMutableList()
-
                 if (side.isEmpty()) return
 
                 // Greedy vertical spacing (ladder)
@@ -196,23 +191,21 @@ public fun PieChart(
                     )
 
                     val labelX = if (item.rightSide) {
-                        // place text to the right
                         elbow.x + labelPaddingH
                     } else {
-                        // place text to the left (right-aligned)
                         elbow.x - labelPaddingH - layout.size.width
                     }
                     val labelYTop = item.y - layout.size.height / 2f
 
-                    // Leader lines
+                    // Leader lines in slice color
                     drawLine(
-                        color = data[i].color, // use slice color
+                        color = slices[i].color,
                         start = arcPt,
                         end = elbow,
                         strokeWidth = connectorWidthPx
                     )
                     drawLine(
-                        color = data[i].color, // use slice color
+                        color = slices[i].color,
                         start = elbow,
                         end = Offset(
                             x = if (item.rightSide) labelX else labelX + layout.size.width,
@@ -222,13 +215,9 @@ public fun PieChart(
                     )
 
                     // Text
-                    drawText(
-                        layout,
-                        topLeft = Offset(labelX, labelYTop),
-                    )
+                    drawText(layout, topLeft = Offset(labelX, labelYTop))
                 }
             }
-
             layoutSide(rightSide = true)
             layoutSide(rightSide = false)
         }
@@ -244,7 +233,7 @@ private fun DrawScope.drawRoundedArc(
     startAngle: Float,
     sweepAngle: Float,
     width: Float,
-    @FloatRange(from = 0.0, to = 1.0)
+    @androidx.annotation.FloatRange(from = 0.0, to = 1.0)
     alpha: Float = 1.0f,
     style: DrawStyle = Fill,
     center: Offset = this.center,
