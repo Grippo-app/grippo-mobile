@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 
 private var _RomanChair: ImageVector? = null
 
-public val RomainChair: ImageVector
+public val RomanChair: ImageVector
     get() {
         if (_RomanChair != null) {
             return _RomanChair!!
@@ -487,8 +487,3 @@ public val RomainChair: ImageVector
         }.build()
         return _RomanChair!!
     }
-
-// Temporary alias to fix naming typo while maintaining backward compatibility
-public val RomanChair: ImageVector
-    get() = RomainChair
-

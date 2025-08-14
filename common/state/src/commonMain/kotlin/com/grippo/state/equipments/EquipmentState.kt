@@ -90,7 +90,7 @@ public data class EquipmentState(
             EquipmentEnumState.ROW_CABLE -> RowCable
             EquipmentEnumState.PULL_UP_BAR -> PullUpBar
             EquipmentEnumState.DIP_BARS -> DipBar
-            EquipmentEnumState.ROMAIN_CHAIR -> RomanChair
+            EquipmentEnumState.ROMAN_CHAIR -> RomanChair
             EquipmentEnumState.GLUTE_HAM_RAISE_BENCH -> GluteHamRaiseBench
             EquipmentEnumState.FLAT_BENCH -> FlatBench
             EquipmentEnumState.ADJUSTABLE_BENCH -> AdjustableBench

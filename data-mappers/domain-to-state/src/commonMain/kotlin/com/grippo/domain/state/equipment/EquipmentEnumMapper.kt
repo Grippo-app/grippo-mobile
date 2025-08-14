@@ -40,7 +40,7 @@ public fun EquipmentEnum.toState(): EquipmentEnumState {
 
         EquipmentEnum.PULL_UP_BAR -> EquipmentEnumState.PULL_UP_BAR
         EquipmentEnum.DIP_BARS -> EquipmentEnumState.DIP_BARS
-        EquipmentEnum.ROMAIN_CHAIR -> EquipmentEnumState.ROMAIN_CHAIR
+        EquipmentEnum.ROMAN_CHAIR -> EquipmentEnumState.ROMAN_CHAIR
         EquipmentEnum.GLUTE_HAM_RAISE_BENCH -> EquipmentEnumState.GLUTE_HAM_RAISE_BENCH
 
         EquipmentEnum.FLAT_BENCH -> EquipmentEnumState.FLAT_BENCH

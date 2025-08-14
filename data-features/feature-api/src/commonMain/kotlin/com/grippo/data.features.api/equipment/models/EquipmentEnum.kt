@@ -36,7 +36,7 @@ public enum class EquipmentEnum(private val key: String) {
 
     PULL_UP_BAR("pull_up_bar"),
     DIP_BARS("dip_bars"),
-    ROMAIN_CHAIR("romain_chair"),
+    ROMAN_CHAIR("romain_chair"),
     GLUTE_HAM_RAISE_BENCH("glute_ham_raise_bench"),
 
     FLAT_BENCH("flat_bench"),

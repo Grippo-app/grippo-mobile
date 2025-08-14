@@ -36,7 +36,7 @@ public enum class EquipmentEnumState {
 
     PULL_UP_BAR,
     DIP_BARS,
-    ROMAIN_CHAIR,
+    ROMAN_CHAIR,
     GLUTE_HAM_RAISE_BENCH,
 
     FLAT_BENCH,
