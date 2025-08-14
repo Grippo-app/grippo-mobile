@@ -4,95 +4,91 @@ import androidx.compose.ui.graphics.Color
 import com.grippo.design.resources.provider.AppColor
 
 public object LightColor : AppColor {
+
     override val border: AppColor.BorderColors = object : AppColor.BorderColors {
-        override val default = AppColorTokens.NeutralLight.N200
-        override val focus = AppColorTokens.Common.Accent
+        override val default = AppPalette.NeutralLight.N200
+        override val focus = AppPalette.Common.Accent
     }
 
     override val button: AppColor.ButtonColors = object : AppColor.ButtonColors {
-        override val backgroundPrimary = AppColorTokens.Primary.P500
-        override val textPrimary = AppColorTokens.Common.White
-        override val iconPrimary = AppColorTokens.Common.White
-        override val backgroundPrimaryDisabled = AppColorTokens.NeutralLight.N200
-        override val contentPrimaryDisabled = AppColorTokens.NeutralLight.N550
+        override val backgroundPrimary = AppPalette.Primary.P500
+        override val textPrimary = AppPalette.Common.White
+        override val iconPrimary = AppPalette.Common.White
+        override val backgroundPrimaryDisabled = AppPalette.NeutralLight.N200
+        override val contentPrimaryDisabled = AppPalette.NeutralLight.N550
 
         override val backgroundSecondary = Color.Transparent
-        override val textSecondary = AppColorTokens.Common.Black
-        override val iconSecondary = AppColorTokens.Common.Accent
-        override val borderSecondary = AppColorTokens.Primary.P250
-        override val backgroundSecondaryDisabled = AppColorTokens.NeutralLight.N200
-        override val contentSecondaryDisabled = AppColorTokens.NeutralLight.N550
+        override val textSecondary = AppPalette.Common.Black
+        override val iconSecondary = AppPalette.Common.Accent
+        override val borderSecondary = AppPalette.Primary.P250
+        override val backgroundSecondaryDisabled = AppPalette.NeutralLight.N200
+        override val contentSecondaryDisabled = AppPalette.NeutralLight.N550
 
-        override val textTransparent = AppColorTokens.Common.Accent
-        override val iconTransparent = AppColorTokens.Common.Accent
-        override val contentTransparentDisabled = AppColorTokens.NeutralLight.N550
+        override val textTransparent = AppPalette.Common.Accent
+        override val iconTransparent = AppPalette.Common.Accent
+        override val contentTransparentDisabled = AppPalette.NeutralLight.N550
     }
 
     override val icon: AppColor.IconColors = object : AppColor.IconColors {
-        override val primary = AppColorTokens.NeutralLight.N700
-        override val secondary = AppColorTokens.NeutralLight.N600
-        override val disabled = AppColorTokens.NeutralLight.N200
-        override val accent = AppColorTokens.Common.Accent
-        override val inverted = AppColorTokens.Common.White
+        override val primary = AppPalette.NeutralLight.N700
+        override val secondary = AppPalette.NeutralLight.N600
+        override val disabled = AppPalette.NeutralLight.N200
+        override val accent = AppPalette.Common.Accent
+        override val inverted = AppPalette.Common.White
     }
 
     override val toggle: AppColor.ToggleColors = object : AppColor.ToggleColors {
-        override val checkedThumb = AppColorTokens.Common.White
-        override val checkedTrack = AppColorTokens.Common.Accent
-
-        override val uncheckedThumb = AppColorTokens.Common.White
-        override val uncheckedTrack = AppColorTokens.NeutralLight.N200
+        override val checkedThumb = AppPalette.Common.White
+        override val checkedTrack = AppPalette.Common.Accent
+        override val uncheckedThumb = AppPalette.Common.White
+        override val uncheckedTrack = AppPalette.NeutralLight.N200
     }
 
     override val radio: AppColor.RadioColors = object : AppColor.RadioColors {
-        override val selectedThumb = AppColorTokens.Common.Accent
-        override val selectedTrack = AppColorTokens.Common.Accent
-
-        override val unselectedTrack = AppColorTokens.NeutralLight.N200
-
-        override val disabledSelectedThumb = AppColorTokens.NeutralLight.N550
-        override val disabledUnselectedTrack = AppColorTokens.NeutralLight.N200
+        override val selectedThumb = AppPalette.Common.Accent
+        override val selectedTrack = AppPalette.Common.Accent
+        override val unselectedTrack = AppPalette.NeutralLight.N200
+        override val disabledSelectedThumb = AppPalette.NeutralLight.N550
+        override val disabledUnselectedTrack = AppPalette.NeutralLight.N200
     }
 
     override val input: AppColor.InputColors = object : AppColor.InputColors {
-        override val placeholder = AppColorTokens.NeutralLight.N400
-        override val label = AppColorTokens.NeutralLight.N550
-        override val text = AppColorTokens.Common.Black
-
-        override val leading = AppColorTokens.NeutralLight.N700
-        override val trailing = AppColorTokens.NeutralLight.N700
-
-        override val backgroundDisabled = AppColorTokens.NeutralLight.N300
-        override val textDisabled = AppColorTokens.NeutralLight.N550
-        override val placeholderDisabled = AppColorTokens.NeutralLight.N550
+        override val placeholder = AppPalette.NeutralLight.N400
+        override val label = AppPalette.NeutralLight.N550
+        override val text = AppPalette.Common.Black
+        override val leading = AppPalette.NeutralLight.N700
+        override val trailing = AppPalette.NeutralLight.N700
+        override val backgroundDisabled = AppPalette.NeutralLight.N300
+        override val textDisabled = AppPalette.NeutralLight.N550
+        override val placeholderDisabled = AppPalette.NeutralLight.N550
     }
 
     override val background: AppColor.BackgroundColors = object : AppColor.BackgroundColors {
-        override val screen = AppColorTokens.NeutralLight.N150
-        override val dialog = AppColorTokens.NeutralLight.N100
-        override val card = AppColorTokens.Common.White
-        override val accent = AppColorTokens.Common.Accent
+        override val screen = AppPalette.NeutralLight.N150
+        override val dialog = AppPalette.NeutralLight.N100
+        override val card = AppPalette.Common.White
+        override val accent = AppPalette.Common.Accent
     }
 
     override val dialog: AppColor.DialogColors = object : AppColor.DialogColors {
-        override val handle = AppColorTokens.NeutralLight.N500
+        override val handle = AppPalette.NeutralLight.N500
         override val scrim = Color(0x80000000)
     }
 
     override val text: AppColor.TextColors = object : AppColor.TextColors {
-        override val primary = AppColorTokens.Common.Black
-        override val secondary = AppColorTokens.NeutralLight.N700
-        override val tertiary = AppColorTokens.NeutralLight.N550
-        override val inverted = AppColorTokens.Common.White
-        override val disabled = AppColorTokens.NeutralLight.N400
+        override val primary = AppPalette.Common.Black
+        override val secondary = AppPalette.NeutralLight.N700
+        override val tertiary = AppPalette.NeutralLight.N550
+        override val inverted = AppPalette.Common.White
+        override val disabled = AppPalette.NeutralLight.N400
     }
 
     override val semantic: AppColor.SemanticColors = object : AppColor.SemanticColors {
-        override val success = AppColorTokens.Semantic.Success
-        override val error = AppColorTokens.Semantic.Error
-        override val warning = AppColorTokens.Semantic.Warning
-        override val info = AppColorTokens.Common.Accent
-        override val accent = AppColorTokens.Common.Accent
+        override val success = AppPalette.Semantic.Success
+        override val error = AppPalette.Semantic.Error
+        override val warning = AppPalette.Semantic.Warning
+        override val info = AppPalette.Common.Accent
+        override val accent = AppPalette.Common.Accent
     }
 
     override val overlay: AppColor.OverlayColors = object : AppColor.OverlayColors {
@@ -100,136 +96,122 @@ public object LightColor : AppColor {
     }
 
     override val skeleton: AppColor.SkeletonColors = object : AppColor.SkeletonColors {
-        override val background = AppColorTokens.NeutralLight.N300
-        override val shimmer = AppColorTokens.NeutralLight.N400
+        override val background = AppPalette.NeutralLight.N300
+        override val shimmer = AppPalette.NeutralLight.N400
     }
 
     override val segment: AppColor.SegmentColors = object : AppColor.SegmentColors {
-        override val active = AppColorTokens.Common.Black
-        override val inactive = AppColorTokens.NeutralLight.N550
-        override val selector = AppColorTokens.Common.Accent
+        override val active = AppPalette.Common.Black
+        override val inactive = AppPalette.NeutralLight.N550
+        override val selector = AppPalette.Common.Accent
     }
 
     override val divider: AppColor.DividerColors = object : AppColor.DividerColors {
-        override val default = AppColorTokens.NeutralLight.N200.copy(alpha = 0.5f)
+        override val default = AppPalette.NeutralLight.N200.copy(alpha = 0.5f)
     }
 
     override val theme: AppColor.ThemeColors = object : AppColor.ThemeColors {
-        override val lightText = AppColorTokens.NeutralLight.N800
-        override val lightBackground1 = AppColorTokens.Common.White
-        override val lightBackground2 = AppColorTokens.Common.White
-        override val darkText = AppColorTokens.NeutralDark.N800
-        override val darkBackground1 = AppColorTokens.NeutralDark.N150
-        override val darkBackground2 = AppColorTokens.NeutralDark.N150
+        override val lightText = AppPalette.NeutralLight.N800
+        override val lightBackground1 = AppPalette.Common.White
+        override val lightBackground2 = AppPalette.Common.White
+        override val darkText = AppPalette.NeutralDark.N800
+        override val darkBackground1 = AppPalette.NeutralDark.N150
+        override val darkBackground2 = AppPalette.NeutralDark.N150
     }
 
     override val konfetti: AppColor.Konfetti = object : AppColor.Konfetti {
-        override val confettiColor1 = AppColorTokens.Semantic.Success
-        override val confettiColor2 = AppColorTokens.Semantic.Warning
-        override val confettiColor3 = AppColorTokens.Semantic.Error
-        override val confettiColor4 = AppColorTokens.Common.Accent
-        override val confettiColor5 = AppColorTokens.Primary.P300
-        override val confettiColor6 = AppColorTokens.Primary.P400
-        override val confettiColor7 = AppColorTokens.Primary.P500
-        override val confettiColor8 = AppColorTokens.NeutralLight.N300
-        override val confettiColor9 = AppColorTokens.NeutralLight.N400
-        override val confettiColor10 = AppColorTokens.NeutralLight.N500
+        override val confettiColor1 = AppPalette.Semantic.Success
+        override val confettiColor2 = AppPalette.Semantic.Warning
+        override val confettiColor3 = AppPalette.Semantic.Error
+        override val confettiColor4 = AppPalette.Common.Accent
+        override val confettiColor5 = AppPalette.Primary.P300
+        override val confettiColor6 = AppPalette.Primary.P400
+        override val confettiColor7 = AppPalette.Primary.P500
+        override val confettiColor8 = AppPalette.NeutralLight.N300
+        override val confettiColor9 = AppPalette.NeutralLight.N400
+        override val confettiColor10 = AppPalette.NeutralLight.N500
     }
 
     override val chip: AppColor.ChipColors = object : AppColor.ChipColors {
-        override val intensity: AppColor.ChipColors.GradientColors =
-            object : AppColor.ChipColors.GradientColors {
-                override val startColor = Color(0xFFFF5757)
-                override val endColor = Color(0xFFFF8C29)
-                override val contentColor = AppColorTokens.Common.White
-            }
-
-        override val volume: AppColor.ChipColors.GradientColors =
-            object : AppColor.ChipColors.GradientColors {
-                override val startColor = Color(0xFF2B7FFF)
-                override val endColor = Color(0xFF00C2FF)
-                override val contentColor = AppColorTokens.Common.White
-            }
-
-        override val repetitions: AppColor.ChipColors.GradientColors =
-            object : AppColor.ChipColors.GradientColors {
-                override val startColor = Color(0xFF8C52FF)
-                override val endColor = Color(0xFFAF5CF7)
-                override val contentColor = AppColorTokens.Common.White
-            }
+        override val intensity = object : AppColor.ChipColors.GradientColors {
+            override val startColor = Color(0xFFFF5757)
+            override val endColor = Color(0xFFFF8C29)
+            override val contentColor = AppPalette.Common.White
+        }
+        override val volume = object : AppColor.ChipColors.GradientColors {
+            override val startColor = Color(0xFF2B7FFF)
+            override val endColor = Color(0xFF00C2FF)
+            override val contentColor = AppPalette.Common.White
+        }
+        override val repetitions = object : AppColor.ChipColors.GradientColors {
+            override val startColor = Color(0xFF8C52FF)
+            override val endColor = Color(0xFFAF5CF7)
+            override val contentColor = AppPalette.Common.White
+        }
     }
 
     override val muscle: AppColor.MuscleColors = object : AppColor.MuscleColors {
-        override val focused = AppColorTokens.Primary.P600
-        override val active = AppColorTokens.Primary.P400
-        override val inactive = AppColorTokens.NeutralLight.N300
-        override val background = AppColorTokens.NeutralLight.N200
-        override val outline = AppColorTokens.NeutralLight.N200
-        override val text = AppColorTokens.Common.White
-        override val palette = listOf(
-            Color(0xFFEF5350), Color(0xFFFF7043), Color(0xFFFFCA28), Color(0xFFBA68C8),
-            Color(0xFF5C6BC0), Color(0xFF9575CD), Color(0xFF7986CB), Color(0xFFFFEE58),
-            Color(0xFFFFA726), Color(0xFF8D6E63), Color(0xFF4DB6AC), Color(0xFF81C784),
-            Color(0xFFAED581), Color(0xFFDCE775), Color(0xFFB0BEC5), Color(0xFFFF8A65),
-            Color(0xFFFFB74D), Color(0xFFFFD54F), Color(0xFF64B5F6), Color(0xFF42A5F5),
-            Color(0xFF4FC3F7), Color(0xFF90A4AE)
-        )
+        override val focused = AppPalette.Primary.P600
+        override val active = AppPalette.Primary.P400
+        override val inactive = AppPalette.NeutralLight.N300
+        override val background = AppPalette.NeutralLight.N200
+        override val outline = AppPalette.NeutralLight.N200
+        override val text = AppPalette.Common.White
+        override val palette = AppPalette.Qualitative.Palette12
     }
 
     override val charts: AppColor.Charts = object : AppColor.Charts {
         override val surface = object : AppColor.Charts.SurfaceColors {
-            override val grid = AppColorTokens.Chart.SurfaceLight.Grid
-            override val axis = AppColorTokens.Chart.SurfaceLight.Axis
-            override val labelPrimary = AppColorTokens.Chart.SurfaceLight.LabelPrimary
-            override val labelSecondary = AppColorTokens.Chart.SurfaceLight.LabelSecondary
-            override val extremaLabel = AppColorTokens.Chart.SurfaceLight.ExtremaLabel
+            override val grid = AppPalette.Common.Black.copy(alpha = 0.13f)
+            override val axis = AppPalette.Common.Black.copy(alpha = 0.20f)
+            override val labelPrimary = AppPalette.NeutralLight.N700
+            override val labelSecondary = AppPalette.NeutralLight.N550
+            override val extremaLabel = AppPalette.Common.Black.copy(alpha = 0.80f)
         }
-        override val sparkline: AppColor.Charts.SparklineColors =
-            object : AppColor.Charts.SparklineColors {
-                override val lineA = AppColorTokens.Chart.Sparkline.LineA
-                override val lineB = AppColorTokens.Chart.Sparkline.LineB
-                override val fillBase = AppColorTokens.Chart.Sparkline.FillBase
-                override val dot = AppColorTokens.Chart.Sparkline.Dot
-                override val min = AppColorTokens.Chart.Sparkline.Min
-                override val max = AppColorTokens.Chart.Sparkline.Max
-            }
+        override val sparkline = object : AppColor.Charts.SparklineColors {
+            override val lineA = AppPalette.Primary.P400
+            override val lineB = AppPalette.Semantic.Success
+            override val fillBase = AppPalette.Primary.P400
+            override val dot = AppPalette.Primary.P400
+            override val min = AppPalette.Semantic.Warning
+            override val max = AppPalette.Semantic.Success
+        }
         override val area = object : AppColor.Charts.AreaColors {
-            override val lineA = AppColorTokens.Chart.Area.LineA
-            override val lineB = AppColorTokens.Chart.Area.LineB
-            override val fillBase = AppColorTokens.Chart.Area.FillBase
-            override val glow = AppColorTokens.Chart.Area.Glow
-            override val dot = AppColorTokens.Chart.Area.Dot
+            override val lineA = AppPalette.Semantic.Success
+            override val lineB = AppPalette.Primary.P400
+            override val fillBase = AppPalette.Semantic.Success
+            override val glow = AppPalette.Semantic.Success
+            override val dot = AppPalette.Semantic.Success
         }
         override val bar = object : AppColor.Charts.BarColors {
-            override val stroke = AppColorTokens.Chart.Bar.StrokeOnLight
+            override val stroke = AppPalette.Common.Black.copy(alpha = 0.20f)
         }
         override val categorical = object : AppColor.Charts.CategoricalColors {
-            override val palette = AppColorTokens.Chart.Categorical.Palette32
+            override val palette = AppPalette.Qualitative.Palette12
         }
         override val pie = object : AppColor.Charts.PieColors {
-            override val labelText = AppColorTokens.Chart.Pie.LabelTextOnLight
-            override val leader = AppColorTokens.Chart.Pie.LeaderOnLight
+            override val labelText = AppPalette.Common.Black.copy(alpha = 0.80f)
+            override val leader = null
         }
-        override val heatmap: AppColor.Charts.HeatmapColors =
-            object : AppColor.Charts.HeatmapColors {
-                override val scaleStops = AppColorTokens.Chart.Heatmap.StopsCoolWarm
-                override val missingCell = AppColorTokens.Chart.Heatmap.Light.Missing
-                override val border = AppColorTokens.Chart.Heatmap.Light.Border
-                override val valueText = AppColorTokens.Chart.Heatmap.Light.ValueText
-            }
-        override val radar: AppColor.Charts.RadarColors = object : AppColor.Charts.RadarColors {
-            override val grid = AppColorTokens.Chart.Radar.GridOnLight
-            override val spoke = AppColorTokens.Chart.Radar.SpokeOnLight
-            override val label = AppColorTokens.Chart.Radar.LabelOnLight
-            override val valueText = AppColorTokens.Chart.Radar.ValueOnLight
-            override val strokeFallback = AppColorTokens.Chart.Radar.StrokeFallbackOnLight
-            override val palette = AppColorTokens.Chart.Radar.Palette
+        override val heatmap = object : AppColor.Charts.HeatmapColors {
+            override val scaleStops = AppPalette.Ramps.BlueToOrange
+            override val missingCell = AppPalette.Common.Black.copy(alpha = 0.07f)
+            override val border = AppPalette.Common.Black.copy(alpha = 0.20f)
+            override val valueText = AppPalette.Common.Black
+        }
+        override val radar = object : AppColor.Charts.RadarColors {
+            override val grid = AppPalette.Common.Black.copy(alpha = 0.20f)
+            override val spoke = AppPalette.Common.Black.copy(alpha = 0.13f)
+            override val label = AppPalette.NeutralLight.N700
+            override val valueText = AppPalette.Common.Black.copy(alpha = 0.80f)
+            override val strokeFallback = AppPalette.Primary.P500
+            override val palette = AppPalette.Qualitative.Palette12
         }
         override val progress = object : AppColor.Charts.ProgressColors {
-            override val track = AppColorTokens.Chart.Progress.TrackOnLight
-            override val stroke = AppColorTokens.Chart.Progress.StrokeOnLight
-            override val target = AppColorTokens.Chart.Progress.TargetOnLight
-            override val palette = AppColorTokens.Chart.Progress.Palette
+            override val track = AppPalette.Common.Black.copy(alpha = 0.08f)
+            override val stroke = AppPalette.Common.Black.copy(alpha = 0.20f)
+            override val target = AppPalette.Common.Black.copy(alpha = 0.27f)
+            override val palette = AppPalette.Qualitative.Palette12
         }
     }
 }
