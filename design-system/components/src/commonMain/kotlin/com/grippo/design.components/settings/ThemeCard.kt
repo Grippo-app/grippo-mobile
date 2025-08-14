@@ -82,7 +82,7 @@ public fun ThemeCard(
         Radio(
             modifier = Modifier.align(Alignment.BottomEnd),
             selected = isSelected,
-            onSelectedChange = onClick
+            onSelectedChange = { onClick() }
         )
     }
 }
