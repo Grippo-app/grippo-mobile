@@ -93,6 +93,22 @@ internal object AppColorTokens {
             val LeaderOnLight: Color? = null
         }
 
+        object Progress {
+            val TrackOnDark = Color(0x14FFFFFF)
+            val StrokeOnDark = Color(0x22FFFFFF)
+            val TargetOnDark = Color(0x44FFFFFF)
+
+            val TrackOnLight = Color(0x14000000)
+            val StrokeOnLight = Color(0x22000000)
+            val TargetOnLight = Color(0x44000000)
+
+            val Palette: List<Color> = listOf(
+                Color(0xFF6AA9FF), Color(0xFF00E6A7), Color(0xFFFF7A33), Color(0xFFB049F8),
+                Color(0xFFFFC53D), Color(0xFF3A86FF), Color(0xFFFF5E8A), Color(0xFF2B7FFF),
+                Color(0xFF33D2FF), Color(0xFFA56FFF), Color(0xFFAF5CF7), Color(0xFF64B5F6)
+            )
+        }
+
         object Bar {
             val StrokeOnDark = SurfaceDark.Axis
             val StrokeOnLight = SurfaceLight.Axis

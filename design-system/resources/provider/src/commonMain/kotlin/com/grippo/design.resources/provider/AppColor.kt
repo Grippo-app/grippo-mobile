@@ -185,6 +185,7 @@ public interface AppColor {
         public val pie: PieColors
         public val categorical: CategoricalColors
         public val heatmap: HeatmapColors
+        public val progress: ProgressColors
 
         public interface HeatmapColors {
             public val scaleStops: List<Pair<Float, Color>>
@@ -216,6 +217,13 @@ public interface AppColor {
 
         public interface BarColors {
             public val stroke: Color
+        }
+
+        public interface ProgressColors {
+            public val track: Color
+            public val stroke: Color
+            public val target: Color
+            public val palette: List<Color>
         }
 
         public interface CategoricalColors {

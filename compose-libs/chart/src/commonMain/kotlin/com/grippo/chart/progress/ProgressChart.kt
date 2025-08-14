@@ -17,7 +17,7 @@ import kotlin.math.max
 public fun ProgressChart(
     modifier: Modifier = Modifier,
     data: ProgressData,
-    style: ProgressStyle = ProgressStyle(),
+    style: ProgressStyle,
 ) {
     val measurer = rememberTextMeasurer()
 

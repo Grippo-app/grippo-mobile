@@ -209,5 +209,11 @@ public object DarkColor : AppColor {
             override val labelText = AppColorTokens.Chart.Pie.LabelTextOnDark
             override val leader = AppColorTokens.Chart.Pie.LeaderOnDark
         }
+        override val progress = object : AppColor.Charts.ProgressColors {
+            override val track = AppColorTokens.Chart.Progress.TrackOnDark
+            override val stroke = AppColorTokens.Chart.Progress.StrokeOnDark
+            override val target = AppColorTokens.Chart.Progress.TargetOnDark
+            override val palette = AppColorTokens.Chart.Progress.Palette
+        }
     }
 }

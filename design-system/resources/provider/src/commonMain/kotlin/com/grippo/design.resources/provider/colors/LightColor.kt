@@ -208,5 +208,11 @@ public object LightColor : AppColor {
                 override val border = AppColorTokens.Chart.Heatmap.Light.Border
                 override val valueText = AppColorTokens.Chart.Heatmap.Light.ValueText
             }
+        override val progress = object : AppColor.Charts.ProgressColors {
+            override val track = AppColorTokens.Chart.Progress.TrackOnLight
+            override val stroke = AppColorTokens.Chart.Progress.StrokeOnLight
+            override val target = AppColorTokens.Chart.Progress.TargetOnLight
+            override val palette = AppColorTokens.Chart.Progress.Palette
+        }
     }
 }
