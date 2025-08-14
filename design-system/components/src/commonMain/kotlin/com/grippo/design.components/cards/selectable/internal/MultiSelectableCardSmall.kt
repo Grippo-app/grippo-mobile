@@ -49,7 +49,7 @@ internal fun MultiSelectableCardSmall(
 
         Toggle(
             checked = isSelected,
-            onCheckedChange = { onClick() }
+            onCheckedChange = onClick
         )
     }
 }
