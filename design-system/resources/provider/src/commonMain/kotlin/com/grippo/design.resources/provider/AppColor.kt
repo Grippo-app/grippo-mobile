@@ -180,10 +180,7 @@ public interface AppColor {
     }
 
     public interface Charts {
-        public val surface: SurfaceColors
         public val area: AreaColors
-        public val bar: BarColors
-        public val pie: PieColors
         public val categorical: CategoricalColors
         public val heatmap: HeatmapColors
         public val progress: ProgressColors
@@ -200,10 +197,6 @@ public interface AppColor {
         }
 
         public interface RadarColors {
-            public val grid: Color
-            public val spoke: Color
-            public val label: Color
-            public val valueText: Color
             public val strokeFallback: Color
             public val palette: List<Color>
         }
@@ -211,16 +204,6 @@ public interface AppColor {
         public interface HeatmapColors {
             public val scaleStops: List<Pair<Float, Color>>
             public val missingCell: Color
-            public val border: Color
-            public val valueText: Color
-        }
-
-        public interface SurfaceColors {
-            public val grid: Color
-            public val axis: Color
-            public val labelPrimary: Color
-            public val labelSecondary: Color
-            public val extremaLabel: Color
         }
 
         public interface AreaColors {
@@ -231,19 +214,8 @@ public interface AppColor {
             public val dot: Color
         }
 
-        public interface PieColors {
-            public val labelText: Color
-            public val leader: Color?
-        }
-
-        public interface BarColors {
-            public val stroke: Color
-        }
-
         public interface ProgressColors {
             public val track: Color
-            public val stroke: Color
-            public val target: Color
             public val palette: List<Color>
         }
 

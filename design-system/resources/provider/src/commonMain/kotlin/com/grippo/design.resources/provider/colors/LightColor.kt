@@ -162,13 +162,6 @@ public object LightColor : AppColor {
     }
 
     override val charts: AppColor.Charts = object : AppColor.Charts {
-        override val surface = object : AppColor.Charts.SurfaceColors {
-            override val grid = AppPalette.Common.Black.copy(alpha = 0.13f)
-            override val axis = AppPalette.Common.Black.copy(alpha = 0.20f)
-            override val labelPrimary = AppPalette.NeutralLight.N700
-            override val labelSecondary = AppPalette.NeutralLight.N550
-            override val extremaLabel = AppPalette.Common.Black.copy(alpha = 0.80f)
-        }
         override val sparkline = object : AppColor.Charts.SparklineColors {
             override val lineA = AppPalette.Primary.P400
             override val lineB = AppPalette.Semantic.Success
@@ -184,34 +177,19 @@ public object LightColor : AppColor {
             override val glow = AppPalette.Semantic.Success
             override val dot = AppPalette.Semantic.Success
         }
-        override val bar = object : AppColor.Charts.BarColors {
-            override val stroke = AppPalette.Common.Black.copy(alpha = 0.20f)
-        }
         override val categorical = object : AppColor.Charts.CategoricalColors {
             override val palette = AppPalette.Qualitative.Palette12
-        }
-        override val pie = object : AppColor.Charts.PieColors {
-            override val labelText = AppPalette.Common.Black.copy(alpha = 0.80f)
-            override val leader = null
         }
         override val heatmap = object : AppColor.Charts.HeatmapColors {
             override val scaleStops = AppPalette.Ramps.BlueOrangeRed
             override val missingCell = AppPalette.Common.Black.copy(alpha = 0.07f)
-            override val border = AppPalette.Common.Black.copy(alpha = 0.20f)
-            override val valueText = AppPalette.Common.Black
         }
         override val radar = object : AppColor.Charts.RadarColors {
-            override val grid = AppPalette.Common.Black.copy(alpha = 0.20f)
-            override val spoke = AppPalette.Common.Black.copy(alpha = 0.13f)
-            override val label = AppPalette.NeutralLight.N700
-            override val valueText = AppPalette.Common.Black.copy(alpha = 0.80f)
             override val strokeFallback = AppPalette.Primary.P500
             override val palette = AppPalette.Qualitative.Palette12
         }
         override val progress = object : AppColor.Charts.ProgressColors {
             override val track = AppPalette.Common.Black.copy(alpha = 0.08f)
-            override val stroke = AppPalette.Common.Black.copy(alpha = 0.20f)
-            override val target = AppPalette.Common.Black.copy(alpha = 0.27f)
             override val palette = AppPalette.Qualitative.Palette12
         }
     }

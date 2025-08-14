@@ -52,7 +52,7 @@ public fun Sparkline(
         baseline = SparklineStyle.Baseline(
             show = false,
             value = null,
-            color = charts.surface.axis,
+            color = AppTokens.colors.divider.default,
             width = 1.dp,
         ),
         dots = SparklineStyle.Dots(
@@ -62,8 +62,8 @@ public fun Sparkline(
         ),
         extremes = SparklineStyle.Extremes(
             show = true,
-            minColor = charts.sparkline.min,
-            maxColor = charts.sparkline.max,
+            minColor = AppTokens.colors.semantic.warning,
+            maxColor = AppTokens.colors.semantic.success,
             radius = 3.dp,
         )
     )

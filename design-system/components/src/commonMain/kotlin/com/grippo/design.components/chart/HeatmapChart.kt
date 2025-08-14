@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.grippo.chart.heatmap.HeatmapCell
 import com.grippo.chart.heatmap.HeatmapChart
@@ -78,13 +77,14 @@ public fun HeatmapChart(
         labels = HeatmapStyle.Labels(
             showRowLabels = true,
             showColLabels = true,
-            textStyle = TextStyle(color = charts.surface.labelPrimary)
+            textStyle = AppTokens.typography.b11Reg().copy(color = AppTokens.colors.text.primary)
         ),
         legend = HeatmapStyle.Legend(
             show = true,
             height = 12.dp,
             stops = charts.heatmap.scaleStops,
-            labelStyle = TextStyle(color = charts.surface.labelSecondary),
+            labelStyle = AppTokens.typography.b11Reg()
+                .copy(color = AppTokens.colors.text.secondary),
             minText = { "0%" },
             maxText = { "100%" }
         ),
@@ -95,12 +95,12 @@ public fun HeatmapChart(
         ),
         cells = HeatmapStyle.Cells(
             showBorders = false,
-            borderColor = charts.heatmap.border,
+            borderColor = AppTokens.colors.divider.default,
             borderWidth = 1.dp
         ),
         values = HeatmapStyle.Values(
             show = false,
-            textStyle = TextStyle(color = charts.heatmap.valueText),
+            textStyle = AppTokens.typography.b11Med().copy(color = AppTokens.colors.text.primary),
             formatter = { p, _ -> "${(p * 100f).roundToInt()}%" }
         )
     )

@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.grippo.chart.area.AreaChart
 import com.grippo.chart.area.AreaData
@@ -56,21 +55,21 @@ public fun AreaChart(
         ),
         grid = AreaStyle.Grid(
             show = true,
-            color = charts.surface.grid,
+            color = AppTokens.colors.divider.default,
             strokeWidth = 1.dp
         ),
         yAxis = AreaStyle.YAxis(
             show = true,
             ticks = 5,
-            textStyle = TextStyle(color = charts.surface.labelPrimary),
+            textStyle = AppTokens.typography.b11Reg().copy(color = AppTokens.colors.text.primary),
             showLine = true,
-            axisLineColor = charts.surface.axis,
+            axisLineColor = AppTokens.colors.divider.default,
             axisLineWidth = 1.dp,
             formatter = { v, d -> "${v.roundToInt()} ${d.yUnit ?: ""}".trim() }
         ),
         xAxis = AreaStyle.XAxis(
             show = true,
-            textStyle = TextStyle(color = charts.surface.labelSecondary)
+            textStyle = AppTokens.typography.b11Reg().copy(color = AppTokens.colors.text.secondary)
         ),
         line = AreaStyle.Line(
             strokeWidth = 2.dp,
@@ -103,7 +102,7 @@ public fun AreaChart(
         ),
         extrema = AreaStyle.Extrema(
             show = true,
-            textStyle = TextStyle(color = charts.surface.extremaLabel),
+            textStyle = AppTokens.typography.b11Bold().copy(color = AppTokens.colors.text.primary),
             markerColor = null,
             markerRadius = 3.dp,
         )

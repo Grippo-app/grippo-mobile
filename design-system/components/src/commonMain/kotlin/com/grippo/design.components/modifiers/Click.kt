@@ -1,6 +1,8 @@
 package com.grippo.design.components.modifiers
 
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
@@ -36,6 +38,7 @@ public fun Modifier.scalableClick(
 
     val scale by animateFloatAsState(
         targetValue = if (pressed) scaleDown else 1f,
+        animationSpec = tween(durationMillis = 120, easing = LinearOutSlowInEasing),
         label = "clickScale"
     )
 

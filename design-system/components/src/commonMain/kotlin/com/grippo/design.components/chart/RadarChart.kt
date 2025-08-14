@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.grippo.chart.radar.RadarAxis
 import com.grippo.chart.radar.RadarChart
@@ -65,20 +64,21 @@ public fun RadarChart(
         grid = RadarStyle.Grid(
             levels = 5,
             asPolygon = true,
-            color = charts.radar.grid,
+            color = AppTokens.colors.divider.default,
             strokeWidth = 1.dp,
             showLevelLabels = false,
-            levelLabelStyle = TextStyle(color = charts.radar.label.copy(alpha = 0.85f)),
+            levelLabelStyle = AppTokens.typography.b11Reg()
+                .copy(color = AppTokens.colors.text.secondary.copy(alpha = 0.85f)),
             levelFormatter = { v -> "${(v * 100f).roundToInt()}%" }
         ),
         spokes = RadarStyle.Spokes(
             show = true,
-            color = charts.radar.spoke,
+            color = AppTokens.colors.divider.default,
             strokeWidth = 1.dp,
         ),
         labels = RadarStyle.Labels(
             show = true,
-            textStyle = TextStyle(color = charts.radar.label)
+            textStyle = AppTokens.typography.b11Reg().copy(color = AppTokens.colors.text.primary)
         ),
         polygon = RadarStyle.Polygon(
             strokeWidth = 2.dp,
@@ -92,7 +92,7 @@ public fun RadarChart(
         ),
         values = RadarStyle.Values(
             show = false,
-            textStyle = TextStyle(color = charts.radar.valueText),
+            textStyle = AppTokens.typography.b11Med().copy(color = AppTokens.colors.text.primary),
             formatter = { v, _ -> "${(v.coerceIn(0f, 1f) * 100f).roundToInt()}%" },
             offset = 8.dp,
         ),

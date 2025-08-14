@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.grippo.chart.bar.BarChart
 import com.grippo.chart.bar.BarData
@@ -53,23 +52,23 @@ public fun BarChart(
         ),
         grid = BarStyle.Grid(
             show = true,
-            color = charts.surface.grid,
+            color = AppTokens.colors.divider.default,
             strokeWidth = 1.dp
         ),
         yAxis = BarStyle.YAxis(
             show = true,
             ticks = 5,
-            textStyle = TextStyle(color = charts.surface.labelPrimary),
+            textStyle = AppTokens.typography.b11Reg().copy(color = AppTokens.colors.text.primary),
             showLine = true,
-            axisLineColor = charts.surface.axis,
+            axisLineColor = AppTokens.colors.divider.default,
             axisLineWidth = 1.dp,
             formatter = { v, _ -> v.roundToInt().toString() }
         ),
         xAxis = BarStyle.XAxis(
             show = true,
-            textStyle = TextStyle(color = charts.surface.labelSecondary),
+            textStyle = AppTokens.typography.b11Reg().copy(color = AppTokens.colors.text.secondary),
             showBaseline = true,
-            baselineColor = charts.surface.axis,
+            baselineColor = AppTokens.colors.divider.default,
             baselineWidth = 3.dp
         ),
         bars = BarStyle.Bars(
@@ -85,11 +84,11 @@ public fun BarChart(
                 )
             },
             strokeWidth = 0.dp,
-            strokeColor = charts.bar.stroke
+            strokeColor = AppTokens.colors.divider.default
         ),
         values = BarStyle.Values(
             show = true,
-            textStyle = TextStyle(color = charts.surface.extremaLabel),
+            textStyle = AppTokens.typography.b11Bold().copy(color = AppTokens.colors.text.primary),
             formatter = { v, _ -> v.roundToInt().toString() },
             placement = BarStyle.ValuePlacement.Above,
             minInnerPadding = 6.dp,

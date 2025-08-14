@@ -23,16 +23,14 @@ public fun PieChart(
             startAngleDeg = -90f,
         ),
         arc = PieStyle.Arc(
-            width = 28.dp,
+            width = AppTokens.dp.chart.pie.width,
             paddingAngleDeg = 2f,
             cornerRadius = 6.dp,
         ),
         labels = PieStyle.Labels(
             insideMinAngleDeg = 14f,
             outsideMinAngleDeg = 5f,
-            textStyle = AppTokens.typography.b11Bold().copy(
-                color = AppTokens.colors.muscle.text
-            ),
+            textStyle = AppTokens.typography.b11Bold().copy(color = AppTokens.colors.text.primary),
             labelPadding = 6.dp,
             formatter = { s, p -> s.label }
         ),

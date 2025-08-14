@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.grippo.chart.progress.ProgressChart
 import com.grippo.chart.progress.ProgressChartData
@@ -57,14 +56,14 @@ public fun ProgressChart(
                 )
             },
             strokeWidth = 0.dp,
-            strokeColor = charts.progress.stroke,
+            strokeColor = AppTokens.colors.divider.default,
         ),
         labels = ProgressStyle.Labels(
-            textStyle = TextStyle(color = charts.surface.labelPrimary)
+            textStyle = AppTokens.typography.b11Med().copy(color = AppTokens.colors.text.primary)
         ),
         values = ProgressStyle.Values(
             show = true,
-            textStyle = TextStyle(color = charts.surface.labelPrimary),
+            textStyle = AppTokens.typography.b11Bold().copy(color = AppTokens.colors.text.primary),
             formatter = { v, d -> "${v.roundToInt()}${d.valueUnit ?: ""}" },
             placeInside = true,
             minInnerPadding = 6.dp,
@@ -73,7 +72,7 @@ public fun ProgressChart(
         ),
         target = ProgressStyle.Target(
             value = 80f,
-            color = charts.progress.target,
+            color = AppTokens.colors.text.primary.copy(alpha = 0.27f),
             width = 1.dp,
         )
     )

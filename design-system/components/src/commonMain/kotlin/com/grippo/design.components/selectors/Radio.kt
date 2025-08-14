@@ -6,6 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -23,6 +25,9 @@ public fun Radio(
 
     Canvas(
         modifier = modifier
+            .semantics {
+                this.selected = selected
+            }
             .scalableClick(onClick = onSelectedChange)
             .size(dp.size)
     ) {

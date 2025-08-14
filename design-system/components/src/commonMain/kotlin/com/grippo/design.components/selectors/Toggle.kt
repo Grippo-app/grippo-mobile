@@ -1,17 +1,23 @@
 package com.grippo.design.components.selectors
 
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -27,12 +33,18 @@ public fun Toggle(
     val dp = AppTokens.dp.toggle
     val thumbPosition by animateFloatAsState(
         targetValue = if (checked) 1f else 0f,
+        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
         label = "ToggleThumb"
     )
+    val click = rememberUpdatedState(onCheckedChange)
 
     Box(
         modifier = modifier
-            .scalableClick(onClick = onCheckedChange)
+            .semantics {
+                this.selected = checked
+                stateDescription = if (checked) "On" else "Off"
+            }
+            .scalableClick(onClick = click.value)
             .size(width = dp.width, height = dp.height)
             .background(color = Color.Transparent)
     ) {
