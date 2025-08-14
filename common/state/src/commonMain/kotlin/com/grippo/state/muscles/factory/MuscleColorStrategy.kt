@@ -6,44 +6,70 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 
 /**
- * Defines a strategy for generating muscle color presets.
- * This is used to dynamically color muscles based on different visual logic
- * such as selection or load intensity.
+ * Strategies for coloring muscles in visualizations.
+ *
+ * These strategies don't hard-code specific colors: concrete shades come from your theme
+ * (e.g., AppTokens.colors.muscle: focused/active/inactive/text/palette/scaleStops).
  */
 public sealed interface MuscleColorStrategy {
 
     /**
-     * A simple strategy that colors all visible muscles with the same color,
-     * regardless of load or selection.
+     * Monochrome coloring: all involved muscles get the same color,
+     * regardless of intensity or selection.
+     *
+     * Useful for simple states like “everything active”.
      */
     public data object Monochrome : MuscleColorStrategy
 
     /**
-     * A strategy that colors muscles based on their involvement percentage
-     * (e.g., in an exercise bundle), using the same base color but different alpha levels.
+     * Alpha-based grading relative to a single base color.
      *
-     * The more involved the muscle is, the less transparent it appears.
+     * The more involved a muscle is, the less transparent (more opaque) it appears;
+     * less involved muscles are rendered with higher transparency.
      *
-     * @param bundles A list of muscle bundles with their associated intensity percentages.
+     * Use when you want to keep one hue and only hint at the hierarchy.
+     *
+     * @param bundles A list of muscle bundles with involvement percentages; ordering is
+     * used to distribute alpha values.
      */
     public data class ByAlpha(
         val bundles: ImmutableList<ExerciseExampleBundleState>,
     ) : MuscleColorStrategy
 
     /**
-     * A strategy that assigns a unique color to each involved muscle.
-     * This is useful for visual distinction when multiple muscles are involved,
-     * without relying on alpha or selection.
+     * Color-scale grading (scaleStops) without changing alpha.
      *
-     * @param bundles A list of muscle bundles used to extract involved muscle types.
+     * Muscles are ranked by involvement and mapped onto the color scale provided by
+     * AppTokens.colors.muscle.scaleStops (e.g., cold → warm), producing clear contrast
+     * in both light and dark themes.
+     *
+     * Use when precise visual differentiation of intensity matters.
+     *
+     * @param bundles A list of muscle bundles with involvement percentages; used for
+     * ranking along the scale.
+     */
+    public data class ByScaleStops(
+        val bundles: ImmutableList<ExerciseExampleBundleState>,
+    ) : MuscleColorStrategy
+
+    /**
+     * Assigns a unique color per involved muscle, ignoring the magnitude of involvement.
+     *
+     * Helpful when the primary goal is to distinguish muscles from each other rather than
+     * visualize relative intensity. Colors are taken from a palette (e.g., muscle.palette
+     * or a global categorical palette).
+     *
+     * @param bundles A list of muscle bundles; values are only used to extract muscle types.
      */
     public data class ByUniqueColor(
         val bundles: ImmutableList<ExerciseExampleBundleState>
     ) : MuscleColorStrategy
 
     /**
-     * A strategy that highlights only selected muscles within a group.
-     * Selected muscles are shown with an active color, while the rest remain inactive.
+     * Highlights only selected muscles within a group.
+     *
+     * Selected muscles use the theme’s “active” color; the rest remain “inactive”.
+     * Ideal for selection/filtering modes.
      *
      * @param group The muscle group to select from.
      * @param selectedIds Set of muscle IDs to be marked as active.

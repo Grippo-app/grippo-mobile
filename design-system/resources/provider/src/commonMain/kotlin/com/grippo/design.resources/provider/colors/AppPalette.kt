@@ -61,9 +61,14 @@ internal object AppPalette {
     }
 
     object Ramps {
-        val BlueToOrange: List<Pair<Float, Color>> = listOf(
-            0.00f to Primary.P500,
-            1.00f to Semantic.Warning
+        val BlueOrangeRed: List<Pair<Float, Color>> = listOf(
+            0.00f to Primary.P400,
+            0.16f to Primary.P300,
+            0.36f to Color(0xFFFFE08A),
+            0.56f to Color(0xFFFFB24D),
+            0.76f to Color(0xFFFF7A33),
+            0.90f to Color(0xFFFF5A2A),
+            1.00f to Semantic.Error
         )
     }
 

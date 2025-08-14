@@ -14,6 +14,7 @@ import com.grippo.state.muscles.MuscleGroupState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.toImmutableSet
+import kotlin.math.roundToInt
 
 public object MuscleEngine {
 
@@ -34,6 +35,10 @@ public object MuscleEngine {
             is MuscleColorStrategy.ByUniqueColor -> generateByUniqueColor(
                 strategy.bundles
             )
+
+            is MuscleColorStrategy.ByScaleStops -> generateByScaleStops(
+                strategy.bundles
+            )
         }
     }
 
@@ -52,6 +57,19 @@ public object MuscleEngine {
 
         val colorMap = MuscleEnumState.entries.associateWith { selectedColor }
         return buildPreset(colorMap, inactiveColor)
+    }
+
+    @Composable
+    private fun generateByScaleStops(
+        bundles: ImmutableList<ExerciseExampleBundleState>
+    ): MuscleColorPreset {
+        val scaleStops = AppTokens.colors.muscle.scaleStops
+        val colorsAscending = remember(AppTokens.colors.muscle.scaleStops) {
+            scaleStops.sortedBy { it.first }.map { it.second }
+        }
+        val ranked = fromStopsRanked(bundles, colorsAscending)
+        val colorMap = ranked.associate { it.first.muscle.type to it.second }
+        return buildPreset(colorMap)
     }
 
     @Composable
@@ -97,6 +115,22 @@ public object MuscleEngine {
             it.type to if (it.id in selectedIds) active else inactive
         }
         return buildPreset(colorMap, inactive)
+    }
+
+    @Composable
+    private fun fromStopsRanked(
+        bundles: ImmutableList<ExerciseExampleBundleState>,
+        paletteAscending: List<Color>
+    ): List<Pair<ExerciseExampleBundleState, Color>> {
+        if (bundles.isEmpty() || paletteAscending.isEmpty()) return emptyList()
+        val sorted = remember(bundles) { bundles.sortedByDescending { it.percentage.value } }
+        val n = sorted.size
+        val last = paletteAscending.lastIndex
+        return sorted.mapIndexed { i, bundle ->
+            val pos = if (n == 1) 1f else 1f - (i.toFloat() / (n - 1))
+            val idx = (pos * last).roundToInt().coerceIn(0, last)
+            bundle to paletteAscending[idx]
+        }
     }
 
     @Composable

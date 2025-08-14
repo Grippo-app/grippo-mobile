@@ -136,6 +136,7 @@ public interface AppColor {
 
         public val text: Color
         public val palette: List<Color>
+        public val scaleStops: List<Pair<Float, Color>>
     }
 
     public interface SegmentColors {

@@ -49,7 +49,7 @@ public fun ExerciseExampleBundlesCard(
         value.sortedByDescending { it.percentage.value }.toPersistentList()
     }
 
-    val preset = MuscleEngine.generatePreset(MuscleColorStrategy.ByUniqueColor(internalList))
+    val preset = MuscleEngine.generatePreset(MuscleColorStrategy.ByScaleStops(internalList))
 
     val (front, back) = MuscleEngine.generateImages(preset, internalList)
 
