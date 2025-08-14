@@ -25,7 +25,7 @@ public fun Toggle(
 ) {
     val toggle = AppTokens.colors.toggle
     val dp = AppTokens.dp.toggle
-    val thumbPosition by animateFloatAsState(targetValue = if (checked) 1f else 0f)
+    val thumbPosition by animateFloatAsState(targetValue = if (checked) 1f else 0f, label = "ToggleThumb")
 
     Box(
         modifier = modifier
@@ -57,6 +57,19 @@ public fun Toggle(
             )
         }
     }
+}
+
+@Composable
+public fun Toggle(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Toggle(
+        checked = checked,
+        onCheckedChange = { onCheckedChange(!checked) },
+        modifier = modifier,
+    )
 }
 
 private fun calculateThumbOffset(
