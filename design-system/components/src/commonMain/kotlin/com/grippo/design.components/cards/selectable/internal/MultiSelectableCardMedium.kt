@@ -67,7 +67,7 @@ internal fun MultiSelectableCardMedium(
 
         Toggle(
             checked = isSelected,
-            onCheckedChange = onClick
+            onCheckedChange = { onClick() }
         )
     }
 }

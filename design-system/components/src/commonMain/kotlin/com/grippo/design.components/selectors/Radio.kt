@@ -71,28 +71,29 @@ public fun Radio(
 @Composable
 private fun RadioPreview() {
     PreviewContainer {
+        val noop: () -> Unit = {}
         Radio(
             selected = true,
             enabled = true,
-            onSelectedChange = {}
+            onSelectedChange = noop
         )
 
         Radio(
             selected = false,
             enabled = true,
-            onSelectedChange = {}
+            onSelectedChange = noop
         )
 
         Radio(
             selected = true,
             enabled = false,
-            onSelectedChange = {}
+            onSelectedChange = noop
         )
 
         Radio(
             selected = false,
             enabled = false,
-            onSelectedChange = {}
+            onSelectedChange = noop
         )
     }
 }

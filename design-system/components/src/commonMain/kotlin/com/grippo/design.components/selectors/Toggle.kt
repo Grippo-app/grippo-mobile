@@ -82,14 +82,15 @@ private fun calculateThumbOffset(
 @Composable
 private fun TogglePreview() {
     PreviewContainer {
+        val noop: () -> Unit = {}
         Toggle(
             checked = true,
-            onCheckedChange = {}
+            onCheckedChange = noop
         )
 
         Toggle(
             checked = false,
-            onCheckedChange = {}
+            onCheckedChange = noop
         )
     }
 }
