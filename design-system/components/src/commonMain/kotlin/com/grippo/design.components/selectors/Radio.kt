@@ -52,6 +52,21 @@ public fun Radio(
     }
 }
 
+@Composable
+public fun Radio(
+    modifier: Modifier = Modifier,
+    selected: Boolean,
+    enabled: Boolean = true,
+    onSelectedChange: (Boolean) -> Unit,
+) {
+    Radio(
+        modifier = modifier,
+        selected = selected,
+        enabled = enabled,
+        onSelectedChange = { onSelectedChange(!selected) },
+    )
+}
+
 @AppPreview
 @Composable
 private fun RadioPreview() {
