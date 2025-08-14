@@ -12,7 +12,7 @@ import com.grippo.design.resources.provider.equipment.CalfRaiseMachines
 import com.grippo.design.resources.provider.equipment.ChestPressMachines
 import com.grippo.design.resources.provider.equipment.CloseGripHandle
 import com.grippo.design.resources.provider.equipment.CordHandles
-import com.grippo.design.resources.provider.equipment.Crossower
+import com.grippo.design.resources.provider.equipment.Crossover
 import com.grippo.design.resources.provider.equipment.DeadliftMachines
 import com.grippo.design.resources.provider.equipment.DeclineBench
 import com.grippo.design.resources.provider.equipment.DeclineBenchWithRack
@@ -32,7 +32,7 @@ import com.grippo.design.resources.provider.equipment.LegExtensionMachine
 import com.grippo.design.resources.provider.equipment.LegPressMachine
 import com.grippo.design.resources.provider.equipment.PreacherCurlBench
 import com.grippo.design.resources.provider.equipment.PullUpBar
-import com.grippo.design.resources.provider.equipment.RomainChair
+import com.grippo.design.resources.provider.equipment.RomanChair
 import com.grippo.design.resources.provider.equipment.Rope
 import com.grippo.design.resources.provider.equipment.RowBench
 import com.grippo.design.resources.provider.equipment.RowCable
@@ -86,11 +86,11 @@ public data class EquipmentState(
             EquipmentEnumState.GLUTE_MACHINES -> GluteMachines
             EquipmentEnumState.LAT_PULLDOWN -> LatPulldown
             EquipmentEnumState.CABLE -> Cable
-            EquipmentEnumState.CABLE_CROSSOVER -> Crossower
+            EquipmentEnumState.CABLE_CROSSOVER -> Crossover
             EquipmentEnumState.ROW_CABLE -> RowCable
             EquipmentEnumState.PULL_UP_BAR -> PullUpBar
             EquipmentEnumState.DIP_BARS -> DipBar
-            EquipmentEnumState.ROMAIN_CHAIR -> RomainChair
+            EquipmentEnumState.ROMAIN_CHAIR -> RomanChair
             EquipmentEnumState.GLUTE_HAM_RAISE_BENCH -> GluteHamRaiseBench
             EquipmentEnumState.FLAT_BENCH -> FlatBench
             EquipmentEnumState.ADJUSTABLE_BENCH -> AdjustableBench

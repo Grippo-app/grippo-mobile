@@ -488,3 +488,7 @@ public val RomainChair: ImageVector
         return _RomanChair!!
     }
 
+// Temporary alias to fix naming typo while maintaining backward compatibility
+public val RomanChair: ImageVector
+    get() = RomainChair
+

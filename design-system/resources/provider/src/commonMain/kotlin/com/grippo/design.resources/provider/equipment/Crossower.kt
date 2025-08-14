@@ -1481,3 +1481,7 @@ public val Crossower: ImageVector
         return _Crossower!!
     }
 
+// Temporary alias to fix naming typo while maintaining backward compatibility
+public val Crossover: ImageVector
+    get() = Crossower
+
