@@ -6,10 +6,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 
 @Immutable
 public data class AreaStyle(
-    val layout: Layout,
     val grid: Grid,
     val yAxis: YAxis,
     val xAxis: XAxis,
@@ -18,35 +18,32 @@ public data class AreaStyle(
     val fill: Fill?,
     val dots: Dots,
     val extrema: Extrema,
+    val labelPadding: Dp = 6.dp,
 ) {
-    @Immutable
-    public data class Layout(
-        val padding: Dp,
-        val labelPadding: Dp,
-    )
-
     @Immutable
     public data class Grid(
         val show: Boolean,
         val color: Color,
-        val strokeWidth: Dp,
+        val strokeWidth: Dp
     )
 
     @Immutable
     public data class YAxis(
         val show: Boolean,
-        val ticks: Int,
+        val targetTicks: Int,
         val textStyle: TextStyle,
         val showLine: Boolean,
         val axisLineColor: Color,
         val axisLineWidth: Dp,
-        val formatter: (Float, AreaData) -> String,
+        val formatter: (Float, AreaData) -> String
     )
 
     @Immutable
     public data class XAxis(
         val show: Boolean,
         val textStyle: TextStyle,
+        val minGapDp: Dp,
+        val showAll: Boolean
     )
 
     @Immutable
@@ -56,25 +53,25 @@ public data class AreaStyle(
         val brushProvider: ((Size) -> Brush)?,
         val curved: Boolean,
         val curveSmoothness: Float,
-        val clampOvershoot: Boolean,
+        val clampOvershoot: Boolean
     )
 
     @Immutable
     public data class Glow(
         val width: Dp,
-        val color: Color?,
+        val color: Color?
     )
 
     @Immutable
     public data class Fill(
-        val brushProvider: (Size) -> Brush,
+        val brushProvider: (Size) -> Brush
     )
 
     @Immutable
     public data class Dots(
         val show: Boolean,
         val radius: Dp,
-        val color: Color?,
+        val color: Color?
     )
 
     @Immutable
@@ -82,6 +79,6 @@ public data class AreaStyle(
         val show: Boolean,
         val textStyle: TextStyle,
         val markerRadius: Dp,
-        val markerColor: Color?,
+        val markerColor: Color?
     )
 }

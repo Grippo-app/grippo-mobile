@@ -84,7 +84,7 @@ internal fun HomeStatisticsScreen(
         ) {
             item {
                 ChartCard(
-                    modifier = Modifier.fillMaxWidth().aspectRatio(1.6f),
+                    modifier = Modifier.fillMaxWidth().aspectRatio(1f),
                     content = { AreaChart(modifier = Modifier.fillMaxSize()) }
                 )
             }

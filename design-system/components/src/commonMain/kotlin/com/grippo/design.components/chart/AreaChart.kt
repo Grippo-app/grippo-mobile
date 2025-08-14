@@ -19,40 +19,19 @@ public fun AreaChart(
     modifier: Modifier = Modifier
 ) {
     val charts = AppTokens.colors.charts
-
     val data = AreaData(
         points = listOf(
-            AreaPoint(0f, 0f),
-            AreaPoint(1f, 4f),
-            AreaPoint(2f, 6f),
-            AreaPoint(3f, 3f),
-            AreaPoint(4f, 8f),
-            AreaPoint(5f, 10f),
-            AreaPoint(6f, 7f),
-            AreaPoint(7f, 12f),
-            AreaPoint(8f, 9f),
-            AreaPoint(9f, 14f),
-            AreaPoint(10f, 11f),
-            AreaPoint(11f, 16f)
+            AreaPoint(0f, 2.3f, "Mon"),
+            AreaPoint(1f, 9.1f, "Tue"),
+            AreaPoint(2f, 4.6f, "Wed"),
+            AreaPoint(3f, 12.4f, "Thu"),
+            AreaPoint(4f, 7.2f, "Fri"),
+            AreaPoint(5f, 15.0f, "Sat"),
+            AreaPoint(6f, 8.3f, "Sun"),
         ),
-        xLabels = listOf(
-            0f to "Mon",
-            2f to "Wed",
-            4f to "Fri",
-            6f to "Sun",
-            8f to "Tue",
-            10f to "Thu"
-        ),
-        xName = "Day",
-        yName = "Weight",
-        yUnit = "kg",
     )
 
     val style = AreaStyle(
-        layout = AreaStyle.Layout(
-            padding = 12.dp,
-            labelPadding = 6.dp
-        ),
         grid = AreaStyle.Grid(
             show = true,
             color = AppTokens.colors.divider.default,
@@ -60,51 +39,48 @@ public fun AreaChart(
         ),
         yAxis = AreaStyle.YAxis(
             show = true,
-            ticks = 5,
+            targetTicks = 5,
             textStyle = AppTokens.typography.b11Reg().copy(color = AppTokens.colors.text.primary),
             showLine = true,
             axisLineColor = AppTokens.colors.divider.default,
             axisLineWidth = 1.dp,
-            formatter = { v, d -> "${v.roundToInt()} ${d.yUnit ?: ""}".trim() }
+            formatter = { v, d -> "${v.roundToInt()}" }
         ),
         xAxis = AreaStyle.XAxis(
             show = true,
-            textStyle = AppTokens.typography.b11Reg().copy(color = AppTokens.colors.text.secondary)
+            textStyle = AppTokens.typography.b11Reg().copy(color = AppTokens.colors.text.secondary),
+            minGapDp = 1.dp,
+            showAll = false
         ),
         line = AreaStyle.Line(
             strokeWidth = 2.dp,
             color = charts.area.lineA,
-            brushProvider = { _ ->
+            brushProvider = {
                 Brush.horizontalGradient(
-                    listOf(charts.area.lineA, charts.area.lineB)
+                    listOf(
+                        charts.area.lineA,
+                        charts.area.lineB
+                    )
                 )
             },
             curved = true,
             curveSmoothness = 0.20f,
-            clampOvershoot = true,
+            clampOvershoot = true
         ),
-        glow = AreaStyle.Glow(
-            width = 8.dp,
-            color = charts.area.glow
-        ),
+        glow = AreaStyle.Glow(width = 8.dp, color = charts.area.glow),
         fill = AreaStyle.Fill { sz ->
             Brush.verticalGradient(
                 0f to charts.area.fillBase.copy(alpha = 0.18f),
                 1f to charts.area.fillBase.copy(alpha = 0.00f),
-                startY = 0f,
-                endY = sz.height
+                startY = 0f, endY = sz.height
             )
         },
-        dots = AreaStyle.Dots(
-            show = true,
-            radius = 2.dp,
-            color = charts.area.dot
-        ),
+        dots = AreaStyle.Dots(show = true, radius = 2.dp, color = charts.area.dot),
         extrema = AreaStyle.Extrema(
             show = true,
             textStyle = AppTokens.typography.b11Bold().copy(color = AppTokens.colors.text.primary),
             markerColor = null,
-            markerRadius = 3.dp,
+            markerRadius = 3.dp
         )
     )
 
@@ -121,30 +97,13 @@ private fun AreaChartPreview() {
     PreviewContainer {
         AreaData(
             points = listOf(
-                AreaPoint(0f, 0f),
-                AreaPoint(1f, 4f),
-                AreaPoint(2f, 6f),
-                AreaPoint(3f, 3f),
-                AreaPoint(4f, 8f),
-                AreaPoint(5f, 10f),
-                AreaPoint(6f, 7f),
-                AreaPoint(7f, 12f),
-                AreaPoint(8f, 9f),
-                AreaPoint(9f, 14f),
-                AreaPoint(10f, 11f),
-                AreaPoint(11f, 16f)
+                AreaPoint(0f, 0f, "Mon"),
+                AreaPoint(2f, 6f, "Wed"),
+                AreaPoint(4f, 8f, "Fri"),
+                AreaPoint(6f, 7f, "Sun"),
+                AreaPoint(8f, 9f, "Tue"),
+                AreaPoint(10f, 11f, "Thu"),
             ),
-            xLabels = listOf(
-                0f to "Mon",
-                2f to "Wed",
-                4f to "Fri",
-                6f to "Sun",
-                8f to "Tue",
-                10f to "Thu"
-            ),
-            xName = "Day",
-            yName = "Weight",
-            yUnit = "kg",
         )
 
         AreaChart(
