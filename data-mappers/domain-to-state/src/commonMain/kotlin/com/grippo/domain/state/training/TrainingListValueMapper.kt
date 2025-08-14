@@ -79,7 +79,7 @@ public fun List<TrainingState>.transformToTrainingListValue(): ImmutableList<Tra
                 )
 
                 middle.forEachIndexed { i, ex ->
-                    val indexInTraining = i + 2 // +2 потому что 1 — это First, 2+ — это Middle
+                    val indexInTraining = i + 2 // +2 because 1 is First, 2+ is Middle
 
                     result += TrainingListValue.MiddleExercise(
                         exerciseState = ex,
