@@ -1,4 +1,4 @@
-package equipments
+package com.grippo.design.resources.provider.equipment
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathFillType

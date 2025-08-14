@@ -44,10 +44,10 @@ import com.grippo.design.resources.provider.equipment.TrapBar
 import com.grippo.design.resources.provider.equipment.TricepsMachines
 import com.grippo.design.resources.provider.equipment.VBar
 import com.grippo.design.resources.provider.equipment.WideGripHandle
-import equipments.Barbell
-import equipments.BicepsMachine
-import equipments.Butterfly
-import equipments.ButterflyReverse
+import com.grippo.design.resources.provider.equipment.Barbell
+import com.grippo.design.resources.provider.equipment.BicepsMachine
+import com.grippo.design.resources.provider.equipment.Butterfly
+import com.grippo.design.resources.provider.equipment.ButterflyReverse
 
 @Immutable
 public data class EquipmentState(

@@ -1,4 +1,4 @@
-package equipments
+package com.grippo.design.resources.provider.equipment
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathFillType
@@ -10,14 +10,14 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
 
-private var _Batterfly: ImageVector? = null
+private var _Butterfly: ImageVector? = null
 
 public val Butterfly: ImageVector
     get() {
-        if (_Batterfly != null) {
-            return _Batterfly!!
+        if (_Butterfly != null) {
+            return _Butterfly!!
         }
-        _Batterfly = ImageVector.Builder(
+        _Butterfly = ImageVector.Builder(
             name = "Batterfly",
             defaultWidth = 191.dp,
             defaultHeight = 321.dp,
@@ -1072,6 +1072,6 @@ public val Butterfly: ImageVector
                 close()
             }
         }.build()
-        return _Batterfly!!
+        return _Butterfly!!
     }
 
