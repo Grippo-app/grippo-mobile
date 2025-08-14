@@ -9,16 +9,15 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+private var _ButterflyReverse: ImageVector? = null
 
-private var _BatterflyReverse: ImageVector? = null
-
-public val BatterflyReverse: ImageVector
+public val ButterflyReverse: ImageVector
     get() {
-        if (_BatterflyReverse != null) {
-            return _BatterflyReverse!!
+        if (_ButterflyReverse != null) {
+            return _ButterflyReverse!!
         }
-        _BatterflyReverse = ImageVector.Builder(
-            name = "BatterflyReverse",
+        _ButterflyReverse = ImageVector.Builder(
+            name = "ButterflyReverse",
             defaultWidth = 191.dp,
             defaultHeight = 321.dp,
             viewportWidth = 191f,
@@ -1041,6 +1040,6 @@ public val BatterflyReverse: ImageVector
                 close()
             }
         }.build()
-        return _BatterflyReverse!!
+        return _ButterflyReverse!!
     }
 

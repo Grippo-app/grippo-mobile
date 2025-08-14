@@ -47,6 +47,7 @@ import com.grippo.design.resources.provider.equipment.WideGripHandle
 import equipments.Barbell
 import equipments.BicepsMachine
 import equipments.Butterfly
+import equipments.ButterflyReverse
 
 @Immutable
 public data class EquipmentState(
@@ -70,7 +71,7 @@ public data class EquipmentState(
             EquipmentEnumState.TRAP_BAR -> TrapBar
             EquipmentEnumState.AB_MACHINES -> AbMachine
             EquipmentEnumState.BUTTERFLY -> Butterfly
-            EquipmentEnumState.BUTTERFLY_REVERSE -> Butterfly
+            EquipmentEnumState.BUTTERFLY_REVERSE -> ButterflyReverse
             EquipmentEnumState.LEG_EXTENSION_MACHINES -> LegExtensionMachine
             EquipmentEnumState.LEG_CURL_MACHINES -> LegCurlMachine
             EquipmentEnumState.CHEST_PRESS_MACHINES -> ChestPressMachines
