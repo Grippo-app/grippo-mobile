@@ -187,6 +187,16 @@ public interface AppColor {
         public val heatmap: HeatmapColors
         public val progress: ProgressColors
         public val radar: RadarColors
+        public val sparkline: SparklineColors
+
+        public interface SparklineColors {
+            public val lineA: Color
+            public val lineB: Color
+            public val fillBase: Color
+            public val dot: Color
+            public val min: Color
+            public val max: Color
+        }
 
         public interface RadarColors {
             public val grid: Color

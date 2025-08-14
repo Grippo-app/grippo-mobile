@@ -78,6 +78,15 @@ internal object AppColorTokens {
             val ExtremaLabel = Color(0xCC000000)
         }
 
+        object Sparkline {
+            val LineA = Color(0xFF6AA9FF)
+            val LineB = Color(0xFF00E6A7)
+            val FillBase = LineA
+            val Dot = LineA
+            val Min = Color(0xFFFF7A33)
+            val Max = Color(0xFF00E6A7)
+        }
+
         object Area {
             val LineA = Color(0xFF00E6A7)
             val LineB = Color(0xFF6AA9FF)

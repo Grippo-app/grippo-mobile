@@ -14,7 +14,7 @@ import kotlin.math.min
 public fun Sparkline(
     modifier: Modifier = Modifier,
     data: SparklineData,
-    style: SparklineStyle = SparklineStyle(),
+    style: SparklineStyle,
 ) {
     androidx.compose.foundation.Canvas(modifier) {
         val ptsIn = data.points
@@ -92,7 +92,7 @@ public fun Sparkline(
         val linePath = buildLinePath(pts)
 
         // Fill under line
-        style.fill.provider?.let { provider ->
+        style.fill?.provider?.let { provider ->
             val area = Path().apply {
                 addPath(linePath)
                 lineTo(pts.last().x, chart.bottom)

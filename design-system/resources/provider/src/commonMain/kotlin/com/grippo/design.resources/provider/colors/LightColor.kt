@@ -184,6 +184,15 @@ public object LightColor : AppColor {
             override val labelSecondary = AppColorTokens.Chart.SurfaceLight.LabelSecondary
             override val extremaLabel = AppColorTokens.Chart.SurfaceLight.ExtremaLabel
         }
+        override val sparkline: AppColor.Charts.SparklineColors =
+            object : AppColor.Charts.SparklineColors {
+                override val lineA = AppColorTokens.Chart.Sparkline.LineA
+                override val lineB = AppColorTokens.Chart.Sparkline.LineB
+                override val fillBase = AppColorTokens.Chart.Sparkline.FillBase
+                override val dot = AppColorTokens.Chart.Sparkline.Dot
+                override val min = AppColorTokens.Chart.Sparkline.Min
+                override val max = AppColorTokens.Chart.Sparkline.Max
+            }
         override val area = object : AppColor.Charts.AreaColors {
             override val lineA = AppColorTokens.Chart.Area.LineA
             override val lineB = AppColorTokens.Chart.Area.LineB
