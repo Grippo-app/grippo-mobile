@@ -10,14 +10,14 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
 
-private var _Crossower: ImageVector? = null
+private var _Crossover: ImageVector? = null
 
-public val Crossower: ImageVector
+public val Crossover: ImageVector
     get() {
-        if (_Crossower != null) {
-            return _Crossower!!
+        if (_Crossover != null) {
+            return _Crossover!!
         }
-        _Crossower = ImageVector.Builder(
+        _Crossover = ImageVector.Builder(
             name = "Crossower",
             defaultWidth = 400.dp,
             defaultHeight = 370.dp,
@@ -1478,10 +1478,5 @@ public val Crossower: ImageVector
                 close()
             }
         }.build()
-        return _Crossower!!
+        return _Crossover!!
     }
-
-// Temporary alias to fix naming typo while maintaining backward compatibility
-public val Crossover: ImageVector
-    get() = Crossower
-
