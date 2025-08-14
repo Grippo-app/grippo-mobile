@@ -25,6 +25,7 @@ import com.grippo.design.components.chart.ProgressChart
 import com.grippo.design.components.chart.RadarChart
 import com.grippo.design.components.chart.Sparkline
 import com.grippo.design.components.datetime.PeriodPicker
+import com.grippo.design.components.statistics.ChartCard
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -76,17 +77,42 @@ internal fun HomeStatisticsScreen(
     ) {
 
         LazyVerticalGrid(
-            columns = GridCells.Fixed(1),
+            columns = GridCells.Fixed(2),
             modifier = Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
         ) {
-            item { AreaChart(Modifier.fillMaxWidth().aspectRatio(1.6f)) }
-            item { BarChart(Modifier.fillMaxWidth().aspectRatio(1.6f)) }
-            item { HeatmapChart(Modifier.fillMaxWidth().aspectRatio(1.1f)) }
-            item { ProgressChart(Modifier.fillMaxWidth().aspectRatio(1.1f)) }
-            item { RadarChart(Modifier.fillMaxWidth().aspectRatio(1f)) }
-            item { Sparkline(Modifier.fillMaxWidth().height(120.dp)) }
+            item {
+                ChartCard(
+                    modifier = Modifier.fillMaxWidth().aspectRatio(1.6f),
+                    content = { AreaChart(modifier = Modifier.fillMaxSize()) }
+                )
+            }
+            item {
+                ChartCard(
+                    modifier = Modifier.fillMaxWidth().aspectRatio(1.6f),
+                    content = { BarChart(modifier = Modifier.fillMaxSize()) })
+            }
+            item {
+                ChartCard(
+                    modifier = Modifier.fillMaxWidth().aspectRatio(1.1f),
+                    content = { HeatmapChart(modifier = Modifier.fillMaxSize()) })
+            }
+            item {
+                ChartCard(
+                    modifier = Modifier.fillMaxWidth().aspectRatio(1.1f),
+                    content = { ProgressChart(modifier = Modifier.fillMaxSize()) })
+            }
+            item {
+                ChartCard(
+                    modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+                    content = { RadarChart(modifier = Modifier.fillMaxSize()) })
+            }
+            item {
+                ChartCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    content = { Sparkline(modifier = Modifier.fillMaxWidth().height(120.dp)) })
+            }
         }
     }
 }
