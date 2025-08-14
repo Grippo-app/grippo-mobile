@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 
 @Composable
 public fun ChartCard(
@@ -37,5 +39,13 @@ public fun ChartCard(
             ),
     ) {
         content.invoke(this)
+    }
+}
+
+@AppPreview
+@Composable
+private fun ChartCardPreview() {
+    PreviewContainer {
+        ChartCard {}
     }
 }
