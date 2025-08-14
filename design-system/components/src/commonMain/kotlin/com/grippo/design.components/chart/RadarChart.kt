@@ -1,11 +1,6 @@
 package com.grippo.design.components.chart
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,6 +12,7 @@ import com.grippo.chart.radar.RadarData
 import com.grippo.chart.radar.RadarSeries
 import com.grippo.chart.radar.RadarStyle
 import com.grippo.chart.radar.RadarValues
+import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import kotlin.math.roundToInt
@@ -25,6 +21,8 @@ import kotlin.math.roundToInt
 public fun RadarChart(
     modifier: Modifier = Modifier
 ) {
+    val charts = AppTokens.colors.charts
+
     val axes = listOf(
         RadarAxis("chest", "Chest"),
         RadarAxis("back", "Back"),
@@ -37,7 +35,7 @@ public fun RadarChart(
     val series = listOf(
         RadarSeries(
             name = "Current",
-            color = Color(0xFFB049F8),
+            color = charts.radar.palette[0],
             values = RadarValues.ByAxisId(
                 mapOf(
                     "chest" to 0.75f,
@@ -67,24 +65,24 @@ public fun RadarChart(
         grid = RadarStyle.Grid(
             levels = 5,
             asPolygon = true,
-            color = Color(0x33FFFFFF),
+            color = charts.radar.grid,
             strokeWidth = 1.dp,
             showLevelLabels = false,
-            levelLabelStyle = TextStyle(color = Color(0x66FFFFFF)),
+            levelLabelStyle = TextStyle(color = charts.radar.label.copy(alpha = 0.85f)),
             levelFormatter = { v -> "${(v * 100f).roundToInt()}%" }
         ),
         spokes = RadarStyle.Spokes(
             show = true,
-            color = Color(0x22FFFFFF),
+            color = charts.radar.spoke,
             strokeWidth = 1.dp,
         ),
         labels = RadarStyle.Labels(
             show = true,
-            textStyle = TextStyle(color = Color(0x77FFFFFF))
+            textStyle = TextStyle(color = charts.radar.label)
         ),
         polygon = RadarStyle.Polygon(
             strokeWidth = 2.dp,
-            strokeColorFallback = Color(0xFFB049F8),
+            strokeColorFallback = charts.radar.strokeFallback,
             fillAlpha = 0.35f,
         ),
         vertices = RadarStyle.Vertices(
@@ -94,8 +92,8 @@ public fun RadarChart(
         ),
         values = RadarStyle.Values(
             show = false,
-            textStyle = TextStyle(color = Color(0xCCFFFFFF)),
-            formatter = { v, _ -> "${(v * 100f).roundToInt()}%" },
+            textStyle = TextStyle(color = charts.radar.valueText),
+            formatter = { v, _ -> "${(v.coerceIn(0f, 1f) * 100f).roundToInt()}%" },
             offset = 8.dp,
         ),
         dataPolicy = RadarStyle.DataPolicy(
@@ -115,7 +113,7 @@ public fun RadarChart(
 @Composable
 private fun RadarChartPreview() {
     PreviewContainer {
-        val axes = listOf(
+        listOf(
             RadarAxis("chest", "Chest"),
             RadarAxis("back", "Back"),
             RadarAxis("legs", "Legs"),
@@ -123,7 +121,7 @@ private fun RadarChartPreview() {
             RadarAxis("arms", "Arms"),
             RadarAxis("core", "Core"),
         )
-        val series = listOf(
+        listOf(
             RadarSeries(
                 name = "Current",
                 color = Color(0xFFB049F8),
@@ -139,70 +137,9 @@ private fun RadarChartPreview() {
                 )
             )
         )
-        val data = RadarData(
-            axes = axes,
-            series = series,
-            valueUnit = null,
-        )
-        val style = RadarStyle(
-            layout = RadarStyle.Layout(
-                padding = 12.dp,
-                labelPadding = 12.dp,
-                startAngleDeg = -90f,
-                clockwise = true,
-            ),
-            grid = RadarStyle.Grid(
-                levels = 5,
-                asPolygon = true,
-                color = Color(0x33FFFFFF),
-                strokeWidth = 1.dp,
-                showLevelLabels = false,
-                levelLabelStyle = TextStyle(color = Color(0x66FFFFFF)),
-                levelFormatter = { v -> "${(v * 100f).roundToInt()}%" }
-            ),
-            spokes = RadarStyle.Spokes(
-                show = true,
-                color = Color(0x22FFFFFF),
-                strokeWidth = 1.dp,
-            ),
-            labels = RadarStyle.Labels(
-                show = true,
-                textStyle = TextStyle(color = Color(0x77FFFFFF))
-            ),
-            polygon = RadarStyle.Polygon(
-                strokeWidth = 2.dp,
-                strokeColorFallback = Color(0xFFB049F8),
-                fillAlpha = 0.35f,
-            ),
-            vertices = RadarStyle.Vertices(
-                show = true,
-                radius = 3.dp,
-                colorOverride = null,
-            ),
-            values = RadarStyle.Values(
-                show = false,
-                textStyle = TextStyle(color = Color(0xCCFFFFFF)),
-                formatter = { v, _ -> "${(v * 100f).roundToInt()}%" },
-                offset = 8.dp,
-            ),
-            dataPolicy = RadarStyle.DataPolicy(
-                requireCompleteSeries = true,
-                missingAsZero = true,
-            )
-        )
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(320.dp)
-                .background(Color(0xFF0F172A))
-                .padding(16.dp)
-        ) {
-            RadarChart(
-                modifier = Modifier.fillMaxSize(),
-                data = data,
-                style = style
-            )
-        }
+        RadarChart(
+            modifier = Modifier.size(300.dp),
+        )
     }
 }

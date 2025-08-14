@@ -186,6 +186,16 @@ public interface AppColor {
         public val categorical: CategoricalColors
         public val heatmap: HeatmapColors
         public val progress: ProgressColors
+        public val radar: RadarColors
+
+        public interface RadarColors {
+            public val grid: Color
+            public val spoke: Color
+            public val label: Color
+            public val valueText: Color
+            public val strokeFallback: Color
+            public val palette: List<Color>
+        }
 
         public interface HeatmapColors {
             public val scaleStops: List<Pair<Float, Color>>

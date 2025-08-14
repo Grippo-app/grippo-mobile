@@ -4,80 +4,75 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import kotlin.math.roundToInt
 
 @Immutable
 public data class RadarStyle(
-    val layout: Layout = Layout(),
-    val grid: Grid = Grid(),
-    val spokes: Spokes = Spokes(),
-    val labels: Labels = Labels(),
-    val polygon: Polygon = Polygon(),
-    val vertices: Vertices = Vertices(),
-    val values: Values = Values(),
-    val dataPolicy: DataPolicy = DataPolicy(),
+    val layout: Layout,
+    val grid: Grid,
+    val spokes: Spokes,
+    val labels: Labels,
+    val polygon: Polygon,
+    val vertices: Vertices,
+    val values: Values,
+    val dataPolicy: DataPolicy,
 ) {
     @Immutable
     public data class Layout(
-        val padding: Dp = 12.dp,
-        val labelPadding: Dp = 12.dp,
-        val startAngleDeg: Float = -90f,
-        val clockwise: Boolean = true,
+        val padding: Dp,
+        val labelPadding: Dp,
+        val startAngleDeg: Float,
+        val clockwise: Boolean,
     )
 
     @Immutable
     public data class Grid(
-        val levels: Int = 5,
-        val asPolygon: Boolean = true, // false -> concentric circles
-        val color: Color = Color(0x33FFFFFF),
-        val strokeWidth: Dp = 1.dp,
-        val showLevelLabels: Boolean = false,
-        val levelLabelStyle: TextStyle = TextStyle(color = Color(0x66FFFFFF)),
-        val levelFormatter: (Float) -> String = { v -> "${(v * 100f).roundToInt()}%" },
+        val levels: Int,
+        val asPolygon: Boolean,
+        val color: Color,
+        val strokeWidth: Dp,
+        val showLevelLabels: Boolean,
+        val levelLabelStyle: TextStyle,
+        val levelFormatter: (Float) -> String,
     )
 
     @Immutable
     public data class Spokes(
-        val show: Boolean = true,
-        val color: Color = Color(0x22FFFFFF),
-        val strokeWidth: Dp = 1.dp,
+        val show: Boolean,
+        val color: Color,
+        val strokeWidth: Dp,
     )
 
     @Immutable
     public data class Labels(
-        val show: Boolean = true,
-        val textStyle: TextStyle = TextStyle(color = Color(0x77FFFFFF)),
+        val show: Boolean,
+        val textStyle: TextStyle,
     )
 
     @Immutable
     public data class Polygon(
-        val strokeWidth: Dp = 2.dp,
-        val strokeColorFallback: Color = Color(0xFFB049F8),
-        val fillAlpha: Float = 0.35f, // fill uses series.color with this alpha
+        val strokeWidth: Dp,
+        val strokeColorFallback: Color,
+        val fillAlpha: Float,
     )
 
     @Immutable
     public data class Vertices(
-        val show: Boolean = true,
-        val radius: Dp = 3.dp,
-        val colorOverride: Color? = null, // null -> use series.color
+        val show: Boolean,
+        val radius: Dp,
+        val colorOverride: Color?,
     )
 
     @Immutable
     public data class Values(
-        val show: Boolean = false,
-        val textStyle: TextStyle = TextStyle(color = Color(0xCCFFFFFF)),
-        val formatter: (Float, RadarData) -> String = { v, d ->
-            val pct = (v.coerceIn(0f, 1f) * 100f).roundToInt().toString() + "%"
-            d.valueUnit?.let { "$pct ${it}" } ?: pct
-        },
-        val offset: Dp = 8.dp, // distance from vertex
+        val show: Boolean,
+        val textStyle: TextStyle,
+        val formatter: (Float, RadarData) -> String,
+        val offset: Dp,
     )
 
     @Immutable
     public data class DataPolicy(
-        val requireCompleteSeries: Boolean = false, // if true, skip drawing series with any missing axis
-        val missingAsZero: Boolean = true,          // if false, missing axis is skipped in polygon
+        val requireCompleteSeries: Boolean,
+        val missingAsZero: Boolean,
     )
 }

@@ -20,7 +20,7 @@ import kotlin.math.sin
 public fun RadarChart(
     modifier: Modifier = Modifier,
     data: RadarData,
-    style: RadarStyle = RadarStyle(),
+    style: RadarStyle,
 ) {
     val measurer = rememberTextMeasurer()
 

@@ -199,6 +199,14 @@ public object DarkColor : AppColor {
                 override val border = AppColorTokens.Chart.Heatmap.Dark.Border
                 override val valueText = AppColorTokens.Chart.Heatmap.Dark.ValueText
             }
+        override val radar: AppColor.Charts.RadarColors = object : AppColor.Charts.RadarColors {
+            override val grid = AppColorTokens.Chart.Radar.GridOnDark
+            override val spoke = AppColorTokens.Chart.Radar.SpokeOnDark
+            override val label = AppColorTokens.Chart.Radar.LabelOnDark
+            override val valueText = AppColorTokens.Chart.Radar.ValueOnDark
+            override val strokeFallback = AppColorTokens.Chart.Radar.StrokeFallbackOnDark
+            override val palette = AppColorTokens.Chart.Radar.Palette
+        }
         override val bar = object : AppColor.Charts.BarColors {
             override val stroke = AppColorTokens.Chart.Bar.StrokeOnDark
         }

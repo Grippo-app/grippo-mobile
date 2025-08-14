@@ -145,6 +145,26 @@ internal object AppColorTokens {
             }
         }
 
+        object Radar {
+            val GridOnDark = NeutralDark.N800.copy(alpha = 0.20f)
+            val SpokeOnDark = Color(0x22FFFFFF)
+            val LabelOnDark = Color(0x77FFFFFF)
+            val ValueOnDark = Color(0xCCFFFFFF)
+            val StrokeFallbackOnDark = Color(0xFFB049F8)
+
+            val GridOnLight = NeutralLight.N800.copy(alpha = 0.20f)
+            val SpokeOnLight = Color(0x22000000)
+            val LabelOnLight = Color(0x77000000)
+            val ValueOnLight = Color(0xCC000000)
+            val StrokeFallbackOnLight = Color(0xFF7A42C9)
+
+            val Palette: List<Color> = listOf(
+                Color(0xFFB049F8), Color(0xFF6AA9FF), Color(0xFF00E6A7), Color(0xFFFF7A33),
+                Color(0xFFFF5E8A), Color(0xFF33D2FF), Color(0xFFFFC53D), Color(0xFF2B7FFF),
+                Color(0xFFA56FFF), Color(0xFF64B5F6), Color(0xFFAF5CF7), Color(0xFF4FC3F7)
+            )
+        }
+
         object Categorical {
             val Palette12 = listOf(
                 Color(0xFF6AA9FF), Color(0xFF00E6A7), Color(0xFFFF7A33), Color(0xFFB049F8),
