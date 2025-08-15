@@ -18,7 +18,6 @@ public data class RadarStyle(
 ) {
     @Immutable
     public data class Layout(
-        val padding: Dp,
         val labelPadding: Dp,
         val startAngleDeg: Float,
         val clockwise: Boolean,
@@ -30,23 +29,43 @@ public data class RadarStyle(
         val asPolygon: Boolean,
         val color: Color,
         val strokeWidth: Dp,
-        val showLevelLabels: Boolean,
-        val levelLabelStyle: TextStyle,
-        val levelFormatter: (Float) -> String,
+        val levelLabels: LevelLabels,
     )
 
     @Immutable
-    public data class Spokes(
-        val show: Boolean,
-        val color: Color,
-        val strokeWidth: Dp,
-    )
+    public sealed interface LevelLabels {
+        @Immutable
+        public data object None : LevelLabels
+
+        @Immutable
+        public data class Visible(
+            val levelLabelStyle: TextStyle,
+            val levelFormatter: (Float) -> String,
+        ) : LevelLabels
+    }
 
     @Immutable
-    public data class Labels(
-        val show: Boolean,
-        val textStyle: TextStyle,
-    )
+    public sealed interface Spokes {
+        @Immutable
+        public data object None : Spokes
+
+        @Immutable
+        public data class Visible(
+            val color: Color,
+            val strokeWidth: Dp,
+        ) : Spokes
+    }
+
+    @Immutable
+    public sealed interface Labels {
+        @Immutable
+        public data object None : Labels
+
+        @Immutable
+        public data class Visible(
+            val textStyle: TextStyle,
+        ) : Labels
+    }
 
     @Immutable
     public data class Polygon(
@@ -56,19 +75,29 @@ public data class RadarStyle(
     )
 
     @Immutable
-    public data class Vertices(
-        val show: Boolean,
-        val radius: Dp,
-        val colorOverride: Color?,
-    )
+    public sealed interface Vertices {
+        @Immutable
+        public data object None : Vertices
+
+        @Immutable
+        public data class Visible(
+            val radius: Dp,
+            val colorOverride: Color?,
+        ) : Vertices
+    }
 
     @Immutable
-    public data class Values(
-        val show: Boolean,
-        val textStyle: TextStyle,
-        val formatter: (Float, RadarData) -> String,
-        val offset: Dp,
-    )
+    public sealed interface Values {
+        @Immutable
+        public data object None : Values
+
+        @Immutable
+        public data class Visible(
+            val textStyle: TextStyle,
+            val formatter: (Float, RadarData) -> String,
+            val offset: Dp,
+        ) : Values
+    }
 
     @Immutable
     public data class DataPolicy(

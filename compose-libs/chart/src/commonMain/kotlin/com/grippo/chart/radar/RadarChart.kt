@@ -29,10 +29,9 @@ public fun RadarChart(
         val n = axes.size
         if (n == 0) return@Canvas
 
-        // Bounds & center
-        val pad = style.layout.padding.toPx()
-        val chart = Rect(pad, pad, size.width - pad, size.height - pad)
-        val r = min(chart.width, chart.height) / 2f * 0.95f
+        // Bounds & center (no external padding). Compute radius so labels fit inside.
+        val labelPad = style.layout.labelPadding.toPx()
+        val chart = Rect(0f, 0f, size.width, size.height)
         val c = Offset(chart.left + chart.width / 2f, chart.top + chart.height / 2f)
 
         val dir = if (style.layout.clockwise) 1f else -1f
@@ -43,6 +42,57 @@ public fun RadarChart(
             x = c.x + radius * cos(angle),
             y = c.y + radius * sin(angle)
         )
+
+        // Measure axis labels to compute max radial outward space needed
+        val labelLayouts = when (val lbl = style.labels) {
+            is RadarStyle.Labels.Visible -> axes.map {
+                measurer.measure(
+                    AnnotatedString(it.label),
+                    lbl.textStyle
+                )
+            }
+
+            is RadarStyle.Labels.None -> emptyList()
+        }
+
+        fun radialInsetsForLabels(radius: Float): Float {
+            if (labelLayouts.isEmpty()) return 0f
+            var maxOverflow = 0f
+            for (i in 0 until n) {
+                val a = startRad + i * angleStep
+                val p = Offset(
+                    x = c.x + (radius + labelPad) * cos(a),
+                    y = c.y + (radius + labelPad) * sin(a)
+                )
+                val layout = labelLayouts[i]
+                val left = p.x - layout.size.width / 2f
+                val right = p.x + layout.size.width / 2f
+                val top = p.y - layout.size.height / 2f
+                val bottom = p.y + layout.size.height / 2f
+                maxOverflow = max(
+                    maxOverflow,
+                    max(0f, left - chart.left) * -1f
+                )
+                maxOverflow = max(maxOverflow, max(0f, chart.right - right) * -1f)
+                maxOverflow = max(maxOverflow, max(0f, top - chart.top) * -1f)
+                maxOverflow = max(maxOverflow, max(0f, chart.bottom - bottom) * -1f)
+            }
+            return maxOverflow
+        }
+
+        var r = min(chart.width, chart.height) / 2f * 0.95f
+        // Reduce radius if labels would overflow
+        if (labelLayouts.isNotEmpty()) {
+            // simple iterative shrink
+            var iter = 0
+            while (iter < 8) {
+                val overflow = radialInsetsForLabels(r)
+                if (overflow <= 0f) break
+                r -= overflow
+                iter++
+            }
+            r = r.coerceAtLeast(0f)
+        }
 
         // Grid rings
         val gridStroke = Stroke(width = style.grid.strokeWidth.toPx())
@@ -63,26 +113,33 @@ public fun RadarChart(
                 drawCircle(color = style.grid.color, radius = rr, center = c, style = gridStroke)
             }
 
-            if (style.grid.showLevelLabels) {
-                val label = style.grid.levelFormatter(t)
-                val layout = measurer.measure(AnnotatedString(label), style.grid.levelLabelStyle)
-                drawText(
-                    layout,
-                    topLeft = Offset(
-                        x = c.x - layout.size.width / 2f,
-                        y = c.y - rr - layout.size.height - 4.dp.toPx()
+            when (val ll = style.grid.levelLabels) {
+                is RadarStyle.LevelLabels.None -> Unit
+                is RadarStyle.LevelLabels.Visible -> {
+                    val label = ll.levelFormatter(t)
+                    val layout = measurer.measure(AnnotatedString(label), ll.levelLabelStyle)
+                    val y = (c.y - rr - layout.size.height - 4.dp.toPx()).coerceAtLeast(chart.top)
+                    drawText(
+                        layout,
+                        topLeft = Offset(
+                            x = c.x - layout.size.width / 2f,
+                            y = y
+                        )
                     )
-                )
+                }
             }
         }
 
         // Spokes
-        if (style.spokes.show) {
-            val sw = style.spokes.strokeWidth.toPx()
-            for (i in 0 until n) {
-                val a = startRad + i * angleStep
-                val p = polar(a, r)
-                drawLine(style.spokes.color, c, p, sw)
+        when (val sp = style.spokes) {
+            is RadarStyle.Spokes.None -> Unit
+            is RadarStyle.Spokes.Visible -> {
+                val sw = sp.strokeWidth.toPx()
+                for (i in 0 until n) {
+                    val a = startRad + i * angleStep
+                    val p = polar(a, r)
+                    drawLine(sp.color, c, p, sw)
+                }
             }
         }
 
@@ -120,58 +177,76 @@ public fun RadarChart(
             drawPath(path, color = s.color, style = Stroke(width = strokeW))
 
             // Vertices
-            if (style.vertices.show) {
-                val vr = style.vertices.radius.toPx()
-                val vc = style.vertices.colorOverride ?: s.color
-                for (i in 0 until n) {
-                    val a = startRad + i * angleStep
-                    val raw: Float? = when (val v = s.values) {
-                        is RadarValues.ByAxisId -> v.map[data.axes[i].id]
-                        is RadarValues.ByIndex -> v.list.getOrNull(i)
+            when (val vcg = style.vertices) {
+                is RadarStyle.Vertices.None -> Unit
+                is RadarStyle.Vertices.Visible -> {
+                    val vr = vcg.radius.toPx()
+                    val vc = vcg.colorOverride ?: s.color
+                    for (i in 0 until n) {
+                        val a = startRad + i * angleStep
+                        val raw: Float? = when (val v = s.values) {
+                            is RadarValues.ByAxisId -> v.map[data.axes[i].id]
+                            is RadarValues.ByIndex -> v.list.getOrNull(i)
+                        }
+                        if (raw == null && !style.dataPolicy.missingAsZero) continue
+                        val vv = (raw ?: 0f).coerceIn(0f, 1f)
+                        val p = polar(a, r * vv)
+                        drawCircle(color = vc, radius = vr, center = p)
                     }
-                    if (raw == null && !style.dataPolicy.missingAsZero) continue
-                    val vv = (raw ?: 0f).coerceIn(0f, 1f)
-                    val p = polar(a, r * vv)
-                    drawCircle(color = vc, radius = vr, center = p)
                 }
             }
 
             // Values near vertices
-            if (style.values.show) {
-                val off = style.values.offset.toPx()
-                for (i in 0 until n) {
-                    val a = startRad + i * angleStep
-                    val raw: Float? = when (val v = s.values) {
-                        is RadarValues.ByAxisId -> v.map[data.axes[i].id]
-                        is RadarValues.ByIndex -> v.list.getOrNull(i)
+            when (val v = style.values) {
+                is RadarStyle.Values.None -> Unit
+                is RadarStyle.Values.Visible -> {
+                    val off = v.offset.toPx()
+                    for (i in 0 until n) {
+                        val a = startRad + i * angleStep
+                        val raw: Float? = when (val vvz = s.values) {
+                            is RadarValues.ByAxisId -> vvz.map[data.axes[i].id]
+                            is RadarValues.ByIndex -> vvz.list.getOrNull(i)
+                        }
+                        if (raw == null && !style.dataPolicy.missingAsZero) continue
+                        val vv = (raw ?: 0f).coerceIn(0f, 1f)
+                        val p0 = polar(a, r * vv)
+                        val label = v.formatter(vv, data)
+                        val layout = measurer.measure(AnnotatedString(label), v.textStyle)
+                        val x = (p0.x + cos(a) * off - layout.size.width / 2f)
+                            .coerceIn(chart.left, chart.right - layout.size.width.toFloat())
+                        val y = (p0.y + sin(a) * off - layout.size.height / 2f)
+                            .coerceIn(chart.top, chart.bottom - layout.size.height.toFloat())
+                        drawText(
+                            layout,
+                            topLeft = Offset(x, y)
+                        )
                     }
-                    if (raw == null && !style.dataPolicy.missingAsZero) continue
-                    val vv = (raw ?: 0f).coerceIn(0f, 1f)
-                    val p = polar(a, r * vv)
-                    val label = style.values.formatter(vv, data)
-                    val layout = measurer.measure(AnnotatedString(label), style.values.textStyle)
-                    val x = p.x + cos(a) * off
-                    val y = p.y + sin(a) * off
-                    drawText(
-                        layout,
-                        topLeft = Offset(x - layout.size.width / 2f, y - layout.size.height / 2f)
-                    )
                 }
             }
         }
 
         // Axis labels
-        if (style.labels.show) {
-            val lp = style.layout.labelPadding.toPx()
-            for (i in 0 until n) {
-                val a = startRad + i * angleStep
-                val p = polar(a, r + lp)
-                val layout =
-                    measurer.measure(AnnotatedString(axes[i].label), style.labels.textStyle)
-                drawText(
-                    layout,
-                    topLeft = Offset(p.x - layout.size.width / 2f, p.y - layout.size.height / 2f)
-                )
+        when (val lbl = style.labels) {
+            is RadarStyle.Labels.None -> Unit
+            is RadarStyle.Labels.Visible -> {
+                val lp = labelPad
+                for (i in 0 until n) {
+                    val a = startRad + i * angleStep
+                    val p = polar(a, r + lp)
+                    val layout = measurer.measure(AnnotatedString(axes[i].label), lbl.textStyle)
+                    val x = (p.x - layout.size.width / 2f).coerceIn(
+                        chart.left,
+                        chart.right - layout.size.width.toFloat()
+                    )
+                    val y = (p.y - layout.size.height / 2f).coerceIn(
+                        chart.top,
+                        chart.bottom - layout.size.height.toFloat()
+                    )
+                    drawText(
+                        layout,
+                        topLeft = Offset(x, y)
+                    )
+                }
             }
         }
     }

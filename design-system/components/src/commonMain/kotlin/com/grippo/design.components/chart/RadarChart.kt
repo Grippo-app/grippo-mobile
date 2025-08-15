@@ -14,7 +14,6 @@ import com.grippo.chart.radar.RadarValues
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import kotlin.math.roundToInt
 
 @Composable
 public fun RadarChart(
@@ -56,7 +55,6 @@ public fun RadarChart(
 
     val style = RadarStyle(
         layout = RadarStyle.Layout(
-            padding = 12.dp,
             labelPadding = 12.dp,
             startAngleDeg = -90f,
             clockwise = true,
@@ -66,18 +64,13 @@ public fun RadarChart(
             asPolygon = true,
             color = AppTokens.colors.divider.default,
             strokeWidth = 1.dp,
-            showLevelLabels = false,
-            levelLabelStyle = AppTokens.typography.b11Reg()
-                .copy(color = AppTokens.colors.text.secondary.copy(alpha = 0.85f)),
-            levelFormatter = { v -> "${(v * 100f).roundToInt()}%" }
+            levelLabels = RadarStyle.LevelLabels.None,
         ),
-        spokes = RadarStyle.Spokes(
-            show = true,
+        spokes = RadarStyle.Spokes.Visible(
             color = AppTokens.colors.divider.default,
             strokeWidth = 1.dp,
         ),
-        labels = RadarStyle.Labels(
-            show = true,
+        labels = RadarStyle.Labels.Visible(
             textStyle = AppTokens.typography.b11Reg().copy(color = AppTokens.colors.text.primary)
         ),
         polygon = RadarStyle.Polygon(
@@ -85,17 +78,11 @@ public fun RadarChart(
             strokeColorFallback = charts.radar.strokeFallback,
             fillAlpha = 0.35f,
         ),
-        vertices = RadarStyle.Vertices(
-            show = true,
+        vertices = RadarStyle.Vertices.Visible(
             radius = 3.dp,
             colorOverride = null,
         ),
-        values = RadarStyle.Values(
-            show = false,
-            textStyle = AppTokens.typography.b11Med().copy(color = AppTokens.colors.text.primary),
-            formatter = { v, _ -> "${(v.coerceIn(0f, 1f) * 100f).roundToInt()}%" },
-            offset = 8.dp,
-        ),
+        values = RadarStyle.Values.None,
         dataPolicy = RadarStyle.DataPolicy(
             requireCompleteSeries = true,
             missingAsZero = true,
