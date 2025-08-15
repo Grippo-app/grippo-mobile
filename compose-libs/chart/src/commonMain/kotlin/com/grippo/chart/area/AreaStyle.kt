@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 public data class AreaStyle(
     val grid: Grid,
     val yAxis: YAxis,
+    val yAxisLine: AxisLine?,
     val xAxis: XAxis,
     val line: Line,
     val glow: Glow,
@@ -28,23 +29,36 @@ public data class AreaStyle(
     )
 
     @Immutable
-    public data class YAxis(
-        val show: Boolean,
-        val targetTicks: Int,
-        val textStyle: TextStyle,
-        val showLine: Boolean,
-        val axisLineColor: Color,
-        val axisLineWidth: Dp,
-        val formatter: (Float, AreaData) -> String
-    )
+    public sealed interface YAxis {
+        @Immutable
+        public data object None : YAxis
+
+        @Immutable
+        public data class Labels(
+            val targetTicks: Int,
+            val textStyle: TextStyle,
+            val formatter: (Float, AreaData) -> String,
+            val tickMarkColor: Color,
+            val tickMarkWidth: Dp,
+        ) : YAxis
+    }
 
     @Immutable
-    public data class XAxis(
-        val show: Boolean,
-        val textStyle: TextStyle,
-        val minGapDp: Dp,
-        val showAll: Boolean
-    )
+    public sealed interface XAxis {
+        @Immutable
+        public data object None : XAxis
+
+        @Immutable
+        public data class LabelsShowAll(
+            val textStyle: TextStyle,
+        ) : XAxis
+
+        @Immutable
+        public data class LabelsAdaptive(
+            val textStyle: TextStyle,
+            val minGapDp: Dp,
+        ) : XAxis
+    }
 
     @Immutable
     public data class Line(
@@ -68,17 +82,33 @@ public data class AreaStyle(
     )
 
     @Immutable
-    public data class Dots(
-        val show: Boolean,
-        val radius: Dp,
-        val color: Color?
-    )
+    public sealed interface Dots {
+        @Immutable
+        public data object None : Dots
+
+        @Immutable
+        public data class Visible(
+            val radius: Dp,
+            val color: Color?
+        ) : Dots
+    }
 
     @Immutable
-    public data class Extrema(
-        val show: Boolean,
-        val textStyle: TextStyle,
-        val markerRadius: Dp,
-        val markerColor: Color?
+    public sealed interface Extrema {
+        @Immutable
+        public data object None : Extrema
+
+        @Immutable
+        public data class Visible(
+            val textStyle: TextStyle,
+            val markerRadius: Dp,
+            val markerColor: Color?
+        ) : Extrema
+    }
+
+    @Immutable
+    public data class AxisLine(
+        val color: Color,
+        val width: Dp,
     )
 }

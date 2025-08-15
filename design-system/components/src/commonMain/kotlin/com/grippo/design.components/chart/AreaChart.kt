@@ -37,20 +37,20 @@ public fun AreaChart(
             color = AppTokens.colors.divider.default,
             strokeWidth = 1.dp
         ),
-        yAxis = AreaStyle.YAxis(
-            show = true,
+        yAxis = AreaStyle.YAxis.Labels(
             targetTicks = 5,
             textStyle = AppTokens.typography.b11Reg().copy(color = AppTokens.colors.text.primary),
-            showLine = true,
-            axisLineColor = AppTokens.colors.divider.default,
-            axisLineWidth = 1.dp,
-            formatter = { v, d -> "${v.roundToInt()}" }
+            formatter = { v, _ -> "${v.roundToInt()}" },
+            tickMarkColor = AppTokens.colors.divider.default,
+            tickMarkWidth = 1.dp
         ),
-        xAxis = AreaStyle.XAxis(
-            show = true,
+        yAxisLine = AreaStyle.AxisLine(
+            color = AppTokens.colors.divider.default,
+            width = 1.dp
+        ),
+        xAxis = AreaStyle.XAxis.LabelsAdaptive(
             textStyle = AppTokens.typography.b11Reg().copy(color = AppTokens.colors.text.secondary),
-            minGapDp = 1.dp,
-            showAll = false
+            minGapDp = 1.dp
         ),
         line = AreaStyle.Line(
             strokeWidth = 2.dp,
@@ -75,9 +75,8 @@ public fun AreaChart(
                 startY = 0f, endY = sz.height
             )
         },
-        dots = AreaStyle.Dots(show = true, radius = 2.dp, color = charts.area.dot),
-        extrema = AreaStyle.Extrema(
-            show = true,
+        dots = AreaStyle.Dots.Visible(radius = 2.dp, color = charts.area.dot),
+        extrema = AreaStyle.Extrema.Visible(
             textStyle = AppTokens.typography.b11Bold().copy(color = AppTokens.colors.text.primary),
             markerColor = null,
             markerRadius = 3.dp

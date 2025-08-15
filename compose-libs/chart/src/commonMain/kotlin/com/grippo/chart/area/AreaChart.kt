@@ -58,7 +58,11 @@ public fun AreaChart(
             return niceMul * base
         }
 
-        val yStep = niceStep(yMaxTarget - yMinTarget, max(2, style.yAxis.targetTicks))
+        val targetTicks = when (val yCfg = style.yAxis) {
+            is AreaStyle.YAxis.Labels -> max(2, yCfg.targetTicks)
+            is AreaStyle.YAxis.None -> 5
+        }
+        val yStep = niceStep(yMaxTarget - yMinTarget, targetTicks)
         val minY = floor(yMinTarget / yStep) * yStep
         val maxY = ceil(yMaxTarget / yStep) * yStep
         val spanY = (maxY - minY).coerceAtLeast(1e-6f)
@@ -73,7 +77,10 @@ public fun AreaChart(
                 add(v); v += yStep
             }
         }
-        val rawY = yTicks.map { style.yAxis.formatter(it, data) }
+        val rawY = when (val yCfg = style.yAxis) {
+            is AreaStyle.YAxis.Labels -> yTicks.map { yCfg.formatter(it, data) }
+            is AreaStyle.YAxis.None -> emptyList()
+        }
 
         fun commonSuffix(list: List<String>): String {
             if (list.isEmpty()) return ""
@@ -89,35 +96,48 @@ public fun AreaChart(
             it.removeSuffix(sharedSuffix).trimEnd()
         }
 
-        val yLayouts = if (style.yAxis.show)
-            yLabels.map { measurer.measure(AnnotatedString(it), style.yAxis.textStyle) }
-        else emptyList()
+        val yLayouts = when (val yCfg = style.yAxis) {
+            is AreaStyle.YAxis.Labels -> yLabels.map {
+                measurer.measure(
+                    AnnotatedString(it),
+                    yCfg.textStyle
+                )
+            }
 
-        val unitLayout = if (style.yAxis.show && sharedSuffix.isNotEmpty())
-            measurer.measure(AnnotatedString(sharedSuffix), style.yAxis.textStyle)
-        else null
+            is AreaStyle.YAxis.None -> emptyList()
+        }
 
-        val leftGutter = if (style.yAxis.show && yLayouts.isNotEmpty()) {
+        val unitLayout = when (val yCfg = style.yAxis) {
+            is AreaStyle.YAxis.Labels -> if (sharedSuffix.isNotEmpty()) measurer.measure(
+                AnnotatedString(sharedSuffix),
+                yCfg.textStyle
+            ) else null
+
+            is AreaStyle.YAxis.None -> null
+        }
+
+        val leftGutter = if (yLayouts.isNotEmpty()) {
             val wLabels = yLayouts.maxOf { it.size.width }.toFloat()
             val wUnit = (unitLayout?.size?.width ?: 0).toFloat()
             (wLabels + wUnit + labelPadPx * 1.5f)
         } else 0f
 
         // X labels come from points; we’ll thin them to avoid overlap
-        val xLayouts = if (style.xAxis.show)
-            data.points.map { p ->
-                p.xLabel?.let {
-                    measurer.measure(
-                        AnnotatedString(it),
-                        style.xAxis.textStyle
-                    )
-                }
+        val xLayouts = when (val xCfg = style.xAxis) {
+            is AreaStyle.XAxis.LabelsAdaptive -> data.points.map { p ->
+                p.xLabel?.let { measurer.measure(AnnotatedString(it), xCfg.textStyle) }
             }
-        else emptyList()
+
+            is AreaStyle.XAxis.LabelsShowAll -> data.points.map { p ->
+                p.xLabel?.let { measurer.measure(AnnotatedString(it), xCfg.textStyle) }
+            }
+
+            is AreaStyle.XAxis.None -> emptyList()
+        }
 
         // FIX: remove extra half padding at the bottom
         val maxXLabelH = xLayouts.filterNotNull().maxOfOrNull { it.size.height }?.toFloat() ?: 0f
-        val bottomGutter = if (style.xAxis.show && maxXLabelH > 0f) maxXLabelH else 0f
+        val bottomGutter = if (xLayouts.isNotEmpty() && maxXLabelH > 0f) maxXLabelH else 0f
 
         // ----- Chart rect (fully inside canvas; no external margins) -----
         val chart = Rect(
@@ -142,52 +162,55 @@ public fun AreaChart(
             }
         }
 
-        // ----- Y axis (labels inside; no overflow) -----
-        if (style.yAxis.show && yLayouts.isNotEmpty()) {
-            val axisW = style.yAxis.axisLineWidth.toPx()
-            for (i in yTicks.indices) {
-                val y = mapY(yTicks[i])
-                drawLine(
-                    color = style.yAxis.axisLineColor,
-                    start = Offset(chart.left, y),
-                    end = Offset(chart.left + 4.dp.toPx(), y),
-                    strokeWidth = axisW
-                )
-                val l = yLayouts[i]
-                val lW = l.size.width.toFloat()
-                val lH = l.size.height.toFloat()
-                val top = (y - lH / 2f).coerceIn(chart.top, chart.bottom - lH)
-                val unitW = unitLayout?.size?.width?.toFloat() ?: 0f
-                drawText(
-                    l,
-                    topLeft = Offset(
-                        x = chart.left - labelPadPx - unitW - lW,
-                        y = top
+        // ----- Y axis (labels and tick marks) -----
+        when (val yCfg = style.yAxis) {
+            is AreaStyle.YAxis.Labels -> {
+                val tickW = yCfg.tickMarkWidth.toPx()
+                for (i in yTicks.indices) {
+                    val y = mapY(yTicks[i])
+                    drawLine(
+                        color = yCfg.tickMarkColor,
+                        start = Offset(chart.left, y),
+                        end = Offset(chart.left + 4.dp.toPx(), y),
+                        strokeWidth = tickW
                     )
-                )
+                    val l = yLayouts[i]
+                    val lW = l.size.width.toFloat()
+                    val lH = l.size.height.toFloat()
+                    val top = (y - lH / 2f).coerceIn(chart.top, chart.bottom - lH)
+                    val unitW = unitLayout?.size?.width?.toFloat() ?: 0f
+                    drawText(
+                        l,
+                        topLeft = Offset(
+                            x = chart.left - labelPadPx - unitW - lW,
+                            y = top
+                        )
+                    )
+                }
+                unitLayout?.let { u ->
+                    val uW = u.size.width.toFloat()
+                    val uH = u.size.height.toFloat()
+                    val ux = chart.left - labelPadPx - uW
+                    val uy = (chart.top - uH - 2.dp.toPx()).coerceAtLeast(0f)
+                    drawText(u, topLeft = Offset(ux, uy))
+                }
             }
-            if (style.yAxis.showLine) {
-                drawLine(
-                    color = style.yAxis.axisLineColor,
-                    start = Offset(chart.left, chart.top),
-                    end = Offset(chart.left, chart.bottom),
-                    strokeWidth = axisW
-                )
-            }
-            unitLayout?.let { u ->
-                val uW = u.size.width.toFloat()
-                val uH = u.size.height.toFloat()
-                val ux = chart.left - labelPadPx - uW
-                val uy = (chart.top - uH - 2.dp.toPx()).coerceAtLeast(0f)
-                drawText(u, topLeft = Offset(ux, uy))
-            }
+
+            is AreaStyle.YAxis.None -> Unit
+        }
+        style.yAxisLine?.let { axis ->
+            drawLine(
+                color = axis.color,
+                start = Offset(chart.left, chart.top),
+                end = Offset(chart.left, chart.bottom),
+                strokeWidth = axis.width.toPx()
+            )
         }
 
-        // ----- X axis (labels with strict min gap; keep tail sane) -----
-        if (style.xAxis.show && xLayouts.isNotEmpty()) {
-            val minGapPx = style.xAxis.minGapDp.toPx()
-
-            if (style.xAxis.showAll) {
+        // ----- X axis (adaptive / show all / none) -----
+        when (val xCfg = style.xAxis) {
+            is AreaStyle.XAxis.None -> Unit
+            is AreaStyle.XAxis.LabelsShowAll -> {
                 // Draw every label; clamp into chart; allow overlaps by design
                 for (i in data.points.indices) {
                     val lay = xLayouts[i] ?: continue
@@ -196,7 +219,10 @@ public fun AreaChart(
                     val left = (cx - w / 2f).coerceIn(chart.left, chart.right - w)
                     drawText(lay, topLeft = Offset(left, chart.bottom))
                 }
-            } else {
+            }
+
+            is AreaStyle.XAxis.LabelsAdaptive -> {
+                val minGapPx = xCfg.minGapDp.toPx()
                 // Sort by actual X
                 val order = data.points.indices.sortedBy { pts[it].x }
 
@@ -314,35 +340,49 @@ public fun AreaChart(
         } ?: drawPath(linePath, color = style.line.color, style = stroke)
 
         // ----- Dots -----
-        if (style.dots.show) {
-            val r = style.dots.radius.toPx()
-            val c = style.dots.color ?: style.line.color
-            pts.forEach { drawCircle(color = c, radius = r, center = it) }
+        when (val dCfg = style.dots) {
+            is AreaStyle.Dots.Visible -> {
+                val r = dCfg.radius.toPx()
+                val c = dCfg.color ?: style.line.color
+                pts.forEach { drawCircle(color = c, radius = r, center = it) }
+            }
+
+            is AreaStyle.Dots.None -> Unit
         }
 
         // ----- Extrema -----
-        if (style.extrema.show && pts.isNotEmpty()) {
-            val maxIdx = data.points.indices.maxBy { data.points[it].y }
-            val minIdx = data.points.indices.minBy { data.points[it].y }
-            fun drawTag(idx: Int) {
-                val p = pts[idx]
-                val value = data.points[idx].y
-                val label = style.yAxis.formatter(value, data)
-                val layout = measurer.measure(AnnotatedString(label), style.extrema.textStyle)
-                val x = (p.x - layout.size.width / 2f).coerceIn(
-                    chart.left,
-                    chart.right - layout.size.width
-                )
-                val y = (p.y - layout.size.height - 4.dp.toPx()).coerceAtLeast(chart.top)
-                drawCircle(
-                    color = (style.extrema.markerColor ?: style.line.color),
-                    radius = style.extrema.markerRadius.toPx(),
-                    center = p
-                )
-                drawText(layout, topLeft = Offset(x, y))
+        if (pts.isNotEmpty()) {
+            when (val eCfg = style.extrema) {
+                is AreaStyle.Extrema.None -> Unit
+                is AreaStyle.Extrema.Visible -> {
+                    val maxIdx = data.points.indices.maxBy { data.points[it].y }
+                    val minIdx = data.points.indices.minBy { data.points[it].y }
+                    val yFormatter: (Float) -> String = when (val yCfg = style.yAxis) {
+                        is AreaStyle.YAxis.Labels -> { v -> yCfg.formatter(v, data) }
+                        is AreaStyle.YAxis.None -> { v -> v.toString() }
+                    }
+
+                    fun drawTag(idx: Int) {
+                        val p = pts[idx]
+                        val value = data.points[idx].y
+                        val label = yFormatter(value)
+                        val layout = measurer.measure(AnnotatedString(label), eCfg.textStyle)
+                        val x = (p.x - layout.size.width / 2f).coerceIn(
+                            chart.left,
+                            chart.right - layout.size.width
+                        )
+                        val y = (p.y - layout.size.height - 4.dp.toPx()).coerceAtLeast(chart.top)
+                        drawCircle(
+                            color = (eCfg.markerColor ?: style.line.color),
+                            radius = eCfg.markerRadius.toPx(),
+                            center = p
+                        )
+                        drawText(layout, topLeft = Offset(x, y))
+                    }
+                    drawTag(maxIdx)
+                    drawTag(minIdx)
+                }
             }
-            drawTag(maxIdx)
-            drawTag(minIdx)
         }
     }
 }

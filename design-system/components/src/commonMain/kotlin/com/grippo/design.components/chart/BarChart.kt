@@ -47,7 +47,6 @@ public fun BarChart(
 
     val style = BarStyle(
         layout = BarStyle.Layout(
-            padding = 12.dp,
             labelPadding = 6.dp
         ),
         grid = BarStyle.Grid(
@@ -55,25 +54,26 @@ public fun BarChart(
             color = AppTokens.colors.divider.default,
             strokeWidth = 1.dp
         ),
-        yAxis = BarStyle.YAxis(
-            show = true,
+        yAxis = BarStyle.YAxis.Labels(
             ticks = 5,
             textStyle = AppTokens.typography.b11Reg().copy(color = AppTokens.colors.text.primary),
-            showLine = true,
-            axisLineColor = AppTokens.colors.divider.default,
-            axisLineWidth = 1.dp,
-            formatter = { v, _ -> v.roundToInt().toString() }
+            formatter = { v, _ -> v.roundToInt().toString() },
+            tickMarkColor = AppTokens.colors.divider.default,
+            tickMarkWidth = 1.dp
         ),
-        xAxis = BarStyle.XAxis(
-            show = true,
+        yAxisLine = BarStyle.AxisLine(
+            color = AppTokens.colors.divider.default,
+            width = 1.dp
+        ),
+        xAxis = BarStyle.XAxis.LabelsAdaptive(
             textStyle = AppTokens.typography.b11Reg().copy(color = AppTokens.colors.text.secondary),
-            showBaseline = true,
-            baselineColor = AppTokens.colors.divider.default,
-            baselineWidth = 3.dp
+            minGapDp = 1.dp
+        ),
+        xBaseline = BarStyle.Baseline(
+            color = AppTokens.colors.divider.default,
+            width = 3.dp
         ),
         bars = BarStyle.Bars(
-            width = 18.dp,
-            spacing = 10.dp,
             corner = 10.dp,
             brushProvider = { entry, _, rect ->
                 Brush.verticalGradient(
@@ -84,15 +84,12 @@ public fun BarChart(
                 )
             },
             strokeWidth = 0.dp,
-            strokeColor = AppTokens.colors.divider.default
+            strokeColor = AppTokens.colors.divider.default,
+            sizing = BarStyle.BarsSizing.AutoEqualBarsAndGaps
         ),
-        values = BarStyle.Values(
-            show = true,
+        values = BarStyle.Values.Above(
             textStyle = AppTokens.typography.b11Bold().copy(color = AppTokens.colors.text.primary),
             formatter = { v, _ -> v.roundToInt().toString() },
-            placement = BarStyle.ValuePlacement.Above,
-            minInnerPadding = 6.dp,
-            insideColor = null,
         ),
         target = null
     )
