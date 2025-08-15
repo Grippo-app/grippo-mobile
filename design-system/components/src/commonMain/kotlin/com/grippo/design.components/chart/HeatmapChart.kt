@@ -60,9 +60,9 @@ public fun HeatmapChart(
 
     val style = HeatmapStyle(
         layout = HeatmapStyle.Layout(
-            gap = 6.dp,
-            corner = 6.dp,
-            labelPadding = 6.dp
+            gap = 1.dp,
+            corner = 3.dp,
+            labelPadding = 4.dp
         ),
         rowLabels = HeatmapStyle.AxisLabels.ShowAll(
             textStyle = AppTokens.typography.b11Reg().copy(color = AppTokens.colors.text.primary)
@@ -72,7 +72,7 @@ public fun HeatmapChart(
             minGapDp = 1.dp
         ),
         legend = HeatmapStyle.Legend.Visible(
-            height = 12.dp,
+            height = 8.dp,
             stops = charts.heatmap.scaleStops,
             labelStyle = AppTokens.typography.b11Reg()
                 .copy(color = AppTokens.colors.text.secondary),

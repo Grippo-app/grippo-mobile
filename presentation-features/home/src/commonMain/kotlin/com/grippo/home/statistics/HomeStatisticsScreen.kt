@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
@@ -96,7 +97,7 @@ internal fun HomeStatisticsScreen(
             item {
                 ChartCard(
                     modifier = Modifier.fillMaxWidth().aspectRatio(1.1f),
-                    content = { HeatmapChart(modifier = Modifier.fillMaxSize()) })
+                    content = { HeatmapChart(modifier = Modifier.fillMaxSize().clipToBounds()) })
             }
             item {
                 ChartCard(

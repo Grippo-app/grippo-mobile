@@ -40,6 +40,7 @@ public fun HeatmapChart(
 
         // ----- Gutters for labels/legend (no external padding) -----
         val labelPadPx = style.layout.labelPadding.toPx()
+        val legendLabelSpacingPx = 2.dp.toPx()
 
         var leftGutter = 0f
         when (val rLbl = style.rowLabels) {
@@ -67,6 +68,7 @@ public fun HeatmapChart(
         }
 
         var bottomGutter = 0f
+        var colLabelsMaxH = 0f
         when (val cLbl = style.colLabels) {
             is HeatmapStyle.AxisLabels.ShowAll -> {
                 if (data.colLabels.isNotEmpty()) {
@@ -74,7 +76,8 @@ public fun HeatmapChart(
                         val text = data.colLabels.getOrNull(c) ?: ""
                         measurer.measure(AnnotatedString(text), cLbl.textStyle).size.height
                     }
-                    bottomGutter += maxH + labelPadPx
+                    colLabelsMaxH = maxH.toFloat()
+                    bottomGutter += colLabelsMaxH + labelPadPx
                 }
             }
 
@@ -84,18 +87,28 @@ public fun HeatmapChart(
                         val text = data.colLabels.getOrNull(c) ?: ""
                         measurer.measure(AnnotatedString(text), cLbl.textStyle).size.height
                     }
-                    bottomGutter += maxH + labelPadPx
+                    colLabelsMaxH = maxH.toFloat()
+                    bottomGutter += colLabelsMaxH + labelPadPx
                 }
             }
 
             is HeatmapStyle.AxisLabels.None -> Unit
         }
 
-        val legendH = when (val lg = style.legend) {
-            is HeatmapStyle.Legend.Visible -> lg.height.toPx()
-            is HeatmapStyle.Legend.None -> 0f
+        when (val lg = style.legend) {
+            is HeatmapStyle.Legend.Visible -> {
+                val legendH = lg.height.toPx()
+                val minText = (lg.minText?.let { it(minVal) }) ?: "0%"
+                val maxText = (lg.maxText?.let { it(maxVal) }) ?: "100%"
+                val minLayout = measurer.measure(AnnotatedString(minText), lg.labelStyle)
+                val maxLayout = measurer.measure(AnnotatedString(maxText), lg.labelStyle)
+                val legendTextMaxH =
+                    kotlin.math.max(minLayout.size.height, maxLayout.size.height).toFloat()
+                bottomGutter += legendH + legendLabelSpacingPx + legendTextMaxH + labelPadPx
+            }
+
+            is HeatmapStyle.Legend.None -> Unit
         }
-        if (legendH > 0f) bottomGutter += legendH + labelPadPx
 
         val chart = Rect(leftGutter, 0f, size.width, size.height - bottomGutter)
         val chartW = chart.width.coerceAtLeast(0f)
@@ -294,7 +307,8 @@ public fun HeatmapChart(
         when (val lg = style.legend) {
             is HeatmapStyle.Legend.None -> Unit
             is HeatmapStyle.Legend.Visible -> {
-                val legendTop = size.height - lg.height.toPx()
+                val legendTop =
+                    chart.bottom + (if (colLabelsMaxH > 0f) colLabelsMaxH + labelPadPx else labelPadPx)
                 val legendRect =
                     Rect(chart.left, legendTop, chart.right, legendTop + lg.height.toPx())
                 val brush = legendBrush(lg.stops)
@@ -309,13 +323,13 @@ public fun HeatmapChart(
                 val maxLayout = measurer.measure(AnnotatedString(maxText), lg.labelStyle)
                 drawText(
                     minLayout,
-                    topLeft = Offset(legendRect.left, legendRect.bottom + 2.dp.toPx())
+                    topLeft = Offset(legendRect.left, legendRect.bottom + legendLabelSpacingPx)
                 )
                 drawText(
                     maxLayout,
                     topLeft = Offset(
                         legendRect.right - maxLayout.size.width,
-                        legendRect.bottom + 2.dp.toPx()
+                        legendRect.bottom + legendLabelSpacingPx
                     )
                 )
             }
