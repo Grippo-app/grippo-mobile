@@ -158,7 +158,7 @@ public object LightColor : AppColor {
         override val outline = AppPalette.NeutralLight.N200
         override val text = AppPalette.Common.White
         override val palette = AppPalette.Qualitative.Palette12
-        override val scaleStops = AppPalette.Ramps.BlueOrangeRed
+        override val scaleStops = AppPalette.Ramps.OrangeRed
     }
 
     override val charts: AppColor.Charts = object : AppColor.Charts {
@@ -181,7 +181,7 @@ public object LightColor : AppColor {
             override val palette = AppPalette.Qualitative.Palette12
         }
         override val heatmap = object : AppColor.Charts.HeatmapColors {
-            override val scaleStops = AppPalette.Ramps.BlueOrangeRed
+            override val scaleStops = AppPalette.Ramps.OrangeRed
             override val missingCell = AppPalette.Common.Black.copy(alpha = 0.07f)
         }
         override val radar = object : AppColor.Charts.RadarColors {

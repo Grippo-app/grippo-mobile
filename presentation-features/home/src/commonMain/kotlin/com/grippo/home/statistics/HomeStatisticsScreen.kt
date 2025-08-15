@@ -4,19 +4,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height as BoxHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.compose.material3.Text
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.date.utils.DateFormat
@@ -81,14 +75,8 @@ internal fun HomeStatisticsScreen(
         item(key = "area_chart", span = StaggeredGridItemSpan.FullLine) {
             ChartCard(
                 modifier = Modifier.fillMaxWidth().aspectRatio(1.8f),
-                content = {
-                    Text(
-                        text = AppTokens.strings.res(Res.string.statistics),
-                        style = AppTokens.typography.b11Med().copy(color = AppTokens.colors.text.secondary)
-                    )
-                    Spacer(modifier = Modifier.BoxHeight(8.dp))
-                    AreaChart(modifier = Modifier.fillMaxSize())
-                }
+                title = AppTokens.strings.res(Res.string.statistics),
+                content = { AreaChart(modifier = Modifier.fillMaxWidth().weight(1f)) }
             )
         }
 
@@ -96,70 +84,38 @@ internal fun HomeStatisticsScreen(
         item(key = "bar_chart") {
             ChartCard(
                 modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-                content = {
-                    Text(
-                        text = "Weekly Volume",
-                        style = AppTokens.typography.b11Med().copy(color = AppTokens.colors.text.secondary)
-                    )
-                    Spacer(modifier = Modifier.BoxHeight(8.dp))
-                    BarChart(modifier = Modifier.fillMaxSize())
-                }
+                title = "Weekly Volume",
+                content = { BarChart(modifier = Modifier.fillMaxWidth().weight(1f)) }
             )
         }
         item(key = "sparkline_chart") {
             ChartCard(
                 modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-                content = {
-                    Text(
-                        text = "Trend",
-                        style = AppTokens.typography.b11Med().copy(color = AppTokens.colors.text.secondary)
-                    )
-                    Spacer(modifier = Modifier.BoxHeight(8.dp))
-                    Sparkline(modifier = Modifier.fillMaxSize())
-                }
+                title = "Trend",
+                content = { Sparkline(modifier = Modifier.fillMaxWidth().weight(1f)) }
             )
         }
 
-        // Heatmap — full width
         item(key = "heatmap_chart", span = StaggeredGridItemSpan.FullLine) {
             ChartCard(
-                modifier = Modifier.fillMaxWidth().aspectRatio(1.5f),
-                content = {
-                    Text(
-                        text = "Activity Heatmap",
-                        style = AppTokens.typography.b11Med().copy(color = AppTokens.colors.text.secondary)
-                    )
-                    Spacer(modifier = Modifier.BoxHeight(8.dp))
-                    HeatmapChart(modifier = Modifier.fillMaxSize())
-                }
+                modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+                title = "Activity Heatmap",
+                content = { HeatmapChart(modifier = Modifier.fillMaxWidth().weight(1f)) }
             )
         }
 
-        // Radar and Progress — side by side (progress fixed height for readability)
         item(key = "radar_chart") {
             ChartCard(
                 modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-                content = {
-                    Text(
-                        text = "Muscle Balance",
-                        style = AppTokens.typography.b11Med().copy(color = AppTokens.colors.text.secondary)
-                    )
-                    Spacer(modifier = Modifier.BoxHeight(8.dp))
-                    RadarChart(modifier = Modifier.fillMaxSize())
-                }
+                title = "Muscle Balance",
+                content = { RadarChart(modifier = Modifier.fillMaxWidth().weight(1f)) }
             )
         }
         item(key = "progress_chart") {
             ChartCard(
                 modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-                content = {
-                    Text(
-                        text = "Progress",
-                        style = AppTokens.typography.b11Med().copy(color = AppTokens.colors.text.secondary)
-                    )
-                    Spacer(modifier = Modifier.BoxHeight(8.dp))
-                    ProgressChart(modifier = Modifier.fillMaxSize())
-                }
+                title = "Progress",
+                content = { ProgressChart(modifier = Modifier.fillMaxWidth().weight(1f)) }
             )
         }
     }
