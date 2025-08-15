@@ -8,36 +8,51 @@ import androidx.compose.ui.unit.Dp
 @Immutable
 public data class HeatmapStyle(
     val layout: Layout,
-    val labels: Labels,
+    val rowLabels: AxisLabels,
+    val colLabels: AxisLabels,
     val legend: Legend,
     val palette: Palette,
-    val cells: Cells,
+    val borders: Borders,
     val values: Values,
 ) {
     @Immutable
     public data class Layout(
-        val padding: Dp,
         val gap: Dp,
         val corner: Dp,
         val labelPadding: Dp,
     )
 
     @Immutable
-    public data class Labels(
-        val showRowLabels: Boolean,
-        val showColLabels: Boolean,
-        val textStyle: TextStyle,
-    )
+    public sealed interface AxisLabels {
+        @Immutable
+        public data object None : AxisLabels
+
+        @Immutable
+        public data class ShowAll(
+            val textStyle: TextStyle,
+        ) : AxisLabels
+
+        @Immutable
+        public data class Adaptive(
+            val textStyle: TextStyle,
+            val minGapDp: Dp,
+        ) : AxisLabels
+    }
 
     @Immutable
-    public data class Legend(
-        val show: Boolean,
-        val height: Dp,
-        val stops: List<Pair<Float, Color>>?,
-        val labelStyle: TextStyle,
-        val minText: ((Float) -> String)?,
-        val maxText: ((Float) -> String)?,
-    )
+    public sealed interface Legend {
+        @Immutable
+        public data object None : Legend
+
+        @Immutable
+        public data class Visible(
+            val height: Dp,
+            val stops: List<Pair<Float, Color>>?,
+            val labelStyle: TextStyle,
+            val minText: ((Float) -> String)?,
+            val maxText: ((Float) -> String)?,
+        ) : Legend
+    }
 
     @Immutable
     public data class Palette(
@@ -47,16 +62,26 @@ public data class HeatmapStyle(
     )
 
     @Immutable
-    public data class Cells(
-        val showBorders: Boolean,
-        val borderColor: Color,
-        val borderWidth: Dp,
-    )
+    public sealed interface Borders {
+        @Immutable
+        public data object None : Borders
+
+        @Immutable
+        public data class Visible(
+            val borderColor: Color,
+            val borderWidth: Dp,
+        ) : Borders
+    }
 
     @Immutable
-    public data class Values(
-        val show: Boolean,
-        val textStyle: TextStyle,
-        val formatter: (Float, HeatmapData) -> String,
-    )
+    public sealed interface Values {
+        @Immutable
+        public data object None : Values
+
+        @Immutable
+        public data class Visible(
+            val textStyle: TextStyle,
+            val formatter: (Float, HeatmapData) -> String,
+        ) : Values
+    }
 }

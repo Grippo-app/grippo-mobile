@@ -24,10 +24,10 @@ public fun HeatmapChart(
     val measurer = rememberTextMeasurer()
 
     androidx.compose.foundation.Canvas(modifier) {
-        if (data.rows <= 0 || data.cols <= 0) return@Canvas
+        if (data.matrix.rows <= 0 || data.matrix.cols <= 0) return@Canvas
 
         // ----- Normalize domain (optional) -----
-        val values = data.cells.map { it.value01 }
+        val values = data.matrix.values
         var minVal = 0f
         var maxVal = 1f
         if (style.palette.autoNormalize && values.isNotEmpty()) {
@@ -38,55 +38,84 @@ public fun HeatmapChart(
         fun norm(v: Float): Float =
             if (!style.palette.autoNormalize) v else (v - minVal) / (maxVal - minVal)
 
-        // ----- Gutters for labels/legend -----
-        val pad = style.layout.padding.toPx()
+        // ----- Gutters for labels/legend (no external padding) -----
         val labelPadPx = style.layout.labelPadding.toPx()
 
-        var leftGutter = pad
-        if (style.labels.showRowLabels && data.rowLabels.isNotEmpty()) {
-            val maxW = (0 until data.rows).maxOf { r ->
-                val text = data.rowLabels.getOrNull(r) ?: ""
-                measurer.measure(AnnotatedString(text), style.labels.textStyle).size.width
+        var leftGutter = 0f
+        when (val rLbl = style.rowLabels) {
+            is HeatmapStyle.AxisLabels.ShowAll -> {
+                if (data.rowLabels.isNotEmpty()) {
+                    val maxW = (0 until data.matrix.rows).maxOf { r ->
+                        val text = data.rowLabels.getOrNull(r) ?: ""
+                        measurer.measure(AnnotatedString(text), rLbl.textStyle).size.width
+                    }
+                    leftGutter += maxW + labelPadPx
+                }
             }
-            leftGutter += maxW + labelPadPx
+
+            is HeatmapStyle.AxisLabels.Adaptive -> {
+                if (data.rowLabels.isNotEmpty()) {
+                    val maxW = (0 until data.matrix.rows).maxOf { r ->
+                        val text = data.rowLabels.getOrNull(r) ?: ""
+                        measurer.measure(AnnotatedString(text), rLbl.textStyle).size.width
+                    }
+                    leftGutter += maxW + labelPadPx
+                }
+            }
+
+            is HeatmapStyle.AxisLabels.None -> Unit
         }
 
-        var bottomGutter = pad
-        if (style.labels.showColLabels && data.colLabels.isNotEmpty()) {
-            val maxH = (0 until data.cols).maxOf { c ->
-                val text = data.colLabels.getOrNull(c) ?: ""
-                measurer.measure(AnnotatedString(text), style.labels.textStyle).size.height
+        var bottomGutter = 0f
+        when (val cLbl = style.colLabels) {
+            is HeatmapStyle.AxisLabels.ShowAll -> {
+                if (data.colLabels.isNotEmpty()) {
+                    val maxH = (0 until data.matrix.cols).maxOf { c ->
+                        val text = data.colLabels.getOrNull(c) ?: ""
+                        measurer.measure(AnnotatedString(text), cLbl.textStyle).size.height
+                    }
+                    bottomGutter += maxH + labelPadPx
+                }
             }
-            bottomGutter += maxH + labelPadPx
-        }
-        if (style.legend.show) {
-            bottomGutter += style.legend.height.toPx() + labelPadPx
+
+            is HeatmapStyle.AxisLabels.Adaptive -> {
+                if (data.colLabels.isNotEmpty()) {
+                    val maxH = (0 until data.matrix.cols).maxOf { c ->
+                        val text = data.colLabels.getOrNull(c) ?: ""
+                        measurer.measure(AnnotatedString(text), cLbl.textStyle).size.height
+                    }
+                    bottomGutter += maxH + labelPadPx
+                }
+            }
+
+            is HeatmapStyle.AxisLabels.None -> Unit
         }
 
-        val chart = Rect(leftGutter, pad, size.width - pad, size.height - bottomGutter)
+        val legendH = when (val lg = style.legend) {
+            is HeatmapStyle.Legend.Visible -> lg.height.toPx()
+            is HeatmapStyle.Legend.None -> 0f
+        }
+        if (legendH > 0f) bottomGutter += legendH + labelPadPx
+
+        val chart = Rect(leftGutter, 0f, size.width, size.height - bottomGutter)
         val chartW = chart.width.coerceAtLeast(0f)
         val chartH = chart.height.coerceAtLeast(0f)
         if (chartW <= 0f || chartH <= 0f) return@Canvas
 
         // ----- Cell geometry -----
         val gap = style.layout.gap.toPx()
-        val cw = if (data.cols > 0) (chartW - gap * (data.cols - 1)) / data.cols else 0f
-        val ch = if (data.rows > 0) (chartH - gap * (data.rows - 1)) / data.rows else 0f
+        val cw =
+            if (data.matrix.cols > 0) (chartW - gap * (data.matrix.cols - 1)) / data.matrix.cols else 0f
+        val ch =
+            if (data.matrix.rows > 0) (chartH - gap * (data.matrix.rows - 1)) / data.matrix.rows else 0f
         val rx = style.layout.corner.toPx()
 
-        // Index cells for O(1) lookup
-        val valueMap = HashMap<Long, Float>(data.cells.size)
-        fun key(r: Int, c: Int) = (r.toLong() shl 32) or (c.toLong() and 0xFFFFFFFF)
-        data.cells.forEach {
-            if (it.row in 0 until data.rows && it.col in 0 until data.cols) {
-                valueMap[key(it.row, it.col)] = it.value01
-            }
-        }
+        // Direct matrix access
 
         // Background for missing cells
         style.palette.missingCellColor?.let { bg ->
-            for (r in 0 until data.rows) {
-                for (c in 0 until data.cols) {
+            for (r in 0 until data.matrix.rows) {
+                for (c in 0 until data.matrix.cols) {
                     val x = chart.left + (cw + gap) * c
                     val y = chart.top + (ch + gap) * r
                     drawRoundRect(
@@ -100,9 +129,9 @@ public fun HeatmapChart(
         }
 
         // Cells with data
-        for (r in 0 until data.rows) {
-            for (c in 0 until data.cols) {
-                val v = valueMap[key(r, c)] ?: continue
+        for (r in 0 until data.matrix.rows) {
+            for (c in 0 until data.matrix.cols) {
+                val v = data.matrix[r, c]
                 val t = norm(v).coerceIn(0f, 1f)
                 val x = chart.left + (cw + gap) * c
                 val y = chart.top + (ch + gap) * r
@@ -114,76 +143,182 @@ public fun HeatmapChart(
                     cornerRadius = CornerRadius(rx, rx)
                 )
 
-                if (style.cells.showBorders && style.cells.borderWidth.value > 0f) {
-                    drawRoundRect(
-                        color = style.cells.borderColor,
-                        topLeft = Offset(x, y),
-                        size = Size(cw, ch),
-                        cornerRadius = CornerRadius(rx, rx),
-                        style = Stroke(width = style.cells.borderWidth.toPx())
-                    )
+                when (val b = style.borders) {
+                    is HeatmapStyle.Borders.Visible -> if (b.borderWidth.value > 0f) {
+                        drawRoundRect(
+                            color = b.borderColor,
+                            topLeft = Offset(x, y),
+                            size = Size(cw, ch),
+                            cornerRadius = CornerRadius(rx, rx),
+                            style = Stroke(width = b.borderWidth.toPx())
+                        )
+                    }
+
+                    is HeatmapStyle.Borders.None -> Unit
                 }
 
-                if (style.values.show) {
-                    val pTxt = style.values.formatter(t, data)
-                    val txtColor = chooseContrastingText(color, style.values.textStyle.color)
-                    val layout = measurer.measure(
-                        AnnotatedString(pTxt),
-                        style.values.textStyle.copy(color = txtColor)
-                    )
-                    val cx = x + (cw - layout.size.width) / 2f
-                    val cy = y + (ch - layout.size.height) / 2f
-                    drawText(layout, topLeft = Offset(cx, cy))
+                when (val v = style.values) {
+                    is HeatmapStyle.Values.Visible -> {
+                        val pTxt = v.formatter(t, data)
+                        val txtColor = chooseContrastingText(color, v.textStyle.color)
+                        val layout = measurer.measure(
+                            AnnotatedString(pTxt),
+                            v.textStyle.copy(color = txtColor)
+                        )
+                        val cx = x + (cw - layout.size.width) / 2f
+                        val cy = y + (ch - layout.size.height) / 2f
+                        drawText(layout, topLeft = Offset(cx, cy))
+                    }
+
+                    is HeatmapStyle.Values.None -> Unit
                 }
             }
         }
 
         // Row labels
-        if (style.labels.showRowLabels && data.rowLabels.isNotEmpty()) {
-            for (r in 0 until data.rows) {
-                val text = data.rowLabels.getOrNull(r) ?: ""
-                val layout = measurer.measure(AnnotatedString(text), style.labels.textStyle)
-                val y = chart.top + r * (ch + gap) + (ch - layout.size.height) / 2f
-                val x = chart.left - labelPadPx - layout.size.width
-                drawText(layout, topLeft = Offset(x, y))
+        when (val rLbl = style.rowLabels) {
+            is HeatmapStyle.AxisLabels.ShowAll -> if (data.rowLabels.isNotEmpty()) {
+                for (r in 0 until data.matrix.rows) {
+                    val text = data.rowLabels.getOrNull(r) ?: ""
+                    val layout = measurer.measure(AnnotatedString(text), rLbl.textStyle)
+                    val y = chart.top + r * (ch + gap) + (ch - layout.size.height) / 2f
+                    val x = chart.left - labelPadPx - layout.size.width
+                    drawText(layout, topLeft = Offset(x, y))
+                }
             }
+
+            is HeatmapStyle.AxisLabels.Adaptive -> if (data.rowLabels.isNotEmpty()) {
+                val minGapPx = rLbl.minGapDp.toPx()
+                // try to thin rows by step so that label boxes (height) have gap
+                val layouts = (0 until data.matrix.rows).map { r ->
+                    val text = data.rowLabels.getOrNull(r) ?: ""
+                    measurer.measure(AnnotatedString(text), rLbl.textStyle)
+                }
+                var step = 1
+                while (true) {
+                    var ok = true
+                    var prevBottom = Float.NEGATIVE_INFINITY
+                    var r = 0
+                    while (r < data.matrix.rows) {
+                        val l = layouts[r]
+                        val y = chart.top + r * (ch + gap) + (ch - l.size.height) / 2f
+                        val top = y
+                        if (top < prevBottom + minGapPx) {
+                            ok = false; break
+                        }
+                        prevBottom = top + l.size.height
+                        r += step
+                    }
+                    if (ok) break
+                    step++
+                    if (step > data.matrix.rows) break
+                }
+                var r = 0
+                while (r < data.matrix.rows) {
+                    val l = layouts[r]
+                    val y = chart.top + r * (ch + gap) + (ch - l.size.height) / 2f
+                    val x = chart.left - labelPadPx - l.size.width
+                    drawText(l, topLeft = Offset(x, y))
+                    r += step
+                }
+            }
+
+            is HeatmapStyle.AxisLabels.None -> Unit
         }
 
         // Column labels
-        if (style.labels.showColLabels && data.colLabels.isNotEmpty()) {
-            for (c in 0 until data.cols) {
-                val text = data.colLabels.getOrNull(c) ?: ""
-                val layout = measurer.measure(AnnotatedString(text), style.labels.textStyle)
-                val x = chart.left + c * (cw + gap) + (cw - layout.size.width) / 2f
-                val y = chart.bottom + labelPadPx / 2f
-                drawText(layout, topLeft = Offset(x, y))
+        when (val cLbl = style.colLabels) {
+            is HeatmapStyle.AxisLabels.ShowAll -> if (data.colLabels.isNotEmpty()) {
+                for (c in 0 until data.matrix.cols) {
+                    val text = data.colLabels.getOrNull(c) ?: ""
+                    val layout = measurer.measure(AnnotatedString(text), cLbl.textStyle)
+                    val x = chart.left + c * (cw + gap) + (cw - layout.size.width) / 2f
+                    val y = chart.bottom + labelPadPx / 2f
+                    drawText(layout, topLeft = Offset(x, y))
+                }
             }
+
+            is HeatmapStyle.AxisLabels.Adaptive -> if (data.colLabels.isNotEmpty()) {
+                val minGapPx = cLbl.minGapDp.toPx()
+                val centers = (0 until data.matrix.cols).map { c ->
+                    chart.left + c * (cw + gap) + cw / 2f
+                }
+                val layouts = (0 until data.matrix.cols).map { c ->
+                    val text = data.colLabels.getOrNull(c) ?: ""
+                    measurer.measure(AnnotatedString(text), cLbl.textStyle)
+                }
+
+                data class L(
+                    val left: Float,
+                    val right: Float,
+                    val layout: androidx.compose.ui.text.TextLayoutResult
+                )
+
+                val boxes = (0 until data.matrix.cols).map { c ->
+                    val layout = layouts[c]
+                    val w = layout.size.width.toFloat()
+                    val cx = centers[c]
+                    val left = (cx - w / 2f).coerceIn(chart.left, chart.right - w)
+                    L(left, left + w, layout)
+                }
+                val selected = mutableListOf<Int>()
+                var lastRight = Float.NEGATIVE_INFINITY
+                for (i in 0 until data.matrix.cols) {
+                    val b = boxes[i]
+                    if (b.left >= lastRight + minGapPx) {
+                        selected.add(i)
+                        lastRight = b.right
+                    }
+                }
+                // Ensure last visible if possible
+                if (selected.isNotEmpty() && selected.last() != data.matrix.cols - 1) {
+                    val lastB = boxes.last()
+                    while (selected.isNotEmpty()) {
+                        val tail = boxes[selected.last()]
+                        if (lastB.left >= tail.right + minGapPx) break
+                        selected.removeLast()
+                    }
+                    selected.add(data.matrix.cols - 1)
+                }
+                selected.forEach { i ->
+                    val b = boxes[i]
+                    val y = chart.bottom + labelPadPx / 2f
+                    drawText(b.layout, topLeft = Offset(b.left, y))
+                }
+            }
+
+            is HeatmapStyle.AxisLabels.None -> Unit
         }
 
         // Legend
-        if (style.legend.show) {
-            val legendTop = size.height - pad - style.legend.height.toPx()
-            val legendRect =
-                Rect(chart.left, legendTop, chart.right, legendTop + style.legend.height.toPx())
-            val brush = legendBrush(style.legend.stops)
-            drawRect(
-                brush = brush,
-                topLeft = Offset(legendRect.left, legendRect.top),
-                size = Size(legendRect.width, legendRect.height)
-            )
-
-            val minText = (style.legend.minText?.let { it(minVal) }) ?: "0%"
-            val maxText = (style.legend.maxText?.let { it(maxVal) }) ?: "100%"
-            val minLayout = measurer.measure(AnnotatedString(minText), style.legend.labelStyle)
-            val maxLayout = measurer.measure(AnnotatedString(maxText), style.legend.labelStyle)
-            drawText(minLayout, topLeft = Offset(legendRect.left, legendRect.bottom + 2.dp.toPx()))
-            drawText(
-                maxLayout,
-                topLeft = Offset(
-                    legendRect.right - maxLayout.size.width,
-                    legendRect.bottom + 2.dp.toPx()
+        when (val lg = style.legend) {
+            is HeatmapStyle.Legend.None -> Unit
+            is HeatmapStyle.Legend.Visible -> {
+                val legendTop = size.height - lg.height.toPx()
+                val legendRect =
+                    Rect(chart.left, legendTop, chart.right, legendTop + lg.height.toPx())
+                val brush = legendBrush(lg.stops)
+                drawRect(
+                    brush = brush,
+                    topLeft = Offset(legendRect.left, legendRect.top),
+                    size = Size(legendRect.width, legendRect.height)
                 )
-            )
+                val minText = (lg.minText?.let { it(minVal) }) ?: "0%"
+                val maxText = (lg.maxText?.let { it(maxVal) }) ?: "100%"
+                val minLayout = measurer.measure(AnnotatedString(minText), lg.labelStyle)
+                val maxLayout = measurer.measure(AnnotatedString(maxText), lg.labelStyle)
+                drawText(
+                    minLayout,
+                    topLeft = Offset(legendRect.left, legendRect.bottom + 2.dp.toPx())
+                )
+                drawText(
+                    maxLayout,
+                    topLeft = Offset(
+                        legendRect.right - maxLayout.size.width,
+                        legendRect.bottom + 2.dp.toPx()
+                    )
+                )
+            }
         }
     }
 }

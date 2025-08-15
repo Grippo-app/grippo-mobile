@@ -5,14 +5,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.grippo.chart.heatmap.HeatmapCell
 import com.grippo.chart.heatmap.HeatmapChart
 import com.grippo.chart.heatmap.HeatmapData
 import com.grippo.chart.heatmap.HeatmapStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import kotlin.math.roundToInt
 
 @Composable
 public fun HeatmapChart(
@@ -25,20 +23,13 @@ public fun HeatmapChart(
     val labelsRow = listOf("Chest", "Back", "Legs", "Shoulders", "Arms", "Core")
     val labelsCol = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 
-    val cells = buildList {
-        for (r in 0 until rows) {
-            for (c in 0 until cols) {
+    val data = HeatmapData.fromRows(
+        values01 = List(rows) { r ->
+            List(cols) { c ->
                 val base = (r + 1) * (c + 1)
-                val v = ((base % 10) / 10f).coerceIn(0f, 1f)
-                add(HeatmapCell(r, c, v))
+                ((base % 10) / 10f)
             }
-        }
-    }
-
-    val data = HeatmapData(
-        rows = rows,
-        cols = cols,
-        cells = cells,
+        },
         rowLabels = labelsRow,
         colLabels = labelsCol,
         rowDim = "Muscle Group",
@@ -69,18 +60,18 @@ public fun HeatmapChart(
 
     val style = HeatmapStyle(
         layout = HeatmapStyle.Layout(
-            padding = 12.dp,
             gap = 6.dp,
             corner = 6.dp,
             labelPadding = 6.dp
         ),
-        labels = HeatmapStyle.Labels(
-            showRowLabels = true,
-            showColLabels = true,
+        rowLabels = HeatmapStyle.AxisLabels.ShowAll(
             textStyle = AppTokens.typography.b11Reg().copy(color = AppTokens.colors.text.primary)
         ),
-        legend = HeatmapStyle.Legend(
-            show = true,
+        colLabels = HeatmapStyle.AxisLabels.Adaptive(
+            textStyle = AppTokens.typography.b11Reg().copy(color = AppTokens.colors.text.primary),
+            minGapDp = 1.dp
+        ),
+        legend = HeatmapStyle.Legend.Visible(
             height = 12.dp,
             stops = charts.heatmap.scaleStops,
             labelStyle = AppTokens.typography.b11Reg()
@@ -93,16 +84,8 @@ public fun HeatmapChart(
             autoNormalize = false,
             missingCellColor = charts.heatmap.missingCell
         ),
-        cells = HeatmapStyle.Cells(
-            showBorders = false,
-            borderColor = AppTokens.colors.divider.default,
-            borderWidth = 1.dp
-        ),
-        values = HeatmapStyle.Values(
-            show = false,
-            textStyle = AppTokens.typography.b11Med().copy(color = AppTokens.colors.text.primary),
-            formatter = { p, _ -> "${(p * 100f).roundToInt()}%" }
-        )
+        borders = HeatmapStyle.Borders.None,
+        values = HeatmapStyle.Values.None
     )
 
     HeatmapChart(
@@ -121,20 +104,15 @@ private fun HeatmapChartPreview() {
         val labelsRow = listOf("Chest", "Back", "Legs", "Shoulders", "Arms", "Core")
         val labelsCol = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 
-        val cells = buildList {
-            for (r in 0 until rows) {
-                for (c in 0 until cols) {
-                    val base = (r + 1) * (c + 1)
-                    val v = ((base % 10) / 10f).coerceIn(0f, 1f)
-                    add(HeatmapCell(r, c, v))
-                }
-            }
-        }
 
-        HeatmapData(
-            rows = rows,
-            cols = cols,
-            cells = cells,
+
+        HeatmapData.fromRows(
+            values01 = List(rows) { r ->
+                List(cols) { c ->
+                    val base = (r + 1) * (c + 1)
+                    ((base % 10) / 10f)
+                }
+            },
             rowLabels = labelsRow,
             colLabels = labelsCol,
             rowDim = "Muscle Group",
