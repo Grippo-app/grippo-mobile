@@ -1,5 +1,6 @@
 package com.grippo.chart.bar
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -28,7 +29,18 @@ public fun BarChart(
 ) {
     val measurer = rememberTextMeasurer()
 
-    androidx.compose.foundation.Canvas(modifier) {
+    // Precompute X-axis label layouts in composition to avoid measuring every draw
+    val precomputedXLayouts: List<TextLayoutResult> = when (val xCfg = style.xAxis) {
+        is BarStyle.XAxis.None -> emptyList()
+        is BarStyle.XAxis.LabelsAdaptive -> data.items.map { e ->
+            measurer.measure(AnnotatedString(e.label), xCfg.textStyle)
+        }
+        is BarStyle.XAxis.LabelsShowAll -> data.items.map { e ->
+            measurer.measure(AnnotatedString(e.label), xCfg.textStyle)
+        }
+    }
+
+    Canvas(modifier) {
         if (data.items.isEmpty()) return@Canvas
 
         // ----- Domain (data-driven with headroom; ensure room for Above value labels) -----
@@ -95,35 +107,40 @@ public fun BarChart(
         // ----- Gutters (inside-only; no external paddings) -----
         val labelPad = style.layout.labelPadding.toPx()
 
-        var leftGutter = 0f
-        when (val yCfg = style.yAxis) {
+        val yAxisSpecs = when (val yCfg = style.yAxis) {
+            is BarStyle.YAxis.Labels -> (0..yTickCount).map { i ->
+                val t = yCfg.formatter(minY + i * yStep, data)
+                t to yCfg.textStyle
+            }
+            is BarStyle.YAxis.None -> emptyList()
+        }
+
+        var leftGutter: Float
+        when (style.yAxis) {
             is BarStyle.YAxis.Labels -> {
-                val maxLabelW = (0..yTickCount).maxOf { i ->
-                    val t = yCfg.formatter(minY + i * yStep, data)
-                    measurer.measure(AnnotatedString(t), yCfg.textStyle).size.width
+                val maxLabelW = yAxisSpecs.maxOf { (text, style) ->
+                    measurer.measure(AnnotatedString(text), style).size.width
                 }
                 leftGutter = maxLabelW + labelPad
             }
-
             is BarStyle.YAxis.None -> leftGutter = 0f
         }
 
-        var bottomGutter = 0f
-        when (val xCfg = style.xAxis) {
+        val xAxisSpecs = when (style.xAxis) {
+            is BarStyle.XAxis.LabelsAdaptive, is BarStyle.XAxis.LabelsShowAll -> precomputedXLayouts
+            is BarStyle.XAxis.None -> emptyList()
+        }
+
+        var bottomGutter: Float
+        when (style.xAxis) {
             is BarStyle.XAxis.LabelsAdaptive -> {
-                val maxH = data.items.maxOf {
-                    measurer.measure(AnnotatedString(it.label), xCfg.textStyle).size.height
-                }
+                val maxH = xAxisSpecs.maxOfOrNull { it.size.height } ?: 0
                 bottomGutter = maxH.toFloat()
             }
-
             is BarStyle.XAxis.LabelsShowAll -> {
-                val maxH = data.items.maxOf {
-                    measurer.measure(AnnotatedString(it.label), xCfg.textStyle).size.height
-                }
+                val maxH = xAxisSpecs.maxOfOrNull { it.size.height } ?: 0
                 bottomGutter = maxH.toFloat()
             }
-
             is BarStyle.XAxis.None -> bottomGutter = 0f
         }
 
@@ -158,11 +175,11 @@ public fun BarChart(
         }
         when (val yCfg = style.yAxis) {
             is BarStyle.YAxis.Labels -> {
+                val layouts = yAxisSpecs.map { (text, style) -> measurer.measure(AnnotatedString(text), style) }
                 for (i in 0..yTickCount) {
                     val yVal = minY + i * yStep
                     val y = mapY(yVal)
-                    val text = yCfg.formatter(yVal, data)
-                    val layout = measurer.measure(AnnotatedString(text), yCfg.textStyle)
+                    val layout = layouts[i]
                     val x = (chart.left - labelPad - layout.size.width)
                         .coerceAtLeast(0f)
                     val top = (y - layout.size.height / 2f)
@@ -348,9 +365,7 @@ public fun BarChart(
                     val left = startX + i * (bw + sp)
                     left + bw / 2f
                 }
-                val layouts = data.items.map { e ->
-                    measurer.measure(AnnotatedString(e.label), xCfg.textStyle)
-                }
+                val layouts = xAxisSpecs
                 for (i in data.items.indices) {
                     val lay = layouts[i]
                     val w = lay.size.width.toFloat()
@@ -366,14 +381,12 @@ public fun BarChart(
                     val left = startX + i * (bw + sp)
                     left + bw / 2f
                 }
-                val layouts = data.items.map { e ->
-                    measurer.measure(AnnotatedString(e.label), xCfg.textStyle)
-                }
+                val layouts = xAxisSpecs
 
                 data class L(
                     val left: Float,
                     val right: Float,
-                    val layout: androidx.compose.ui.text.TextLayoutResult
+                    val layout: TextLayoutResult
                 )
 
                 val bounds = mutableMapOf<Int, L>()

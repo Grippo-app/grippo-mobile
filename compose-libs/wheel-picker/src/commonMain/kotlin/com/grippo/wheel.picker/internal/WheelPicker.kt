@@ -38,6 +38,13 @@ internal fun WheelPicker(
 ) {
     val flingBehavior = rememberSnapFlingBehavior(listState)
 
+    // Precompute snapshot-derived values once per recomposition
+    val layoutInfo = remember(listState, rowCount) { derivedStateOf { listState.layoutInfo } }
+    val viewportHeight = layoutInfo.value.viewportSize.height.toFloat()
+    val singleViewportHeight = viewportHeight / rowCount
+    val centerIndexState = remember(listState) { derivedStateOf { listState.firstVisibleItemIndex } }
+    val centerOffsetState = remember(listState) { derivedStateOf { listState.firstVisibleItemScrollOffset } }
+
     LazyColumn(
         modifier = modifier
             .height(size.height)
@@ -46,8 +53,15 @@ internal fun WheelPicker(
         contentPadding = PaddingValues(vertical = size.height / rowCount * ((rowCount - 1) / 2)),
         flingBehavior = flingBehavior
     ) {
+
         items(count) { index ->
-            val (alpha, rotX) = calculateAnimatedAlphaAndRotationX(listState, index, rowCount)
+            val (alpha, rotX) = calculateAnimatedAlphaAndRotationX(
+                rowCount = rowCount,
+                index = index,
+                singleViewportHeight = singleViewportHeight,
+                centerIndex = centerIndexState.value,
+                centerIndexOffset = centerOffsetState.value
+            )
             Box(
                 modifier = Modifier
                     .height(size.height / rowCount)
@@ -63,33 +77,23 @@ internal fun WheelPicker(
 
 @Composable
 private fun calculateAnimatedAlphaAndRotationX(
-    lazyListState: LazyListState,
+    rowCount: Int,
     index: Int,
-    rowCount: Int
+    singleViewportHeight: Float,
+    centerIndex: Int,
+    centerIndexOffset: Int
 ): Pair<Float, Float> {
-
-    val layoutInfo = remember { derivedStateOf { lazyListState.layoutInfo } }.value
-    val viewPortHeight = layoutInfo.viewportSize.height.toFloat()
-    val singleViewPortHeight = viewPortHeight / rowCount
-
-    val centerIndex = remember { derivedStateOf { lazyListState.firstVisibleItemIndex } }.value
-    val centerIndexOffset =
-        remember { derivedStateOf { lazyListState.firstVisibleItemScrollOffset } }.value
-
     val distanceToCenterIndex = index - centerIndex
-
-    val distanceToIndexSnap =
-        distanceToCenterIndex * singleViewPortHeight.toInt() - centerIndexOffset
+    val distanceToIndexSnap = distanceToCenterIndex * singleViewportHeight.toInt() - centerIndexOffset
     val distanceToIndexSnapAbs = abs(distanceToIndexSnap)
 
-    val animatedAlpha = if (abs(distanceToIndexSnap) in 0..singleViewPortHeight.toInt()) {
-        1.2f - (distanceToIndexSnapAbs / singleViewPortHeight)
+    val animatedAlpha = if (abs(distanceToIndexSnap) in 0..singleViewportHeight.toInt()) {
+        1.2f - (distanceToIndexSnapAbs / singleViewportHeight)
     } else {
         0.2f
     }
 
-    val animatedRotationX =
-        (-20 * (distanceToIndexSnap / singleViewPortHeight)).takeUnless { it.isNaN() } ?: 0f
+    val animatedRotationX = (-20 * (distanceToIndexSnap / singleViewportHeight)).takeUnless { it.isNaN() } ?: 0f
 
     return animatedAlpha to animatedRotationX
 }

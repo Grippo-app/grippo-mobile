@@ -25,6 +25,15 @@ public fun RadarChart(
 ) {
     val measurer = rememberTextMeasurer()
 
+    // Precompute axis label layouts and color stops in composition scope
+    val axisLabelLayouts = when (val lbl = style.labels) {
+        is RadarStyle.Labels.Visible -> data.axes.map {
+            measurer.measure(AnnotatedString(it.label), lbl.textStyle)
+        }
+        is RadarStyle.Labels.None -> emptyList()
+    }
+    val resolvedStops: List<Pair<Float, Color>> = style.colorStops
+
     androidx.compose.foundation.Canvas(modifier) {
         val axes = data.axes
         val n = axes.size
@@ -44,17 +53,8 @@ public fun RadarChart(
             y = c.y + radius * sin(angle)
         )
 
-        // Measure axis labels to compute max radial outward space needed
-        val labelLayouts = when (val lbl = style.labels) {
-            is RadarStyle.Labels.Visible -> axes.map {
-                measurer.measure(
-                    AnnotatedString(it.label),
-                    lbl.textStyle
-                )
-            }
-
-            is RadarStyle.Labels.None -> emptyList()
-        }
+        // Use precomputed axis label layouts to compute max radial outward space needed
+        val labelLayouts = axisLabelLayouts
 
         fun radialInsetsForLabels(radius: Float): Float {
             if (labelLayouts.isEmpty()) return 0f
@@ -219,7 +219,7 @@ public fun RadarChart(
             if (!firstPlotted) return@forEach
             path.close()
 
-            val resolvedStops: List<Pair<Float, Color>> = style.colorStops
+            val resolvedStops: List<Pair<Float, Color>> = resolvedStops
 
             // Enhance contrast by slightly sharpening stop distribution around mid-range
             val cs = resolvedStops

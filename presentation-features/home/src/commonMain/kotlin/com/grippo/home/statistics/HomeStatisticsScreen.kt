@@ -78,7 +78,7 @@ internal fun HomeStatisticsScreen(
         )
     ) {
         // Hero area chart — full width
-        item(span = StaggeredGridItemSpan.FullLine) {
+        item(key = "area_chart", span = StaggeredGridItemSpan.FullLine) {
             ChartCard(
                 modifier = Modifier.fillMaxWidth().aspectRatio(1.8f),
                 content = {
@@ -93,7 +93,7 @@ internal fun HomeStatisticsScreen(
         }
 
         // Bar and Sparkline — side by side
-        item {
+        item(key = "bar_chart") {
             ChartCard(
                 modifier = Modifier.fillMaxWidth().aspectRatio(1f),
                 content = {
@@ -106,7 +106,7 @@ internal fun HomeStatisticsScreen(
                 }
             )
         }
-        item {
+        item(key = "sparkline_chart") {
             ChartCard(
                 modifier = Modifier.fillMaxWidth().aspectRatio(1f),
                 content = {
@@ -121,7 +121,7 @@ internal fun HomeStatisticsScreen(
         }
 
         // Heatmap — full width
-        item(span = StaggeredGridItemSpan.FullLine) {
+        item(key = "heatmap_chart", span = StaggeredGridItemSpan.FullLine) {
             ChartCard(
                 modifier = Modifier.fillMaxWidth().aspectRatio(1.5f),
                 content = {
@@ -136,7 +136,7 @@ internal fun HomeStatisticsScreen(
         }
 
         // Radar and Progress — side by side (progress fixed height for readability)
-        item {
+        item(key = "radar_chart") {
             ChartCard(
                 modifier = Modifier.fillMaxWidth().aspectRatio(1f),
                 content = {
@@ -149,7 +149,7 @@ internal fun HomeStatisticsScreen(
                 }
             )
         }
-        item {
+        item(key = "progress_chart") {
             ChartCard(
                 modifier = Modifier.fillMaxWidth().aspectRatio(1f),
                 content = {

@@ -90,6 +90,9 @@ public fun Button(
         .then(horizontalPadding?.let { Modifier.padding(horizontal = it) } ?: Modifier)
         .then(height?.let { Modifier.height(it) } ?: Modifier)
 
+    // Pre-create transition once to avoid churn while toggling loading state
+    val loadingTransition = rememberInfiniteTransition(label = "button_loading")
+
     // Row that contains the content
     Row(
         modifier = finalModifier,
@@ -103,7 +106,7 @@ public fun Button(
             label = "icon_animation"
         ) { loading ->
             if (loading) {
-                val angle by rememberInfiniteTransition().animateFloat(
+                val angle by loadingTransition.animateFloat(
                     initialValue = 0f, targetValue = 360f,
                     animationSpec = infiniteRepeatable(
                         animation = tween(durationMillis = 1000, easing = LinearEasing),

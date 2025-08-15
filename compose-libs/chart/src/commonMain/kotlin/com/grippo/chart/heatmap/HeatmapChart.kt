@@ -23,6 +23,33 @@ public fun HeatmapChart(
 ) {
     val measurer = rememberTextMeasurer()
 
+    // Precompute label specs in composition (independent of canvas size)
+    val rowLabelSpecs = when (val rLbl = style.rowLabels) {
+        is HeatmapStyle.AxisLabels.ShowAll -> (0 until data.matrix.rows).map { r ->
+            (data.rowLabels.getOrNull(r) ?: "") to rLbl.textStyle
+        }
+        is HeatmapStyle.AxisLabels.Adaptive -> (0 until data.matrix.rows).map { r ->
+            (data.rowLabels.getOrNull(r) ?: "") to rLbl.textStyle
+        }
+        is HeatmapStyle.AxisLabels.None -> emptyList()
+    }
+    val colLabelSpecs = when (val cLbl = style.colLabels) {
+        is HeatmapStyle.AxisLabels.ShowAll -> (0 until data.matrix.cols).map { c ->
+            (data.colLabels.getOrNull(c) ?: "") to cLbl.textStyle
+        }
+        is HeatmapStyle.AxisLabels.Adaptive -> (0 until data.matrix.cols).map { c ->
+            (data.colLabels.getOrNull(c) ?: "") to cLbl.textStyle
+        }
+        is HeatmapStyle.AxisLabels.None -> emptyList()
+    }
+
+    val rowLabelLayouts = rowLabelSpecs.map { (text, style) ->
+        measurer.measure(AnnotatedString(text), style)
+    }
+    val colLabelLayouts = colLabelSpecs.map { (text, style) ->
+        measurer.measure(AnnotatedString(text), style)
+    }
+
     androidx.compose.foundation.Canvas(modifier) {
         if (data.matrix.rows <= 0 || data.matrix.cols <= 0) return@Canvas
 
@@ -43,55 +70,26 @@ public fun HeatmapChart(
         val legendLabelSpacingPx = 2.dp.toPx()
 
         var leftGutter = 0f
-        when (val rLbl = style.rowLabels) {
-            is HeatmapStyle.AxisLabels.ShowAll -> {
-                if (data.rowLabels.isNotEmpty()) {
-                    val maxW = (0 until data.matrix.rows).maxOf { r ->
-                        val text = data.rowLabels.getOrNull(r) ?: ""
-                        measurer.measure(AnnotatedString(text), rLbl.textStyle).size.width
-                    }
+        when (style.rowLabels) {
+            is HeatmapStyle.AxisLabels.ShowAll, is HeatmapStyle.AxisLabels.Adaptive -> {
+                if (rowLabelLayouts.isNotEmpty()) {
+                    val maxW = rowLabelLayouts.maxOf { it.size.width }
                     leftGutter += maxW + labelPadPx
                 }
             }
-
-            is HeatmapStyle.AxisLabels.Adaptive -> {
-                if (data.rowLabels.isNotEmpty()) {
-                    val maxW = (0 until data.matrix.rows).maxOf { r ->
-                        val text = data.rowLabels.getOrNull(r) ?: ""
-                        measurer.measure(AnnotatedString(text), rLbl.textStyle).size.width
-                    }
-                    leftGutter += maxW + labelPadPx
-                }
-            }
-
             is HeatmapStyle.AxisLabels.None -> Unit
         }
 
         var bottomGutter = 0f
         var colLabelsMaxH = 0f
-        when (val cLbl = style.colLabels) {
-            is HeatmapStyle.AxisLabels.ShowAll -> {
-                if (data.colLabels.isNotEmpty()) {
-                    val maxH = (0 until data.matrix.cols).maxOf { c ->
-                        val text = data.colLabels.getOrNull(c) ?: ""
-                        measurer.measure(AnnotatedString(text), cLbl.textStyle).size.height
-                    }
+        when (style.colLabels) {
+            is HeatmapStyle.AxisLabels.ShowAll, is HeatmapStyle.AxisLabels.Adaptive -> {
+                if (colLabelLayouts.isNotEmpty()) {
+                    val maxH = colLabelLayouts.maxOf { it.size.height }
                     colLabelsMaxH = maxH.toFloat()
                     bottomGutter += colLabelsMaxH + labelPadPx
                 }
             }
-
-            is HeatmapStyle.AxisLabels.Adaptive -> {
-                if (data.colLabels.isNotEmpty()) {
-                    val maxH = (0 until data.matrix.cols).maxOf { c ->
-                        val text = data.colLabels.getOrNull(c) ?: ""
-                        measurer.measure(AnnotatedString(text), cLbl.textStyle).size.height
-                    }
-                    colLabelsMaxH = maxH.toFloat()
-                    bottomGutter += colLabelsMaxH + labelPadPx
-                }
-            }
-
             is HeatmapStyle.AxisLabels.None -> Unit
         }
 
@@ -242,9 +240,9 @@ public fun HeatmapChart(
         // Column labels
         when (val cLbl = style.colLabels) {
             is HeatmapStyle.AxisLabels.ShowAll -> if (data.colLabels.isNotEmpty()) {
+                val layouts = colLabelLayouts
                 for (c in 0 until data.matrix.cols) {
-                    val text = data.colLabels.getOrNull(c) ?: ""
-                    val layout = measurer.measure(AnnotatedString(text), cLbl.textStyle)
+                    val layout = layouts[c]
                     val x = chart.left + c * (cw + gap) + (cw - layout.size.width) / 2f
                     val y = chart.bottom + labelPadPx / 2f
                     drawText(layout, topLeft = Offset(x, y))
@@ -256,10 +254,7 @@ public fun HeatmapChart(
                 val centers = (0 until data.matrix.cols).map { c ->
                     chart.left + c * (cw + gap) + cw / 2f
                 }
-                val layouts = (0 until data.matrix.cols).map { c ->
-                    val text = data.colLabels.getOrNull(c) ?: ""
-                    measurer.measure(AnnotatedString(text), cLbl.textStyle)
-                }
+                val layouts = colLabelLayouts
 
                 data class L(
                     val left: Float,
