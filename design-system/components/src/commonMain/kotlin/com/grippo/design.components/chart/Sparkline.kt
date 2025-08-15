@@ -22,9 +22,6 @@ public fun Sparkline(
     val values = listOf(4f, 6f, 5f, 8f, 9f, 7f, 12f, 10f, 13f, 11f, 16f)
 
     val style = SparklineStyle(
-        layout = SparklineStyle.Layout(
-            padding = 6.dp,
-        ),
         line = SparklineStyle.Line(
             stroke = 2.dp,
             color = charts.sparkline.lineA,
@@ -49,19 +46,12 @@ public fun Sparkline(
                 )
             }
         ),
-        baseline = SparklineStyle.Baseline(
-            show = false,
-            value = null,
-            color = AppTokens.colors.divider.default,
-            width = 1.dp,
-        ),
-        dots = SparklineStyle.Dots(
-            show = false,
+        baseline = SparklineStyle.Baseline.None,
+        dots = SparklineStyle.Dots.Visible(
             radius = 2.dp,
             color = null
         ),
-        extremes = SparklineStyle.Extremes(
-            show = true,
+        extremes = SparklineStyle.Extremes.Visible(
             minColor = AppTokens.colors.semantic.warning,
             maxColor = AppTokens.colors.semantic.success,
             radius = 3.dp,

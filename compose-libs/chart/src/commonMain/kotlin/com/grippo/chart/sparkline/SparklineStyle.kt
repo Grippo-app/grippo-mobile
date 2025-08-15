@@ -8,18 +8,12 @@ import androidx.compose.ui.unit.Dp
 
 @Immutable
 public data class SparklineStyle(
-    val layout: Layout,
     val line: Line,
     val fill: Fill?,
     val baseline: Baseline,
     val dots: Dots,
     val extremes: Extremes,
 ) {
-    @Immutable
-    public data class Layout(
-        val padding: Dp,
-    )
-
     @Immutable
     public data class Line(
         val stroke: Dp,
@@ -36,25 +30,40 @@ public data class SparklineStyle(
     )
 
     @Immutable
-    public data class Baseline(
-        val show: Boolean,
-        val value: Float?,    // null → min value
-        val color: Color,
-        val width: Dp,
-    )
+    public sealed interface Baseline {
+        @Immutable
+        public data object None : Baseline
+
+        @Immutable
+        public data class Visible(
+            val value: Float?,    // null → min value
+            val color: Color,
+            val width: Dp,
+        ) : Baseline
+    }
 
     @Immutable
-    public data class Dots(
-        val show: Boolean,
-        val radius: Dp,
-        val color: Color?,
-    )
+    public sealed interface Dots {
+        @Immutable
+        public data object None : Dots
+
+        @Immutable
+        public data class Visible(
+            val radius: Dp,
+            val color: Color?,
+        ) : Dots
+    }
 
     @Immutable
-    public data class Extremes(
-        val show: Boolean,
-        val minColor: Color,
-        val maxColor: Color,
-        val radius: Dp,
-    )
+    public sealed interface Extremes {
+        @Immutable
+        public data object None : Extremes
+
+        @Immutable
+        public data class Visible(
+            val minColor: Color,
+            val maxColor: Color,
+            val radius: Dp,
+        ) : Extremes
+    }
 }

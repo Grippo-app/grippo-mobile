@@ -20,9 +20,8 @@ public fun Sparkline(
         val ptsIn = data.points
         if (ptsIn.isEmpty()) return@Canvas
 
-        // Bounds
-        val pad = style.layout.padding.toPx()
-        val chart = Rect(pad, pad, size.width - pad, size.height - pad)
+        // Bounds (no external padding)
+        val chart = Rect(0f, 0f, size.width, size.height)
         if (chart.width <= 0f || chart.height <= 0f) return@Canvas
 
         // Domain
@@ -40,15 +39,18 @@ public fun Sparkline(
         val pts = ptsIn.sortedBy { it.x }.map { Offset(mx(it.x), my(it.y)) }
 
         // Baseline
-        if (style.baseline.show) {
-            val baseVal = style.baseline.value ?: minY
-            val y = my(baseVal.coerceIn(minY, maxY))
-            drawLine(
-                color = style.baseline.color,
-                start = Offset(chart.left, y),
-                end = Offset(chart.right, y),
-                strokeWidth = style.baseline.width.toPx()
-            )
+        when (val base = style.baseline) {
+            is SparklineStyle.Baseline.None -> Unit
+            is SparklineStyle.Baseline.Visible -> {
+                val baseVal = base.value ?: minY
+                val y = my(baseVal.coerceIn(minY, maxY))
+                drawLine(
+                    color = base.color,
+                    start = Offset(chart.left, y),
+                    end = Offset(chart.right, y),
+                    strokeWidth = base.width.toPx()
+                )
+            }
         }
 
         fun buildLinePath(points: List<Offset>): Path {
@@ -119,19 +121,25 @@ public fun Sparkline(
         }
 
         // Dots
-        if (style.dots.show) {
-            val r = style.dots.radius.toPx()
-            val dc = style.dots.color ?: style.line.color
-            pts.forEach { drawCircle(color = dc, radius = r, center = it) }
+        when (val d = style.dots) {
+            is SparklineStyle.Dots.None -> Unit
+            is SparklineStyle.Dots.Visible -> {
+                val r = d.radius.toPx()
+                val dc = d.color ?: style.line.color
+                pts.forEach { drawCircle(color = dc, radius = r, center = it) }
+            }
         }
 
         // Min/Max markers
-        if (style.extremes.show && ptsIn.size >= 2) {
-            val minIdx = ptsIn.indices.minBy { ptsIn[it].y }
-            val maxIdx = ptsIn.indices.maxBy { ptsIn[it].y }
-            val rr = style.extremes.radius.toPx()
-            drawCircle(color = style.extremes.minColor, radius = rr, center = pts[minIdx])
-            drawCircle(color = style.extremes.maxColor, radius = rr, center = pts[maxIdx])
+        when (val ex = style.extremes) {
+            is SparklineStyle.Extremes.None -> Unit
+            is SparklineStyle.Extremes.Visible -> if (ptsIn.size >= 2) {
+                val minIdx = ptsIn.indices.minBy { ptsIn[it].y }
+                val maxIdx = ptsIn.indices.maxBy { ptsIn[it].y }
+                val rr = ex.radius.toPx()
+                drawCircle(color = ex.minColor, radius = rr, center = pts[minIdx])
+                drawCircle(color = ex.maxColor, radius = rr, center = pts[maxIdx])
+            }
         }
     }
 }
