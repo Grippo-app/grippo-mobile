@@ -5,6 +5,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 
+/**
+ * Visual configuration for a Radar (spider) chart.
+ *
+ * Axes radiate from the center and series are drawn as polygons. Use this style to control
+ * rings, spokes, labels, polygon appearance, vertex markers, value labels and color mapping.
+ *
+ * Visual map:
+ *   center
+ *     •
+ *     |\\        Spokes (radial lines)
+ *     | \\      -> clockwise=true (angles increase clockwise)
+ * ----+--o-----  Grid rings (circle or polygon)
+ *     | /  o    Vertices (per-axis points)
+ *     |/        Axis labels sit just outside polygon radius
+ *
+ * Color stops define a radial gradient from center (t=0f) to outer radius (t=1f).
+ */
 @Immutable
 public data class RadarStyle(
     val layout: Layout,
@@ -17,6 +34,7 @@ public data class RadarStyle(
     val dataPolicy: DataPolicy,
     val colorStops: List<Pair<Float, Color>>,
 ) {
+    /** Overall layout knobs. */
     @Immutable
     public data class Layout(
         val labelPadding: Dp,
@@ -24,6 +42,7 @@ public data class RadarStyle(
         val clockwise: Boolean,
     )
 
+    /** Concentric grid rings. */
     @Immutable
     public data class Grid(
         val levels: Int,
@@ -35,9 +54,11 @@ public data class RadarStyle(
 
     @Immutable
     public sealed interface LevelLabels {
+        /** Hide level labels. */
         @Immutable
         public data object None : LevelLabels
 
+        /** Show labels for each ring (e.g., 0.2, 0.4, ...). */
         @Immutable
         public data class Visible(
             val levelLabelStyle: TextStyle,
@@ -45,11 +66,14 @@ public data class RadarStyle(
         ) : LevelLabels
     }
 
+    /** Radial lines from center along axes. */
     @Immutable
     public sealed interface Spokes {
+        /** No spokes. */
         @Immutable
         public data object None : Spokes
 
+        /** Visible spokes with color and width. */
         @Immutable
         public data class Visible(
             val color: Color,
@@ -57,17 +81,21 @@ public data class RadarStyle(
         ) : Spokes
     }
 
+    /** Axis labels at spoke ends. */
     @Immutable
     public sealed interface Labels {
+        /** No axis labels. */
         @Immutable
         public data object None : Labels
 
+        /** Visible axis labels. */
         @Immutable
         public data class Visible(
             val textStyle: TextStyle,
         ) : Labels
     }
 
+    /** Polygon appearance for series (stroke+fill). */
     @Immutable
     public data class Polygon(
         val strokeWidth: Dp,
@@ -75,11 +103,15 @@ public data class RadarStyle(
         val fillAlpha: Float,
     )
 
+    /** Circular vertex markers. */
     @Immutable
     public sealed interface Vertices {
+        /** No vertices. */
         @Immutable
         public data object None : Vertices
 
+        /** Visible circular markers.
+         * [colorOverride]=null -> auto color from gradient/value. */
         @Immutable
         public data class Visible(
             val radius: Dp,
@@ -87,11 +119,14 @@ public data class RadarStyle(
         ) : Vertices
     }
 
+    /** Value labels near vertices. */
     @Immutable
     public sealed interface Values {
+        /** No value labels. */
         @Immutable
         public data object None : Values
 
+        /** Visible value labels. */
         @Immutable
         public data class Visible(
             val textStyle: TextStyle,
@@ -100,6 +135,7 @@ public data class RadarStyle(
         ) : Values
     }
 
+    /** Handling of partial series / null values. */
     @Immutable
     public data class DataPolicy(
         val requireCompleteSeries: Boolean,
