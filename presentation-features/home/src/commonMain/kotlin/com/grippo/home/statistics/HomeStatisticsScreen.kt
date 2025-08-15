@@ -71,28 +71,42 @@ internal fun HomeStatisticsScreen(
             vertical = AppTokens.dp.contentPadding.content
         )
     ) {
-        // Hero area chart — full width
         item(key = "area_chart", span = StaggeredGridItemSpan.FullLine) {
             ChartCard(
                 modifier = Modifier.fillMaxWidth().aspectRatio(1.8f),
                 title = AppTokens.strings.res(Res.string.statistics),
-                content = { AreaChart(modifier = Modifier.fillMaxWidth().weight(1f)) }
+                content = {
+                    AreaChart(
+                        modifier = Modifier.fillMaxWidth().weight(1f),
+                        data = state.areaData
+                    )
+                }
             )
         }
 
-        // Bar and Sparkline — side by side
         item(key = "bar_chart") {
             ChartCard(
                 modifier = Modifier.fillMaxWidth().aspectRatio(1f),
                 title = "Weekly Volume",
-                content = { BarChart(modifier = Modifier.fillMaxWidth().weight(1f)) }
+                content = {
+                    BarChart(
+                        modifier = Modifier.fillMaxWidth().weight(1f),
+                        data = state.barData
+                    )
+                }
             )
         }
+
         item(key = "sparkline_chart") {
             ChartCard(
                 modifier = Modifier.fillMaxWidth().aspectRatio(1f),
                 title = "Trend",
-                content = { Sparkline(modifier = Modifier.fillMaxWidth().weight(1f)) }
+                content = {
+                    Sparkline(
+                        modifier = Modifier.fillMaxWidth().weight(1f),
+                        data = state.sparklineData
+                    )
+                }
             )
         }
 
@@ -100,7 +114,12 @@ internal fun HomeStatisticsScreen(
             ChartCard(
                 modifier = Modifier.fillMaxWidth().aspectRatio(1f),
                 title = "Activity Heatmap",
-                content = { HeatmapChart(modifier = Modifier.fillMaxWidth().weight(1f)) }
+                content = {
+                    HeatmapChart(
+                        modifier = Modifier.fillMaxWidth().weight(1f),
+                        data = state.heatmapData
+                    )
+                }
             )
         }
 
@@ -108,14 +127,25 @@ internal fun HomeStatisticsScreen(
             ChartCard(
                 modifier = Modifier.fillMaxWidth().aspectRatio(1f),
                 title = "Muscle Balance",
-                content = { RadarChart(modifier = Modifier.fillMaxWidth().weight(1f)) }
+                content = {
+                    RadarChart(
+                        modifier = Modifier.fillMaxWidth().weight(1f),
+                        data = state.radarData
+                    )
+                }
             )
         }
+
         item(key = "progress_chart") {
             ChartCard(
                 modifier = Modifier.fillMaxWidth().aspectRatio(1f),
                 title = "Progress",
-                content = { ProgressChart(modifier = Modifier.fillMaxWidth().weight(1f)) }
+                content = {
+                    ProgressChart(
+                        modifier = Modifier.fillMaxWidth().weight(1f),
+                        data = state.progressData
+                    )
+                }
             )
         }
     }

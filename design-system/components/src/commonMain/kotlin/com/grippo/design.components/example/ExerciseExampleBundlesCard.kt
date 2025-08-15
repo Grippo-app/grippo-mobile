@@ -20,8 +20,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
-import com.grippo.chart.pie.PieData
-import com.grippo.chart.pie.PieSlice
+import com.grippo.design.components.chart.DSPieData
+import com.grippo.design.components.chart.DSPieSlice
 import com.grippo.design.components.chart.PieChart
 import com.grippo.design.components.chip.Chip
 import com.grippo.design.components.chip.ChipLabel
@@ -56,9 +56,9 @@ public fun ExerciseExampleBundlesCard(
     val percent = AppTokens.strings.res(Res.string.percent)
 
     val pie = remember(internalList) {
-        PieData(
+        DSPieData(
             slices = internalList.mapIndexed { idx, it ->
-                PieSlice(
+                DSPieSlice(
                     id = "slice-$idx",
                     label = "${it.percentage.value}$percent",
                     value = it.percentage.value.toFloat(),

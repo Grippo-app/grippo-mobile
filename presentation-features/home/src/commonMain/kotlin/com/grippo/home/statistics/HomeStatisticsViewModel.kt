@@ -2,12 +2,14 @@ package com.grippo.home.statistics
 
 import com.grippo.core.BaseViewModel
 import com.grippo.date.utils.DateTimeUtils
+import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.state.datetime.PeriodState
 
 internal class HomeStatisticsViewModel(
-    private val dialogController: DialogController
+    private val dialogController: DialogController,
+    private val colorProvider: ColorProvider
 ) : BaseViewModel<HomeStatisticsState, HomeStatisticsDirection, HomeStatisticsLoader>(
     HomeStatisticsState()
 ), HomeStatisticsContract {

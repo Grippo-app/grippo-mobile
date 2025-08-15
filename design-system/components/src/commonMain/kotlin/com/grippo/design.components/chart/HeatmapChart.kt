@@ -2,40 +2,37 @@ package com.grippo.design.components.chart
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.grippo.chart.heatmap.HeatmapChart
 import com.grippo.chart.heatmap.HeatmapData
 import com.grippo.chart.heatmap.HeatmapStyle
+import com.grippo.chart.heatmap.Matrix01
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
+@Immutable
+public data class DSHeatmapData(
+    val rows: Int,
+    val cols: Int,
+    val values01: List<Float>,
+    val rowLabels: List<String> = emptyList(),
+    val colLabels: List<String> = emptyList(),
+    val rowDim: String? = null,
+    val colDim: String? = null,
+    val valueUnit: String? = null,
+)
+
 @Composable
 public fun HeatmapChart(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    data: DSHeatmapData
 ) {
     val charts = AppTokens.colors.charts
-
-    val rows = 6
-    val cols = 7
-    val labelsRow = listOf("Chest", "Back", "Legs", "Shoulders", "Arms", "Core")
-    val labelsCol = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-
-    val data = HeatmapData.fromRows(
-        values01 = List(rows) { r ->
-            List(cols) { c ->
-                val base = (r + 1) * (c + 1)
-                ((base % 10) / 10f)
-            }
-        },
-        rowLabels = labelsRow,
-        colLabels = labelsCol,
-        rowDim = "Muscle Group",
-        colDim = "Day",
-        valueUnit = null,
-    )
 
     fun scaleColorOf(stops: List<Pair<Float, Color>>): (Float) -> Color = { tIn ->
         val t = tIn.coerceIn(0f, 1f)
@@ -90,8 +87,20 @@ public fun HeatmapChart(
 
     HeatmapChart(
         modifier = modifier,
-        data = data,
+        data = remember(data) { data.toChart() },
         style = style
+    )
+}
+
+private fun DSHeatmapData.toChart(): HeatmapData {
+    val matrix = Matrix01.fromFlat(rows, cols, values01)
+    return HeatmapData(
+        matrix = matrix,
+        rowLabels = rowLabels,
+        colLabels = colLabels,
+        rowDim = rowDim,
+        colDim = colDim,
+        valueUnit = valueUnit,
     )
 }
 
@@ -104,24 +113,24 @@ private fun HeatmapChartPreview() {
         val labelsRow = listOf("Chest", "Back", "Legs", "Shoulders", "Arms", "Core")
         val labelsCol = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 
-
-
-        HeatmapData.fromRows(
-            values01 = List(rows) { r ->
-                List(cols) { c ->
-                    val base = (r + 1) * (c + 1)
-                    ((base % 10) / 10f)
-                }
+        val ds = DSHeatmapData(
+            rows = rows,
+            cols = cols,
+            values01 = List(rows * cols) { idx ->
+                val r = idx / cols
+                val c = idx % cols
+                val base = (r + 1) * (c + 1)
+                ((base % 10) / 10f)
             },
             rowLabels = labelsRow,
             colLabels = labelsCol,
             rowDim = "Muscle Group",
             colDim = "Day",
-            valueUnit = null,
         )
 
         HeatmapChart(
-            modifier = Modifier.size(300.dp)
+            modifier = Modifier.size(300.dp),
+            data = ds
         )
     }
 }

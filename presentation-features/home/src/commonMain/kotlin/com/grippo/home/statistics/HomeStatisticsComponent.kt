@@ -14,7 +14,8 @@ internal class HomeStatisticsComponent(
 
     override val viewModel = componentContext.retainedInstance {
         HomeStatisticsViewModel(
-            dialogController = getKoin().get()
+            dialogController = getKoin().get(),
+            colorProvider = getKoin().get()
         )
     }
 

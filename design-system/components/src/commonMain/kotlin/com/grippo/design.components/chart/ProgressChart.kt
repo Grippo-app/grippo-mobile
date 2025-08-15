@@ -2,6 +2,8 @@ package com.grippo.design.components.chart
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -13,25 +15,27 @@ import com.grippo.chart.progress.ProgressStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import kotlin.math.roundToInt
+
+@Immutable
+public data class DSProgressItem(
+    val label: String,
+    val value: Float,
+    val color: Color
+)
+
+@Immutable
+public data class DSProgressData(
+    val items: List<DSProgressItem>,
+    val valueUnit: String? = null,
+    val title: String? = null,
+)
 
 @Composable
 public fun ProgressChart(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    data: DSProgressData
 ) {
     val charts = AppTokens.colors.charts
-
-    val data = ProgressData(
-        items = listOf(
-            ProgressChartData("Bench Press", 72f, charts.progress.palette[0]),
-            ProgressChartData("Deadlift", 100f, charts.progress.palette[1]),
-            ProgressChartData("Squat", 86f, charts.progress.palette[2]),
-            ProgressChartData("Overhead", 58f, charts.progress.palette[3]),
-            ProgressChartData("Row", 64f, charts.progress.palette[4]),
-        ),
-        valueUnit = "%",
-        title = "Strength Progress",
-    )
 
     val style = ProgressStyle(
         layout = ProgressStyle.Layout(
@@ -61,9 +65,9 @@ public fun ProgressChart(
         ),
         values = ProgressStyle.Values.Inside(
             textStyle = AppTokens.typography.b11Bold().copy(color = AppTokens.colors.text.primary),
-            formatter = { v, d -> "${v.roundToInt()}${d.valueUnit ?: ""}" },
+            formatter = { v, d -> v.toString() },
             minInnerPadding = 6.dp,
-            insideColor = null,                 // auto-contrast
+            insideColor = null,
             preferNormalizedLabels = true,
         ),
         target = ProgressStyle.Target(
@@ -75,22 +79,34 @@ public fun ProgressChart(
 
     ProgressChart(
         modifier = modifier,
-        data = data,
+        data = remember(data) { data.toChart() },
         style = style
     )
 }
+
+private fun DSProgressItem.toChart(): ProgressChartData = ProgressChartData(
+    label = label,
+    value = value,
+    color = color
+)
+
+private fun DSProgressData.toChart(): ProgressData = ProgressData(
+    items = items.map { it.toChart() },
+    valueUnit = valueUnit,
+    title = title
+)
 
 @AppPreview
 @Composable
 private fun ProgressChartPreview() {
     PreviewContainer {
-        ProgressData(
+        val ds = DSProgressData(
             items = listOf(
-                ProgressChartData("Bench Press", 72f, Color(0xFF6AA9FF)),
-                ProgressChartData("Deadlift", 100f, Color(0xFF00E6A7)),
-                ProgressChartData("Squat", 86f, Color(0xFFFF7A33)),
-                ProgressChartData("Overhead Press", 58f, Color(0xFFB049F8)),
-                ProgressChartData("Row", 64f, Color(0xFFFFC53D)),
+                DSProgressItem("Bench Press", 72f, Color(0xFF6AA9FF)),
+                DSProgressItem("Deadlift", 100f, Color(0xFF00E6A7)),
+                DSProgressItem("Squat", 86f, Color(0xFFFF7A33)),
+                DSProgressItem("Overhead Press", 58f, Color(0xFFB049F8)),
+                DSProgressItem("Row", 64f, Color(0xFFFFC53D)),
             ),
             valueUnit = "%",
             title = "Strength Progress",
@@ -98,6 +114,7 @@ private fun ProgressChartPreview() {
 
         ProgressChart(
             modifier = Modifier.size(300.dp),
+            data = ds
         )
     }
 }

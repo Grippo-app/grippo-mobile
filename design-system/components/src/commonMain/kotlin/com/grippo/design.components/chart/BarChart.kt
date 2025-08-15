@@ -2,6 +2,8 @@ package com.grippo.design.components.chart
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -15,36 +17,26 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import kotlin.math.roundToInt
 
+@Immutable
+public data class DSBarItem(
+    val label: String,
+    val value: Float,
+    val color: Color,
+)
+
+@Immutable
+public data class DSBarData(
+    val items: List<DSBarItem>,
+    val xName: String? = null,
+    val yName: String? = null,
+    val yUnit: String? = null,
+)
+
 @Composable
 public fun BarChart(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    data: DSBarData,
 ) {
-    val charts = AppTokens.colors.charts
-    val palette = charts.categorical.palette
-
-    val entries = listOf(
-        "Mon" to 6f,
-        "Tue" to 10f,
-        "Wed" to 4f,
-        "Thu" to 12f,
-        "Fri" to 8f,
-        "Sat" to 14f,
-        "Sun" to 9f,
-    ).mapIndexed { i, (label, value) ->
-        BarEntry(
-            label = label,
-            value = value,
-            color = palette[i % palette.size]
-        )
-    }
-
-    val data = BarData(
-        items = entries,
-        xName = "Day",
-        yName = "Volume",
-        yUnit = null,
-    )
-
     val style = BarStyle(
         layout = BarStyle.Layout(
             labelPadding = 6.dp
@@ -96,34 +88,45 @@ public fun BarChart(
 
     BarChart(
         modifier = modifier,
-        data = data,
+        data = remember(data) { data.toChart() },
         style = style
     )
 }
+
+private fun DSBarItem.toChart(): BarEntry = BarEntry(
+    label = label,
+    value = value,
+    color = color
+)
+
+private fun DSBarData.toChart(): BarData = BarData(
+    items = items.map { it.toChart() },
+    xName = xName,
+    yName = yName,
+    yUnit = yUnit
+)
 
 @AppPreview
 @Composable
 private fun BarChartPreview() {
     PreviewContainer {
-        val entries = listOf(
-            BarEntry("Mon", 6f, Color(0xFF6AA9FF)),
-            BarEntry("Tue", 10f, Color(0xFF00E6A7)),
-            BarEntry("Wed", 4f, Color(0xFFFF7A33)),
-            BarEntry("Thu", 12f, Color(0xFFB049F8)),
-            BarEntry("Fri", 8f, Color(0xFFFFC53D)),
-            BarEntry("Sat", 14f, Color(0xFF3A86FF)),
-            BarEntry("Sun", 9f, Color(0xFFFF5E8A)),
-        )
-
-        BarData(
-            items = entries,
+        val ds = DSBarData(
+            items = listOf(
+                DSBarItem("Mon", 6f, Color(0xFF6AA9FF)),
+                DSBarItem("Tue", 10f, Color(0xFF00E6A7)),
+                DSBarItem("Wed", 4f, Color(0xFFFF7A33)),
+                DSBarItem("Thu", 12f, Color(0xFFB049F8)),
+                DSBarItem("Fri", 8f, Color(0xFFFFC53D)),
+                DSBarItem("Sat", 14f, Color(0xFF3A86FF)),
+                DSBarItem("Sun", 9f, Color(0xFFFF5E8A)),
+            ),
             xName = "Day",
             yName = "Volume",
-            yUnit = null,
         )
 
         BarChart(
-            modifier = Modifier.size(300.dp)
+            modifier = Modifier.size(300.dp),
+            data = ds
         )
     }
 }

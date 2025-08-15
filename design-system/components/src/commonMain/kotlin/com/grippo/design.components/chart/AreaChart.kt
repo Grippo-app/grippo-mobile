@@ -2,6 +2,8 @@ package com.grippo.design.components.chart
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
@@ -14,22 +16,24 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import kotlin.math.roundToInt
 
+@Immutable
+public data class DSAreaPoint(
+    val x: Float,
+    val y: Float,
+    val xLabel: String? = null,
+)
+
+@Immutable
+public data class DSAreaData(
+    val points: List<DSAreaPoint>
+)
+
 @Composable
 public fun AreaChart(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    data: DSAreaData
 ) {
     val charts = AppTokens.colors.charts
-    val data = AreaData(
-        points = listOf(
-            AreaPoint(0f, 2.3f, "Mon"),
-            AreaPoint(1f, 9.1f, "Tue"),
-            AreaPoint(2f, 4.6f, "Wed"),
-            AreaPoint(3f, 12.4f, "Thu"),
-            AreaPoint(4f, 7.2f, "Fri"),
-            AreaPoint(5f, 15.0f, "Sat"),
-            AreaPoint(6f, 8.3f, "Sun"),
-        ),
-    )
 
     val style = AreaStyle(
         grid = AreaStyle.Grid(
@@ -40,7 +44,7 @@ public fun AreaChart(
         yAxis = AreaStyle.YAxis.Labels(
             targetTicks = 5,
             textStyle = AppTokens.typography.b11Reg().copy(color = AppTokens.colors.text.primary),
-            formatter = { v, _ -> "${v.roundToInt()}" },
+            formatter = { v, _ -> v.roundToInt().toString() },
             tickMarkColor = AppTokens.colors.divider.default,
             tickMarkWidth = 1.dp
         ),
@@ -85,28 +89,39 @@ public fun AreaChart(
 
     AreaChart(
         modifier = modifier,
-        data = data,
+        data = remember(data) { data.toChart() },
         style = style
     )
 }
+
+private fun DSAreaPoint.toChart(): AreaPoint = AreaPoint(
+    x = x,
+    y = y,
+    xLabel = xLabel
+)
+
+private fun DSAreaData.toChart(): AreaData = AreaData(
+    points = points.map { it.toChart() }
+)
 
 @AppPreview
 @Composable
 private fun AreaChartPreview() {
     PreviewContainer {
-        AreaData(
+        val ds = DSAreaData(
             points = listOf(
-                AreaPoint(0f, 0f, "Mon"),
-                AreaPoint(2f, 6f, "Wed"),
-                AreaPoint(4f, 8f, "Fri"),
-                AreaPoint(6f, 7f, "Sun"),
-                AreaPoint(8f, 9f, "Tue"),
-                AreaPoint(10f, 11f, "Thu"),
-            ),
+                DSAreaPoint(0f, 0f, "Mon"),
+                DSAreaPoint(2f, 6f, "Wed"),
+                DSAreaPoint(4f, 8f, "Fri"),
+                DSAreaPoint(6f, 7f, "Sun"),
+                DSAreaPoint(8f, 9f, "Tue"),
+                DSAreaPoint(10f, 11f, "Thu"),
+            )
         )
 
         AreaChart(
-            modifier = Modifier.size(300.dp)
+            modifier = Modifier.size(300.dp),
+            data = ds
         )
     }
 }

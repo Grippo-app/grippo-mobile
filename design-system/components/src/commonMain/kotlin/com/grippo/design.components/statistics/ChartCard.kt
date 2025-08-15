@@ -24,7 +24,6 @@ public fun ChartCard(
     title: String,
     content: @Composable ColumnScope.() -> Unit
 ) {
-
     val shape = RoundedCornerShape(AppTokens.dp.chartCard.radius)
 
     Column(
