@@ -151,14 +151,14 @@ internal fun HomeStatisticsScreen(
         }
         item {
             ChartCard(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().aspectRatio(1f),
                 content = {
                     Text(
                         text = "Progress",
                         style = AppTokens.typography.b11Med().copy(color = AppTokens.colors.text.secondary)
                     )
                     Spacer(modifier = Modifier.BoxHeight(8.dp))
-                    ProgressChart(modifier = Modifier.fillMaxWidth().height(200.dp))
+                    ProgressChart(modifier = Modifier.fillMaxSize())
                 }
             )
         }
