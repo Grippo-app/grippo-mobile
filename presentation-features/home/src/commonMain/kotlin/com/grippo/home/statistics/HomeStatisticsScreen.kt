@@ -1,20 +1,17 @@
 package com.grippo.home.statistics
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
@@ -65,55 +62,47 @@ internal fun HomeStatisticsScreen(
         }
     )
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f)
-            .padding(
-                horizontal = AppTokens.dp.screen.horizontalPadding,
-                vertical = AppTokens.dp.contentPadding.content
-            ).imePadding(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+    LazyVerticalStaggeredGrid(
+        modifier = Modifier.fillMaxWidth()
+            .weight(1f),
+        columns = StaggeredGridCells.Fixed(2),
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+        verticalItemSpacing = AppTokens.dp.contentPadding.content,
+        contentPadding = PaddingValues(
+            horizontal = AppTokens.dp.screen.horizontalPadding,
+            vertical = AppTokens.dp.contentPadding.content
+        )
     ) {
-
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-        ) {
-            item {
-                ChartCard(
-                    modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-                    content = { AreaChart(modifier = Modifier.fillMaxSize()) }
-                )
-            }
-            item {
-                ChartCard(
-                    modifier = Modifier.fillMaxWidth().aspectRatio(1.6f),
-                    content = { BarChart(modifier = Modifier.fillMaxSize()) })
-            }
-            item {
-                ChartCard(
-                    modifier = Modifier.fillMaxWidth().aspectRatio(1.1f),
-                    content = { HeatmapChart(modifier = Modifier.fillMaxSize().clipToBounds()) })
-            }
-            item {
-                ChartCard(
-                    modifier = Modifier.fillMaxWidth().aspectRatio(1.1f),
-                    content = { ProgressChart(modifier = Modifier.fillMaxSize()) })
-            }
-            item {
-                ChartCard(
-                    modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-                    content = { RadarChart(modifier = Modifier.fillMaxSize()) })
-            }
-            item {
-                ChartCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    content = { Sparkline(modifier = Modifier.fillMaxWidth().height(120.dp)) })
-            }
+        item {
+            ChartCard(
+                modifier = Modifier.fillMaxWidth().aspectRatio(1.2f),
+                content = { AreaChart(modifier = Modifier.fillMaxSize()) }
+            )
+        }
+        item {
+            ChartCard(
+                modifier = Modifier.fillMaxWidth().aspectRatio(1.4f),
+                content = { BarChart(modifier = Modifier.fillMaxSize()) })
+        }
+        item {
+            ChartCard(
+                modifier = Modifier.fillMaxWidth().aspectRatio(1.1f),
+                content = { HeatmapChart(modifier = Modifier.fillMaxSize()) })
+        }
+        item {
+            ChartCard(
+                modifier = Modifier.fillMaxWidth().aspectRatio(1.1f),
+                content = { ProgressChart(modifier = Modifier.fillMaxSize()) })
+        }
+        item {
+            ChartCard(
+                modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+                content = { RadarChart(modifier = Modifier.fillMaxSize()) })
+        }
+        item {
+            ChartCard(
+                modifier = Modifier.fillMaxWidth(),
+                content = { Sparkline(modifier = Modifier.fillMaxWidth().height(120.dp)) })
         }
     }
 }

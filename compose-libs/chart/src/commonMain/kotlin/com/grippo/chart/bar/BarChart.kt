@@ -30,11 +30,13 @@ public fun BarChart(
     androidx.compose.foundation.Canvas(modifier) {
         if (data.items.isEmpty()) return@Canvas
 
-        // ----- Domain (include zero, nice ticks) -----
-        val minVal = data.items.minOf { it.value }
-        val maxVal = data.items.maxOf { it.value }
-        val yMinTarget = min(0f, minVal)
-        val yMaxTarget = max(0f, maxVal)
+        // ----- Domain (data-driven with small headroom; include zero only if crossing) -----
+        val rawMin = data.items.minOf { it.value }
+        val rawMax = data.items.maxOf { it.value }
+        val baseSpan = (rawMax - rawMin).coerceAtLeast(1e-6f)
+        val headroom = (baseSpan * 0.08f).coerceAtLeast(1e-3f)
+        val yMinTarget = 0f
+        val yMaxTarget = (rawMax + headroom)
 
         val ticksY = when (val yCfg = style.yAxis) {
             is BarStyle.YAxis.Labels -> max(1, yCfg.ticks)
@@ -57,9 +59,12 @@ public fun BarChart(
 
         val spanRaw = (yMaxTarget - yMinTarget).coerceAtLeast(1e-6f)
         val yStep = niceStep(spanRaw, ticksY)
-        val minY = floor(yMinTarget / yStep) * yStep
-        val maxY = ceil(yMaxTarget / yStep) * yStep
+        val maxYAligned = ceil(yMaxTarget / yStep) * yStep
+        val minYAligned = floor(yMinTarget / yStep) * yStep
+        val maxY = maxYAligned
+        val minY = minYAligned
         val spanY = (maxY - minY).coerceAtLeast(1e-6f)
+        val yTickCount = ((maxY - minY) / yStep).toInt().coerceAtLeast(1)
 
         // ----- Gutters (inside-only; no external paddings) -----
         val labelPad = style.layout.labelPadding.toPx()
@@ -67,7 +72,7 @@ public fun BarChart(
         var leftGutter = 0f
         when (val yCfg = style.yAxis) {
             is BarStyle.YAxis.Labels -> {
-                val maxLabelW = (0..ticksY).maxOf { i ->
+                val maxLabelW = (0..yTickCount).maxOf { i ->
                     val t = yCfg.formatter(minY + i * yStep, data)
                     measurer.measure(AnnotatedString(t), yCfg.textStyle).size.width
                 }
@@ -110,7 +115,7 @@ public fun BarChart(
         // ----- Grid & axes -----
         if (style.grid.show) {
             val gw = style.grid.strokeWidth.toPx()
-            for (i in 0..ticksY) {
+            for (i in 0..yTickCount) {
                 val yVal = minY + i * yStep
                 val y = mapY(yVal)
                 drawLine(style.grid.color, Offset(chart.left, y), Offset(chart.right, y), gw)
@@ -118,16 +123,20 @@ public fun BarChart(
         }
         when (val yCfg = style.yAxis) {
             is BarStyle.YAxis.Labels -> {
-                for (i in 0..ticksY) {
+                for (i in 0..yTickCount) {
                     val yVal = minY + i * yStep
                     val y = mapY(yVal)
                     val text = yCfg.formatter(yVal, data)
                     val layout = measurer.measure(AnnotatedString(text), yCfg.textStyle)
+                    val x = (chart.left - labelPad - layout.size.width)
+                        .coerceAtLeast(0f)
+                    val top = (y - layout.size.height / 2f)
+                        .coerceIn(chart.top, chart.bottom - layout.size.height.toFloat())
                     drawText(
                         layout,
                         topLeft = Offset(
-                            x = chart.left - labelPad - layout.size.width,
-                            y = y - layout.size.height / 2f
+                            x = x,
+                            y = top
                         )
                     )
                     drawLine(
