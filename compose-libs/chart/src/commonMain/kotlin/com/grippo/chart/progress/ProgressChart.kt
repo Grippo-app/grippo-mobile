@@ -25,37 +25,45 @@ public fun ProgressChart(
         if (data.items.isEmpty()) return@Canvas
 
         // ----- Domain -----
-        val autoMax = if (style.domain.normalized) 1f else max(1f, data.items.maxOf { it.value })
-        val maxV = style.domain.maxValue?.takeIf { it > 0f } ?: autoMax
+        val isNormalized = when (style.domain) {
+            is ProgressStyle.Domain.Normalized -> true
+            is ProgressStyle.Domain.Absolute -> false
+        }
+        val autoMax = if (isNormalized) 1f else max(1f, data.items.maxOf { it.value })
+        val maxV = when (val d = style.domain) {
+            is ProgressStyle.Domain.Normalized -> 1f
+            is ProgressStyle.Domain.Absolute -> d.maxValue?.takeIf { it > 0f } ?: autoMax
+        }
 
-        // ----- Gutters -----
-        val pad = style.layout.padding.toPx()
+        // ----- Gutters (inside-only; no external paddings) -----
         val labelPad = style.layout.labelPadding.toPx()
 
         // left gutter for labels
         val maxLabelW = data.items.maxOf { e ->
             measurer.measure(AnnotatedString(e.label), style.labels.textStyle).size.width
         }
-        val leftGutter = pad + maxLabelW + labelPad
+        val leftGutter = maxLabelW + labelPad
 
         // right gutter only if values are outside
-        val sampleValues = if (style.values.show && !style.values.placeInside) {
-            data.items.map { e ->
-                val disp =
-                    if (style.domain.normalized && style.values.preferNormalizedLabels) e.value.coerceIn(
+        val rightGutter = when (val vCfg = style.values) {
+            is ProgressStyle.Values.Outside -> {
+                val sampleValues = data.items.map { e ->
+                    val disp = if (isNormalized && vCfg.preferNormalizedLabels) e.value.coerceIn(
                         0f,
                         1f
                     ) else e.value
-                style.values.formatter(disp, data)
+                    vCfg.formatter(disp, data)
+                }
+                val maxValueW = sampleValues.maxOfOrNull { t ->
+                    measurer.measure(AnnotatedString(t), vCfg.textStyle).size.width
+                } ?: 0
+                (maxValueW + labelPad).toFloat()
             }
-        } else emptyList()
-        val maxValueW = sampleValues.maxOfOrNull { t ->
-            measurer.measure(AnnotatedString(t), style.values.textStyle).size.width
-        } ?: 0
-        val rightGutter =
-            pad + if (style.values.show && !style.values.placeInside) maxValueW + labelPad else 0f
 
-        val chart = Rect(leftGutter, pad, size.width - rightGutter, size.height - pad)
+            is ProgressStyle.Values.None, is ProgressStyle.Values.Inside -> 0f
+        }
+
+        val chart = Rect(leftGutter, 0f, size.width - rightGutter, size.height)
 
         // bail out if not enough room
         val chartW = chart.width.coerceAtLeast(0f)
@@ -69,10 +77,14 @@ public fun ProgressChart(
         val strokeW = style.bars.strokeWidth.toPx()
 
         val totalH = data.items.size * h + (data.items.size - 1) * gap
-        val startY = chart.top + (chartH - totalH).coerceAtLeast(0f) / 2f
+        val scale = if (totalH > chartH) chartH / totalH else 1f
+        val hEff = h * scale
+        val gapEff = gap * scale
+        val totalHEff = data.items.size * hEff + (data.items.size - 1) * gapEff
+        val startY = chart.top + (chartH - totalHEff).coerceAtLeast(0f) / 2f
 
         fun mapX(v: Float): Float {
-            val vv = if (style.domain.normalized) v.coerceIn(0f, 1f) else v
+            val vv = if (isNormalized) v.coerceIn(0f, 1f) else v
             val cw = chartW.coerceAtLeast(1e-3f)
             val domain = maxV.coerceAtLeast(1e-3f)
             return chart.left + (vv / domain) * cw
@@ -80,7 +92,7 @@ public fun ProgressChart(
 
         // target marker
         style.target?.let { t ->
-            val x = mapX(if (style.domain.normalized) t.value.coerceIn(0f, 1f) else t.value)
+            val x = mapX(if (isNormalized) t.value.coerceIn(0f, 1f) else t.value)
             drawLine(
                 color = t.color,
                 start = Offset(x, chart.top),
@@ -91,21 +103,21 @@ public fun ProgressChart(
 
         // bars
         data.items.forEachIndexed { i, e ->
-            val y = startY + i * (h + gap)
+            val y = startY + i * (hEff + gapEff)
 
             // track
             style.bars.trackColor?.let { tc ->
                 drawRoundRect(
                     color = tc,
                     topLeft = Offset(chart.left, y),
-                    size = Size(chartW, h),
+                    size = Size(chartW, hEff),
                     cornerRadius = CornerRadius(rx, rx)
                 )
             }
 
             // foreground bar
             val w = (mapX(e.value) - chart.left).coerceIn(0f, chartW)
-            val barRect = Rect(chart.left, y, chart.left + w, y + h)
+            val barRect = Rect(chart.left, y, chart.left + w, y + hEff)
             val brush = style.bars.brushProvider?.invoke(e, size, barRect)
             if (brush != null) {
                 drawRoundRect(
@@ -136,35 +148,57 @@ public fun ProgressChart(
             // left label
             val labelLayout = measurer.measure(AnnotatedString(e.label), style.labels.textStyle)
             val labelX = chart.left - labelPad - labelLayout.size.width
-            val labelY = y + (h - labelLayout.size.height) / 2f
+            val labelY = y + (hEff - labelLayout.size.height) / 2f
             drawText(labelLayout, topLeft = Offset(labelX, labelY))
 
             // value label
-            if (style.values.show) {
-                val display =
-                    if (style.domain.normalized && style.values.preferNormalizedLabels) e.value.coerceIn(
+            when (val vCfg = style.values) {
+                is ProgressStyle.Values.None -> Unit
+                is ProgressStyle.Values.Inside -> {
+                    val display = if (isNormalized && vCfg.preferNormalizedLabels) e.value.coerceIn(
                         0f,
                         1f
                     ) else e.value
-                val txt = style.values.formatter(display, data)
-                val valueLayout = measurer.measure(AnnotatedString(txt), style.values.textStyle)
-                val insideFits =
-                    style.values.placeInside && w >= valueLayout.size.width + 2f * style.values.minInnerPadding.toPx()
-                if (insideFits) {
-                    val vx =
-                        barRect.right - style.values.minInnerPadding.toPx() - valueLayout.size.width
-                    val vy = y + (h - valueLayout.size.height) / 2f
-                    val insideColor = style.values.insideColor ?: chooseContrastingText(
-                        e.color, style.values.textStyle.color
+                    val txt = vCfg.formatter(display, data)
+                    val baseLayout = measurer.measure(AnnotatedString(txt), vCfg.textStyle)
+                    val insideFits = w >= baseLayout.size.width + 2f * vCfg.minInnerPadding.toPx()
+                    if (insideFits) {
+                        val vx = barRect.right - vCfg.minInnerPadding.toPx() - baseLayout.size.width
+                        val vy = y + (hEff - baseLayout.size.height) / 2f
+                        val insideColor = vCfg.insideColor ?: chooseContrastingText(
+                            e.color, vCfg.textStyle.color
+                        )
+                        val insideLayout = measurer.measure(
+                            AnnotatedString(txt),
+                            vCfg.textStyle.copy(color = insideColor)
+                        )
+                        drawText(insideLayout, topLeft = Offset(vx, vy))
+                    } else {
+                        // fallback: draw outside but clamp inside chart
+                        val valueLayout = measurer.measure(AnnotatedString(txt), vCfg.textStyle)
+                        val unclampedX = barRect.right + style.layout.labelPadding.toPx()
+                        val vx = unclampedX.coerceIn(
+                            chart.left,
+                            chart.right - valueLayout.size.width.toFloat()
+                        )
+                        val vy = y + (hEff - valueLayout.size.height) / 2f
+                        drawText(valueLayout, topLeft = Offset(vx, vy))
+                    }
+                }
+
+                is ProgressStyle.Values.Outside -> {
+                    val display = if (isNormalized && vCfg.preferNormalizedLabels) e.value.coerceIn(
+                        0f,
+                        1f
+                    ) else e.value
+                    val txt = vCfg.formatter(display, data)
+                    val valueLayout = measurer.measure(AnnotatedString(txt), vCfg.textStyle)
+                    val unclampedX = barRect.right + style.layout.labelPadding.toPx()
+                    val vx = unclampedX.coerceIn(
+                        chart.left,
+                        chart.right - valueLayout.size.width.toFloat()
                     )
-                    val insideLayout = measurer.measure(
-                        AnnotatedString(txt),
-                        style.values.textStyle.copy(color = insideColor)
-                    )
-                    drawText(insideLayout, topLeft = Offset(vx, vy))
-                } else {
-                    val vx = chart.left + w + style.layout.labelPadding.toPx()
-                    val vy = y + (h - valueLayout.size.height) / 2f
+                    val vy = y + (hEff - valueLayout.size.height) / 2f
                     drawText(valueLayout, topLeft = Offset(vx, vy))
                 }
             }

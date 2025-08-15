@@ -35,14 +35,12 @@ public fun ProgressChart(
 
     val style = ProgressStyle(
         layout = ProgressStyle.Layout(
-            padding = 12.dp,
             barHeight = 16.dp,
             spacing = 12.dp,
             corner = 10.dp,
             labelPadding = 8.dp,
         ),
-        domain = ProgressStyle.Domain(
-            normalized = false,
+        domain = ProgressStyle.Domain.Absolute(
             maxValue = 100f,
         ),
         bars = ProgressStyle.Bars(
@@ -61,11 +59,9 @@ public fun ProgressChart(
         labels = ProgressStyle.Labels(
             textStyle = AppTokens.typography.b11Med().copy(color = AppTokens.colors.text.primary)
         ),
-        values = ProgressStyle.Values(
-            show = true,
+        values = ProgressStyle.Values.Inside(
             textStyle = AppTokens.typography.b11Bold().copy(color = AppTokens.colors.text.primary),
             formatter = { v, d -> "${v.roundToInt()}${d.valueUnit ?: ""}" },
-            placeInside = true,
             minInnerPadding = 6.dp,
             insideColor = null,                 // auto-contrast
             preferNormalizedLabels = true,

@@ -19,7 +19,6 @@ public data class ProgressStyle(
 ) {
     @Immutable
     public data class Layout(
-        val padding: Dp,
         val barHeight: Dp,
         val spacing: Dp,
         val corner: Dp,
@@ -27,10 +26,15 @@ public data class ProgressStyle(
     )
 
     @Immutable
-    public data class Domain(
-        val normalized: Boolean,   // if true, values expected in 0..1
-        val maxValue: Float?,      // optional manual max; ignored if <= 0
-    )
+    public sealed interface Domain {
+        @Immutable
+        public data object Normalized : Domain
+
+        @Immutable
+        public data class Absolute(
+            val maxValue: Float?,      // optional manual max; if null/<=0 -> auto
+        ) : Domain
+    }
 
     @Immutable
     public data class Bars(
@@ -46,15 +50,26 @@ public data class ProgressStyle(
     )
 
     @Immutable
-    public data class Values(
-        val show: Boolean,
-        val textStyle: TextStyle,
-        val formatter: (Float, ProgressData) -> String,
-        val placeInside: Boolean,
-        val minInnerPadding: Dp,
-        val insideColor: Color?,              // null -> auto contrast
-        val preferNormalizedLabels: Boolean,  // when domain.normalized
-    )
+    public sealed interface Values {
+        @Immutable
+        public data object None : Values
+
+        @Immutable
+        public data class Inside(
+            val textStyle: TextStyle,
+            val formatter: (Float, ProgressData) -> String,
+            val minInnerPadding: Dp,
+            val insideColor: Color?,              // null -> auto contrast
+            val preferNormalizedLabels: Boolean,  // when domain is Normalized
+        ) : Values
+
+        @Immutable
+        public data class Outside(
+            val textStyle: TextStyle,
+            val formatter: (Float, ProgressData) -> String,
+            val preferNormalizedLabels: Boolean,  // when domain is Normalized
+        ) : Values
+    }
 
     @Immutable
     public data class Target(
