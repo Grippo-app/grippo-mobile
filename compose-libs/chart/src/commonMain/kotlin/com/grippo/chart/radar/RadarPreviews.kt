@@ -62,7 +62,16 @@ private fun radarStyle(labels: Boolean, values: Boolean): RadarStyle = RadarStyl
         formatter = { v, _ -> (v * 100).toInt().toString() + "%" },
         offset = 10.dp
     ) else RadarStyle.Values.None,
-    dataPolicy = RadarStyle.DataPolicy(requireCompleteSeries = true, missingAsZero = true)
+    dataPolicy = RadarStyle.DataPolicy(requireCompleteSeries = true, missingAsZero = true),
+    colorStops = listOf(
+        0.00f to Color(0xFF7090FF),
+        0.16f to Color(0xFF99B2FF),
+        0.36f to Color(0xFFFFE08A),
+        0.56f to Color(0xFFFFB24D),
+        0.76f to Color(0xFFFF7A33),
+        0.90f to Color(0xFFFF5A2A),
+        1.00f to Color(0xFFFF4D4F)
+    )
 )
 
 @Preview

@@ -70,6 +70,14 @@ internal object AppPalette {
             0.90f to Color(0xFFFF5A2A),
             1.00f to Semantic.Error
         )
+
+        val OrangeRed: List<Pair<Float, Color>> = listOf(
+            0.00f to Color(0xFFFFE08A),
+            0.30f to Color(0xFFFFB24D),
+            0.60f to Color(0xFFFF7A33),
+            0.85f to Color(0xFFFF5A2A),
+            1.00f to Semantic.Error
+        )
     }
 
     object Qualitative {

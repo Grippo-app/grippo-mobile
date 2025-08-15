@@ -86,7 +86,8 @@ public fun RadarChart(
         dataPolicy = RadarStyle.DataPolicy(
             requireCompleteSeries = true,
             missingAsZero = true,
-        )
+        ),
+        colorStops = charts.radar.scaleStops,
     )
 
     RadarChart(

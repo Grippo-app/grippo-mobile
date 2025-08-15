@@ -199,6 +199,7 @@ public interface AppColor {
         public interface RadarColors {
             public val strokeFallback: Color
             public val palette: List<Color>
+            public val scaleStops: List<Pair<Float, Color>>
         }
 
         public interface HeatmapColors {

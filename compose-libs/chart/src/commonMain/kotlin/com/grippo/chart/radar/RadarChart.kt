@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.drawText
@@ -143,6 +144,31 @@ public fun RadarChart(
             }
         }
 
+        fun lerpColor(a: Color, b: Color, t: Float): Color = Color(
+            red = a.red + (b.red - a.red) * t,
+            green = a.green + (b.green - a.green) * t,
+            blue = a.blue + (b.blue - a.blue) * t,
+            alpha = a.alpha + (b.alpha - a.alpha) * t
+        )
+
+        fun colorFromStops(stops: List<Pair<Float, Color>>, t: Float): Color {
+            if (stops.isEmpty()) return Color.Unspecified
+            val clamped = t.coerceIn(0f, 1f)
+            var prevPos = stops.first().first
+            var prevColor = stops.first().second
+            for (i in 1 until stops.size) {
+                val pos = stops[i].first
+                val col = stops[i].second
+                if (clamped <= pos) {
+                    val localT = if (pos == prevPos) 0f else (clamped - prevPos) / (pos - prevPos)
+                    return lerpColor(prevColor, col, localT)
+                }
+                prevPos = pos
+                prevColor = col
+            }
+            return stops.last().second
+        }
+
         // Series polygons
         val strokeW = style.polygon.strokeWidth.toPx()
         data.series.forEach { s ->
@@ -153,17 +179,39 @@ public fun RadarChart(
             }
             if (style.dataPolicy.requireCompleteSeries && missingId) return@forEach
 
+            // Prepare normalized and geometry-adjusted values for consistent usage (path, vertices, labels)
+            val rawList: List<Float?> = (0 until n).map { idx ->
+                when (val v = s.values) {
+                    is RadarValues.ByAxisId -> v.map[data.axes[idx].id]
+                    is RadarValues.ByIndex -> v.list.getOrNull(idx)
+                }
+            }
+            val vvList: List<Float?> = rawList.map { raw ->
+                if (raw == null && !style.dataPolicy.missingAsZero) null else (raw ?: 0f).coerceIn(0f, 1f)
+            }
+            val valuesForNormalization = vvList.filterNotNull()
+            val seriesMinValue = valuesForNormalization.minOrNull() ?: 0f
+            val seriesMaxValue = valuesForNormalization.maxOrNull() ?: 1f
+            val seriesRange = (seriesMaxValue - seriesMinValue).coerceAtLeast(1e-6f)
+
+            val mixFactor = 0.25f
+            val vvGeomByIndex: MutableList<Float?> = MutableList(n) { null }
+            val normalizedByIndex: MutableList<Float?> = MutableList(n) { null }
+
             val path = Path()
             var firstPlotted = false
             for (i in 0 until n) {
                 val a = startRad + i * angleStep
-                val raw: Float? = when (val v = s.values) {
-                    is RadarValues.ByAxisId -> v.map[data.axes[i].id]
-                    is RadarValues.ByIndex -> v.list.getOrNull(i)
-                }
-                if (raw == null && !style.dataPolicy.missingAsZero) continue
-                val vv = (raw ?: 0f).coerceIn(0f, 1f)
-                val p = polar(a, r * vv)
+                val vv = vvList[i]
+                if (vv == null) continue
+                val valueNormalized = ((vv - seriesMinValue) / seriesRange).coerceIn(0f, 1f)
+                val expanded = ((valueNormalized - 0.5f) * 1.4f + 0.5f).coerceIn(0f, 1f)
+                val boostedAbsolute = (seriesMinValue + seriesRange * expanded).coerceIn(0f, 1f)
+                val smallPull = 0.05f * (1f - valueNormalized)
+                val vvGeom = (vv * (1f - mixFactor) + boostedAbsolute * mixFactor - smallPull).coerceIn(0f, 1f)
+                vvGeomByIndex[i] = vvGeom
+                normalizedByIndex[i] = valueNormalized
+                val p = polar(a, r * vvGeom)
                 if (!firstPlotted) {
                     path.moveTo(p.x, p.y); firstPlotted = true
                 } else path.lineTo(p.x, p.y)
@@ -171,27 +219,44 @@ public fun RadarChart(
             if (!firstPlotted) return@forEach
             path.close()
 
-            // Fill using series color with alpha
-            drawPath(path, color = s.color.copy(alpha = style.polygon.fillAlpha))
+            val resolvedStops: List<Pair<Float, Color>> = style.colorStops
+
+            // Enhance contrast by slightly sharpening stop distribution around mid-range
+            val cs = resolvedStops
+                .sortedBy { it.first }
+                .map { it.first to it.second.copy(alpha = it.second.alpha * style.polygon.fillAlpha) }
+
+            // Apply slight non-linear mapping to t to increase perceived contrast of the fill
+            val adjustedStops = cs.map { (t, col) ->
+                val gamma = 0.85f
+                val tAdj = if (t <= 0f) 0f else kotlin.math.exp(kotlin.math.ln(t.toDouble()) * gamma.toDouble()).toFloat()
+                tAdj to col
+            }.sortedBy { it.first }
+
+            val brush = androidx.compose.ui.graphics.Brush.radialGradient(
+                colorStops = adjustedStops.toTypedArray(),
+                center = c,
+                radius = r
+            )
+            drawPath(path, brush = brush)
             // Stroke
-            drawPath(path, color = s.color, style = Stroke(width = strokeW))
+            drawPath(path, brush = brush, style = Stroke(width = strokeW))
 
             // Vertices
             when (val vcg = style.vertices) {
                 is RadarStyle.Vertices.None -> Unit
                 is RadarStyle.Vertices.Visible -> {
                     val vr = vcg.radius.toPx()
-                    val vc = vcg.colorOverride ?: s.color
+                    val vertexStops = resolvedStops.sortedBy { it.first }
                     for (i in 0 until n) {
                         val a = startRad + i * angleStep
-                        val raw: Float? = when (val v = s.values) {
-                            is RadarValues.ByAxisId -> v.map[data.axes[i].id]
-                            is RadarValues.ByIndex -> v.list.getOrNull(i)
-                        }
-                        if (raw == null && !style.dataPolicy.missingAsZero) continue
-                        val vv = (raw ?: 0f).coerceIn(0f, 1f)
-                        val p = polar(a, r * vv)
-                        drawCircle(color = vc, radius = vr, center = p)
+                        val vv = vvList[i] ?: continue
+                        val vvGeom = vvGeomByIndex[i] ?: vv
+                        val normalized = normalizedByIndex[i] ?: 0.5f
+                        val p = polar(a, r * vvGeom)
+                        val gradientColor = colorFromStops(vertexStops, normalized)
+                        val finalColor = vcg.colorOverride ?: gradientColor
+                        drawCircle(color = finalColor, radius = vr, center = p)
                     }
                 }
             }

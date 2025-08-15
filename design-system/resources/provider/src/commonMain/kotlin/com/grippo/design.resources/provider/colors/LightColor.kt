@@ -187,6 +187,7 @@ public object LightColor : AppColor {
         override val radar = object : AppColor.Charts.RadarColors {
             override val strokeFallback = AppPalette.Primary.P500
             override val palette = AppPalette.Qualitative.Palette12
+            override val scaleStops = AppPalette.Ramps.OrangeRed
         }
         override val progress = object : AppColor.Charts.ProgressColors {
             override val track = AppPalette.Common.Black.copy(alpha = 0.08f)

@@ -15,6 +15,7 @@ public data class RadarStyle(
     val vertices: Vertices,
     val values: Values,
     val dataPolicy: DataPolicy,
+    val colorStops: List<Pair<Float, Color>>,
 ) {
     @Immutable
     public data class Layout(
