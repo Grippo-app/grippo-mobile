@@ -10,9 +10,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height as BoxHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.Text
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.date.utils.DateFormat
@@ -73,36 +77,90 @@ internal fun HomeStatisticsScreen(
             vertical = AppTokens.dp.contentPadding.content
         )
     ) {
+        // Hero area chart — full width
+        item(span = StaggeredGridItemSpan.FullLine) {
+            ChartCard(
+                modifier = Modifier.fillMaxWidth().aspectRatio(1.8f),
+                content = {
+                    Text(
+                        text = AppTokens.strings.res(Res.string.statistics),
+                        style = AppTokens.typography.b11Med().copy(color = AppTokens.colors.text.secondary)
+                    )
+                    Spacer(modifier = Modifier.BoxHeight(8.dp))
+                    AreaChart(modifier = Modifier.fillMaxSize())
+                }
+            )
+        }
+
+        // Bar and Sparkline — side by side
         item {
             ChartCard(
-                modifier = Modifier.fillMaxWidth().aspectRatio(1.2f),
-                content = { AreaChart(modifier = Modifier.fillMaxSize()) }
+                modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+                content = {
+                    Text(
+                        text = "Weekly Volume",
+                        style = AppTokens.typography.b11Med().copy(color = AppTokens.colors.text.secondary)
+                    )
+                    Spacer(modifier = Modifier.BoxHeight(8.dp))
+                    BarChart(modifier = Modifier.fillMaxSize())
+                }
             )
         }
         item {
             ChartCard(
-                modifier = Modifier.fillMaxWidth().aspectRatio(1.4f),
-                content = { BarChart(modifier = Modifier.fillMaxSize()) })
+                modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+                content = {
+                    Text(
+                        text = "Trend",
+                        style = AppTokens.typography.b11Med().copy(color = AppTokens.colors.text.secondary)
+                    )
+                    Spacer(modifier = Modifier.BoxHeight(8.dp))
+                    Sparkline(modifier = Modifier.fillMaxSize())
+                }
+            )
         }
-        item {
+
+        // Heatmap — full width
+        item(span = StaggeredGridItemSpan.FullLine) {
             ChartCard(
-                modifier = Modifier.fillMaxWidth().aspectRatio(1.1f),
-                content = { HeatmapChart(modifier = Modifier.fillMaxSize()) })
+                modifier = Modifier.fillMaxWidth().aspectRatio(1.5f),
+                content = {
+                    Text(
+                        text = "Activity Heatmap",
+                        style = AppTokens.typography.b11Med().copy(color = AppTokens.colors.text.secondary)
+                    )
+                    Spacer(modifier = Modifier.BoxHeight(8.dp))
+                    HeatmapChart(modifier = Modifier.fillMaxSize())
+                }
+            )
         }
-        item {
-            ChartCard(
-                modifier = Modifier.fillMaxWidth().aspectRatio(1.1f),
-                content = { ProgressChart(modifier = Modifier.fillMaxSize()) })
-        }
+
+        // Radar and Progress — side by side (progress fixed height for readability)
         item {
             ChartCard(
                 modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-                content = { RadarChart(modifier = Modifier.fillMaxSize()) })
+                content = {
+                    Text(
+                        text = "Muscle Balance",
+                        style = AppTokens.typography.b11Med().copy(color = AppTokens.colors.text.secondary)
+                    )
+                    Spacer(modifier = Modifier.BoxHeight(8.dp))
+                    RadarChart(modifier = Modifier.fillMaxSize())
+                }
+            )
         }
         item {
             ChartCard(
                 modifier = Modifier.fillMaxWidth(),
-                content = { Sparkline(modifier = Modifier.fillMaxWidth().height(120.dp)) })
+                content = {
+                    Text(
+                        text = "Progress",
+                        style = AppTokens.typography.b11Med().copy(color = AppTokens.colors.text.secondary)
+                    )
+                    Spacer(modifier = Modifier.BoxHeight(8.dp))
+                    ProgressChart(modifier = Modifier.fillMaxWidth().height(200.dp))
+                }
+            )
         }
     }
 }
