@@ -9,7 +9,7 @@ import org.koin.core.annotation.Single
 @Single(binds = [ErrorProvider::class])
 internal class ErrorProviderImpl(val dialogController: DialogController) : ErrorProvider {
 
-    override fun provide(exception: Throwable, callback: () -> Unit) {
+    override suspend fun provide(exception: Throwable, callback: () -> Unit) {
         val config = when (exception) {
             is AppError.Network.NoInternet -> DialogConfig.ErrorDisplay(
                 title = "No Internet",

@@ -9,9 +9,9 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import kotlin.coroutines.cancellation.CancellationException
 
 public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : BaseLoader>(
     state: STATE,
@@ -61,20 +62,18 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
         loader: LOADER? = null,
         onError: (() -> Unit) = {},
         block: suspend CoroutineScope.() -> Unit,
-    ) {
-        if (loader != null) {
-            _loaders.update { it.toMutableSet().apply { add(loader) }.toPersistentSet() }
-        }
+    ): Job {
+        addLoader(loader)
 
-        val handler = CoroutineExceptionHandler { _, throwable ->
-            sendError(throwable, onError)
-        }
-
-        coroutineScope.launch(dispatcher + handler) {
-            block.invoke(this)
-        }.invokeOnCompletion {
-            if (loader != null) {
-                _loaders.update { it.toMutableSet().apply { remove(loader) }.toPersistentSet() }
+        return coroutineScope.launch(dispatcher) {
+            try {
+                block()
+            } catch (ce: CancellationException) {
+                throw ce
+            } catch (t: Throwable) {
+                sendError(t, onError)
+            } finally {
+                loader?.let { removeLoader(it) }
             }
         }
     }
@@ -83,36 +82,37 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
         dispatcher: CoroutineDispatcher = Dispatchers.Default,
         loader: LOADER? = null,
         onError: (() -> Unit) = {},
-    ) {
-        this.onStart {
-            if (loader != null) {
-                _loaders.update { it.toMutableSet().apply { add(loader) }.toPersistentSet() }
-            }
-        }.catch { exception ->
-            sendError(
-                exception = exception,
-                onError = onError,
-            )
-        }.onCompletion {
-            _loaders.update { it.toMutableSet().apply { remove(loader) }.toPersistentSet() }
-        }.flowOn(
-            context = dispatcher
-        ).launchIn(
-            scope = coroutineScope
-        )
+    ): Job {
+        return this
+            .onStart { addLoader(loader) }
+            .catch { e -> if (e !is CancellationException) sendError(e, onError) else throw e }
+            .onCompletion { removeLoader(loader) }
+            .flowOn(dispatcher)
+            .launchIn(coroutineScope)
     }
 
-    private fun sendError(exception: Throwable, onError: (() -> Unit)) {
+    private fun addLoader(loader: LOADER?) {
+        loader ?: return
+        _loaders.update { (it + loader).toPersistentSet() }
+    }
+
+    private fun removeLoader(loader: LOADER?) {
+        loader ?: return
+        _loaders.update { (it - loader).toPersistentSet() }
+    }
+
+    private suspend fun sendError(exception: Throwable, onError: (() -> Unit)) {
         AppLogger.General.error("┌───────── ViewModel error ─────────")
         AppLogger.General.error("│ message: ${exception.message}")
         AppLogger.General.error("│ cause: ${exception.cause?.message}")
-        AppLogger.General.error("└───────── ViewModel error ─────────")
-
+        AppLogger.General.error("│ stacktrace: ${exception.stackTraceToString()}")
+        AppLogger.General.error("└───────────────────────────────────")
         errorProvider.provide(exception, callback = onError)
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        _navigator.close()
         coroutineScope.cancel()
     }
 }

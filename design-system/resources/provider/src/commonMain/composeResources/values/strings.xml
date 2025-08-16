@@ -79,7 +79,6 @@
     <string name="user_card_no_records_yet">No records yet</string>
 
 
-
     <string name="profile_menu_exercise_library">Exercise Library</string>
     <string name="profile_menu_excluded_muscles">Excluded Muscles</string>
     <string name="profile_menu_missing_equipment">Missing equipment</string>
@@ -115,8 +114,6 @@
     <string name="close">Close</string>
     <string name="from">From</string>
     <string name="to">To</string>
-
-    <!-- Charts/Statistics additions -->
     <string name="axis_hour">Hour</string>
     <string name="axis_day">Day</string>
     <string name="axis_month">Month</string>

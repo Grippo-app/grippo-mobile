@@ -16,7 +16,7 @@
     <string name="or">АБО</string>
     <string name="email_placeholder">Введіть електронну адресу</string>
     <string name="password_placeholder">Введіть пароль</string>
-    <string name="name_placeholder">напр., Олексій</string>
+    <string name="name_placeholder">наприклад, Олексій</string>
     <string name="weight_placeholder">Вкажіть свою вагу</string>
     <string name="height_placeholder">Вкажіть свій зріст</string>
     <string name="time_ago_day">%d день</string>
@@ -32,14 +32,14 @@
     <string name="login_button_registration_label">Ще не маєте облікового запису?</string>
     <string name="login_button_registration">Зареєструватися</string>
     <string name="registration_credential_title">Розпочнімо реєстрацію</string>
-    <string name="registration_credential_description">Лише ваша пошта та пароль — швидко й просто.</string>
+    <string name="registration_credential_description">Лише ваша електронна пошта та пароль — швидко й просто.</string>
     <string name="registration_name_title">Як вас звати?</string>
     <string name="registration_name_description">Ми будемо підбадьорювати вас під час тренувань!</string>
     <string name="registration_body_title">Ваше тіло — ваша подорож</string>
     <string name="registration_body_description">Вкажіть свою вагу й зріст, щоб ми підібрали план.</string>
     <string name="registration_experience_title">Скільки ви тренувалися?</string>
     <string name="registration_experience_description">Без паніки — у нас є плани для будь‑якого рівня.</string>
-    <string name="registration_muscles_title">Щось хочете пропустити?</string>
+    <string name="registration_muscles_title">Хочете щось пропустити?</string>
     <string name="registration_muscles_description">Виберіть групи м’язів, які не хочете тренувати. Це необов’язково!</string>
     <string name="registration_equipment_title">Чого немає у вашому залі?</string>
     <string name="registration_equipment_description">Ми приберемо вправи, що потребують цього обладнання.</string>
@@ -54,10 +54,10 @@
     <string name="experience_intermediate_title">Середній рівень</string>
     <string name="experience_advanced_title">Досвідчений</string>
     <string name="experience_pro_title">Профі</string>
-    <string name="experience_beginner_description">Ви тренуєтесь менше року й лише знайомитеся з вправами.</string>
-    <string name="experience_intermediate_description">Ви тренуєтесь понад рік, знайомі з більшістю вправ і маєте міцну базу.</string>
-    <string name="experience_advanced_description">Ви тренуєтесь понад 2 роки, маєте добру техніку та стабільний прогрес.</string>
-    <string name="experience_pro_description">Ви тренуєтесь понад 5 років, маєте відмінну техніку та високий рівень розвитку м’язів.</string>
+    <string name="experience_beginner_description">Ви тренуєтеся менше року й лише знайомитеся з вправами.</string>
+    <string name="experience_intermediate_description">Ви тренуєтеся понад рік, знайомі з більшістю вправ і маєте міцну базу.</string>
+    <string name="experience_advanced_description">Ви тренуєтеся понад 2 роки, маєте добру техніку та стабільний прогрес.</string>
+    <string name="experience_pro_description">Ви тренуєтеся понад 5 років, маєте відмінну техніку та високий рівень розвитку м’язів.</string>
     <string name="user_card_value_in_a_row">%1$s поспіль</string>
     <string name="user_card_value_workouts">%1$s тренувань</string>
     <string name="user_card_no_workouts_yet">Поки немає тренувань</string>
@@ -95,10 +95,8 @@
     <string name="close">Закрити</string>
     <string name="from">Від</string>
     <string name="to">До</string>
-    <string name="select_start_date">Оберіть дату початку</string>
-    <string name="select_end_date">Оберіть дату завершення</string>
-
-    <!-- Charts/Statistics additions -->
+    <string name="select_start_date">Оберіть початкову дату</string>
+    <string name="select_end_date">Оберіть кінцеву дату</string>
     <string name="axis_hour">Година</string>
     <string name="axis_day">День</string>
     <string name="axis_month">Місяць</string>
