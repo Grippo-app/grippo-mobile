@@ -2,11 +2,9 @@
 <resources>
     <string name="kg">kg</string>
     <string name="percent">%</string>
-    <string name="reps">reps</string>
     <string name="back">Back</string>
     <string name="selected">Selected</string>
     <string name="cm">cm</string>
-    <string name="source">Source</string>
     <string name="next_btn">Next</string>
     <string name="apply_btn">Apply</string>
     <string name="got_it_btn">Got it</string>
@@ -14,7 +12,6 @@
     <string name="loading">Loading..</string>
     <string name="submit_btn">Submit</string>
     <string name="get_started_btn">Get Started</string>
-    <string name="skip_btn">Skip</string>
     <string name="continue_btn">Continue</string>
     <string name="or">OR</string>
     <string name="email_placeholder">Enter email</string>
@@ -56,7 +53,6 @@
     <string name="registration_equipment_description">We’ll leave out exercises that need that equipment.</string>
 
     <string name="registration_completed_title">🎉 You're all set!</string>
-    <string name="registration_completed_description">We’ve prepared your plan. Time to get stronger.</string>
 
     <string name="height_picker_title">Select your height</string>
     <string name="height_picker_description">This will help us personalize your workout recommendations.</string>
@@ -76,20 +72,14 @@
     <string name="experience_advanced_description">You've been working out for over 2 years, have good exercise form, and show consistent physical progress.</string>
     <string name="experience_pro_description">You've been working out for over 5 years, have excellent exercise form, and maintain a high level of muscular development.</string>
 
-    <string name="user_card_preferences">preferences</string>
     <string name="user_card_value_in_a_row">%1$s in a Row</string>
     <string name="user_card_value_workouts">%1$s Workouts</string>
     <string name="user_card_no_workouts_yet">No workouts yet</string>
     <string name="user_card_value_personal_records">%1$s Personal Records</string>
     <string name="user_card_no_records_yet">No records yet</string>
 
-    <string name="set_value">Set %1$s</string>
 
-    <string name="exercise_example_description">Description</string>
-    <string name="exercise_example_equipments">Equipments</string>
-    <string name="exercise_example_muscles">Muscles</string>
 
-    <string name="profile_menu_weight_history">Weight History</string>
     <string name="profile_menu_exercise_library">Exercise Library</string>
     <string name="profile_menu_excluded_muscles">Excluded Muscles</string>
     <string name="profile_menu_missing_equipment">Missing equipment</string>
@@ -100,18 +90,14 @@
     <string name="equipments">Equipments</string>
     <string name="muscles">Muscles</string>
     <string name="weight_history">Weight History</string>
-    <string name="view_details">View details</string>
     <string name="start_workout">Start Workout</string>
     <string name="system">System</string>
     <string name="debug">Debug</string>
     <string name="settings">Settings</string>
     <string name="activity">Activity</string>
     <string name="overview">Overview</string>
-    <string name="muscles_in_use">Muscles in use</string>
-    <string name="exercise_details">Exercise details</string>
     <string name="required_equipment">Required equipment</string>
     <string name="training_at_value">Training at %1$s</string>
-    <string name="iterations">Iterations</string>
     <string name="no_internet_connection">No internet connection</string>
     <string name="dark">Dark</string>
     <string name="light">Light</string>
@@ -121,19 +107,11 @@
     <string name="custom_range">Custom range</string>
     <string name="select_start_date">Select start date</string>
     <string name="select_end_date">Select end date</string>
-    <string name="from_value">From %1$s</string>
-    <string name="to_value">To %1$s</string>
     <string name="r">R</string>
     <string name="x">x</string>
     <string name="tonnage_chip">Tonnage</string>
     <string name="intensity_chip">Intensity</string>
     <string name="repetitions_chip">Repetitions</string>
-    <string name="ton_chip">Ton</string>
-    <string name="t_chip">T</string>
-    <string name="reps_chip">Reps</string>
-    <string name="r_chip">R</string>
-    <string name="int_chip">Int</string>
-    <string name="i_chip">I</string>
     <string name="close">Close</string>
     <string name="from">From</string>
     <string name="to">To</string>
