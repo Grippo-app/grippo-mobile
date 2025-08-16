@@ -101,8 +101,6 @@
     <string name="this_week">Цей тиждень</string>
     <string name="this_month">Цей місяць</string>
     <string name="custom_range">Власний діапазон</string>
-    <string name="from">Від</string>
-    <string name="to">До</string>
     <string name="from_value">Від %1$s</string>
     <string name="to_value">До %1$s</string>
     <string name="r">R</string>
@@ -117,6 +115,28 @@
     <string name="int_chip">Інт.</string>
     <string name="i_chip">I</string>
     <string name="close">Закрити</string>
+    <string name="from">Від</string>
+    <string name="to">До</string>
     <string name="select_start_date">Оберіть дату початку</string>
     <string name="select_end_date">Оберіть дату завершення</string>
+
+    <!-- Charts/Statistics additions -->
+    <string name="axis_hour">Година</string>
+    <string name="axis_day">День</string>
+    <string name="axis_month">Місяць</string>
+    <string name="volume">Обсяг</string>
+    <string name="muscle_group">Група м’язів</string>
+    <string name="series_current">Поточний</string>
+    <string name="bench_press">Жим лежачи</string>
+    <string name="deadlift">Станова тяга</string>
+    <string name="squat">Присідання</string>
+    <string name="overhead_press">Жим стоячи</string>
+    <string name="row_ex">Тяга</string>
+    <string name="chest_muscle">Груди</string>
+    <string name="back_muscle">Спина</string>
+    <string name="legs_muscle">Ноги</string>
+    <string name="shoulders_muscle">Плечі</string>
+    <string name="arms_muscle">Руки</string>
+    <string name="core_muscle">Кор</string>
+    <string name="strength_progress">Прогрес сили</string>
 </resources>

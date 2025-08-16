@@ -137,4 +137,24 @@
     <string name="close">Close</string>
     <string name="from">From</string>
     <string name="to">To</string>
+
+    <!-- Charts/Statistics additions -->
+    <string name="axis_hour">Hour</string>
+    <string name="axis_day">Day</string>
+    <string name="axis_month">Month</string>
+    <string name="volume">Volume</string>
+    <string name="muscle_group">Muscle Group</string>
+    <string name="series_current">Current</string>
+    <string name="bench_press">Bench Press</string>
+    <string name="deadlift">Deadlift</string>
+    <string name="squat">Squat</string>
+    <string name="overhead_press">Overhead Press</string>
+    <string name="row_ex">Row</string>
+    <string name="chest_muscle">Chest</string>
+    <string name="back_muscle">Back</string>
+    <string name="legs_muscle">Legs</string>
+    <string name="shoulders_muscle">Shoulders</string>
+    <string name="arms_muscle">Arms</string>
+    <string name="core_muscle">Core</string>
+    <string name="strength_progress">Strength Progress</string>
 </resources>
