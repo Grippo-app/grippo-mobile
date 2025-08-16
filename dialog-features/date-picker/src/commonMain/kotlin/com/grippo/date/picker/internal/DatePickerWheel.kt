@@ -129,7 +129,7 @@ internal fun DateWheelPicker(
             val template = remember(m) {
                 LocalDateTime(selectedYear, m.ordinal + 1, 1, 0, 0)
             }
-            val monthName = rememberFormat(value = template, format = DateFormat.MMMM)
+            val monthName = rememberFormat(value = template, format = DateFormat.MONTH_FULL)
 
             WheelItem(
                 text = monthName,

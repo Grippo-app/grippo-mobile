@@ -309,7 +309,7 @@ internal class HomeStatisticsViewModel(
         val date = range.from.date
         return (0 until 24 step 2).map { h ->
             val t = LocalDateTime(date.year, date.month, date.dayOfMonth, h, 0)
-            DateTimeUtils.format(t, DateFormat.H_mm)
+            DateTimeUtils.format(t, DateFormat.TIME_24H_H_MM)
         }
     }
 
@@ -320,7 +320,7 @@ internal class HomeStatisticsViewModel(
         var cur = startDate
         while (cur <= endDate) {
             val ldt = LocalDateTime(cur.year, cur.month, cur.dayOfMonth, 0, 0)
-            labels += DateTimeUtils.format(ldt, DateFormat.dd_MMM)
+            labels += DateTimeUtils.format(ldt, DateFormat.DATE_DD_MMM)
             cur = cur.plus(DatePeriod(days = 1))
         }
         return labels
@@ -345,7 +345,7 @@ internal class HomeStatisticsViewModel(
         var cur = LocalDate(y, m, 1)
         while (cur <= LocalDate(end.year, end.month, 1)) {
             val ldt = LocalDateTime(cur.year, cur.month, 1, 0, 0)
-            labels += DateTimeUtils.format(ldt, DateFormat.MMM)
+            labels += DateTimeUtils.format(ldt, DateFormat.MONTH_SHORT)
             incMonth()
             cur = LocalDate(y, m, 1)
         }
@@ -359,7 +359,7 @@ internal class HomeStatisticsViewModel(
         var cur = startDate
         while (cur <= endDate) {
             val ldt = LocalDateTime(cur.year, cur.month, cur.dayOfMonth, 0, 0)
-            labels += DateTimeUtils.format(ldt, DateFormat.EEE)
+            labels += DateTimeUtils.format(ldt, DateFormat.WEEKDAY_SHORT)
             cur = cur.plus(DatePeriod(days = 1))
         }
         return labels

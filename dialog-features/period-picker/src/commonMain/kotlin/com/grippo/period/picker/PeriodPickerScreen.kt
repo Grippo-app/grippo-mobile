@@ -78,7 +78,7 @@ internal fun PeriodPickerScreen(
                     onSelect = clickProvider,
                     style = SelectableCardStyle.Large(
                         title = item.text(),
-                        description = item.range(DateFormat.MMM_dd),
+                        description = item.range(DateFormat.DATE_MMM_DD_COMMA),
                         icon = item.icon(),
                         subContent = if (item is PeriodState.CUSTOM) {
                             {

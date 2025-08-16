@@ -24,7 +24,7 @@ public fun TimeLabel(
     modifier: Modifier = Modifier,
     value: LocalDateTime
 ) {
-    val text = DateCompose.rememberFormat(value, DateFormat.HH_mm)
+    val text = DateCompose.rememberFormat(value, DateFormat.TIME_24H_HH_MM)
 
     Row(
         modifier = modifier,

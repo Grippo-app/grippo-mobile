@@ -29,7 +29,7 @@ public fun DateRangeSelector(
             modifier = Modifier.weight(1f),
             title = AppTokens.strings.res(Res.string.from),
             value = value.from,
-            format = DateFormat.MMM_dd_yyyy,
+            format = DateFormat.DATE_MMM_DD_YYYY,
             enabled = enabled,
             onClick = onFromClick
         )
@@ -38,7 +38,7 @@ public fun DateRangeSelector(
             modifier = Modifier.weight(1f),
             title = AppTokens.strings.res(Res.string.to),
             value = value.to,
-            format = DateFormat.MMM_dd_yyyy,
+            format = DateFormat.DATE_MMM_DD_YYYY,
             enabled = enabled,
             onClick = onToClick
         )

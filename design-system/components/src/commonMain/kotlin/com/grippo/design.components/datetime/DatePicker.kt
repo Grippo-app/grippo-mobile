@@ -80,7 +80,7 @@ private fun DatePickerPreview() {
     PreviewContainer {
         DatePicker(
             value = DateTimeUtils.now(),
-            format = DateFormat.MMM_dd_yyyy,
+            format = DateFormat.DATE_MMM_DD_YYYY,
             title = "Text",
             enabled = true,
             onClick = {}
@@ -88,7 +88,7 @@ private fun DatePickerPreview() {
 
         DatePicker(
             value = DateTimeUtils.now(),
-            format = DateFormat.MMM_dd_yyyy,
+            format = DateFormat.DATE_MMM_DD_YYYY,
             title = "Text",
             enabled = false,
             onClick = {}

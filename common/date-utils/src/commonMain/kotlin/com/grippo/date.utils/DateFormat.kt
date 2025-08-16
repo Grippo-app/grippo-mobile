@@ -5,13 +5,13 @@ import androidx.compose.runtime.Immutable
 // https://kotlinlang.org/api/kotlinx-datetime/kotlinx-datetime/kotlinx.datetime.format/by-unicode-pattern.html
 @Immutable
 public enum class DateFormat(internal val value: String) {
-    MMMM("MMMM"),
-    HH_mm("HH:mm"),
-    H_mm("H:mm"),
-    MMM_dd_yyyy("MMM dd, yyyy"),
-    MMM_dd("MMM, dd"),
-    dd_MM("dd.MM"),
-    dd_MMM("dd MMM"),
-    MMM("MMM"),
-    EEE("EEE")
+    MONTH_FULL("MMMM"),
+    TIME_24H_HH_MM("HH:mm"),
+    TIME_24H_H_MM("H:mm"),
+    DATE_MMM_DD_YYYY("MMM dd, yyyy"),
+    DATE_MMM_DD_COMMA("MMM, dd"),
+    DATE_DD_DOT_MM("dd.MM"),
+    DATE_DD_MMM("dd MMM"),
+    MONTH_SHORT("MMM"),
+    WEEKDAY_SHORT("EEE")
 }
