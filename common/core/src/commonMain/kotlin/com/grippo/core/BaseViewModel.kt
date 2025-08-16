@@ -43,7 +43,7 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
     private val _state: MutableStateFlow<STATE> = MutableStateFlow(state)
     public val state: StateFlow<STATE> = _state.asStateFlow()
 
-    private val _navigator = Channel<DIRECTION>(Channel.CONFLATED)
+    private val _navigator = Channel<DIRECTION>(Channel.BUFFERED)
     public val navigator: Flow<DIRECTION> = _navigator.receiveAsFlow()
 
     private val _loaders = MutableStateFlow<ImmutableSet<LOADER>>(persistentSetOf())
@@ -54,7 +54,7 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
     }
 
     protected fun navigateTo(destination: DIRECTION) {
-        coroutineScope.launch { _navigator.send(destination) }
+        _navigator.trySend(destination)
     }
 
     protected fun safeLaunch(
@@ -65,17 +65,18 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
     ): Job {
         addLoader(loader)
 
-        return coroutineScope.launch(dispatcher) {
+        val job = coroutineScope.launch(dispatcher) {
             try {
                 block()
             } catch (ce: CancellationException) {
                 throw ce
             } catch (t: Throwable) {
                 sendError(t, onError)
-            } finally {
-                loader?.let { removeLoader(it) }
             }
         }
+
+        job.invokeOnCompletion { removeLoader(loader) }
+        return job
     }
 
     protected fun <T> Flow<T>.safeLaunch(
@@ -84,10 +85,10 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
         onError: (() -> Unit) = {},
     ): Job {
         return this
+            .flowOn(dispatcher)
             .onStart { addLoader(loader) }
             .catch { e -> if (e !is CancellationException) sendError(e, onError) else throw e }
             .onCompletion { removeLoader(loader) }
-            .flowOn(dispatcher)
             .launchIn(coroutineScope)
     }
 
@@ -111,7 +112,6 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         _navigator.close()
         coroutineScope.cancel()
     }
