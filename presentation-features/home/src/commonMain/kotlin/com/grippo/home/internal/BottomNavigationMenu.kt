@@ -20,7 +20,7 @@ import com.grippo.design.components.tab.TabItem
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.icons.Box
+import com.grippo.design.resources.provider.icons.NavArrowDown
 import com.grippo.home.BottomBarMenu
 import com.grippo.state.formatters.UiText
 import kotlinx.collections.immutable.ImmutableList
@@ -64,7 +64,7 @@ private fun ScreenPreview() {
                 .map {
                     it.ordinal to TabItem(
                         text = UiText.Str(it.name),
-                        icon = AppTokens.icons.Box
+                        icon = AppTokens.icons.NavArrowDown
                     )
                 }
                 .toPersistentList(),

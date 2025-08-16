@@ -23,7 +23,7 @@ import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.icons.Box
+import com.grippo.design.resources.provider.icons.NavArrowDown
 import com.grippo.design.resources.provider.icons.Settings
 import com.grippo.segment.control.SegmentBox
 import com.grippo.segment.control.SegmentSizing
@@ -131,11 +131,17 @@ private fun SegmentPreview() {
         Tab(
             modifier = Modifier,
             items = persistentListOf(
-                "Box" to TabItem(text = UiText.Str("Box"), icon = AppTokens.icons.Box),
-                "Play" to TabItem(text = UiText.Str("Play"), icon = AppTokens.icons.Settings),
+                "Box" to TabItem(
+                    text = UiText.Str("Box"),
+                    icon = AppTokens.icons.NavArrowDown
+                ),
+                "Play" to TabItem(
+                    text = UiText.Str("Play"),
+                    icon = AppTokens.icons.NavArrowDown
+                ),
                 "Settings" to TabItem(
                     text = UiText.Str("Settings"),
-                    icon = AppTokens.icons.Settings
+                    icon = AppTokens.icons.NavArrowDown
                 ),
             ),
             selected = "Play",
