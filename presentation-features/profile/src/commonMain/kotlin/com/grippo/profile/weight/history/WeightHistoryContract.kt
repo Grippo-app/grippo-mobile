@@ -1,11 +1,11 @@
 package com.grippo.profile.weight.history
 
 internal interface WeightHistoryContract {
-    fun openWeightPicker()
-    fun back()
+    fun onWeightPickerClick()
+    fun onBack()
 
     companion object Empty : WeightHistoryContract {
-        override fun openWeightPicker() {}
-        override fun back() {}
+        override fun onWeightPickerClick() {}
+        override fun onBack() {}
     }
 }

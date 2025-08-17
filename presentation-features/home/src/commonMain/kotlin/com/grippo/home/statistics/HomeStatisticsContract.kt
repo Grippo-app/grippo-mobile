@@ -1,11 +1,11 @@
 package com.grippo.home.statistics
 
 internal interface HomeStatisticsContract {
-    fun selectPeriod()
-    fun back()
+    fun onSelectPeriod()
+    fun onBack()
 
     companion object Empty : HomeStatisticsContract {
-        override fun selectPeriod() {}
-        override fun back() {}
+        override fun onSelectPeriod() {}
+        override fun onBack() {}
     }
 }

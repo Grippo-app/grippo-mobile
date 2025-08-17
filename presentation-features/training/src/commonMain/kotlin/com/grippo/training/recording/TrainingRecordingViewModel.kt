@@ -11,21 +11,10 @@ internal class TrainingRecordingViewModel(
 ), TrainingRecordingContract {
 
     override fun onAddExercise() {
-        dialogController.show(
-            DialogConfig.ExerciseExamples(
-                onResult = { id ->
-                    // TODO: add exercise by id
-                }
-            )
-        )
+
     }
 
     override fun onOpenFilters() {
-        dialogController.show(
-            DialogConfig.Filters(
-                onResult = { /* handle filters */ }
-            )
-        )
     }
 
     override fun onOpenExerciseExample(id: String) {
@@ -33,39 +22,35 @@ internal class TrainingRecordingViewModel(
     }
 
     override fun onAddIteration(exerciseId: String) {
-        dialogController.show(
-            DialogConfig.Iteration(
-                weight = 20f,
-                repeats = 5,
-                onResult = { weight, repeats ->
-                    // TODO: add iteration
-                }
-            )
+        val dialog = DialogConfig.Iteration(
+            weight = 20f,
+            repeats = 5,
+            onResult = { weight, repeats ->
+                // TODO: update iteration
+            }
         )
+
+        dialogController.show(dialog)
     }
 
     override fun onEditIteration(exerciseId: String, iterationId: String) {
-        dialogController.show(
-            DialogConfig.Iteration(
-                weight = 20f,
-                repeats = 5,
-                onResult = { weight, repeats ->
-                    // TODO: update iteration
-                }
-            )
+        val dialog = DialogConfig.Iteration(
+            weight = 20f,
+            repeats = 5,
+            onResult = { weight, repeats ->
+                // TODO: update iteration
+            }
         )
+
+        dialogController.show(dialog)
     }
 
     override fun onRemoveIteration(exerciseId: String, iterationId: String) {
         // TODO: implement remove
     }
 
-    override fun onOpenStats() {
-        update { it.copy(tab = RecordingTab.Stats) }
-    }
-
-    override fun onOpenExercises() {
-        update { it.copy(tab = RecordingTab.Exercises) }
+    override fun onSelectTab(tab: RecordingTab) {
+        update { it.copy(tab = tab) }
     }
 
     override fun onSave() {

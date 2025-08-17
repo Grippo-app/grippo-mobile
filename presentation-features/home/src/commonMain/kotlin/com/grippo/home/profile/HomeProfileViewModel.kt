@@ -49,7 +49,7 @@ internal class HomeProfileViewModel(
         navigateTo(HomeProfileDirection.Workout)
     }
 
-    override fun back() {
+    override fun onBack() {
         navigateTo(HomeProfileDirection.Back)
     }
 }

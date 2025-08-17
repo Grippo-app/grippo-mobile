@@ -2,13 +2,13 @@ package com.grippo.profile.muscles
 
 internal interface ProfileMusclesContract {
 
-    fun select(id: String)
-    fun apply()
-    fun back()
+    fun onSelect(id: String)
+    fun onApply()
+    fun onBack()
 
     companion object Empty : ProfileMusclesContract {
-        override fun select(id: String) {}
-        override fun apply() {}
-        override fun back() {}
+        override fun onSelect(id: String) {}
+        override fun onApply() {}
+        override fun onBack() {}
     }
 }

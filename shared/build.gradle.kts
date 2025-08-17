@@ -49,6 +49,7 @@ kotlin {
         implementation(projects.presentationFeatures.profile)
         implementation(projects.presentationFeatures.settings)
         implementation(projects.presentationFeatures.debug)
+        implementation(projects.presentationFeatures.training)
 
         implementation(projects.dialogFeatures.dialogApi)
         implementation(projects.dialogFeatures.weightPicker)
@@ -58,6 +59,7 @@ kotlin {
         implementation(projects.dialogFeatures.errorDisplay)
         implementation(projects.dialogFeatures.exerciseExample)
         implementation(projects.dialogFeatures.exercise)
+        implementation(projects.dialogFeatures.iterationPicker)
 
         implementation(libs.datetime)
         implementation(libs.immutable.collections)

@@ -43,7 +43,7 @@ internal class HomeTrainingsViewModel(
         update { it.copy(trainings = trainings) }
     }
 
-    override fun openExercise(id: String) {
+    override fun onExerciseClick(id: String) {
         val dialog = DialogConfig.Exercise(
             id = id,
         )
@@ -51,7 +51,7 @@ internal class HomeTrainingsViewModel(
         dialogController.show(dialog)
     }
 
-    override fun selectDate() {
+    override fun onSelectDate() {
         safeLaunch {
             val dialog = DialogConfig.DatePicker(
                 title = stringProvider.get(Res.string.date_picker_title),
@@ -64,7 +64,7 @@ internal class HomeTrainingsViewModel(
         }
     }
 
-    override fun back() {
+    override fun onBack() {
         navigateTo(HomeTrainingsDirection.Back)
     }
 }

@@ -1,9 +1,9 @@
 package com.grippo.profile
 
 internal interface ProfileContract {
-    fun back()
+    fun onBack()
 
     companion object Empty : ProfileContract {
-        override fun back() {}
+        override fun onBack() {}
     }
 }

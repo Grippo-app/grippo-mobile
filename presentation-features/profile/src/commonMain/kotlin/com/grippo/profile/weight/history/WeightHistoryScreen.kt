@@ -35,7 +35,7 @@ internal fun WeightHistoryScreen(
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.weight_history),
-        onBack = contract::back
+        onBack = contract::onBack
     )
 
     Column(
@@ -48,7 +48,7 @@ internal fun WeightHistoryScreen(
 
         InputWeight(
             value = state.weight.value,
-            onClick = contract::openWeightPicker
+            onClick = contract::onWeightPickerClick
         )
 
         Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))

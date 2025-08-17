@@ -6,7 +6,7 @@ public class SettingsViewModel : BaseViewModel<SettingsState, SettingsDirection,
     SettingsState
 ), SettingsContract {
 
-    override fun back() {
+    override fun onBack() {
         navigateTo(SettingsDirection.Back)
     }
 }

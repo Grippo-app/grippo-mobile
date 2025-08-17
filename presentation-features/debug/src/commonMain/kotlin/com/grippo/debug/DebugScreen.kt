@@ -36,7 +36,7 @@ internal fun DebugScreen(
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.equipments),
-        onBack = contract::back,
+        onBack = contract::onBack,
         content = {
             Segment(
                 modifier = Modifier
@@ -45,7 +45,7 @@ internal fun DebugScreen(
                     .fillMaxWidth(),
                 items = segmentItems,
                 selected = state.selected,
-                onSelect = contract::select,
+                onSelect = contract::onSelect,
                 segmentWidth = SegmentWidth.Unspecified,
             )
         }

@@ -32,7 +32,7 @@ internal fun SystemScreen(
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.system),
-        onBack = contract::back,
+        onBack = contract::onBack,
     )
 
     LazyColumn(

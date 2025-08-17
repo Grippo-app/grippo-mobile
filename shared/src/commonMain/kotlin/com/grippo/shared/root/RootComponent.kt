@@ -22,12 +22,14 @@ import com.grippo.presentation.api.auth.AuthRouter
 import com.grippo.presentation.api.bottom.navigation.BottomNavigationRouter
 import com.grippo.presentation.api.profile.ProfileRouter
 import com.grippo.presentation.api.settings.SettingsRouter
+import com.grippo.presentation.api.trainings.TrainingRouter
 import com.grippo.profile.ProfileComponent
 import com.grippo.settings.SettingsComponent
 import com.grippo.shared.dialog.DialogComponent
 import com.grippo.shared.root.RootComponent.Child.Authorization
 import com.grippo.shared.root.RootComponent.Child.Home
 import com.grippo.state.settings.ThemeState
+import com.grippo.training.TrainingComponent
 
 public class RootComponent(
     componentContext: ComponentContext,
@@ -54,7 +56,7 @@ public class RootComponent(
         childFactory = ::createChild,
     )
 
-    private val backCallback = BackCallback(onBack = viewModel::back)
+    private val backCallback = BackCallback(onBack = viewModel::onBack)
 
     init {
         backHandler.register(backCallback)
@@ -111,10 +113,13 @@ public class RootComponent(
                 )
             )
 
-            is RootRouter.Workout -> {
-                // Handle Workout router if needed
-                throw NotImplementedError("Workout router is not implemented yet")
-            }
+            is RootRouter.Workout -> Child.Workout(
+                TrainingComponent(
+                    componentContext = context,
+                    initial = TrainingRouter.Preferences,
+                    back = navigation::pop
+                )
+            )
 
             is RootRouter.Settings -> Child.Settings(
                 SettingsComponent(
@@ -143,5 +148,6 @@ public class RootComponent(
         public data class Profile(override val component: ProfileComponent) : Child(component)
         public data class Debug(override val component: DebugComponent) : Child(component)
         public data class Settings(override val component: SettingsComponent) : Child(component)
+        public data class Workout(override val component: TrainingComponent) : Child(component)
     }
 }

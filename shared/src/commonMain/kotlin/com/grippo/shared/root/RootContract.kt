@@ -1,9 +1,9 @@
 package com.grippo.shared.root
 
 public interface RootContract {
-    public fun back()
+    public fun onBack()
 
     public companion object Empty : RootContract {
-        override fun back() {}
+        override fun onBack() {}
     }
 }

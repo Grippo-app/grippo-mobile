@@ -46,7 +46,7 @@ public class RootViewModel(
         update { it.copy(isConnectedToInternet = isConnected) }
     }
 
-    override fun back() {
+    override fun onBack() {
         navigateTo(RootDirection.Back)
     }
 }

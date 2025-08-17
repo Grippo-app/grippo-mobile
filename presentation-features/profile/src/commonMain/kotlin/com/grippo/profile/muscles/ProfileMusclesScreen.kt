@@ -39,7 +39,7 @@ internal fun ProfileMusclesScreen(
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.muscles),
-        onBack = contract::back
+        onBack = contract::onBack
     )
 
     LazyColumn(
@@ -67,7 +67,7 @@ internal fun ProfileMusclesScreen(
                         modifier = Modifier.weight(1f),
                         item = group,
                         selectedIds = state.selectedMuscleIds,
-                        onSelect = contract::select
+                        onSelect = contract::onSelect
                     )
                     MusclesImage(
                         modifier = Modifier.weight(1f),
@@ -84,7 +84,7 @@ internal fun ProfileMusclesScreen(
                         modifier = Modifier.weight(1f),
                         item = group,
                         selectedIds = state.selectedMuscleIds,
-                        onSelect = contract::select
+                        onSelect = contract::onSelect
                     )
                 }
             }
@@ -107,7 +107,7 @@ internal fun ProfileMusclesScreen(
         text = AppTokens.strings.res(Res.string.apply_btn),
         style = ButtonStyle.Primary,
         state = buttonState,
-        onClick = contract::apply
+        onClick = contract::onApply
     )
 
     Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))

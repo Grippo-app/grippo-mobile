@@ -65,7 +65,7 @@ internal class HomeStatisticsViewModel(
         }
     }
 
-    override fun selectPeriod() {
+    override fun onSelectPeriod() {
         val custom = (state.value.period as? PeriodState.CUSTOM) ?: PeriodState.CUSTOM(
             range = DateTimeUtils.thisWeek(),
             limitations = DateTimeUtils.trailingYear()
@@ -95,7 +95,7 @@ internal class HomeStatisticsViewModel(
         dialogController.show(dialog)
     }
 
-    override fun back() {
+    override fun onBack() {
         navigateTo(HomeStatisticsDirection.Back)
     }
 

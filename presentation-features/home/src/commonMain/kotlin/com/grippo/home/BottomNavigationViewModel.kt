@@ -23,7 +23,7 @@ public class BottomNavigationViewModel(
         update { it.copy(selected = selected) }
     }
 
-    override fun back() {
+    override fun onBack() {
         navigateTo(BottomNavigationDirection.Back)
     }
 }

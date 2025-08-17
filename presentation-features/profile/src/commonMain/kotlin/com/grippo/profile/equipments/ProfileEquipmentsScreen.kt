@@ -49,7 +49,7 @@ internal fun ProfileEquipmentsScreen(
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.equipments),
-        onBack = contract::back,
+        onBack = contract::onBack,
         content = {
             Segment(
                 modifier = Modifier
@@ -58,7 +58,7 @@ internal fun ProfileEquipmentsScreen(
                     .fillMaxWidth(),
                 items = segmentItems,
                 selected = state.selectedGroupId,
-                onSelect = contract::selectGroup,
+                onSelect = contract::onSelectGroup,
                 segmentWidth = SegmentWidth.Unspecified,
             )
         }
@@ -83,7 +83,7 @@ internal fun ProfileEquipmentsScreen(
             EquipmentRow(
                 equipment = equipment,
                 selectedEquipmentIds = state.selectedEquipmentIds,
-                selectEquipment = contract::selectEquipment,
+                selectEquipment = contract::onSelectEquipment,
             )
         }
     }
@@ -104,7 +104,7 @@ internal fun ProfileEquipmentsScreen(
         text = AppTokens.strings.res(Res.string.apply_btn),
         style = ButtonStyle.Primary,
         state = buttonState,
-        onClick = contract::apply
+        onClick = contract::onApply
     )
 
     Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))

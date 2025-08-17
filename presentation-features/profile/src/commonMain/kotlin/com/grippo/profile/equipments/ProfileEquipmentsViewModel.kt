@@ -49,15 +49,15 @@ internal class ProfileEquipmentsViewModel(
         }
     }
 
-    override fun selectGroup(id: String) {
+    override fun onSelectGroup(id: String) {
         update { it.copy(selectedGroupId = id) }
     }
 
-    override fun back() {
+    override fun onBack() {
         navigateTo(ProfileEquipmentsDirection.Back)
     }
 
-    override fun selectEquipment(id: String) {
+    override fun onSelectEquipment(id: String) {
         update {
             val newList: PersistentList<String> = it.selectedEquipmentIds
                 .toMutableList()
@@ -68,7 +68,7 @@ internal class ProfileEquipmentsViewModel(
         }
     }
 
-    override fun apply() {
+    override fun onApply() {
         val formattedList = state.value.suggestions
             .flatMap { it.equipments }
             .map { it.id } - state.value.selectedEquipmentIds

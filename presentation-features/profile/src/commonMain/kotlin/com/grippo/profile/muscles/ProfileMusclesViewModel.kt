@@ -48,7 +48,7 @@ internal class ProfileMusclesViewModel(
         }
     }
 
-    override fun select(id: String) {
+    override fun onSelect(id: String) {
         update {
             val newList: PersistentList<String> = it.selectedMuscleIds
                 .toMutableList()
@@ -59,7 +59,7 @@ internal class ProfileMusclesViewModel(
         }
     }
 
-    override fun apply() {
+    override fun onApply() {
         val formattedList = state.value.suggestions
             .flatMap { it.muscles }
             .map { it.value.id } - state.value.selectedMuscleIds
@@ -71,7 +71,7 @@ internal class ProfileMusclesViewModel(
         }
     }
 
-    override fun back() {
+    override fun onBack() {
         navigateTo(ProfileMusclesDirection.Back)
     }
 }

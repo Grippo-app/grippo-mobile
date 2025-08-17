@@ -29,7 +29,7 @@ internal class SystemViewModel(
         update { it.copy(theme = theme) }
     }
 
-    override fun back() {
+    override fun onBack() {
         navigateTo(SystemDirection.Back)
     }
 }

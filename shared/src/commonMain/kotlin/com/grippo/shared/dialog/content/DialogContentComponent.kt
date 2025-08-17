@@ -16,6 +16,7 @@ import com.grippo.error.display.ErrorDisplayComponent
 import com.grippo.exercise.ExerciseComponent
 import com.grippo.exercise.example.exerciseexample.ExerciseExampleComponent
 import com.grippo.height.picker.HeightPickerComponent
+import com.grippo.iteration.picker.IterationPickerComponent
 import com.grippo.period.picker.PeriodPickerComponent
 import com.grippo.weight.picker.WeightPickerComponent
 
@@ -97,6 +98,16 @@ internal class DialogContentComponent(
                 )
             )
 
+            is DialogConfig.Iteration -> Child.IterationPicker(
+                IterationPickerComponent(
+                    componentContext = context,
+                    weight = router.weight,
+                    repetitions = router.repeats,
+                    onResult = { w, r -> viewModel.onBack { router.onResult.invoke(w, r) } },
+                    back = { viewModel.onBack(null) }
+                )
+            )
+
             is DialogConfig.DatePicker -> Child.DatePicker(
                 DatePickerComponent(
                     componentContext = context,
@@ -147,6 +158,9 @@ internal class DialogContentComponent(
             Child(component)
 
         data class PeriodPicker(override val component: PeriodPickerComponent) :
+            Child(component)
+
+        data class IterationPicker(override val component: IterationPickerComponent) :
             Child(component)
     }
 }

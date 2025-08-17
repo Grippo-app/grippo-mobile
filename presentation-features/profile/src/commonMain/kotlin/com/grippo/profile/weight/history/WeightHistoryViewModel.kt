@@ -11,7 +11,7 @@ internal class WeightHistoryViewModel(
     WeightHistoryState()
 ), WeightHistoryContract {
 
-    override fun openWeightPicker() {
+    override fun onWeightPickerClick() {
         val dialog = DialogConfig.WeightPicker(
             initial = state.value.weight.value,
             onResult = { value -> update { it.copy(weight = WeightFormatState.of(value)) } }
@@ -19,7 +19,7 @@ internal class WeightHistoryViewModel(
         dialogController.show(dialog)
     }
 
-    override fun back() {
+    override fun onBack() {
         navigateTo(WeightHistoryDirection.Back)
     }
 }

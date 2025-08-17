@@ -87,7 +87,10 @@ public class TrainingComponent(
         data class Preferences(override val component: TrainingPreferencesComponent) :
             Child(component)
 
-        data class Recording(override val component: TrainingRecordingComponent) : Child(component)
-        data class Success(override val component: TrainingSuccessComponent) : Child(component)
+        data class Recording(override val component: TrainingRecordingComponent) :
+            Child(component)
+
+        data class Success(override val component: TrainingSuccessComponent) :
+            Child(component)
     }
 }

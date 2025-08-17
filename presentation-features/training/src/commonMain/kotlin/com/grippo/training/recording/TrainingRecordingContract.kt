@@ -7,8 +7,7 @@ internal interface TrainingRecordingContract {
     fun onAddIteration(exerciseId: String)
     fun onEditIteration(exerciseId: String, iterationId: String)
     fun onRemoveIteration(exerciseId: String, iterationId: String)
-    fun onOpenStats()
-    fun onOpenExercises()
+    fun onSelectTab(tab: RecordingTab)
     fun onSave()
     fun onBack()
 
@@ -19,8 +18,7 @@ internal interface TrainingRecordingContract {
         override fun onAddIteration(exerciseId: String) {}
         override fun onEditIteration(exerciseId: String, iterationId: String) {}
         override fun onRemoveIteration(exerciseId: String, iterationId: String) {}
-        override fun onOpenStats() {}
-        override fun onOpenExercises() {}
+        override fun onSelectTab(tab: RecordingTab) {}
         override fun onSave() {}
         override fun onBack() {}
     }

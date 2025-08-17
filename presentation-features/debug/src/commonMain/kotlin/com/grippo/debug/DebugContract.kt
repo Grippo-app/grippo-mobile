@@ -1,11 +1,11 @@
 package com.grippo.debug
 
 internal interface DebugContract {
-    fun back()
-    fun select(value: DebugMenu)
+    fun onBack()
+    fun onSelect(value: DebugMenu)
 
     companion object Empty : DebugContract {
-        override fun back() {}
-        override fun select(value: DebugMenu) {}
+        override fun onBack() {}
+        override fun onSelect(value: DebugMenu) {}
     }
 }

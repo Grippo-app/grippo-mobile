@@ -4,10 +4,10 @@ import com.grippo.state.settings.ThemeState
 
 internal interface SystemContract {
     fun onThemeClick(theme: ThemeState)
-    fun back()
+    fun onBack()
 
     companion object Empty : SystemContract {
         override fun onThemeClick(theme: ThemeState) {}
-        override fun back() {}
+        override fun onBack() {}
     }
 }

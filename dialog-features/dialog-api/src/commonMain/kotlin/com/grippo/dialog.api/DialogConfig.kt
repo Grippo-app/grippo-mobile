@@ -39,6 +39,16 @@ public sealed class DialogConfig(
     )
 
     @Serializable
+    public data class Iteration(
+        val weight: Float,
+        val repeats: Int,
+        @Transient val onResult: (weight: Float, repeats: Int) -> Unit = { w, r -> },
+    ) : DialogConfig(
+        onDismiss = null,
+        dismissBySwipe = false
+    )
+
+    @Serializable
     public data class WeightPicker(
         val initial: Float,
         @Transient val onResult: (value: Float) -> Unit = {},

@@ -1,15 +1,15 @@
 package com.grippo.profile.equipments
 
 internal interface ProfileEquipmentsContract {
-    fun apply()
-    fun selectEquipment(id: String)
-    fun selectGroup(id: String)
-    fun back()
+    fun onApply()
+    fun onSelectEquipment(id: String)
+    fun onSelectGroup(id: String)
+    fun onBack()
 
     companion object Empty : ProfileEquipmentsContract {
-        override fun apply() {}
-        override fun selectEquipment(id: String) {}
-        override fun selectGroup(id: String) {}
-        override fun back() {}
+        override fun onApply() {}
+        override fun onSelectEquipment(id: String) {}
+        override fun onSelectGroup(id: String) {}
+        override fun onBack() {}
     }
 }

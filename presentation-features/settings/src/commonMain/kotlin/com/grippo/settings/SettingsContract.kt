@@ -1,9 +1,9 @@
 package com.grippo.settings
 
 internal interface SettingsContract {
-    fun back()
+    fun onBack()
 
     companion object Empty : SettingsContract {
-        override fun back() {}
+        override fun onBack() {}
     }
 }

@@ -67,7 +67,7 @@ internal fun HomeTrainingsScreen(
                     title = AppTokens.strings.res(Res.string.selected),
                     value = state.date,
                     format = DateFormat.DATE_MMM_DD_YYYY,
-                    onClick = contract::selectDate
+                    onClick = contract::onSelectDate
                 )
             }
         }
@@ -113,7 +113,7 @@ internal fun HomeTrainingsScreen(
 
                 if (exercise != null) {
                     val clickProvider = remember {
-                        { contract.openExercise(exercise.id) }
+                        { contract.onExerciseClick(exercise.id) }
                     }
 
                     val trailing = index?.let {
