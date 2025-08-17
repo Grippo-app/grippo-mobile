@@ -12,14 +12,12 @@ public class IterationPickerViewModel(
     )
 ), IterationPickerContract {
 
-    override fun onWeightChange(value: String) {
-        val weight = value.toFloatOrNull() ?: return
-        update { it.copy(weight = weight) }
+    override fun onWeightChange(value: Float) {
+        update { it.copy(weight = value) }
     }
 
-    override fun onRepetitionsChange(value: String) {
-        val repetitions = value.toIntOrNull() ?: return
-        update { it.copy(repetitions = repetitions) }
+    override fun onRepetitionsChange(value: Int) {
+        update { it.copy(repetitions = value) }
     }
 
     override fun onSubmit() {
@@ -34,5 +32,3 @@ public class IterationPickerViewModel(
         navigateTo(IterationPickerDirection.Back)
     }
 }
-
-

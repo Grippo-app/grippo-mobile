@@ -54,7 +54,17 @@ internal class TrainingRecordingViewModel(
     }
 
     override fun onSave() {
-        navigateTo(TrainingRecordingDirection.ToSuccess)
+        val dialog = DialogConfig.Iteration(
+            weight = 20f,
+            repeats = 5,
+            onResult = { weight, repeats ->
+                // TODO: update iteration
+            }
+        )
+
+        dialogController.show(dialog)
+
+//        navigateTo(TrainingRecordingDirection.ToSuccess)
     }
 
     override fun onBack() {

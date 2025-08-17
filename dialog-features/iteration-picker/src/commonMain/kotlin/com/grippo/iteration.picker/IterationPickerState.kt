@@ -7,8 +7,3 @@ public data class IterationPickerState(
     val weight: Float,
     val repetitions: Int,
 )
-
-
-
-
-

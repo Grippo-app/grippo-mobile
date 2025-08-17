@@ -116,7 +116,7 @@ public class RootComponent(
             is RootRouter.Workout -> Child.Workout(
                 TrainingComponent(
                     componentContext = context,
-                    initial = TrainingRouter.Preferences,
+                    initial = TrainingRouter.Setup,
                     back = navigation::pop
                 )
             )

@@ -2,7 +2,6 @@ package com.grippo.training.recording
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -22,7 +20,6 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.toolbar.Toolbar
-import com.grippo.design.components.training.IterationsCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -30,7 +27,6 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.equipments
 import com.grippo.state.formatters.UiText
 import com.grippo.state.trainings.stubIteration
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -78,15 +74,7 @@ internal fun TrainingRecordingScreen(
         ),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
     ) {
-        // todo implement content
-
-        /*
-        *  when (state.tab) {
-            RecordingTab.Exercises -> ExercisesTab(state.exercises, contract)
-            RecordingTab.Stats -> StatsTab()
-        }
-        *
-        * */
+        // todo implement content with state.tab
     }
 
     Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
@@ -115,47 +103,6 @@ internal fun TrainingRecordingScreen(
     Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
 
     Spacer(modifier = Modifier.navigationBarsPadding())
-}
-
-@Composable
-private fun ExercisesTab(
-    exercises: ImmutableList<RecordingExerciseItem>,
-    contract: TrainingRecordingContract
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-    ) {
-        exercises.forEach { ex ->
-            Text(
-                text = ex.name,
-                style = AppTokens.typography.b14Bold(),
-                color = AppTokens.colors.text.primary
-            )
-            Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
-            IterationsCard(
-                modifier = Modifier.fillMaxWidth(),
-                value = ex.iterations
-            )
-            Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
-        }
-    }
-}
-
-@Composable
-private fun StatsTab() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-    ) {
-        Text(
-            text = "Summary stats",
-            style = AppTokens.typography.b14Bold(),
-            color = AppTokens.colors.text.primary
-        )
-    }
 }
 
 @AppPreview

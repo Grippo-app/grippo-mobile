@@ -18,6 +18,7 @@
     <string name="password_placeholder">Enter password</string>
     <string name="name_placeholder">e.g. Alex</string>
     <string name="weight_placeholder">Enter your weight</string>
+    <string name="repetitions_placeholder">Enter your repetitions</string>
     <string name="height_placeholder">Enter your height</string>
 
     <string name="time_ago_day">%d day</string>

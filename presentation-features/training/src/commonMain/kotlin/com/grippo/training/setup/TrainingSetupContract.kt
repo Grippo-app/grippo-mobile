@@ -1,11 +1,11 @@
-package com.grippo.training.preferences
+package com.grippo.training.setup
 
-internal interface TrainingPreferencesContract {
+internal interface TrainingSetupContract {
     fun onToggleMuscle(id: String)
     fun onContinueClick()
     fun onBack()
 
-    companion object Empty : TrainingPreferencesContract {
+    companion object Empty : TrainingSetupContract {
         override fun onToggleMuscle(id: String) {}
         override fun onContinueClick() {}
         override fun onBack() {}

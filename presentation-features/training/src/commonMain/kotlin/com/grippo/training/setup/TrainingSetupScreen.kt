@@ -1,4 +1,4 @@
-package com.grippo.training.preferences
+package com.grippo.training.setup
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,10 +23,10 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
-internal fun TrainingPreferencesScreen(
-    state: TrainingPreferencesState,
-    loaders: ImmutableSet<TrainingPreferencesLoader>,
-    contract: TrainingPreferencesContract
+internal fun TrainingSetupScreen(
+    state: TrainingSetupState,
+    loaders: ImmutableSet<TrainingSetupLoader>,
+    contract: TrainingSetupContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
 
     Toolbar(
@@ -71,12 +71,12 @@ internal fun TrainingPreferencesScreen(
 @Composable
 private fun ScreenPreview() {
     PreviewContainer {
-        TrainingPreferencesScreen(
-            state = TrainingPreferencesState(
+        TrainingSetupScreen(
+            state = TrainingSetupState(
                 muscles = stubMuscles()
             ),
             loaders = persistentSetOf(),
-            contract = TrainingPreferencesContract.Empty
+            contract = TrainingSetupContract.Empty
         )
     }
 }

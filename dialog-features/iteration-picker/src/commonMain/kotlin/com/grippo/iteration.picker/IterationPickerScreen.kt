@@ -1,6 +1,5 @@
 package com.grippo.iteration.picker
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,8 +11,13 @@ import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.inputs.InputRepetitions
+import com.grippo.design.components.inputs.InputWeight
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
 internal fun IterationPickerScreen(
@@ -21,39 +25,63 @@ internal fun IterationPickerScreen(
     loaders: ImmutableSet<IterationPickerLoader>,
     contract: IterationPickerContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
-    Column(
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+
+    Text(
         modifier = Modifier
-            .fillMaxWidth()
             .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-    ) {
-        Text(
-            text = "Iteration",
-            style = AppTokens.typography.h1(),
-            color = AppTokens.colors.text.primary
-        )
+            .fillMaxWidth(),
+        text = "Iteration",
+        style = AppTokens.typography.h1(),
+        color = AppTokens.colors.text.primary,
+    )
 
-        Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
+    Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
 
-//        Input(
-//            value = state.weight.toString(),
-//            placeholder = PlaceHolder.OverInput("Weight (kg)"),
-//            inputStyle = InputStyle.Default(onValueChange = contract::onWeightChange),
-//        )
+    InputRepetitions(
+        modifier = Modifier
+            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+            .fillMaxWidth(),
+        value = state.repetitions,
+        onValueChange = contract::onRepetitionsChange
+    )
 
-        Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
+    Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
 
-//        Input(
-//            value = state.repetitions,
-//            placeholder = PlaceHolder.OverInput("Repetitions"),
-//            inputStyle = InputStyle.Default(onValueChange = contract::onRepetitionsChange),
-//        )
+    InputWeight(
+        modifier = Modifier
+            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+            .fillMaxWidth(),
+        value = state.weight,
+        onClick = {}
+    )
 
-        Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
+    Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
 
-        Button(text = "Submit", style = ButtonStyle.Primary, onClick = contract::onSubmit)
-    }
+    Button(
+        modifier = Modifier
+            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+            .fillMaxWidth(),
+        text = "Submit",
+        style = ButtonStyle.Primary,
+        onClick = contract::onSubmit
+    )
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
 }
 
-
-
-
+@AppPreview
+@Composable
+private fun ScreenPreview() {
+    PreviewContainer {
+        IterationPickerScreen(
+            state = IterationPickerState(
+                weight = 140f,
+                repetitions = 6
+            ),
+            loaders = persistentSetOf(),
+            contract = IterationPickerContract.Empty
+        )
+    }
+}

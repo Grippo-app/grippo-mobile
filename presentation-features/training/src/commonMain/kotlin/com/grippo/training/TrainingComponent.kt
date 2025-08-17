@@ -12,8 +12,8 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.platform.collectAsStateMultiplatform
 import com.grippo.presentation.api.trainings.TrainingRouter
-import com.grippo.training.preferences.TrainingPreferencesComponent
 import com.grippo.training.recording.TrainingRecordingComponent
+import com.grippo.training.setup.TrainingSetupComponent
 import com.grippo.training.success.TrainingSuccessComponent
 
 public class TrainingComponent(
@@ -51,8 +51,8 @@ public class TrainingComponent(
 
     private fun createChild(router: TrainingRouter, context: ComponentContext): Child {
         return when (router) {
-            TrainingRouter.Preferences -> Child.Preferences(
-                TrainingPreferencesComponent(
+            TrainingRouter.Setup -> Child.Setup(
+                TrainingSetupComponent(
                     componentContext = context,
                     toRecording = { navigation.push(TrainingRouter.Recording) },
                     back = back
@@ -84,7 +84,7 @@ public class TrainingComponent(
     }
 
     internal sealed class Child(open val component: BaseComponent<*>) {
-        data class Preferences(override val component: TrainingPreferencesComponent) :
+        data class Setup(override val component: TrainingSetupComponent) :
             Child(component)
 
         data class Recording(override val component: TrainingRecordingComponent) :

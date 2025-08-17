@@ -43,5 +43,3 @@ public class IterationPickerComponent(
         IterationPickerScreen(state.value, loaders.value, viewModel)
     }
 }
-
-

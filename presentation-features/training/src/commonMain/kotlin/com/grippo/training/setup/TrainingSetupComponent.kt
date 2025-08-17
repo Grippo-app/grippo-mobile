@@ -1,4 +1,4 @@
-package com.grippo.training.preferences
+package com.grippo.training.setup
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
@@ -7,14 +7,14 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.platform.collectAsStateMultiplatform
 
-internal class TrainingPreferencesComponent(
+internal class TrainingSetupComponent(
     componentContext: ComponentContext,
     private val toRecording: (selectedMuscleIds: List<String>) -> Unit,
     private val back: () -> Unit,
-) : BaseComponent<TrainingPreferencesDirection>(componentContext) {
+) : BaseComponent<TrainingSetupDirection>(componentContext) {
 
-    override val viewModel: TrainingPreferencesViewModel = componentContext.retainedInstance {
-        TrainingPreferencesViewModel(
+    override val viewModel: TrainingSetupViewModel = componentContext.retainedInstance {
+        TrainingSetupViewModel(
             muscleFeature = getKoin().get(),
         )
     }
@@ -25,10 +25,10 @@ internal class TrainingPreferencesComponent(
         backHandler.register(backCallback)
     }
 
-    override suspend fun eventListener(direction: TrainingPreferencesDirection) {
+    override suspend fun eventListener(direction: TrainingSetupDirection) {
         when (direction) {
-            is TrainingPreferencesDirection.ToRecording -> toRecording.invoke(direction.selectedMuscleIds)
-            TrainingPreferencesDirection.Back -> back.invoke()
+            is TrainingSetupDirection.ToRecording -> toRecording.invoke(direction.selectedMuscleIds)
+            TrainingSetupDirection.Back -> back.invoke()
         }
     }
 
@@ -36,6 +36,6 @@ internal class TrainingPreferencesComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        TrainingPreferencesScreen(state.value, loaders.value, viewModel)
+        TrainingSetupScreen(state.value, loaders.value, viewModel)
     }
 }
