@@ -1,8 +1,10 @@
 package com.grippo.state.exercise.examples
 
+import androidx.compose.runtime.Immutable
 import com.grippo.state.profile.ExperienceEnumState
 import kotlin.uuid.Uuid
 
+@Immutable
 public data class ExerciseExampleValueState(
     val id: String,
     val name: String,

@@ -1,10 +1,12 @@
 package com.grippo.state.profile
 
+import androidx.compose.runtime.Immutable
 import com.grippo.date.utils.DateTimeUtils
 import kotlinx.datetime.LocalDateTime
 import kotlin.random.Random
 import kotlin.uuid.Uuid
 
+@Immutable
 public data class UserState(
     val id: String,
     val name: String,

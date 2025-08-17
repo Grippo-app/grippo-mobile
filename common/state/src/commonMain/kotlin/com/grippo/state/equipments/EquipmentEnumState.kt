@@ -1,5 +1,8 @@
 package com.grippo.state.equipments
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 public enum class EquipmentEnumState {
     DUMBBELLS,
     BARBELL,
