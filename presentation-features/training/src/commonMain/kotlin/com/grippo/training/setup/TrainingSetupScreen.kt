@@ -1,17 +1,25 @@
 package com.grippo.training.setup
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.muscle.MusclesColumn
+import com.grippo.design.components.muscle.MusclesImage
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -36,11 +44,55 @@ internal fun TrainingSetupScreen(
     )
 
     LazyColumn(
-        modifier = Modifier.fillMaxWidth().weight(1f)
-            .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+        modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f),
+        contentPadding = PaddingValues(
+            horizontal = AppTokens.dp.screen.horizontalPadding,
+            vertical = AppTokens.dp.contentPadding.content
+        ),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
     ) {
-        // todo implement content
+        itemsIndexed(
+            state.suggestions,
+            key = { _, item -> item.id }) { index, group ->
+            val isEven = index % 2 == 0
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (isEven) {
+                    MusclesColumn(
+                        modifier = Modifier.weight(1f),
+                        item = group,
+                        selectedIds = state.selectedMuscleIds,
+                        onSelect = contract::onSelect
+                    )
+                    MusclesImage(
+                        modifier = Modifier.weight(1f),
+                        item = group,
+                        selectedIds = state.selectedMuscleIds
+                    )
+                } else {
+                    MusclesImage(
+                        modifier = Modifier.weight(1f),
+                        item = group,
+                        selectedIds = state.selectedMuscleIds
+                    )
+                    MusclesColumn(
+                        modifier = Modifier.weight(1f),
+                        item = group,
+                        selectedIds = state.selectedMuscleIds,
+                        onSelect = contract::onSelect
+                    )
+                }
+            }
+        }
     }
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
     Button(
         modifier = Modifier
@@ -73,7 +125,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         TrainingSetupScreen(
             state = TrainingSetupState(
-                muscles = stubMuscles()
+                suggestions = stubMuscles()
             ),
             loaders = persistentSetOf(),
             contract = TrainingSetupContract.Empty
