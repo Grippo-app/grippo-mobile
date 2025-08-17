@@ -44,11 +44,11 @@ internal fun PeriodPickerScreen(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
         Text(
             modifier = Modifier.fillMaxWidth(),
@@ -107,7 +107,7 @@ internal fun PeriodPickerScreen(
             onClick = contract::onSubmitClick
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
     }
 }
 

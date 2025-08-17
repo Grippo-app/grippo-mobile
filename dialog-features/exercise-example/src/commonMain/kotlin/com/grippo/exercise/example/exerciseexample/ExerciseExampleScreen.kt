@@ -39,11 +39,11 @@ internal fun ExerciseExampleScreen(
             .verticalScroll(rememberScrollState()),
     ) {
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
         Text(
             modifier = Modifier
-                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                 .fillMaxWidth(),
             text = example.value.name,
             style = AppTokens.typography.h1(),
@@ -54,7 +54,7 @@ internal fun ExerciseExampleScreen(
 
         Text(
             modifier = Modifier
-                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                 .fillMaxWidth(),
             text = example.value.description,
             style = AppTokens.typography.b14Reg(),
@@ -71,7 +71,7 @@ internal fun ExerciseExampleScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         Text(
-            modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+            modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
             text = AppTokens.strings.res(Res.string.required_equipment),
             style = AppTokens.typography.b14Bold(),
             color = AppTokens.colors.text.primary
@@ -82,10 +82,10 @@ internal fun ExerciseExampleScreen(
         EquipmentsCard(
             modifier = Modifier.fillMaxWidth(),
             value = example.equipments,
-            contentPadding = PaddingValues(horizontal = AppTokens.dp.screen.horizontalPadding)
+            contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
     }
 }
 

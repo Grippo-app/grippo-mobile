@@ -44,6 +44,7 @@ public data object AppDp {
     val bottomSheet: BottomSheet = BottomSheet
     val contentPadding: ContentPadding = ContentPadding
     val screen: Screen = Screen
+    val dialog: Dialog = Dialog
     val input: Input = Input
     val button: Button = Button
     val error: Error = Error
@@ -83,6 +84,12 @@ public data object AppDp {
         public data object Toolbar {
             val height: Dp = size.medium
         }
+    }
+
+    public data object Dialog {
+        val top: Dp = padding.medium
+        val bottom: Dp = padding.extraLarge
+        val horizontalPadding: Dp = padding.extraLarge
     }
 
     public data object ContentPadding {

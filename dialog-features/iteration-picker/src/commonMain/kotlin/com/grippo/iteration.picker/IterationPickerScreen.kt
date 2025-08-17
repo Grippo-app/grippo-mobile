@@ -26,11 +26,11 @@ internal fun IterationPickerScreen(
     contract: IterationPickerContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
-    Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
     Text(
         modifier = Modifier
-            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
             .fillMaxWidth(),
         text = "Iteration",
         style = AppTokens.typography.h1(),
@@ -41,7 +41,7 @@ internal fun IterationPickerScreen(
 
     InputRepetitions(
         modifier = Modifier
-            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
             .fillMaxWidth(),
         value = state.repetitions,
         onValueChange = contract::onRepetitionsChange
@@ -51,7 +51,7 @@ internal fun IterationPickerScreen(
 
     InputVolume(
         modifier = Modifier
-            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
             .fillMaxWidth(),
         value = state.volume,
         onValueChange = contract::onVolumeChange
@@ -61,14 +61,14 @@ internal fun IterationPickerScreen(
 
     Button(
         modifier = Modifier
-            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
             .fillMaxWidth(),
         text = "Submit",
         style = ButtonStyle.Primary,
         onClick = contract::onSubmit
     )
 
-    Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
 }
 
 @AppPreview

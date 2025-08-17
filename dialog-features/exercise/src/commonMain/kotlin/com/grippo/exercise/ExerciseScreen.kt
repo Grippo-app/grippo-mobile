@@ -51,11 +51,11 @@ internal fun ExerciseScreen(
             .verticalScroll(rememberScrollState())
     ) {
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
         Text(
             modifier = Modifier
-                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                 .fillMaxWidth(),
             text = exercise.name,
             style = AppTokens.typography.h1(),
@@ -68,7 +68,7 @@ internal fun ExerciseScreen(
 
             IterationsCard(
                 modifier = Modifier
-                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                     .fillMaxWidth(),
                 value = exercise.iterations
             )
@@ -78,7 +78,7 @@ internal fun ExerciseScreen(
             Row(
                 modifier = Modifier
                     .horizontalScroll(rememberScrollState())
-                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
             ) {
@@ -112,7 +112,7 @@ internal fun ExerciseScreen(
 
             Row(
                 modifier = Modifier
-                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
@@ -134,7 +134,7 @@ internal fun ExerciseScreen(
 
             Text(
                 modifier = Modifier
-                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                     .fillMaxWidth(),
                 text = example.description,
                 style = AppTokens.typography.b14Reg(),
@@ -142,7 +142,7 @@ internal fun ExerciseScreen(
             )
         }
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
     }
 }
 
