@@ -23,9 +23,9 @@ internal class TrainingRecordingViewModel(
 
     override fun onAddIteration(exerciseId: String) {
         val dialog = DialogConfig.Iteration(
-            weight = 20f,
+            volume = 20f,
             repeats = 5,
-            onResult = { weight, repeats ->
+            onResult = { volume, repeats ->
                 // TODO: update iteration
             }
         )
@@ -35,9 +35,9 @@ internal class TrainingRecordingViewModel(
 
     override fun onEditIteration(exerciseId: String, iterationId: String) {
         val dialog = DialogConfig.Iteration(
-            weight = 20f,
+            volume = 20f,
             repeats = 5,
-            onResult = { weight, repeats ->
+            onResult = { volume, repeats ->
                 // TODO: update iteration
             }
         )
@@ -55,9 +55,9 @@ internal class TrainingRecordingViewModel(
 
     override fun onSave() {
         val dialog = DialogConfig.Iteration(
-            weight = 20f,
+            volume = 20f,
             repeats = 5,
-            onResult = { weight, repeats ->
+            onResult = { volume, repeats ->
                 // TODO: update iteration
             }
         )

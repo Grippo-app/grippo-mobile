@@ -9,14 +9,14 @@ import com.grippo.core.platform.collectAsStateMultiplatform
 
 public class IterationPickerComponent(
     componentContext: ComponentContext,
-    private val weight: Float,
+    private val volume: Float,
     private val repetitions: Int,
-    private val onResult: (weight: Float, repetitions: Int) -> Unit,
+    private val onResult: (volume: Float, repetitions: Int) -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<IterationPickerDirection>(componentContext) {
 
     override val viewModel: IterationPickerViewModel = componentContext.retainedInstance {
-        IterationPickerViewModel(weight = weight, repetitions = repetitions)
+        IterationPickerViewModel(volume = volume, repetitions = repetitions)
     }
 
     private val backCallback = BackCallback(onBack = viewModel::onBack)
@@ -28,7 +28,7 @@ public class IterationPickerComponent(
     override suspend fun eventListener(direction: IterationPickerDirection) {
         when (direction) {
             is IterationPickerDirection.BackWithResult -> onResult.invoke(
-                direction.weight,
+                direction.volume,
                 direction.repetitions
             )
 

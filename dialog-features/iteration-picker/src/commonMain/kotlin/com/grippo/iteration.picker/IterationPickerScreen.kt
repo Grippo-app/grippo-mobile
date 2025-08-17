@@ -12,7 +12,7 @@ import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.inputs.InputRepetitions
-import com.grippo.design.components.inputs.InputWeight
+import com.grippo.design.components.inputs.InputVolume
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -49,12 +49,12 @@ internal fun IterationPickerScreen(
 
     Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
 
-    InputWeight(
+    InputVolume(
         modifier = Modifier
             .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
             .fillMaxWidth(),
-        value = state.weight,
-        onClick = {}
+        value = state.volume,
+        onValueChange = contract::onVolumeChange
     )
 
     Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
@@ -77,7 +77,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         IterationPickerScreen(
             state = IterationPickerState(
-                weight = 140f,
+                volume = 140f,
                 repetitions = 6
             ),
             loaders = persistentSetOf(),

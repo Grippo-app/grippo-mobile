@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="kg">kg</string>
+    <string name="reps">reps</string>
     <string name="percent">%</string>
     <string name="back">Back</string>
     <string name="selected">Selected</string>

@@ -40,7 +40,7 @@ public sealed class DialogConfig(
 
     @Serializable
     public data class Iteration(
-        val weight: Float,
+        val volume: Float,
         val repeats: Int,
         @Transient val onResult: (weight: Float, repeats: Int) -> Unit = { w, r -> },
     ) : DialogConfig(

@@ -101,7 +101,7 @@ internal class DialogContentComponent(
             is DialogConfig.Iteration -> Child.IterationPicker(
                 IterationPickerComponent(
                     componentContext = context,
-                    weight = router.weight,
+                    volume = router.volume,
                     repetitions = router.repeats,
                     onResult = { w, r -> viewModel.onBack { router.onResult.invoke(w, r) } },
                     back = { viewModel.onBack(null) }

@@ -3,17 +3,17 @@ package com.grippo.iteration.picker
 import com.grippo.core.BaseViewModel
 
 public class IterationPickerViewModel(
-    weight: Float,
+    volume: Float,
     repetitions: Int
 ) : BaseViewModel<IterationPickerState, IterationPickerDirection, IterationPickerLoader>(
     IterationPickerState(
-        weight = weight,
+        volume = volume,
         repetitions = repetitions
     )
 ), IterationPickerContract {
 
-    override fun onWeightChange(value: Float) {
-        update { it.copy(weight = value) }
+    override fun onVolumeChange(value: Float) {
+        update { it.copy(volume = value) }
     }
 
     override fun onRepetitionsChange(value: Int) {
@@ -22,7 +22,7 @@ public class IterationPickerViewModel(
 
     override fun onSubmit() {
         val direction = IterationPickerDirection.BackWithResult(
-            weight = state.value.weight,
+            volume = state.value.volume,
             repetitions = state.value.repetitions
         )
         navigateTo(direction)

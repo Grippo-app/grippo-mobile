@@ -4,6 +4,6 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 public data class IterationPickerState(
-    val weight: Float,
+    val volume: Float,
     val repetitions: Int,
 )

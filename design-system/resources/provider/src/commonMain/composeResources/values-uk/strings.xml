@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="kg">кг</string>
+    <string name="reps">повт.</string>
     <string name="percent">%</string>
     <string name="back">Назад</string>
     <string name="selected">Обрано</string>

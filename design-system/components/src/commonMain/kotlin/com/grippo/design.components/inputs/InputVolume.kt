@@ -20,25 +20,25 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.kg
 import com.grippo.design.resources.provider.repetitions_placeholder
-import com.grippo.design.resources.provider.reps
 
 @Composable
-public fun InputRepetitions(
+public fun InputVolume(
     modifier: Modifier = Modifier,
-    value: Int,
-    onValueChange: (Int) -> Unit,
+    value: Float,
+    onValueChange: (Float) -> Unit,
 ) {
 
     val internalValue = remember(value) {
-        if (value == 0) "" else value.toString()
+        if (value == 0f) "" else value.toString()
     }
 
     val onValueChangeProvider = remember {
         { str: String ->
             when {
-                str.isBlank() -> onValueChange(0)
-                str.toIntOrNull() != null -> onValueChange(str.toInt())
+                str.isBlank() -> onValueChange(0f)
+                str.toFloatOrNull() != null -> onValueChange(str.toFloat())
             }
         }
     }
@@ -54,7 +54,7 @@ public fun InputRepetitions(
         trailing = { color ->
             Text(
                 modifier = Modifier.padding(end = 8.dp),
-                text = AppTokens.strings.res(Res.string.reps),
+                text = AppTokens.strings.res(Res.string.kg),
                 style = AppTokens.typography.b14Semi(),
                 color = color
             )
@@ -75,15 +75,15 @@ public fun InputRepetitions(
 
 @AppPreview
 @Composable
-private fun InputRepetitionsPreview() {
+private fun InputVolumePreview() {
     PreviewContainer {
-        InputRepetitions(
-            value = 12,
+        InputVolume(
+            value = 12f,
             onValueChange = {}
         )
 
-        InputRepetitions(
-            value = 123,
+        InputVolume(
+            value = 123f,
             onValueChange = {}
         )
     }
