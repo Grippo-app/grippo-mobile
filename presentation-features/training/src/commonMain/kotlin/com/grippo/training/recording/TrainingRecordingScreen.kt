@@ -26,7 +26,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.equipments
 import com.grippo.state.formatters.UiText
-import com.grippo.state.trainings.stubIteration
+import com.grippo.state.trainings.stubExercise
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -111,16 +111,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         TrainingRecordingScreen(
             state = TrainingRecordingState(
-                exercises = persistentListOf(
-                    RecordingExerciseItem(
-                        id = "1",
-                        name = "Bench Press",
-                        iterations = persistentListOf(
-                            stubIteration(),
-                            stubIteration()
-                        )
-                    )
-                )
+                exercises = persistentListOf(stubExercise())
             ),
             loaders = persistentSetOf(),
             contract = TrainingRecordingContract.Empty

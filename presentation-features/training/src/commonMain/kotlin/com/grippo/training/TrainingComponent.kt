@@ -6,6 +6,7 @@ import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.push
+import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
@@ -62,7 +63,7 @@ public class TrainingComponent(
             TrainingRouter.Recording -> Child.Recording(
                 TrainingRecordingComponent(
                     componentContext = context,
-                    toSuccess = { navigation.push(TrainingRouter.Success) },
+                    toSuccess = { navigation.replaceAll(TrainingRouter.Success) },
                     back = back
                 ),
             )

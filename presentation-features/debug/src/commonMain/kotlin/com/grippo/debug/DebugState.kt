@@ -7,6 +7,7 @@ public data class DebugState(
     val selected: DebugMenu = DebugMenu.General
 )
 
+@Immutable
 public enum class DebugMenu {
     General,
     Logger

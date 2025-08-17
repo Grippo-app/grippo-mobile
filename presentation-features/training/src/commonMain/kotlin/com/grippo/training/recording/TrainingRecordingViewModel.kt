@@ -11,7 +11,16 @@ internal class TrainingRecordingViewModel(
 ), TrainingRecordingContract {
 
     override fun onAddExercise() {
+        // TODO REMOVE IT
+        val dialog = DialogConfig.Iteration(
+            volume = 20f,
+            repeats = 5,
+            onResult = { volume, repeats ->
+                // TODO: update iteration
+            }
+        )
 
+        dialogController.show(dialog)
     }
 
     override fun onOpenFilters() {
@@ -54,17 +63,7 @@ internal class TrainingRecordingViewModel(
     }
 
     override fun onSave() {
-        val dialog = DialogConfig.Iteration(
-            volume = 20f,
-            repeats = 5,
-            onResult = { volume, repeats ->
-                // TODO: update iteration
-            }
-        )
-
-        dialogController.show(dialog)
-
-//        navigateTo(TrainingRecordingDirection.ToSuccess)
+        navigateTo(TrainingRecordingDirection.ToSuccess)
     }
 
     override fun onBack() {
