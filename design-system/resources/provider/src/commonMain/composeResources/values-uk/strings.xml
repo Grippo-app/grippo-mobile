@@ -14,6 +14,7 @@
     <string name="submit_btn">Надіслати</string>
     <string name="get_started_btn">Почати</string>
     <string name="continue_btn">Продовжити</string>
+    <string name="skip_btn">Пропустити</string>
     <string name="or">АБО</string>
     <string name="email_placeholder">Введіть електронну адресу</string>
     <string name="password_placeholder">Введіть пароль</string>

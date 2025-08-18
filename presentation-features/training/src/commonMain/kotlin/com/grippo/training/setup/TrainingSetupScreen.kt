@@ -25,6 +25,8 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.continue_btn
+import com.grippo.design.resources.provider.skip_btn
 import com.grippo.design.resources.provider.trainings
 import com.grippo.state.muscles.stubMuscles
 import kotlinx.collections.immutable.ImmutableSet
@@ -98,18 +100,18 @@ internal fun TrainingSetupScreen(
         modifier = Modifier
             .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
             .fillMaxWidth(),
-        text = "Continue",
+        text = AppTokens.strings.res(Res.string.continue_btn),
         style = ButtonStyle.Primary,
         onClick = contract::onContinueClick
     )
 
-    Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
     Button(
         modifier = Modifier
             .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
             .fillMaxWidth(),
-        text = "Skip",
+        text = AppTokens.strings.res(Res.string.skip_btn),
         style = ButtonStyle.Secondary,
         onClick = contract::onContinueClick
     )
