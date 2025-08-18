@@ -14,6 +14,10 @@ public class TrainingViewModel :
         navigateTo(TrainingDirection.ToRecording)
     }
 
+    override fun toExercise(id: String?) {
+        navigateTo(TrainingDirection.ToExercise(id))
+    }
+
     override fun toSuccess() {
         navigateTo(TrainingDirection.ToSuccess)
     }

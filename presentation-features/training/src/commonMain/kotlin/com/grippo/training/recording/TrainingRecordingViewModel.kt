@@ -1,8 +1,8 @@
 package com.grippo.training.recording
 
 import com.grippo.core.BaseViewModel
-import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
+import com.grippo.state.trainings.stubExercises
 
 internal class TrainingRecordingViewModel(
     private val dialogController: DialogController,
@@ -10,52 +10,18 @@ internal class TrainingRecordingViewModel(
     TrainingRecordingState()
 ), TrainingRecordingContract {
 
+    init {
+        safeLaunch {
+            update { it.copy(exercises = stubExercises()) }
+        }
+    }
+
     override fun onAddExercise() {
-        // TODO REMOVE IT
-        val dialog = DialogConfig.Iteration(
-            volume = 20f,
-            repeats = 5,
-            onResult = { volume, repeats ->
-                // TODO: update iteration
-            }
-        )
-
-        dialogController.show(dialog)
+        navigateTo(TrainingRecordingDirection.ToExercise(null))
     }
 
-    override fun onOpenFilters() {
-    }
-
-    override fun onOpenExerciseExample(id: String) {
-        dialogController.show(DialogConfig.ExerciseExample(id = id))
-    }
-
-    override fun onAddIteration(exerciseId: String) {
-        val dialog = DialogConfig.Iteration(
-            volume = 20f,
-            repeats = 5,
-            onResult = { volume, repeats ->
-                // TODO: update iteration
-            }
-        )
-
-        dialogController.show(dialog)
-    }
-
-    override fun onEditIteration(exerciseId: String, iterationId: String) {
-        val dialog = DialogConfig.Iteration(
-            volume = 20f,
-            repeats = 5,
-            onResult = { volume, repeats ->
-                // TODO: update iteration
-            }
-        )
-
-        dialogController.show(dialog)
-    }
-
-    override fun onRemoveIteration(exerciseId: String, iterationId: String) {
-        // TODO: implement remove
+    override fun onEditExercise(id: String) {
+        navigateTo(TrainingRecordingDirection.ToExercise(id))
     }
 
     override fun onSelectTab(tab: RecordingTab) {

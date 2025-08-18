@@ -13,6 +13,7 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.platform.collectAsStateMultiplatform
 import com.grippo.presentation.api.trainings.TrainingRouter
+import com.grippo.training.exercise.ExerciseComponent
 import com.grippo.training.recording.TrainingRecordingComponent
 import com.grippo.training.setup.TrainingSetupComponent
 import com.grippo.training.success.TrainingSuccessComponent
@@ -37,6 +38,7 @@ public class TrainingComponent(
         when (direction) {
             TrainingDirection.Back -> back.invoke()
             TrainingDirection.ToRecording -> navigation.push(TrainingRouter.Recording)
+            is TrainingDirection.ToExercise -> navigation.push(TrainingRouter.Exercise(direction.id))
             TrainingDirection.ToSuccess -> navigation.replaceAll(TrainingRouter.Success)
         }
     }
@@ -66,6 +68,15 @@ public class TrainingComponent(
                 TrainingRecordingComponent(
                     componentContext = context,
                     toSuccess = viewModel::toSuccess,
+                    toExercise = viewModel::toExercise,
+                    back = viewModel::onBack
+                ),
+            )
+
+            is TrainingRouter.Exercise -> Child.Exercise(
+                ExerciseComponent(
+                    componentContext = context,
+                    id = router.id,
                     back = viewModel::onBack
                 ),
             )
@@ -91,6 +102,9 @@ public class TrainingComponent(
             Child(component)
 
         data class Recording(override val component: TrainingRecordingComponent) :
+            Child(component)
+
+        data class Exercise(override val component: ExerciseComponent) :
             Child(component)
 
         data class Success(override val component: TrainingSuccessComponent) :

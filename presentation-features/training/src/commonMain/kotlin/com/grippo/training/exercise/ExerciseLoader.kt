@@ -1,7 +1,7 @@
-package com.grippo.weight.picker
+package com.grippo.training.exercise
 
 import androidx.compose.runtime.Immutable
 import com.grippo.core.models.BaseLoader
 
 @Immutable
-public sealed interface WeightPickerLoader : BaseLoader
+internal sealed interface ExerciseLoader : BaseLoader

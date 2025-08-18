@@ -1,4 +1,4 @@
-package com.grippo.training.recording
+package com.grippo.training.exercise
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
@@ -7,15 +7,15 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.platform.collectAsStateMultiplatform
 
-internal class TrainingRecordingComponent(
+internal class ExerciseComponent(
     componentContext: ComponentContext,
-    private val toSuccess: () -> Unit,
-    private val toExercise: (id: String?) -> Unit,
+    private val id: String?,
     private val back: () -> Unit,
-) : BaseComponent<TrainingRecordingDirection>(componentContext) {
+) : BaseComponent<ExerciseDirection>(componentContext) {
 
-    override val viewModel: TrainingRecordingViewModel = componentContext.retainedInstance {
-        TrainingRecordingViewModel(
+    override val viewModel: ExerciseViewModel = componentContext.retainedInstance {
+        ExerciseViewModel(
+            id = id,
             dialogController = getKoin().get(),
         )
     }
@@ -26,11 +26,9 @@ internal class TrainingRecordingComponent(
         backHandler.register(backCallback)
     }
 
-    override suspend fun eventListener(direction: TrainingRecordingDirection) {
+    override suspend fun eventListener(direction: ExerciseDirection) {
         when (direction) {
-            TrainingRecordingDirection.ToSuccess -> toSuccess.invoke()
-            is TrainingRecordingDirection.ToExercise -> toExercise.invoke(direction.id)
-            TrainingRecordingDirection.Back -> back.invoke()
+            ExerciseDirection.Back -> back.invoke()
         }
     }
 
@@ -38,6 +36,6 @@ internal class TrainingRecordingComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        TrainingRecordingScreen(state.value, loaders.value, viewModel)
+        ExerciseScreen(state.value, loaders.value, viewModel)
     }
 }

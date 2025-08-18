@@ -8,7 +8,7 @@ import kotlinx.collections.immutable.persistentListOf
 @Immutable
 internal data class TrainingRecordingState(
     val tab: RecordingTab = RecordingTab.Exercises,
-    val exercises: ImmutableList<ExerciseState> = persistentListOf(),
+    val exercises: ImmutableList<ExerciseState> = persistentListOf()
 )
 
 @Immutable

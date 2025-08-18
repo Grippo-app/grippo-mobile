@@ -7,6 +7,8 @@ import com.grippo.state.formatters.IntensityFormatState
 import com.grippo.state.formatters.RepetitionsFormatState
 import com.grippo.state.formatters.VolumeFormatState
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlin.random.Random
 import kotlin.uuid.Uuid
@@ -20,6 +22,13 @@ public data class ExerciseState(
     val intensity: IntensityFormatState,
     val iterations: ImmutableList<IterationState>,
     val exerciseExample: ExerciseExampleValueState?,
+)
+
+public fun stubExercises(): PersistentList<ExerciseState> = persistentListOf(
+    stubExercise(),
+    stubExercise(),
+    stubExercise(),
+    stubExercise(),
 )
 
 public fun stubExercise(): ExerciseState = ExerciseState(

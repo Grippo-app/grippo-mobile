@@ -1,6 +1,5 @@
-package com.grippo.training.recording
+package com.grippo.training.exercise
 
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -11,56 +10,63 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.segment.Segment
+import com.grippo.design.components.cards.information.InformationCard
+import com.grippo.design.components.chip.IntensityChip
+import com.grippo.design.components.chip.IntensityChipStyle
+import com.grippo.design.components.chip.RepetitionsChip
+import com.grippo.design.components.chip.RepetitionsChipStyle
+import com.grippo.design.components.chip.VolumeChip
+import com.grippo.design.components.chip.VolumeChipStyle
 import com.grippo.design.components.toolbar.Toolbar
+import com.grippo.design.components.training.IterationCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.equipments
-import com.grippo.state.formatters.UiText
-import com.grippo.state.trainings.stubExercises
+import com.grippo.state.trainings.stubExercise
 import kotlinx.collections.immutable.ImmutableSet
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
-internal fun TrainingRecordingScreen(
-    state: TrainingRecordingState,
-    loaders: ImmutableSet<TrainingRecordingLoader>,
-    contract: TrainingRecordingContract
+internal fun ExerciseScreen(
+    state: ExerciseState,
+    loaders: ImmutableSet<ExerciseLoader>,
+    contract: ExerciseContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
-
-    val segmentItems = remember {
-        persistentListOf(
-            RecordingTab.Exercises to UiText.Str("Exercises"),
-            RecordingTab.Stats to UiText.Str("Stats"),
-        )
-    }
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
-        title = AppTokens.strings.res(Res.string.equipments),
+        title = state.exercise.name,
         onBack = contract::onBack,
         content = {
-            Segment(
+            Row(
                 modifier = Modifier
-                    .horizontalScroll(rememberScrollState())
                     .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
                     .fillMaxWidth(),
-                items = segmentItems,
-                selected = state.tab,
-                onSelect = contract::onSelectTab
-            )
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+            ) {
+                VolumeChip(
+                    value = state.exercise.volume,
+                    style = VolumeChipStyle.LONG
+                )
+
+                RepetitionsChip(
+                    value = state.exercise.repetitions,
+                    style = RepetitionsChipStyle.LONG
+                )
+
+                IntensityChip(
+                    value = state.exercise.intensity,
+                    style = IntensityChipStyle.LONG
+                )
+            }
         }
     )
 
@@ -76,24 +82,29 @@ internal fun TrainingRecordingScreen(
         ),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
     ) {
-        when (state.tab) {
-            RecordingTab.Exercises -> {
-                items(
-                    items = state.exercises,
-                    key = { it.id }
-                ) { exercise ->
-                }
-            }
+        item {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = "Iterations (${state.exercise.iterations.size})",
+                style = AppTokens.typography.h4(),
+                color = AppTokens.colors.text.primary,
+                textAlign = TextAlign.Start
+            )
+        }
 
-            RecordingTab.Stats -> {
-                item {
-                    Text(
-                        text = "Statistics will be implemented here",
-                        style = AppTokens.typography.b14Med(),
-                        color = AppTokens.colors.text.secondary
+        items(
+            items = state.exercise.iterations,
+            key = { it.id }
+        ) { iteration ->
+            InformationCard(
+                modifier = Modifier.fillMaxWidth(),
+                label = "Set",
+                value = {
+                    IterationCard(
+                        value = iteration,
                     )
                 }
-            }
+            )
         }
     }
 
@@ -107,9 +118,9 @@ internal fun TrainingRecordingScreen(
     ) {
         Button(
             modifier = Modifier.weight(1f),
-            text = "Add exercise",
+            text = "Add Set",
             style = ButtonStyle.Secondary,
-            onClick = contract::onAddExercise
+            onClick = contract::onAddIteration
         )
 
         Button(
@@ -127,14 +138,14 @@ internal fun TrainingRecordingScreen(
 
 @AppPreview
 @Composable
-private fun ScreenPreview() {
+private fun ExerciseScreenPreview() {
     PreviewContainer {
-        TrainingRecordingScreen(
-            state = TrainingRecordingState(
-                exercises = stubExercises()
+        ExerciseScreen(
+            state = ExerciseState(
+                exercise = stubExercise()
             ),
             loaders = persistentSetOf(),
-            contract = TrainingRecordingContract.Empty
+            contract = ExerciseContract.Empty
         )
     }
 }

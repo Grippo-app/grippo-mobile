@@ -1,7 +1,7 @@
 package com.grippo.training.recording
 
+import androidx.compose.runtime.Immutable
 import com.grippo.core.models.BaseLoader
 
-internal sealed interface TrainingRecordingLoader : BaseLoader {
-    data object Training : TrainingRecordingLoader
-}
+@Immutable
+internal sealed interface TrainingRecordingLoader : BaseLoader

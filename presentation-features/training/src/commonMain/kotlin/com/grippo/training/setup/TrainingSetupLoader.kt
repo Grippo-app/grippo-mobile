@@ -1,7 +1,7 @@
 package com.grippo.training.setup
 
+import androidx.compose.runtime.Immutable
 import com.grippo.core.models.BaseLoader
 
-internal sealed interface TrainingSetupLoader : BaseLoader {
-    data object Muscles : TrainingSetupLoader
-}
+@Immutable
+internal sealed interface TrainingSetupLoader : BaseLoader

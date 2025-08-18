@@ -13,5 +13,8 @@ public sealed class TrainingRouter : BaseRouter {
     public data object Recording : TrainingRouter()
 
     @Serializable
+    public data class Exercise(val id: String?) : TrainingRouter()
+
+    @Serializable
     public data object Success : TrainingRouter()
 }
