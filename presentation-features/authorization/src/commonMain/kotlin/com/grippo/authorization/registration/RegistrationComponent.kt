@@ -33,13 +33,39 @@ internal class RegistrationComponent(
 
     override suspend fun eventListener(direction: RegistrationDirection) {
         when (direction) {
-            RegistrationDirection.Back -> navigation::pop
+            is RegistrationDirection.ToNameWithCredentials -> navigation.push(
+                RegistrationRouter.Name
+            )
+
+            is RegistrationDirection.ToBodyWithName -> navigation.push(
+                RegistrationRouter.Body
+            )
+
+            is RegistrationDirection.ToExperienceWithBody -> navigation.push(
+                RegistrationRouter.Experience
+            )
+
+            is RegistrationDirection.ToExcludedMusclesWithExperience -> navigation.push(
+                RegistrationRouter.ExcludedMuscles
+            )
+
+            is RegistrationDirection.ToMissingEquipmentWithMuscles -> navigation.push(
+                RegistrationRouter.MissingEquipments
+            )
+
+            is RegistrationDirection.ToCompletedWithEquipment -> navigation.push(
+                RegistrationRouter.Completed
+            )
+
+            RegistrationDirection.ToHome -> toHome.invoke()
+            RegistrationDirection.Close -> back.invoke()
+            RegistrationDirection.Back -> navigation.pop()
         }
     }
 
     private val navigation = StackNavigation<RegistrationRouter>()
 
-    private val backCallback = BackCallback(onBack = viewModel::onBack)
+    private val backCallback = BackCallback(onBack = viewModel::close)
 
     init {
         backHandler.register(backCallback)
@@ -59,66 +85,48 @@ internal class RegistrationComponent(
             RegistrationRouter.Credentials -> Child.Credential(
                 CredentialComponent(
                     componentContext = context,
-                    toName = { e, p ->
-                        viewModel.saveCredentials(e, p)
-                        navigation.push(RegistrationRouter.Name)
-                    },
-                    back = back
+                    toName = viewModel::toNameWithCredentials,
+                    back = viewModel::close
                 ),
             )
 
             RegistrationRouter.Name -> Child.Name(
                 NameComponent(
                     componentContext = context,
-                    toBody = { n ->
-                        viewModel.saveName(n)
-                        navigation.push(RegistrationRouter.Body)
-                    },
-                    back = navigation::pop
+                    toBody = viewModel::toBodyWithName,
+                    back = viewModel::onBack
                 ),
             )
 
             RegistrationRouter.Body -> Child.Body(
                 BodyComponent(
                     componentContext = context,
-                    toExperience = { w, h ->
-                        viewModel.saveWeightHeight(w, h)
-                        navigation.push(RegistrationRouter.Experience)
-                    },
-                    back = navigation::pop
+                    toExperience = viewModel::toExperienceWithBody,
+                    back = viewModel::onBack
                 ),
             )
 
             RegistrationRouter.Experience -> Child.Experience(
                 ExperienceComponent(
                     componentContext = context,
-                    toExcludedMuscles = { e ->
-                        viewModel.saveExperience(e)
-                        navigation.push(RegistrationRouter.ExcludedMuscles)
-                    },
-                    back = navigation::pop
+                    toExcludedMuscles = viewModel::toExcludedMusclesWithExperience,
+                    back = viewModel::onBack
                 ),
             )
 
             RegistrationRouter.ExcludedMuscles -> Child.ExcludedMuscles(
                 ExcludedMusclesComponent(
                     componentContext = context,
-                    toMissingEquipment = { ids ->
-                        viewModel.saveExcludedMuscleIds(ids)
-                        navigation.push(RegistrationRouter.MissingEquipments)
-                    },
-                    back = navigation::pop
+                    toMissingEquipment = viewModel::toMissingEquipmentWithMuscles,
+                    back = viewModel::onBack
                 ),
             )
 
             RegistrationRouter.MissingEquipments -> Child.MussingEquipments(
                 MissingEquipmentsComponent(
                     componentContext = context,
-                    toCompleted = { ids ->
-                        viewModel.saveMissingEquipmentIds(ids)
-                        navigation.push(RegistrationRouter.Completed)
-                    },
-                    back = navigation::pop
+                    toCompleted = viewModel::toCompletedWithEquipment,
+                    back = viewModel::onBack
                 ),
             )
 
@@ -133,8 +141,8 @@ internal class RegistrationComponent(
                     weight = viewModel.state.value.weight,
                     excludedMuscleIds = viewModel.state.value.excludedMuscleIds,
                     missingEquipmentIds = viewModel.state.value.missingEquipmentIds,
-                    toHome = toHome,
-                    back = toHome
+                    toHome = viewModel::toHome,
+                    back = viewModel::toHome
                 ),
             )
         }

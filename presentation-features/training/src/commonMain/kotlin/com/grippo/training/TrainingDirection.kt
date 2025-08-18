@@ -4,4 +4,6 @@ import com.grippo.core.models.BaseDirection
 
 public sealed interface TrainingDirection : BaseDirection {
     public data object Back : TrainingDirection
+    public data object ToRecording : TrainingDirection
+    public data object ToSuccess : TrainingDirection
 }

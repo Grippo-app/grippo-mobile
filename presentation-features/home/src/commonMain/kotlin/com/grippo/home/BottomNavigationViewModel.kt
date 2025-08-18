@@ -26,4 +26,32 @@ public class BottomNavigationViewModel(
     override fun onBack() {
         navigateTo(BottomNavigationDirection.Back)
     }
+
+    override fun toExcludedMuscles() {
+        navigateTo(BottomNavigationDirection.ToExcludedMuscles)
+    }
+
+    override fun toMissingEquipment() {
+        navigateTo(BottomNavigationDirection.ToMissingEquipment)
+    }
+
+    override fun toWeightHistory() {
+        navigateTo(BottomNavigationDirection.ToWeightHistory)
+    }
+
+    override fun toExerciseLibrary() {
+        navigateTo(BottomNavigationDirection.ToExerciseLibrary)
+    }
+
+    override fun toDebug() {
+        navigateTo(BottomNavigationDirection.ToDebug)
+    }
+
+    override fun toWorkout() {
+        navigateTo(BottomNavigationDirection.ToWorkout)
+    }
+
+    override fun toSystemSettings() {
+        navigateTo(BottomNavigationDirection.ToSystemSettings)
+    }
 }

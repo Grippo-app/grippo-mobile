@@ -56,7 +56,7 @@ public class RootComponent(
         childFactory = ::createChild,
     )
 
-    private val backCallback = BackCallback(onBack = viewModel::onBack)
+    private val backCallback = BackCallback(onBack = viewModel::close)
 
     init {
         backHandler.register(backCallback)
@@ -68,7 +68,17 @@ public class RootComponent(
                 navigation.replaceAll(RootRouter.Auth(AuthRouter.AuthProcess))
             }
 
-            RootDirection.Back -> finish.invoke()
+            RootDirection.Close -> finish.invoke()
+            RootDirection.ToHome -> navigation.replaceAll(RootRouter.Home)
+            RootDirection.ToProfile -> navigation.push(RootRouter.Profile(ProfileRouter.WeightHistory))
+            RootDirection.ToDebug -> navigation.push(RootRouter.Debug)
+            RootDirection.ToSettings -> navigation.push(RootRouter.Settings(SettingsRouter.System))
+            RootDirection.ToWorkout -> navigation.push(RootRouter.Workout)
+            RootDirection.ToWeightHistory -> navigation.push(RootRouter.Profile(ProfileRouter.WeightHistory))
+            RootDirection.ToMissingEquipment -> navigation.push(RootRouter.Profile(ProfileRouter.Equipments))
+            RootDirection.ToExcludedMuscles -> navigation.push(RootRouter.Profile(ProfileRouter.Muscles))
+            RootDirection.ToSystemSettings -> navigation.push(RootRouter.Settings(SettingsRouter.System))
+            RootDirection.Back -> navigation.pop()
         }
     }
 
@@ -78,8 +88,8 @@ public class RootComponent(
                 AuthComponent(
                     componentContext = context,
                     initial = router.value,
-                    toHome = { navigation.replaceAll(RootRouter.Home) },
-                    back = finish
+                    toHome = viewModel::toHome,
+                    back = viewModel::close
                 ),
             )
 
@@ -87,14 +97,14 @@ public class RootComponent(
                 BottomNavigationComponent(
                     componentContext = context,
                     initial = BottomNavigationRouter.Trainings,
-                    toWeightHistory = { navigation.push(RootRouter.Profile(ProfileRouter.WeightHistory)) },
-                    toMissingEquipment = { navigation.push(RootRouter.Profile(ProfileRouter.Equipments)) },
-                    toExcludedMuscles = { navigation.push(RootRouter.Profile(ProfileRouter.Muscles)) },
-                    toDebug = { navigation.push(RootRouter.Debug) },
-                    toWorkout = { navigation.push(RootRouter.Workout) },
-                    toSystemSettings = { navigation.push(RootRouter.Settings(SettingsRouter.System)) },
+                    toWeightHistory = viewModel::toWeightHistory,
+                    toMissingEquipment = viewModel::toMissingEquipment,
+                    toExcludedMuscles = viewModel::toExcludedMuscles,
+                    toDebug = viewModel::toDebug,
+                    toWorkout = viewModel::toWorkout,
+                    toSystemSettings = viewModel::toSystemSettings,
                     toExerciseLibrary = {},
-                    back = finish
+                    back = viewModel::close
                 )
             )
 
@@ -102,14 +112,14 @@ public class RootComponent(
                 ProfileComponent(
                     componentContext = context,
                     initial = router.value,
-                    back = navigation::pop
+                    back = viewModel::onBack
                 )
             )
 
             is RootRouter.Debug -> Child.Debug(
                 DebugComponent(
                     componentContext = context,
-                    back = navigation::pop
+                    back = viewModel::onBack
                 )
             )
 
@@ -117,7 +127,7 @@ public class RootComponent(
                 TrainingComponent(
                     componentContext = context,
                     initial = TrainingRouter.Setup,
-                    back = navigation::pop
+                    back = viewModel::onBack
                 )
             )
 
@@ -125,7 +135,7 @@ public class RootComponent(
                 SettingsComponent(
                     componentContext = context,
                     initial = router.value,
-                    back = navigation::pop,
+                    back = viewModel::onBack,
                 )
             )
         }

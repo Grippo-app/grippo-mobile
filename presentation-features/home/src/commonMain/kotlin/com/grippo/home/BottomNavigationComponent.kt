@@ -47,6 +47,13 @@ public class BottomNavigationComponent(
             BottomNavigationDirection.Statistics -> navigation.replaceAll(BottomNavigationRouter.Statistics)
             BottomNavigationDirection.Profile -> navigation.replaceAll(BottomNavigationRouter.Profile)
             BottomNavigationDirection.Back -> back.invoke()
+            BottomNavigationDirection.ToExcludedMuscles -> toExcludedMuscles.invoke()
+            BottomNavigationDirection.ToMissingEquipment -> toMissingEquipment.invoke()
+            BottomNavigationDirection.ToWeightHistory -> toWeightHistory.invoke()
+            BottomNavigationDirection.ToExerciseLibrary -> toExerciseLibrary.invoke()
+            BottomNavigationDirection.ToDebug -> toDebug.invoke()
+            BottomNavigationDirection.ToWorkout -> toWorkout.invoke()
+            BottomNavigationDirection.ToSystemSettings -> toSystemSettings.invoke()
         }
     }
 
@@ -66,28 +73,28 @@ public class BottomNavigationComponent(
             is BottomNavigationRouter.Trainings -> Child.Trainings(
                 HomeTrainingsComponent(
                     componentContext = context,
-                    back = back
+                    back = viewModel::onBack
                 ),
             )
 
             is BottomNavigationRouter.Statistics -> Child.Statistics(
                 HomeStatisticsComponent(
                     componentContext = context,
-                    back = back
+                    back = viewModel::onBack
                 ),
             )
 
             BottomNavigationRouter.Profile -> Child.Profile(
                 HomeProfileComponent(
                     componentContext = context,
-                    toExcludedMuscles = toExcludedMuscles,
-                    toExerciseLibrary = toExerciseLibrary,
-                    toMissingEquipment = toMissingEquipment,
-                    toWeightHistory = toWeightHistory,
-                    toWorkout = toWorkout,
-                    toDebug = toDebug,
-                    toSystemSettings = toSystemSettings,
-                    back = back
+                    toExcludedMuscles = viewModel::toExcludedMuscles,
+                    toExerciseLibrary = viewModel::toExerciseLibrary,
+                    toMissingEquipment = viewModel::toMissingEquipment,
+                    toWeightHistory = viewModel::toWeightHistory,
+                    toWorkout = viewModel::toWorkout,
+                    toDebug = viewModel::toDebug,
+                    toSystemSettings = viewModel::toSystemSettings,
+                    back = viewModel::onBack
                 ),
             )
         }

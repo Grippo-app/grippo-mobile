@@ -56,21 +56,21 @@ public class ProfileComponent(
             ProfileRouter.Muscles -> Muscles(
                 ProfileMusclesComponent(
                     componentContext = context,
-                    back = back
+                    back = viewModel::onBack
                 ),
             )
 
             is ProfileRouter.Equipments -> Equipments(
                 ProfileEquipmentsComponent(
                     componentContext = context,
-                    back = back
+                    back = viewModel::onBack
                 ),
             )
 
             ProfileRouter.WeightHistory -> WeightHistory(
                 WeightHistoryComponent(
                     componentContext = context,
-                    back = back
+                    back = viewModel::onBack
                 )
             )
         }

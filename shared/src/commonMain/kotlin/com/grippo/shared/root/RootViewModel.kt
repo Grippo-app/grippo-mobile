@@ -46,6 +46,46 @@ public class RootViewModel(
         update { it.copy(isConnectedToInternet = isConnected) }
     }
 
+    override fun close() {
+        navigateTo(RootDirection.Close)
+    }
+
+    override fun toHome() {
+        navigateTo(RootDirection.ToHome)
+    }
+
+    override fun toProfile() {
+        navigateTo(RootDirection.ToProfile)
+    }
+
+    override fun toDebug() {
+        navigateTo(RootDirection.ToDebug)
+    }
+
+    override fun toSettings() {
+        navigateTo(RootDirection.ToSettings)
+    }
+
+    override fun toWorkout() {
+        navigateTo(RootDirection.ToWorkout)
+    }
+
+    override fun toWeightHistory() {
+        navigateTo(RootDirection.ToWeightHistory)
+    }
+
+    override fun toMissingEquipment() {
+        navigateTo(RootDirection.ToMissingEquipment)
+    }
+
+    override fun toExcludedMuscles() {
+        navigateTo(RootDirection.ToExcludedMuscles)
+    }
+
+    override fun toSystemSettings() {
+        navigateTo(RootDirection.ToSystemSettings)
+    }
+
     override fun onBack() {
         navigateTo(RootDirection.Back)
     }

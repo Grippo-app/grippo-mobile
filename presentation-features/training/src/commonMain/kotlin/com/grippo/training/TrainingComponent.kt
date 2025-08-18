@@ -36,6 +36,8 @@ public class TrainingComponent(
     override suspend fun eventListener(direction: TrainingDirection) {
         when (direction) {
             TrainingDirection.Back -> back.invoke()
+            TrainingDirection.ToRecording -> navigation.push(TrainingRouter.Recording)
+            TrainingDirection.ToSuccess -> navigation.replaceAll(TrainingRouter.Success)
         }
     }
 
@@ -55,23 +57,23 @@ public class TrainingComponent(
             TrainingRouter.Setup -> Child.Setup(
                 TrainingSetupComponent(
                     componentContext = context,
-                    toRecording = { navigation.push(TrainingRouter.Recording) },
-                    back = back
+                    toRecording = viewModel::toRecording,
+                    back = viewModel::onBack
                 ),
             )
 
             TrainingRouter.Recording -> Child.Recording(
                 TrainingRecordingComponent(
                     componentContext = context,
-                    toSuccess = { navigation.replaceAll(TrainingRouter.Success) },
-                    back = back
+                    toSuccess = viewModel::toSuccess,
+                    back = viewModel::onBack
                 ),
             )
 
             TrainingRouter.Success -> Child.Success(
                 TrainingSuccessComponent(
                     componentContext = context,
-                    back = back
+                    back = viewModel::onBack
                 ),
             )
         }

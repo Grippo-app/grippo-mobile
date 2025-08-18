@@ -59,7 +59,7 @@ internal class DialogContentComponent(
                 WeightPickerComponent(
                     componentContext = context,
                     initial = router.initial,
-                    onResult = { viewModel.onBack { router.onResult.invoke(it) } },
+                    onResult = { weight -> viewModel.onBack { router.onResult.invoke(weight) } },
                     back = { viewModel.onBack(null) }
                 )
             )
@@ -68,7 +68,7 @@ internal class DialogContentComponent(
                 HeightPickerComponent(
                     componentContext = context,
                     initial = router.initial,
-                    onResult = { viewModel.onBack { router.onResult.invoke(it) } },
+                    onResult = { height -> viewModel.onBack { router.onResult.invoke(height) } },
                     back = { viewModel.onBack(null) }
                 )
             )
@@ -103,7 +103,14 @@ internal class DialogContentComponent(
                     componentContext = context,
                     volume = router.volume,
                     repetitions = router.repeats,
-                    onResult = { w, r -> viewModel.onBack { router.onResult.invoke(w, r) } },
+                    onResult = { weight, reps ->
+                        viewModel.onBack {
+                            router.onResult.invoke(
+                                weight,
+                                reps
+                            )
+                        }
+                    },
                     back = { viewModel.onBack(null) }
                 )
             )
@@ -114,7 +121,7 @@ internal class DialogContentComponent(
                     initial = router.initial,
                     title = router.title,
                     limitations = router.limitations,
-                    onResult = { viewModel.onBack { router.onResult.invoke(it) } },
+                    onResult = { date -> viewModel.onBack { router.onResult.invoke(date) } },
                     back = { viewModel.onBack(null) }
                 )
             )
@@ -124,7 +131,7 @@ internal class DialogContentComponent(
                     componentContext = context,
                     initial = router.initial,
                     available = router.available,
-                    onResult = { viewModel.onBack { router.onResult.invoke(it) } },
+                    onResult = { period -> viewModel.onBack { router.onResult.invoke(period) } },
                     back = { viewModel.onBack(null) }
                 )
             )

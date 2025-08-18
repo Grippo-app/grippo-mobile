@@ -55,7 +55,7 @@ public class SettingsComponent(
             SettingsRouter.System -> Child.System(
                 SystemComponent(
                     componentContext = context,
-                    back = back
+                    back = viewModel::onBack
                 ),
             )
         }

@@ -3,21 +3,25 @@ package com.grippo.authorization.registration
 import com.grippo.state.profile.ExperienceEnumState
 
 internal interface RegistrationContract {
-    fun saveCredentials(email: String, password: String)
-    fun saveName(name: String)
-    fun saveWeightHeight(weight: Float, height: Int)
-    fun saveExperience(experience: ExperienceEnumState)
-    fun saveExcludedMuscleIds(ids: List<String>)
-    fun saveMissingEquipmentIds(ids: List<String>)
+    fun close()
+    fun toNameWithCredentials(email: String, password: String)
+    fun toBodyWithName(name: String)
+    fun toExperienceWithBody(weight: Float, height: Int)
+    fun toExcludedMusclesWithExperience(experience: ExperienceEnumState)
+    fun toMissingEquipmentWithMuscles(ids: List<String>)
+    fun toCompletedWithEquipment(ids: List<String>)
+    fun toHome()
     fun onBack()
 
     companion object Empty : RegistrationContract {
-        override fun saveCredentials(email: String, password: String) {}
-        override fun saveName(name: String) {}
-        override fun saveWeightHeight(weight: Float, height: Int) {}
-        override fun saveExperience(experience: ExperienceEnumState) {}
-        override fun saveExcludedMuscleIds(ids: List<String>) {}
-        override fun saveMissingEquipmentIds(ids: List<String>) {}
+        override fun close() {}
+        override fun toNameWithCredentials(email: String, password: String) {}
+        override fun toBodyWithName(name: String) {}
+        override fun toExperienceWithBody(weight: Float, height: Int) {}
+        override fun toExcludedMusclesWithExperience(experience: ExperienceEnumState) {}
+        override fun toMissingEquipmentWithMuscles(ids: List<String>) {}
+        override fun toCompletedWithEquipment(ids: List<String>) {}
+        override fun toHome() {}
         override fun onBack() {}
     }
 }

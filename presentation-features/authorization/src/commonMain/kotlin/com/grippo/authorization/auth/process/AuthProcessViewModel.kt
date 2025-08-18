@@ -6,6 +6,18 @@ internal class AuthProcessViewModel :
     BaseViewModel<AuthProcessState, AuthProcessDirection, AuthProcessLoader>(AuthProcessState),
     AuthProcessContract {
 
+    override fun close() {
+        navigateTo(AuthProcessDirection.Close)
+    }
+
+    override fun toRegistration() {
+        navigateTo(AuthProcessDirection.ToRegistration)
+    }
+
+    override fun toHome() {
+        navigateTo(AuthProcessDirection.ToHome)
+    }
+
     override fun onBack() {
         navigateTo(AuthProcessDirection.Back)
     }

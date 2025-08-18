@@ -8,30 +8,44 @@ internal class RegistrationViewModel :
     BaseViewModel<RegistrationState, RegistrationDirection, RegistrationLoader>(RegistrationState()),
     RegistrationContract {
 
-    override fun saveCredentials(email: String, password: String) {
+    override fun close() {
+        navigateTo(RegistrationDirection.Close)
+    }
+
+    override fun toNameWithCredentials(email: String, password: String) {
         update { it.copy(email = email, password = password) }
+        navigateTo(RegistrationDirection.ToNameWithCredentials(email, password))
     }
 
-    override fun saveName(name: String) {
+    override fun toBodyWithName(name: String) {
         update { it.copy(name = name) }
+        navigateTo(RegistrationDirection.ToBodyWithName(name))
     }
 
-    override fun saveWeightHeight(weight: Float, height: Int) {
+    override fun toExperienceWithBody(weight: Float, height: Int) {
         update { it.copy(weight = weight, height = height) }
+        navigateTo(RegistrationDirection.ToExperienceWithBody(weight, height))
     }
 
-    override fun saveExperience(experience: ExperienceEnumState) {
+    override fun toExcludedMusclesWithExperience(experience: ExperienceEnumState) {
         update { it.copy(experience = experience) }
+        navigateTo(RegistrationDirection.ToExcludedMusclesWithExperience(experience))
     }
 
-    override fun saveExcludedMuscleIds(ids: List<String>) {
+    override fun toMissingEquipmentWithMuscles(ids: List<String>) {
         val list = ids.toPersistentList()
         update { it.copy(excludedMuscleIds = list) }
+        navigateTo(RegistrationDirection.ToMissingEquipmentWithMuscles(ids))
     }
 
-    override fun saveMissingEquipmentIds(ids: List<String>) {
+    override fun toCompletedWithEquipment(ids: List<String>) {
         val list = ids.toPersistentList()
         update { it.copy(missingEquipmentIds = list) }
+        navigateTo(RegistrationDirection.ToCompletedWithEquipment(ids))
+    }
+
+    override fun toHome() {
+        navigateTo(RegistrationDirection.ToHome)
     }
 
     override fun onBack() {

@@ -8,4 +8,12 @@ public class AuthViewModel : BaseViewModel<AuthState, AuthDirection, AuthLoader>
     override fun onBack() {
         navigateTo(AuthDirection.Back)
     }
+
+    override fun toAuthProcess() {
+        navigateTo(AuthDirection.AuthProcess)
+    }
+
+    override fun toHome() {
+        navigateTo(AuthDirection.ToHome)
+    }
 }

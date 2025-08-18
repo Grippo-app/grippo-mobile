@@ -26,7 +26,7 @@ internal class AuthProcessComponent(
         AuthProcessViewModel()
     }
 
-    private val backCallback = BackCallback(onBack = viewModel::onBack)
+    private val backCallback = BackCallback(onBack = viewModel::close)
 
     init {
         backHandler.register(backCallback)
@@ -34,7 +34,10 @@ internal class AuthProcessComponent(
 
     override suspend fun eventListener(direction: AuthProcessDirection) {
         when (direction) {
-            AuthProcessDirection.Back -> back.invoke()
+            AuthProcessDirection.Close -> back.invoke()
+            AuthProcessDirection.ToRegistration -> navigation.push(AuthProcessRouter.Registration)
+            AuthProcessDirection.ToHome -> toHome.invoke()
+            AuthProcessDirection.Back -> navigation.pop()
         }
     }
 
@@ -54,17 +57,17 @@ internal class AuthProcessComponent(
             AuthProcessRouter.Login -> Child.Login(
                 LoginComponent(
                     componentContext = context,
-                    toRegistration = { navigation.push(AuthProcessRouter.Registration) },
-                    toHome = toHome,
-                    back = back
+                    toRegistration = viewModel::toRegistration,
+                    toHome = viewModel::toHome,
+                    back = viewModel::close
                 )
             )
 
             AuthProcessRouter.Registration -> Child.Registration(
                 RegistrationComponent(
                     componentContext = context,
-                    toHome = toHome,
-                    back = navigation::pop
+                    toHome = viewModel::toHome,
+                    back = viewModel::onBack
                 )
             )
         }

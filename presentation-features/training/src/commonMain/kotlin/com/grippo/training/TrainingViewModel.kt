@@ -9,4 +9,12 @@ public class TrainingViewModel :
     override fun onBack() {
         navigateTo(TrainingDirection.Back)
     }
+
+    override fun toRecording() {
+        navigateTo(TrainingDirection.ToRecording)
+    }
+
+    override fun toSuccess() {
+        navigateTo(TrainingDirection.ToSuccess)
+    }
 }

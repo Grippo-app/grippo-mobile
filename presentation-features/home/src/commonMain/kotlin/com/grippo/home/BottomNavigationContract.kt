@@ -4,9 +4,23 @@ internal interface BottomNavigationContract {
 
     fun selectTab(origin: Int)
     fun onBack()
+    fun toExcludedMuscles()
+    fun toMissingEquipment()
+    fun toWeightHistory()
+    fun toExerciseLibrary()
+    fun toDebug()
+    fun toWorkout()
+    fun toSystemSettings()
 
     companion object Empty : BottomNavigationContract {
         override fun selectTab(origin: Int) {}
         override fun onBack() {}
+        override fun toExcludedMuscles() {}
+        override fun toMissingEquipment() {}
+        override fun toWeightHistory() {}
+        override fun toExerciseLibrary() {}
+        override fun toDebug() {}
+        override fun toWorkout() {}
+        override fun toSystemSettings() {}
     }
 }

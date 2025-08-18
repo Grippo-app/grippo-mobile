@@ -6,7 +6,6 @@ import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.push
-import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
@@ -39,6 +38,7 @@ public class AuthComponent(
         when (direction) {
             AuthDirection.AuthProcess -> navigation.push(AuthRouter.AuthProcess)
             AuthDirection.Back -> back.invoke()
+            AuthDirection.ToHome -> toHome.invoke()
         }
     }
 
@@ -58,17 +58,17 @@ public class AuthComponent(
             AuthRouter.Splash -> Splash(
                 SplashComponent(
                     componentContext = context,
-                    toAuthProcess = { navigation.replaceAll(AuthRouter.AuthProcess) },
-                    toHome = toHome,
-                    back = back
+                    toAuthProcess = viewModel::toAuthProcess,
+                    toHome = viewModel::toHome,
+                    back = viewModel::onBack
                 ),
             )
 
             is AuthRouter.AuthProcess -> AuthProcess(
                 AuthProcessComponent(
                     componentContext = context,
-                    toHome = toHome,
-                    back = back
+                    toHome = viewModel::toHome,
+                    back = viewModel::onBack
                 ),
             )
         }

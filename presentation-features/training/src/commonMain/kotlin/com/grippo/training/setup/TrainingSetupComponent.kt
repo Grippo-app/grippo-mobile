@@ -9,7 +9,7 @@ import com.grippo.core.platform.collectAsStateMultiplatform
 
 internal class TrainingSetupComponent(
     componentContext: ComponentContext,
-    private val toRecording: (selectedMuscleIds: List<String>) -> Unit,
+    private val toRecording: () -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<TrainingSetupDirection>(componentContext) {
 
@@ -27,7 +27,7 @@ internal class TrainingSetupComponent(
 
     override suspend fun eventListener(direction: TrainingSetupDirection) {
         when (direction) {
-            is TrainingSetupDirection.ToRecording -> toRecording.invoke(direction.selectedMuscleIds)
+            is TrainingSetupDirection.ToRecording -> toRecording.invoke()
             TrainingSetupDirection.Back -> back.invoke()
         }
     }
