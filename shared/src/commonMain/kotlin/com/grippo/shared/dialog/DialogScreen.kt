@@ -1,10 +1,5 @@
 package com.grippo.shared.dialog
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -78,7 +73,6 @@ private fun BottomSheet(
 
     val showBackButton = stack.size > 1
     val programmaticDismiss = phase == SheetPhase.DISMISSING
-    val showHeader = showBackButton || !isSwipeDismissEnabled
 
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
@@ -111,27 +105,21 @@ private fun BottomSheet(
             topEnd = AppTokens.dp.bottomSheet.radius
         ),
     ) {
-        AnimatedVisibility(
-            visible = showHeader,
-            enter = fadeIn() + expandVertically(),
-            exit = fadeOut() + shrinkVertically()
-        ) {
-            BottomSheetToolbar(
-                modifier = Modifier.fillMaxWidth(),
-                start = if (showBackButton) BottomSheetToolbarActionButton(
-                    text = AppTokens.strings.res(Res.string.back),
-                    startIcon = AppTokens.icons.NavArrowLeft,
-                    style = ButtonStyle.Transparent,
-                    onClick = onBack
-                ) else null,
-                end = if (isSwipeDismissEnabled.not()) BottomSheetToolbarActionButton(
-                    text = AppTokens.strings.res(Res.string.close),
-                    startIcon = null,
-                    style = ButtonStyle.Transparent,
-                    onClick = onClose
-                ) else null,
-            )
-        }
+        BottomSheetToolbar(
+            modifier = Modifier.fillMaxWidth(),
+            start = if (showBackButton) BottomSheetToolbarActionButton(
+                text = AppTokens.strings.res(Res.string.back),
+                startIcon = AppTokens.icons.NavArrowLeft,
+                style = ButtonStyle.Transparent,
+                onClick = onBack
+            ) else null,
+            end = BottomSheetToolbarActionButton(
+                text = AppTokens.strings.res(Res.string.close),
+                startIcon = null,
+                style = ButtonStyle.Transparent,
+                onClick = onClose
+            ),
+        )
 
         Column(
             modifier = Modifier.weight(weight = 1f, fill = false),
