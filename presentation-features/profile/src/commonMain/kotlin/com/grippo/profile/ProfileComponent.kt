@@ -46,7 +46,7 @@ public class ProfileComponent(
         source = navigation,
         serializer = ProfileRouter.serializer(),
         initialStack = { listOf(initial) },
-        key = "AuthComponent",
+        key = "ProfileComponent",
         handleBackButton = true,
         childFactory = ::createChild,
     )

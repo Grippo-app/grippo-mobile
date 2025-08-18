@@ -63,7 +63,7 @@ public class BottomNavigationComponent(
         source = navigation,
         serializer = BottomNavigationRouter.serializer(),
         initialStack = { listOf(initial) },
-        key = "AuthProcessComponent",
+        key = "BottomNavigationComponent",
         handleBackButton = true,
         childFactory = ::createChild,
     )

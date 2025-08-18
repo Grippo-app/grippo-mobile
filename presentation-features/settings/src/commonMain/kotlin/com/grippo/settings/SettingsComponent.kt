@@ -42,7 +42,7 @@ public class SettingsComponent(
             source = navigation,
             serializer = SettingsRouter.serializer(),
             initialStack = { listOf(initial) },
-            key = "AuthComponent",
+            key = "SettingsComponent",
             handleBackButton = true,
             childFactory = ::createChild,
         )
