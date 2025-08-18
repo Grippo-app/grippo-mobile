@@ -15,6 +15,13 @@
     <string name="get_started_btn">Get Started</string>
     <string name="continue_btn">Continue</string>
     <string name="skip_btn">Skip</string>
+    <string name="exercises">Exercises</string>
+    <string name="add_exercise_btn">Add exercise</string>
+    <string name="save_btn">Save</string>
+    <string name="workout_saved">Workout saved</string>
+    <string name="iterations_label">Iterations (%d)</string>
+    <string name="set_label">Set</string>
+    <string name="add_set_btn">Add Set</string>
     <string name="or">OR</string>
     <string name="email_placeholder">Enter email</string>
     <string name="password_placeholder">Enter password</string>
@@ -126,6 +133,7 @@
     <string name="bench_press">Bench Press</string>
     <string name="deadlift">Deadlift</string>
     <string name="squat">Squat</string>
+    <string name="sets_label">Sets:</string>
     <string name="overhead_press">Overhead Press</string>
     <string name="row_ex">Row</string>
     <string name="chest_muscle">Chest</string>

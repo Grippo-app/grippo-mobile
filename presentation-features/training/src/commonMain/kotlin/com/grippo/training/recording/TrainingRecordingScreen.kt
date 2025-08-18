@@ -22,11 +22,16 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.toolbar.Toolbar
+import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.add_exercise_btn
 import com.grippo.design.resources.provider.equipments
+import com.grippo.design.resources.provider.exercises
+import com.grippo.design.resources.provider.save_btn
+import com.grippo.design.resources.provider.statistics
 import com.grippo.state.formatters.UiText
 import com.grippo.state.trainings.stubExercises
 import kotlinx.collections.immutable.ImmutableSet
@@ -40,10 +45,13 @@ internal fun TrainingRecordingScreen(
     contract: TrainingRecordingContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
 
+    val exercisesTxt = AppTokens.strings.res(Res.string.exercises)
+    val statisticsTxt = AppTokens.strings.res(Res.string.statistics)
+
     val segmentItems = remember {
         persistentListOf(
-            RecordingTab.Exercises to UiText.Str("Exercises"),
-            RecordingTab.Stats to UiText.Str("Stats"),
+            RecordingTab.Exercises to UiText.Str(exercisesTxt),
+            RecordingTab.Stats to UiText.Str(statisticsTxt),
         )
     }
 
@@ -64,15 +72,14 @@ internal fun TrainingRecordingScreen(
         }
     )
 
-    Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
-
     LazyColumn(
         modifier = Modifier
-            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
             .fillMaxWidth()
             .weight(1f),
         contentPadding = PaddingValues(
-            top = AppTokens.dp.contentPadding.content
+            top = AppTokens.dp.contentPadding.content,
+            start = AppTokens.dp.screen.horizontalPadding,
+            end = AppTokens.dp.screen.horizontalPadding,
         ),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
     ) {
@@ -82,6 +89,15 @@ internal fun TrainingRecordingScreen(
                     items = state.exercises,
                     key = { it.id }
                 ) { exercise ->
+                    val clickProvider = remember(exercise.id) {
+                        { contract.onEditExercise(exercise.id) }
+                    }
+
+                    ExerciseCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = exercise,
+                        onClick = clickProvider
+                    )
                 }
             }
 
@@ -97,24 +113,24 @@ internal fun TrainingRecordingScreen(
         }
     }
 
-    Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(AppTokens.dp.screen.horizontalPadding),
+            .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
         Button(
             modifier = Modifier.weight(1f),
-            text = "Add exercise",
+            text = AppTokens.strings.res(Res.string.add_exercise_btn),
             style = ButtonStyle.Secondary,
             onClick = contract::onAddExercise
         )
 
         Button(
             modifier = Modifier.weight(1f),
-            text = "Save",
+            text = AppTokens.strings.res(Res.string.save_btn),
             style = ButtonStyle.Primary,
             onClick = contract::onSave
         )

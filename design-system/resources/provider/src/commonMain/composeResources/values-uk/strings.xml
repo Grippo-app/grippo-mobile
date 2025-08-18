@@ -15,6 +15,13 @@
     <string name="get_started_btn">Почати</string>
     <string name="continue_btn">Продовжити</string>
     <string name="skip_btn">Пропустити</string>
+    <string name="exercises">Вправи</string>
+    <string name="add_exercise_btn">Додати вправу</string>
+    <string name="save_btn">Зберегти</string>
+    <string name="workout_saved">Тренування збережено</string>
+    <string name="iterations_label">Ітерації (%d)</string>
+    <string name="set_label">Сет</string>
+    <string name="add_set_btn">Додати сет</string>
     <string name="or">АБО</string>
     <string name="email_placeholder">Введіть електронну адресу</string>
     <string name="password_placeholder">Введіть пароль</string>
@@ -107,6 +114,7 @@
     <string name="series_current">Поточний</string>
     <string name="bench_press">Жим лежачи</string>
     <string name="deadlift">Станова тяга</string>
+    <string name="sets_label">Сети:</string>
     <string name="squat">Присідання</string>
     <string name="overhead_press">Жим стоячи</string>
     <string name="row_ex">Тяга</string>

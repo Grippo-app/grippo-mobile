@@ -31,6 +31,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.get_started_btn
 import com.grippo.design.resources.provider.icons.Check
+import com.grippo.design.resources.provider.workout_saved
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.delay
@@ -81,7 +82,7 @@ internal fun TrainingSuccessScreen(
 
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = "Workout saved",
+                text = AppTokens.strings.res(Res.string.workout_saved),
                 style = AppTokens.typography.h1(),
                 color = AppTokens.colors.text.primary,
                 textAlign = TextAlign.Center

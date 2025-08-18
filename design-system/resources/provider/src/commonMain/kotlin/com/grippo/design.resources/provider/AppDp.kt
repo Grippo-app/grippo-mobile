@@ -208,6 +208,9 @@ public data object AppDp {
 
     public data object ExerciseCard {
         val radius: Dp = AppDp.radius.medium
+        val horizontalPadding: Dp = padding.large
+        val verticalPadding: Dp = padding.medium
+        val spacing: Dp = padding.medium
     }
 
     public data object EquipmentCard {

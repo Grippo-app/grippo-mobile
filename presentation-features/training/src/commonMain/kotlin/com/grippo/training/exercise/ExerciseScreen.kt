@@ -1,5 +1,6 @@
 package com.grippo.training.exercise
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -30,6 +32,11 @@ import com.grippo.design.components.training.IterationCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.add_set_btn
+import com.grippo.design.resources.provider.iterations_label
+import com.grippo.design.resources.provider.save_btn
+import com.grippo.design.resources.provider.set_label
 import com.grippo.state.trainings.stubExercise
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -48,7 +55,9 @@ internal fun ExerciseScreen(
         content = {
             Row(
                 modifier = Modifier
+                    .horizontalScroll(rememberScrollState())
                     .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                    .padding(bottom = AppTokens.dp.contentPadding.content)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
             ) {
@@ -85,7 +94,10 @@ internal fun ExerciseScreen(
         item {
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = "Iterations (${state.exercise.iterations.size})",
+                text = AppTokens.strings.res(
+                    Res.string.iterations_label,
+                    state.exercise.iterations.size
+                ),
                 style = AppTokens.typography.h4(),
                 color = AppTokens.colors.text.primary,
                 textAlign = TextAlign.Start
@@ -98,12 +110,8 @@ internal fun ExerciseScreen(
         ) { iteration ->
             InformationCard(
                 modifier = Modifier.fillMaxWidth(),
-                label = "Set",
-                value = {
-                    IterationCard(
-                        value = iteration,
-                    )
-                }
+                label = AppTokens.strings.res(Res.string.set_label),
+                value = { IterationCard(value = iteration) }
             )
         }
     }
@@ -118,14 +126,14 @@ internal fun ExerciseScreen(
     ) {
         Button(
             modifier = Modifier.weight(1f),
-            text = "Add Set",
+            text = AppTokens.strings.res(Res.string.add_set_btn),
             style = ButtonStyle.Secondary,
             onClick = contract::onAddIteration
         )
 
         Button(
             modifier = Modifier.weight(1f),
-            text = "Save",
+            text = AppTokens.strings.res(Res.string.save_btn),
             style = ButtonStyle.Primary,
             onClick = contract::onSave
         )
