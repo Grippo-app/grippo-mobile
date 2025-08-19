@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.training.IterationCard
+import com.grippo.design.components.training.IterationCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -64,7 +65,8 @@ private fun InformationCardPreview() {
             label = "Volume",
             value = {
                 IterationCard(
-                    value = stubIteration()
+                    value = stubIteration(),
+                    style = IterationCardStyle.SmallView
                 )
             }
         )

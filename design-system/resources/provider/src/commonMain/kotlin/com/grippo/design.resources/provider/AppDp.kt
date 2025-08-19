@@ -184,8 +184,20 @@ public data object AppDp {
     }
 
     public data object IterationCard {
-        val horizontalPadding: Dp = 4.dp
-        val verticalPadding: Dp = 5.dp
+        val smallView: SmallView = SmallView
+        val editable: Editable = Editable
+
+        public data object SmallView {
+            val horizontalPadding: Dp = 4.dp
+            val verticalPadding: Dp = 5.dp
+        }
+
+        public data object Editable {
+            val horizontalPadding: Dp = padding.medium
+            val verticalPadding: Dp = padding.medium
+            val radius: Dp = AppDp.radius.small
+            val spacing: Dp = padding.medium
+        }
     }
 
     public data object InformationCard {
@@ -233,7 +245,6 @@ public data object AppDp {
             val radius: Dp = AppDp.radius.medium
             val icon: Dp = size.large
         }
-
 
         public data object Small {
             val height: Dp = size.medium

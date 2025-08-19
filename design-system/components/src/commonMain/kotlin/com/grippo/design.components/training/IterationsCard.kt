@@ -35,6 +35,7 @@ public fun IterationsCard(
             key(iteration.id) {
                 IterationCard(
                     value = iteration,
+                    style = IterationCardStyle.SmallView
                 )
             }
         }

@@ -14,13 +14,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.cards.information.InformationCard
 import com.grippo.design.components.chip.IntensityChip
 import com.grippo.design.components.chip.IntensityChipStyle
 import com.grippo.design.components.chip.RepetitionsChip
@@ -29,6 +29,7 @@ import com.grippo.design.components.chip.VolumeChip
 import com.grippo.design.components.chip.VolumeChipStyle
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.training.IterationCard
+import com.grippo.design.components.training.IterationCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -36,7 +37,6 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.add_set_btn
 import com.grippo.design.resources.provider.iterations_label
 import com.grippo.design.resources.provider.save_btn
-import com.grippo.design.resources.provider.set_label
 import com.grippo.state.trainings.stubExercise
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -108,10 +108,21 @@ internal fun ExerciseScreen(
             items = state.exercise.iterations,
             key = { it.id }
         ) { iteration ->
-            InformationCard(
+            val editVolumeProvider = remember(iteration.id) {
+                { contract.onEditVolume(iteration.id) }
+            }
+
+            val editRepetitionProvider = remember(iteration.id) {
+                { contract.onEditVolume(iteration.id) }
+            }
+
+            IterationCard(
                 modifier = Modifier.fillMaxWidth(),
-                label = AppTokens.strings.res(Res.string.set_label),
-                value = { IterationCard(value = iteration) }
+                value = iteration,
+                style = IterationCardStyle.Editable(
+                    onVolumeClick = editVolumeProvider,
+                    onRepetitionClick = editRepetitionProvider
+                )
             )
         }
     }

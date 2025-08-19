@@ -43,7 +43,34 @@ internal class ExerciseViewModel(
         dialogController.show(dialog)
     }
 
-    override fun onEditIteration(id: String) {
+    override fun onEditVolume(id: String) {
+        val iteration = state.value.exercise.iterations.find { it.id == id } ?: return
+
+        val dialog = DialogConfig.Iteration(
+            volume = iteration.volume.value,
+            repeats = iteration.repetitions.value,
+            onResult = { volume, repeats ->
+                update {
+                    val iterations = it.exercise.iterations
+                        .toMutableList()
+                        .map { m ->
+                            if (m.id == id) m.copy(
+                                volume = VolumeFormatState(volume),
+                                repetitions = RepetitionsFormatState(repeats)
+                            ) else m
+                        }.toPersistentList()
+
+                    val exercise = it.exercise.copy(iterations = iterations)
+
+                    it.copy(exercise = exercise)
+                }
+            }
+        )
+
+        dialogController.show(dialog)
+    }
+
+    override fun onEditRepetition(id: String) {
         val iteration = state.value.exercise.iterations.find { it.id == id } ?: return
 
         val dialog = DialogConfig.Iteration(

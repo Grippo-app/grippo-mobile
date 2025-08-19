@@ -97,7 +97,10 @@ public fun ExerciseCard(
             ) {
                 value.iterations.forEach { iteration ->
                     key(iteration.id) {
-                        IterationCard(value = iteration)
+                        IterationCard(
+                            value = iteration,
+                            style = IterationCardStyle.SmallView
+                        )
                     }
                 }
             }
