@@ -8,7 +8,7 @@ internal class RegistrationViewModel :
     BaseViewModel<RegistrationState, RegistrationDirection, RegistrationLoader>(RegistrationState()),
     RegistrationContract {
 
-    override fun close() {
+    override fun onClose() {
         navigateTo(RegistrationDirection.Close)
     }
 

@@ -5,6 +5,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.value.Value
@@ -21,14 +22,14 @@ import com.grippo.training.success.TrainingSuccessComponent
 public class TrainingComponent(
     componentContext: ComponentContext,
     initial: TrainingRouter,
-    private val back: () -> Unit,
+    private val close: () -> Unit,
 ) : BaseComponent<TrainingDirection>(componentContext) {
 
     override val viewModel: TrainingViewModel = componentContext.retainedInstance {
         TrainingViewModel()
     }
 
-    private val backCallback = BackCallback(onBack = viewModel::onBack)
+    private val backCallback = BackCallback(onBack = viewModel::onClose)
 
     init {
         backHandler.register(backCallback)
@@ -36,7 +37,8 @@ public class TrainingComponent(
 
     override suspend fun eventListener(direction: TrainingDirection) {
         when (direction) {
-            TrainingDirection.Back -> back.invoke()
+            TrainingDirection.Close -> close.invoke()
+            TrainingDirection.Back -> navigation.pop()
             TrainingDirection.ToRecording -> navigation.push(TrainingRouter.Recording)
             is TrainingDirection.ToExercise -> navigation.push(TrainingRouter.Exercise(direction.id))
             TrainingDirection.ToSuccess -> navigation.replaceAll(TrainingRouter.Success)
@@ -60,7 +62,7 @@ public class TrainingComponent(
                 TrainingSetupComponent(
                     componentContext = context,
                     toRecording = viewModel::toRecording,
-                    back = viewModel::onBack
+                    back = viewModel::onClose
                 ),
             )
 

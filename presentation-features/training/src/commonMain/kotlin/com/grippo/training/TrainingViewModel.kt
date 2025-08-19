@@ -10,6 +10,10 @@ public class TrainingViewModel :
         navigateTo(TrainingDirection.Back)
     }
 
+    override fun onClose() {
+        navigateTo(TrainingDirection.Close)
+    }
+
     override fun toRecording() {
         navigateTo(TrainingDirection.ToRecording)
     }

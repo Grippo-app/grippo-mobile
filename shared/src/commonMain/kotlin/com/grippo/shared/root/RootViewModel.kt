@@ -46,7 +46,7 @@ public class RootViewModel(
         update { it.copy(isConnectedToInternet = isConnected) }
     }
 
-    override fun close() {
+    override fun onClose() {
         navigateTo(RootDirection.Close)
     }
 

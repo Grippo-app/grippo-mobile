@@ -33,7 +33,7 @@ import com.grippo.training.TrainingComponent
 
 public class RootComponent(
     componentContext: ComponentContext,
-    private val finish: () -> Unit,
+    private val close: () -> Unit,
 ) : BaseComponent<RootDirection>(componentContext) {
 
     private val dialogComponent = DialogComponent(componentContext)
@@ -56,7 +56,7 @@ public class RootComponent(
         childFactory = ::createChild,
     )
 
-    private val backCallback = BackCallback(onBack = viewModel::close)
+    private val backCallback = BackCallback(onBack = viewModel::onClose)
 
     init {
         backHandler.register(backCallback)
@@ -68,7 +68,7 @@ public class RootComponent(
                 navigation.replaceAll(RootRouter.Auth(AuthRouter.AuthProcess))
             }
 
-            RootDirection.Close -> finish.invoke()
+            RootDirection.Close -> close.invoke()
             RootDirection.ToHome -> navigation.replaceAll(RootRouter.Home)
             RootDirection.ToProfile -> navigation.push(RootRouter.Profile(ProfileRouter.WeightHistory))
             RootDirection.ToDebug -> navigation.push(RootRouter.Debug)
@@ -89,7 +89,7 @@ public class RootComponent(
                     componentContext = context,
                     initial = router.value,
                     toHome = viewModel::toHome,
-                    back = viewModel::close
+                    back = viewModel::onClose
                 ),
             )
 
@@ -104,7 +104,7 @@ public class RootComponent(
                     toWorkout = viewModel::toWorkout,
                     toSystemSettings = viewModel::toSystemSettings,
                     toExerciseLibrary = {},
-                    back = viewModel::close
+                    back = viewModel::onClose
                 )
             )
 
@@ -127,7 +127,7 @@ public class RootComponent(
                 TrainingComponent(
                     componentContext = context,
                     initial = TrainingRouter.Setup,
-                    back = viewModel::onBack
+                    close = viewModel::onBack
                 )
             )
 
@@ -135,7 +135,7 @@ public class RootComponent(
                 SettingsComponent(
                     componentContext = context,
                     initial = router.value,
-                    back = viewModel::onBack,
+                    close = viewModel::onBack,
                 )
             )
         }

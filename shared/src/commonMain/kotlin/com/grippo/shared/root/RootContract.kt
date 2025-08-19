@@ -1,7 +1,7 @@
 package com.grippo.shared.root
 
 public interface RootContract {
-    public fun close()
+    public fun onClose()
     public fun toHome()
     public fun toProfile()
     public fun toDebug()
@@ -14,7 +14,7 @@ public interface RootContract {
     public fun onBack()
 
     public companion object Empty : RootContract {
-        override fun close() {}
+        override fun onClose() {}
         override fun toHome() {}
         override fun toProfile() {}
         override fun toDebug() {}

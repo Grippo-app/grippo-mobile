@@ -16,14 +16,14 @@ import com.grippo.settings.system.SystemComponent
 public class SettingsComponent(
     initial: SettingsRouter,
     componentContext: ComponentContext,
-    private val back: () -> Unit
+    private val close: () -> Unit
 ) : BaseComponent<SettingsDirection>(componentContext) {
 
     override val viewModel: SettingsViewModel = componentContext.retainedInstance {
         SettingsViewModel()
     }
 
-    private val backCallback = BackCallback(onBack = viewModel::onBack)
+    private val backCallback = BackCallback(onBack = viewModel::onClose)
 
     init {
         backHandler.register(backCallback)
@@ -31,7 +31,7 @@ public class SettingsComponent(
 
     override suspend fun eventListener(direction: SettingsDirection) {
         when (direction) {
-            SettingsDirection.Back -> back.invoke()
+            SettingsDirection.Close -> close.invoke()
         }
     }
 
@@ -55,7 +55,7 @@ public class SettingsComponent(
             SettingsRouter.System -> Child.System(
                 SystemComponent(
                     componentContext = context,
-                    back = viewModel::onBack
+                    back = viewModel::onClose
                 ),
             )
         }

@@ -68,7 +68,7 @@ public class AuthComponent(
                 AuthProcessComponent(
                     componentContext = context,
                     toHome = viewModel::toHome,
-                    back = viewModel::onBack
+                    close = viewModel::onBack
                 ),
             )
         }

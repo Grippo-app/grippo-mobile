@@ -24,7 +24,7 @@ import com.grippo.presentation.api.auth.RegistrationRouter
 internal class RegistrationComponent(
     componentContext: ComponentContext,
     private val toHome: () -> Unit,
-    private val back: () -> Unit,
+    private val close: () -> Unit,
 ) : BaseComponent<RegistrationDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
@@ -58,14 +58,14 @@ internal class RegistrationComponent(
             )
 
             RegistrationDirection.ToHome -> toHome.invoke()
-            RegistrationDirection.Close -> back.invoke()
+            RegistrationDirection.Close -> close.invoke()
             RegistrationDirection.Back -> navigation.pop()
         }
     }
 
     private val navigation = StackNavigation<RegistrationRouter>()
 
-    private val backCallback = BackCallback(onBack = viewModel::close)
+    private val backCallback = BackCallback(onBack = viewModel::onClose)
 
     init {
         backHandler.register(backCallback)
@@ -86,7 +86,7 @@ internal class RegistrationComponent(
                 CredentialComponent(
                     componentContext = context,
                     toName = viewModel::toNameWithCredentials,
-                    back = viewModel::close
+                    back = viewModel::onClose
                 ),
             )
 

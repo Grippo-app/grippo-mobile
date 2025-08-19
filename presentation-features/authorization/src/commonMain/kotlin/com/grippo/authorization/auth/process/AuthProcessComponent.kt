@@ -19,14 +19,14 @@ import com.grippo.presentation.api.auth.AuthProcessRouter
 internal class AuthProcessComponent(
     componentContext: ComponentContext,
     private val toHome: () -> Unit,
-    private val back: () -> Unit
+    private val close: () -> Unit
 ) : BaseComponent<AuthProcessDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
         AuthProcessViewModel()
     }
 
-    private val backCallback = BackCallback(onBack = viewModel::close)
+    private val backCallback = BackCallback(onBack = viewModel::onClose)
 
     init {
         backHandler.register(backCallback)
@@ -34,7 +34,7 @@ internal class AuthProcessComponent(
 
     override suspend fun eventListener(direction: AuthProcessDirection) {
         when (direction) {
-            AuthProcessDirection.Close -> back.invoke()
+            AuthProcessDirection.Close -> close.invoke()
             AuthProcessDirection.ToRegistration -> navigation.push(AuthProcessRouter.Registration)
             AuthProcessDirection.ToHome -> toHome.invoke()
             AuthProcessDirection.Back -> navigation.pop()
@@ -59,7 +59,7 @@ internal class AuthProcessComponent(
                     componentContext = context,
                     toRegistration = viewModel::toRegistration,
                     toHome = viewModel::toHome,
-                    back = viewModel::close
+                    back = viewModel::onClose
                 )
             )
 
@@ -67,7 +67,7 @@ internal class AuthProcessComponent(
                 RegistrationComponent(
                     componentContext = context,
                     toHome = viewModel::toHome,
-                    back = viewModel::onBack
+                    close = viewModel::onBack
                 )
             )
         }
