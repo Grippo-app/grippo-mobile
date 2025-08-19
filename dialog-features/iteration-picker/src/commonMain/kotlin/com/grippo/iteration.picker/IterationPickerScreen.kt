@@ -6,7 +6,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
@@ -16,8 +19,10 @@ import com.grippo.design.components.inputs.InputVolume
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.state.formatters.RepetitionsFormatState
-import com.grippo.state.formatters.VolumeFormatState
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.submit_btn
+import com.grippo.state.trainings.IterationFocus
+import com.grippo.state.trainings.stubIteration
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -27,6 +32,17 @@ internal fun IterationPickerScreen(
     loaders: ImmutableSet<IterationPickerLoader>,
     contract: IterationPickerContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
+
+    val volumeRequester = FocusRequester()
+    val repetitionsRequester = FocusRequester()
+
+    LaunchedEffect(state.focus) {
+        when (state.focus) {
+            IterationFocus.VOLUME -> volumeRequester.requestFocus()
+            IterationFocus.REPETITIONS -> repetitionsRequester.requestFocus()
+            IterationFocus.UNIDENTIFIED -> {}
+        }
+    }
 
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
@@ -43,9 +59,10 @@ internal fun IterationPickerScreen(
 
     InputRepetitions(
         modifier = Modifier
+            .focusRequester(volumeRequester)
             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
             .fillMaxWidth(),
-        value = state.repetitions.value,
+        value = state.value.repetitions.value,
         onValueChange = contract::onRepetitionsChange
     )
 
@@ -53,9 +70,10 @@ internal fun IterationPickerScreen(
 
     InputVolume(
         modifier = Modifier
+            .focusRequester(repetitionsRequester)
             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
             .fillMaxWidth(),
-        value = state.volume.value,
+        value = state.value.volume.value,
         onValueChange = contract::onVolumeChange
     )
 
@@ -65,7 +83,7 @@ internal fun IterationPickerScreen(
         modifier = Modifier
             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
             .fillMaxWidth(),
-        text = "Submit",
+        text = AppTokens.strings.res(Res.string.submit_btn),
         style = ButtonStyle.Primary,
         onClick = contract::onSubmit
     )
@@ -79,8 +97,8 @@ private fun ScreenPreview() {
     PreviewContainer {
         IterationPickerScreen(
             state = IterationPickerState(
-                volume = VolumeFormatState.of(140f),
-                repetitions = RepetitionsFormatState.of(6)
+                value = stubIteration(),
+                focus = IterationFocus.UNIDENTIFIED
             ),
             loaders = persistentSetOf(),
             contract = IterationPickerContract.Empty

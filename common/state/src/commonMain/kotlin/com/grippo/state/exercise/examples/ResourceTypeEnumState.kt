@@ -6,6 +6,5 @@ import androidx.compose.runtime.Immutable
 public enum class ResourceTypeEnumState {
     YOUTUBE_VIDEO,
     VIDEO,
-    TEXT,
-    UNKNOWN
+    TEXT
 }

@@ -3,10 +3,12 @@ package com.grippo.state.trainings
 import androidx.compose.runtime.Immutable
 import com.grippo.state.formatters.RepetitionsFormatState
 import com.grippo.state.formatters.VolumeFormatState
+import kotlinx.serialization.Serializable
 import kotlin.random.Random
 import kotlin.uuid.Uuid
 
 @Immutable
+@Serializable
 public data class IterationState(
     val id: String,
     val volume: VolumeFormatState,

@@ -6,17 +6,22 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.platform.collectAsStateMultiplatform
+import com.grippo.state.trainings.IterationFocus
+import com.grippo.state.trainings.IterationState
 
 public class IterationPickerComponent(
     componentContext: ComponentContext,
-    private val volume: Float,
-    private val repetitions: Int,
-    private val onResult: (volume: Float, repetitions: Int) -> Unit,
+    private val focus: IterationFocus,
+    private val initial: IterationState,
+    private val onResult: (value: IterationState) -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<IterationPickerDirection>(componentContext) {
 
     override val viewModel: IterationPickerViewModel = componentContext.retainedInstance {
-        IterationPickerViewModel(volume = volume, repetitions = repetitions)
+        IterationPickerViewModel(
+            initial = initial,
+            focus = focus
+        )
     }
 
     private val backCallback = BackCallback(onBack = viewModel::onBack)
@@ -27,11 +32,7 @@ public class IterationPickerComponent(
 
     override suspend fun eventListener(direction: IterationPickerDirection) {
         when (direction) {
-            is IterationPickerDirection.BackWithResult -> onResult.invoke(
-                direction.volume,
-                direction.repetitions
-            )
-
+            is IterationPickerDirection.BackWithResult -> onResult.invoke(direction.value)
             IterationPickerDirection.Back -> back.invoke()
         }
     }

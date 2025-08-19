@@ -5,21 +5,28 @@ import androidx.compose.runtime.Immutable
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.kg
+import kotlinx.serialization.Serializable
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
 @Immutable
-public sealed class VolumeFormatState(public open val value: Float) {
-    @Immutable
-    public data class Valid(
-        override val value: Float
-    ) : VolumeFormatState(value = value)
+@Serializable
+public sealed class VolumeFormatState {
+
+    public abstract val value: Float
 
     @Immutable
+    @Serializable
+    public data class Valid(
+        override val value: Float
+    ) : VolumeFormatState()
+
+    @Immutable
+    @Serializable
     public data class Invalid(
         override val value: Float
-    ) : VolumeFormatState(value = value)
+    ) : VolumeFormatState()
 
     public companion object {
         public fun of(value: Float): VolumeFormatState {

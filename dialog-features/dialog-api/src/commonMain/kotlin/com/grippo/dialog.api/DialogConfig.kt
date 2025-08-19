@@ -2,6 +2,8 @@ package com.grippo.dialog.api
 
 import com.grippo.date.utils.DateRange
 import com.grippo.state.datetime.PeriodState
+import com.grippo.state.trainings.IterationFocus
+import com.grippo.state.trainings.IterationState
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -40,9 +42,9 @@ public sealed class DialogConfig(
 
     @Serializable
     public data class Iteration(
-        val volume: Float,
-        val repeats: Int,
-        @Transient val onResult: (weight: Float, repeats: Int) -> Unit = { w, r -> },
+        val initial: IterationState,
+        val focus: IterationFocus,
+        @Transient val onResult: (iteration: IterationState) -> Unit = { },
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = false

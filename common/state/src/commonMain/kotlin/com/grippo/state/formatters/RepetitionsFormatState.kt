@@ -5,18 +5,25 @@ import androidx.compose.runtime.Immutable
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.x
+import kotlinx.serialization.Serializable
 
 @Immutable
-public sealed class RepetitionsFormatState(public open val value: Int) {
-    @Immutable
-    public data class Valid(
-        override val value: Int
-    ) : RepetitionsFormatState(value = value)
+@Serializable
+public sealed class RepetitionsFormatState {
+
+    public abstract val value: Int
 
     @Immutable
+    @Serializable
+    public data class Valid(
+        override val value: Int
+    ) : RepetitionsFormatState()
+
+    @Immutable
+    @Serializable
     public data class Invalid(
         override val value: Int
-    ) : RepetitionsFormatState(value = value)
+    ) : RepetitionsFormatState()
 
     public companion object {
         public fun of(value: Int): RepetitionsFormatState {

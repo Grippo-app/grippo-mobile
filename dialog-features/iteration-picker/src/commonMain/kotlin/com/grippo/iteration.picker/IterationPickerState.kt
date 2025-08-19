@@ -1,11 +1,11 @@
 package com.grippo.iteration.picker
 
 import androidx.compose.runtime.Immutable
-import com.grippo.state.formatters.RepetitionsFormatState
-import com.grippo.state.formatters.VolumeFormatState
+import com.grippo.state.trainings.IterationFocus
+import com.grippo.state.trainings.IterationState
 
 @Immutable
 public data class IterationPickerState(
-    val volume: VolumeFormatState,
-    val repetitions: RepetitionsFormatState,
+    val value: IterationState,
+    val focus: IterationFocus,
 )
