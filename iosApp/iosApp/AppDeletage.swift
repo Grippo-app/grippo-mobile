@@ -12,7 +12,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             instanceKeeper: nil,
             backHandler: backDispatcher
         ),
-        finish: {
+        close: {
             // ✅ Soft hide app
             UIApplication.shared.perform(#selector(NSXPCConnection.suspend))
 

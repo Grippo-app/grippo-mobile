@@ -25,6 +25,7 @@ import com.grippo.state.trainings.IterationFocus
 import com.grippo.state.trainings.stubIteration
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.coroutines.delay
 
 @Composable
 internal fun IterationPickerScreen(
@@ -37,6 +38,7 @@ internal fun IterationPickerScreen(
     val repetitionsRequester = FocusRequester()
 
     LaunchedEffect(state.focus) {
+        delay(300)
         when (state.focus) {
             IterationFocus.VOLUME -> volumeRequester.requestFocus()
             IterationFocus.REPETITIONS -> repetitionsRequester.requestFocus()
