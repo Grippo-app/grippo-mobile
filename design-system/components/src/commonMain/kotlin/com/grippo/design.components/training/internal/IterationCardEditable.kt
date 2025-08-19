@@ -4,12 +4,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -20,6 +22,7 @@ import com.grippo.state.trainings.stubIteration
 @Composable
 internal fun IterationCardEditable(
     modifier: Modifier = Modifier,
+    label: String,
     value: IterationState,
     onVolumeClick: () -> Unit,
     onRepetitionClick: () -> Unit
@@ -31,6 +34,17 @@ internal fun IterationCardEditable(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.iterationCard.editable.spacing)
     ) {
+
+        Text(
+            modifier = Modifier
+                .width(60.dp)
+                .padding(horizontal = AppTokens.dp.iterationCard.editable.horizontalPadding),
+            text = label,
+            textAlign = TextAlign.Center,
+            style = AppTokens.typography.b13Bold(),
+            color = AppTokens.colors.text.primary
+        )
+
         Text(
             modifier = Modifier
                 .scalableClick(onClick = onVolumeClick)
@@ -68,21 +82,25 @@ internal fun IterationCardEditable(
 private fun IterationCardEditablePreview() {
     PreviewContainer {
         IterationCardEditable(
+            label = "1",
             value = stubIteration(),
             onVolumeClick = {},
             onRepetitionClick = {}
         )
         IterationCardEditable(
+            label = "2",
             value = stubIteration(),
             onVolumeClick = {},
             onRepetitionClick = {}
         )
         IterationCardEditable(
+            label = "3",
             value = stubIteration(),
             onVolumeClick = {},
             onRepetitionClick = {}
         )
         IterationCardEditable(
+            label = "4",
             value = stubIteration(),
             onVolumeClick = {},
             onRepetitionClick = {}

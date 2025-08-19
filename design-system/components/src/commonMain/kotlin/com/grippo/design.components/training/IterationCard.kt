@@ -17,6 +17,7 @@ public sealed interface IterationCardStyle {
 
     @Immutable
     public data class Editable(
+        val label: String,
         val onVolumeClick: () -> Unit,
         val onRepetitionClick: () -> Unit,
     ) : IterationCardStyle
@@ -36,6 +37,7 @@ public fun IterationCard(
 
         is IterationCardStyle.Editable -> IterationCardEditable(
             modifier = modifier,
+            label = style.label,
             value = value,
             onVolumeClick = style.onVolumeClick,
             onRepetitionClick = style.onRepetitionClick
@@ -72,19 +74,35 @@ private fun IterationCardEditablePreview() {
     PreviewContainer {
         IterationCard(
             value = stubIteration(),
-            style = IterationCardStyle.Editable(onVolumeClick = {}, onRepetitionClick = {})
+            style = IterationCardStyle.Editable(
+                label = "1",
+                onVolumeClick = {},
+                onRepetitionClick = {}
+            )
         )
         IterationCard(
             value = stubIteration(),
-            style = IterationCardStyle.Editable(onVolumeClick = {}, onRepetitionClick = {}),
+            style = IterationCardStyle.Editable(
+                label = "2",
+                onVolumeClick = {},
+                onRepetitionClick = {}
+            ),
         )
         IterationCard(
             value = stubIteration(),
-            style = IterationCardStyle.Editable(onVolumeClick = {}, onRepetitionClick = {}),
+            style = IterationCardStyle.Editable(
+                label = "3",
+                onVolumeClick = {},
+                onRepetitionClick = {}
+            ),
         )
         IterationCard(
             value = stubIteration(),
-            style = IterationCardStyle.Editable(onVolumeClick = {}, onRepetitionClick = {}),
+            style = IterationCardStyle.Editable(
+                label = "4",
+                onVolumeClick = {},
+                onRepetitionClick = {}
+            ),
         )
     }
 }

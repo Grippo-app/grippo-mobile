@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -104,10 +104,10 @@ internal fun ExerciseScreen(
             )
         }
 
-        items(
+        itemsIndexed(
             items = state.exercise.iterations,
-            key = { it.id }
-        ) { iteration ->
+            key = { index, item -> item.id }
+        ) { index, iteration ->
             val editVolumeProvider = remember(iteration.id) {
                 { contract.onEditVolume(iteration.id) }
             }
@@ -120,6 +120,7 @@ internal fun ExerciseScreen(
                 modifier = Modifier.fillMaxWidth(),
                 value = iteration,
                 style = IterationCardStyle.Editable(
+                    label = (index + 1).toString(),
                     onVolumeClick = editVolumeProvider,
                     onRepetitionClick = editRepetitionProvider
                 )
