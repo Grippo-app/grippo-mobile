@@ -39,8 +39,8 @@ public fun stubExercise(): ExerciseState = ExerciseState(
             add(stubIteration())
         }
     }.toPersistentList(),
-    volume = VolumeFormatState(Random.nextInt(1000, 10000).toFloat()),
-    intensity = IntensityFormatState(Random.nextInt(20, 100).toFloat()),
-    repetitions = RepetitionsFormatState(Random.nextInt(20, 100)),
+    volume = VolumeFormatState.of(Random.nextInt(1000, 10000).toFloat()),
+    intensity = IntensityFormatState.of(Random.nextInt(20, 100).toFloat()),
+    repetitions = RepetitionsFormatState.of(Random.nextInt(20, 100)),
     exerciseExample = stubExerciseExampleValueState()
 )

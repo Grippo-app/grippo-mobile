@@ -54,12 +54,12 @@ public fun VolumeChip(
 private fun VolumeChipPreview() {
     PreviewContainer {
         VolumeChip(
-            value = VolumeFormatState(1250.5f),
+            value = VolumeFormatState.of(1250.5f),
             style = VolumeChipStyle.LONG
         )
 
         VolumeChip(
-            value = VolumeFormatState(1250.5f),
+            value = VolumeFormatState.of(1250.5f),
             style = VolumeChipStyle.SHORT
         )
     }

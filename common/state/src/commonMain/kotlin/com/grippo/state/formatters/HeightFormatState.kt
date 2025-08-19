@@ -26,7 +26,6 @@ public sealed class HeightFormatState(public open val value: Int) {
 }
 
 private object HeightValidator {
-
     fun isValid(value: Int): Boolean {
         val withinRange = value in 100..250
         return withinRange

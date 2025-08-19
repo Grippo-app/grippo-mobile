@@ -10,7 +10,27 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 
 @Immutable
-public data class VolumeFormatState(val value: Float) {
+public sealed class VolumeFormatState(public open val value: Float) {
+    @Immutable
+    public data class Valid(
+        override val value: Float
+    ) : VolumeFormatState(value = value)
+
+    @Immutable
+    public data class Invalid(
+        override val value: Float
+    ) : VolumeFormatState(value = value)
+
+    public companion object {
+        public fun of(value: Float): VolumeFormatState {
+            return if (VolumeValidator.isValid(value)) {
+                Valid(value)
+            } else {
+                Invalid(value)
+            }
+        }
+    }
+
     @Composable
     public fun short(): String {
         val kg = AppTokens.strings.res(Res.string.kg)
@@ -42,5 +62,11 @@ public data class VolumeFormatState(val value: Float) {
     private fun Float.round(decimals: Int): Float {
         val factor = 10.0.pow(decimals).toFloat()
         return (this * factor).roundToInt() / factor
+    }
+}
+
+private object VolumeValidator {
+    fun isValid(value: Float): Boolean {
+        return value >= 0f
     }
 }

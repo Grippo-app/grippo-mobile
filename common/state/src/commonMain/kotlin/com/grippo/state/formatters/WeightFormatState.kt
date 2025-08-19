@@ -26,7 +26,6 @@ public sealed class WeightFormatState(public open val value: Float) {
 }
 
 private object WeightValidator {
-
     fun isValid(value: Float): Boolean {
         val withinRange = value in 30.0f..150.0f
         val hasOneDecimal = (value * 10).rem(1f) == 0f

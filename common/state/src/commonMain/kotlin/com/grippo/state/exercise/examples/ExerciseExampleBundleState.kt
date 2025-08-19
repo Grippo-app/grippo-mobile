@@ -21,7 +21,7 @@ public fun stubExerciseExampleBundles(): ImmutableList<ExerciseExampleBundleStat
         ExerciseExampleBundleState(
             id = Uuid.random().toString(),
             muscle = m.value,
-            percentage = PercentageFormatState(Random.nextInt(1, 20))
+            percentage = PercentageFormatState.of(Random.nextInt(1, 20))
         )
     }.toPersistentList()
 }
@@ -30,6 +30,6 @@ public fun stubExerciseExampleBundle(): ExerciseExampleBundleState {
     return ExerciseExampleBundleState(
         id = Uuid.random().toString(),
         muscle = stubMuscles().random().muscles.random().value,
-        percentage = PercentageFormatState(Random.nextInt(1, 20))
+        percentage = PercentageFormatState.of(Random.nextInt(1, 20))
     )
 }

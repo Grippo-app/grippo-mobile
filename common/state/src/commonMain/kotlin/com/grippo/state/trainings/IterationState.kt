@@ -15,6 +15,6 @@ public data class IterationState(
 
 public fun stubIteration(): IterationState = IterationState(
     id = Uuid.random().toString(),
-    volume = VolumeFormatState(Random.nextInt(40, 250).toFloat()),
-    repetitions = RepetitionsFormatState(Random.nextInt(2, 16))
+    volume = VolumeFormatState.of(Random.nextInt(40, 250).toFloat()),
+    repetitions = RepetitionsFormatState.of(Random.nextInt(2, 16))
 )

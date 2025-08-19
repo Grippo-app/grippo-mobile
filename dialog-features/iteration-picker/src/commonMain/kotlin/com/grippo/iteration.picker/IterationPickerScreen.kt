@@ -16,6 +16,8 @@ import com.grippo.design.components.inputs.InputVolume
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.state.formatters.RepetitionsFormatState
+import com.grippo.state.formatters.VolumeFormatState
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -43,7 +45,7 @@ internal fun IterationPickerScreen(
         modifier = Modifier
             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
             .fillMaxWidth(),
-        value = state.repetitions,
+        value = state.repetitions.value,
         onValueChange = contract::onRepetitionsChange
     )
 
@@ -53,7 +55,7 @@ internal fun IterationPickerScreen(
         modifier = Modifier
             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
             .fillMaxWidth(),
-        value = state.volume,
+        value = state.volume.value,
         onValueChange = contract::onVolumeChange
     )
 
@@ -77,8 +79,8 @@ private fun ScreenPreview() {
     PreviewContainer {
         IterationPickerScreen(
             state = IterationPickerState(
-                volume = 140f,
-                repetitions = 6
+                volume = VolumeFormatState.of(140f),
+                repetitions = RepetitionsFormatState.of(6)
             ),
             loaders = persistentSetOf(),
             contract = IterationPickerContract.Empty

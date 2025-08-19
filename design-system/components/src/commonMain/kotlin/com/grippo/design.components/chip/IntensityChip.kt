@@ -7,8 +7,8 @@ import androidx.compose.ui.graphics.Brush
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.icons.FireFlame
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.icons.FireFlame
 import com.grippo.design.resources.provider.intensity_chip
 import com.grippo.state.formatters.IntensityFormatState
 import com.grippo.state.formatters.UiText
@@ -54,12 +54,12 @@ public fun IntensityChip(
 private fun IntensityChipPreview() {
     PreviewContainer {
         IntensityChip(
-            value = IntensityFormatState(85f),
+            value = IntensityFormatState.of(85f),
             style = IntensityChipStyle.LONG
         )
 
         IntensityChip(
-            value = IntensityFormatState(85f),
+            value = IntensityFormatState.of(85f),
             style = IntensityChipStyle.SHORT
         )
     }

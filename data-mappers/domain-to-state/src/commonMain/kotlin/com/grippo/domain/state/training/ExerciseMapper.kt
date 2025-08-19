@@ -18,9 +18,9 @@ public fun Exercise.toState(): ExerciseState {
         id = id,
         name = name,
         iterations = iterations.toState(),
-        volume = VolumeFormatState(volume),
-        repetitions = RepetitionsFormatState(repetitions),
-        intensity = IntensityFormatState(intensity),
+        volume = VolumeFormatState.of(volume),
+        repetitions = RepetitionsFormatState.of(repetitions),
+        intensity = IntensityFormatState.of(intensity),
         exerciseExample = exerciseExample?.toState()
     )
 }

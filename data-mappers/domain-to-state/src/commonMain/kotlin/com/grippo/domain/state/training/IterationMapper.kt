@@ -14,7 +14,7 @@ public fun List<Iteration>.toState(): PersistentList<IterationState> {
 public fun Iteration.toState(): IterationState {
     return IterationState(
         id = id,
-        volume = VolumeFormatState(volume),
-        repetitions = RepetitionsFormatState(repetitions)
+        volume = VolumeFormatState.of(volume),
+        repetitions = RepetitionsFormatState.of(repetitions)
     )
 }

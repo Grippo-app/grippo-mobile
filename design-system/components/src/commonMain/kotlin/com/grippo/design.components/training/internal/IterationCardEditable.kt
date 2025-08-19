@@ -4,7 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,8 +37,11 @@ internal fun IterationCardEditable(
 
         Text(
             modifier = Modifier
-                .width(60.dp)
-                .padding(horizontal = AppTokens.dp.iterationCard.editable.horizontalPadding),
+                .widthIn(min = 60.dp)
+                .padding(
+                    horizontal = AppTokens.dp.iterationCard.editable.horizontalPadding,
+                    vertical = AppTokens.dp.iterationCard.editable.verticalPadding
+                ),
             text = label,
             textAlign = TextAlign.Center,
             style = AppTokens.typography.b13Bold(),

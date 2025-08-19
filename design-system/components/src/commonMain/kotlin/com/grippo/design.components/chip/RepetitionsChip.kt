@@ -54,12 +54,12 @@ public fun RepetitionsChip(
 private fun RepetitionsChipPreview() {
     PreviewContainer {
         RepetitionsChip(
-            value = RepetitionsFormatState(12),
+            value = RepetitionsFormatState.of(12),
             style = RepetitionsChipStyle.LONG
         )
 
         RepetitionsChip(
-            value = RepetitionsFormatState(12),
+            value = RepetitionsFormatState.of(12),
             style = RepetitionsChipStyle.SHORT
         )
     }

@@ -14,7 +14,7 @@ public fun List<ExerciseExampleBundle>.toState(): ImmutableList<ExerciseExampleB
 public fun ExerciseExampleBundle.toState(): ExerciseExampleBundleState {
     return ExerciseExampleBundleState(
         id = id,
-        percentage = PercentageFormatState(percentage),
+        percentage = PercentageFormatState.of(percentage),
         muscle = muscle.toState().value
     )
 }

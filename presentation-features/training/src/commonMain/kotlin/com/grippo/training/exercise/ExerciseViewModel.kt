@@ -23,8 +23,8 @@ internal class ExerciseViewModel(
             onResult = { volume, repeats ->
                 val iteration = IterationState(
                     id = Uuid.random().toString(),
-                    volume = VolumeFormatState(volume),
-                    repetitions = RepetitionsFormatState(repeats)
+                    volume = VolumeFormatState.of(volume),
+                    repetitions = RepetitionsFormatState.of(repeats)
                 )
 
                 update {
@@ -55,8 +55,8 @@ internal class ExerciseViewModel(
                         .toMutableList()
                         .map { m ->
                             if (m.id == id) m.copy(
-                                volume = VolumeFormatState(volume),
-                                repetitions = RepetitionsFormatState(repeats)
+                                volume = VolumeFormatState.of(volume),
+                                repetitions = RepetitionsFormatState.of(repeats)
                             ) else m
                         }.toPersistentList()
 
@@ -82,8 +82,8 @@ internal class ExerciseViewModel(
                         .toMutableList()
                         .map { m ->
                             if (m.id == id) m.copy(
-                                volume = VolumeFormatState(volume),
-                                repetitions = RepetitionsFormatState(repeats)
+                                volume = VolumeFormatState.of(volume),
+                                repetitions = RepetitionsFormatState.of(repeats)
                             ) else m
                         }.toPersistentList()
 

@@ -26,7 +26,6 @@ public sealed class PasswordFormatState(public open val value: String) {
 }
 
 private object PasswordValidator {
-
     fun isValid(value: String): Boolean {
         return value.length > 6
     }

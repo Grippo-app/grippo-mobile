@@ -16,9 +16,9 @@ public fun Training.toState(): TrainingState {
     return TrainingState(
         id = id,
         exercises = exercises.toState(),
-        volume = VolumeFormatState(volume),
-        repetitions = RepetitionsFormatState(repetitions),
-        intensity = IntensityFormatState(intensity),
+        volume = VolumeFormatState.of(volume),
+        repetitions = RepetitionsFormatState.of(repetitions),
+        intensity = IntensityFormatState.of(intensity),
         duration = duration,
         createdAt = createdAt
     )

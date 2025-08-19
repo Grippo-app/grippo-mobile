@@ -26,7 +26,6 @@ public sealed class NameFormatState(public open val value: String) {
 }
 
 private object NameValidator {
-
     fun isValid(value: String): Boolean {
         return value.length > 3
     }
