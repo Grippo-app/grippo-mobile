@@ -13,15 +13,15 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.grippo.design.components.internal.Input
-import com.grippo.design.components.internal.InputStyle
-import com.grippo.design.components.internal.PlaceHolder
+import com.grippo.design.components.inputs.core.Input
+import com.grippo.design.components.inputs.core.InputStyle
+import com.grippo.design.components.inputs.core.PlaceHolder
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.kg
-import com.grippo.design.resources.provider.repetitions_placeholder
+import com.grippo.design.resources.provider.volume_placeholder
 
 @Composable
 public fun InputVolume(
@@ -60,7 +60,7 @@ public fun InputVolume(
             )
         },
         placeholder = PlaceHolder.OverInput(
-            value = AppTokens.strings.res(Res.string.repetitions_placeholder)
+            value = AppTokens.strings.res(Res.string.volume_placeholder)
         ),
         keyboardActions = KeyboardActions {
             focusManager.moveFocus(FocusDirection.Next)

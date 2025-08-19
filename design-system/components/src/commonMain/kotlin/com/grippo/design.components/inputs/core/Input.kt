@@ -1,4 +1,4 @@
-package com.grippo.design.components.internal
+package com.grippo.design.components.inputs.core
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
@@ -24,14 +24,19 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.lerp
 import androidx.compose.ui.text.style.TextOverflow
@@ -77,12 +82,49 @@ internal fun Input(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     maxLines: Int = Int.MAX_VALUE,
     minLines: Int = 1,
+    controller: InputController = rememberInputController(),
 ) {
     val colors = AppTokens.colors
     val shape = RoundedCornerShape(AppTokens.dp.input.radius)
     val height = AppTokens.dp.input.height
 
     val hasFocus = remember { mutableStateOf(false) }
+    val interactionSource = remember { MutableInteractionSource() }
+
+    // Internal TextFieldValue to control selection
+    var tfv by remember(value) {
+        mutableStateOf(TextFieldValue(text = value, selection = TextRange(value.length)))
+    }
+
+    // Sync internal TFV with external String, preserving selection when possible
+    LaunchedEffect(value) {
+        if (value != tfv.text) {
+            val s = tfv.selection.start.coerceIn(0, value.length)
+            val e = tfv.selection.end.coerceIn(0, value.length)
+            tfv = tfv.copy(text = value, selection = TextRange(s, e))
+        }
+    }
+
+    // Apply controller intent exactly when focus is gained
+    LaunchedEffect(
+        hasFocus.value,
+        controller.moveToEndOnNextFocus,
+        controller.selectAllOnNextFocus
+    ) {
+        if (hasFocus.value) {
+            when {
+                controller.selectAllOnNextFocus -> {
+                    tfv = tfv.copy(selection = TextRange(0, tfv.text.length))
+                    controller.selectAllOnNextFocus = false
+                }
+
+                controller.moveToEndOnNextFocus -> {
+                    tfv = tfv.copy(selection = TextRange(tfv.text.length))
+                    controller.moveToEndOnNextFocus = false
+                }
+            }
+        }
+    }
 
     val borderColor = when {
         error is InputError.Error -> colors.semantic.error
@@ -90,36 +132,30 @@ internal fun Input(
         hasFocus.value -> colors.border.focus
         else -> Color.Transparent
     }
-
     val backgroundColor = when (enabled) {
         true -> colors.background.card
         else -> colors.input.backgroundDisabled
     }
-
     val placeholderColor = when {
         error is InputError.Error -> colors.semantic.error
         !enabled -> colors.input.placeholderDisabled
         else -> colors.input.placeholder
     }
-
     val labelColor = when {
         error is InputError.Error -> colors.semantic.error
         !enabled -> colors.input.placeholderDisabled
         else -> colors.input.label
     }
-
     val contentColor = when {
         error is InputError.Error -> colors.semantic.error
         !enabled -> colors.input.textDisabled
         else -> colors.input.text
     }
-
     val leadingColor = when {
         error is InputError.Error -> colors.semantic.error
         !enabled -> colors.input.textDisabled
         else -> colors.input.leading
     }
-
     val trailingColor = when {
         error is InputError.Error -> colors.semantic.error
         !enabled -> colors.input.textDisabled
@@ -127,11 +163,9 @@ internal fun Input(
     }
 
     val textStyleAnimateFraction = animateFloatAsState(
-        targetValue = if (hasFocus.value || value.isNotBlank()) 1f else 0f,
+        targetValue = if (hasFocus.value || tfv.text.isNotBlank()) 1f else 0f,
         animationSpec = tween(durationMillis = 100),
     )
-
-    val interactionSource = remember { MutableInteractionSource() }
 
     if (interactionSource.collectIsPressedAsState().value) {
         (inputStyle as? InputStyle.Clickable)?.onClick?.invoke()
@@ -149,15 +183,16 @@ internal fun Input(
             .heightIn(min = height)
             .onFocusChanged { hasFocus.value = it.hasFocus }
             .animateContentSize(),
-        value = value,
+        value = tfv,
         cursorBrush = SolidColor(contentColor),
-        onValueChange = when (inputStyle) {
-            is InputStyle.Clickable -> {
-                {}
-            }
+        onValueChange = { new ->
+            tfv = new
+            when (inputStyle) {
+                is InputStyle.Clickable -> {}
 
-            is InputStyle.Default -> {
-                inputStyle.onValueChange
+                is InputStyle.Default -> {
+                    inputStyle.onValueChange(new.text)
+                }
             }
         },
         readOnly = inputStyle is InputStyle.Clickable,
@@ -181,18 +216,14 @@ internal fun Input(
                     modifier = rowModifier,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-
                     Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding))
-
                     leading?.invoke(leadingColor)
-
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .animateContentSize()
-                    ) {
-                        innerTextField()
-                    }
+                            .animateContentSize(),
+                        content = { innerTextField() }
+                    )
 
                     if (trailing != null) {
                         trailing.invoke(trailingColor)
@@ -207,9 +238,7 @@ internal fun Input(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding))
-
                     leading?.invoke(leadingColor)
-
                     Box(
                         modifier = Modifier
                             .weight(1f)
@@ -221,18 +250,15 @@ internal fun Input(
                                 style = lerp(
                                     start = AppTokens.typography.b13Semi()
                                         .copy(color = placeholderColor),
-                                    stop = AppTokens.typography.b12Semi()
-                                        .copy(color = labelColor),
+                                    stop = AppTokens.typography.b12Semi().copy(color = labelColor),
                                     fraction = textStyleAnimateFraction.value,
                                 ),
                                 maxLines = maxLines,
                                 overflow = TextOverflow.Ellipsis,
                             )
-                            if (hasFocus.value || value.isNotBlank()) innerTextField()
+                            if (hasFocus.value || tfv.text.isNotBlank()) innerTextField()
                         }
                     }
-
-
                     if (trailing != null) {
                         trailing.invoke(trailingColor)
                         Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding / 3))

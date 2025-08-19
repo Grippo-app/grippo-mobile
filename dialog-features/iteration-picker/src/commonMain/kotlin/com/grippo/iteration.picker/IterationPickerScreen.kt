@@ -1,5 +1,7 @@
 package com.grippo.iteration.picker
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -7,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -25,7 +28,6 @@ import com.grippo.state.trainings.IterationFocus
 import com.grippo.state.trainings.stubIteration
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.coroutines.delay
 
 @Composable
 internal fun IterationPickerScreen(
@@ -38,7 +40,6 @@ internal fun IterationPickerScreen(
     val repetitionsRequester = FocusRequester()
 
     LaunchedEffect(state.focus) {
-        delay(300)
         when (state.focus) {
             IterationFocus.VOLUME -> volumeRequester.requestFocus()
             IterationFocus.REPETITIONS -> repetitionsRequester.requestFocus()
@@ -59,25 +60,29 @@ internal fun IterationPickerScreen(
 
     Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
 
-    InputRepetitions(
+    Row(
         modifier = Modifier
-            .focusRequester(volumeRequester)
             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
             .fillMaxWidth(),
-        value = state.value.repetitions.value,
-        onValueChange = contract::onRepetitionsChange
-    )
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+    ) {
+        InputVolume(
+            modifier = Modifier
+                .focusRequester(volumeRequester)
+                .weight(1f),
+            value = state.value.volume.value,
+            onValueChange = contract::onVolumeChange
+        )
 
-    Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
-
-    InputVolume(
-        modifier = Modifier
-            .focusRequester(repetitionsRequester)
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-            .fillMaxWidth(),
-        value = state.value.volume.value,
-        onValueChange = contract::onVolumeChange
-    )
+        InputRepetitions(
+            modifier = Modifier
+                .focusRequester(repetitionsRequester)
+                .weight(1f),
+            value = state.value.repetitions.value,
+            onValueChange = contract::onRepetitionsChange
+        )
+    }
 
     Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
 

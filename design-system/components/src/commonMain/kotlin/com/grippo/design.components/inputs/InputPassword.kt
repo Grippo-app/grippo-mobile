@@ -25,16 +25,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import com.grippo.design.components.internal.Input
-import com.grippo.design.components.internal.InputStyle
-import com.grippo.design.components.internal.PlaceHolder
+import com.grippo.design.components.inputs.core.Input
+import com.grippo.design.components.inputs.core.InputStyle
+import com.grippo.design.components.inputs.core.PlaceHolder
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.EyeEmpty
 import com.grippo.design.resources.provider.icons.EyeOff
-import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.password_placeholder
 
 @Composable
