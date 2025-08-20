@@ -14,51 +14,48 @@ public sealed class RepetitionsFormatState : FormatState<Int> {
     @Immutable
     @Serializable
     public data class Valid(
-        override val displayValue: String,
+        override val display: String,
         override val value: Int
-    ) : RepetitionsFormatState() {
-        override val isValid: Boolean = true
-    }
+    ) : RepetitionsFormatState()
 
     @Immutable
     @Serializable
     public data class Invalid(
-        override val displayValue: String,
+        override val display: String,
         override val value: Int? = null
-    ) : RepetitionsFormatState() {
-        override val isValid: Boolean = false
-    }
+    ) : RepetitionsFormatState()
 
     public companion object {
-        public fun of(displayValue: String): RepetitionsFormatState {
-            return if (displayValue.isEmpty()) {
-                Invalid(displayValue)
+        public fun of(display: String): RepetitionsFormatState {
+            return if (display.isEmpty()) {
+                Invalid(display)
             } else {
                 try {
-                    val repetitions = displayValue.toInt()
+                    val repetitions = display.toInt()
                     if (RepetitionsValidator.isValid(repetitions)) {
-                        Valid(displayValue, repetitions)
+                        Valid(display, repetitions)
                     } else {
-                        Invalid(displayValue, repetitions)
+                        Invalid(display, repetitions)
                     }
                 } catch (e: NumberFormatException) {
-                    Invalid(displayValue)
+                    Invalid(display)
                 }
             }
         }
 
-        public fun of(internalValue: Int): RepetitionsFormatState {
-            return if (RepetitionsValidator.isValid(internalValue)) {
-                Valid(internalValue.toString(), internalValue)
+        public fun of(value: Int): RepetitionsFormatState {
+            return if (RepetitionsValidator.isValid(value)) {
+                Valid(value.toString(), value)
             } else {
-                Invalid(internalValue.toString(), internalValue)
+                Invalid(value.toString(), value)
             }
         }
     }
 
     @Composable
     public fun short(): String {
-        return AppTokens.strings.res(Res.string.x, value ?: 0)
+        val x = AppTokens.strings.res(Res.string.x)
+        return "$x${value ?: "-"}"
     }
 
     private object RepetitionsValidator {

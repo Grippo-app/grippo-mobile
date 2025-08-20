@@ -12,20 +12,16 @@ public sealed class DateFormatState : FormatState<LocalDateTime> {
     @Immutable
     @Serializable
     public data class Valid(
-        override val displayValue: String,
+        override val display: String,
         override val value: LocalDateTime
-    ) : DateFormatState() {
-        override val isValid: Boolean = true
-    }
+    ) : DateFormatState()
 
     @Immutable
     @Serializable
     public data class Invalid(
-        override val displayValue: String,
+        override val display: String,
         override val value: LocalDateTime? = null
-    ) : DateFormatState() {
-        override val isValid: Boolean = false
-    }
+    ) : DateFormatState()
 
     public companion object {
         public fun of(internalValue: LocalDateTime, range: DateRange): DateFormatState {

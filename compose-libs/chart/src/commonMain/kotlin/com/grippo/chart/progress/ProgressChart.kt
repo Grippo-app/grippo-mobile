@@ -57,7 +57,7 @@ public fun ProgressChart(
                 val maxValueW = sampleValues.maxOfOrNull { t ->
                     measurer.measure(AnnotatedString(t), vCfg.textStyle).size.width
                 } ?: 0
-                (maxValueW + labelPad).toFloat()
+                (maxValueW + labelPad)
             }
 
             is ProgressStyle.Values.None, is ProgressStyle.Values.Inside -> 0f

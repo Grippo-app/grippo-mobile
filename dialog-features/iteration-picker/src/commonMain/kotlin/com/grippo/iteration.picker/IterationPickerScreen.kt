@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
@@ -23,6 +24,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.set_label
 import com.grippo.design.resources.provider.submit_btn
 import com.grippo.state.trainings.IterationFocus
 import com.grippo.state.trainings.stubIteration
@@ -49,13 +51,13 @@ internal fun IterationPickerScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
+
     Text(
-        modifier = Modifier
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-            .fillMaxWidth(),
-        text = "Iteration",
-        style = AppTokens.typography.h1(),
+        modifier = Modifier.fillMaxWidth(),
+        text = AppTokens.strings.res(Res.string.set_label),
+        style = AppTokens.typography.h3(),
         color = AppTokens.colors.text.primary,
+        textAlign = TextAlign.Center
     )
 
     Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
@@ -71,7 +73,7 @@ internal fun IterationPickerScreen(
             modifier = Modifier
                 .focusRequester(volumeRequester)
                 .weight(1f),
-            value = state.value.volume.displayValue,
+            value = state.value.volume.display,
             onValueChange = contract::onVolumeChange
         )
 
@@ -79,7 +81,7 @@ internal fun IterationPickerScreen(
             modifier = Modifier
                 .focusRequester(repetitionsRequester)
                 .weight(1f),
-            value = state.value.repetitions.displayValue,
+            value = state.value.repetitions.display,
             onValueChange = contract::onRepetitionsChange
         )
     }

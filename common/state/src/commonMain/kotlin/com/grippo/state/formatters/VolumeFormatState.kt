@@ -16,20 +16,16 @@ public sealed class VolumeFormatState : FormatState<Float> {
     @Immutable
     @Serializable
     public data class Valid(
-        override val displayValue: String,
+        override val display: String,
         override val value: Float
-    ) : VolumeFormatState() {
-        override val isValid: Boolean = true
-    }
+    ) : VolumeFormatState()
 
     @Immutable
     @Serializable
     public data class Invalid(
-        override val displayValue: String,
+        override val display: String,
         override val value: Float? = null
-    ) : VolumeFormatState() {
-        override val isValid: Boolean = false
-    }
+    ) : VolumeFormatState()
 
     public companion object {
         public fun of(displayValue: String): VolumeFormatState {
@@ -61,7 +57,7 @@ public sealed class VolumeFormatState : FormatState<Float> {
     @Composable
     public fun short(): String {
         val kg = AppTokens.strings.res(Res.string.kg)
-        return "${value?.short() ?: "0"}$kg"
+        return "${value?.short() ?: "-"}$kg"
     }
 
     private fun Float.short(): String {

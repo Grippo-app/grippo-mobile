@@ -14,20 +14,16 @@ public sealed class PercentageFormatState : FormatState<Int> {
     @Immutable
     @Serializable
     public data class Valid(
-        override val displayValue: String,
+        override val display: String,
         override val value: Int
-    ) : PercentageFormatState() {
-        override val isValid: Boolean = true
-    }
+    ) : PercentageFormatState()
 
     @Immutable
     @Serializable
     public data class Invalid(
-        override val displayValue: String,
+        override val display: String,
         override val value: Int? = null
-    ) : PercentageFormatState() {
-        override val isValid: Boolean = false
-    }
+    ) : PercentageFormatState()
 
     public companion object {
         public fun of(displayValue: String): PercentageFormatState {
@@ -58,7 +54,7 @@ public sealed class PercentageFormatState : FormatState<Int> {
 
     @Composable
     public fun short(): String {
-        return AppTokens.strings.res(Res.string.percent, value ?: 0)
+        return AppTokens.strings.res(Res.string.percent, value ?: "-")
     }
 
     private object PercentageValidator {

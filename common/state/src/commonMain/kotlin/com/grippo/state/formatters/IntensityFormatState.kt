@@ -15,20 +15,16 @@ public sealed class IntensityFormatState : FormatState<Float> {
     @Immutable
     @Serializable
     public data class Valid(
-        override val displayValue: String,
+        override val display: String,
         override val value: Float
-    ) : IntensityFormatState() {
-        override val isValid: Boolean = true
-    }
+    ) : IntensityFormatState()
 
     @Immutable
     @Serializable
     public data class Invalid(
-        override val displayValue: String,
+        override val display: String,
         override val value: Float? = null
-    ) : IntensityFormatState() {
-        override val isValid: Boolean = false
-    }
+    ) : IntensityFormatState()
 
     public companion object {
         public fun of(displayValue: String): IntensityFormatState {
@@ -59,7 +55,7 @@ public sealed class IntensityFormatState : FormatState<Float> {
 
     @Composable
     public fun short(): String {
-        return AppTokens.strings.res(Res.string.percent, value?.roundToInt() ?: 0)
+        return AppTokens.strings.res(Res.string.percent, value?.roundToInt() ?: "-")
     }
 
     private object IntensityValidator {

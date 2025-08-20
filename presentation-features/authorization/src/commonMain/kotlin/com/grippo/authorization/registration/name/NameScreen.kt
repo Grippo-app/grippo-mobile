@@ -78,7 +78,7 @@ internal fun NameScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         InputName(
-            value = state.name.displayValue,
+            value = state.name.display,
             onValueChange = contract::onNameChange
         )
 

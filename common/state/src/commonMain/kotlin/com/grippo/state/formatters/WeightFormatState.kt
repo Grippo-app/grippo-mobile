@@ -10,20 +10,16 @@ public sealed class WeightFormatState : FormatState<Float> {
     @Immutable
     @Serializable
     public data class Valid(
-        override val displayValue: String,
+        override val display: String,
         override val value: Float
-    ) : WeightFormatState() {
-        override val isValid: Boolean = true
-    }
+    ) : WeightFormatState()
 
     @Immutable
     @Serializable
     public data class Invalid(
-        override val displayValue: String,
+        override val display: String,
         override val value: Float? = null
-    ) : WeightFormatState() {
-        override val isValid: Boolean = false
-    }
+    ) : WeightFormatState()
 
     public companion object {
         public fun of(displayValue: String): WeightFormatState {

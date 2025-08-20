@@ -10,20 +10,16 @@ public sealed class NameFormatState : FormatState<String> {
     @Immutable
     @Serializable
     public data class Valid(
-        override val displayValue: String,
+        override val display: String,
         override val value: String
-    ) : NameFormatState() {
-        override val isValid: Boolean = true
-    }
+    ) : NameFormatState()
 
     @Immutable
     @Serializable
     public data class Invalid(
-        override val displayValue: String,
+        override val display: String,
         override val value: String? = null
-    ) : NameFormatState() {
-        override val isValid: Boolean = false
-    }
+    ) : NameFormatState()
 
     public companion object {
         public fun of(displayValue: String): NameFormatState {

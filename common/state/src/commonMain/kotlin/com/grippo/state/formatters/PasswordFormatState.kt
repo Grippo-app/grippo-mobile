@@ -10,20 +10,16 @@ public sealed class PasswordFormatState : FormatState<String> {
     @Immutable
     @Serializable
     public data class Valid(
-        override val displayValue: String,
+        override val display: String,
         override val value: String
-    ) : PasswordFormatState() {
-        override val isValid: Boolean = true
-    }
+    ) : PasswordFormatState()
 
     @Immutable
     @Serializable
     public data class Invalid(
-        override val displayValue: String,
+        override val display: String,
         override val value: String? = null
-    ) : PasswordFormatState() {
-        override val isValid: Boolean = false
-    }
+    ) : PasswordFormatState()
 
     public companion object {
         public fun of(displayValue: String): PasswordFormatState {

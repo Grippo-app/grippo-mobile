@@ -33,6 +33,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.percent
 import com.grippo.state.exercise.examples.ExerciseExampleBundleState
 import com.grippo.state.exercise.examples.stubExerciseExample
+import com.grippo.state.formatters.PercentageFormatState
 import com.grippo.state.formatters.UiText
 import com.grippo.state.muscles.factory.MuscleColorStrategy
 import com.grippo.state.muscles.factory.MuscleEngine
@@ -46,7 +47,7 @@ public fun ExerciseExampleBundlesCard(
 ) {
 
     val internalList = remember(value) {
-        value.sortedByDescending { it.percentage.value ?: 0 }.toPersistentList()
+        value.sortedByDescending { it.percentage.value }.toPersistentList()
     }
 
     val preset = MuscleEngine.generatePreset(MuscleColorStrategy.ByScaleStops(internalList))
@@ -57,11 +58,14 @@ public fun ExerciseExampleBundlesCard(
 
     val pie = remember(internalList) {
         DSPieData(
-            slices = internalList.mapIndexed { idx, it ->
+            slices = internalList.mapIndexedNotNull { idx, it ->
+                val percentage = (it.percentage as? PercentageFormatState.Valid)
+                    ?: return@mapIndexedNotNull null
+
                 DSPieSlice(
                     id = "slice-$idx",
-                    label = "${it.percentage.value ?: 0}$percent",
-                    value = (it.percentage.value ?: 0).toFloat(),
+                    label = "${percentage.display}$percent",
+                    value = percentage.value.toFloat(),
                     color = it.muscle.type.color(preset),
                 )
             }

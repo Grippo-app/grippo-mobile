@@ -3,6 +3,8 @@ package com.grippo.authorization.registration.body
 import com.grippo.core.BaseViewModel
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
+import com.grippo.state.formatters.HeightFormatState
+import com.grippo.state.formatters.WeightFormatState
 
 internal class BodyViewModel(
     private val dialogController: DialogController
@@ -26,9 +28,12 @@ internal class BodyViewModel(
     }
 
     override fun onNextClick() {
+        val weight = (state.value.weight as? WeightFormatState.Valid) ?: return
+        val height = (state.value.height as? HeightFormatState.Valid) ?: return
+
         val direction = BodyDirection.Experience(
-            weight = state.value.weight.value ?: 0f,
-            height = state.value.height.value ?: 0
+            weight = weight.value,
+            height = height.value
         )
         navigateTo(direction)
     }

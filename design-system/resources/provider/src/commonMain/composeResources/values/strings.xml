@@ -2,6 +2,8 @@
 <resources>
     <string name="kg">kg</string>
     <string name="reps">reps</string>
+    <string name="set_value">Set: %1$s</string>
+    <string name="sets_value">Sets (%1$s)</string>
     <string name="percent">%</string>
     <string name="back">Back</string>
     <string name="selected">Selected</string>
@@ -19,7 +21,6 @@
     <string name="add_exercise_btn">Add exercise</string>
     <string name="save_btn">Save</string>
     <string name="workout_saved">Workout saved</string>
-    <string name="iterations_label">Iterations (%d)</string>
     <string name="set_label">Set</string>
     <string name="add_set_btn">Add Set</string>
     <string name="or">OR</string>

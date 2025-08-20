@@ -10,20 +10,16 @@ public sealed class EmailFormatState : FormatState<String> {
     @Immutable
     @Serializable
     public data class Valid(
-        override val displayValue: String,
+        override val display: String,
         override val value: String
-    ) : EmailFormatState() {
-        override val isValid: Boolean = true
-    }
+    ) : EmailFormatState()
 
     @Immutable
     @Serializable
     public data class Invalid(
-        override val displayValue: String,
+        override val display: String,
         override val value: String? = null
-    ) : EmailFormatState() {
-        override val isValid: Boolean = false
-    }
+    ) : EmailFormatState()
 
     public companion object {
         public fun of(displayValue: String): EmailFormatState {

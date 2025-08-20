@@ -78,14 +78,14 @@ internal fun BodyScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         InputWeight(
-            value = state.weight.displayValue,
+            value = state.weight.display,
             onClick = contract::onWeightPickerClick
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         InputHeight(
-            value = state.height.displayValue,
+            value = state.height.display,
             onClick = contract::onHeightPickerClick
         )
 

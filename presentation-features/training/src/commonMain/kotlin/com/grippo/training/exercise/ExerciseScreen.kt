@@ -35,8 +35,8 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.add_set_btn
-import com.grippo.design.resources.provider.iterations_label
 import com.grippo.design.resources.provider.save_btn
+import com.grippo.design.resources.provider.sets_value
 import com.grippo.state.trainings.stubExercise
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -95,7 +95,7 @@ internal fun ExerciseScreen(
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = AppTokens.strings.res(
-                    Res.string.iterations_label,
+                    Res.string.sets_value,
                     state.exercise.iterations.size
                 ),
                 style = AppTokens.typography.h4(),

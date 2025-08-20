@@ -2,6 +2,8 @@
 <resources>
     <string name="kg">кг</string>
     <string name="reps">повт.</string>
+    <string name="set_value">Сет: %1$s</string>
+    <string name="sets_value">Сети (%1$s)</string>
     <string name="percent">%</string>
     <string name="back">Назад</string>
     <string name="selected">Обрано</string>
@@ -19,7 +21,6 @@
     <string name="add_exercise_btn">Додати вправу</string>
     <string name="save_btn">Зберегти</string>
     <string name="workout_saved">Тренування збережено</string>
-    <string name="iterations_label">Ітерації (%d)</string>
     <string name="set_label">Сет</string>
     <string name="add_set_btn">Додати сет</string>
     <string name="or">АБО</string>

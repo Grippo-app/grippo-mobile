@@ -9,8 +9,8 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import com.grippo.chart.utils.chooseContrastingText
@@ -35,6 +35,7 @@ public fun BarChart(
         is BarStyle.XAxis.LabelsAdaptive -> data.items.map { e ->
             measurer.measure(AnnotatedString(e.label), xCfg.textStyle)
         }
+
         is BarStyle.XAxis.LabelsShowAll -> data.items.map { e ->
             measurer.measure(AnnotatedString(e.label), xCfg.textStyle)
         }
@@ -58,6 +59,7 @@ public fun BarChart(
                 val txt = vCfg.formatter(it.value, data)
                 measurer.measure(AnnotatedString(txt), vCfg.textStyle).size.height
             }.toFloat()
+
             else -> 0f
         }
         if (valueAboveMaxH > 0f) {
@@ -65,9 +67,11 @@ public fun BarChart(
                 is BarStyle.XAxis.LabelsAdaptive -> data.items.maxOf {
                     measurer.measure(AnnotatedString(it.label), xCfg.textStyle).size.height
                 }.toFloat()
+
                 is BarStyle.XAxis.LabelsShowAll -> data.items.maxOf {
                     measurer.measure(AnnotatedString(it.label), xCfg.textStyle).size.height
                 }.toFloat()
+
                 is BarStyle.XAxis.None -> 0f
             }
             val chartHApprox = (size.height - bottomCandidate).coerceAtLeast(1f)
@@ -112,6 +116,7 @@ public fun BarChart(
                 val t = yCfg.formatter(minY + i * yStep, data)
                 t to yCfg.textStyle
             }
+
             is BarStyle.YAxis.None -> emptyList()
         }
 
@@ -123,6 +128,7 @@ public fun BarChart(
                 }
                 leftGutter = maxLabelW + labelPad
             }
+
             is BarStyle.YAxis.None -> leftGutter = 0f
         }
 
@@ -137,10 +143,12 @@ public fun BarChart(
                 val maxH = xAxisSpecs.maxOfOrNull { it.size.height } ?: 0
                 bottomGutter = maxH.toFloat()
             }
+
             is BarStyle.XAxis.LabelsShowAll -> {
                 val maxH = xAxisSpecs.maxOfOrNull { it.size.height } ?: 0
                 bottomGutter = maxH.toFloat()
             }
+
             is BarStyle.XAxis.None -> bottomGutter = 0f
         }
 
@@ -151,8 +159,9 @@ public fun BarChart(
                 val maxW = samples.maxOfOrNull { t ->
                     measurer.measure(AnnotatedString(t), vCfg.textStyle).size.width
                 } ?: 0
-                (maxW + labelPad).toFloat()
+                (maxW + labelPad)
             }
+
             else -> 0f
         }
 
@@ -175,7 +184,12 @@ public fun BarChart(
         }
         when (val yCfg = style.yAxis) {
             is BarStyle.YAxis.Labels -> {
-                val layouts = yAxisSpecs.map { (text, style) -> measurer.measure(AnnotatedString(text), style) }
+                val layouts = yAxisSpecs.map { (text, style) ->
+                    measurer.measure(
+                        AnnotatedString(text),
+                        style
+                    )
+                }
                 for (i in 0..yTickCount) {
                     val yVal = minY + i * yStep
                     val y = mapY(yVal)
@@ -261,6 +275,7 @@ public fun BarChart(
 
         // Collect value labels to draw after bars (so they are never occluded by later bars)
         data class ValueLabel(val layout: TextLayoutResult, val x: Float, val y: Float)
+
         val deferredValueLabels = mutableListOf<ValueLabel>()
 
         data.items.forEachIndexed { i, e ->

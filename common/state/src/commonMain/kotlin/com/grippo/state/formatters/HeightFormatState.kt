@@ -10,20 +10,16 @@ public sealed class HeightFormatState : FormatState<Int> {
     @Immutable
     @Serializable
     public data class Valid(
-        override val displayValue: String,
+        override val display: String,
         override val value: Int
-    ) : HeightFormatState() {
-        override val isValid: Boolean = true
-    }
+    ) : HeightFormatState()
 
     @Immutable
     @Serializable
     public data class Invalid(
-        override val displayValue: String,
+        override val display: String,
         override val value: Int? = null
-    ) : HeightFormatState() {
-        override val isValid: Boolean = false
-    }
+    ) : HeightFormatState()
 
     public companion object {
         public fun of(displayValue: String): HeightFormatState {

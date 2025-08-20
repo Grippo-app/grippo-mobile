@@ -47,7 +47,7 @@ internal fun WeightHistoryScreen(
         Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
 
         InputWeight(
-            value = state.weight.displayValue,
+            value = state.weight.display,
             onClick = contract::onWeightPickerClick
         )
 
