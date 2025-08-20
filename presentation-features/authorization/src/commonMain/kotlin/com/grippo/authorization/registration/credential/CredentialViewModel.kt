@@ -16,9 +16,12 @@ internal class CredentialViewModel :
     }
 
     override fun onNextClick() {
+        val email = (state.value.email as? EmailFormatState.Valid) ?: return
+        val password = (state.value.password as? PasswordFormatState.Valid) ?: return
+
         val direction = CredentialDirection.Name(
-            email = state.value.email.value ?: "",
-            password = state.value.password.value ?: ""
+            email = email.value,
+            password = password.value
         )
         navigateTo(direction)
     }
