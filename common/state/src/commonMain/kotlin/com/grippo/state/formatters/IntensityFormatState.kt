@@ -38,7 +38,7 @@ public sealed class IntensityFormatState : FormatState<Float> {
                     } else {
                         Invalid(displayValue, intensity)
                     }
-                } catch (e: NumberFormatException) {
+                } catch (_: NumberFormatException) {
                     Invalid(displayValue)
                 }
             }
@@ -55,12 +55,13 @@ public sealed class IntensityFormatState : FormatState<Float> {
 
     @Composable
     public fun short(): String {
-        return AppTokens.strings.res(Res.string.percent, value?.roundToInt() ?: "-")
+        val percent = AppTokens.strings.res(Res.string.percent)
+        return "${value?.roundToInt() ?: "-"}${percent}"
     }
 
     private object IntensityValidator {
         fun isValid(value: Float): Boolean {
-            return value in 0f..100f
+            return true
         }
     }
 }

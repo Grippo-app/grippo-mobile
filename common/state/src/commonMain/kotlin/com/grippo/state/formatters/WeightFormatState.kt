@@ -33,7 +33,7 @@ public sealed class WeightFormatState : FormatState<Float> {
                     } else {
                         Invalid(displayValue, weight)
                     }
-                } catch (e: NumberFormatException) {
+                } catch (_: NumberFormatException) {
                     Invalid(displayValue)
                 }
             }

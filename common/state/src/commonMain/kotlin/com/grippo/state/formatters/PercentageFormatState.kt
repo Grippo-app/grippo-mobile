@@ -37,7 +37,7 @@ public sealed class PercentageFormatState : FormatState<Int> {
                     } else {
                         Invalid(displayValue, percentage)
                     }
-                } catch (e: NumberFormatException) {
+                } catch (_: NumberFormatException) {
                     Invalid(displayValue)
                 }
             }
@@ -54,12 +54,13 @@ public sealed class PercentageFormatState : FormatState<Int> {
 
     @Composable
     public fun short(): String {
-        return AppTokens.strings.res(Res.string.percent, value ?: "-")
+        val percent = AppTokens.strings.res(Res.string.percent)
+        return "${value ?: "-"}${percent}"
     }
 
     private object PercentageValidator {
         fun isValid(value: Int): Boolean {
-            return value in 0..100
+            return true
         }
     }
 }

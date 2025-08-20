@@ -39,7 +39,7 @@ public sealed class VolumeFormatState : FormatState<Float> {
                     } else {
                         Invalid(displayValue, volume)
                     }
-                } catch (e: NumberFormatException) {
+                } catch (_: NumberFormatException) {
                     Invalid(displayValue)
                 }
             }

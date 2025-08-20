@@ -37,7 +37,7 @@ public sealed class RepetitionsFormatState : FormatState<Int> {
                     } else {
                         Invalid(display, repetitions)
                     }
-                } catch (e: NumberFormatException) {
+                } catch (_: NumberFormatException) {
                     Invalid(display)
                 }
             }

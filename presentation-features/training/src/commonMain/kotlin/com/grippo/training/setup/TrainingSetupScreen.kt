@@ -11,12 +11,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.muscle.MusclesColumn
 import com.grippo.design.components.muscle.MusclesImage
@@ -96,12 +98,20 @@ internal fun TrainingSetupScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
+    val buttonState = remember(loaders, state.selectedMuscleIds) {
+        when {
+            state.selectedMuscleIds.isEmpty() -> ButtonState.Disabled
+            else -> ButtonState.Enabled
+        }
+    }
+
     Button(
         modifier = Modifier
             .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
             .fillMaxWidth(),
         text = AppTokens.strings.res(Res.string.continue_btn),
         style = ButtonStyle.Primary,
+        state = buttonState,
         onClick = contract::onContinueClick
     )
 

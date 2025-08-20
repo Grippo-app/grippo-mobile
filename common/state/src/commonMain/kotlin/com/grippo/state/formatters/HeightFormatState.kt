@@ -33,7 +33,7 @@ public sealed class HeightFormatState : FormatState<Int> {
                     } else {
                         Invalid(displayValue, height)
                     }
-                } catch (e: NumberFormatException) {
+                } catch (_: NumberFormatException) {
                     Invalid(displayValue)
                 }
             }

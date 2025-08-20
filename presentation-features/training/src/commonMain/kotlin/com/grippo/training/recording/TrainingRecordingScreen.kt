@@ -1,6 +1,5 @@
 package com.grippo.training.recording
 
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -11,10 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
@@ -30,6 +29,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.add_exercise_btn
 import com.grippo.design.resources.provider.equipments
 import com.grippo.design.resources.provider.exercises
+import com.grippo.design.resources.provider.icons.NavArrowRight
 import com.grippo.design.resources.provider.save_btn
 import com.grippo.design.resources.provider.statistics
 import com.grippo.state.formatters.UiText
@@ -60,15 +60,29 @@ internal fun TrainingRecordingScreen(
         title = AppTokens.strings.res(Res.string.equipments),
         onBack = contract::onBack,
         content = {
-            Segment(
+            Row(
                 modifier = Modifier
-                    .horizontalScroll(rememberScrollState())
                     .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
                     .fillMaxWidth(),
-                items = segmentItems,
-                selected = state.tab,
-                onSelect = contract::onSelectTab
-            )
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+            ) {
+                Segment(
+                    items = segmentItems,
+                    selected = state.tab,
+                    onSelect = contract::onSelectTab
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Button(
+                    modifier = Modifier,
+                    text = AppTokens.strings.res(Res.string.save_btn),
+                    endIcon = AppTokens.icons.NavArrowRight,
+                    style = ButtonStyle.Transparent,
+                    onClick = contract::onSave
+                )
+            }
         }
     )
 
@@ -115,26 +129,14 @@ internal fun TrainingRecordingScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-    Row(
+    Button(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-    ) {
-        Button(
-            modifier = Modifier.weight(1f),
-            text = AppTokens.strings.res(Res.string.add_exercise_btn),
-            style = ButtonStyle.Secondary,
-            onClick = contract::onAddExercise
-        )
-
-        Button(
-            modifier = Modifier.weight(1f),
-            text = AppTokens.strings.res(Res.string.save_btn),
-            style = ButtonStyle.Primary,
-            onClick = contract::onSave
-        )
-    }
+            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+            .fillMaxWidth(1f),
+        text = AppTokens.strings.res(Res.string.add_exercise_btn),
+        style = ButtonStyle.Secondary,
+        onClick = contract::onAddExercise
+    )
 
     Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
 
