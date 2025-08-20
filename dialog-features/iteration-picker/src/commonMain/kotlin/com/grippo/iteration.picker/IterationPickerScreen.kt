@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -17,6 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.inputs.InputRepetitions
 import com.grippo.design.components.inputs.InputVolume
@@ -26,6 +28,8 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.set_label
 import com.grippo.design.resources.provider.submit_btn
+import com.grippo.state.formatters.RepetitionsFormatState
+import com.grippo.state.formatters.VolumeFormatState
 import com.grippo.state.trainings.IterationFocus
 import com.grippo.state.trainings.stubIteration
 import kotlinx.collections.immutable.ImmutableSet
@@ -88,12 +92,21 @@ internal fun IterationPickerScreen(
 
     Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
 
+    val buttonState = remember(loaders, state.value.repetitions, state.value.volume) {
+        when {
+            state.value.repetitions is RepetitionsFormatState.Invalid -> ButtonState.Disabled
+            state.value.volume is VolumeFormatState.Invalid -> ButtonState.Disabled
+            else -> ButtonState.Enabled
+        }
+    }
+
     Button(
         modifier = Modifier
             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
             .fillMaxWidth(),
         text = AppTokens.strings.res(Res.string.submit_btn),
         style = ButtonStyle.Primary,
+        state = buttonState,
         onClick = contract::onSubmit
     )
 

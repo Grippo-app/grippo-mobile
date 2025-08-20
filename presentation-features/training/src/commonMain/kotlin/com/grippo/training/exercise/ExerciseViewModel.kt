@@ -24,8 +24,8 @@ internal class ExerciseViewModel(
     override fun onAddIteration() {
         val value = IterationState(
             id = Uuid.random().toString(),
-            volume = VolumeFormatState.of(0f),
-            repetitions = RepetitionsFormatState.of(0)
+            volume = VolumeFormatState.of(""),
+            repetitions = RepetitionsFormatState.of("")
         )
 
         val dialog = DialogConfig.Iteration(
