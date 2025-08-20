@@ -71,13 +71,11 @@ public fun ExerciseCard(
             IntensityChip(
                 value = value.intensity,
                 style = IntensityChipStyle.SHORT,
-//                modifier = Modifier.weight(1f)
             )
 
             RepetitionsChip(
                 value = value.repetitions,
                 style = RepetitionsChipStyle.SHORT,
-//                modifier = Modifier.weight(1f)
             )
         }
 

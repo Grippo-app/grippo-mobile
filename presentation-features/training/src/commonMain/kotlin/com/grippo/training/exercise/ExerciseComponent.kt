@@ -6,16 +6,17 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.platform.collectAsStateMultiplatform
+import com.grippo.state.trainings.ExerciseState
 
 internal class ExerciseComponent(
     componentContext: ComponentContext,
-    private val id: String?,
+    private val exercise: ExerciseState,
     private val back: () -> Unit,
 ) : BaseComponent<ExerciseDirection>(componentContext) {
 
     override val viewModel: ExerciseViewModel = componentContext.retainedInstance {
         ExerciseViewModel(
-            id = id,
+            exercise = exercise,
             dialogController = getKoin().get(),
         )
     }

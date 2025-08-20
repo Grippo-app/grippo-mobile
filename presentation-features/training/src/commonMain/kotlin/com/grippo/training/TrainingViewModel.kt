@@ -1,9 +1,10 @@
 package com.grippo.training
 
 import com.grippo.core.BaseViewModel
+import com.grippo.state.trainings.ExerciseState
 
 public class TrainingViewModel :
-    BaseViewModel<TrainingState, TrainingDirection, TrainingLoader>(TrainingState),
+    BaseViewModel<TrainingState, TrainingDirection, TrainingLoader>(TrainingState()),
     TrainingContract {
 
     override fun onBack() {
@@ -18,8 +19,8 @@ public class TrainingViewModel :
         navigateTo(TrainingDirection.ToRecording)
     }
 
-    override fun toExercise(id: String?) {
-        navigateTo(TrainingDirection.ToExercise(id))
+    override fun toExercise(exercise: ExerciseState) {
+        navigateTo(TrainingDirection.ToExercise(exercise))
     }
 
     override fun toSuccess() {

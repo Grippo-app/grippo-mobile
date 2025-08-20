@@ -2,7 +2,12 @@ package com.grippo.training.recording
 
 import com.grippo.core.BaseViewModel
 import com.grippo.dialog.api.DialogController
-import com.grippo.state.trainings.stubExercises
+import com.grippo.state.formatters.IntensityFormatState
+import com.grippo.state.formatters.RepetitionsFormatState
+import com.grippo.state.formatters.VolumeFormatState
+import com.grippo.state.trainings.ExerciseState
+import kotlinx.collections.immutable.persistentListOf
+import kotlin.uuid.Uuid
 
 internal class TrainingRecordingViewModel(
     private val dialogController: DialogController,
@@ -10,18 +15,22 @@ internal class TrainingRecordingViewModel(
     TrainingRecordingState()
 ), TrainingRecordingContract {
 
-    init {
-        safeLaunch {
-            update { it.copy(exercises = stubExercises()) }
-        }
-    }
-
     override fun onAddExercise() {
-        navigateTo(TrainingRecordingDirection.ToExercise(null))
+        val exercise = ExerciseState(
+            id = Uuid.random().toString(),
+            name = "Test name",
+            volume = VolumeFormatState.of(0f),
+            repetitions = RepetitionsFormatState.of(0),
+            intensity = IntensityFormatState.of(0f),
+            iterations = persistentListOf(),
+            exerciseExample = null
+        )
+        navigateTo(TrainingRecordingDirection.ToExercise(exercise))
     }
 
     override fun onEditExercise(id: String) {
-        navigateTo(TrainingRecordingDirection.ToExercise(id))
+        val exercise = state.value.exercises.find { it.id == id } ?: return
+        navigateTo(TrainingRecordingDirection.ToExercise(exercise))
     }
 
     override fun onSelectTab(tab: RecordingTab) {

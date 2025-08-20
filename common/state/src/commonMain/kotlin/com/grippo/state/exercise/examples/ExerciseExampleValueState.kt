@@ -2,9 +2,11 @@ package com.grippo.state.exercise.examples
 
 import androidx.compose.runtime.Immutable
 import com.grippo.state.profile.ExperienceEnumState
+import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
 @Immutable
+@Serializable
 public data class ExerciseExampleValueState(
     val id: String,
     val name: String,

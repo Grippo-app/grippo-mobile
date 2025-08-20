@@ -5,16 +5,20 @@ import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.state.formatters.RepetitionsFormatState
 import com.grippo.state.formatters.VolumeFormatState
+import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.IterationFocus
 import com.grippo.state.trainings.IterationState
 import kotlinx.collections.immutable.toPersistentList
 import kotlin.uuid.Uuid
+import com.grippo.training.exercise.ExerciseState as ScreenExerciseState
 
 internal class ExerciseViewModel(
-    private val id: String?,
+    exercise: ExerciseState,
     private val dialogController: DialogController,
-) : BaseViewModel<ExerciseState, ExerciseDirection, ExerciseLoader>(
-    ExerciseState()
+) : BaseViewModel<ScreenExerciseState, ExerciseDirection, ExerciseLoader>(
+    ScreenExerciseState(
+        exercise = exercise
+    )
 ), ExerciseContract {
 
     override fun onAddIteration() {

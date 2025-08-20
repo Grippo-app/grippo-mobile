@@ -6,11 +6,12 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.platform.collectAsStateMultiplatform
+import com.grippo.state.trainings.ExerciseState
 
 internal class TrainingRecordingComponent(
     componentContext: ComponentContext,
     private val toSuccess: () -> Unit,
-    private val toExercise: (id: String?) -> Unit,
+    private val toExercise: (exercise: ExerciseState) -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<TrainingRecordingDirection>(componentContext) {
 
@@ -29,7 +30,7 @@ internal class TrainingRecordingComponent(
     override suspend fun eventListener(direction: TrainingRecordingDirection) {
         when (direction) {
             TrainingRecordingDirection.ToSuccess -> toSuccess.invoke()
-            is TrainingRecordingDirection.ToExercise -> toExercise.invoke(direction.id)
+            is TrainingRecordingDirection.ToExercise -> toExercise.invoke(direction.exercise)
             TrainingRecordingDirection.Back -> back.invoke()
         }
     }

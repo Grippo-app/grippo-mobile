@@ -10,10 +10,12 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.serialization.Serializable
 import kotlin.random.Random
 import kotlin.uuid.Uuid
 
 @Immutable
+@Serializable
 public data class ExerciseState(
     val id: String,
     val name: String,

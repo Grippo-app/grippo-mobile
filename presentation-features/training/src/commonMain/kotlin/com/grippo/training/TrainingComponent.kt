@@ -40,7 +40,7 @@ public class TrainingComponent(
             TrainingDirection.Close -> close.invoke()
             TrainingDirection.Back -> navigation.pop()
             TrainingDirection.ToRecording -> navigation.push(TrainingRouter.Recording)
-            is TrainingDirection.ToExercise -> navigation.push(TrainingRouter.Exercise(direction.id))
+            is TrainingDirection.ToExercise -> navigation.push(TrainingRouter.Exercise(direction.exercise))
             TrainingDirection.ToSuccess -> navigation.replaceAll(TrainingRouter.Success)
         }
     }
@@ -78,7 +78,7 @@ public class TrainingComponent(
             is TrainingRouter.Exercise -> Child.Exercise(
                 ExerciseComponent(
                     componentContext = context,
-                    id = router.id,
+                    exercise = router.exercise,
                     back = viewModel::onBack
                 ),
             )
