@@ -5,6 +5,7 @@
     <string name="set_value">Сет: %1$s</string>
     <string name="sets_value">Сети (%1$s)</string>
     <string name="percent">%</string>
+    <string name="prepare_training">Підготовка тренування</string>
     <string name="back">Назад</string>
     <string name="selected">Обрано</string>
     <string name="cm">см</string>
@@ -77,6 +78,7 @@
     <string name="profile_menu_excluded_muscles">Виключені м’язи</string>
     <string name="profile_menu_missing_equipment">Відсутнє обладнання</string>
     <string name="trainings">Тренування</string>
+    <string name="training">Тренування</string>
     <string name="profile">Профіль</string>
     <string name="statistics">Статистика</string>
     <string name="equipments">Обладнання</string>

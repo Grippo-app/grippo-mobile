@@ -28,8 +28,8 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.continue_btn
+import com.grippo.design.resources.provider.prepare_training
 import com.grippo.design.resources.provider.skip_btn
-import com.grippo.design.resources.provider.trainings
 import com.grippo.state.muscles.stubMuscles
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -43,7 +43,7 @@ internal fun TrainingSetupScreen(
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
-        title = AppTokens.strings.res(Res.string.trainings),
+        title = AppTokens.strings.res(Res.string.prepare_training),
         onBack = contract::onBack,
     )
 

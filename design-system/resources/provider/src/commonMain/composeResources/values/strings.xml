@@ -5,6 +5,7 @@
     <string name="set_value">Set: %1$s</string>
     <string name="sets_value">Sets (%1$s)</string>
     <string name="percent">%</string>
+    <string name="prepare_training">Prepare training</string>
     <string name="back">Back</string>
     <string name="selected">Selected</string>
     <string name="cm">cm</string>
@@ -96,6 +97,7 @@
     <string name="profile_menu_missing_equipment">Missing equipment</string>
 
     <string name="trainings">Trainings</string>
+    <string name="training">Training</string>
     <string name="profile">Profile</string>
     <string name="statistics">Statistics</string>
     <string name="equipments">Equipments</string>

@@ -27,11 +27,11 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.add_exercise_btn
-import com.grippo.design.resources.provider.equipments
 import com.grippo.design.resources.provider.exercises
 import com.grippo.design.resources.provider.icons.NavArrowRight
 import com.grippo.design.resources.provider.save_btn
 import com.grippo.design.resources.provider.statistics
+import com.grippo.design.resources.provider.training
 import com.grippo.state.formatters.UiText
 import com.grippo.state.trainings.stubExercises
 import kotlinx.collections.immutable.ImmutableSet
@@ -57,7 +57,7 @@ internal fun TrainingRecordingScreen(
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
-        title = AppTokens.strings.res(Res.string.equipments),
+        title = AppTokens.strings.res(Res.string.training),
         onBack = contract::onBack,
         content = {
             Row(
