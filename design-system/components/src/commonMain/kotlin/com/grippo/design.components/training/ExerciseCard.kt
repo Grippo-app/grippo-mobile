@@ -21,6 +21,7 @@ import com.grippo.design.components.chip.RepetitionsChip
 import com.grippo.design.components.chip.RepetitionsChipStyle
 import com.grippo.design.components.chip.VolumeChip
 import com.grippo.design.components.chip.VolumeChipStyle
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -33,10 +34,11 @@ import com.grippo.state.trainings.stubExercise
 public fun ExerciseCard(
     modifier: Modifier = Modifier,
     value: ExerciseState,
-    onClick: (() -> Unit)
+    onClick: () -> Unit
 ) {
     Column(
         modifier = modifier
+            .scalableClick(onClick = onClick)
             .background(
                 color = AppTokens.colors.background.card,
                 shape = RoundedCornerShape(AppTokens.dp.exerciseCard.radius)
@@ -69,13 +71,13 @@ public fun ExerciseCard(
             IntensityChip(
                 value = value.intensity,
                 style = IntensityChipStyle.SHORT,
-                modifier = Modifier.weight(1f)
+//                modifier = Modifier.weight(1f)
             )
 
             RepetitionsChip(
                 value = value.repetitions,
                 style = RepetitionsChipStyle.SHORT,
-                modifier = Modifier.weight(1f)
+//                modifier = Modifier.weight(1f)
             )
         }
 
