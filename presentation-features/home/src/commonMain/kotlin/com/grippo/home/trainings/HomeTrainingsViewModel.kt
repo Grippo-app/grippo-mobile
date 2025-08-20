@@ -11,6 +11,7 @@ import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState
 import com.grippo.domain.state.training.transformToTrainingListValue
+import com.grippo.state.formatters.DateFormatState
 import kotlinx.coroutines.flow.onEach
 import kotlinx.datetime.LocalDateTime
 
@@ -53,11 +54,17 @@ internal class HomeTrainingsViewModel(
 
     override fun onSelectDate() {
         safeLaunch {
+            val limits = DateTimeUtils.trailingYear()
+            val value = DateFormatState.of(state.value.date, limits)
+
             val dialog = DialogConfig.DatePicker(
                 title = stringProvider.get(Res.string.date_picker_title),
-                initial = state.value.date,
-                limitations = DateTimeUtils.trailingYear(),
-                onResult = { value -> update { it.copy(date = value) } }
+                initial = value,
+                limitations = limits,
+                onResult = { value ->
+                    val date = value.value ?: return@DatePicker
+                    update { it.copy(date = date) }
+                }
             )
 
             dialogController.show(dialog)

@@ -8,6 +8,7 @@ import com.grippo.design.resources.provider.select_start_date
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.state.datetime.PeriodState
+import com.grippo.state.formatters.DateFormatState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 
@@ -30,13 +31,17 @@ public class PeriodPickerViewModel(
     override fun onFromClick() {
         val custom = (state.value.value as? PeriodState.CUSTOM) ?: return
 
+        val limits = custom.limitations.copy(to = custom.range.to)
+        val data = DateFormatState.of(custom.range.from, limits)
+
         safeLaunch {
             val dialog = DialogConfig.DatePicker(
                 title = stringProvider.get(Res.string.select_start_date),
-                initial = custom.range.from,
-                limitations = custom.limitations.copy(to = custom.range.to),
+                initial = data,
+                limitations = limits,
                 onResult = { value ->
-                    val range = custom.range.copy(from = value)
+                    val date = value.value ?: return@DatePicker
+                    val range = custom.range.copy(from = date)
                     val newValue = custom.copy(range = range)
                     update { it.copy(value = newValue, list = it.list.synchronize(newValue)) }
                 }
@@ -49,13 +54,17 @@ public class PeriodPickerViewModel(
     override fun onToClick() {
         val custom = (state.value.value as? PeriodState.CUSTOM) ?: return
 
+        val limits = custom.limitations.copy(from = custom.range.from)
+        val data = DateFormatState.of(custom.range.to, limits)
+
         safeLaunch {
             val dialog = DialogConfig.DatePicker(
                 title = stringProvider.get(Res.string.select_end_date),
-                initial = custom.range.to,
-                limitations = custom.limitations.copy(from = custom.range.from),
+                initial = data,
+                limitations = limits,
                 onResult = { value ->
-                    val range = custom.range.copy(to = value)
+                    val date = value.value ?: return@DatePicker
+                    val range = custom.range.copy(to = date)
                     val newValue = custom.copy(range = range)
                     update { it.copy(value = newValue, list = it.list.synchronize(newValue)) }
                 }

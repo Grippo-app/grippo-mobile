@@ -80,14 +80,14 @@ internal fun CredentialScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         InputEmail(
-            value = state.email.value,
+            value = state.email.displayValue,
             onValueChange = contract::onEmailChange
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         InputPassword(
-            value = state.password.value,
+            value = state.password.displayValue,
             onValueChange = contract::onPasswordChange
         )
 

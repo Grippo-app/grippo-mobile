@@ -12,7 +12,7 @@ internal class NameViewModel : BaseViewModel<NameState, NameDirection, NameLoade
 
     override fun onNextClick() {
         val direction = NameDirection.Body(
-            name = state.value.name.value
+            name = state.value.name.value ?: ""
         )
         navigateTo(direction)
     }

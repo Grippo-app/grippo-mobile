@@ -1,15 +1,16 @@
 package com.grippo.height.picker
 
 import com.grippo.core.BaseViewModel
+import com.grippo.state.formatters.HeightFormatState
 
 public class HeightPickerViewModel(
-    initial: Int
+    initial: HeightFormatState
 ) : BaseViewModel<HeightPickerState, HeightPickerDirection, HeightPickerLoader>(
     HeightPickerState(value = initial)
 ), HeightPickerContract {
 
     override fun onSelectHeight(value: Int) {
-        update { it.copy(value = value) }
+        update { it.copy(value = HeightFormatState.of(value)) }
     }
 
     override fun onSubmitClick() {

@@ -7,33 +7,53 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.kg
 import kotlinx.serialization.Serializable
 import kotlin.math.abs
-import kotlin.math.pow
 import kotlin.math.roundToInt
 
 @Immutable
 @Serializable
-public sealed class VolumeFormatState {
-
-    public abstract val value: Float
+public sealed class VolumeFormatState : FormatState<Float> {
 
     @Immutable
     @Serializable
     public data class Valid(
+        override val displayValue: String,
         override val value: Float
-    ) : VolumeFormatState()
+    ) : VolumeFormatState() {
+        override val isValid: Boolean = true
+    }
 
     @Immutable
     @Serializable
     public data class Invalid(
-        override val value: Float
-    ) : VolumeFormatState()
+        override val displayValue: String,
+        override val value: Float? = null
+    ) : VolumeFormatState() {
+        override val isValid: Boolean = false
+    }
 
     public companion object {
-        public fun of(value: Float): VolumeFormatState {
-            return if (VolumeValidator.isValid(value)) {
-                Valid(value)
+        public fun of(displayValue: String): VolumeFormatState {
+            return if (displayValue.isEmpty()) {
+                Invalid(displayValue)
             } else {
-                Invalid(value)
+                try {
+                    val volume = displayValue.toFloat()
+                    if (VolumeValidator.isValid(volume)) {
+                        Valid(displayValue, volume)
+                    } else {
+                        Invalid(displayValue, volume)
+                    }
+                } catch (e: NumberFormatException) {
+                    Invalid(displayValue)
+                }
+            }
+        }
+
+        public fun of(internalValue: Float): VolumeFormatState {
+            return if (VolumeValidator.isValid(internalValue)) {
+                Valid(internalValue.toString(), internalValue)
+            } else {
+                Invalid(internalValue.toString(), internalValue)
             }
         }
     }
@@ -41,39 +61,22 @@ public sealed class VolumeFormatState {
     @Composable
     public fun short(): String {
         val kg = AppTokens.strings.res(Res.string.kg)
-        return "${value.short()}$kg"
+        return "${value?.short() ?: "0"}$kg"
     }
 
     private fun Float.short(): String {
-        val absValue = abs(this)
-
         return when {
-            absValue >= 1_000_000 -> {
-                val rounded = (absValue / 1_000_000).round(1)
-                val value =
-                    if (rounded % 1.0 == 0.0) rounded.toInt().toString() else rounded.toString()
-                "$value(M)"
-            }
-
-            absValue >= 1_000 -> {
-                val rounded = (absValue / 1_000).round(1)
-                val value =
-                    if (rounded % 1.0 == 0.0) rounded.toInt().toString() else rounded.toString()
-                "$value(K)"
-            }
-
-            else -> this.round(1).toString()
+            this == 0f -> "0"
+            abs(this) < 1f -> ((this * 10).roundToInt() / 10.0f).toString()
+            abs(this) < 10f -> ((this * 10).roundToInt() / 10.0f).toString()
+            abs(this) < 100f -> this.roundToInt().toString()
+            else -> this.roundToInt().toString()
         }
     }
 
-    private fun Float.round(decimals: Int): Float {
-        val factor = 10.0.pow(decimals).toFloat()
-        return (this * factor).roundToInt() / factor
-    }
-}
-
-private object VolumeValidator {
-    fun isValid(value: Float): Boolean {
-        return value >= 0f
+    private object VolumeValidator {
+        fun isValid(value: Float): Boolean {
+            return value in 0f..1000f
+        }
     }
 }

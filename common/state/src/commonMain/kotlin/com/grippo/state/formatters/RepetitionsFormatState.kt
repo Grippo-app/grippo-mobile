@@ -9,41 +9,61 @@ import kotlinx.serialization.Serializable
 
 @Immutable
 @Serializable
-public sealed class RepetitionsFormatState {
-
-    public abstract val value: Int
+public sealed class RepetitionsFormatState : FormatState<Int> {
 
     @Immutable
     @Serializable
     public data class Valid(
+        override val displayValue: String,
         override val value: Int
-    ) : RepetitionsFormatState()
+    ) : RepetitionsFormatState() {
+        override val isValid: Boolean = true
+    }
 
     @Immutable
     @Serializable
     public data class Invalid(
-        override val value: Int
-    ) : RepetitionsFormatState()
+        override val displayValue: String,
+        override val value: Int? = null
+    ) : RepetitionsFormatState() {
+        override val isValid: Boolean = false
+    }
 
     public companion object {
-        public fun of(value: Int): RepetitionsFormatState {
-            return if (RepetitionsValidator.isValid(value)) {
-                Valid(value)
+        public fun of(displayValue: String): RepetitionsFormatState {
+            return if (displayValue.isEmpty()) {
+                Invalid(displayValue)
             } else {
-                Invalid(value)
+                try {
+                    val repetitions = displayValue.toInt()
+                    if (RepetitionsValidator.isValid(repetitions)) {
+                        Valid(displayValue, repetitions)
+                    } else {
+                        Invalid(displayValue, repetitions)
+                    }
+                } catch (e: NumberFormatException) {
+                    Invalid(displayValue)
+                }
+            }
+        }
+
+        public fun of(internalValue: Int): RepetitionsFormatState {
+            return if (RepetitionsValidator.isValid(internalValue)) {
+                Valid(internalValue.toString(), internalValue)
+            } else {
+                Invalid(internalValue.toString(), internalValue)
             }
         }
     }
 
     @Composable
     public fun short(): String {
-        val times = AppTokens.strings.res(Res.string.x)
-        return "$times$value"
+        return AppTokens.strings.res(Res.string.x, value ?: 0)
     }
-}
 
-private object RepetitionsValidator {
-    fun isValid(value: Int): Boolean {
-        return value > 0
+    private object RepetitionsValidator {
+        fun isValid(value: Int): Boolean {
+            return value in 1..100
+        }
     }
 }

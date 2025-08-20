@@ -8,6 +8,7 @@ plugins {
 kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.common.core)
+        implementation(projects.common.state)
         implementation(projects.designSystem.core)
         implementation(projects.designSystem.resources.provider)
         implementation(projects.designSystem.components)

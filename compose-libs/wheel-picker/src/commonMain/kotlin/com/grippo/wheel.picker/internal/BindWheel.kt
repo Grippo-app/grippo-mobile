@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.map
 internal fun <T> BindWheel(
     listState: LazyListState,
     items: List<T>,
-    selected: T,
+    selected: T?,
     onSelect: (T) -> Unit,
     isValid: (T) -> Boolean
 ) {

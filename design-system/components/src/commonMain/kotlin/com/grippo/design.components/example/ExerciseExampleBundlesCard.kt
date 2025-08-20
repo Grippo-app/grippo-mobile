@@ -46,7 +46,7 @@ public fun ExerciseExampleBundlesCard(
 ) {
 
     val internalList = remember(value) {
-        value.sortedByDescending { it.percentage.value }.toPersistentList()
+        value.sortedByDescending { it.percentage.value ?: 0 }.toPersistentList()
     }
 
     val preset = MuscleEngine.generatePreset(MuscleColorStrategy.ByScaleStops(internalList))
@@ -60,8 +60,8 @@ public fun ExerciseExampleBundlesCard(
             slices = internalList.mapIndexed { idx, it ->
                 DSPieSlice(
                     id = "slice-$idx",
-                    label = "${it.percentage.value}$percent",
-                    value = it.percentage.value.toFloat(),
+                    label = "${it.percentage.value ?: 0}$percent",
+                    value = (it.percentage.value ?: 0).toFloat(),
                     color = it.muscle.type.color(preset),
                 )
             }

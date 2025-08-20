@@ -5,7 +5,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
@@ -26,30 +25,16 @@ import com.grippo.design.resources.provider.reps
 @Composable
 public fun InputRepetitions(
     modifier: Modifier = Modifier,
-    value: Int,
-    onValueChange: (Int) -> Unit,
+    value: String,
+    onValueChange: (String) -> Unit,
 ) {
-
-    val internalValue = remember(value) {
-        if (value == 0) "" else value.toString()
-    }
-
-    val onValueChangeProvider = remember {
-        { str: String ->
-            when {
-                str.isBlank() -> onValueChange(0)
-                str.toIntOrNull() != null -> onValueChange(str.toInt())
-            }
-        }
-    }
-
     val focusManager = LocalFocusManager.current
 
     Input(
         modifier = modifier,
-        value = internalValue,
+        value = value,
         inputStyle = InputStyle.Default(
-            onValueChange = onValueChangeProvider,
+            onValueChange = onValueChange,
         ),
         trailing = { color ->
             Text(
@@ -78,12 +63,12 @@ public fun InputRepetitions(
 private fun InputRepetitionsPreview() {
     PreviewContainer {
         InputRepetitions(
-            value = 12,
+            value = "12",
             onValueChange = {}
         )
 
         InputRepetitions(
-            value = 123,
+            value = "123",
             onValueChange = {}
         )
     }

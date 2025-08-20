@@ -37,7 +37,6 @@ public fun InputEmail(
     value: String,
     onValueChange: (String) -> Unit
 ) {
-
     val focusManager = LocalFocusManager.current
 
     Input(

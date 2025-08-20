@@ -21,8 +21,8 @@ internal class LoginViewModel(
     override fun onLoginClick() {
         safeLaunch(loader = LoginLoader.LoginButton) {
             loginUseCase.execute(
-                email = state.value.email.value,
-                password = state.value.password.value
+                email = state.value.email.value ?: "",
+                password = state.value.password.value ?: ""
             )
 
             navigateTo(LoginDirection.Home)

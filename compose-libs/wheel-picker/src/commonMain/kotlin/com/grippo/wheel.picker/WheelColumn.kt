@@ -15,7 +15,7 @@ import com.grippo.wheel.picker.internal.WheelPickerDefaults
 public data class WheelColumn<T : Comparable<T>>(
     override val id: String,
     val items: List<T>,
-    val selected: T,
+    val selected: T?,
     val onSelect: (T) -> Unit,
     val isValid: (T) -> Boolean,
     val itemContent: @Composable (T, Boolean) -> Unit,

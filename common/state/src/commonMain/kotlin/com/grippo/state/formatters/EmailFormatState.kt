@@ -1,42 +1,55 @@
 package com.grippo.state.formatters
 
 import androidx.compose.runtime.Immutable
+import kotlinx.serialization.Serializable
 
 @Immutable
-public sealed class EmailFormatState(public open val value: String) {
-    @Immutable
-    public data class Valid(
-        override val value: String
-    ) : EmailFormatState(value = value)
+@Serializable
+public sealed class EmailFormatState : FormatState<String> {
 
     @Immutable
-    public data class Invalid(
+    @Serializable
+    public data class Valid(
+        override val displayValue: String,
         override val value: String
-    ) : EmailFormatState(value = value)
+    ) : EmailFormatState() {
+        override val isValid: Boolean = true
+    }
+
+    @Immutable
+    @Serializable
+    public data class Invalid(
+        override val displayValue: String,
+        override val value: String? = null
+    ) : EmailFormatState() {
+        override val isValid: Boolean = false
+    }
 
     public companion object {
-        public fun of(value: String): EmailFormatState {
-            return if (EmailValidator.isValid(value)) {
-                Valid(value)
+        public fun of(displayValue: String): EmailFormatState {
+            return if (displayValue.isEmpty()) {
+                Invalid(displayValue)
+            } else if (EmailValidator.isValid(displayValue)) {
+                Valid(displayValue, displayValue)
             } else {
-                Invalid(value)
+                Invalid(displayValue, displayValue)
             }
         }
     }
-}
 
-private object EmailValidator {
-    private val emailAddressRegex = Regex(
-        "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
-                "\\@" +
-                "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
-                "(" +
-                "\\." +
-                "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
-                ")+",
-    )
+    private object EmailValidator {
+        private val emailAddressRegex = Regex(
+            "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
+                    "\\@" +
+                    "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
+                    "(" +
+                    "\\." +
+                    "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
+                    ")+",
+        )
 
-    fun isValid(value: String): Boolean {
-        return value.matches(emailAddressRegex)
+        fun isValid(value: String): Boolean {
+            return value.matches(emailAddressRegex)
+        }
     }
 }

@@ -5,7 +5,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
@@ -26,30 +25,16 @@ import com.grippo.design.resources.provider.volume_placeholder
 @Composable
 public fun InputVolume(
     modifier: Modifier = Modifier,
-    value: Float,
-    onValueChange: (Float) -> Unit,
+    value: String,
+    onValueChange: (String) -> Unit,
 ) {
-
-    val internalValue = remember(value) {
-        if (value == 0f) "" else value.toString()
-    }
-
-    val onValueChangeProvider = remember {
-        { str: String ->
-            when {
-                str.isBlank() -> onValueChange(0f)
-                str.toFloatOrNull() != null -> onValueChange(str.toFloat())
-            }
-        }
-    }
-
     val focusManager = LocalFocusManager.current
 
     Input(
         modifier = modifier,
-        value = internalValue,
+        value = value,
         inputStyle = InputStyle.Default(
-            onValueChange = onValueChangeProvider,
+            onValueChange = onValueChange,
         ),
         trailing = { color ->
             Text(
@@ -78,12 +63,12 @@ public fun InputVolume(
 private fun InputVolumePreview() {
     PreviewContainer {
         InputVolume(
-            value = 12f,
+            value = "12",
             onValueChange = {}
         )
 
         InputVolume(
-            value = 123f,
+            value = "123",
             onValueChange = {}
         )
     }

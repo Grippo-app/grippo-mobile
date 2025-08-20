@@ -6,11 +6,12 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.platform.collectAsStateMultiplatform
+import com.grippo.state.formatters.HeightFormatState
 
 public class HeightPickerComponent(
     componentContext: ComponentContext,
-    private val initial: Int,
-    private val onResult: (value: Int) -> Unit,
+    private val initial: HeightFormatState,
+    private val onResult: (value: HeightFormatState) -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<HeightPickerDirection>(componentContext) {
 

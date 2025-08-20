@@ -22,6 +22,7 @@ import com.grippo.design.resources.provider.height_picker_description
 import com.grippo.design.resources.provider.height_picker_title
 import com.grippo.design.resources.provider.submit_btn
 import com.grippo.height.picker.internal.HeightWheelPicker
+import com.grippo.state.formatters.HeightFormatState
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -64,7 +65,7 @@ internal fun HeightPickerScreen(
         HeightWheelPicker(
             modifier = Modifier.fillMaxWidth(),
             suggestions = state.suggestions,
-            value = state.value,
+            value = state.value.value,
             select = contract::onSelectHeight
         )
 
@@ -87,7 +88,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         HeightPickerScreen(
             state = HeightPickerState(
-                value = 155
+                value = HeightFormatState.of(155)
             ),
             contract = HeightPickerContract.Empty,
             loaders = persistentSetOf()

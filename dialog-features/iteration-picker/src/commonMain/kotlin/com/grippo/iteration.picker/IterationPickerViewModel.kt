@@ -16,14 +16,14 @@ public class IterationPickerViewModel(
     )
 ), IterationPickerContract {
 
-    override fun onVolumeChange(value: Float) {
+    override fun onVolumeChange(value: String) {
         update {
             val iteration = it.value.copy(volume = VolumeFormatState.of(value))
             it.copy(value = iteration)
         }
     }
 
-    override fun onRepetitionsChange(value: Int) {
+    override fun onRepetitionsChange(value: String) {
         update {
             val iteration = it.value.copy(repetitions = RepetitionsFormatState.of(value))
             it.copy(value = iteration)

@@ -71,7 +71,7 @@ internal fun IterationPickerScreen(
             modifier = Modifier
                 .focusRequester(volumeRequester)
                 .weight(1f),
-            value = state.value.volume.value,
+            value = state.value.volume.displayValue,
             onValueChange = contract::onVolumeChange
         )
 
@@ -79,7 +79,7 @@ internal fun IterationPickerScreen(
             modifier = Modifier
                 .focusRequester(repetitionsRequester)
                 .weight(1f),
-            value = state.value.repetitions.value,
+            value = state.value.repetitions.displayValue,
             onValueChange = contract::onRepetitionsChange
         )
     }

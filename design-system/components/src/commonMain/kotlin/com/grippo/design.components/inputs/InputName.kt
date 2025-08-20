@@ -36,7 +36,6 @@ public fun InputName(
     value: String,
     onValueChange: (String) -> Unit
 ) {
-
     val focusManager = LocalFocusManager.current
 
     Input(

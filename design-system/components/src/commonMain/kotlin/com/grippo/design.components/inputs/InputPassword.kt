@@ -43,9 +43,9 @@ public fun InputPassword(
     value: String,
     onValueChange: (String) -> Unit,
 ) {
-    var passwordVisible by rememberSaveable { mutableStateOf(false) }
-
     val focusManager = LocalFocusManager.current
+
+    var passwordVisible by rememberSaveable { mutableStateOf(false) }
 
     Input(
         modifier = modifier,

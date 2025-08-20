@@ -1,34 +1,62 @@
 package com.grippo.state.formatters
 
 import androidx.compose.runtime.Immutable
+import kotlinx.serialization.Serializable
 
 @Immutable
-public sealed class WeightFormatState(public open val value: Float) {
-    @Immutable
-    public data class Valid(
-        override val value: Float
-    ) : WeightFormatState(value = value)
+@Serializable
+public sealed class WeightFormatState : FormatState<Float> {
 
     @Immutable
-    public data class Invalid(
+    @Serializable
+    public data class Valid(
+        override val displayValue: String,
         override val value: Float
-    ) : WeightFormatState(value = value)
+    ) : WeightFormatState() {
+        override val isValid: Boolean = true
+    }
+
+    @Immutable
+    @Serializable
+    public data class Invalid(
+        override val displayValue: String,
+        override val value: Float? = null
+    ) : WeightFormatState() {
+        override val isValid: Boolean = false
+    }
 
     public companion object {
-        public fun of(value: Float): WeightFormatState {
-            return if (WeightValidator.isValid(value)) {
-                Valid(value)
+        public fun of(displayValue: String): WeightFormatState {
+            return if (displayValue.isEmpty()) {
+                Invalid(displayValue)
             } else {
-                Invalid(value)
+                try {
+                    val weight = displayValue.toFloat()
+                    if (WeightValidator.isValid(weight)) {
+                        Valid(displayValue, weight)
+                    } else {
+                        Invalid(displayValue, weight)
+                    }
+                } catch (e: NumberFormatException) {
+                    Invalid(displayValue)
+                }
+            }
+        }
+
+        public fun of(internalValue: Float): WeightFormatState {
+            return if (WeightValidator.isValid(internalValue)) {
+                Valid(internalValue.toString(), internalValue)
+            } else {
+                Invalid(internalValue.toString(), internalValue)
             }
         }
     }
-}
 
-private object WeightValidator {
-    fun isValid(value: Float): Boolean {
-        val withinRange = value in 30.0f..150.0f
-        val hasOneDecimal = (value * 10).rem(1f) == 0f
-        return withinRange && hasOneDecimal
+    private object WeightValidator {
+        fun isValid(value: Float): Boolean {
+            val withinRange = value in 30.0f..150.0f
+            val hasOneDecimal = (value * 10).rem(1f) == 0f
+            return withinRange && hasOneDecimal
+        }
     }
 }

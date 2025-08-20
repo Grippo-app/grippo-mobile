@@ -2,9 +2,11 @@ package com.grippo.dialog.api
 
 import com.grippo.date.utils.DateRange
 import com.grippo.state.datetime.PeriodState
+import com.grippo.state.formatters.DateFormatState
+import com.grippo.state.formatters.HeightFormatState
+import com.grippo.state.formatters.WeightFormatState
 import com.grippo.state.trainings.IterationFocus
 import com.grippo.state.trainings.IterationState
-import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
@@ -52,8 +54,8 @@ public sealed class DialogConfig(
 
     @Serializable
     public data class WeightPicker(
-        val initial: Float,
-        @Transient val onResult: (value: Float) -> Unit = {},
+        val initial: WeightFormatState,
+        @Transient val onResult: (value: WeightFormatState) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = false
@@ -61,8 +63,8 @@ public sealed class DialogConfig(
 
     @Serializable
     public data class HeightPicker(
-        val initial: Int,
-        @Transient val onResult: (value: Int) -> Unit = {},
+        val initial: HeightFormatState,
+        @Transient val onResult: (value: HeightFormatState) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = false
@@ -70,10 +72,10 @@ public sealed class DialogConfig(
 
     @Serializable
     public data class DatePicker(
-        val initial: LocalDateTime,
+        val initial: DateFormatState,
         val limitations: DateRange,
         val title: String,
-        @Transient val onResult: (value: LocalDateTime) -> Unit = {},
+        @Transient val onResult: (value: DateFormatState) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = false

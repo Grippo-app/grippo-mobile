@@ -21,6 +21,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.submit_btn
 import com.grippo.design.resources.provider.weight_picker_description
 import com.grippo.design.resources.provider.weight_picker_title
+import com.grippo.state.formatters.WeightFormatState
 import com.grippo.weight.picker.internal.WeightWheelPicker
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -64,7 +65,7 @@ internal fun WeightPickerScreen(
         WeightWheelPicker(
             modifier = Modifier.fillMaxWidth(),
             suggestions = state.suggestions,
-            value = state.value,
+            value = state.value.value,
             select = contract::onSelectWeight
         )
 
@@ -87,7 +88,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         WeightPickerScreen(
             state = WeightPickerState(
-                value = 55.4F
+                value = WeightFormatState.of(55.4F)
             ),
             contract = WeightPickerContract.Empty,
             loaders = persistentSetOf()

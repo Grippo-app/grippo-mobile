@@ -20,7 +20,7 @@ import kotlinx.collections.immutable.toPersistentList
 internal fun WeightWheelPicker(
     modifier: Modifier = Modifier,
     suggestions: PersistentList<Float>,
-    value: Float,
+    value: Float?,
     select: (Float) -> Unit
 ) {
     val weightListState = rememberLazyListState()

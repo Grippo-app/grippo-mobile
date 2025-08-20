@@ -7,14 +7,14 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.platform.collectAsStateMultiplatform
 import com.grippo.date.utils.DateRange
-import kotlinx.datetime.LocalDateTime
+import com.grippo.state.formatters.DateFormatState
 
 public class DatePickerComponent(
     componentContext: ComponentContext,
     private val title: String,
-    private val initial: LocalDateTime,
+    private val initial: DateFormatState,
     private val limitations: DateRange,
-    private val onResult: (value: LocalDateTime) -> Unit,
+    private val onResult: (value: DateFormatState) -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<DatePickerDirection>(componentContext) {
 

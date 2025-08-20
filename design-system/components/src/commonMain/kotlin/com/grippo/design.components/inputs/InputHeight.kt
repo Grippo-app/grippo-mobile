@@ -5,7 +5,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
@@ -26,19 +25,14 @@ import com.grippo.design.resources.provider.height_placeholder
 @Composable
 public fun InputHeight(
     modifier: Modifier = Modifier,
-    value: Int,
+    value: String,
     onClick: () -> Unit
 ) {
-
-    val internalValue = remember(value) {
-        value.toString()
-    }
-
     val focusManager = LocalFocusManager.current
 
     Input(
         modifier = modifier,
-        value = internalValue,
+        value = value,
         inputStyle = InputStyle.Clickable(
             onClick = onClick
         ),
@@ -69,12 +63,12 @@ public fun InputHeight(
 private fun InputHeightPreview() {
     PreviewContainer {
         InputHeight(
-            value = 12,
+            value = "12",
             onClick = {}
         )
 
         InputHeight(
-            value = 123,
+            value = "123",
             onClick = {}
         )
     }

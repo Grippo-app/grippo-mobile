@@ -6,11 +6,12 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.platform.collectAsStateMultiplatform
+import com.grippo.state.formatters.WeightFormatState
 
 public class WeightPickerComponent(
     componentContext: ComponentContext,
-    private val initial: Float,
-    private val onResult: (value: Float) -> Unit,
+    private val initial: WeightFormatState,
+    private val onResult: (value: WeightFormatState) -> Unit,
     private val back: () -> Unit
 ) : BaseComponent<WeightPickerDirection>(componentContext) {
 

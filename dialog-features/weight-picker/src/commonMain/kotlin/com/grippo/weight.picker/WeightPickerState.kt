@@ -1,6 +1,7 @@
 package com.grippo.weight.picker
 
 import androidx.compose.runtime.Immutable
+import com.grippo.state.formatters.WeightFormatState
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 
@@ -11,5 +12,5 @@ public data class WeightPickerState(
             add(i / 10f)
         }
     }.toPersistentList(),
-    val value: Float
+    val value: WeightFormatState
 )

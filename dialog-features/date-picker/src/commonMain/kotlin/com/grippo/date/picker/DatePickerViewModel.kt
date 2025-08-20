@@ -7,11 +7,11 @@ import kotlinx.datetime.LocalDateTime
 
 public class DatePickerViewModel(
     title: String,
-    initial: LocalDateTime,
+    initial: DateFormatState,
     limitations: DateRange
 ) : BaseViewModel<DatePickerState, DatePickerDirection, DatePickerLoader>(
     DatePickerState(
-        value = DateFormatState.of(initial, limitations),
+        value = initial,
         limitations = limitations,
         title = title
     )
@@ -22,7 +22,7 @@ public class DatePickerViewModel(
     }
 
     override fun onSubmitClick() {
-        navigateTo(DatePickerDirection.BackWithResult(state.value.value.value))
+        navigateTo(DatePickerDirection.BackWithResult(state.value.value))
     }
 
     override fun onDismiss() {

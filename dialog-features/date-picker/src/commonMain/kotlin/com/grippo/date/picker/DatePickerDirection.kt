@@ -1,9 +1,9 @@
 package com.grippo.date.picker
 
 import com.grippo.core.models.BaseDirection
-import kotlinx.datetime.LocalDateTime
+import com.grippo.state.formatters.DateFormatState
 
 public sealed interface DatePickerDirection : BaseDirection {
-    public data class BackWithResult(val value: LocalDateTime) : DatePickerDirection
+    public data class BackWithResult(val value: DateFormatState) : DatePickerDirection
     public data object Back : DatePickerDirection
 }

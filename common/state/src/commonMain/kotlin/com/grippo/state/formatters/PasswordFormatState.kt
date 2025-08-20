@@ -1,32 +1,45 @@
 package com.grippo.state.formatters
 
 import androidx.compose.runtime.Immutable
+import kotlinx.serialization.Serializable
 
 @Immutable
-public sealed class PasswordFormatState(public open val value: String) {
-    @Immutable
-    public data class Valid(
-        override val value: String
-    ) : PasswordFormatState(value = value)
+@Serializable
+public sealed class PasswordFormatState : FormatState<String> {
 
     @Immutable
-    public data class Invalid(
+    @Serializable
+    public data class Valid(
+        override val displayValue: String,
         override val value: String
-    ) : PasswordFormatState(value = value)
+    ) : PasswordFormatState() {
+        override val isValid: Boolean = true
+    }
+
+    @Immutable
+    @Serializable
+    public data class Invalid(
+        override val displayValue: String,
+        override val value: String? = null
+    ) : PasswordFormatState() {
+        override val isValid: Boolean = false
+    }
 
     public companion object {
-        public fun of(value: String): PasswordFormatState {
-            return if (PasswordValidator.isValid(value)) {
-                Valid(value)
+        public fun of(displayValue: String): PasswordFormatState {
+            return if (displayValue.isEmpty()) {
+                Invalid(displayValue)
+            } else if (PasswordValidator.isValid(displayValue)) {
+                Valid(displayValue, displayValue)
             } else {
-                Invalid(value)
+                Invalid(displayValue, displayValue)
             }
         }
     }
-}
 
-private object PasswordValidator {
-    fun isValid(value: String): Boolean {
-        return value.length > 6
+    private object PasswordValidator {
+        fun isValid(value: String): Boolean {
+            return value.length > 6
+        }
     }
 }

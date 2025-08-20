@@ -123,7 +123,7 @@ public object MuscleEngine {
         paletteAscending: List<Color>
     ): List<Pair<ExerciseExampleBundleState, Color>> {
         if (bundles.isEmpty() || paletteAscending.isEmpty()) return emptyList()
-        val sorted = remember(bundles) { bundles.sortedByDescending { it.percentage.value } }
+        val sorted = remember(bundles) { bundles.sortedByDescending { it.percentage.value ?: 0 } }
         val n = sorted.size
         val last = paletteAscending.lastIndex
         return sorted.mapIndexed { i, bundle ->
@@ -190,7 +190,7 @@ public object MuscleEngine {
     ): List<Pair<ExerciseExampleBundleState, Color>> {
         if (bundles.isEmpty()) return emptyList()
 
-        val sorted = remember(bundles) { bundles.sortedByDescending { it.percentage.value } }
+        val sorted = remember(bundles) { bundles.sortedByDescending { it.percentage.value ?: 0 } }
 
         val alphas = remember(sorted) {
             if (sorted.size <= 1) listOf(1f)

@@ -28,13 +28,29 @@ import kotlinx.datetime.Month
 @Composable
 internal fun DateWheelPicker(
     modifier: Modifier = Modifier,
-    initial: LocalDateTime,
+    initial: LocalDateTime?,
     limitations: DateRange,
     select: (LocalDateTime) -> Unit,
 ) {
-    var selectedYear by remember { mutableStateOf(initial.year) }
-    var selectedMonth by remember { mutableStateOf(initial.month) }
-    var selectedDay by remember { mutableStateOf(initial.dayOfMonth) }
+
+    // Resolve initial date-time safely: if null -> use earliest allowed (limitations.from).
+    // Also clamp any out-of-range initial to bounds.
+    val value: LocalDateTime = remember(initial, limitations) {
+        when {
+            initial == null -> limitations.from
+            initial < limitations.from -> limitations.from
+            initial > limitations.to -> limitations.to
+            else -> initial
+        }
+    }
+
+    // Preserve hour/minute from resolved initial
+    val baseHour = remember(value) { value.hour }
+    val baseMinute = remember(value) { value.minute }
+
+    var selectedYear by remember { mutableStateOf(value.year) }
+    var selectedMonth by remember { mutableStateOf(value.month) }
+    var selectedDay by remember { mutableStateOf(value.dayOfMonth) }
 
     val years = remember(limitations) {
         (limitations.from.year..limitations.to.year).toList()
@@ -78,16 +94,16 @@ internal fun DateWheelPicker(
         }
     }
 
-    // Emit only valid selections (hour/min preserved)
-    LaunchedEffect(selectedYear, selectedMonth, selectedDay) {
+    // Emit only valid selections (hour/min preserved from baseInitial)
+    LaunchedEffect(selectedYear, selectedMonth, selectedDay, daysInMonth) {
         val safeDay = selectedDay.coerceIn(daysInMonth.first(), daysInMonth.last())
         val dt = runCatching {
             LocalDateTime(
                 year = selectedYear,
                 month = selectedMonth,
                 dayOfMonth = safeDay,
-                hour = initial.hour,
-                minute = initial.minute
+                hour = baseHour,
+                minute = baseMinute
             )
         }.getOrNull()
 
@@ -109,8 +125,8 @@ internal fun DateWheelPicker(
                 month = selectedMonth,
                 day = d,
                 limitations = limitations,
-                hour = initial.hour,
-                minute = initial.minute
+                hour = baseHour,
+                minute = baseMinute
             )
         },
         itemContent = { d, valid ->
@@ -130,11 +146,7 @@ internal fun DateWheelPicker(
                 LocalDateTime(selectedYear, m.ordinal + 1, 1, 0, 0)
             }
             val monthName = rememberFormat(value = template, format = DateFormat.MONTH_FULL)
-
-            WheelItem(
-                text = monthName,
-                isValid = valid
-            )
+            WheelItem(text = monthName, isValid = valid)
         },
         listState = monthState
     )

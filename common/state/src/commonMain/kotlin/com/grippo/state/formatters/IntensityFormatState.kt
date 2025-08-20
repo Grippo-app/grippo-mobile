@@ -5,39 +5,66 @@ import androidx.compose.runtime.Immutable
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.percent
+import kotlinx.serialization.Serializable
 import kotlin.math.roundToInt
 
 @Immutable
-public sealed class IntensityFormatState(public open val value: Float) {
-    @Immutable
-    public data class Valid(
-        override val value: Float
-    ) : IntensityFormatState(value = value)
+@Serializable
+public sealed class IntensityFormatState : FormatState<Float> {
 
     @Immutable
-    public data class Invalid(
+    @Serializable
+    public data class Valid(
+        override val displayValue: String,
         override val value: Float
-    ) : IntensityFormatState(value = value)
+    ) : IntensityFormatState() {
+        override val isValid: Boolean = true
+    }
+
+    @Immutable
+    @Serializable
+    public data class Invalid(
+        override val displayValue: String,
+        override val value: Float? = null
+    ) : IntensityFormatState() {
+        override val isValid: Boolean = false
+    }
 
     public companion object {
-        public fun of(value: Float): IntensityFormatState {
-            return if (IntensityValidator.isValid(value)) {
-                Valid(value)
+        public fun of(displayValue: String): IntensityFormatState {
+            return if (displayValue.isEmpty()) {
+                Invalid(displayValue)
             } else {
-                Invalid(value)
+                try {
+                    val intensity = displayValue.toFloat()
+                    if (IntensityValidator.isValid(intensity)) {
+                        Valid(displayValue, intensity)
+                    } else {
+                        Invalid(displayValue, intensity)
+                    }
+                } catch (e: NumberFormatException) {
+                    Invalid(displayValue)
+                }
+            }
+        }
+
+        public fun of(internalValue: Float): IntensityFormatState {
+            return if (IntensityValidator.isValid(internalValue)) {
+                Valid(internalValue.toString(), internalValue)
+            } else {
+                Invalid(internalValue.toString(), internalValue)
             }
         }
     }
 
     @Composable
     public fun short(): String {
-        val percent = AppTokens.strings.res(Res.string.percent)
-        return "${value.roundToInt()}$percent"
+        return AppTokens.strings.res(Res.string.percent, value?.roundToInt() ?: 0)
     }
-}
 
-private object IntensityValidator {
-    fun isValid(value: Float): Boolean {
-        return value in 0f..100f
+    private object IntensityValidator {
+        fun isValid(value: Float): Boolean {
+            return value in 0f..100f
+        }
     }
 }

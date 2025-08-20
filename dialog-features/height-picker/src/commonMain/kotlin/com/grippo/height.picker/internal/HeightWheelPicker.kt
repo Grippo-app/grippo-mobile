@@ -20,7 +20,7 @@ import kotlinx.collections.immutable.toPersistentList
 internal fun HeightWheelPicker(
     modifier: Modifier = Modifier,
     suggestions: PersistentList<Int>,
-    value: Int,
+    value: Int?,
     select: (Int) -> Unit
 ) {
     val heightListState = rememberLazyListState()
