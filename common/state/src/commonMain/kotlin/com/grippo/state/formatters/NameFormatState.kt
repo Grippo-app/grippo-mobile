@@ -22,13 +22,13 @@ public sealed class NameFormatState : FormatState<String> {
     ) : NameFormatState()
 
     public companion object {
-        public fun of(displayValue: String): NameFormatState {
-            return if (displayValue.isEmpty()) {
-                Invalid(displayValue)
-            } else if (NameValidator.isValid(displayValue)) {
-                Valid(displayValue, displayValue)
+        public fun of(display: String): NameFormatState {
+            return if (display.isEmpty()) {
+                Invalid(display)
+            } else if (NameValidator.isValid(display)) {
+                Valid(display, display)
             } else {
-                Invalid(displayValue, displayValue)
+                Invalid(display, display)
             }
         }
     }

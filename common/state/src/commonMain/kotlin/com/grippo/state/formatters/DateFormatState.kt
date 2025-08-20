@@ -24,11 +24,11 @@ public sealed class DateFormatState : FormatState<LocalDateTime> {
     ) : DateFormatState()
 
     public companion object {
-        public fun of(internalValue: LocalDateTime, range: DateRange): DateFormatState {
-            return if (DateValidator.isValid(internalValue, range)) {
-                Valid(internalValue.toString(), internalValue)
+        public fun of(value: LocalDateTime, range: DateRange): DateFormatState {
+            return if (DateValidator.isValid(value, range)) {
+                Valid(value.toString(), value)
             } else {
-                Invalid(internalValue.toString(), internalValue)
+                Invalid(value.toString(), value)
             }
         }
     }

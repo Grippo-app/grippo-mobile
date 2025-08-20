@@ -22,28 +22,28 @@ public sealed class HeightFormatState : FormatState<Int> {
     ) : HeightFormatState()
 
     public companion object {
-        public fun of(displayValue: String): HeightFormatState {
-            return if (displayValue.isEmpty()) {
-                Invalid(displayValue)
+        public fun of(display: String): HeightFormatState {
+            return if (display.isEmpty()) {
+                Invalid(display)
             } else {
                 try {
-                    val height = displayValue.toInt()
+                    val height = display.toInt()
                     if (HeightValidator.isValid(height)) {
-                        Valid(displayValue, height)
+                        Valid(display, height)
                     } else {
-                        Invalid(displayValue, height)
+                        Invalid(display, height)
                     }
                 } catch (_: NumberFormatException) {
-                    Invalid(displayValue)
+                    Invalid(display)
                 }
             }
         }
 
-        public fun of(internalValue: Int): HeightFormatState {
-            return if (HeightValidator.isValid(internalValue)) {
-                Valid(internalValue.toString(), internalValue)
+        public fun of(value: Int): HeightFormatState {
+            return if (HeightValidator.isValid(value)) {
+                Valid(value.toString(), value)
             } else {
-                Invalid(internalValue.toString(), internalValue)
+                Invalid(value.toString(), value)
             }
         }
     }

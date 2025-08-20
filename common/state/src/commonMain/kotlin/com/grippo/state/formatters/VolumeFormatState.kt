@@ -28,28 +28,28 @@ public sealed class VolumeFormatState : FormatState<Float> {
     ) : VolumeFormatState()
 
     public companion object {
-        public fun of(displayValue: String): VolumeFormatState {
-            return if (displayValue.isEmpty()) {
-                Invalid(displayValue)
+        public fun of(display: String): VolumeFormatState {
+            return if (display.isEmpty()) {
+                Invalid(display)
             } else {
                 try {
-                    val volume = displayValue.toFloat()
+                    val volume = display.toFloat()
                     if (VolumeValidator.isValid(volume)) {
-                        Valid(displayValue, volume)
+                        Valid(display, volume)
                     } else {
-                        Invalid(displayValue, volume)
+                        Invalid(display, volume)
                     }
                 } catch (_: NumberFormatException) {
-                    Invalid(displayValue)
+                    Invalid(display)
                 }
             }
         }
 
-        public fun of(internalValue: Float): VolumeFormatState {
-            return if (VolumeValidator.isValid(internalValue)) {
-                Valid(internalValue.toString(), internalValue)
+        public fun of(value: Float): VolumeFormatState {
+            return if (VolumeValidator.isValid(value)) {
+                Valid(value.toString(), value)
             } else {
-                Invalid(internalValue.toString(), internalValue)
+                Invalid(value.toString(), value)
             }
         }
     }

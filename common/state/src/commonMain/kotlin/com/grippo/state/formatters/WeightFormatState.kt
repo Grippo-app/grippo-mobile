@@ -22,28 +22,28 @@ public sealed class WeightFormatState : FormatState<Float> {
     ) : WeightFormatState()
 
     public companion object {
-        public fun of(displayValue: String): WeightFormatState {
-            return if (displayValue.isEmpty()) {
-                Invalid(displayValue)
+        public fun of(display: String): WeightFormatState {
+            return if (display.isEmpty()) {
+                Invalid(display)
             } else {
                 try {
-                    val weight = displayValue.toFloat()
+                    val weight = display.toFloat()
                     if (WeightValidator.isValid(weight)) {
-                        Valid(displayValue, weight)
+                        Valid(display, weight)
                     } else {
-                        Invalid(displayValue, weight)
+                        Invalid(display, weight)
                     }
                 } catch (_: NumberFormatException) {
-                    Invalid(displayValue)
+                    Invalid(display)
                 }
             }
         }
 
-        public fun of(internalValue: Float): WeightFormatState {
-            return if (WeightValidator.isValid(internalValue)) {
-                Valid(internalValue.toString(), internalValue)
+        public fun of(value: Float): WeightFormatState {
+            return if (WeightValidator.isValid(value)) {
+                Valid(value.toString(), value)
             } else {
-                Invalid(internalValue.toString(), internalValue)
+                Invalid(value.toString(), value)
             }
         }
     }

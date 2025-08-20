@@ -22,13 +22,13 @@ public sealed class EmailFormatState : FormatState<String> {
     ) : EmailFormatState()
 
     public companion object {
-        public fun of(displayValue: String): EmailFormatState {
-            return if (displayValue.isEmpty()) {
-                Invalid(displayValue)
-            } else if (EmailValidator.isValid(displayValue)) {
-                Valid(displayValue, displayValue)
+        public fun of(value: String): EmailFormatState {
+            return if (value.isEmpty()) {
+                Invalid(value)
+            } else if (EmailValidator.isValid(value)) {
+                Valid(value, value)
             } else {
-                Invalid(displayValue, displayValue)
+                Invalid(value, value)
             }
         }
     }

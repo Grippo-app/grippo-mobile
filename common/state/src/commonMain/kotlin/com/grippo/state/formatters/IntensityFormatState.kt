@@ -27,28 +27,28 @@ public sealed class IntensityFormatState : FormatState<Float> {
     ) : IntensityFormatState()
 
     public companion object {
-        public fun of(displayValue: String): IntensityFormatState {
-            return if (displayValue.isEmpty()) {
-                Invalid(displayValue)
+        public fun of(display: String): IntensityFormatState {
+            return if (display.isEmpty()) {
+                Invalid(display)
             } else {
                 try {
-                    val intensity = displayValue.toFloat()
+                    val intensity = display.toFloat()
                     if (IntensityValidator.isValid(intensity)) {
-                        Valid(displayValue, intensity)
+                        Valid(display, intensity)
                     } else {
-                        Invalid(displayValue, intensity)
+                        Invalid(display, intensity)
                     }
                 } catch (_: NumberFormatException) {
-                    Invalid(displayValue)
+                    Invalid(display)
                 }
             }
         }
 
-        public fun of(internalValue: Float): IntensityFormatState {
-            return if (IntensityValidator.isValid(internalValue)) {
-                Valid(internalValue.toString(), internalValue)
+        public fun of(value: Float): IntensityFormatState {
+            return if (IntensityValidator.isValid(value)) {
+                Valid(value.toString(), value)
             } else {
-                Invalid(internalValue.toString(), internalValue)
+                Invalid(value.toString(), value)
             }
         }
     }

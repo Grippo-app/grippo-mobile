@@ -26,28 +26,28 @@ public sealed class PercentageFormatState : FormatState<Int> {
     ) : PercentageFormatState()
 
     public companion object {
-        public fun of(displayValue: String): PercentageFormatState {
-            return if (displayValue.isEmpty()) {
-                Invalid(displayValue)
+        public fun of(display: String): PercentageFormatState {
+            return if (display.isEmpty()) {
+                Invalid(display)
             } else {
                 try {
-                    val percentage = displayValue.toInt()
+                    val percentage = display.toInt()
                     if (PercentageValidator.isValid(percentage)) {
-                        Valid(displayValue, percentage)
+                        Valid(display, percentage)
                     } else {
-                        Invalid(displayValue, percentage)
+                        Invalid(display, percentage)
                     }
                 } catch (_: NumberFormatException) {
-                    Invalid(displayValue)
+                    Invalid(display)
                 }
             }
         }
 
-        public fun of(internalValue: Int): PercentageFormatState {
-            return if (PercentageValidator.isValid(internalValue)) {
-                Valid(internalValue.toString(), internalValue)
+        public fun of(value: Int): PercentageFormatState {
+            return if (PercentageValidator.isValid(value)) {
+                Valid(value.toString(), value)
             } else {
-                Invalid(internalValue.toString(), internalValue)
+                Invalid(value.toString(), value)
             }
         }
     }

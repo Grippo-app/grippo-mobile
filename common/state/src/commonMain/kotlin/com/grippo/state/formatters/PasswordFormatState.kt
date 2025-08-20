@@ -22,13 +22,13 @@ public sealed class PasswordFormatState : FormatState<String> {
     ) : PasswordFormatState()
 
     public companion object {
-        public fun of(displayValue: String): PasswordFormatState {
-            return if (displayValue.isEmpty()) {
-                Invalid(displayValue)
-            } else if (PasswordValidator.isValid(displayValue)) {
-                Valid(displayValue, displayValue)
+        public fun of(display: String): PasswordFormatState {
+            return if (display.isEmpty()) {
+                Invalid(display)
+            } else if (PasswordValidator.isValid(display)) {
+                Valid(display, display)
             } else {
-                Invalid(displayValue, displayValue)
+                Invalid(display, display)
             }
         }
     }
