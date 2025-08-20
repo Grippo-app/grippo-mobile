@@ -86,7 +86,7 @@ public class TrainingComponent(
             TrainingRouter.Success -> Child.Success(
                 TrainingSuccessComponent(
                     componentContext = context,
-                    back = viewModel::onBack
+                    back = viewModel::onClose
                 ),
             )
         }
