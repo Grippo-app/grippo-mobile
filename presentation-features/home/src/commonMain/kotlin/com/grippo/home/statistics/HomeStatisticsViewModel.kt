@@ -41,6 +41,9 @@ import com.grippo.design.resources.provider.volume
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.state.datetime.PeriodState
+import com.grippo.state.formatters.IntensityFormatState
+import com.grippo.state.formatters.RepetitionsFormatState
+import com.grippo.state.formatters.VolumeFormatState
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -266,6 +269,63 @@ internal class HomeStatisticsViewModel(
         update { it.copy(sparklineData = DSSparklineData(points = points)) }
     }
 
+    private suspend fun generateVolumeData(period: PeriodState, colors: AppColor) {
+        val baseVolume = when (period) {
+            PeriodState.ThisDay -> 1250f
+            PeriodState.ThisWeek -> 8750f
+            PeriodState.ThisMonth -> 35000f
+            is PeriodState.CUSTOM -> {
+                val daysInclusive = inclusiveDays(period.range)
+                when {
+                    daysInclusive <= 1L -> 1250f
+                    daysInclusive in 2L..7L -> 8750f
+                    daysInclusive in 8L..31L -> 35000f
+                    else -> 105000f
+                }
+            }
+        }
+        val volume = VolumeFormatState.of(baseVolume)
+        update { it.copy(volume = volume) }
+    }
+
+    private suspend fun generateRepetitionsData(period: PeriodState, colors: AppColor) {
+        val baseRepetitions = when (period) {
+            PeriodState.ThisDay -> 45
+            PeriodState.ThisWeek -> 315
+            PeriodState.ThisMonth -> 1260
+            is PeriodState.CUSTOM -> {
+                val daysInclusive = inclusiveDays(period.range)
+                when {
+                    daysInclusive <= 1L -> 45
+                    daysInclusive in 2L..7L -> 315
+                    daysInclusive in 8L..31L -> 1260
+                    else -> 3780
+                }
+            }
+        }
+        val repetitions = RepetitionsFormatState.of(baseRepetitions)
+        update { it.copy(repetitions = repetitions) }
+    }
+
+    private suspend fun generateIntensityData(period: PeriodState, colors: AppColor) {
+        val baseIntensity = when (period) {
+            PeriodState.ThisDay -> 75f
+            PeriodState.ThisWeek -> 78f
+            PeriodState.ThisMonth -> 82f
+            is PeriodState.CUSTOM -> {
+                val daysInclusive = inclusiveDays(period.range)
+                when {
+                    daysInclusive <= 1L -> 75f
+                    daysInclusive in 2L..7L -> 78f
+                    daysInclusive in 8L..31L -> 82f
+                    else -> 85f
+                }
+            }
+        }
+        val intensity = IntensityFormatState.of(baseIntensity)
+        update { it.copy(intensity = intensity) }
+    }
+
     private suspend fun regenerateAllFor(period: PeriodState, colors: AppColor) {
         generateAreaData(period, colors)
         generateBarData(period, colors)
@@ -273,6 +333,9 @@ internal class HomeStatisticsViewModel(
         generateRadarData(period, colors)
         generateProgressData(period, colors)
         generateSparklineData(period, colors)
+        generateVolumeData(period, colors)
+        generateRepetitionsData(period, colors)
+        generateIntensityData(period, colors)
     }
 
     // --- timeline helpers ---
