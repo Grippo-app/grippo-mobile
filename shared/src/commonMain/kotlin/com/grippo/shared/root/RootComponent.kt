@@ -21,6 +21,7 @@ import com.grippo.home.BottomNavigationComponent
 import com.grippo.presentation.api.RootRouter
 import com.grippo.presentation.api.auth.AuthRouter
 import com.grippo.presentation.api.bottom.navigation.BottomNavigationRouter
+import com.grippo.presentation.api.exercise.examples.ExerciseExamplesRouter
 import com.grippo.presentation.api.profile.ProfileRouter
 import com.grippo.presentation.api.settings.SettingsRouter
 import com.grippo.presentation.api.trainings.TrainingRouter
@@ -74,17 +75,50 @@ public class RootComponent(
                 navigation.replaceAll(RootRouter.Auth(AuthRouter.AuthProcess))
             }
 
-            RootDirection.Close -> close.invoke()
-            RootDirection.ToHome -> navigation.replaceAll(RootRouter.Home)
-            RootDirection.ToProfile -> navigation.push(RootRouter.Profile(ProfileRouter.WeightHistory))
-            RootDirection.ToDebug -> navigation.push(RootRouter.Debug)
-            RootDirection.ToSettings -> navigation.push(RootRouter.Settings(SettingsRouter.System))
-            RootDirection.ToWorkout -> navigation.push(RootRouter.Workout)
-            RootDirection.ToWeightHistory -> navigation.push(RootRouter.Profile(ProfileRouter.WeightHistory))
-            RootDirection.ToMissingEquipment -> navigation.push(RootRouter.Profile(ProfileRouter.Equipments))
-            RootDirection.ToExcludedMuscles -> navigation.push(RootRouter.Profile(ProfileRouter.Muscles))
-            RootDirection.ToSystemSettings -> navigation.push(RootRouter.Settings(SettingsRouter.System))
+            RootDirection.ToHome -> navigation.replaceAll(
+                RootRouter.Home
+            )
+
+            RootDirection.ToProfile -> navigation.push(
+                RootRouter.Profile(ProfileRouter.WeightHistory)
+            )
+
+            RootDirection.ToDebug -> navigation.push(
+                RootRouter.Debug
+            )
+
+            RootDirection.ToSettings -> navigation.push(
+                RootRouter.Settings(SettingsRouter.System)
+            )
+
+            RootDirection.ToWorkout -> navigation.push(
+                RootRouter.Workout
+            )
+
+            RootDirection.ToWeightHistory -> navigation.push(
+                RootRouter.Profile(ProfileRouter.WeightHistory)
+            )
+
+            RootDirection.ToMissingEquipment -> navigation.push(
+                RootRouter.Profile(ProfileRouter.Equipments)
+            )
+
+            RootDirection.ToExcludedMuscles -> navigation.push(
+                RootRouter.Profile(ProfileRouter.Muscles)
+            )
+
+            RootDirection.ToExerciseExamples -> navigation.push(
+                RootRouter.ExerciseExamples(
+                    ExerciseExamplesRouter.List
+                )
+            )
+
+            RootDirection.ToSystemSettings -> navigation.push(
+                RootRouter.Settings(SettingsRouter.System)
+            )
+
             RootDirection.Back -> navigation.pop()
+            RootDirection.Close -> close.invoke()
         }
     }
 
