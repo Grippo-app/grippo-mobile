@@ -75,6 +75,7 @@ include(":dialog-features:date-picker")
 include(":dialog-features:period-picker")
 include(":dialog-features:exercise-example")
 include(":dialog-features:error-display")
+include(":dialog-features:confirmation")
 include(":dialog-features:iteration-picker")
 
 include(":common:platform-core")

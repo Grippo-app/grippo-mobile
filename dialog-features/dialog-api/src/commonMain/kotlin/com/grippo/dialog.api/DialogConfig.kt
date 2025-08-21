@@ -90,4 +90,14 @@ public sealed class DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
     )
+
+    @Serializable
+    public data class Confirmation(
+        val title: String,
+        val description: String?,
+        @Transient val onResult: () -> Unit = {},
+    ) : DialogConfig(
+        onDismiss = null,
+        dismissBySwipe = true
+    )
 }

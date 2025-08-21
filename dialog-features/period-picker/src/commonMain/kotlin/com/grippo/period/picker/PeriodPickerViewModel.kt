@@ -54,10 +54,10 @@ public class PeriodPickerViewModel(
     override fun onToClick() {
         val custom = (state.value.value as? PeriodState.CUSTOM) ?: return
 
-        val limits = custom.limitations.copy(from = custom.range.from)
-        val data = DateFormatState.of(custom.range.to, limits)
-
         safeLaunch {
+            val limits = custom.limitations.copy(from = custom.range.from)
+            val data = DateFormatState.of(custom.range.to, limits)
+
             val dialog = DialogConfig.DatePicker(
                 title = stringProvider.get(Res.string.select_end_date),
                 initial = data,

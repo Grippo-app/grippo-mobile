@@ -12,6 +12,8 @@
     <string name="next_btn">Далі</string>
     <string name="apply_btn">Застосувати</string>
     <string name="got_it_btn">Зрозуміло</string>
+    <string name="confirm_btn">Підтвердити</string>
+    <string name="cancel_btn">Скасувати</string>
     <string name="logout_btn">Вийти</string>
     <string name="loading">Завантаження…</string>
     <string name="submit_btn">Надіслати</string>

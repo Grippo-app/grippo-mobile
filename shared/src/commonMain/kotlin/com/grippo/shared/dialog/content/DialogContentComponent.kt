@@ -8,6 +8,7 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
+import com.grippo.confirmation.ConfirmationComponent
 import com.grippo.core.BaseComponent
 import com.grippo.core.platform.collectAsStateMultiplatform
 import com.grippo.date.picker.DatePickerComponent
@@ -128,6 +129,16 @@ internal class DialogContentComponent(
                     back = { viewModel.onBack(null) }
                 )
             )
+
+            is DialogConfig.Confirmation -> Child.Confirmation(
+                ConfirmationComponent(
+                    componentContext = context,
+                    title = router.title,
+                    description = router.description,
+                    onResult = { viewModel.onBack { router.onResult.invoke() } },
+                    back = { viewModel.onBack(null) }
+                )
+            )
         }
     }
 
@@ -161,6 +172,9 @@ internal class DialogContentComponent(
             Child(component)
 
         data class IterationPicker(override val component: IterationPickerComponent) :
+            Child(component)
+
+        data class Confirmation(override val component: ConfirmationComponent) :
             Child(component)
     }
 }

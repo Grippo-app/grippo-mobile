@@ -57,6 +57,7 @@ kotlin {
         implementation(projects.dialogFeatures.datePicker)
         implementation(projects.dialogFeatures.periodPicker)
         implementation(projects.dialogFeatures.errorDisplay)
+        implementation(projects.dialogFeatures.confirmation)
         implementation(projects.dialogFeatures.exerciseExample)
         implementation(projects.dialogFeatures.exercise)
         implementation(projects.dialogFeatures.iterationPicker)

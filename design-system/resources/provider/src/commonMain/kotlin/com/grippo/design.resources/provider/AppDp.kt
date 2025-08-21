@@ -48,6 +48,7 @@ public data object AppDp {
     val input: Input = Input
     val button: Button = Button
     val error: Error = Error
+    val confirmation: Confirmation = Confirmation
     val loader: Loader = Loader
     val segment: Segment = Segment
     val tab: Tab = Tab
@@ -265,6 +266,10 @@ public data object AppDp {
     }
 
     public data object Error {
+        val icon: Dp = AppDp.icon.huge
+    }
+
+    public data object Confirmation {
         val icon: Dp = AppDp.icon.huge
     }
 
