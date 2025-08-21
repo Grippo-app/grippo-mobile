@@ -3,7 +3,8 @@ package com.grippo.training.recording
 import com.grippo.core.BaseViewModel
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.providers.StringProvider
-import com.grippo.design.resources.provider.select_start_date
+import com.grippo.design.resources.provider.training_progress_lost_description
+import com.grippo.design.resources.provider.training_progress_lost_title
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.state.formatters.IntensityFormatState
@@ -49,8 +50,8 @@ internal class TrainingRecordingViewModel(
     override fun onBack() {
         safeLaunch {
             val dialog = DialogConfig.Confirmation(
-                title = stringProvider.get(Res.string.select_start_date),
-                description = null,
+                title = stringProvider.get(Res.string.training_progress_lost_title),
+                description = stringProvider.get(Res.string.training_progress_lost_description),
                 onResult = { navigateTo(TrainingRecordingDirection.Back) }
             )
 

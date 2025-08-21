@@ -149,4 +149,6 @@
     <string name="arms_muscle">Arms</string>
     <string name="core_muscle">Core</string>
     <string name="strength_progress">Strength Progress</string>
+    <string name="training_progress_lost_title">Exit Training</string>
+    <string name="training_progress_lost_description">Closing now will cause all your progress in this session to be lost.</string>
 </resources>

@@ -130,4 +130,6 @@
     <string name="arms_muscle">Руки</string>
     <string name="core_muscle">Кор</string>
     <string name="strength_progress">Прогрес сили</string>
+    <string name="training_progress_lost_title">Завершити тренування</string>
+    <string name="training_progress_lost_description">Якщо закрити зараз, весь прогрес у цій сесії буде втрачено.</string>
 </resources>

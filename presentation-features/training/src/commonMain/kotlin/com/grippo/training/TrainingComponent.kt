@@ -39,7 +39,7 @@ public class TrainingComponent(
         when (direction) {
             TrainingDirection.Close -> close.invoke()
             TrainingDirection.Back -> navigation.pop()
-            TrainingDirection.ToRecording -> navigation.push(TrainingRouter.Recording)
+            TrainingDirection.ToRecording -> navigation.replaceAll(TrainingRouter.Recording)
             is TrainingDirection.ToExercise -> navigation.push(TrainingRouter.Exercise(direction.exercise))
             TrainingDirection.ToSuccess -> navigation.replaceAll(TrainingRouter.Success)
         }
@@ -71,7 +71,7 @@ public class TrainingComponent(
                     componentContext = context,
                     toSuccess = viewModel::toSuccess,
                     toExercise = viewModel::toExercise,
-                    back = viewModel::onBack
+                    back = viewModel::onClose
                 ),
             )
 
