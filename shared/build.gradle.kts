@@ -50,6 +50,7 @@ kotlin {
         implementation(projects.presentationFeatures.settings)
         implementation(projects.presentationFeatures.debug)
         implementation(projects.presentationFeatures.training)
+        implementation(projects.presentationFeatures.exerciseExamples)
 
         implementation(projects.dialogFeatures.dialogApi)
         implementation(projects.dialogFeatures.weightPicker)

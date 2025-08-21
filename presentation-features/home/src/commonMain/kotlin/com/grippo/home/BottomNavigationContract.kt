@@ -7,7 +7,7 @@ internal interface BottomNavigationContract {
     fun toExcludedMuscles()
     fun toMissingEquipment()
     fun toWeightHistory()
-    fun toExerciseLibrary()
+    fun toExerciseExamples()
     fun toDebug()
     fun toWorkout()
     fun toSystemSettings()
@@ -18,7 +18,7 @@ internal interface BottomNavigationContract {
         override fun toExcludedMuscles() {}
         override fun toMissingEquipment() {}
         override fun toWeightHistory() {}
-        override fun toExerciseLibrary() {}
+        override fun toExerciseExamples() {}
         override fun toDebug() {}
         override fun toWorkout() {}
         override fun toSystemSettings() {}

@@ -30,7 +30,7 @@ internal class HomeProfileViewModel(
         val direction = when (menu) {
             HomeProfileActivityMenu.ExcludedMuscles -> HomeProfileDirection.ExcludedMuscles
             HomeProfileActivityMenu.MissingEquipment -> HomeProfileDirection.MissingEquipment
-            HomeProfileActivityMenu.ExerciseLibrary -> HomeProfileDirection.ExerciseLibrary
+            HomeProfileActivityMenu.ExerciseExamples -> HomeProfileDirection.ExerciseExamples
         }
 
         navigateTo(direction)

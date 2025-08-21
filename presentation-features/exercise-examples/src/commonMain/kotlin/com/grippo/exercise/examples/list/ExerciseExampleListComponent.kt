@@ -1,4 +1,4 @@
-package com.grippo.debug
+package com.grippo.exercise.examples.list
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
@@ -7,13 +7,15 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.platform.collectAsStateMultiplatform
 
-public class DebugComponent(
+internal class ExerciseExampleListComponent(
     componentContext: ComponentContext,
-    private val close: () -> Unit
-) : BaseComponent<DebugDirection>(componentContext) {
+    private val back: () -> Unit
+) : BaseComponent<ExerciseExampleListDirection>(componentContext) {
 
-    override val viewModel: DebugViewModel = componentContext.retainedInstance {
-        DebugViewModel()
+    override val viewModel = componentContext.retainedInstance {
+        ExerciseExampleListViewModel(
+            exerciseExampleFeature = getKoin().get()
+        )
     }
 
     private val backCallback = BackCallback(onBack = viewModel::onBack)
@@ -22,9 +24,9 @@ public class DebugComponent(
         backHandler.register(backCallback)
     }
 
-    override suspend fun eventListener(direction: DebugDirection) {
+    override suspend fun eventListener(direction: ExerciseExampleListDirection) {
         when (direction) {
-            DebugDirection.Back -> close.invoke()
+            ExerciseExampleListDirection.Back -> back.invoke()
         }
     }
 
@@ -32,6 +34,6 @@ public class DebugComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        DebugScreen(state.value, loaders.value, viewModel)
+        ExerciseExampleListScreen(state.value, loaders.value, viewModel)
     }
 }

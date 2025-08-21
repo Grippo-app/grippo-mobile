@@ -28,7 +28,7 @@ internal data class HomeProfileState(
 internal enum class HomeProfileActivityMenu {
     ExcludedMuscles,
     MissingEquipment,
-    ExerciseLibrary;
+    ExerciseExamples;
 
     companion object {
         @Composable
@@ -40,7 +40,7 @@ internal enum class HomeProfileActivityMenu {
     @Composable
     fun text(): String {
         return when (this) {
-            ExerciseLibrary -> AppTokens.strings.res(Res.string.profile_menu_exercise_library)
+            ExerciseExamples -> AppTokens.strings.res(Res.string.profile_menu_exercise_library)
             ExcludedMuscles -> AppTokens.strings.res(Res.string.profile_menu_excluded_muscles)
             MissingEquipment -> AppTokens.strings.res(Res.string.profile_menu_missing_equipment)
         }
@@ -49,7 +49,7 @@ internal enum class HomeProfileActivityMenu {
     @Composable
     fun icon(): ImageVector {
         return when (this) {
-            ExerciseLibrary -> AppTokens.icons.Repository
+            ExerciseExamples -> AppTokens.icons.Repository
             ExcludedMuscles -> AppTokens.icons.Waist
             MissingEquipment -> AppTokens.icons.Gym
         }

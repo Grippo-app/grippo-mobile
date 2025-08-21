@@ -22,11 +22,11 @@ public class BottomNavigationComponent(
     private val toExcludedMuscles: () -> Unit,
     private val toMissingEquipment: () -> Unit,
     private val toWeightHistory: () -> Unit,
-    private val toExerciseLibrary: () -> Unit,
+    private val toExerciseExamples: () -> Unit,
     private val toDebug: () -> Unit,
     private val toWorkout: () -> Unit,
     private val toSystemSettings: () -> Unit,
-    private val back: () -> Unit,
+    private val close: () -> Unit,
 ) : BaseComponent<BottomNavigationDirection>(componentContext) {
 
     override val viewModel: BottomNavigationViewModel = componentContext.retainedInstance {
@@ -46,11 +46,11 @@ public class BottomNavigationComponent(
             BottomNavigationDirection.Trainings -> navigation.replaceAll(BottomNavigationRouter.Trainings)
             BottomNavigationDirection.Statistics -> navigation.replaceAll(BottomNavigationRouter.Statistics)
             BottomNavigationDirection.Profile -> navigation.replaceAll(BottomNavigationRouter.Profile)
-            BottomNavigationDirection.Back -> back.invoke()
+            BottomNavigationDirection.Back -> close.invoke()
             BottomNavigationDirection.ToExcludedMuscles -> toExcludedMuscles.invoke()
             BottomNavigationDirection.ToMissingEquipment -> toMissingEquipment.invoke()
             BottomNavigationDirection.ToWeightHistory -> toWeightHistory.invoke()
-            BottomNavigationDirection.ToExerciseLibrary -> toExerciseLibrary.invoke()
+            BottomNavigationDirection.ToExerciseExamples -> toExerciseExamples.invoke()
             BottomNavigationDirection.ToDebug -> toDebug.invoke()
             BottomNavigationDirection.ToWorkout -> toWorkout.invoke()
             BottomNavigationDirection.ToSystemSettings -> toSystemSettings.invoke()
@@ -88,7 +88,7 @@ public class BottomNavigationComponent(
                 HomeProfileComponent(
                     componentContext = context,
                     toExcludedMuscles = viewModel::toExcludedMuscles,
-                    toExerciseLibrary = viewModel::toExerciseLibrary,
+                    toExerciseExamples = viewModel::toExerciseExamples,
                     toMissingEquipment = viewModel::toMissingEquipment,
                     toWeightHistory = viewModel::toWeightHistory,
                     toWorkout = viewModel::toWorkout,

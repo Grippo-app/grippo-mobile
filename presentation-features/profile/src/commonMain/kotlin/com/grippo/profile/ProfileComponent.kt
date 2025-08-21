@@ -21,7 +21,7 @@ import com.grippo.profile.weight.history.WeightHistoryComponent
 public class ProfileComponent(
     initial: ProfileRouter,
     componentContext: ComponentContext,
-    private val back: () -> Unit
+    private val close: () -> Unit
 ) : BaseComponent<ProfileDirection>(componentContext) {
 
     override val viewModel: ProfileViewModel = componentContext.retainedInstance {
@@ -36,7 +36,7 @@ public class ProfileComponent(
 
     override suspend fun eventListener(direction: ProfileDirection) {
         when (direction) {
-            ProfileDirection.Back -> back.invoke()
+            ProfileDirection.Back -> close.invoke()
         }
     }
 

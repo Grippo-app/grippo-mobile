@@ -16,6 +16,7 @@ import com.grippo.core.BaseComponent
 import com.grippo.core.platform.collectAsStateMultiplatform
 import com.grippo.debug.DebugComponent
 import com.grippo.design.core.AppTheme
+import com.grippo.exercise.examples.ExerciseExamplesComponent
 import com.grippo.home.BottomNavigationComponent
 import com.grippo.presentation.api.RootRouter
 import com.grippo.presentation.api.auth.AuthRouter
@@ -27,7 +28,12 @@ import com.grippo.profile.ProfileComponent
 import com.grippo.settings.SettingsComponent
 import com.grippo.shared.dialog.DialogComponent
 import com.grippo.shared.root.RootComponent.Child.Authorization
+import com.grippo.shared.root.RootComponent.Child.Debug
+import com.grippo.shared.root.RootComponent.Child.ExerciseExamples
 import com.grippo.shared.root.RootComponent.Child.Home
+import com.grippo.shared.root.RootComponent.Child.Profile
+import com.grippo.shared.root.RootComponent.Child.Settings
+import com.grippo.shared.root.RootComponent.Child.Workout
 import com.grippo.state.settings.ThemeState
 import com.grippo.training.TrainingComponent
 
@@ -89,7 +95,7 @@ public class RootComponent(
                     componentContext = context,
                     initial = router.value,
                     toHome = viewModel::toHome,
-                    back = viewModel::onClose
+                    close = viewModel::onClose
                 ),
             )
 
@@ -103,27 +109,27 @@ public class RootComponent(
                     toDebug = viewModel::toDebug,
                     toWorkout = viewModel::toWorkout,
                     toSystemSettings = viewModel::toSystemSettings,
-                    toExerciseLibrary = {},
-                    back = viewModel::onClose
+                    toExerciseExamples = viewModel::toExerciseExamples,
+                    close = viewModel::onClose
                 )
             )
 
-            is RootRouter.Profile -> Child.Profile(
+            is RootRouter.Profile -> Profile(
                 ProfileComponent(
                     componentContext = context,
                     initial = router.value,
-                    back = viewModel::onBack
+                    close = viewModel::onBack
                 )
             )
 
-            is RootRouter.Debug -> Child.Debug(
+            is RootRouter.Debug -> Debug(
                 DebugComponent(
                     componentContext = context,
-                    back = viewModel::onBack
+                    close = viewModel::onBack
                 )
             )
 
-            is RootRouter.Workout -> Child.Workout(
+            is RootRouter.Workout -> Workout(
                 TrainingComponent(
                     componentContext = context,
                     initial = TrainingRouter.Setup,
@@ -131,8 +137,16 @@ public class RootComponent(
                 )
             )
 
-            is RootRouter.Settings -> Child.Settings(
+            is RootRouter.Settings -> Settings(
                 SettingsComponent(
+                    componentContext = context,
+                    initial = router.value,
+                    close = viewModel::onBack,
+                )
+            )
+
+            is RootRouter.ExerciseExamples -> ExerciseExamples(
+                ExerciseExamplesComponent(
                     componentContext = context,
                     initial = router.value,
                     close = viewModel::onBack,
@@ -159,5 +173,7 @@ public class RootComponent(
         public data class Debug(override val component: DebugComponent) : Child(component)
         public data class Settings(override val component: SettingsComponent) : Child(component)
         public data class Workout(override val component: TrainingComponent) : Child(component)
+        public data class ExerciseExamples(override val component: ExerciseExamplesComponent) :
+            Child(component)
     }
 }

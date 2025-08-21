@@ -66,6 +66,7 @@ include(":presentation-features:profile")
 include(":presentation-features:debug")
 include(":presentation-features:settings")
 include(":presentation-features:training")
+include(":presentation-features:exercise-examples")
 
 include(":dialog-features:dialog-api")
 include(":dialog-features:weight-picker")

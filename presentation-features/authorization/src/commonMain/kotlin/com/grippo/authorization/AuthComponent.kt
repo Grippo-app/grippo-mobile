@@ -21,7 +21,7 @@ public class AuthComponent(
     componentContext: ComponentContext,
     initial: AuthRouter,
     private val toHome: () -> Unit,
-    private val back: () -> Unit,
+    private val close: () -> Unit,
 ) : BaseComponent<AuthDirection>(componentContext) {
 
     override val viewModel: AuthViewModel = componentContext.retainedInstance {
@@ -37,7 +37,7 @@ public class AuthComponent(
     override suspend fun eventListener(direction: AuthDirection) {
         when (direction) {
             AuthDirection.AuthProcess -> navigation.push(AuthRouter.AuthProcess)
-            AuthDirection.Back -> back.invoke()
+            AuthDirection.Back -> close.invoke()
             AuthDirection.ToHome -> toHome.invoke()
         }
     }

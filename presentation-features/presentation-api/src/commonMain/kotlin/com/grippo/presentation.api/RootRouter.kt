@@ -2,6 +2,7 @@ package com.grippo.presentation.api
 
 import com.grippo.core.models.BaseRouter
 import com.grippo.presentation.api.auth.AuthRouter
+import com.grippo.presentation.api.exercise.examples.ExerciseExamplesRouter
 import com.grippo.presentation.api.profile.ProfileRouter
 import com.grippo.presentation.api.settings.SettingsRouter
 import kotlinx.serialization.Serializable
@@ -26,4 +27,7 @@ public sealed class RootRouter : BaseRouter {
 
     @Serializable
     public data object Workout : RootRouter()
+
+    @Serializable
+    public data class ExerciseExamples(val value: ExerciseExamplesRouter) : RootRouter()
 }
