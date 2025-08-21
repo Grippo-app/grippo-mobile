@@ -86,8 +86,8 @@ internal fun NameScreen(
 
         val buttonState = remember(loaders, state.name) {
             when {
-                state.name is NameFormatState.Valid -> ButtonState.Enabled
-                else -> ButtonState.Disabled
+                state.name is NameFormatState.Invalid -> ButtonState.Disabled
+                else -> ButtonState.Enabled
             }
         }
 

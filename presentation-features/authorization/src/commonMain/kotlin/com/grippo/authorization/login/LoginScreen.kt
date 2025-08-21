@@ -101,8 +101,9 @@ internal fun LoginScreen(
         val buttonState = remember(loaders, state.email, state.password) {
             when {
                 loaders.contains(LoginLoader.LoginButton) -> ButtonState.Loading
-                state.email is EmailFormatState.Valid && state.password is PasswordFormatState.Valid -> ButtonState.Enabled
-                else -> ButtonState.Disabled
+                state.email is EmailFormatState.Invalid -> ButtonState.Disabled
+                state.password is PasswordFormatState.Invalid -> ButtonState.Disabled
+                else -> ButtonState.Enabled
             }
         }
 

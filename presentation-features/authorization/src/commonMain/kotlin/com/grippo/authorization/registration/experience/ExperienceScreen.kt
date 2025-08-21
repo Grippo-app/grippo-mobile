@@ -112,8 +112,8 @@ internal fun ExperienceScreen(
 
         val buttonState = remember(loaders, state.selected) {
             when {
-                state.selected != null -> ButtonState.Enabled
-                else -> ButtonState.Disabled
+                state.selected == null -> ButtonState.Disabled
+                else -> ButtonState.Enabled
             }
         }
 

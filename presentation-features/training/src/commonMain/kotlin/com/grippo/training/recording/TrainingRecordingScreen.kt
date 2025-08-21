@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.toolbar.Toolbar
@@ -75,11 +76,19 @@ internal fun TrainingRecordingScreen(
 
                 Spacer(modifier = Modifier.weight(1f))
 
+                val buttonState = remember(loaders, state.exercises) {
+                    when {
+                        state.exercises.isEmpty() -> ButtonState.Disabled
+                        else -> ButtonState.Enabled
+                    }
+                }
+
                 Button(
                     modifier = Modifier,
                     text = AppTokens.strings.res(Res.string.save_btn),
                     endIcon = AppTokens.icons.NavArrowRight,
                     style = ButtonStyle.Transparent,
+                    state = buttonState,
                     onClick = contract::onSave
                 )
             }
