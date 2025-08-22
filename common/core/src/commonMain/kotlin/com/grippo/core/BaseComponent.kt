@@ -7,7 +7,7 @@ import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.arkivanov.essenty.lifecycle.doOnStart
 import com.arkivanov.essenty.lifecycle.doOnStop
 import com.grippo.core.internal.ComponentTreeLogger
-import com.grippo.core.internal.ResultManager
+import com.grippo.core.internal.result.ResultManager
 import com.grippo.core.models.BaseDirection
 import com.grippo.core.models.BaseResult
 import com.grippo.core.models.ComponentIdentifier

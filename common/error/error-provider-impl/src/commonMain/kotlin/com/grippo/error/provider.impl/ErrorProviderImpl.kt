@@ -7,7 +7,9 @@ import com.grippo.error.provider.ErrorProvider
 import org.koin.core.annotation.Single
 
 @Single(binds = [ErrorProvider::class])
-internal class ErrorProviderImpl(val dialogController: DialogController) : ErrorProvider {
+internal class ErrorProviderImpl(
+    val dialogController: DialogController
+) : ErrorProvider {
 
     override suspend fun provide(exception: Throwable, callback: () -> Unit) {
         val config = when (exception) {
