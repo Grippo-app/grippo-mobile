@@ -11,10 +11,11 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
+import org.koin.core.annotation.Factory
 import org.koin.core.annotation.InjectedParam
 import org.koin.core.annotation.Single
 
-@Single
+@Factory
 internal class ResultManager(
     private val resultEmitter: ResultEmitter,
     @InjectedParam val coroutineScope: CoroutineScope
