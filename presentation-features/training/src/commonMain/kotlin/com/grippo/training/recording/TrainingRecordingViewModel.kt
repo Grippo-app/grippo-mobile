@@ -42,8 +42,13 @@ internal class TrainingRecordingViewModel(
 
     fun updateExercise(value: ExerciseState) {
         update {
-            val updatedExercises = it.exercises
-                .map { exercise -> if (exercise.id == exercise.id) value else exercise }
+            val index = it.exercises.indexOfFirst { exercise -> exercise.id == value.id }
+
+            val updatedExercises = if (index >= 0) {
+                it.exercises.toMutableList().apply { this[index] = value }
+            } else {
+                it.exercises + value
+            }
 
             it.copy(exercises = updatedExercises.toPersistentList())
         }

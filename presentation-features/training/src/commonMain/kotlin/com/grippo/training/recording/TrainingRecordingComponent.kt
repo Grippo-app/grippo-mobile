@@ -18,7 +18,7 @@ internal class TrainingRecordingComponent(
 ) : BaseComponent<TrainingRecordingDirection>(componentContext) {
 
     init {
-        subscribeToResult<Result<ExerciseState>>(
+        observeResult<Result<ExerciseState>>(
             key = ResultKeys.create("exercise"),
             onResult = { viewModel.updateExercise(it.data) }
         )
