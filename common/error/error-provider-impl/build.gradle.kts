@@ -8,5 +8,6 @@ kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.dialogFeatures.dialogApi)
         implementation(projects.common.error.errorProvider)
+        implementation(projects.common.state)
     }
 }

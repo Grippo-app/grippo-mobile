@@ -1,14 +1,13 @@
 package com.grippo.error.display
 
 import com.grippo.core.BaseViewModel
+import com.grippo.state.error.AppErrorState
 
 public class ErrorDisplayViewModel(
-    title: String,
-    description: String?,
+    error: AppErrorState,
 ) : BaseViewModel<ErrorDisplayState, ErrorDisplayDirection, ErrorDisplayLoader>(
     ErrorDisplayState(
-        title = title,
-        description = description
+        error = error,
     )
 ), ErrorDisplayContract {
 

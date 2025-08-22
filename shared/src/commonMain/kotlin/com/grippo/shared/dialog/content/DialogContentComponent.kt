@@ -77,8 +77,7 @@ internal class DialogContentComponent(
             is DialogConfig.ErrorDisplay -> Child.ErrorDisplay(
                 ErrorDisplayComponent(
                     componentContext = context,
-                    title = router.title,
-                    description = router.description,
+                    error = router.error,
                     back = { viewModel.onBack(null) }
                 )
             )

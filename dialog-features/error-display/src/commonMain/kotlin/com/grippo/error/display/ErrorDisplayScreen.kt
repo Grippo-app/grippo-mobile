@@ -25,6 +25,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.got_it_btn
 import com.grippo.design.resources.provider.icons.WarningTriangleOutline
+import com.grippo.state.error.AppErrorState
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -55,13 +56,15 @@ internal fun ErrorDisplayScreen(
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = state.title,
+            text = state.error.title(),
             style = AppTokens.typography.h2(),
             color = AppTokens.colors.text.primary,
             textAlign = TextAlign.Center
         )
 
-        if (state.description != null) {
+        val description = state.error.description()
+
+        if (description != null) {
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
             Text(
@@ -69,7 +72,7 @@ internal fun ErrorDisplayScreen(
                     .fillMaxWidth()
                     .heightIn(max = 400.dp)
                     .verticalScroll(rememberScrollState()),
-                text = state.description,
+                text = description,
                 style = AppTokens.typography.b14Med(),
                 color = AppTokens.colors.text.secondary,
                 textAlign = TextAlign.Center
@@ -95,8 +98,9 @@ private fun ScreenPreview() {
     PreviewContainer {
         ErrorDisplayScreen(
             state = ErrorDisplayState(
-                title = "Something went wrong",
-                description = "Try again after few minutes."
+                error = AppErrorState.Unknown(
+                    description = "What happens?"
+                )
             ),
             contract = ErrorDisplayContract.Empty,
             loaders = persistentSetOf()

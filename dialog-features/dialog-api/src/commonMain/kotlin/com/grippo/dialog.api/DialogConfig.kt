@@ -2,6 +2,7 @@ package com.grippo.dialog.api
 
 import com.grippo.date.utils.DateRange
 import com.grippo.state.datetime.PeriodState
+import com.grippo.state.error.AppErrorState
 import com.grippo.state.formatters.DateFormatState
 import com.grippo.state.formatters.HeightFormatState
 import com.grippo.state.formatters.WeightFormatState
@@ -18,8 +19,7 @@ public sealed class DialogConfig(
     ) {
     @Serializable
     public data class ErrorDisplay(
-        val title: String,
-        val description: String?,
+        val error: AppErrorState,
         @Transient val onClose: () -> Unit = {},
     ) : DialogConfig(
         onDismiss = onClose,
