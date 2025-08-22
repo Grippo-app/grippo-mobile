@@ -2,6 +2,12 @@ package com.grippo.state.error
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import com.grippo.design.core.AppTokens
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.no_internet_connection
+import com.grippo.design.resources.provider.timeout_error
+import com.grippo.design.resources.provider.unexpected_network_error
+import com.grippo.design.resources.provider.unsupported_error
 
 @Immutable
 public sealed interface AppErrorState {
@@ -40,10 +46,10 @@ public sealed interface AppErrorState {
     public fun title(): String {
         return when (this) {
             is Network.Expected -> this.title
-            is Network.NoInternet -> "No internet"
-            is Network.Timeout -> "Timeout"
-            is Network.Unexpected -> "Unexpected error"
-            is Unknown -> "Unsupported error"
+            is Network.NoInternet -> AppTokens.strings.res(Res.string.no_internet_connection)
+            is Network.Timeout -> AppTokens.strings.res(Res.string.timeout_error)
+            is Network.Unexpected -> AppTokens.strings.res(Res.string.unexpected_network_error)
+            is Unknown -> AppTokens.strings.res(Res.string.unsupported_error)
         }
     }
 

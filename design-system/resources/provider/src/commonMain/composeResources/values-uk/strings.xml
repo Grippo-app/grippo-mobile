@@ -132,4 +132,7 @@
     <string name="strength_progress">Прогрес сили</string>
     <string name="training_progress_lost_title">Завершити тренування</string>
     <string name="training_progress_lost_description">Якщо закрити зараз, весь прогрес у цій сесії буде втрачено.</string>
+    <string name="timeout_error">Час очікування минув</string>
+    <string name="unexpected_network_error">Неочікувана мережева помилка</string>
+    <string name="unsupported_error">Непідтримувана помилка</string>
 </resources>
