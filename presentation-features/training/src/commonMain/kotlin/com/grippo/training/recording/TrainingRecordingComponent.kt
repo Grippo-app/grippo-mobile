@@ -5,6 +5,8 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
+import com.grippo.core.models.Result
+import com.grippo.core.models.ResultKeys
 import com.grippo.core.platform.collectAsStateMultiplatform
 import com.grippo.state.trainings.ExerciseState
 
@@ -14,6 +16,13 @@ internal class TrainingRecordingComponent(
     private val toExercise: (exercise: ExerciseState) -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<TrainingRecordingDirection>(componentContext) {
+
+    init {
+        subscribeToResult<Result<ExerciseState>>(
+            key = ResultKeys.create("exercise"),
+            onResult = { viewModel.updateExercise(it.data) }
+        )
+    }
 
     override val viewModel: TrainingRecordingViewModel = componentContext.retainedInstance {
         TrainingRecordingViewModel(

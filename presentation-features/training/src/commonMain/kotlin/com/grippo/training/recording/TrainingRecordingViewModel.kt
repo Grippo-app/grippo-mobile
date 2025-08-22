@@ -12,6 +12,7 @@ import com.grippo.state.formatters.RepetitionsFormatState
 import com.grippo.state.formatters.VolumeFormatState
 import com.grippo.state.trainings.ExerciseState
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlin.uuid.Uuid
 
 internal class TrainingRecordingViewModel(
@@ -37,6 +38,15 @@ internal class TrainingRecordingViewModel(
     override fun onEditExercise(id: String) {
         val exercise = state.value.exercises.find { it.id == id } ?: return
         navigateTo(TrainingRecordingDirection.ToExercise(exercise))
+    }
+
+    fun updateExercise(value: ExerciseState) {
+        update {
+            val updatedExercises = it.exercises
+                .map { exercise -> if (exercise.id == exercise.id) value else exercise }
+
+            it.copy(exercises = updatedExercises.toPersistentList())
+        }
     }
 
     override fun onSelectTab(tab: RecordingTab) {

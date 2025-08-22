@@ -104,7 +104,11 @@ internal class ExerciseViewModel(
     }
 
     override fun onSave() {
-        navigateTo(ExerciseDirection.Back)
+        val direction = ExerciseDirection.Save(
+            exercise = state.value.exercise
+        )
+
+        navigateTo(direction)
     }
 
     override fun onBack() {

@@ -79,7 +79,7 @@ public class TrainingComponent(
                 ExerciseComponent(
                     componentContext = context,
                     exercise = router.exercise,
-                    back = viewModel::onBack
+                    back = viewModel::onBack,
                 ),
             )
 
