@@ -5,6 +5,7 @@ import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.authorization.AuthorizationFeature
 import com.grippo.data.features.api.settings.SettingsFeature
 import com.grippo.data.features.api.settings.models.Settings
+import com.grippo.design.components.connection.snackbar.ConnectionSnackbarState
 import com.grippo.domain.state.settings.toState
 import com.grippo.state.settings.ThemeState
 import kotlinx.coroutines.flow.launchIn
@@ -39,11 +40,11 @@ public class RootViewModel(
     }
 
     private fun provideConnectionStatus(value: Connectivity.Status) {
-        val isConnected = when (value) {
-            is Connectivity.Status.Connected -> true
-            Connectivity.Status.Disconnected -> false
+        val connection = when (value) {
+            is Connectivity.Status.Connected -> ConnectionSnackbarState.Hidden
+            Connectivity.Status.Disconnected -> ConnectionSnackbarState.Visible
         }
-        update { it.copy(isConnectedToInternet = isConnected) }
+        update { it.copy(connection = connection) }
     }
 
     override fun onClose() {
@@ -82,7 +83,7 @@ public class RootViewModel(
         navigateTo(RootDirection.ToExcludedMuscles)
     }
 
-    override fun toExerciseExamples(){
+    override fun toExerciseExamples() {
         navigateTo(RootDirection.ToExerciseExamples)
     }
 

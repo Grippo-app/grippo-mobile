@@ -108,9 +108,7 @@ public class RootComponent(
             )
 
             RootDirection.ToExerciseExamples -> navigation.push(
-                RootRouter.ExerciseExamples(
-                    ExerciseExamplesRouter.List
-                )
+                RootRouter.ExerciseExamples(ExerciseExamplesRouter.List)
             )
 
             RootDirection.ToSystemSettings -> navigation.push(
@@ -201,12 +199,24 @@ public class RootComponent(
     }
 
     public sealed class Child(public open val component: BaseComponent<*>) {
-        public data class Authorization(override val component: AuthComponent) : Child(component)
-        public data class Home(override val component: BottomNavigationComponent) : Child(component)
-        public data class Profile(override val component: ProfileComponent) : Child(component)
-        public data class Debug(override val component: DebugComponent) : Child(component)
-        public data class Settings(override val component: SettingsComponent) : Child(component)
-        public data class Workout(override val component: TrainingComponent) : Child(component)
+        public data class Authorization(override val component: AuthComponent) :
+            Child(component)
+
+        public data class Home(override val component: BottomNavigationComponent) :
+            Child(component)
+
+        public data class Profile(override val component: ProfileComponent) :
+            Child(component)
+
+        public data class Debug(override val component: DebugComponent) :
+            Child(component)
+
+        public data class Settings(override val component: SettingsComponent) :
+            Child(component)
+
+        public data class Workout(override val component: TrainingComponent) :
+            Child(component)
+
         public data class ExerciseExamples(override val component: ExerciseExamplesComponent) :
             Child(component)
     }

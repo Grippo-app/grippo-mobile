@@ -1,10 +1,11 @@
 package com.grippo.shared.root
 
 import androidx.compose.runtime.Immutable
+import com.grippo.design.components.connection.snackbar.ConnectionSnackbarState
 import com.grippo.state.settings.ThemeState
 
 @Immutable
 public data class RootState(
-    val isConnectedToInternet: Boolean = true,
+    val connection: ConnectionSnackbarState = ConnectionSnackbarState.Hidden,
     val theme: ThemeState? = null
 )
