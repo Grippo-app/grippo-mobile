@@ -43,14 +43,14 @@ kotlin {
 
         implementation(projects.dataMappers.domainToState)
 
-        implementation(projects.presentationFeatures.presentationApi)
-        implementation(projects.presentationFeatures.authorization)
-        implementation(projects.presentationFeatures.home)
-        implementation(projects.presentationFeatures.profile)
-        implementation(projects.presentationFeatures.settings)
-        implementation(projects.presentationFeatures.debug)
-        implementation(projects.presentationFeatures.training)
-        implementation(projects.presentationFeatures.exerciseExamples)
+        implementation(projects.uiScreenFeatures.screenApi)
+        implementation(projects.uiScreenFeatures.authorization)
+        implementation(projects.uiScreenFeatures.home)
+        implementation(projects.uiScreenFeatures.profile)
+        implementation(projects.uiScreenFeatures.settings)
+        implementation(projects.uiScreenFeatures.debug)
+        implementation(projects.uiScreenFeatures.training)
+        implementation(projects.uiScreenFeatures.exerciseExamples)
 
         implementation(projects.dialogFeatures.dialogApi)
         implementation(projects.dialogFeatures.weightPicker)
