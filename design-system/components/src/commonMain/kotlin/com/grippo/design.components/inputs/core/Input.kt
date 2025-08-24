@@ -217,7 +217,12 @@ internal fun Input(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding))
-                    leading?.invoke(leadingColor)
+
+                    if (leading != null) {
+                        leading.invoke(leadingColor)
+                        Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.content))
+                    }
+
                     Box(
                         modifier = Modifier
                             .weight(1f)
@@ -226,6 +231,7 @@ internal fun Input(
                     )
 
                     if (trailing != null) {
+                        Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.content))
                         trailing.invoke(trailingColor)
                         Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding / 3))
                     } else {
@@ -238,7 +244,12 @@ internal fun Input(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding))
-                    leading?.invoke(leadingColor)
+
+                    if (leading != null) {
+                        leading.invoke(leadingColor)
+                        Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.content))
+                    }
+
                     Box(
                         modifier = Modifier
                             .weight(1f)
@@ -260,6 +271,7 @@ internal fun Input(
                         }
                     }
                     if (trailing != null) {
+                        Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.content))
                         trailing.invoke(trailingColor)
                         Spacer(modifier = Modifier.width(AppTokens.dp.input.horizontalPadding / 3))
                     } else {

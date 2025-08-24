@@ -42,6 +42,8 @@ public fun InputEmail(
     Input(
         modifier = modifier,
         value = value,
+        maxLines = 1,
+        minLines = 1,
         inputStyle = InputStyle.Default(
             onValueChange = onValueChange,
         ),

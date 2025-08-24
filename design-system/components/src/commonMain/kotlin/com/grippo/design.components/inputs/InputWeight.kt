@@ -33,6 +33,8 @@ public fun InputWeight(
     Input(
         modifier = modifier,
         value = value,
+        maxLines = 1,
+        minLines = 1,
         inputStyle = InputStyle.Clickable(
             onClick = onClick
         ),

@@ -10,4 +10,8 @@ public class ExerciseExamplesViewModel :
     override fun onBack() {
         navigateTo(ExerciseExamplesDirection.Back)
     }
+
+    override fun onClose() {
+        navigateTo(ExerciseExamplesDirection.Close)
+    }
 }

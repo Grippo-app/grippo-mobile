@@ -5,6 +5,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
@@ -31,7 +32,8 @@ public class ExerciseExamplesComponent(
 
     override suspend fun eventListener(direction: ExerciseExamplesDirection) {
         when (direction) {
-            ExerciseExamplesDirection.Back -> close.invoke()
+            ExerciseExamplesDirection.Back -> navigation.pop()
+            ExerciseExamplesDirection.Close -> close.invoke()
         }
     }
 
@@ -51,7 +53,7 @@ public class ExerciseExamplesComponent(
             ExerciseExamplesRouter.List -> Child.List(
                 ExerciseExampleListComponent(
                     componentContext = context,
-                    back = viewModel::onBack
+                    back = viewModel::onClose
                 ),
             )
         }

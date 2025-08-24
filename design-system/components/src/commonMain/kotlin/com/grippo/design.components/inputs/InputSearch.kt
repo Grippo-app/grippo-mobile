@@ -28,10 +28,11 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.Cancel
-import com.grippo.design.resources.provider.name_placeholder
+import com.grippo.design.resources.provider.icons.Search
+import com.grippo.design.resources.provider.search_placeholder
 
 @Composable
-public fun InputName(
+public fun InputSearch(
     modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit
@@ -46,6 +47,15 @@ public fun InputName(
         inputStyle = InputStyle.Default(
             onValueChange = onValueChange,
         ),
+        leading = { color ->
+            Icon(
+                modifier = Modifier
+                    .size(AppTokens.dp.input.icon),
+                imageVector = AppTokens.icons.Search,
+                tint = color,
+                contentDescription = null
+            )
+        },
         trailing = { color ->
             Box {
                 AnimatedVisibility(
@@ -72,7 +82,7 @@ public fun InputName(
             }
         },
         placeholder = PlaceHolder.OverInput(
-            value = AppTokens.strings.res(Res.string.name_placeholder)
+            value = AppTokens.strings.res(Res.string.search_placeholder)
         ),
         keyboardActions = KeyboardActions {
             focusManager.clearFocus(force = true)
