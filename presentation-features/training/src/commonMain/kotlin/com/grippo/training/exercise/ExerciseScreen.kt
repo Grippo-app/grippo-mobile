@@ -113,7 +113,7 @@ internal fun ExerciseScreen(
             }
 
             val editRepetitionProvider = remember(iteration.id) {
-                { contract.onEditVolume(iteration.id) }
+                { contract.onEditRepetition(iteration.id) }
             }
 
             IterationCard(

@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -42,19 +43,27 @@ internal fun IterationPickerScreen(
     contract: IterationPickerContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
-    val volumeRequester = FocusRequester()
-    val repetitionsRequester = FocusRequester()
+    val volumeRequester = remember { FocusRequester() }
+    val repetitionsRequester = remember { FocusRequester() }
 
     LaunchedEffect(state.focus) {
+        // run after composition
+        withFrameNanos { /* no-op, just await a frame */ }
+
         when (state.focus) {
-            IterationFocus.VOLUME -> volumeRequester.requestFocus()
-            IterationFocus.REPETITIONS -> repetitionsRequester.requestFocus()
+            IterationFocus.VOLUME -> {
+                volumeRequester.requestFocus()
+            }
+
+            IterationFocus.REPETITIONS -> {
+                repetitionsRequester.requestFocus()
+            }
+
             IterationFocus.UNIDENTIFIED -> {}
         }
     }
 
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
-
 
     Text(
         modifier = Modifier.fillMaxWidth(),

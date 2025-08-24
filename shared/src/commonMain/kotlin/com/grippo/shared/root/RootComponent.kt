@@ -15,6 +15,7 @@ import com.grippo.authorization.AuthComponent
 import com.grippo.core.BaseComponent
 import com.grippo.core.platform.collectAsStateMultiplatform
 import com.grippo.debug.DebugComponent
+import com.grippo.design.components.connection.snackbar.ConnectionSnackbar
 import com.grippo.design.core.AppTheme
 import com.grippo.exercise.examples.ExerciseExamplesComponent
 import com.grippo.home.BottomNavigationComponent
@@ -194,6 +195,7 @@ public class RootComponent(
 
         AppTheme(darkTheme = state.value.theme == ThemeState.DARK) {
             RootScreen(this, state.value, loaders.value, viewModel)
+            ConnectionSnackbar(state = state.value.connection)
             dialogComponent.Render()
         }
     }
