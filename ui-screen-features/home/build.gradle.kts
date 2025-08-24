@@ -11,7 +11,7 @@ kotlin {
         implementation(projects.common.dateUtils)
         implementation(projects.common.state)
         implementation(projects.dataMappers.domainToState)
-        implementation(projects.dialogFeatures.dialogApi)
+        implementation(projects.uiDialogFeatures.dialogApi)
         implementation(projects.uiScreenFeatures.screenApi)
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.designSystem.core)

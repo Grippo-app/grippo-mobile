@@ -17,7 +17,7 @@ kotlin {
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.dataMappers.domainToState)
         implementation(projects.dataMappers.stateToDomain)
-        implementation(projects.dialogFeatures.dialogApi)
+        implementation(projects.uiDialogFeatures.dialogApi)
 
         implementation(compose.foundation)
         implementation(compose.material3)

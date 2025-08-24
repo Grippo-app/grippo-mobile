@@ -15,7 +15,7 @@ kotlin {
         implementation(projects.designSystem.preview)
         implementation(projects.designSystem.components)
         implementation(projects.composeLibs.wheelPicker)
-        implementation(projects.dialogFeatures.dialogApi)
+        implementation(projects.uiDialogFeatures.dialogApi)
 
         implementation(compose.foundation)
         implementation(compose.material3)
