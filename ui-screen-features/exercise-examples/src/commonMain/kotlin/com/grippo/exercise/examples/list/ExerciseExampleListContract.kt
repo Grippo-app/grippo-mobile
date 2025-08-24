@@ -4,10 +4,12 @@ internal interface ExerciseExampleListContract {
     fun onBack()
     fun onExerciseExampleClick(id: String)
     fun onQueryChange(value: String)
+    fun onFiltersClick()
 
     companion object Empty : ExerciseExampleListContract {
         override fun onBack() {}
         override fun onExerciseExampleClick(id: String) {}
         override fun onQueryChange(value: String) {}
+        override fun onFiltersClick() {}
     }
 }

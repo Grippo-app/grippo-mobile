@@ -16,6 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.inputs.InputName
@@ -93,7 +94,9 @@ internal fun NameScreen(
 
         Button(
             modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.continue_btn),
+            content = ButtonContent.Text(
+                text = AppTokens.strings.res(Res.string.continue_btn),
+            ),
             state = buttonState,
             style = ButtonStyle.Primary,
             onClick = contract::onNextClick

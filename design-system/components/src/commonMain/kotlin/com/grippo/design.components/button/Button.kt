@@ -15,6 +15,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -43,6 +44,21 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.icons.SystemRestart
 
 @Immutable
+public sealed interface ButtonContent {
+    @Immutable
+    public data class Text(
+        val text: String,
+        val startIcon: ImageVector? = null,
+        val endIcon: ImageVector? = null,
+    ) : ButtonContent
+
+    @Immutable
+    public data class Icon(
+        val icon: ImageVector,
+    ) : ButtonContent
+}
+
+@Immutable
 public sealed interface ButtonStyle {
     public data object Primary : ButtonStyle
     public data object Secondary : ButtonStyle
@@ -54,17 +70,20 @@ public sealed interface ButtonStyle {
 }
 
 @Immutable
-public enum class ButtonState { Enabled, Loading, Disabled; }
+public enum class ButtonState { Enabled, Loading, Disabled }
 
+/**
+ * Canonical button with two layouts:
+ * - ButtonContent.Text: standard (text with optional start/end icons)
+ * - ButtonContent.Icon: square icon-only button
+ */
 @Composable
 public fun Button(
     modifier: Modifier = Modifier,
-    text: String,
+    content: ButtonContent,
     style: ButtonStyle = ButtonStyle.Primary,
     state: ButtonState = ButtonState.Enabled,
     onClick: () -> Unit,
-    startIcon: ImageVector? = null,
-    endIcon: ImageVector? = null,
     textStyle: TextStyle = AppTokens.typography.b14Bold(),
 ) {
     val colorTokens = resolveButtonColors(style = style, state = state)
@@ -72,57 +91,87 @@ public fun Button(
     val iconSize = AppTokens.dp.button.icon
     val isLoading = state == ButtonState.Loading
 
-    // Calculate the size-related properties
-    val height = if (style == ButtonStyle.Transparent) null else AppTokens.dp.button.height
+    // Size & paddings for text layout (keeps Transparent behavior)
+    val textHeight = if (style == ButtonStyle.Transparent) null else AppTokens.dp.button.height
     val horizontalPadding =
         if (style == ButtonStyle.Transparent) null else AppTokens.dp.button.horizontalPadding
     val iconPadding =
         if (style == ButtonStyle.Transparent) AppTokens.dp.button.spaceTransparent else AppTokens.dp.button.space
 
-    // Base modifier
+    // Square side for icon-only layout (aligned with button height token)
+    val squareSide = AppTokens.dp.button.height
+
     val baseModifier = modifier
         .scalableClick(enabled = state == ButtonState.Enabled, onClick = onClick)
         .background(colorTokens.background, shape)
         .border(1.dp, colorTokens.border, shape)
 
-    // Apply padding and height modifications
-    val finalModifier = baseModifier
-        .then(horizontalPadding?.let { Modifier.padding(horizontal = it) } ?: Modifier)
-        .then(height?.let { Modifier.height(it) } ?: Modifier)
-
-    // Pre-create transition once to avoid churn while toggling loading state
     val loadingTransition = rememberInfiniteTransition(label = "button_loading")
 
-    // Row that contains the content
-    Row(
-        modifier = finalModifier,
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Animated loading icon
-        AnimatedContent(
-            targetState = isLoading,
-            transitionSpec = { fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut() },
-            label = "icon_animation"
-        ) { loading ->
-            if (loading) {
-                val angle by loadingTransition.animateFloat(
-                    initialValue = 0f, targetValue = 360f,
-                    animationSpec = infiniteRepeatable(
-                        animation = tween(durationMillis = 1000, easing = LinearEasing),
-                        repeatMode = RepeatMode.Restart
-                    )
+    when (content) {
+        is ButtonContent.Text -> {
+            val finalModifier = baseModifier
+                .then(horizontalPadding?.let { Modifier.padding(horizontal = it) } ?: Modifier)
+                .then(textHeight?.let { Modifier.height(it) } ?: Modifier)
+
+            Row(
+                modifier = finalModifier,
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Start icon or loader
+                AnimatedContent(
+                    targetState = isLoading,
+                    transitionSpec = { fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut() },
+                    label = "btn_text_start_anim"
+                ) { loading ->
+                    if (loading) {
+                        val angle by loadingTransition.animateFloat(
+                            initialValue = 0f,
+                            targetValue = 360f,
+                            animationSpec = infiniteRepeatable(
+                                animation = tween(durationMillis = 1000, easing = LinearEasing),
+                                repeatMode = RepeatMode.Restart
+                            ),
+                            label = "btn_text_loader_rotation"
+                        )
+                        Icon(
+                            modifier = Modifier
+                                .size(iconSize)
+                                .graphicsLayer { rotationZ = angle },
+                            imageVector = AppTokens.icons.SystemRestart,
+                            tint = colorTokens.icon,
+                            contentDescription = null
+                        )
+                    } else {
+                        content.startIcon?.let {
+                            Icon(
+                                modifier = Modifier.size(iconSize),
+                                imageVector = it,
+                                tint = colorTokens.icon,
+                                contentDescription = null
+                            )
+                        }
+                    }
+                }
+
+                if (content.startIcon != null || isLoading) {
+                    Spacer(modifier = Modifier.width(iconPadding))
+                }
+
+                Text(
+                    text = content.text,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = colorTokens.content,
+                    style = textStyle
                 )
-                Icon(
-                    modifier = Modifier
-                        .size(iconSize)
-                        .graphicsLayer { rotationZ = angle },
-                    imageVector = AppTokens.icons.SystemRestart,
-                    tint = colorTokens.icon,
-                    contentDescription = null
-                )
-            } else {
-                startIcon?.let {
+
+                if (content.endIcon != null) {
+                    Spacer(modifier = Modifier.width(iconPadding))
+                }
+
+                content.endIcon?.let {
                     Icon(
                         modifier = Modifier.size(iconSize),
                         imageVector = it,
@@ -133,78 +182,145 @@ public fun Button(
             }
         }
 
-        // Spacer for icon padding
-        if (startIcon != null || isLoading) Spacer(modifier = Modifier.width(iconPadding))
-
-        // Text
-        Text(
-            text = text,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            color = colorTokens.content,
-            style = textStyle
-        )
-
-        // Spacer for end icon
-        if (endIcon != null) Spacer(modifier = Modifier.width(iconPadding))
-
-        // End icon
-        endIcon?.let {
-            Icon(
-                modifier = Modifier.size(iconSize),
-                imageVector = it,
-                tint = colorTokens.icon,
-                contentDescription = null
-            )
+        is ButtonContent.Icon -> {
+            // Strict square icon-only button
+            Box(
+                modifier = baseModifier.size(squareSide),
+                contentAlignment = Alignment.Center
+            ) {
+                AnimatedContent(
+                    targetState = isLoading,
+                    transitionSpec = { fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut() },
+                    label = "btn_icon_anim"
+                ) { loading ->
+                    if (loading) {
+                        val angle by loadingTransition.animateFloat(
+                            initialValue = 0f,
+                            targetValue = 360f,
+                            animationSpec = infiniteRepeatable(
+                                animation = tween(durationMillis = 1000, easing = LinearEasing),
+                                repeatMode = RepeatMode.Restart
+                            ),
+                            label = "btn_icon_loader_rotation"
+                        )
+                        Icon(
+                            modifier = Modifier
+                                .size(iconSize)
+                                .graphicsLayer { rotationZ = angle },
+                            imageVector = AppTokens.icons.SystemRestart,
+                            tint = colorTokens.icon,
+                            contentDescription = null
+                        )
+                    } else {
+                        Icon(
+                            modifier = Modifier.size(iconSize),
+                            imageVector = content.icon,
+                            tint = colorTokens.icon,
+                            contentDescription = null
+                        )
+                    }
+                }
+            }
         }
     }
 }
 
 @AppPreview
 @Composable
-private fun ButtonPrimaryPreviews() {
+private fun ButtonTextPreview() {
     PreviewContainer {
-        ButtonVariantsWithIcon(ButtonStyle.Primary)
+        Button(
+            content = ButtonContent.Text(text = "Enabled", startIcon = Icons.Default.Check),
+            style = ButtonStyle.Primary,
+            state = ButtonState.Enabled,
+            onClick = {}
+        )
+        Button(
+            content = ButtonContent.Text(text = "Loading", startIcon = Icons.Default.Check),
+            style = ButtonStyle.Primary,
+            state = ButtonState.Loading,
+            onClick = {}
+        )
+        Button(
+            content = ButtonContent.Text(text = "Disabled", startIcon = Icons.Default.Check),
+            style = ButtonStyle.Primary,
+            state = ButtonState.Disabled,
+            onClick = {}
+        )
     }
 }
 
 @AppPreview
 @Composable
-private fun ButtonSecondaryPreviews() {
+private fun ButtonIconPreview() {
     PreviewContainer {
-        ButtonVariantsWithIcon(ButtonStyle.Secondary)
+        Button(
+            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            style = ButtonStyle.Secondary,
+            state = ButtonState.Enabled,
+            onClick = {}
+        )
+        Button(
+            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            style = ButtonStyle.Secondary,
+            state = ButtonState.Loading,
+            onClick = {}
+        )
+        Button(
+            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            style = ButtonStyle.Secondary,
+            state = ButtonState.Disabled,
+            onClick = {}
+        )
     }
 }
 
 @AppPreview
 @Composable
-private fun ButtonTransparentPreviews() {
+private fun ButtonTextTransparentPreview() {
     PreviewContainer {
-        ButtonVariantsWithIcon(ButtonStyle.Transparent)
+        Button(
+            content = ButtonContent.Text(text = "Enabled", startIcon = Icons.Default.Check),
+            style = ButtonStyle.Transparent,
+            state = ButtonState.Enabled,
+            onClick = {}
+        )
+        Button(
+            content = ButtonContent.Text(text = "Loading", startIcon = Icons.Default.Check),
+            style = ButtonStyle.Transparent,
+            state = ButtonState.Loading,
+            onClick = {}
+        )
+        Button(
+            content = ButtonContent.Text(text = "Disabled", startIcon = Icons.Default.Check),
+            style = ButtonStyle.Transparent,
+            state = ButtonState.Disabled,
+            onClick = {}
+        )
     }
 }
 
+@AppPreview
 @Composable
-private fun ButtonVariantsWithIcon(style: ButtonStyle) {
-    Button(
-        text = "Enabled",
-        style = style,
-        state = ButtonState.Enabled,
-        onClick = {},
-        startIcon = Icons.Default.Check
-    )
-    Button(
-        text = "Loading",
-        style = style,
-        state = ButtonState.Loading,
-        onClick = {},
-        startIcon = Icons.Default.Check
-    )
-    Button(
-        text = "Disabled",
-        style = style,
-        state = ButtonState.Disabled,
-        onClick = {},
-        startIcon = Icons.Default.Check
-    )
+private fun ButtonIconTransparentPreview() {
+    PreviewContainer {
+        Button(
+            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            style = ButtonStyle.Transparent,
+            state = ButtonState.Enabled,
+            onClick = {}
+        )
+        Button(
+            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            style = ButtonStyle.Transparent,
+            state = ButtonState.Loading,
+            onClick = {}
+        )
+        Button(
+            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            style = ButtonStyle.Transparent,
+            state = ButtonState.Disabled,
+            onClick = {}
+        )
+    }
 }

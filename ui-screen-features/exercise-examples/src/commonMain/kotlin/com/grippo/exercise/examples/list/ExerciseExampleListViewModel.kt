@@ -19,4 +19,7 @@ internal class ExerciseExampleListViewModel(
     override fun onQueryChange(value: String) {
         update { it.copy(query = value) }
     }
+
+    override fun onFiltersClick() {
+    }
 }

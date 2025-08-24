@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -88,14 +89,18 @@ internal fun ConfirmationScreen(
         ) {
             Button(
                 modifier = Modifier.weight(1f),
-                text = AppTokens.strings.res(Res.string.cancel_btn),
+                content = ButtonContent.Text(
+                    text = AppTokens.strings.res(Res.string.cancel_btn),
+                ),
                 style = ButtonStyle.Secondary,
                 onClick = contract::onBack
             )
 
             Button(
                 modifier = Modifier.weight(1f),
-                text = AppTokens.strings.res(Res.string.confirm_btn),
+                content = ButtonContent.Text(
+                    text = AppTokens.strings.res(Res.string.confirm_btn),
+                ),
                 style = ButtonStyle.Primary,
                 onClick = contract::onConfirm
             )

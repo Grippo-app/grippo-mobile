@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.konfetti.KonfettiParade
 import com.grippo.design.components.loading.Loader
@@ -37,9 +38,9 @@ import com.grippo.design.components.user.UserCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.icons.Check
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.get_started_btn
+import com.grippo.design.resources.provider.icons.Check
 import com.grippo.design.resources.provider.registration_completed_title
 import com.grippo.state.profile.stubUser
 import kotlinx.collections.immutable.ImmutableSet
@@ -126,9 +127,11 @@ internal fun CompletedScreen(
 
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                text = AppTokens.strings.res(Res.string.get_started_btn),
+                content = ButtonContent.Text(
+                    text = AppTokens.strings.res(Res.string.get_started_btn),
+                    startIcon = AppTokens.icons.Check,
+                ),
                 style = ButtonStyle.Primary,
-                startIcon = AppTokens.icons.Check,
                 onClick = contract::onCompleteClick
             )
         }

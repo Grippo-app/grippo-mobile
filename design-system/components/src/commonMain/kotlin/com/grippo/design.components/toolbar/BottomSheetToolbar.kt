@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -42,8 +43,10 @@ public fun BottomSheetToolbar(
     ) {
         start?.let { btn ->
             Button(
-                text = btn.text,
-                startIcon = btn.startIcon,
+                content = ButtonContent.Text(
+                    text = btn.text,
+                    startIcon = btn.startIcon,
+                ),
                 style = btn.style,
                 onClick = btn.onClick
             )
@@ -53,8 +56,10 @@ public fun BottomSheetToolbar(
 
         end?.let { btn ->
             Button(
-                text = btn.text,
-                startIcon = btn.startIcon,
+                content = ButtonContent.Text(
+                    text = btn.text,
+                    startIcon = btn.startIcon,
+                ),
                 style = btn.style,
                 onClick = btn.onClick
             )

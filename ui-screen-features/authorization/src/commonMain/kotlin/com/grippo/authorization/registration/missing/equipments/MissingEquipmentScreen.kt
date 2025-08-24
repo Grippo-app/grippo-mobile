@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.equipment.EquipmentRow
 import com.grippo.design.components.segment.Segment
@@ -138,7 +139,9 @@ internal fun MissingEquipmentsScreen(
             modifier = Modifier
                 .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
                 .fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.continue_btn),
+            content = ButtonContent.Text(
+                text = AppTokens.strings.res(Res.string.continue_btn),
+            ),
             style = ButtonStyle.Primary,
             onClick = contract::onNextClick
         )

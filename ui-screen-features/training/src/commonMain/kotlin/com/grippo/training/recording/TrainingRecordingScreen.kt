@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.segment.Segment
@@ -85,8 +86,10 @@ internal fun TrainingRecordingScreen(
 
                 Button(
                     modifier = Modifier,
-                    text = AppTokens.strings.res(Res.string.save_btn),
-                    endIcon = AppTokens.icons.NavArrowRight,
+                    content = ButtonContent.Text(
+                        text = AppTokens.strings.res(Res.string.save_btn),
+                        endIcon = AppTokens.icons.NavArrowRight,
+                    ),
                     style = ButtonStyle.Transparent,
                     state = buttonState,
                     onClick = contract::onSave
@@ -142,7 +145,9 @@ internal fun TrainingRecordingScreen(
         modifier = Modifier
             .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
             .fillMaxWidth(1f),
-        text = AppTokens.strings.res(Res.string.add_exercise_btn),
+        content = ButtonContent.Text(
+            text = AppTokens.strings.res(Res.string.add_exercise_btn),
+        ),
         style = ButtonStyle.Secondary,
         onClick = contract::onAddExercise
     )

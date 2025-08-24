@@ -16,6 +16,7 @@ import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonColorTokens
+import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.menu.Menu
 import com.grippo.design.components.menu.MenuItem
@@ -80,8 +81,10 @@ internal fun HomeProfileScreen(
         Button(
             modifier = Modifier.fillMaxWidth(),
             style = ButtonStyle.Secondary,
-            startIcon = AppTokens.icons.Rocket,
-            text = AppTokens.strings.res(Res.string.start_workout),
+            content = ButtonContent.Text(
+                startIcon = AppTokens.icons.Rocket,
+                text = AppTokens.strings.res(Res.string.start_workout),
+            ),
             onClick = contract::onStartWorkoutClick
         )
 
@@ -117,8 +120,10 @@ internal fun HomeProfileScreen(
                     icon = AppTokens.colors.button.contentSecondaryDisabled
                 ),
             ),
-            startIcon = AppTokens.icons.LogOut,
-            text = AppTokens.strings.res(Res.string.logout_btn),
+            content = ButtonContent.Text(
+                startIcon = AppTokens.icons.LogOut,
+                text = AppTokens.strings.res(Res.string.logout_btn),
+            ),
             onClick = contract::onLogoutClick
         )
     }

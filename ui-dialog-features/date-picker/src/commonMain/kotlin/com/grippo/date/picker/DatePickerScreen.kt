@@ -17,6 +17,7 @@ import com.grippo.core.ScreenBackground
 import com.grippo.date.picker.internal.DateWheelPicker
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
@@ -74,7 +75,9 @@ internal fun DatePickerScreen(
 
         Button(
             modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.submit_btn),
+            content = ButtonContent.Text(
+                text = AppTokens.strings.res(Res.string.submit_btn),
+            ),
             style = ButtonStyle.Primary,
             state = buttonState,
             onClick = contract::onSubmitClick

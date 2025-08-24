@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -83,7 +84,9 @@ internal fun ErrorDisplayScreen(
 
         Button(
             modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.got_it_btn),
+            content = ButtonContent.Text(
+                text = AppTokens.strings.res(Res.string.got_it_btn),
+            ),
             style = ButtonStyle.Primary,
             onClick = contract::onDismiss
         )

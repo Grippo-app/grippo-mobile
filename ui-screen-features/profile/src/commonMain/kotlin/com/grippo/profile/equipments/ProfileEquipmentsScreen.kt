@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.equipment.EquipmentRow
@@ -101,7 +102,9 @@ internal fun ProfileEquipmentsScreen(
         modifier = Modifier
             .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
             .fillMaxWidth(),
-        text = AppTokens.strings.res(Res.string.apply_btn),
+        content = ButtonContent.Text(
+            text = AppTokens.strings.res(Res.string.apply_btn),
+        ),
         style = ButtonStyle.Primary,
         state = buttonState,
         onClick = contract::onApply
