@@ -1,6 +1,7 @@
 package com.grippo.core
 
 import com.arkivanov.essenty.instancekeeper.InstanceKeeper
+import com.grippo.core.internal.operation.OperationManager
 import com.grippo.core.models.BaseDirection
 import com.grippo.core.models.BaseLoader
 import com.grippo.error.provider.ErrorProvider
@@ -20,23 +21,24 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.koin.core.parameter.parametersOf
 import kotlin.coroutines.cancellation.CancellationException
 
 public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : BaseLoader>(
     state: STATE,
 ) : InstanceKeeper.Instance, KoinComponent {
 
-    public val coroutineScope: CoroutineScope =
-        CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    public val coroutineScope: CoroutineScope = CoroutineScope(
+        context = SupervisorJob() + Dispatchers.Main.immediate
+    )
+
+    private val operationManager by inject<OperationManager> {
+        parametersOf(coroutineScope)
+    }
 
     private val errorProvider by inject<ErrorProvider>()
 
@@ -57,39 +59,41 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
         _navigator.trySend(destination)
     }
 
+    protected fun <T> Flow<T>.safeLaunch(
+        dispatcher: CoroutineDispatcher = Dispatchers.Default,
+        loader: LOADER? = null,
+        onError: (() -> Unit) = {},
+    ): Job = launchProvider(dispatcher, loader, onError) {
+        this@safeLaunch
+            .catch { e ->
+                if (e is CancellationException) throw e
+                sendError(e, onError)
+            }.collect {}
+    }
+
     protected fun safeLaunch(
         dispatcher: CoroutineDispatcher = Dispatchers.Default,
         loader: LOADER? = null,
         onError: (() -> Unit) = {},
         block: suspend CoroutineScope.() -> Unit,
-    ): Job {
-        addLoader(loader)
-
-        val job = coroutineScope.launch(dispatcher) {
-            try {
-                block()
-            } catch (ce: CancellationException) {
-                throw ce
-            } catch (t: Throwable) {
-                sendError(t, onError)
-            }
-        }
-
-        job.invokeOnCompletion { removeLoader(loader) }
-        return job
+    ): Job = launchProvider(dispatcher, loader, onError) { scope ->
+        scope.block()
     }
 
-    protected fun <T> Flow<T>.safeLaunch(
+    private inline fun launchProvider(
         dispatcher: CoroutineDispatcher = Dispatchers.Default,
         loader: LOADER? = null,
-        onError: (() -> Unit) = {},
+        noinline onError: (() -> Unit) = {},
+        crossinline body: suspend (CoroutineScope) -> Unit
     ): Job {
-        return this
-            .flowOn(dispatcher)
-            .onStart { addLoader(loader) }
-            .catch { e -> if (e !is CancellationException) sendError(e, onError) else throw e }
-            .onCompletion { removeLoader(loader) }
-            .launchIn(coroutineScope)
+        addLoader(loader)
+        val job = operationManager.launch(
+            dispatcher = dispatcher,
+            onChildError = { t -> sendError(t, onError) },
+            block = { body(this) }
+        )
+        job.invokeOnCompletion { removeLoader(loader) }
+        return job
     }
 
     private fun addLoader(loader: LOADER?) {

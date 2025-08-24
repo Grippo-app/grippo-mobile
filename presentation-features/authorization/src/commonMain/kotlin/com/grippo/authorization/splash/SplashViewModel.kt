@@ -4,9 +4,9 @@ import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.authorization.AuthorizationFeature
 import com.grippo.data.features.api.equipment.EquipmentFeature
 import com.grippo.data.features.api.muscle.MuscleFeature
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
 
 internal class SplashViewModel(
     private val muscleFeature: MuscleFeature,
@@ -19,9 +19,9 @@ internal class SplashViewModel(
             loader = SplashLoader.AppContent,
             onError = { navigateTo(SplashDirection.AuthProcess) }
         ) {
-            val muscleJob = launch { muscleFeature.getMuscles().getOrThrow() }
-            val equipmentJob = launch { equipmentFeature.getEquipments().getOrThrow() }
-            joinAll(muscleJob, equipmentJob)
+            val muscles = async { muscleFeature.getMuscles().getOrThrow() }
+            val equipment = async { equipmentFeature.getEquipments().getOrThrow() }
+            awaitAll(muscles, equipment)
 
             val token = authorizationFeature.getToken().firstOrNull()
 
