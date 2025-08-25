@@ -77,6 +77,7 @@ include(":ui-dialog-features:period-picker")
 include(":ui-dialog-features:exercise-example")
 include(":ui-dialog-features:error-display")
 include(":ui-dialog-features:confirmation")
+include(":ui-dialog-features:filter-picker")
 include(":ui-dialog-features:iteration-picker")
 
 include(":common:platform-core")

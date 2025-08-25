@@ -16,6 +16,7 @@ import com.grippo.dialog.api.DialogConfig
 import com.grippo.error.display.ErrorDisplayComponent
 import com.grippo.exercise.ExerciseComponent
 import com.grippo.exercise.example.exerciseexample.ExerciseExampleComponent
+import com.grippo.filter.picker.FilterPickerComponent
 import com.grippo.height.picker.HeightPickerComponent
 import com.grippo.iteration.picker.IterationPickerComponent
 import com.grippo.period.picker.PeriodPickerComponent
@@ -129,6 +130,15 @@ internal class DialogContentComponent(
                 )
             )
 
+            is DialogConfig.FilterPicker -> Child.FilterPicker(
+                FilterPickerComponent(
+                    componentContext = context,
+                    initial = router.initial,
+                    onResult = { period -> viewModel.onBack { router.onResult.invoke(period) } },
+                    back = { viewModel.onBack(null) }
+                )
+            )
+
             is DialogConfig.Confirmation -> Child.Confirmation(
                 ConfirmationComponent(
                     componentContext = context,
@@ -174,6 +184,9 @@ internal class DialogContentComponent(
             Child(component)
 
         data class Confirmation(override val component: ConfirmationComponent) :
+            Child(component)
+
+        data class FilterPicker(override val component: FilterPickerComponent) :
             Child(component)
     }
 }

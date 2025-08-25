@@ -2,6 +2,7 @@
 <resources>
     <string name="kg">kg</string>
     <string name="reps">reps</string>
+    <string name="filters">Filters</string>
     <string name="search_placeholder">Search..</string>
     <string name="set_value">Set: %1$s</string>
     <string name="sets_value">Sets (%1$s)</string>

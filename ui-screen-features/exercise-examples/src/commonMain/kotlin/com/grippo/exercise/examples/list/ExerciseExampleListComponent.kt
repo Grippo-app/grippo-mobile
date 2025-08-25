@@ -14,7 +14,8 @@ internal class ExerciseExampleListComponent(
 
     override val viewModel = componentContext.retainedInstance {
         ExerciseExampleListViewModel(
-            exerciseExampleFeature = getKoin().get()
+            exerciseExampleFeature = getKoin().get(),
+            dialogController = getKoin().get()
         )
     }
 
