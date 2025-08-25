@@ -4,6 +4,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,10 +13,14 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.date.utils.DateFormat
+import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.chart.AreaChart
 import com.grippo.design.components.chart.BarChart
 import com.grippo.design.components.chart.HeatmapChart
@@ -35,6 +40,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.icons.Filter
 import com.grippo.design.resources.provider.statistics
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -58,11 +64,22 @@ internal fun HomeStatisticsScreen(
                         start = AppTokens.dp.screen.horizontalPadding,
                         end = AppTokens.dp.screen.horizontalPadding
                     ),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 PeriodPicker(
                     value = state.period,
                     format = DateFormat.DATE_DD_MMM,
                     onClick = contract::onSelectPeriod
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Button(
+                    content = ButtonContent.Icon(
+                        icon = AppTokens.icons.Filter
+                    ),
+                    style = ButtonStyle.Tertiary,
+                    onClick = contract::onFiltersClick
                 )
             }
         }

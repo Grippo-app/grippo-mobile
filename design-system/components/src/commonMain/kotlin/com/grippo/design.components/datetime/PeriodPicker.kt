@@ -1,8 +1,10 @@
 package com.grippo.design.components.datetime
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
@@ -42,10 +44,13 @@ public fun PeriodPicker(
         false -> AppTokens.colors.icon.disabled
     }
 
-    Column(modifier = modifier.scalableClick(onClick = onClick)) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+    Column(
+        modifier = modifier
+            .height(AppTokens.dp.periodPicker.height)
+            .scalableClick(onClick = onClick),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = value.text(),
                 style = AppTokens.typography.b16Bold(),

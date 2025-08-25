@@ -44,6 +44,7 @@ import com.grippo.state.datetime.PeriodState
 import com.grippo.state.formatters.IntensityFormatState
 import com.grippo.state.formatters.RepetitionsFormatState
 import com.grippo.state.formatters.VolumeFormatState
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -92,6 +93,16 @@ internal class HomeStatisticsViewModel(
                     val colors = themeColors ?: colorProvider.get().also { themeColors = it }
                     regenerateAllFor(value, colors)
                 }
+            }
+        )
+
+        dialogController.show(dialog)
+    }
+
+    override fun onFiltersClick() {
+        val dialog = DialogConfig.FilterPicker(
+            initial = persistentListOf(),
+            onResult = { value ->
             }
         )
 

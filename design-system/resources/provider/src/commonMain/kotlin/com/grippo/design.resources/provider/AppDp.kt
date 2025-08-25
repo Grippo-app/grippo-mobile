@@ -163,11 +163,13 @@ public data object AppDp {
 
     public data object DatePicker {
         val icon: Dp = AppDp.icon.medium
+        val height: Dp = size.medium
         val spacer: Dp = padding.extraSmall
     }
 
     public data object PeriodPicker {
         val icon: Dp = AppDp.icon.medium
+        val height: Dp = size.medium
         val spacer: Dp = padding.extraSmall
     }
 
@@ -256,12 +258,19 @@ public data object AppDp {
 
     public data object SelectableCard {
         val large: Large = Large
+        val small: Small = Small
 
         public data object Large {
             val horizontalPadding: Dp = padding.large
             val verticalPadding: Dp = padding.large
             val radius: Dp = AppDp.radius.medium
             val icon: Dp = AppDp.icon.large
+        }
+
+        public data object Small {
+            val height: Dp = size.medium
+            val horizontalPadding: Dp = padding.medium
+            val radius: Dp = AppDp.radius.large
         }
     }
 

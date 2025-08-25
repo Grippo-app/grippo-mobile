@@ -1,8 +1,10 @@
 package com.grippo.design.components.datetime
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
@@ -46,7 +48,12 @@ public fun DatePicker(
         false -> AppTokens.colors.icon.disabled
     }
 
-    Column(modifier = modifier.scalableClick(enabled = enabled, onClick = onClick)) {
+    Column(
+        modifier = modifier
+            .height(AppTokens.dp.datePicker.height)
+            .scalableClick(enabled = enabled, onClick = onClick),
+        verticalArrangement = Arrangement.Center
+    ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = title,

@@ -62,6 +62,7 @@ internal fun HomeTrainingsScreen(
                         start = AppTokens.dp.screen.horizontalPadding,
                         end = AppTokens.dp.screen.horizontalPadding
                     ),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 DatePicker(
                     title = AppTokens.strings.res(Res.string.selected),
