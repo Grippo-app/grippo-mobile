@@ -163,13 +163,11 @@ public data object AppDp {
 
     public data object DatePicker {
         val icon: Dp = AppDp.icon.medium
-        val height: Dp = size.medium
         val spacer: Dp = padding.extraSmall
     }
 
     public data object PeriodPicker {
         val icon: Dp = AppDp.icon.medium
-        val height: Dp = size.medium
         val spacer: Dp = padding.extraSmall
     }
 
