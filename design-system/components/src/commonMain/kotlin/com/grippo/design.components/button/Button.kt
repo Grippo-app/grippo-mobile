@@ -62,6 +62,7 @@ public sealed interface ButtonContent {
 public sealed interface ButtonStyle {
     public data object Primary : ButtonStyle
     public data object Secondary : ButtonStyle
+    public data object Tertiary : ButtonStyle
     public data object Transparent : ButtonStyle
     public data class Custom(
         val enabled: ButtonColorTokens,

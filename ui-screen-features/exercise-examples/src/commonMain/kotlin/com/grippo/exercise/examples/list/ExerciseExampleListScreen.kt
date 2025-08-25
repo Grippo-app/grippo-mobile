@@ -10,6 +10,7 @@ import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.inputs.InputSearch
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
@@ -54,6 +55,7 @@ internal fun ExerciseExampleListScreen(
                     content = ButtonContent.Icon(
                         icon = AppTokens.icons.Filter
                     ),
+                    style = ButtonStyle.Tertiary,
                     onClick = contract::onFiltersClick
                 )
             }

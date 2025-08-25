@@ -24,6 +24,13 @@ public object DarkColor : AppColor {
         override val backgroundSecondaryDisabled = AppPalette.NeutralDark.N300
         override val contentSecondaryDisabled = AppPalette.NeutralDark.N550
 
+        override val backgroundTertiary: Color = AppPalette.NeutralDark.N150
+        override val textTertiary: Color = AppPalette.NeutralDark.N800
+        override val borderTertiary: Color = Color.Transparent
+        override val iconTertiary: Color = AppPalette.NeutralDark.N600
+        override val backgroundTertiaryDisabled: Color = AppPalette.NeutralDark.N300
+        override val contentTertiaryDisabled: Color = AppPalette.NeutralDark.N500
+
         override val textTransparent = AppPalette.Common.Accent
         override val iconTransparent = AppPalette.Common.Accent
         override val contentTransparentDisabled = AppPalette.NeutralDark.N550

@@ -41,6 +41,13 @@ public interface AppColor {
         public val backgroundSecondaryDisabled: Color
         public val contentSecondaryDisabled: Color
 
+        public val backgroundTertiary: Color
+        public val textTertiary: Color
+        public val iconTertiary: Color
+        public val borderTertiary: Color
+        public val backgroundTertiaryDisabled: Color
+        public val contentTertiaryDisabled: Color
+
         public val contentTransparentDisabled: Color
         public val textTransparent: Color
         public val iconTransparent: Color
