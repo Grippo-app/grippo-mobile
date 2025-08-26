@@ -1,8 +1,6 @@
 package com.grippo.design.components.cards.selectable.internal
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -11,11 +9,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import com.grippo.design.components.cards.selectable.SelectableCardStyle
 import com.grippo.design.components.cards.selectable.SelectableCardVariants
 import com.grippo.design.components.modifiers.scalableClick
@@ -33,17 +28,11 @@ internal fun SelectableCardSmall(
 ) {
     val shape = RoundedCornerShape(AppTokens.dp.selectableCard.small.radius)
 
-    val borderColor by animateColorAsState(
-        if (isSelected) AppTokens.colors.border.focus else Color.Transparent,
-        label = "border"
-    )
-
     Row(
         modifier = modifier
             .scalableClick(onClick = onClick)
             .background(AppTokens.colors.background.card, shape)
             .height(AppTokens.dp.selectableCard.small.height)
-            .border(1.dp, borderColor, shape)
             .padding(horizontal = AppTokens.dp.selectableCard.small.horizontalPadding),
         verticalAlignment = Alignment.CenterVertically
     ) {

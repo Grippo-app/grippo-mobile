@@ -156,4 +156,8 @@
     <string name="unsupported_error">Unsupported error</string>
     <string name="timeout_error">Timeout</string>
     <string name="unexpected_network_error">Unexpected network error</string>
+
+    <string name="filter_weight_type">Weight type</string>
+    <string name="filter_force_type">Force type</string>
+    <string name="filter_category">Category</string>
 </resources>

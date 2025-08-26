@@ -3,7 +3,7 @@ package com.grippo.dialog.api
 import com.grippo.date.utils.DateRange
 import com.grippo.state.datetime.PeriodState
 import com.grippo.state.error.AppErrorState
-import com.grippo.state.filters.FilterContent
+import com.grippo.state.filters.FilterValue
 import com.grippo.state.formatters.DateFormatState
 import com.grippo.state.formatters.HeightFormatState
 import com.grippo.state.formatters.WeightFormatState
@@ -94,8 +94,8 @@ public sealed class DialogConfig(
 
     @Serializable
     public data class FilterPicker(
-        val initial: List<FilterContent>,
-        @Transient val onResult: (List<FilterContent>) -> Unit = {},
+        val initial: List<FilterValue>,
+        @Transient val onResult: (List<FilterValue>) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true

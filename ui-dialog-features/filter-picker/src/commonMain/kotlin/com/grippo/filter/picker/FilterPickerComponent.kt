@@ -6,12 +6,12 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.platform.collectAsStateMultiplatform
-import com.grippo.state.filters.FilterContent
+import com.grippo.state.filters.FilterValue
 
 public class FilterPickerComponent(
     componentContext: ComponentContext,
-    private val initial: List<FilterContent>,
-    private val onResult: (values: List<FilterContent>) -> Unit,
+    private val initial: List<FilterValue>,
+    private val onResult: (values: List<FilterValue>) -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<FilterPickerDirection>(componentContext) {
 

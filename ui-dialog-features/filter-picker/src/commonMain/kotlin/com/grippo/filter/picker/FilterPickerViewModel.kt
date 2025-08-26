@@ -1,11 +1,11 @@
 package com.grippo.filter.picker
 
 import com.grippo.core.BaseViewModel
-import com.grippo.state.filters.FilterContent
+import com.grippo.state.filters.FilterValue
 import kotlinx.collections.immutable.toPersistentList
 
 public class FilterPickerViewModel(
-    initial: List<FilterContent>,
+    initial: List<FilterValue>,
 ) : BaseViewModel<FilterPickerState, FilterPickerDirection, FilterPickerLoader>(
     FilterPickerState(
         list = initial.toPersistentList(),
