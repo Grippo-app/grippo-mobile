@@ -1,4 +1,4 @@
-package com.grippo.training.success
+package com.grippo.training.completed
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
@@ -6,14 +6,19 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.platform.collectAsStateMultiplatform
+import com.grippo.state.trainings.ExerciseState
 
-internal class TrainingSuccessComponent(
+internal class TrainingCompletedComponent(
     componentContext: ComponentContext,
+    exercises: List<ExerciseState>,
     private val back: () -> Unit,
-) : BaseComponent<TrainingSuccessDirection>(componentContext) {
+) : BaseComponent<TrainingCompletedDirection>(componentContext) {
 
-    override val viewModel: TrainingSuccessViewModel = componentContext.retainedInstance {
-        TrainingSuccessViewModel()
+    override val viewModel: TrainingCompletedViewModel = componentContext.retainedInstance {
+        TrainingCompletedViewModel(
+            exercises = exercises,
+            trainingFeature = getKoin().get()
+        )
     }
 
     private val backCallback = BackCallback(onBack = viewModel::onBack)
@@ -22,9 +27,9 @@ internal class TrainingSuccessComponent(
         backHandler.register(backCallback)
     }
 
-    override suspend fun eventListener(direction: TrainingSuccessDirection) {
+    override suspend fun eventListener(direction: TrainingCompletedDirection) {
         when (direction) {
-            TrainingSuccessDirection.Back -> back.invoke()
+            TrainingCompletedDirection.Back -> back.invoke()
         }
     }
 
@@ -32,6 +37,6 @@ internal class TrainingSuccessComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        TrainingSuccessScreen(state.value, loaders.value, viewModel)
+        TrainingCompletedScreen(state.value, loaders.value, viewModel)
     }
 }

@@ -23,7 +23,7 @@ public class TrainingViewModel :
         navigateTo(TrainingDirection.ToExercise(exercise))
     }
 
-    override fun toSuccess() {
-        navigateTo(TrainingDirection.ToSuccess)
+    override fun toCompleted(exercises: List<ExerciseState>) {
+        navigateTo(TrainingDirection.ToCompleted(exercises))
     }
 }

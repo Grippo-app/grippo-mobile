@@ -8,13 +8,13 @@ internal interface TrainingContract {
     fun onBack()
     fun toRecording()
     fun toExercise(exercise: ExerciseState)
-    fun toSuccess()
+    fun toCompleted(exercises: List<ExerciseState>)
 
     companion object Empty : TrainingContract {
         override fun onClose() {}
         override fun onBack() {}
         override fun toRecording() {}
         override fun toExercise(exercise: ExerciseState) {}
-        override fun toSuccess() {}
+        override fun toCompleted(exercises: List<ExerciseState>) {}
     }
 }

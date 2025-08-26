@@ -59,7 +59,11 @@ internal class TrainingRecordingViewModel(
     }
 
     override fun onSave() {
-        navigateTo(TrainingRecordingDirection.ToSuccess)
+        val direction = TrainingRecordingDirection.ToCompleted(
+            exercises = state.value.exercises
+        )
+
+        navigateTo(direction)
     }
 
     override fun onBack() {

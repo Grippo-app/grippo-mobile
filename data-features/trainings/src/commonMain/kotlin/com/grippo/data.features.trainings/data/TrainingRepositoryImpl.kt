@@ -1,6 +1,7 @@
 package com.grippo.data.features.trainings.data
 
 import com.grippo.data.features.api.training.models.Exercise
+import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.data.features.trainings.domain.TrainingRepository
 import com.grippo.database.dao.TrainingDao
@@ -50,7 +51,7 @@ internal class TrainingRepositoryImpl(
             it.forEach { r ->
                 val training = r.toEntityOrNull() ?: return@onSuccess
                 val exercises = r.exercises.toEntities()
-                val iterations = r.exercises.flatMap { it.iterations }.toEntities()
+                val iterations = r.exercises.flatMap { f -> f.iterations }.toEntities()
                 trainingDao.insertOrReplace(training, exercises, iterations)
             }
         }
@@ -58,7 +59,7 @@ internal class TrainingRepositoryImpl(
         return response.map {}
     }
 
-    override suspend fun setTraining(training: Training): Result<String?> {
+    override suspend fun setTraining(training: SetTraining): Result<String?> {
         TODO("Not yet implemented")
     }
 

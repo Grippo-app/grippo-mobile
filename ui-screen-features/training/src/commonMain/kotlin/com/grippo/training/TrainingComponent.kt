@@ -14,10 +14,10 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.platform.collectAsStateMultiplatform
 import com.grippo.screen.api.TrainingRouter
+import com.grippo.training.completed.TrainingCompletedComponent
 import com.grippo.training.exercise.ExerciseComponent
 import com.grippo.training.recording.TrainingRecordingComponent
 import com.grippo.training.setup.TrainingSetupComponent
-import com.grippo.training.success.TrainingSuccessComponent
 
 public class TrainingComponent(
     componentContext: ComponentContext,
@@ -37,11 +37,21 @@ public class TrainingComponent(
 
     override suspend fun eventListener(direction: TrainingDirection) {
         when (direction) {
+            TrainingDirection.ToRecording -> navigation.replaceAll(
+                TrainingRouter.Recording
+            )
+
+            is TrainingDirection.ToExercise -> navigation.push(
+                TrainingRouter.Exercise(direction.exercise)
+            )
+
+            is TrainingDirection.ToCompleted -> navigation.replaceAll(
+                TrainingRouter.Completed(direction.exercises)
+            )
+
             TrainingDirection.Close -> close.invoke()
             TrainingDirection.Back -> navigation.pop()
-            TrainingDirection.ToRecording -> navigation.replaceAll(TrainingRouter.Recording)
-            is TrainingDirection.ToExercise -> navigation.push(TrainingRouter.Exercise(direction.exercise))
-            TrainingDirection.ToSuccess -> navigation.replaceAll(TrainingRouter.Success)
+
         }
     }
 
@@ -69,7 +79,7 @@ public class TrainingComponent(
             TrainingRouter.Recording -> Child.Recording(
                 TrainingRecordingComponent(
                     componentContext = context,
-                    toSuccess = viewModel::toSuccess,
+                    toCompleted = viewModel::toCompleted,
                     toExercise = viewModel::toExercise,
                     back = viewModel::onClose
                 ),
@@ -83,9 +93,10 @@ public class TrainingComponent(
                 ),
             )
 
-            TrainingRouter.Success -> Child.Success(
-                TrainingSuccessComponent(
+            is TrainingRouter.Completed -> Child.Completed(
+                TrainingCompletedComponent(
                     componentContext = context,
+                    exercises = router.exercises,
                     back = viewModel::onClose
                 ),
             )
@@ -109,7 +120,7 @@ public class TrainingComponent(
         data class Exercise(override val component: ExerciseComponent) :
             Child(component)
 
-        data class Success(override val component: TrainingSuccessComponent) :
+        data class Completed(override val component: TrainingCompletedComponent) :
             Child(component)
     }
 }

@@ -8,5 +8,5 @@ public sealed interface TrainingDirection : BaseDirection {
     public data object Back : TrainingDirection
     public data object ToRecording : TrainingDirection
     public data class ToExercise(val exercise: ExerciseState) : TrainingDirection
-    public data object ToSuccess : TrainingDirection
+    public data class ToCompleted(val exercises: List<ExerciseState>) : TrainingDirection
 }

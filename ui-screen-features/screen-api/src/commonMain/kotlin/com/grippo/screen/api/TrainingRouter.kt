@@ -17,5 +17,5 @@ public sealed class TrainingRouter : BaseRouter {
     public data class Exercise(val exercise: ExerciseState) : TrainingRouter()
 
     @Serializable
-    public data object Success : TrainingRouter()
+    public data class Completed(val exercises: List<ExerciseState>) : TrainingRouter()
 }

@@ -2,6 +2,7 @@ package com.grippo.data.features.trainings.domain
 
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Exercise
+import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.data.features.api.training.models.Training
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDateTime
@@ -28,7 +29,7 @@ internal class TrainingFeatureImpl(
         return repository.getTrainings(start, end)
     }
 
-    override suspend fun setTraining(training: Training): Result<String?> {
+    override suspend fun setTraining(training: SetTraining): Result<String?> {
         return repository.setTraining(training)
     }
 

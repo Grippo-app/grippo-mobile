@@ -1,4 +1,4 @@
-package com.grippo.training.success
+package com.grippo.training.completed
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,18 +33,19 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.get_started_btn
 import com.grippo.design.resources.provider.icons.Check
 import com.grippo.design.resources.provider.workout_saved
+import com.grippo.state.trainings.stubTraining
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.delay
 
 @Composable
-internal fun TrainingSuccessScreen(
-    state: TrainingSuccessState,
-    loaders: ImmutableSet<TrainingSuccessLoader>,
-    contract: TrainingSuccessContract
+internal fun TrainingCompletedScreen(
+    state: TrainingCompletedState,
+    loaders: ImmutableSet<TrainingCompletedLoader>,
+    contract: TrainingCompletedContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
 
-    if (loaders.contains(TrainingSuccessLoader.SaveTraining)) {
+    if (loaders.contains(TrainingCompletedLoader.SaveTraining)) {
         Loader(modifier = Modifier.fillMaxSize())
         return@BaseComposeScreen
     }
@@ -114,10 +115,12 @@ internal fun TrainingSuccessScreen(
 @Composable
 private fun ScreenPreview() {
     PreviewContainer {
-        TrainingSuccessScreen(
-            state = TrainingSuccessState,
+        TrainingCompletedScreen(
+            state = TrainingCompletedState(
+                training = stubTraining()
+            ),
             loaders = persistentSetOf(),
-            contract = TrainingSuccessContract.Empty
+            contract = TrainingCompletedContract.Empty
         )
     }
 }
