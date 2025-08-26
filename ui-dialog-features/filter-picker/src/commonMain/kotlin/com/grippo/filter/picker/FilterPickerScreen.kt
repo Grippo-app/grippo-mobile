@@ -91,7 +91,7 @@ internal fun FilterPickerScreen(
                                     key(item) {
                                         SelectableCard(
                                             style = SelectableCardStyle.Small(
-                                                title = item.name
+                                                title = item.title()
                                             ),
                                             isSelected = item == content.value,
                                             onSelect = {}
@@ -113,7 +113,7 @@ internal fun FilterPickerScreen(
                                     key(item) {
                                         SelectableCard(
                                             style = SelectableCardStyle.Small(
-                                                title = item.name
+                                                title = item.title()
                                             ),
                                             isSelected = item == content.value,
                                             onSelect = {}
@@ -135,7 +135,7 @@ internal fun FilterPickerScreen(
                                     key(item) {
                                         SelectableCard(
                                             style = SelectableCardStyle.Small(
-                                                title = item.name
+                                                title = item.title()
                                             ),
                                             isSelected = item == content.value,
                                             onSelect = {}

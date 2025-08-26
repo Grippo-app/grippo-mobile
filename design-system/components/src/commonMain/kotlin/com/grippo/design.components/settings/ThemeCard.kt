@@ -20,9 +20,6 @@ import com.grippo.design.components.selectors.Radio
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.dark
-import com.grippo.design.resources.provider.light
 import com.grippo.state.settings.ThemeState
 import kotlinx.collections.immutable.persistentListOf
 
@@ -47,11 +44,6 @@ public fun ThemeCard(
         )
     }
 
-    val text = when (style) {
-        ThemeState.LIGHT -> AppTokens.strings.res(Res.string.light)
-        ThemeState.DARK -> AppTokens.strings.res(Res.string.dark)
-    }
-
     val textColor = when (style) {
         ThemeState.LIGHT -> AppTokens.colors.theme.lightText
         ThemeState.DARK -> AppTokens.colors.theme.darkText
@@ -74,7 +66,7 @@ public fun ThemeCard(
     ) {
         Text(
             modifier = Modifier.align(Alignment.TopStart),
-            text = text,
+            text = style.title(),
             style = AppTokens.typography.h2(),
             color = textColor
         )

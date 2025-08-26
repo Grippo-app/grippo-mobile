@@ -1,7 +1,31 @@
 package com.grippo.state.muscles
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
+import com.grippo.design.core.AppTokens
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.muscle_abductors
+import com.grippo.design.resources.provider.muscle_adductors
+import com.grippo.design.resources.provider.muscle_anterior_deltoid
+import com.grippo.design.resources.provider.muscle_biceps
+import com.grippo.design.resources.provider.muscle_calf
+import com.grippo.design.resources.provider.muscle_forearm
+import com.grippo.design.resources.provider.muscle_gluteal
+import com.grippo.design.resources.provider.muscle_hamstrings
+import com.grippo.design.resources.provider.muscle_lateral_deltoid
+import com.grippo.design.resources.provider.muscle_latissimus_dorsi
+import com.grippo.design.resources.provider.muscle_obliques
+import com.grippo.design.resources.provider.muscle_pectoralis_major_abdominal
+import com.grippo.design.resources.provider.muscle_pectoralis_major_clavicular
+import com.grippo.design.resources.provider.muscle_pectoralis_major_sternocostal
+import com.grippo.design.resources.provider.muscle_posterior_deltoid
+import com.grippo.design.resources.provider.muscle_quadriceps
+import com.grippo.design.resources.provider.muscle_rectus_abdominis
+import com.grippo.design.resources.provider.muscle_rhomboids
+import com.grippo.design.resources.provider.muscle_teres_major
+import com.grippo.design.resources.provider.muscle_trapezius
+import com.grippo.design.resources.provider.muscle_triceps
 import com.grippo.design.resources.provider.muscles.MuscleColorPreset
 
 @Immutable
@@ -104,5 +128,33 @@ public enum class MuscleEnumState {
             TRICEPS,
             FOREARM
         )
+    }
+
+    @Composable
+    public fun title(): String {
+        val r = when (this) {
+            PECTORALIS_MAJOR_CLAVICULAR -> Res.string.muscle_pectoralis_major_clavicular
+            PECTORALIS_MAJOR_STERNOCOSTAL -> Res.string.muscle_pectoralis_major_sternocostal
+            PECTORALIS_MAJOR_ABDOMINAL -> Res.string.muscle_pectoralis_major_abdominal
+            TRAPEZIUS -> Res.string.muscle_trapezius
+            LATISSIMUS_DORSI -> Res.string.muscle_latissimus_dorsi
+            RHOMBOIDS -> Res.string.muscle_rhomboids
+            TERES_MAJOR -> Res.string.muscle_teres_major
+            RECTUS_ABDOMINIS -> Res.string.muscle_rectus_abdominis
+            OBLIQUES -> Res.string.muscle_obliques
+            CALF -> Res.string.muscle_calf
+            GLUTEAL -> Res.string.muscle_gluteal
+            HAMSTRINGS -> Res.string.muscle_hamstrings
+            QUADRICEPS -> Res.string.muscle_quadriceps
+            ADDUCTORS -> Res.string.muscle_adductors
+            ABDUCTORS -> Res.string.muscle_abductors
+            ANTERIOR_DELTOID -> Res.string.muscle_anterior_deltoid
+            LATERAL_DELTOID -> Res.string.muscle_lateral_deltoid
+            POSTERIOR_DELTOID -> Res.string.muscle_posterior_deltoid
+            BICEPS -> Res.string.muscle_biceps
+            TRICEPS -> Res.string.muscle_triceps
+            FOREARM -> Res.string.muscle_forearm
+        }
+        return AppTokens.strings.res(r)
     }
 }

@@ -116,8 +116,6 @@
     <string name="required_equipment">Required equipment</string>
     <string name="training_at_value">Training at %1$s</string>
     <string name="no_internet_connection">No internet connection</string>
-    <string name="dark">Dark</string>
-    <string name="light">Light</string>
     <string name="this_day">This day</string>
     <string name="this_week">This week</string>
     <string name="this_month">This month</string>
@@ -160,4 +158,119 @@
     <string name="filter_weight_type">Weight type</string>
     <string name="filter_force_type">Force type</string>
     <string name="filter_category">Category</string>
+
+    <!-- ForceTypeEnumState -->
+    <string name="force_type_pull">Pull</string>
+    <string name="force_type_push">Push</string>
+    <string name="force_type_hinge">Hinge</string>
+
+    <!-- CategoryEnumState -->
+    <string name="category_compound">Compound</string>
+    <string name="category_isolation">Isolation</string>
+
+    <!-- WeightTypeEnumState -->
+    <string name="weight_type_free">Free</string>
+    <string name="weight_type_fixed">Fixed</string>
+    <string name="weight_type_body_weight">Body Weight</string>
+
+    <!-- ResourceTypeEnumState -->
+    <string name="resource_type_youtube_video">YouTube Video</string>
+    <string name="resource_type_video">Video</string>
+    <string name="resource_type_text">Text</string>
+
+    <!-- EquipmentEnumState -->
+    <string name="equipment_dumbbells">Dumbbells</string>
+    <string name="equipment_barbell">Barbell</string>
+    <string name="equipment_v_bar">V Bar</string>
+    <string name="equipment_wide_grip_handle">Wide Grip Handle</string>
+    <string name="equipment_close_grip_handle">Close Grip Handle</string>
+    <string name="equipment_ez_bar">EZ Bar</string>
+    <string name="equipment_trap_bar">Trap Bar</string>
+    <string name="equipment_rope">Rope</string>
+    <string name="equipment_straight_bar">Straight Bar</string>
+    <string name="equipment_cord_handles">Cord Handles</string>
+
+    <string name="equipment_ab_machines">AB Machines</string>
+    <string name="equipment_butterfly">Butterfly</string>
+    <string name="equipment_butterfly_reverse">Butterfly Reverse</string>
+    <string name="equipment_leg_extension_machines">Leg Extension Machines</string>
+    <string name="equipment_leg_curl_machines">Leg Curl Machines</string>
+    <string name="equipment_chest_press_machines">Chest Press Machines</string>
+    <string name="equipment_biceps_machines">Biceps Machines</string>
+    <string name="equipment_smith_machines">Smith Machines</string>
+    <string name="equipment_hack_squat_machines">Hack Squat Machines</string>
+    <string name="equipment_leg_press_machine">Leg Press Machine</string>
+    <string name="equipment_deadlift_machines">Deadlift Machines</string>
+    <string name="equipment_shoulder_press_machines">Shoulder Press Machines</string>
+    <string name="equipment_lateral_raise_machines">Lateral Raise Machines</string>
+    <string name="equipment_triceps_machines">Triceps Machines</string>
+    <string name="equipment_calf_raise_machines">Calf Raise Machines</string>
+    <string name="equipment_glute_machines">Glute Machines</string>
+    <string name="equipment_adductor_machine">Adductor Machine</string>
+    <string name="equipment_abductor_machine">Abductor Machine</string>
+
+    <string name="equipment_lat_pulldown">Lat Pulldown</string>
+    <string name="equipment_cable">Cable</string>
+    <string name="equipment_cable_crossover">Cable Crossover</string>
+    <string name="equipment_row_cable">Row Cable</string>
+
+    <string name="equipment_pull_up_bar">Pull Up Bar</string>
+    <string name="equipment_dip_bars">Dip Bars</string>
+    <string name="equipment_roman_chair">Roman Chair</string>
+    <string name="equipment_glute_ham_raise_bench">Glute Ham Raise Bench</string>
+
+    <string name="equipment_flat_bench">Flat Bench</string>
+    <string name="equipment_adjustable_bench">Adjustable Bench</string>
+    <string name="equipment_decline_bench">Decline Bench</string>
+    <string name="equipment_flat_bench_with_rack">Flat Bench with Rack</string>
+    <string name="equipment_incline_bench_with_rack">Incline Bench with Rack</string>
+    <string name="equipment_decline_bench_with_rack">Decline Bench with Rack</string>
+    <string name="equipment_squat_rack">Squat Rack</string>
+    <string name="equipment_preacher_curl_bench">Preacher Curl Bench</string>
+    <string name="equipment_row_bench">Row Bench</string>
+
+    <!-- MuscleEnumState -->
+    <string name="muscle_pectoralis_major_clavicular">Pectoralis Major (Clavicular)</string>
+    <string name="muscle_pectoralis_major_sternocostal">Pectoralis Major (Sternocostal)</string>
+    <string name="muscle_pectoralis_major_abdominal">Pectoralis Major (Abdominal)</string>
+    <string name="muscle_trapezius">Trapezius</string>
+    <string name="muscle_latissimus_dorsi">Latissimus Dorsi</string>
+    <string name="muscle_rhomboids">Rhomboids</string>
+    <string name="muscle_teres_major">Teres Major</string>
+    <string name="muscle_rectus_abdominis">Rectus Abdominis</string>
+    <string name="muscle_obliques">Obliques</string>
+    <string name="muscle_calf">Calf</string>
+    <string name="muscle_gluteal">Gluteal</string>
+    <string name="muscle_hamstrings">Hamstrings</string>
+    <string name="muscle_quadriceps">Quadriceps</string>
+    <string name="muscle_adductors">Adductors</string>
+    <string name="muscle_abductors">Abductors</string>
+    <string name="muscle_anterior_deltoid">Anterior Deltoid</string>
+    <string name="muscle_lateral_deltoid">Lateral Deltoid</string>
+    <string name="muscle_posterior_deltoid">Posterior Deltoid</string>
+    <string name="muscle_biceps">Biceps</string>
+    <string name="muscle_triceps">Triceps</string>
+    <string name="muscle_forearm">Forearm</string>
+
+    <!-- MuscleGroupEnumState -->
+    <string name="muscle_group_chest_muscles">Chest Muscles</string>
+    <string name="muscle_group_back_muscles">Back Muscles</string>
+    <string name="muscle_group_abdominal_muscles">Abdominal Muscles</string>
+    <string name="muscle_group_legs">Legs</string>
+    <string name="muscle_group_arms_and_forearms">Arms and Forearms</string>
+    <string name="muscle_group_shoulder_muscles">Shoulder Muscles</string>
+
+    <!-- MuscleLoadEnumState -->
+    <string name="muscle_load_high">High</string>
+    <string name="muscle_load_medium">Medium</string>
+    <string name="muscle_load_low">Low</string>
+
+    <!-- IterationFocus -->
+    <string name="iteration_focus_volume">Volume</string>
+    <string name="iteration_focus_repetitions">Repetitions</string>
+    <string name="iteration_focus_unidentified">Unidentified</string>
+
+    <!-- ThemeState -->
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
 </resources>

@@ -97,8 +97,6 @@
     <string name="required_equipment">Потрібне обладнання</string>
     <string name="training_at_value">Тренування о %1$s</string>
     <string name="no_internet_connection">Немає підключення до інтернету</string>
-    <string name="dark">Темна</string>
-    <string name="light">Світла</string>
     <string name="this_day">Цей день</string>
     <string name="this_week">Цей тиждень</string>
     <string name="this_month">Цей місяць</string>
@@ -137,4 +135,119 @@
     <string name="timeout_error">Час очікування минув</string>
     <string name="unexpected_network_error">Неочікувана мережева помилка</string>
     <string name="unsupported_error">Непідтримувана помилка</string>
+
+    <!-- ForceTypeEnumState -->
+    <string name="force_type_pull">Тягнути</string>
+    <string name="force_type_push">Штовхати</string>
+    <string name="force_type_hinge">Шарнір</string>
+
+    <!-- CategoryEnumState -->
+    <string name="category_compound">Базові</string>
+    <string name="category_isolation">Ізолюючі</string>
+
+    <!-- WeightTypeEnumState -->
+    <string name="weight_type_free">Вільні</string>
+    <string name="weight_type_fixed">Фіксовані</string>
+    <string name="weight_type_body_weight">Вага тіла</string>
+
+    <!-- ResourceTypeEnumState -->
+    <string name="resource_type_youtube_video">YouTube відео</string>
+    <string name="resource_type_video">Відео</string>
+    <string name="resource_type_text">Текст</string>
+
+    <!-- EquipmentEnumState -->
+    <string name="equipment_dumbbells">Гантелі</string>
+    <string name="equipment_barbell">Штанга</string>
+    <string name="equipment_v_bar">V-образна рукоятка</string>
+    <string name="equipment_wide_grip_handle">Рукоятка широким хватом</string>
+    <string name="equipment_close_grip_handle">Рукоятка вузьким хватом</string>
+    <string name="equipment_ez_bar">EZ-штанга</string>
+    <string name="equipment_trap_bar">Трапецієвидна штанга</string>
+    <string name="equipment_rope">Канат</string>
+    <string name="equipment_straight_bar">Пряма штанга</string>
+    <string name="equipment_cord_handles">Ручки для канатів</string>
+
+    <string name="equipment_ab_machines">Тренажери для преса</string>
+    <string name="equipment_butterfly">Метелик</string>
+    <string name="equipment_butterfly_reverse">Метелик зворотній</string>
+    <string name="equipment_leg_extension_machines">Тренажери для розгинання ніг</string>
+    <string name="equipment_leg_curl_machines">Тренажери для згинання ніг</string>
+    <string name="equipment_chest_press_machines">Тренажери для жиму лежачи</string>
+    <string name="equipment_biceps_machines">Тренажери для біцепсів</string>
+    <string name="equipment_smith_machines">Тренажери Сміт</string>
+    <string name="equipment_hack_squat_machines">Тренажери для хак-присідань</string>
+    <string name="equipment_leg_press_machine">Тренажер для жиму ногами</string>
+    <string name="equipment_deadlift_machines">Тренажери для станової тяги</string>
+    <string name="equipment_shoulder_press_machines">Тренажери для жиму плечима</string>
+    <string name="equipment_lateral_raise_machines">Тренажери для розведення рук</string>
+    <string name="equipment_triceps_machines">Тренажери для тріцепсів</string>
+    <string name="equipment_calf_raise_machines">Тренажери для ікр</string>
+    <string name="equipment_glute_machines">Тренажери для сідниць</string>
+    <string name="equipment_adductor_machine">Тренажер для приведення</string>
+    <string name="equipment_abductor_machine">Тренажер для відведення</string>
+
+    <string name="equipment_lat_pulldown">Тяга верхнього блоку</string>
+    <string name="equipment_cable">Кабельний тренажер</string>
+    <string name="equipment_cable_crossover">Кабельний кросовер</string>
+    <string name="equipment_row_cable">Кабельна тяга</string>
+
+    <string name="equipment_pull_up_bar">Турнік</string>
+    <string name="equipment_dip_bars">Бруси</string>
+    <string name="equipment_roman_chair">Римський стілець</string>
+    <string name="equipment_glute_ham_raise_bench">Лавка для підйому сідниць і підколінних</string>
+
+    <string name="equipment_flat_bench">Пласка лавка</string>
+    <string name="equipment_adjustable_bench">Регулювана лавка</string>
+    <string name="equipment_decline_bench">Лавка з нахилом вниз</string>
+    <string name="equipment_flat_bench_with_rack">Пласка лавка зі стійками</string>
+    <string name="equipment_incline_bench_with_rack">Лавка з нахилом вгору зі стійками</string>
+    <string name="equipment_decline_bench_with_rack">Лавка з нахилом вниз зі стійками</string>
+    <string name="equipment_squat_rack">Стійки для присідань</string>
+    <string name="equipment_preacher_curl_bench">Лавка для підйому на біцепс</string>
+    <string name="equipment_row_bench">Лавка для тяги</string>
+
+    <!-- MuscleEnumState -->
+    <string name="muscle_pectoralis_major_clavicular">Великий грудний (ключична частина)</string>
+    <string name="muscle_pectoralis_major_sternocostal">Великий грудний (груднинна частина)</string>
+    <string name="muscle_pectoralis_major_abdominal">Великий грудний (черевна частина)</string>
+    <string name="muscle_trapezius">Трапецієвидний</string>
+    <string name="muscle_latissimus_dorsi">Найширший м'яз спини</string>
+    <string name="muscle_rhomboids">Ромбоподібні</string>
+    <string name="muscle_teres_major">Великий круглий</string>
+    <string name="muscle_rectus_abdominis">Прямий м'яз живота</string>
+    <string name="muscle_obliques">Косі м'язи живота</string>
+    <string name="muscle_calf">Ікроніжний</string>
+    <string name="muscle_gluteal">Сідничні</string>
+    <string name="muscle_hamstrings">Підколінні</string>
+    <string name="muscle_quadriceps">Чотириголовий стегновий</string>
+    <string name="muscle_adductors">Приводячі</string>
+    <string name="muscle_abductors">Відводячі</string>
+    <string name="muscle_anterior_deltoid">Передня дельта</string>
+    <string name="muscle_lateral_deltoid">Бічна дельта</string>
+    <string name="muscle_posterior_deltoid">Задня дельта</string>
+    <string name="muscle_biceps">Біцепс</string>
+    <string name="muscle_triceps">Тріцепс</string>
+    <string name="muscle_forearm">Передпліччя</string>
+
+    <!-- MuscleGroupEnumState -->
+    <string name="muscle_group_chest_muscles">Грудні м'язи</string>
+    <string name="muscle_group_back_muscles">М'язи спини</string>
+    <string name="muscle_group_abdominal_muscles">М'язи живота</string>
+    <string name="muscle_group_legs">Ноги</string>
+    <string name="muscle_group_arms_and_forearms">Руки та передпліччя</string>
+    <string name="muscle_group_shoulder_muscles">М'язи плечей</string>
+
+    <!-- MuscleLoadEnumState -->
+    <string name="muscle_load_high">Високий</string>
+    <string name="muscle_load_medium">Середній</string>
+    <string name="muscle_load_low">Низький</string>
+
+    <!-- IterationFocus -->
+    <string name="iteration_focus_volume">Обсяг</string>
+    <string name="iteration_focus_repetitions">Повторення</string>
+    <string name="iteration_focus_unidentified">Невизначений</string>
+
+    <!-- ThemeState -->
+    <string name="theme_light">Світла</string>
+    <string name="theme_dark">Темна</string>
 </resources>
