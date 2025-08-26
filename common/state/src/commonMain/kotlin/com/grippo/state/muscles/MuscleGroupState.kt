@@ -18,7 +18,6 @@ import kotlinx.collections.immutable.toPersistentList
 @Immutable
 public data class MuscleGroupState<T : MuscleRepresentationState>(
     val id: String,
-    val name: String,
     val muscles: ImmutableList<T>,
     val type: MuscleGroupEnumState,
 ) {
@@ -48,7 +47,6 @@ public fun stubMuscles(): PersistentList<MuscleGroupState<MuscleRepresentationSt
     return persistentListOf(
         MuscleGroupState(
             id = "4289bf91-51d8-40b0-9aca-66780584a4eb",
-            name = "Back Muscles",
             type = MuscleGroupEnumState.BACK_MUSCLES,
             muscles = listOf(
                 MuscleState(
@@ -71,7 +69,6 @@ public fun stubMuscles(): PersistentList<MuscleGroupState<MuscleRepresentationSt
         ),
         MuscleGroupState(
             id = "e1f1e456-3f8d-46f6-b7ba-75bb4b8c3802",
-            name = "Abdominal Muscles",
             type = MuscleGroupEnumState.ABDOMINAL_MUSCLES,
             muscles = listOf(
                 MuscleState(
@@ -86,7 +83,6 @@ public fun stubMuscles(): PersistentList<MuscleGroupState<MuscleRepresentationSt
         ),
         MuscleGroupState(
             id = "255efc07-6c7e-42ab-97e5-01c06d60b5a3",
-            name = "Legs",
             type = MuscleGroupEnumState.LEGS,
             muscles = listOf(
                 MuscleState(
@@ -117,7 +113,6 @@ public fun stubMuscles(): PersistentList<MuscleGroupState<MuscleRepresentationSt
         ),
         MuscleGroupState(
             id = "e1117068-06cd-4330-a4f9-93b485165805",
-            name = "Shoulder Muscles",
             type = MuscleGroupEnumState.SHOULDER_MUSCLES,
             muscles = listOf(
                 MuscleState(
@@ -136,7 +131,6 @@ public fun stubMuscles(): PersistentList<MuscleGroupState<MuscleRepresentationSt
         ),
         MuscleGroupState(
             id = "2043a22c-c547-42c2-81bb-81f85693d9cd",
-            name = "Arms and Forearms",
             type = MuscleGroupEnumState.ARMS_AND_FOREARMS,
             muscles = listOf(
                 MuscleState(
@@ -155,7 +149,6 @@ public fun stubMuscles(): PersistentList<MuscleGroupState<MuscleRepresentationSt
         ),
         MuscleGroupState(
             id = "5fd8ccc9-8630-4357-a234-c2f278d905db",
-            name = "Chest Muscles",
             type = MuscleGroupEnumState.CHEST_MUSCLES,
             muscles = listOf(
                 MuscleState(

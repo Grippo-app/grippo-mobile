@@ -13,7 +13,6 @@ public fun List<MuscleGroup>.toState(): PersistentList<MuscleGroupState<MuscleRe
 public fun MuscleGroup.toState(): MuscleGroupState<MuscleRepresentationState.Plain> {
     return MuscleGroupState(
         id = id,
-        name = name,
         muscles = muscles.toState(),
         type = type.toState()
     )
