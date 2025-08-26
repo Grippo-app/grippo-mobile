@@ -136,6 +136,15 @@
     <string name="unexpected_network_error">Неочікувана мережева помилка</string>
     <string name="unsupported_error">Непідтримувана помилка</string>
 
+    <!-- Filter strings -->
+    <string name="filter_weight_type">Тип ваги</string>
+    <string name="filter_force_type">Тип сили</string>
+    <string name="filter_category">Категорія</string>
+
+    <!-- Placeholder strings -->
+    <string name="volume_placeholder">Обсяг</string>
+    <string name="repetitions_placeholder">Повторення</string>
+
     <!-- ForceTypeEnumState -->
     <string name="force_type_pull">Тягнути</string>
     <string name="force_type_push">Штовхати</string>
