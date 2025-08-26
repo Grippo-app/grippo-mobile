@@ -6,17 +6,17 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.platform.collectAsStateMultiplatform
-import com.grippo.state.trainings.ExerciseState
+import com.grippo.state.trainings.TrainingState
 
 internal class TrainingCompletedComponent(
     componentContext: ComponentContext,
-    exercises: List<ExerciseState>,
+    training: TrainingState,
     private val back: () -> Unit,
 ) : BaseComponent<TrainingCompletedDirection>(componentContext) {
 
     override val viewModel: TrainingCompletedViewModel = componentContext.retainedInstance {
         TrainingCompletedViewModel(
-            exercises = exercises,
+            training = training,
             trainingFeature = getKoin().get()
         )
     }

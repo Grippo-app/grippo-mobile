@@ -1,14 +1,12 @@
 package com.grippo.training.recording
 
 import androidx.compose.runtime.Immutable
-import com.grippo.state.trainings.ExerciseState
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
+import com.grippo.state.trainings.TrainingState
 
 @Immutable
 internal data class TrainingRecordingState(
     val tab: RecordingTab = RecordingTab.Exercises,
-    val exercises: ImmutableList<ExerciseState> = persistentListOf()
+    val training: TrainingState? = null
 )
 
 @Immutable

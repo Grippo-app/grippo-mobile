@@ -9,6 +9,7 @@ kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.common.core)
         implementation(projects.common.state)
+        implementation(projects.common.dateUtils)
         implementation(projects.designSystem.core)
         implementation(projects.designSystem.resources.provider)
         implementation(projects.designSystem.preview)
@@ -23,5 +24,6 @@ kotlin {
         implementation(compose.material3)
 
         implementation(libs.immutable.collections)
+        implementation(libs.datetime)
     }
 }

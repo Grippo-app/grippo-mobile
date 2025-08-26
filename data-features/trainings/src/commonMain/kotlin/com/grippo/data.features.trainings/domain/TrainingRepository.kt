@@ -12,6 +12,6 @@ internal interface TrainingRepository {
     fun observeExercise(id: String): Flow<Exercise?>
 
     suspend fun getTrainings(start: LocalDateTime, end: LocalDateTime): Result<Unit>
-    suspend fun setTraining(training: SetTraining): Result<String?>
+    suspend fun setTraining(training: SetTraining): Result<String>
     suspend fun deleteTraining(id: String): Result<Unit>
 }

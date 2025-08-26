@@ -2,10 +2,14 @@ package com.grippo.training.completed
 
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.training.TrainingFeature
-import com.grippo.state.trainings.ExerciseState
+import com.grippo.data.features.api.training.models.Training
+import com.grippo.domain.state.training.toState
+import com.grippo.state.domain.training.toDomain
+import com.grippo.state.trainings.TrainingState
+import kotlinx.coroutines.flow.firstOrNull
 
 internal class TrainingCompletedViewModel(
-    exercises: List<ExerciseState>,
+    training: TrainingState,
     trainingFeature: TrainingFeature
 ) :
     BaseViewModel<TrainingCompletedState, TrainingCompletedDirection, TrainingCompletedLoader>(
@@ -15,12 +19,18 @@ internal class TrainingCompletedViewModel(
 
     init {
         safeLaunch(loader = TrainingCompletedLoader.SaveTraining) {
-//            val id = trainingFeature.setTraining(training).getOrThrow() ?: return@safeLaunch
-//
-//            val trainingState = trainingFeature.observeTraining(id).firstOrNull()
-//
-//            update { it.copy(training = trainingState?.toState()) }
+            val id = trainingFeature
+                .setTraining(training.toDomain())
+                .getOrThrow()
+
+            val training = trainingFeature.observeTraining(id).firstOrNull()
+
+            provideTraining(training)
         }
+    }
+
+    private fun provideTraining(value: Training?) {
+        update { it.copy(training = value?.toState()) }
     }
 
     override fun onBack() {

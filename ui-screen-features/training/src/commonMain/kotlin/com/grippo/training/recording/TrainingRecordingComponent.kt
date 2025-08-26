@@ -9,10 +9,11 @@ import com.grippo.core.models.Result
 import com.grippo.core.models.ResultKeys
 import com.grippo.core.platform.collectAsStateMultiplatform
 import com.grippo.state.trainings.ExerciseState
+import com.grippo.state.trainings.TrainingState
 
 internal class TrainingRecordingComponent(
     componentContext: ComponentContext,
-    private val toCompleted: (exercises: List<ExerciseState>) -> Unit,
+    private val toCompleted: (training: TrainingState) -> Unit,
     private val toExercise: (exercise: ExerciseState) -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<TrainingRecordingDirection>(componentContext) {
@@ -39,7 +40,7 @@ internal class TrainingRecordingComponent(
 
     override suspend fun eventListener(direction: TrainingRecordingDirection) {
         when (direction) {
-            is TrainingRecordingDirection.ToCompleted -> toCompleted.invoke(direction.exercises)
+            is TrainingRecordingDirection.ToCompleted -> toCompleted.invoke(direction.training)
             is TrainingRecordingDirection.ToExercise -> toExercise.invoke(direction.exercise)
             TrainingRecordingDirection.Back -> back.invoke()
         }

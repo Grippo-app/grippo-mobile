@@ -8,10 +8,12 @@ import com.grippo.state.formatters.VolumeFormatState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDateTime
+import kotlinx.serialization.Serializable
 import kotlin.random.Random
 import kotlin.uuid.Uuid
 
 @Immutable
+@Serializable
 public data class TrainingState(
     val id: String,
     val duration: Long,

@@ -1,6 +1,7 @@
 package com.grippo.training.recording
 
 import com.grippo.core.BaseViewModel
+import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.design.resources.provider.training_progress_lost_description
@@ -11,6 +12,7 @@ import com.grippo.state.formatters.IntensityFormatState
 import com.grippo.state.formatters.RepetitionsFormatState
 import com.grippo.state.formatters.VolumeFormatState
 import com.grippo.state.trainings.ExerciseState
+import com.grippo.state.trainings.TrainingState
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlin.uuid.Uuid
@@ -21,6 +23,10 @@ internal class TrainingRecordingViewModel(
 ) : BaseViewModel<TrainingRecordingState, TrainingRecordingDirection, TrainingRecordingLoader>(
     TrainingRecordingState()
 ), TrainingRecordingContract {
+
+    init {
+        provideEmptyTraining()
+    }
 
     override fun onAddExercise() {
         val exercise = ExerciseState(
@@ -36,21 +42,27 @@ internal class TrainingRecordingViewModel(
     }
 
     override fun onEditExercise(id: String) {
-        val exercise = state.value.exercises.find { it.id == id } ?: return
+        val exercise = state.value.training?.exercises?.find { it.id == id } ?: return
         navigateTo(TrainingRecordingDirection.ToExercise(exercise))
     }
 
     fun updateExercise(value: ExerciseState) {
         update {
-            val index = it.exercises.indexOfFirst { exercise -> exercise.id == value.id }
+            val exercises = it.training?.exercises ?: return@update it
+
+            val index = exercises.indexOfFirst { exercise -> exercise.id == value.id }
 
             val updatedExercises = if (index >= 0) {
-                it.exercises.toMutableList().apply { this[index] = value }
+                exercises.toMutableList().apply { this[index] = value }
             } else {
-                it.exercises + value
+                exercises + value
             }
 
-            it.copy(exercises = updatedExercises.toPersistentList())
+            val training = it.training.copy(
+                exercises = updatedExercises.toPersistentList()
+            )
+
+            it.copy(training = training)
         }
     }
 
@@ -59,8 +71,10 @@ internal class TrainingRecordingViewModel(
     }
 
     override fun onSave() {
+        val training = state.value.training ?: return
+
         val direction = TrainingRecordingDirection.ToCompleted(
-            exercises = state.value.exercises
+            training = training
         )
 
         navigateTo(direction)
@@ -76,5 +90,19 @@ internal class TrainingRecordingViewModel(
 
             dialogController.show(dialog)
         }
+    }
+
+    private fun provideEmptyTraining() {
+        val training = TrainingState(
+            id = Uuid.random().toString(),
+            duration = 0L,
+            createdAt = DateTimeUtils.now(),
+            volume = VolumeFormatState.of(""),
+            repetitions = RepetitionsFormatState.of(""),
+            intensity = IntensityFormatState.of(""),
+            exercises = persistentListOf()
+        )
+
+        update { it.copy(training = training) }
     }
 }

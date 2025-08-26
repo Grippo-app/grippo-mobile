@@ -35,7 +35,7 @@ import com.grippo.design.resources.provider.save_btn
 import com.grippo.design.resources.provider.statistics
 import com.grippo.design.resources.provider.training
 import com.grippo.state.formatters.UiText
-import com.grippo.state.trainings.stubExercises
+import com.grippo.state.trainings.stubTraining
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -77,9 +77,9 @@ internal fun TrainingRecordingScreen(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                val buttonState = remember(loaders, state.exercises) {
+                val buttonState = remember(loaders, state.training?.exercises) {
                     when {
-                        state.exercises.isEmpty() -> ButtonState.Disabled
+                        state.training?.exercises.isNullOrEmpty() -> ButtonState.Disabled
                         else -> ButtonState.Enabled
                     }
                 }
@@ -98,6 +98,10 @@ internal fun TrainingRecordingScreen(
         }
     )
 
+    val exercises = remember(state.training?.exercises) {
+        state.training?.exercises ?: persistentListOf()
+    }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
@@ -112,7 +116,7 @@ internal fun TrainingRecordingScreen(
         when (state.tab) {
             RecordingTab.Exercises -> {
                 items(
-                    items = state.exercises,
+                    items = exercises,
                     key = { it.id }
                 ) { exercise ->
                     val clickProvider = remember(exercise.id) {
@@ -163,7 +167,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         TrainingRecordingScreen(
             state = TrainingRecordingState(
-                exercises = stubExercises()
+                training = stubTraining()
             ),
             loaders = persistentSetOf(),
             contract = TrainingRecordingContract.Empty

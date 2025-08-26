@@ -8,7 +8,7 @@ public fun List<TrainingState>.toDomain(): List<SetTraining> {
     return mapNotNull { it.toDomain() }.toPersistentList()
 }
 
-public fun TrainingState.toDomain(): SetTraining? {
+public fun TrainingState.toDomain(): SetTraining {
     return SetTraining(
         exercises = exercises.toDomain(),
         duration = duration

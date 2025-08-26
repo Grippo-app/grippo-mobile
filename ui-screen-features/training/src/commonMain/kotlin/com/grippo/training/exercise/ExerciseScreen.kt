@@ -21,6 +21,7 @@ import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.chip.IntensityChip
 import com.grippo.design.components.chip.IntensityChipStyle
@@ -146,12 +147,20 @@ internal fun ExerciseScreen(
             onClick = contract::onAddIteration
         )
 
+        val buttonState = remember(loaders, state.exercise.iterations) {
+            when {
+                state.exercise.iterations.isEmpty() -> ButtonState.Disabled
+                else -> ButtonState.Enabled
+            }
+        }
+
         Button(
             modifier = Modifier.weight(1f),
             content = ButtonContent.Text(
                 text = AppTokens.strings.res(Res.string.save_btn),
             ),
             style = ButtonStyle.Primary,
+            state = buttonState,
             onClick = contract::onSave
         )
     }

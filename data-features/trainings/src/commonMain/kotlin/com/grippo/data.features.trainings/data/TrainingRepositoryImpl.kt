@@ -10,6 +10,7 @@ import com.grippo.date.utils.DateTimeUtils
 import com.grippo.network.Api
 import com.grippo.network.database.training.toEntities
 import com.grippo.network.database.training.toEntityOrNull
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDateTime
@@ -59,8 +60,9 @@ internal class TrainingRepositoryImpl(
         return response.map {}
     }
 
-    override suspend fun setTraining(training: SetTraining): Result<String?> {
-        TODO("Not yet implemented")
+    override suspend fun setTraining(training: SetTraining): Result<String> {
+        delay(2000)
+        return Result.success("")
     }
 
     override suspend fun deleteTraining(id: String): Result<Unit> {

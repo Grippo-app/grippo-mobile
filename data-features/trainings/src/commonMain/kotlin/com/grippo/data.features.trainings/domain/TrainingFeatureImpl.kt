@@ -29,7 +29,7 @@ internal class TrainingFeatureImpl(
         return repository.getTrainings(start, end)
     }
 
-    override suspend fun setTraining(training: SetTraining): Result<String?> {
+    override suspend fun setTraining(training: SetTraining): Result<String> {
         return repository.setTraining(training)
     }
 

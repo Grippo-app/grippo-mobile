@@ -8,7 +8,7 @@ public fun List<ExerciseState>.toDomain(): List<SetExercise> {
     return mapNotNull { it.toDomain() }.toPersistentList()
 }
 
-public fun ExerciseState.toDomain(): SetExercise? {
+public fun ExerciseState.toDomain(): SetExercise {
     return SetExercise(
         name = name,
         iterations = iterations.toDomain(),

@@ -12,6 +12,6 @@ public interface TrainingFeature {
     public fun observeExercise(id: String): Flow<Exercise?>
 
     public suspend fun getTrainings(start: LocalDateTime, end: LocalDateTime): Result<Unit>
-    public suspend fun setTraining(training: SetTraining): Result<String?>
+    public suspend fun setTraining(training: SetTraining): Result<String>
     public suspend fun deleteTraining(id: String): Result<Unit>
 }

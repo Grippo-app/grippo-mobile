@@ -2,9 +2,11 @@ package com.grippo.training
 
 import com.grippo.core.BaseViewModel
 import com.grippo.state.trainings.ExerciseState
+import com.grippo.state.trainings.TrainingState
+import com.grippo.training.TrainingState as ScreenTrainingState
 
 public class TrainingViewModel :
-    BaseViewModel<TrainingState, TrainingDirection, TrainingLoader>(TrainingState()),
+    BaseViewModel<ScreenTrainingState, TrainingDirection, TrainingLoader>(ScreenTrainingState()),
     TrainingContract {
 
     override fun onBack() {
@@ -23,7 +25,7 @@ public class TrainingViewModel :
         navigateTo(TrainingDirection.ToExercise(exercise))
     }
 
-    override fun toCompleted(exercises: List<ExerciseState>) {
-        navigateTo(TrainingDirection.ToCompleted(exercises))
+    override fun toCompleted(training: TrainingState) {
+        navigateTo(TrainingDirection.ToCompleted(training))
     }
 }
