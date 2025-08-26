@@ -66,7 +66,7 @@ public fun ThemeCard(
     ) {
         Text(
             modifier = Modifier.align(Alignment.TopStart),
-            text = style.title(),
+            text = style.title().text(),
             style = AppTokens.typography.h2(),
             color = textColor
         )

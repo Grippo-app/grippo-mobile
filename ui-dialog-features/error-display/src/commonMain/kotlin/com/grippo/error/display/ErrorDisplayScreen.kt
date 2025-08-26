@@ -57,7 +57,7 @@ internal fun ErrorDisplayScreen(
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = state.error.title(),
+            text = state.error.title().text(),
             style = AppTokens.typography.h2(),
             color = AppTokens.colors.text.primary,
             textAlign = TextAlign.Center
@@ -73,7 +73,7 @@ internal fun ErrorDisplayScreen(
                     .fillMaxWidth()
                     .heightIn(max = 400.dp)
                     .verticalScroll(rememberScrollState()),
-                text = description,
+                text = description.text(),
                 style = AppTokens.typography.b14Med(),
                 color = AppTokens.colors.text.secondary,
                 textAlign = TextAlign.Center

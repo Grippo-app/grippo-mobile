@@ -1,13 +1,12 @@
 package com.grippo.state.error
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.no_internet_connection
 import com.grippo.design.resources.provider.timeout_error
 import com.grippo.design.resources.provider.unexpected_network_error
 import com.grippo.design.resources.provider.unsupported_error
+import com.grippo.state.formatters.UiText
 
 @Immutable
 public sealed interface AppErrorState {
@@ -42,25 +41,23 @@ public sealed interface AppErrorState {
         val description: String?,
     ) : AppErrorState
 
-    @Composable
-    public fun title(): String {
+    public fun title(): UiText {
         return when (this) {
-            is Network.Expected -> this.title
-            is Network.NoInternet -> AppTokens.strings.res(Res.string.no_internet_connection)
-            is Network.Timeout -> AppTokens.strings.res(Res.string.timeout_error)
-            is Network.Unexpected -> AppTokens.strings.res(Res.string.unexpected_network_error)
-            is Unknown -> AppTokens.strings.res(Res.string.unsupported_error)
+            is Network.Expected -> UiText.Str(this.title)
+            is Network.NoInternet -> UiText.Res(Res.string.no_internet_connection)
+            is Network.Timeout -> UiText.Res(Res.string.timeout_error)
+            is Network.Unexpected -> UiText.Res(Res.string.unexpected_network_error)
+            is Unknown -> UiText.Res(Res.string.unsupported_error)
         }
     }
 
-    @Composable
-    public fun description(): String? {
+    public fun description(): UiText? {
         return when (this) {
-            is Network.Expected -> this.description
-            is Network.NoInternet -> this.description
-            is Network.Timeout -> this.description
-            is Network.Unexpected -> this.description
-            is Unknown -> this.description
+            is Network.Expected -> this.description?.let { UiText.Str(it) }
+            is Network.NoInternet -> this.description?.let { UiText.Str(it) }
+            is Network.Timeout -> this.description?.let { UiText.Str(it) }
+            is Network.Unexpected -> this.description?.let { UiText.Str(it) }
+            is Unknown -> this.description?.let { UiText.Str(it) }
         }
     }
 }

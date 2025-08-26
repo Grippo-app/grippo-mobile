@@ -73,7 +73,7 @@ internal fun FilterPickerScreen(
 
                     Text(
                         modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                        text = it.title(),
+                        text = it.title().text(),
                         style = AppTokens.typography.b14Bold(),
                         color = AppTokens.colors.text.primary,
                     )
@@ -91,7 +91,7 @@ internal fun FilterPickerScreen(
                                     key(item) {
                                         SelectableCard(
                                             style = SelectableCardStyle.Small(
-                                                title = item.title()
+                                                title = item.title().text()
                                             ),
                                             isSelected = item == content.value,
                                             onSelect = {}
@@ -113,7 +113,7 @@ internal fun FilterPickerScreen(
                                     key(item) {
                                         SelectableCard(
                                             style = SelectableCardStyle.Small(
-                                                title = item.title()
+                                                title = item.title().text()
                                             ),
                                             isSelected = item == content.value,
                                             onSelect = {}
@@ -135,7 +135,7 @@ internal fun FilterPickerScreen(
                                     key(item) {
                                         SelectableCard(
                                             style = SelectableCardStyle.Small(
-                                                title = item.title()
+                                                title = item.title().text()
                                             ),
                                             isSelected = item == content.value,
                                             onSelect = {}

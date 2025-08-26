@@ -1,9 +1,7 @@
 package com.grippo.state.muscles
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
-import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.muscle_abductors
 import com.grippo.design.resources.provider.muscle_adductors
@@ -27,6 +25,7 @@ import com.grippo.design.resources.provider.muscle_teres_major
 import com.grippo.design.resources.provider.muscle_trapezius
 import com.grippo.design.resources.provider.muscle_triceps
 import com.grippo.design.resources.provider.muscles.MuscleColorPreset
+import com.grippo.state.formatters.UiText
 
 @Immutable
 public enum class MuscleEnumState {
@@ -130,8 +129,7 @@ public enum class MuscleEnumState {
         )
     }
 
-    @Composable
-    public fun title(): String {
+    public fun title(): UiText {
         val r = when (this) {
             PECTORALIS_MAJOR_CLAVICULAR -> Res.string.muscle_pectoralis_major_clavicular
             PECTORALIS_MAJOR_STERNOCOSTAL -> Res.string.muscle_pectoralis_major_sternocostal
@@ -155,6 +153,6 @@ public enum class MuscleEnumState {
             TRICEPS -> Res.string.muscle_triceps
             FOREARM -> Res.string.muscle_forearm
         }
-        return AppTokens.strings.res(r)
+        return UiText.Res(r)
     }
 }

@@ -1,8 +1,6 @@
 package com.grippo.state.equipments
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.equipment_ab_machines
 import com.grippo.design.resources.provider.equipment_abductor_machine
@@ -49,6 +47,7 @@ import com.grippo.design.resources.provider.equipment_trap_bar
 import com.grippo.design.resources.provider.equipment_triceps_machines
 import com.grippo.design.resources.provider.equipment_v_bar
 import com.grippo.design.resources.provider.equipment_wide_grip_handle
+import com.grippo.state.formatters.UiText
 
 @Immutable
 public enum class EquipmentEnumState {
@@ -102,8 +101,7 @@ public enum class EquipmentEnumState {
     PREACHER_CURL_BENCH,
     ROW_BENCH;
 
-    @Composable
-    public fun title(): String {
+    public fun title(): UiText {
         val r = when (this) {
             DUMBBELLS -> Res.string.equipment_dumbbells
             BARBELL -> Res.string.equipment_barbell
@@ -155,6 +153,6 @@ public enum class EquipmentEnumState {
             PREACHER_CURL_BENCH -> Res.string.equipment_preacher_curl_bench
             ROW_BENCH -> Res.string.equipment_row_bench
         }
-        return AppTokens.strings.res(r)
+        return UiText.Res(r)
     }
 }

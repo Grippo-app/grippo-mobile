@@ -102,8 +102,8 @@ internal fun ExperienceScreen(
                     onSelect = selectProvider,
                     isSelected = isSelected,
                     style = SelectableCardStyle.Large(
-                        title = item.title(),
-                        description = item.description(),
+                        title = item.title().text(),
+                        description = item.description().text(),
                         icon = item.icon(),
                         subContent = null,
                     ),

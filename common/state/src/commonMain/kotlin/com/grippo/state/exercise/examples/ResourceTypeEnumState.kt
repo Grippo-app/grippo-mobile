@@ -1,12 +1,11 @@
 package com.grippo.state.exercise.examples
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.resource_type_text
 import com.grippo.design.resources.provider.resource_type_video
 import com.grippo.design.resources.provider.resource_type_youtube_video
+import com.grippo.state.formatters.UiText
 
 @Immutable
 public enum class ResourceTypeEnumState {
@@ -14,13 +13,12 @@ public enum class ResourceTypeEnumState {
     VIDEO,
     TEXT;
 
-    @Composable
-    public fun title(): String {
+    public fun title(): UiText {
         val r = when (this) {
             YOUTUBE_VIDEO -> Res.string.resource_type_youtube_video
             VIDEO -> Res.string.resource_type_video
             TEXT -> Res.string.resource_type_text
         }
-        return AppTokens.strings.res(r)
+        return UiText.Res(r)
     }
 }
