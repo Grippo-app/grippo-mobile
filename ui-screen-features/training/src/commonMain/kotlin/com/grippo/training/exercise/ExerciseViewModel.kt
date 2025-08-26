@@ -3,6 +3,7 @@ package com.grippo.training.exercise
 import com.grippo.core.BaseViewModel
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
+import com.grippo.state.formatters.IntensityFormatState
 import com.grippo.state.formatters.RepetitionsFormatState
 import com.grippo.state.formatters.VolumeFormatState
 import com.grippo.state.trainings.ExerciseState
@@ -38,7 +39,29 @@ internal class ExerciseViewModel(
                         .apply { add(iteration) }
                         .toPersistentList()
 
-                    val exercise = it.exercise.copy(iterations = iterations)
+                    val volume = iterations.mapNotNull { iteration ->
+                        val v = (iteration.volume as? VolumeFormatState.Valid)
+                            ?: return@mapNotNull null
+                        val r = (iteration.repetitions as? RepetitionsFormatState.Valid)
+                            ?: return@mapNotNull null
+                        v.value * r.value
+                    }.sum()
+
+                    val repetition = iterations.mapNotNull { iteration ->
+                        val r = (iteration.repetitions as? RepetitionsFormatState.Valid)
+                            ?: return@mapNotNull null
+                        r.value
+                    }.sum()
+
+                    val intensity = volume / repetition
+
+                    val exercise = it.exercise.copy(
+                        iterations = iterations,
+                        volume = VolumeFormatState.of(volume),
+                        repetitions = RepetitionsFormatState.of(repetition),
+                        intensity = IntensityFormatState.of(intensity)
+                    )
+
                     it.copy(exercise = exercise)
                 }
             }
@@ -60,7 +83,29 @@ internal class ExerciseViewModel(
                         .map { m -> if (m.id == id) iteration else m }
                         .toPersistentList()
 
-                    val exercise = it.exercise.copy(iterations = iterations)
+                    val volume = iterations.mapNotNull { iteration ->
+                        val v = (iteration.volume as? VolumeFormatState.Valid)
+                            ?: return@mapNotNull null
+                        val r = (iteration.repetitions as? RepetitionsFormatState.Valid)
+                            ?: return@mapNotNull null
+                        v.value * r.value
+                    }.sum()
+
+                    val repetition = iterations.mapNotNull { iteration ->
+                        val r = (iteration.repetitions as? RepetitionsFormatState.Valid)
+                            ?: return@mapNotNull null
+                        r.value
+                    }.sum()
+
+                    val intensity = volume / repetition
+
+                    val exercise = it.exercise.copy(
+                        iterations = iterations,
+                        volume = VolumeFormatState.of(volume),
+                        repetitions = RepetitionsFormatState.of(repetition),
+                        intensity = IntensityFormatState.of(intensity)
+                    )
+
                     it.copy(exercise = exercise)
                 }
             }
@@ -82,7 +127,29 @@ internal class ExerciseViewModel(
                         .map { m -> if (m.id == id) iteration else m }
                         .toPersistentList()
 
-                    val exercise = it.exercise.copy(iterations = iterations)
+                    val volume = iterations.mapNotNull { iteration ->
+                        val v = (iteration.volume as? VolumeFormatState.Valid)
+                            ?: return@mapNotNull null
+                        val r = (iteration.repetitions as? RepetitionsFormatState.Valid)
+                            ?: return@mapNotNull null
+                        v.value * r.value
+                    }.sum()
+
+                    val repetition = iterations.mapNotNull { iteration ->
+                        val r = (iteration.repetitions as? RepetitionsFormatState.Valid)
+                            ?: return@mapNotNull null
+                        r.value
+                    }.sum()
+
+                    val intensity = volume / repetition
+
+                    val exercise = it.exercise.copy(
+                        iterations = iterations,
+                        volume = VolumeFormatState.of(volume),
+                        repetitions = RepetitionsFormatState.of(repetition),
+                        intensity = IntensityFormatState.of(intensity)
+                    )
+
                     it.copy(exercise = exercise)
                 }
             }
