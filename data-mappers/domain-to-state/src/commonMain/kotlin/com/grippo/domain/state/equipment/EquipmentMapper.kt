@@ -12,7 +12,6 @@ public fun List<Equipment>.toState(): ImmutableList<EquipmentState> {
 public fun Equipment.toState(): EquipmentState {
     return EquipmentState(
         id = id,
-        name = name,
         type = type.toState()
     )
 }

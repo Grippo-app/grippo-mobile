@@ -50,7 +50,7 @@ public fun MusclesColumn(
             MultiSelectableCard(
                 modifier = Modifier.fillMaxWidth(),
                 style = MultiSelectableCardStyle.Small(
-                    title = muscle.value.name
+                    title = muscle.value.type.title().text()
                 ),
                 isSelected = isSelected,
                 onSelect = selectProvider

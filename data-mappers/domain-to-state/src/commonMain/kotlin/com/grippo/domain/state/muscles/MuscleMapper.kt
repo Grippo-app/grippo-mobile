@@ -13,7 +13,6 @@ public fun List<Muscle>.toState(): ImmutableList<MuscleRepresentationState.Plain
 public fun Muscle.toState(): MuscleRepresentationState.Plain {
     val muscle = MuscleState(
         id = id,
-        name = name,
         type = type.toState(),
     )
 

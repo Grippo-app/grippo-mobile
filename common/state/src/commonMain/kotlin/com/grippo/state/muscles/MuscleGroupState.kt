@@ -53,22 +53,18 @@ public fun stubMuscles(): PersistentList<MuscleGroupState<MuscleRepresentationSt
             muscles = listOf(
                 MuscleState(
                     id = "2e0faf2b-31a5-4c63-ac15-454be132796f",
-                    name = "Trapezius",
                     type = MuscleEnumState.TRAPEZIUS
                 ),
                 MuscleState(
                     id = "af854064-078a-4f50-af1d-8744e866751e",
-                    name = "Rhomboids",
                     type = MuscleEnumState.RHOMBOIDS
                 ),
                 MuscleState(
                     id = "831f39bd-80a8-4d11-9964-bde1788abae1",
-                    name = "Latissimus Dorsi",
                     type = MuscleEnumState.LATISSIMUS_DORSI
                 ),
                 MuscleState(
                     id = "be38dcef-1bc8-487b-a44f-96df1ab9e68c",
-                    name = "Teres Major",
                     type = MuscleEnumState.TERES_MAJOR
                 ),
             ).map { MuscleRepresentationState.Plain(it) }.toPersistentList()
@@ -80,12 +76,10 @@ public fun stubMuscles(): PersistentList<MuscleGroupState<MuscleRepresentationSt
             muscles = listOf(
                 MuscleState(
                     id = "1ddbb748-37a6-4d66-a7d4-4957bdbc647f",
-                    name = "Obliques",
                     type = MuscleEnumState.OBLIQUES
                 ),
                 MuscleState(
                     id = "9e69205f-6c6e-44a7-8ee6-89215e28a28e",
-                    name = "Rectus Abdominis",
                     type = MuscleEnumState.RECTUS_ABDOMINIS
                 ),
             ).map { MuscleRepresentationState.Plain(it) }.toPersistentList()
@@ -97,32 +91,26 @@ public fun stubMuscles(): PersistentList<MuscleGroupState<MuscleRepresentationSt
             muscles = listOf(
                 MuscleState(
                     id = "57559b71-b757-468a-983d-a1b3cec4acef",
-                    name = "Quadriceps",
                     type = MuscleEnumState.QUADRICEPS
                 ),
                 MuscleState(
                     id = "bba5b66d-9a9c-4b44-8dd6-9574760038ee",
-                    name = "Calf Muscles",
                     type = MuscleEnumState.CALF
                 ),
                 MuscleState(
                     id = "f6e65bfe-0746-4a8f-8210-0e9bf88d9886",
-                    name = "Gluteal Muscles",
                     type = MuscleEnumState.GLUTEAL
                 ),
                 MuscleState(
                     id = "3eeaa9fa-0847-4780-9d01-185f91252794",
-                    name = "Hamstrings",
                     type = MuscleEnumState.HAMSTRINGS
                 ),
                 MuscleState(
                     id = "fa8025e6-e106-475c-8b9d-77831132fb47",
-                    name = "Adductors",
                     type = MuscleEnumState.ADDUCTORS
                 ),
                 MuscleState(
                     id = "ab1dbd50-83a4-42c7-a3cd-da1784818ec8",
-                    name = "Abductors",
                     type = MuscleEnumState.ABDUCTORS
                 ),
             ).map { MuscleRepresentationState.Plain(it) }.toPersistentList()
@@ -134,17 +122,14 @@ public fun stubMuscles(): PersistentList<MuscleGroupState<MuscleRepresentationSt
             muscles = listOf(
                 MuscleState(
                     id = "2da3d8f2-6a28-45ff-90a2-ea3a6bb2afe8",
-                    name = "Lateral Deltoid",
                     type = MuscleEnumState.LATERAL_DELTOID
                 ),
                 MuscleState(
                     id = "d736a513-9d73-47a3-bffc-c14911662ea2",
-                    name = "Anterior Deltoid",
                     type = MuscleEnumState.ANTERIOR_DELTOID
                 ),
                 MuscleState(
                     id = "97136fa7-622a-49d6-9d09-403a631d253d",
-                    name = "Posterior Deltoid",
                     type = MuscleEnumState.POSTERIOR_DELTOID
                 ),
             ).map { MuscleRepresentationState.Plain(it) }.toPersistentList()
@@ -156,17 +141,14 @@ public fun stubMuscles(): PersistentList<MuscleGroupState<MuscleRepresentationSt
             muscles = listOf(
                 MuscleState(
                     id = "9a8024fe-c721-4bea-969c-db88674b5ece",
-                    name = "Forearm Muscles",
                     type = MuscleEnumState.FOREARM
                 ),
                 MuscleState(
                     id = "97a87b01-35e8-490a-94b9-9bdae9c2f965",
-                    name = "Biceps Brachii",
                     type = MuscleEnumState.BICEPS
                 ),
                 MuscleState(
                     id = "0fd0be35-f933-43b8-a0d7-a4b6adaa9c1a",
-                    name = "Triceps Brachii",
                     type = MuscleEnumState.TRICEPS
                 ),
             ).map { MuscleRepresentationState.Plain(it) }.toPersistentList()
@@ -178,17 +160,14 @@ public fun stubMuscles(): PersistentList<MuscleGroupState<MuscleRepresentationSt
             muscles = listOf(
                 MuscleState(
                     id = "b4658891-9713-48c4-864c-8dd907da19b0",
-                    name = "Pectoralis (sternocostal)",
                     type = MuscleEnumState.PECTORALIS_MAJOR_STERNOCOSTAL
                 ),
                 MuscleState(
                     id = "c57aa60c-61ea-4498-b01f-fedcafe8a32a",
-                    name = "Pectoralis (clavicular)",
                     type = MuscleEnumState.PECTORALIS_MAJOR_CLAVICULAR
                 ),
                 MuscleState(
                     id = "a3a8eae0-6315-4435-8974-f2c07ec3567f",
-                    name = "Pectoralis (abdominal)",
                     type = MuscleEnumState.PECTORALIS_MAJOR_ABDOMINAL
                 ),
             ).map { MuscleRepresentationState.Plain(it) }.toPersistentList()

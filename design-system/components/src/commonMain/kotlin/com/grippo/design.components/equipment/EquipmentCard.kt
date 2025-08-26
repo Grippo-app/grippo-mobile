@@ -48,7 +48,7 @@ public fun EquipmentCard(
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = value.name,
+            text = value.type.title().text(),
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,

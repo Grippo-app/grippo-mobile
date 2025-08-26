@@ -7,6 +7,10 @@ import com.grippo.design.resources.provider.equipment.AbMachine
 import com.grippo.design.resources.provider.equipment.AbductorMachine
 import com.grippo.design.resources.provider.equipment.AdductorMachine
 import com.grippo.design.resources.provider.equipment.AdjustableBench
+import com.grippo.design.resources.provider.equipment.Barbell
+import com.grippo.design.resources.provider.equipment.BicepsMachine
+import com.grippo.design.resources.provider.equipment.Butterfly
+import com.grippo.design.resources.provider.equipment.ButterflyReverse
 import com.grippo.design.resources.provider.equipment.Cable
 import com.grippo.design.resources.provider.equipment.CalfRaiseMachines
 import com.grippo.design.resources.provider.equipment.ChestPressMachines
@@ -44,15 +48,10 @@ import com.grippo.design.resources.provider.equipment.TrapBar
 import com.grippo.design.resources.provider.equipment.TricepsMachines
 import com.grippo.design.resources.provider.equipment.VBar
 import com.grippo.design.resources.provider.equipment.WideGripHandle
-import com.grippo.design.resources.provider.equipment.Barbell
-import com.grippo.design.resources.provider.equipment.BicepsMachine
-import com.grippo.design.resources.provider.equipment.Butterfly
-import com.grippo.design.resources.provider.equipment.ButterflyReverse
 
 @Immutable
 public data class EquipmentState(
     val id: String,
-    val name: String,
     val type: EquipmentEnumState,
 ) {
 

@@ -30,7 +30,7 @@ public fun EquipmentRow(
     MultiSelectableCard(
         modifier = Modifier.fillMaxWidth(),
         style = MultiSelectableCardStyle.Medium(
-            title = equipment.name,
+            title = equipment.type.title().text(),
             icon = equipment.image(),
         ),
         isSelected = isSelected,

@@ -34,7 +34,6 @@ import com.grippo.design.resources.provider.percent
 import com.grippo.state.exercise.examples.ExerciseExampleBundleState
 import com.grippo.state.exercise.examples.stubExerciseExample
 import com.grippo.state.formatters.PercentageFormatState
-import com.grippo.state.formatters.UiText
 import com.grippo.state.muscles.factory.MuscleColorStrategy
 import com.grippo.state.muscles.factory.MuscleEngine
 import kotlinx.collections.immutable.ImmutableList
@@ -117,7 +116,7 @@ public fun ExerciseExampleBundlesCard(
                 key(item.muscle.id) {
                     Chip(
                         modifier = modifier,
-                        label = ChipLabel.Text(UiText.Str(item.muscle.name)),
+                        label = ChipLabel.Text(item.muscle.type.title()),
                         value = item.percentage.short(),
                         trailing = ChipTrailing.Content {
                             Spacer(
