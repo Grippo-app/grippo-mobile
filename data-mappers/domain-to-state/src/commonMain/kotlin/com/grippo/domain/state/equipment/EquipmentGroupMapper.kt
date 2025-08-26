@@ -12,7 +12,7 @@ public fun List<EquipmentGroup>.toState(): PersistentList<EquipmentGroupState> {
 public fun EquipmentGroup.toState(): EquipmentGroupState {
     return EquipmentGroupState(
         id = id,
-        name = name,
+        type = type.toState(),
         equipments = equipments.toState(),
     )
 }

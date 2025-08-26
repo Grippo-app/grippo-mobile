@@ -229,6 +229,13 @@
     <string name="equipment_preacher_curl_bench">Preacher Curl Bench</string>
     <string name="equipment_row_bench">Row Bench</string>
 
+    <!-- EquipmentGroupEnumState -->
+    <string name="equipment_group_free_weight">Free Weight</string>
+    <string name="equipment_group_machines">Machines</string>
+    <string name="equipment_group_cable_machines">Cable Machines</string>
+    <string name="equipment_group_body_weight">Body Weight</string>
+    <string name="equipment_group_benches_and_racks">Benches and Racks</string>
+
     <!-- MuscleEnumState -->
     <string name="muscle_pectoralis_major_clavicular">Pectoralis Major (Clavicular)</string>
     <string name="muscle_pectoralis_major_sternocostal">Pectoralis Major (Sternocostal)</string>

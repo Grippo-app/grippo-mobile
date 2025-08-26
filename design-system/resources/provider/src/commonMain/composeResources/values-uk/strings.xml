@@ -215,6 +215,13 @@
     <string name="equipment_preacher_curl_bench">Лавка для підйому на біцепс</string>
     <string name="equipment_row_bench">Лавка для тяги</string>
 
+    <!-- EquipmentGroupEnumState -->
+    <string name="equipment_group_free_weight">Вільні ваги</string>
+    <string name="equipment_group_machines">Тренажери</string>
+    <string name="equipment_group_cable_machines">Кабельні тренажери</string>
+    <string name="equipment_group_body_weight">Вага тіла</string>
+    <string name="equipment_group_benches_and_racks">Лавки та стійки</string>
+
     <!-- MuscleEnumState -->
     <string name="muscle_pectoralis_major_clavicular">Великий грудний (ключична частина)</string>
     <string name="muscle_pectoralis_major_sternocostal">Великий грудний (груднинна частина)</string>

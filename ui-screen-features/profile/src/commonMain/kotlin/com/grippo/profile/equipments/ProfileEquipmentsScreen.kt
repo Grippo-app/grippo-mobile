@@ -31,7 +31,6 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.apply_btn
 import com.grippo.design.resources.provider.equipments
 import com.grippo.state.equipments.stubEquipments
-import com.grippo.state.formatters.UiText
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
@@ -44,7 +43,7 @@ internal fun ProfileEquipmentsScreen(
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
 
     val segmentItems = remember(state.suggestions) {
-        state.suggestions.map { it.id to UiText.Str(it.name) }.toPersistentList()
+        state.suggestions.map { it.id to it.type.title() }.toPersistentList()
     }
 
     Toolbar(

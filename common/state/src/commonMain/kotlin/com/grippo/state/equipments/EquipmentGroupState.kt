@@ -7,14 +7,14 @@ import kotlinx.collections.immutable.persistentListOf
 @Immutable
 public data class EquipmentGroupState(
     val id: String,
-    val name: String,
+    val type: EquipmentGroupEnumState,
     val equipments: ImmutableList<EquipmentState>
 )
 
 public fun stubEquipments(): ImmutableList<EquipmentGroupState> = persistentListOf(
     EquipmentGroupState(
         id = "56550c17-dd77-40c2-8737-fde011dcbbaa",
-        name = "Free Weight",
+        type = EquipmentGroupEnumState.FREE_WEIGHT,
         equipments = persistentListOf(
             EquipmentState(
                 "9d66ac93-3a48-429d-aeaa-54302856e204",
@@ -60,7 +60,7 @@ public fun stubEquipments(): ImmutableList<EquipmentGroupState> = persistentList
     ),
     EquipmentGroupState(
         id = "fcfa00b0-820c-494a-ac9e-ff4cf4e69489",
-        name = "Machines",
+        type = EquipmentGroupEnumState.MACHINES,
         equipments = persistentListOf(
             EquipmentState(
                 "527227fe-8182-4aec-949a-66335c5ce25e",
@@ -102,7 +102,7 @@ public fun stubEquipments(): ImmutableList<EquipmentGroupState> = persistentList
     ),
     EquipmentGroupState(
         id = "7f343be4-0ec8-458a-a45b-d5ab7c1973de",
-        name = "Cable Machines",
+        type = EquipmentGroupEnumState.CABLE_MACHINES,
         equipments = persistentListOf(
             EquipmentState(
                 "18995b62-6971-4750-84fe-0c2bc712f352",
@@ -119,6 +119,38 @@ public fun stubEquipments(): ImmutableList<EquipmentGroupState> = persistentList
             EquipmentState(
                 "373d04ea-8079-439a-82a3-d118da6253b1",
                 EquipmentEnumState.ROW_CABLE
+            )
+        )
+    ),
+    EquipmentGroupState(
+        id = "body-weight-001",
+        type = EquipmentGroupEnumState.BODY_WEIGHT,
+        equipments = persistentListOf(
+            EquipmentState(
+                "pull-up-bar-001",
+                EquipmentEnumState.PULL_UP_BAR
+            ),
+            EquipmentState(
+                "dip-bars-001",
+                EquipmentEnumState.DIP_BARS
+            )
+        )
+    ),
+    EquipmentGroupState(
+        id = "benches-racks-001",
+        type = EquipmentGroupEnumState.BENCHES_AND_RACKS,
+        equipments = persistentListOf(
+            EquipmentState(
+                "flat-bench-001",
+                EquipmentEnumState.FLAT_BENCH
+            ),
+            EquipmentState(
+                "adjustable-bench-001",
+                EquipmentEnumState.ADJUSTABLE_BENCH
+            ),
+            EquipmentState(
+                "squat-rack-001",
+                EquipmentEnumState.SQUAT_RACK
             )
         )
     )

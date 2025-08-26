@@ -37,7 +37,6 @@ import com.grippo.design.resources.provider.continue_btn
 import com.grippo.design.resources.provider.registration_equipment_description
 import com.grippo.design.resources.provider.registration_equipment_title
 import com.grippo.state.equipments.stubEquipments
-import com.grippo.state.formatters.UiText
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -92,7 +91,7 @@ internal fun MissingEquipmentsScreen(
         Column(modifier = Modifier.fillMaxWidth().weight(1f)) {
 
             val segmentItems = remember(state.suggestions) {
-                state.suggestions.map { it.id to UiText.Str(it.name) }.toPersistentList()
+                state.suggestions.map { it.id to it.type.title() }.toPersistentList()
             }
 
             Segment(
