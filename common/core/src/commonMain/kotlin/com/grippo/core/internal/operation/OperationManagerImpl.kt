@@ -11,7 +11,7 @@ import org.koin.core.annotation.Factory
 import org.koin.core.annotation.InjectedParam
 import kotlin.coroutines.cancellation.CancellationException
 
-@Factory
+@Factory(binds = [OperationManager::class])
 internal class OperationManagerImpl(
     @InjectedParam val coroutineScope: CoroutineScope
 ) : OperationManager {
