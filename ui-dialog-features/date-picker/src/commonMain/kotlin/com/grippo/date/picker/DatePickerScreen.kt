@@ -64,7 +64,7 @@ internal fun DatePickerScreen(
             limitations = state.limitations
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         val buttonState = remember(loaders, state.value) {
             when {
