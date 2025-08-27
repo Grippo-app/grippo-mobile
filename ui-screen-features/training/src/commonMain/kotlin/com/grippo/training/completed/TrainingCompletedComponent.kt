@@ -17,7 +17,8 @@ internal class TrainingCompletedComponent(
     override val viewModel: TrainingCompletedViewModel = componentContext.retainedInstance {
         TrainingCompletedViewModel(
             training = training,
-            trainingFeature = getKoin().get()
+            trainingFeature = getKoin().get(),
+            dialogController = getKoin().get()
         )
     }
 

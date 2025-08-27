@@ -1,6 +1,9 @@
 package com.grippo.state.trainings
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.grippo.state.formatters.RepetitionsFormatState
 import com.grippo.state.formatters.VolumeFormatState
 import kotlinx.datetime.LocalDateTime
@@ -65,4 +68,43 @@ public sealed class TrainingListValue(
         override val position: TrainingPosition,
         override val id: String
     ) : TrainingListValue(id, position)
+
+    public companion object {
+        public fun TrainingListValue.shape(radius: Dp): RoundedCornerShape = when (this) {
+            is FirstExercise -> RoundedCornerShape(
+                topStart = radius,
+                topEnd = radius
+            )
+
+            is SingleExercise -> RoundedCornerShape(
+                topStart = radius,
+                topEnd = radius,
+                bottomEnd = radius,
+                bottomStart = radius
+            )
+
+            is LastExercise -> RoundedCornerShape(
+                bottomStart = radius,
+                bottomEnd = radius
+            )
+
+            else -> RoundedCornerShape(0.dp)
+        }
+
+        public fun TrainingListValue.index(): Int? = when (this) {
+            is FirstExercise -> indexInTraining
+            is LastExercise -> indexInTraining
+            is MiddleExercise -> indexInTraining
+            is SingleExercise -> indexInTraining
+            else -> null
+        }
+
+        public fun TrainingListValue.exercise(): ExerciseState? = when (this) {
+            is FirstExercise -> exerciseState
+            is LastExercise -> exerciseState
+            is MiddleExercise -> exerciseState
+            is SingleExercise -> exerciseState
+            else -> null
+        }
+    }
 }

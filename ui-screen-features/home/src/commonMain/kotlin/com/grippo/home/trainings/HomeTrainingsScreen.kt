@@ -32,12 +32,12 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.selected
 import com.grippo.design.resources.provider.trainings
 import com.grippo.domain.state.training.transformToTrainingListValue
-import com.grippo.home.trainings.factory.exerciseOf
-import com.grippo.home.trainings.factory.indexFor
-import com.grippo.home.trainings.factory.shapeFor
 import com.grippo.home.trainings.factory.timelineStyle
 import com.grippo.state.formatters.UiText
 import com.grippo.state.trainings.TrainingListValue
+import com.grippo.state.trainings.TrainingListValue.Companion.exercise
+import com.grippo.state.trainings.TrainingListValue.Companion.index
+import com.grippo.state.trainings.TrainingListValue.Companion.shape
 import com.grippo.state.trainings.stubTraining
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
@@ -88,10 +88,10 @@ internal fun HomeTrainingsScreen(
         ) { value ->
             val radius = AppTokens.dp.exerciseCard.radius
             val contentPadding = AppTokens.dp.contentPadding.content
-            val style = remember(value) { timelineStyle(value) }
-            val shape = remember(value) { shapeFor(value, radius) }
-            val exercise = remember(value) { exerciseOf(value) }
-            val index = remember(value) { indexFor(value) }
+            val style = remember(value) { value.timelineStyle() }
+            val shape = remember(value) { value.shape(radius) }
+            val exercise = remember(value) { value.exercise() }
+            val index = remember(value) { value.index() }
 
             TimelineIndicator(style = style) {
 

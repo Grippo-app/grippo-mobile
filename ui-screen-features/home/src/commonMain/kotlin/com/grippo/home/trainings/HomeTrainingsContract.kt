@@ -1,7 +1,6 @@
 package com.grippo.home.trainings
 
 internal interface HomeTrainingsContract {
-
     fun onExerciseClick(id: String)
     fun onSelectDate()
     fun onBack()

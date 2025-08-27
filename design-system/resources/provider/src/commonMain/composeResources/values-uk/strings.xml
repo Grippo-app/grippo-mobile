@@ -7,6 +7,7 @@
     <string name="set_value">Сет: %1$s</string>
     <string name="sets_value">Сети (%1$s)</string>
     <string name="percent">%</string>
+    <string name="complete">Завершити</string>
     <string name="prepare_training">Підготовка тренування</string>
     <string name="back">Назад</string>
     <string name="selected">Обрано</string>

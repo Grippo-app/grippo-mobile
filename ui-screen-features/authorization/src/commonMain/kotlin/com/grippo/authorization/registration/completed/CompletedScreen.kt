@@ -40,7 +40,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.get_started_btn
-import com.grippo.design.resources.provider.icons.Check
 import com.grippo.design.resources.provider.registration_completed_title
 import com.grippo.state.profile.stubUser
 import kotlinx.collections.immutable.ImmutableSet
@@ -109,7 +108,7 @@ internal fun CompletedScreen(
 
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-            Spacer(modifier = Modifier.weight(0.5f))
+            Spacer(modifier = Modifier.weight(1f))
 
             if (state.user != null) {
                 UserCard(
@@ -129,7 +128,6 @@ internal fun CompletedScreen(
                 modifier = Modifier.fillMaxWidth(),
                 content = ButtonContent.Text(
                     text = AppTokens.strings.res(Res.string.get_started_btn),
-                    startIcon = AppTokens.icons.Check,
                 ),
                 style = ButtonStyle.Primary,
                 onClick = contract::onCompleteClick
