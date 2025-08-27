@@ -3,6 +3,7 @@ package com.grippo.home.trainings
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
+import com.grippo.date.utils.DateRange
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.date_picker_title
@@ -12,8 +13,10 @@ import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState
 import com.grippo.domain.state.training.transformToTrainingListValue
 import com.grippo.state.formatters.DateFormatState
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.datetime.LocalDateTime
 
 internal class HomeTrainingsViewModel(
     private val trainingFeature: TrainingFeature,
@@ -24,19 +27,18 @@ internal class HomeTrainingsViewModel(
 ), HomeTrainingsContract {
 
     init {
-        trainingFeature.observeTrainings(
-            start = LocalDateTime(2024, 1, 1, 11, 11, 11, 11),
-            end = LocalDateTime(2026, 1, 1, 11, 11, 11, 11)
-        )
+        state
+            .map { it.date }
+            .distinctUntilChanged()
+            .flatMapLatest { trainingFeature.observeTrainings(start = it.from, end = it.to) }
             .onEach(::provideTrainings)
             .safeLaunch()
 
-        safeLaunch(loader = HomeTrainingsLoader.Trainings) {
-            trainingFeature.getTrainings(
-                start = LocalDateTime(2024, 1, 1, 11, 11, 11, 11),
-                end = LocalDateTime(2026, 1, 1, 11, 11, 11, 11)
-            ).getOrThrow()
-        }
+        state
+            .map { it.date }
+            .distinctUntilChanged()
+            .onEach { trainingFeature.getTrainings(start = it.from, end = it.to).getOrThrow() }
+            .safeLaunch()
     }
 
     private fun provideTrainings(list: List<Training>) {
@@ -55,7 +57,7 @@ internal class HomeTrainingsViewModel(
     override fun onSelectDate() {
         safeLaunch {
             val limits = DateTimeUtils.trailingYear()
-            val value = DateFormatState.of(state.value.date, limits)
+            val value = DateFormatState.of(state.value.date.from, limits)
 
             val dialog = DialogConfig.DatePicker(
                 title = stringProvider.get(Res.string.date_picker_title),
@@ -63,7 +65,9 @@ internal class HomeTrainingsViewModel(
                 limitations = limits,
                 onResult = { value ->
                     val date = value.value ?: return@DatePicker
-                    update { it.copy(date = date) }
+                    val from = DateTimeUtils.startOfDay(date)
+                    val to = DateTimeUtils.endOfDay(date)
+                    update { it.copy(date = DateRange(from, to)) }
                 }
             )
 

@@ -11,6 +11,7 @@ import com.grippo.domain.network.user.training.toBody
 import com.grippo.network.Api
 import com.grippo.network.database.training.toEntities
 import com.grippo.network.database.training.toEntityOrNull
+import com.grippo.network.dto.training.TrainingResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDateTime
@@ -39,53 +40,47 @@ internal class TrainingRepositoryImpl(
         return trainingDao.get(
             from = DateTimeUtils.toUtcIso(start),
             to = DateTimeUtils.toUtcIso(end)
-        ).map { it.toDomain() }
+        ).map {
+            it.toDomain()
+        }
     }
 
     override suspend fun getTrainings(start: LocalDateTime, end: LocalDateTime): Result<Unit> {
         val response = api.getTrainings(
             start = DateTimeUtils.toUtcIso(start),
-            end = DateTimeUtils.toUtcIso(end),
+            end = DateTimeUtils.toUtcIso(end)
         )
 
-        response.onSuccess {
-            it.forEach { r ->
-                val training = r.toEntityOrNull() ?: return@onSuccess
-                val exercises = r.exercises.toEntities()
-                val iterations = r.exercises.flatMap { f -> f.iterations }.toEntities()
-                trainingDao.insertOrReplace(training, exercises, iterations)
-            }
+        response.onSuccess { r ->
+            r.forEach { training -> provideTraining(training) }
         }
 
         return response.map {}
     }
 
     override suspend fun updateTraining(id: String, training: SetTraining): Result<String?> {
-        val body = training.toBody()
-        val response = api.updateTraining(id, body)
+        val response = api.updateTraining(
+            id = id,
+            body = training.toBody()
+        )
 
         response.onSuccess { r ->
-            val newTraining = api.getTraining(id).getOrNull() ?: return@onSuccess
-            val training = newTraining.toEntityOrNull() ?: return@onSuccess
-            val exercises = newTraining.exercises.toEntities()
-            val iterations = newTraining.exercises.flatMap { f -> f.iterations }.toEntities()
-            trainingDao.insertOrReplace(training, exercises, iterations)
+            val training = api.getTraining(id).getOrNull() ?: return@onSuccess
+            provideTraining(training)
         }.getOrThrow()
 
         return Result.success(id)
     }
 
     override suspend fun setTraining(training: SetTraining): Result<String?> {
-        val body = training.toBody()
-        val response = api.setTraining(body)
+        val response = api.setTraining(
+            body = training.toBody()
+        )
 
         response.onSuccess { r ->
             val id = r.id ?: return@onSuccess
-            val newTraining = api.getTraining(id).getOrNull() ?: return@onSuccess
-            val training = newTraining.toEntityOrNull() ?: return@onSuccess
-            val exercises = newTraining.exercises.toEntities()
-            val iterations = newTraining.exercises.flatMap { f -> f.iterations }.toEntities()
-            trainingDao.insertOrReplace(training, exercises, iterations)
+            val training = api.getTraining(id).getOrNull() ?: return@onSuccess
+            provideTraining(training)
         }.getOrThrow()
 
         return response.map { it.id }
@@ -93,5 +88,12 @@ internal class TrainingRepositoryImpl(
 
     override suspend fun deleteTraining(id: String): Result<Unit> {
         TODO("Not yet implemented")
+    }
+
+    private suspend fun provideTraining(value: TrainingResponse) {
+        val training = value.toEntityOrNull() ?: return
+        val exercises = value.exercises.toEntities()
+        val iterations = value.exercises.flatMap { f -> f.iterations }.toEntities()
+        trainingDao.insertOrReplace(training, exercises, iterations)
     }
 }
