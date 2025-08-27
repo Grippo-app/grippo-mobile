@@ -2,7 +2,7 @@ package com.grippo.training
 
 import com.grippo.core.BaseViewModel
 import com.grippo.state.trainings.ExerciseState
-import com.grippo.state.trainings.TrainingState
+import kotlinx.datetime.LocalDateTime
 import com.grippo.training.TrainingState as ScreenTrainingState
 
 public class TrainingViewModel :
@@ -25,7 +25,7 @@ public class TrainingViewModel :
         navigateTo(TrainingDirection.ToExercise(exercise))
     }
 
-    override fun toCompleted(training: TrainingState) {
-        navigateTo(TrainingDirection.ToCompleted(training))
+    override fun toCompleted(exercises: List<ExerciseState>, startAt: LocalDateTime) {
+        navigateTo(TrainingDirection.ToCompleted(exercises, startAt))
     }
 }

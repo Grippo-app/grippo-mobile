@@ -64,17 +64,17 @@ internal fun ExerciseScreen(
                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
             ) {
                 VolumeChip(
-                    value = state.exercise.volume,
+                    value = state.exercise.metrics.volume,
                     style = VolumeChipStyle.LONG
                 )
 
                 RepetitionsChip(
-                    value = state.exercise.repetitions,
+                    value = state.exercise.metrics.repetitions,
                     style = RepetitionsChipStyle.LONG
                 )
 
                 IntensityChip(
-                    value = state.exercise.intensity,
+                    value = state.exercise.metrics.intensity,
                     style = IntensityChipStyle.LONG
                 )
             }

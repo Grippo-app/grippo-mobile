@@ -46,7 +46,7 @@ public class TrainingComponent(
             )
 
             is TrainingDirection.ToCompleted -> navigation.replaceAll(
-                TrainingRouter.Completed(direction.training)
+                TrainingRouter.Completed(direction.exercises, direction.startAt)
             )
 
             TrainingDirection.Close -> close.invoke()
@@ -96,7 +96,8 @@ public class TrainingComponent(
             is TrainingRouter.Completed -> Child.Completed(
                 TrainingCompletedComponent(
                     componentContext = context,
-                    training = router.training,
+                    exercises = router.exercises,
+                    startAt = router.startAt,
                     back = viewModel::onClose
                 ),
             )

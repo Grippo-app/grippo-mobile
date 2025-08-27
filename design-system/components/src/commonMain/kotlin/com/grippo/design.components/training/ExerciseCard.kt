@@ -63,18 +63,18 @@ public fun ExerciseCard(
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.exerciseCard.spacing)
         ) {
             VolumeChip(
-                value = value.volume,
+                value = value.metrics.volume,
                 style = VolumeChipStyle.SHORT,
                 modifier = Modifier.weight(1f)
             )
 
             IntensityChip(
-                value = value.intensity,
+                value = value.metrics.intensity,
                 style = IntensityChipStyle.SHORT,
             )
 
             RepetitionsChip(
-                value = value.repetitions,
+                value = value.metrics.repetitions,
                 style = RepetitionsChipStyle.SHORT,
             )
         }

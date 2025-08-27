@@ -77,9 +77,9 @@ internal fun TrainingRecordingScreen(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                val buttonState = remember(loaders, state.training?.exercises) {
+                val buttonState = remember(loaders, state.exercises) {
                     when {
-                        state.training?.exercises.isNullOrEmpty() -> ButtonState.Disabled
+                        state.exercises.isEmpty() -> ButtonState.Disabled
                         else -> ButtonState.Enabled
                     }
                 }
@@ -98,8 +98,8 @@ internal fun TrainingRecordingScreen(
         }
     )
 
-    val exercises = remember(state.training?.exercises) {
-        state.training?.exercises ?: persistentListOf()
+    val exercises = remember(state.exercises) {
+        state.exercises
     }
 
     LazyColumn(
@@ -167,7 +167,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         TrainingRecordingScreen(
             state = TrainingRecordingState(
-                training = stubTraining()
+                exercises = stubTraining().exercises
             ),
             loaders = persistentSetOf(),
             contract = TrainingRecordingContract.Empty

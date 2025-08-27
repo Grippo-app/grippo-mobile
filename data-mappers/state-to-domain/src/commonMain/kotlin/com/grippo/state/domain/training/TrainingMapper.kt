@@ -8,9 +8,12 @@ public fun List<TrainingState>.toDomain(): List<SetTraining> {
     return mapNotNull { it.toDomain() }.toPersistentList()
 }
 
-public fun TrainingState.toDomain(): SetTraining {
+public fun TrainingState.toDomain(): SetTraining? {
     return SetTraining(
         exercises = exercises.toDomain(),
-        duration = duration
+        duration = duration,
+        repetitions = metrics.repetitions.value ?: return null,
+        volume = metrics.volume.value ?: return null,
+        intensity = metrics.intensity.value ?: return null
     )
 }

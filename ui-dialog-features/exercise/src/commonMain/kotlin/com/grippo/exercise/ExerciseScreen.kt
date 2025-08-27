@@ -85,17 +85,17 @@ internal fun ExerciseScreen(
             ) {
                 VolumeChip(
                     modifier = Modifier,
-                    value = exercise.volume,
+                    value = exercise.metrics.volume,
                     style = VolumeChipStyle.LONG
                 )
 
                 IntensityChip(
-                    value = exercise.intensity,
+                    value = exercise.metrics.intensity,
                     style = IntensityChipStyle.LONG
                 )
 
                 RepetitionsChip(
-                    value = exercise.repetitions,
+                    value = exercise.metrics.repetitions,
                     style = RepetitionsChipStyle.LONG
                 )
             }

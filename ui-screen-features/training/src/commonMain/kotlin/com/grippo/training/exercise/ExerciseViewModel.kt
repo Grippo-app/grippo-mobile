@@ -9,6 +9,7 @@ import com.grippo.state.formatters.VolumeFormatState
 import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.IterationFocus
 import com.grippo.state.trainings.IterationState
+import com.grippo.state.trainings.TrainingMetrics
 import kotlinx.collections.immutable.toPersistentList
 import kotlin.uuid.Uuid
 import com.grippo.training.exercise.ExerciseState as ScreenExerciseState
@@ -57,9 +58,11 @@ internal class ExerciseViewModel(
 
                     val exercise = it.exercise.copy(
                         iterations = iterations,
-                        volume = VolumeFormatState.of(volume),
-                        repetitions = RepetitionsFormatState.of(repetition),
-                        intensity = IntensityFormatState.of(intensity)
+                        metrics = TrainingMetrics(
+                            volume = VolumeFormatState.of(volume),
+                            repetitions = RepetitionsFormatState.of(repetition),
+                            intensity = IntensityFormatState.of(intensity)
+                        )
                     )
 
                     it.copy(exercise = exercise)
@@ -101,9 +104,11 @@ internal class ExerciseViewModel(
 
                     val exercise = it.exercise.copy(
                         iterations = iterations,
-                        volume = VolumeFormatState.of(volume),
-                        repetitions = RepetitionsFormatState.of(repetition),
-                        intensity = IntensityFormatState.of(intensity)
+                        metrics = TrainingMetrics(
+                            volume = VolumeFormatState.of(volume),
+                            repetitions = RepetitionsFormatState.of(repetition),
+                            intensity = IntensityFormatState.of(intensity)
+                        )
                     )
 
                     it.copy(exercise = exercise)
@@ -145,9 +150,11 @@ internal class ExerciseViewModel(
 
                     val exercise = it.exercise.copy(
                         iterations = iterations,
-                        volume = VolumeFormatState.of(volume),
-                        repetitions = RepetitionsFormatState.of(repetition),
-                        intensity = IntensityFormatState.of(intensity)
+                        metrics = TrainingMetrics(
+                            volume = VolumeFormatState.of(volume),
+                            repetitions = RepetitionsFormatState.of(repetition),
+                            intensity = IntensityFormatState.of(intensity)
+                        )
                     )
 
                     it.copy(exercise = exercise)

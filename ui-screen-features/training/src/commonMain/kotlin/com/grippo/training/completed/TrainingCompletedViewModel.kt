@@ -2,18 +2,24 @@ package com.grippo.training.completed
 
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.training.TrainingFeature
+import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.data.features.api.training.models.Training
+import com.grippo.date.utils.DateTimeUtils
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState
 import com.grippo.domain.state.training.toTrainingListValues
 import com.grippo.state.domain.training.toDomain
-import com.grippo.state.trainings.TrainingState
+import com.grippo.state.formatters.RepetitionsFormatState
+import com.grippo.state.formatters.VolumeFormatState
+import com.grippo.state.trainings.ExerciseState
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.datetime.LocalDateTime
 
 internal class TrainingCompletedViewModel(
-    training: TrainingState,
+    exercises: List<ExerciseState>,
     trainingFeature: TrainingFeature,
+    startAt: LocalDateTime,
     private val dialogController: DialogController
 ) : BaseViewModel<TrainingCompletedState, TrainingCompletedDirection, TrainingCompletedLoader>(
     TrainingCompletedState()
@@ -21,8 +27,34 @@ internal class TrainingCompletedViewModel(
 
     init {
         safeLaunch(loader = TrainingCompletedLoader.SaveTraining) {
+            val duration = DateTimeUtils.ago(startAt)
+
+            val volume = exercises.mapNotNull { exercise ->
+                val v = (exercise.metrics.volume as? VolumeFormatState.Valid)
+                    ?: return@mapNotNull null
+                val r = (exercise.metrics.repetitions as? RepetitionsFormatState.Valid)
+                    ?: return@mapNotNull null
+                v.value * r.value
+            }.sum()
+
+            val repetition = exercises.mapNotNull { exercise ->
+                val r = (exercise.metrics.repetitions as? RepetitionsFormatState.Valid)
+                    ?: return@mapNotNull null
+                r.value
+            }.sum()
+
+            val intensity = volume / repetition
+
+            val training = SetTraining(
+                exercises = exercises.toDomain(),
+                duration = duration.inWholeMinutes,
+                volume = volume,
+                intensity = intensity,
+                repetitions = repetition
+            )
+
             val id = trainingFeature
-                .setTraining(training.toDomain())
+                .setTraining(training)
                 .getOrThrow() ?: return@safeLaunch
 
             val domain = trainingFeature.observeTraining(id).firstOrNull()

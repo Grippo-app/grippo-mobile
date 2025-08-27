@@ -4,4 +4,7 @@ public data class SetExercise(
     val name: String,
     val iterations: List<SetIteration>,
     val exerciseExampleId: String?,
+    val repetitions: Int,
+    val intensity: Float,
+    val volume: Float
 )
