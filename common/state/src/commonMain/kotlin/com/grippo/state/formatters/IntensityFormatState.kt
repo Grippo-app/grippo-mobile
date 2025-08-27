@@ -28,27 +28,29 @@ public sealed class IntensityFormatState : FormatState<Float> {
 
     public companion object {
         public fun of(display: String): IntensityFormatState {
-            return if (display.isEmpty()) {
-                Invalid(display)
+            if (display.isEmpty()) return Invalid(display)
+
+            val parsed = display.replace(',', '.').toFloatOrNull() ?: return Invalid(display)
+            if (!parsed.isFinite()) return Invalid(display)
+
+            val trimmed = kotlin.math.round(parsed * 100f) / 100f
+
+            return if (IntensityValidator.isValid(trimmed)) {
+                Valid(display = display, value = trimmed)
             } else {
-                try {
-                    val intensity = display.toFloat()
-                    if (IntensityValidator.isValid(intensity)) {
-                        Valid(display, intensity)
-                    } else {
-                        Invalid(display, intensity)
-                    }
-                } catch (_: NumberFormatException) {
-                    Invalid(display)
-                }
+                Invalid(display = display, value = trimmed)
             }
         }
 
         public fun of(value: Float): IntensityFormatState {
-            return if (IntensityValidator.isValid(value)) {
-                Valid(value.toString(), value)
+            if (!value.isFinite()) return Invalid(value.toString(), null)
+
+            val trimmed = kotlin.math.round(value * 100f) / 100f
+
+            return if (IntensityValidator.isValid(trimmed)) {
+                Valid(display = value.toString(), value = trimmed)
             } else {
-                Invalid(value.toString(), value)
+                Invalid(display = value.toString(), value = trimmed)
             }
         }
     }

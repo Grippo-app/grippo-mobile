@@ -9,9 +9,9 @@ public fun List<SetExercise>.toBody(): List<ExerciseBody> {
 
 public fun SetExercise.toBody(): ExerciseBody {
     return ExerciseBody(
-        repetitions = 0,
-        intensity = 0F,
-        volume = 0F,
+        repetitions = repetitions,
+        intensity = intensity,
+        volume = volume,
         exerciseExampleId = exerciseExampleId,
         iterations = iterations.toBody(),
         name = name
