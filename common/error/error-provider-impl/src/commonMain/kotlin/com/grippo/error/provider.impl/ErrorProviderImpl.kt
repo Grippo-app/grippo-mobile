@@ -32,13 +32,9 @@ internal class ErrorProviderImpl(
                 description = exception.message,
             )
 
-            is AppError.Unknown -> AppErrorState.Unknown(
-                description = exception.message,
-            )
+            is AppError.Unknown -> AppErrorState.Unknown
 
-            else -> AppErrorState.Unknown(
-                description = exception.message,
-            )
+            else -> AppErrorState.Unknown
         }
 
         val config = DialogConfig.ErrorDisplay(

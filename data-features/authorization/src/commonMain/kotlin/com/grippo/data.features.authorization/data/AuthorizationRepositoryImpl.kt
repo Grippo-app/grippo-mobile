@@ -7,8 +7,8 @@ import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.entity.UserActiveEntity
 import com.grippo.domain.network.user.toBody
 import com.grippo.network.Api
-import com.grippo.network.dto.auth.AuthBody
 import com.grippo.network.database.user.toEntityOrNull
+import com.grippo.network.dto.auth.AuthBody
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest

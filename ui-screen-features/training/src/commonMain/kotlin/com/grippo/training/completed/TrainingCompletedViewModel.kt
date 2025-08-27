@@ -23,7 +23,7 @@ internal class TrainingCompletedViewModel(
         safeLaunch(loader = TrainingCompletedLoader.SaveTraining) {
             val id = trainingFeature
                 .setTraining(training.toDomain())
-                .getOrThrow()
+                .getOrThrow() ?: return@safeLaunch
 
             val domain = trainingFeature.observeTraining(id).firstOrNull()
             provideTraining(domain)

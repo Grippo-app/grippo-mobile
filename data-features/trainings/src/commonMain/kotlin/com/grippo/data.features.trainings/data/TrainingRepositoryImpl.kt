@@ -7,10 +7,10 @@ import com.grippo.data.features.trainings.domain.TrainingRepository
 import com.grippo.database.dao.TrainingDao
 import com.grippo.database.domain.training.toDomain
 import com.grippo.date.utils.DateTimeUtils
+import com.grippo.domain.network.user.training.toBody
 import com.grippo.network.Api
 import com.grippo.network.database.training.toEntities
 import com.grippo.network.database.training.toEntityOrNull
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDateTime
@@ -60,9 +60,19 @@ internal class TrainingRepositoryImpl(
         return response.map {}
     }
 
-    override suspend fun setTraining(training: SetTraining): Result<String> {
-        delay(2000)
-        return Result.success("")
+    override suspend fun setTraining(training: SetTraining): Result<String?> {
+        val body = training.toBody()
+        val response = api.setTraining(body)
+
+        val id = response.map { r ->
+            val training = r.toEntityOrNull() ?: return@map null
+            val exercises = r.exercises.toEntities()
+            val iterations = r.exercises.flatMap { f -> f.iterations }.toEntities()
+            trainingDao.insertOrReplace(training, exercises, iterations)
+            return@map r.id
+        }.getOrThrow()
+
+        return Result.success(id)
     }
 
     override suspend fun deleteTraining(id: String): Result<Unit> {

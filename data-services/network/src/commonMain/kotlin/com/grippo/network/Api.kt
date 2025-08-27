@@ -10,6 +10,7 @@ import com.grippo.network.dto.equipment.EquipmentResponse
 import com.grippo.network.dto.exercise.example.ExerciseExampleResponse
 import com.grippo.network.dto.muscle.MuscleGroupResponse
 import com.grippo.network.dto.muscle.MuscleResponse
+import com.grippo.network.dto.training.TrainingBody
 import com.grippo.network.dto.training.TrainingResponse
 import com.grippo.network.user.IdsBody
 import com.grippo.network.user.UserResponse
@@ -150,7 +151,7 @@ public class Api internal constructor(private val client: NetworkClient) {
         )
     }
 
-    public suspend fun setTraining(body: TrainingResponse): Result<TrainingResponse> {
+    public suspend fun setTraining(body: TrainingBody): Result<TrainingResponse> {
         return request(
             method = HttpMethod.Post,
             path = "/trainings",
@@ -158,10 +159,10 @@ public class Api internal constructor(private val client: NetworkClient) {
         )
     }
 
-    public suspend fun getTraining(trainingId: String): Result<TrainingResponse> {
+    public suspend fun getTraining(id: String): Result<TrainingResponse> {
         return request(
             method = HttpMethod.Get,
-            path = "/trainings/$trainingId"
+            path = "/trainings/$id"
         )
     }
 

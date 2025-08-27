@@ -37,9 +37,7 @@ public sealed interface AppErrorState {
     }
 
     @Immutable
-    public data class Unknown(
-        val description: String?,
-    ) : AppErrorState
+    public data object Unknown : AppErrorState
 
     public fun title(): UiText {
         return when (this) {
@@ -47,7 +45,7 @@ public sealed interface AppErrorState {
             is Network.NoInternet -> UiText.Res(Res.string.no_internet_connection)
             is Network.Timeout -> UiText.Res(Res.string.timeout_error)
             is Network.Unexpected -> UiText.Res(Res.string.unexpected_network_error)
-            is Unknown -> UiText.Res(Res.string.unsupported_error)
+            is Unknown -> UiText.Res(Res.string.unsupported_error) // todo rename (Something went wrong)
         }
     }
 
@@ -57,7 +55,7 @@ public sealed interface AppErrorState {
             is Network.NoInternet -> this.description?.let { UiText.Str(it) }
             is Network.Timeout -> this.description?.let { UiText.Str(it) }
             is Network.Unexpected -> this.description?.let { UiText.Str(it) }
-            is Unknown -> this.description?.let { UiText.Str(it) }
+            is Unknown -> null
         }
     }
 }

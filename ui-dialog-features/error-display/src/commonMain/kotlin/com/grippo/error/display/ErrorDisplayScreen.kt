@@ -101,9 +101,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         ErrorDisplayScreen(
             state = ErrorDisplayState(
-                error = AppErrorState.Unknown(
-                    description = "What happens?"
-                )
+                error = AppErrorState.Unknown
             ),
             contract = ErrorDisplayContract.Empty,
             loaders = persistentSetOf()

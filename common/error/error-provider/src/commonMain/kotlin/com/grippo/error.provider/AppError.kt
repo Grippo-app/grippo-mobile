@@ -1,7 +1,7 @@
 package com.grippo.error.provider
 
 public sealed class AppError(
-    override val message: String,
+    override val message: String?,
     override val cause: Throwable? = null,
 ) : Exception(message, cause) {
 
@@ -34,8 +34,5 @@ public sealed class AppError(
         ) : Network(message, cause)
     }
 
-    public data class Unknown(
-        override val message: String,
-        override val cause: Throwable? = null
-    ) : AppError(message, cause)
+    public data object Unknown : AppError(null)
 }
