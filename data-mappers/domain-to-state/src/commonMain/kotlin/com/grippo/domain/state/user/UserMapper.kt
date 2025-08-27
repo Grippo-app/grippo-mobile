@@ -12,6 +12,6 @@ public fun User.toState(): UserState {
         createdAt = createAt,
         experience = experience.toState(),
         records = 0, // todo add from BE
-        workouts = 0 // todo add from BE
+        trainingsCount = 0 // todo add from BE
     )
 }

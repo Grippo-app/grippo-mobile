@@ -14,7 +14,7 @@ public data class UserState(
     val weight: Float,
     val createdAt: LocalDateTime,
     val records: Int,
-    val workouts: Int,
+    val trainingsCount: Int,
     val experience: ExperienceEnumState
 )
 
@@ -25,6 +25,6 @@ public fun stubUser(): UserState = UserState(
     weight = Random.nextInt(60, 100).toFloat(),
     createdAt = DateTimeUtils.thisDay().from,
     records = Random.nextInt(0, 200),
-    workouts = Random.nextInt(0, 200),
+    trainingsCount = Random.nextInt(0, 200),
     experience = ExperienceEnumState.INTERMEDIATE
 )
