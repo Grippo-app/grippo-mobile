@@ -169,6 +169,13 @@ public class Api internal constructor(private val client: NetworkClient) {
         )
     }
 
+    public suspend fun deleteTraining(id: String): Result<Unit> {
+        return request(
+            method = HttpMethod.Delete,
+            path = "/trainings/$id"
+        )
+    }
+
     public suspend fun getTraining(id: String): Result<TrainingResponse> {
         return request(
             method = HttpMethod.Get,

@@ -33,16 +33,11 @@ internal class TrainingRepositoryImpl(
             .map { it?.toDomain() }
     }
 
-    override fun observeTrainings(
-        start: LocalDateTime,
-        end: LocalDateTime
-    ): Flow<List<Training>> {
+    override fun observeTrainings(start: LocalDateTime, end: LocalDateTime): Flow<List<Training>> {
         return trainingDao.get(
             from = DateTimeUtils.toUtcIso(start),
             to = DateTimeUtils.toUtcIso(end)
-        ).map {
-            it.toDomain()
-        }
+        ).map { it.toDomain() }
     }
 
     override suspend fun getTrainings(start: LocalDateTime, end: LocalDateTime): Result<Unit> {
@@ -67,7 +62,7 @@ internal class TrainingRepositoryImpl(
         response.onSuccess { r ->
             val training = api.getTraining(id).getOrNull() ?: return@onSuccess
             provideTraining(training)
-        }.getOrThrow()
+        }
 
         return Result.success(id)
     }
@@ -81,13 +76,21 @@ internal class TrainingRepositoryImpl(
             val id = r.id ?: return@onSuccess
             val training = api.getTraining(id).getOrNull() ?: return@onSuccess
             provideTraining(training)
-        }.getOrThrow()
+        }
 
         return response.map { it.id }
     }
 
     override suspend fun deleteTraining(id: String): Result<Unit> {
-        TODO("Not yet implemented")
+        val response = api.deleteTraining(
+            id = id,
+        )
+
+        response.onSuccess { r ->
+            trainingDao.deleteById(id)
+        }
+
+        return response
     }
 
     private suspend fun provideTraining(value: TrainingResponse) {
