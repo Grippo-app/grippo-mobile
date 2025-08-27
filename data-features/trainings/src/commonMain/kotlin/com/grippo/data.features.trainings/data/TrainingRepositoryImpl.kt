@@ -60,19 +60,35 @@ internal class TrainingRepositoryImpl(
         return response.map {}
     }
 
+    override suspend fun updateTraining(id: String, training: SetTraining): Result<String?> {
+        val body = training.toBody()
+        val response = api.updateTraining(id, body)
+
+        response.onSuccess { r ->
+            val newTraining = api.getTraining(id).getOrNull() ?: return@onSuccess
+            val training = newTraining.toEntityOrNull() ?: return@onSuccess
+            val exercises = newTraining.exercises.toEntities()
+            val iterations = newTraining.exercises.flatMap { f -> f.iterations }.toEntities()
+            trainingDao.insertOrReplace(training, exercises, iterations)
+        }.getOrThrow()
+
+        return Result.success(id)
+    }
+
     override suspend fun setTraining(training: SetTraining): Result<String?> {
         val body = training.toBody()
         val response = api.setTraining(body)
 
-        val id = response.map { r ->
-            val training = r.toEntityOrNull() ?: return@map null
-            val exercises = r.exercises.toEntities()
-            val iterations = r.exercises.flatMap { f -> f.iterations }.toEntities()
+        response.onSuccess { r ->
+            val id = r.id ?: return@onSuccess
+            val newTraining = api.getTraining(id).getOrNull() ?: return@onSuccess
+            val training = newTraining.toEntityOrNull() ?: return@onSuccess
+            val exercises = newTraining.exercises.toEntities()
+            val iterations = newTraining.exercises.flatMap { f -> f.iterations }.toEntities()
             trainingDao.insertOrReplace(training, exercises, iterations)
-            return@map r.id
         }.getOrThrow()
 
-        return Result.success(id)
+        return response.map { it.id }
     }
 
     override suspend fun deleteTraining(id: String): Result<Unit> {

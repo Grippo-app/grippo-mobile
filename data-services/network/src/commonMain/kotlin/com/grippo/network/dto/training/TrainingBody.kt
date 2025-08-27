@@ -5,8 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class TrainingBody(
-    @SerialName("repetitions")
-    val repetitions: Int,
     @SerialName("duration")
     val duration: Long,
     @SerialName("exercises")
@@ -15,6 +13,8 @@ public data class TrainingBody(
     val intensity: Float,
     @SerialName("volume")
     val volume: Float,
+    @SerialName("repetitions")
+    val repetitions: Int,
 )
 
 @Serializable

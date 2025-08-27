@@ -13,5 +13,6 @@ internal interface TrainingRepository {
 
     suspend fun getTrainings(start: LocalDateTime, end: LocalDateTime): Result<Unit>
     suspend fun setTraining(training: SetTraining): Result<String?>
+    suspend fun updateTraining(id: String, training: SetTraining): Result<String?>
     suspend fun deleteTraining(id: String): Result<Unit>
 }

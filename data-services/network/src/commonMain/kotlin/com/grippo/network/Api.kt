@@ -1,6 +1,7 @@
 package com.grippo.network
 
 import com.grippo.network.client.NetworkClient
+import com.grippo.network.dto.IdResponse
 import com.grippo.network.dto.auth.AuthBody
 import com.grippo.network.dto.auth.RefreshBody
 import com.grippo.network.dto.auth.RegisterBody
@@ -151,11 +152,20 @@ public class Api internal constructor(private val client: NetworkClient) {
         )
     }
 
-    public suspend fun setTraining(body: TrainingBody): Result<TrainingResponse> {
+    public suspend fun setTraining(body: TrainingBody): Result<IdResponse> {
         return request(
             method = HttpMethod.Post,
             path = "/trainings",
             body = body
+        )
+    }
+
+    public suspend fun updateTraining(id: String, body: TrainingBody): Result<Unit> {
+        return request(
+            method = HttpMethod.Put,
+            path = "/trainings",
+            body = body,
+            queryParams = mapOf("id" to id)
         )
     }
 
@@ -188,11 +198,23 @@ public class Api internal constructor(private val client: NetworkClient) {
      * Only admin
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun setExerciseExample(body: ExerciseExampleResponse): Result<ExerciseExampleResponse> {
+    public suspend fun setExerciseExample(body: ExerciseExampleResponse): Result<IdResponse> {
         return request(
             method = HttpMethod.Post,
             path = "/exercise-examples",
             body = body
+        )
+    }
+
+    public suspend fun updateExerciseExample(
+        id: String,
+        body: ExerciseExampleResponse
+    ): Result<IdResponse> {
+        return request(
+            method = HttpMethod.Post,
+            path = "/exercise-examples",
+            body = body,
+            queryParams = mapOf("id" to id)
         )
     }
 
