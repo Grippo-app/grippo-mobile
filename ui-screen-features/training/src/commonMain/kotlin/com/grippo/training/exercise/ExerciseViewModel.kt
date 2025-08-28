@@ -81,6 +81,21 @@ internal class ExerciseViewModel(
         dialogController.show(dialog)
     }
 
+    override fun onDeleteIteration(id: String) {
+        update { s ->
+            val iterations = s.exercise.iterations
+                .toMutableList()
+                .apply {
+                    val idx = indexOfFirst { it.id == id }
+                    if (idx >= 0) removeAt(idx)
+                }.toPersistentList()
+
+            val exercise = s.exercise.copy(iterations = iterations)
+
+            s.copy(exercise = exercise)
+        }
+    }
+
     override fun onEditVolume(id: String) {
         val value = state.value.exercise.iterations.find { it.id == id } ?: return
 

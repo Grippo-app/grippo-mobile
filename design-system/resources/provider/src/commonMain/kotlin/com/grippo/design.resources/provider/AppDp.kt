@@ -195,7 +195,7 @@ public data object AppDp {
 
         public data object Editable {
             val horizontalPadding: Dp = padding.medium
-            val verticalPadding: Dp = padding.medium
+            val height: Dp = size.medium
             val radius: Dp = AppDp.radius.small
             val spacing: Dp = padding.medium
         }

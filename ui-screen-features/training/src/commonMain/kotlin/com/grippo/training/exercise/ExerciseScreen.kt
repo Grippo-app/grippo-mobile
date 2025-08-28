@@ -16,10 +16,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonColorTokens
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
@@ -29,6 +31,7 @@ import com.grippo.design.components.chip.RepetitionsChip
 import com.grippo.design.components.chip.RepetitionsChipStyle
 import com.grippo.design.components.chip.VolumeChip
 import com.grippo.design.components.chip.VolumeChipStyle
+import com.grippo.design.components.swipe.SwipeToReveal
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.training.IterationCard
 import com.grippo.design.components.training.IterationCardStyle
@@ -37,6 +40,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.add_set_btn
+import com.grippo.design.resources.provider.icons.Cancel
 import com.grippo.design.resources.provider.save_btn
 import com.grippo.design.resources.provider.sets_value
 import com.grippo.state.trainings.stubExercise
@@ -85,7 +89,6 @@ internal fun ExerciseScreen(
 
     LazyColumn(
         modifier = Modifier
-            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
             .fillMaxWidth()
             .weight(1f),
         contentPadding = PaddingValues(
@@ -95,7 +98,10 @@ internal fun ExerciseScreen(
     ) {
         item {
             Text(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .animateItem()
+                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                    .fillMaxWidth(),
                 text = AppTokens.strings.res(
                     Res.string.sets_value,
                     state.exercise.iterations.size
@@ -118,15 +124,49 @@ internal fun ExerciseScreen(
                 { contract.onEditRepetition(iteration.id) }
             }
 
-            IterationCard(
-                modifier = Modifier.fillMaxWidth(),
-                value = iteration,
-                style = IterationCardStyle.Editable(
-                    label = (index + 1).toString(),
-                    onVolumeClick = editVolumeProvider,
-                    onRepetitionClick = editRepetitionProvider
+            val editDeleteProvider = remember(iteration.id) {
+                { contract.onDeleteIteration(iteration.id) }
+            }
+
+            SwipeToReveal(
+                modifier = Modifier.animateItem(),
+                actions = {
+                    Button(
+                        modifier = Modifier
+                            .padding(end = AppTokens.dp.screen.horizontalPadding),
+                        content = ButtonContent.Icon(
+                            icon = AppTokens.icons.Cancel
+                        ),
+                        style = ButtonStyle.Custom(
+                            enabled = ButtonColorTokens(
+                                background = AppTokens.colors.semantic.error,
+                                icon = AppTokens.colors.button.iconPrimary,
+                                content = AppTokens.colors.button.textPrimary,
+                                border = AppTokens.colors.semantic.error,
+                            ),
+                            disabled = ButtonColorTokens(
+                                background = AppTokens.colors.button.backgroundPrimaryDisabled,
+                                content = AppTokens.colors.button.contentPrimaryDisabled,
+                                border = Color.Transparent,
+                                icon = AppTokens.colors.button.contentPrimaryDisabled
+                            ),
+                        ),
+                        onClick = editDeleteProvider
+                    )
+                }
+            ) {
+                IterationCard(
+                    modifier = Modifier
+                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                        .fillMaxWidth(),
+                    value = iteration,
+                    style = IterationCardStyle.Editable(
+                        label = (index + 1).toString(),
+                        onVolumeClick = editVolumeProvider,
+                        onRepetitionClick = editRepetitionProvider
+                    )
                 )
-            )
+            }
         }
     }
 
