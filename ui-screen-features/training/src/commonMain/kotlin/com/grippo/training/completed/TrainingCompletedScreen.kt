@@ -174,6 +174,12 @@ internal fun TrainingCompletedScreen(
                         }
                     }
                 }
+            } else {
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                )
             }
 
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))

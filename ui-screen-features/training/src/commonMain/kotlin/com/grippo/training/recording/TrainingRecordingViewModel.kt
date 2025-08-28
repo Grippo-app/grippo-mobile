@@ -1,7 +1,6 @@
 package com.grippo.training.recording
 
 import com.grippo.core.BaseViewModel
-import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.design.resources.provider.training_progress_lost_description
@@ -67,7 +66,7 @@ internal class TrainingRecordingViewModel(
     override fun onSave() {
         val direction = TrainingRecordingDirection.ToCompleted(
             exercises = state.value.exercises,
-            startAt = DateTimeUtils.now() // TODO FIX
+            startAt = state.value.startAt
         )
 
         navigateTo(direction)
