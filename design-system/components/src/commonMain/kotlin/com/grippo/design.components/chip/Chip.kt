@@ -1,5 +1,6 @@
 package com.grippo.design.components.chip
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -74,6 +75,7 @@ public fun Chip(
 
     Row(
         modifier = modifier
+            .animateContentSize()
             .background(
                 brush = brush,
                 shape = shape

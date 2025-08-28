@@ -84,7 +84,6 @@ internal fun ExerciseScreen(
                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
             ) {
                 VolumeChip(
-                    modifier = Modifier,
                     value = exercise.metrics.volume,
                     style = VolumeChipStyle.LONG
                 )
