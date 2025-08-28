@@ -16,7 +16,7 @@ import com.grippo.state.formatters.VolumeFormatState
 internal data class HomeStatisticsState(
     val volume: VolumeFormatState = VolumeFormatState.of(""),
     val repetitions: RepetitionsFormatState = RepetitionsFormatState.of(""),
-    val intensity: IntensityFormatState = IntensityFormatState.of(""),
+    val intensity: IntensityFormatState = IntensityFormatState.of(0f),
     val period: PeriodState = PeriodState.ThisDay,
     val areaData: DSAreaData = DSAreaData(points = emptyList()),
     val barData: DSBarData = DSBarData(items = emptyList()),

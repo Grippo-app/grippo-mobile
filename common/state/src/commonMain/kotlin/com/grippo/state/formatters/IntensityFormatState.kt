@@ -27,21 +27,6 @@ public sealed class IntensityFormatState : FormatState<Float> {
     ) : IntensityFormatState()
 
     public companion object {
-        public fun of(display: String): IntensityFormatState {
-            if (display.isEmpty()) return Invalid(display)
-
-            val parsed = display.replace(',', '.').toFloatOrNull() ?: return Invalid(display)
-            if (!parsed.isFinite()) return Invalid(display)
-
-            val trimmed = kotlin.math.round(parsed * 100f) / 100f
-
-            return if (IntensityValidator.isValid(trimmed)) {
-                Valid(display = display, value = trimmed)
-            } else {
-                Invalid(display = display, value = trimmed)
-            }
-        }
-
         public fun of(value: Float): IntensityFormatState {
             if (!value.isFinite()) return Invalid(value.toString(), null)
 

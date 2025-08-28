@@ -5,14 +5,14 @@ import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.date.utils.DateTimeUtils
+import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState
 import com.grippo.domain.state.training.toTrainingListValues
+import com.grippo.error.provider.AppError
 import com.grippo.state.domain.training.toDomain
 import com.grippo.state.formatters.IntensityFormatState
-import com.grippo.state.formatters.RepetitionsFormatState
-import com.grippo.state.formatters.VolumeFormatState
 import com.grippo.state.trainings.ExerciseState
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.LocalDateTime
@@ -21,7 +21,8 @@ internal class TrainingCompletedViewModel(
     exercises: List<ExerciseState>,
     trainingFeature: TrainingFeature,
     startAt: LocalDateTime,
-    private val dialogController: DialogController
+    stringProvider: StringProvider,
+    private val dialogController: DialogController,
 ) : BaseViewModel<TrainingCompletedState, TrainingCompletedDirection, TrainingCompletedLoader>(
     TrainingCompletedState()
 ), TrainingCompletedContract {
@@ -31,18 +32,24 @@ internal class TrainingCompletedViewModel(
             val duration = DateTimeUtils.ago(startAt)
 
             val volume = exercises.map { exercise ->
-                val v = (exercise.metrics.volume as? VolumeFormatState.Valid)
-                    ?: return@safeLaunch
-                v.value
+                exercise.metrics.volume.value ?: throw AppError.Expected(
+                    message = "Incorrect volume",
+                    description = "value = ${exercise.metrics.volume}"
+                )
             }.sum()
 
-            val repetition = exercises.map { exercise ->
-                val r = (exercise.metrics.repetitions as? RepetitionsFormatState.Valid)
-                    ?: return@safeLaunch
-                r.value
-            }.sum()
+            val repetition = exercises.sumOf { exercise ->
+                exercise.metrics.repetitions.value ?: throw AppError.Expected(
+                    message = "Incorrect repetition",
+                    description = "value = ${exercise.metrics.repetitions}"
+                )
+            }
 
-            val intensity = IntensityFormatState.of(volume / repetition).value ?: return@safeLaunch
+            val intensity =
+                IntensityFormatState.of(volume / repetition).value ?: throw AppError.Expected(
+                    message = "Incorrect repetition",
+                    description = "value = ${IntensityFormatState.of(volume / repetition).value}"
+                )
 
             val training = SetTraining(
                 exercises = exercises.toDomain(),

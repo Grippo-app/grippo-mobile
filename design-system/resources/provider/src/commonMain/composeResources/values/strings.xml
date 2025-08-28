@@ -153,7 +153,7 @@
     <string name="strength_progress">Strength Progress</string>
     <string name="training_progress_lost_title">Exit Training</string>
     <string name="training_progress_lost_description">Closing now will cause all your progress in this session to be lost.</string>
-    <string name="unsupported_error">Unsupported error</string>
+    <string name="something_went_wrong">Something went wrong</string>
     <string name="timeout_error">Timeout</string>
     <string name="unexpected_network_error">Unexpected network error</string>
 

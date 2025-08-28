@@ -75,21 +75,4 @@ public sealed class VolumeFormatState : FormatState<Float> {
             return value in 0f..1000f
         }
     }
-
-    public operator fun VolumeFormatState.times(reps: RepetitionsFormatState): VolumeFormatState {
-        val left = this.value
-        val right = reps.value
-        val product: Float? = if (left != null && right != null) left * right else null
-
-        val display = "${this.display}×${reps.display}"
-
-        // Valid only if: both operands valid AND product passes validator
-        val bothValid = (this is Valid) && (reps is RepetitionsFormatState.Valid)
-        return if (bothValid && product != null && product >= 0f && product <= 1_000_000f) {
-            Valid(product.short(), product)
-        } else {
-            Invalid(display = display, value = product)
-        }
-    }
-
 }

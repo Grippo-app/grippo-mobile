@@ -34,5 +34,10 @@ public sealed class AppError(
         ) : Network(message, cause)
     }
 
+    public data class Expected(
+        override val message: String,
+        val description: String?,
+    ) : AppError(null)
+
     public data object Unknown : AppError(null)
 }

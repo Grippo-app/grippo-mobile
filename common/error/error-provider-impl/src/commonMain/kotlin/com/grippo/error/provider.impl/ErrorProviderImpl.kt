@@ -32,6 +32,11 @@ internal class ErrorProviderImpl(
                 description = exception.message,
             )
 
+            is AppError.Expected -> AppErrorState.Expected(
+                title = exception.message,
+                description = exception.description,
+            )
+
             is AppError.Unknown -> AppErrorState.Unknown
 
             else -> AppErrorState.Unknown
