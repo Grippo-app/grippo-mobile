@@ -18,17 +18,32 @@ public sealed class NameFormatState : FormatState<String> {
     @Serializable
     public data class Invalid(
         override val display: String,
+        override val value: String?
+    ) : NameFormatState()
+
+    @Immutable
+    @Serializable
+    public data class Empty(
+        override val display: String = "",
         override val value: String? = null
     ) : NameFormatState()
 
     public companion object {
         public fun of(display: String): NameFormatState {
-            return if (display.isEmpty()) {
-                Invalid(display)
-            } else if (NameValidator.isValid(display)) {
-                Valid(display, display)
+            if (display.isEmpty()) {
+                return Empty()
+            }
+
+            return if (NameValidator.isValid(display)) {
+                Valid(
+                    display = display,
+                    value = display
+                )
             } else {
-                Invalid(display, display)
+                Invalid(
+                    display = display,
+                    value = display
+                )
             }
         }
     }

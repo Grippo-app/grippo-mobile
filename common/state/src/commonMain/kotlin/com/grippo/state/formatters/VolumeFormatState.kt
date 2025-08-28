@@ -24,32 +24,59 @@ public sealed class VolumeFormatState : FormatState<Float> {
     @Serializable
     public data class Invalid(
         override val display: String,
+        override val value: Float?
+    ) : VolumeFormatState()
+
+    @Immutable
+    @Serializable
+    public data class Empty(
+        override val display: String = "",
         override val value: Float? = null
     ) : VolumeFormatState()
 
     public companion object {
         public fun of(display: String): VolumeFormatState {
-            return if (display.isEmpty()) {
-                Invalid(display)
-            } else {
-                try {
-                    val volume = display.toFloat()
-                    if (VolumeValidator.isValid(volume)) {
-                        Valid(display, volume)
-                    } else {
-                        Invalid(display, volume)
-                    }
-                } catch (_: NumberFormatException) {
-                    Invalid(display)
+            if (display.isEmpty()) {
+                return Empty()
+            }
+
+            return try {
+                val volume = display.toFloat()
+
+                when {
+                    volume == 0f -> Empty()
+
+                    VolumeValidator.isValid(volume) -> Valid(
+                        display = display,
+                        value = volume
+                    )
+
+                    else -> Invalid(
+                        display = display,
+                        value = volume
+                    )
                 }
+            } catch (_: NumberFormatException) {
+                Invalid(
+                    display = display,
+                    value = null
+                )
             }
         }
 
         public fun of(value: Float): VolumeFormatState {
-            return if (VolumeValidator.isValid(value)) {
-                Valid(value.toString(), value)
-            } else {
-                Invalid(value.toString(), value)
+            return when {
+                value == 0f -> Empty()
+
+                VolumeValidator.isValid(value) -> Valid(
+                    display = value.toString(),
+                    value = value
+                )
+
+                else -> Invalid(
+                    display = value.toString(),
+                    value = value
+                )
             }
         }
     }

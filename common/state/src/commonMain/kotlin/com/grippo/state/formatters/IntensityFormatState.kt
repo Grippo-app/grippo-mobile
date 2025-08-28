@@ -23,19 +23,39 @@ public sealed class IntensityFormatState : FormatState<Float> {
     @Serializable
     public data class Invalid(
         override val display: String,
+        override val value: Float?
+    ) : IntensityFormatState()
+
+    @Immutable
+    @Serializable
+    public data class Empty(
+        override val display: String = "",
         override val value: Float? = null
     ) : IntensityFormatState()
 
     public companion object {
         public fun of(value: Float): IntensityFormatState {
-            if (!value.isFinite()) return Invalid(value.toString(), null)
+            if (!value.isFinite()) {
+                return Invalid(
+                    display = value.toString(),
+                    value = null
+                )
+            }
 
             val trimmed = kotlin.math.round(value * 100f) / 100f
 
-            return if (IntensityValidator.isValid(trimmed)) {
-                Valid(display = value.toString(), value = trimmed)
-            } else {
-                Invalid(display = value.toString(), value = trimmed)
+            return when {
+                trimmed == 0f -> Empty()
+
+                IntensityValidator.isValid(trimmed) -> Valid(
+                    display = value.toString(),
+                    value = trimmed
+                )
+
+                else -> Invalid(
+                    display = value.toString(),
+                    value = trimmed
+                )
             }
         }
     }

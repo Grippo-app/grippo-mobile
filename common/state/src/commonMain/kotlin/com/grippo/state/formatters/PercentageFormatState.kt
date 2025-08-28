@@ -22,32 +22,59 @@ public sealed class PercentageFormatState : FormatState<Int> {
     @Serializable
     public data class Invalid(
         override val display: String,
+        override val value: Int?
+    ) : PercentageFormatState()
+
+    @Immutable
+    @Serializable
+    public data class Empty(
+        override val display: String = "",
         override val value: Int? = null
     ) : PercentageFormatState()
 
     public companion object {
         public fun of(display: String): PercentageFormatState {
-            return if (display.isEmpty()) {
-                Invalid(display)
-            } else {
-                try {
-                    val percentage = display.toInt()
-                    if (PercentageValidator.isValid(percentage)) {
-                        Valid(display, percentage)
-                    } else {
-                        Invalid(display, percentage)
-                    }
-                } catch (_: NumberFormatException) {
-                    Invalid(display)
+            if (display.isEmpty()) {
+                return Empty()
+            }
+
+            return try {
+                val percentage = display.toInt()
+
+                when {
+                    percentage == 0 -> Empty()
+
+                    PercentageValidator.isValid(percentage) -> Valid(
+                        display = display,
+                        value = percentage
+                    )
+
+                    else -> Invalid(
+                        display = display,
+                        value = percentage
+                    )
                 }
+            } catch (_: NumberFormatException) {
+                Invalid(
+                    display = display,
+                    value = null
+                )
             }
         }
 
         public fun of(value: Int): PercentageFormatState {
-            return if (PercentageValidator.isValid(value)) {
-                Valid(value.toString(), value)
-            } else {
-                Invalid(value.toString(), value)
+            return when {
+                value == 0 -> Empty()
+
+                PercentageValidator.isValid(value) -> Valid(
+                    display = value.toString(),
+                    value = value
+                )
+
+                else -> Invalid(
+                    display = value.toString(),
+                    value = value
+                )
             }
         }
     }
@@ -55,7 +82,7 @@ public sealed class PercentageFormatState : FormatState<Int> {
     @Composable
     public fun short(): String {
         val percent = AppTokens.strings.res(Res.string.percent)
-        return "${value ?: "-"}${percent}"
+        return "${value ?: "-"}$percent"
     }
 
     private object PercentageValidator {

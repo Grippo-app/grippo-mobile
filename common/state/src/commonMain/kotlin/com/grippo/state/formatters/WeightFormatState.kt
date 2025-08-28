@@ -18,32 +18,59 @@ public sealed class WeightFormatState : FormatState<Float> {
     @Serializable
     public data class Invalid(
         override val display: String,
+        override val value: Float?
+    ) : WeightFormatState()
+
+    @Immutable
+    @Serializable
+    public data class Empty(
+        override val display: String = "",
         override val value: Float? = null
     ) : WeightFormatState()
 
     public companion object {
         public fun of(display: String): WeightFormatState {
-            return if (display.isEmpty()) {
-                Invalid(display)
-            } else {
-                try {
-                    val weight = display.toFloat()
-                    if (WeightValidator.isValid(weight)) {
-                        Valid(display, weight)
-                    } else {
-                        Invalid(display, weight)
-                    }
-                } catch (_: NumberFormatException) {
-                    Invalid(display)
+            if (display.isEmpty()) {
+                return Empty()
+            }
+
+            return try {
+                val weight = display.toFloat()
+
+                when {
+                    weight == 0f -> Empty()
+
+                    WeightValidator.isValid(weight) -> Valid(
+                        display = display,
+                        value = weight
+                    )
+
+                    else -> Invalid(
+                        display = display,
+                        value = weight
+                    )
                 }
+            } catch (_: NumberFormatException) {
+                Invalid(
+                    display = display,
+                    value = null
+                )
             }
         }
 
         public fun of(value: Float): WeightFormatState {
-            return if (WeightValidator.isValid(value)) {
-                Valid(value.toString(), value)
-            } else {
-                Invalid(value.toString(), value)
+            return when {
+                value == 0f -> Empty()
+
+                WeightValidator.isValid(value) -> Valid(
+                    display = value.toString(),
+                    value = value
+                )
+
+                else -> Invalid(
+                    display = value.toString(),
+                    value = value
+                )
             }
         }
     }

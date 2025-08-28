@@ -18,4 +18,10 @@ public sealed interface FormatState<T> {
         override val display: String,
         override val value: T? = null
     ) : FormatState<T>
+
+    @Immutable
+    public data class Empty<T>(
+        override val display: String,
+        override val value: T? = null
+    ) : FormatState<T>
 }

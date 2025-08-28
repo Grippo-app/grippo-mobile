@@ -18,17 +18,32 @@ public sealed class EmailFormatState : FormatState<String> {
     @Serializable
     public data class Invalid(
         override val display: String,
+        override val value: String?
+    ) : EmailFormatState()
+
+    @Immutable
+    @Serializable
+    public data class Empty(
+        override val display: String = "",
         override val value: String? = null
     ) : EmailFormatState()
 
     public companion object {
         public fun of(value: String): EmailFormatState {
-            return if (value.isEmpty()) {
-                Invalid(value)
-            } else if (EmailValidator.isValid(value)) {
-                Valid(value, value)
+            if (value.isEmpty()) {
+                return Empty()
+            }
+
+            return if (EmailValidator.isValid(value)) {
+                Valid(
+                    display = value,
+                    value = value
+                )
             } else {
-                Invalid(value, value)
+                Invalid(
+                    display = value,
+                    value = value
+                )
             }
         }
     }
@@ -41,7 +56,7 @@ public sealed class EmailFormatState : FormatState<String> {
                     "(" +
                     "\\." +
                     "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
-                    ")+",
+                    ")+"
         )
 
         fun isValid(value: String): Boolean {

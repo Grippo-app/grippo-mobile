@@ -22,32 +22,59 @@ public sealed class RepetitionsFormatState : FormatState<Int> {
     @Serializable
     public data class Invalid(
         override val display: String,
+        override val value: Int?
+    ) : RepetitionsFormatState()
+
+    @Immutable
+    @Serializable
+    public data class Empty(
+        override val display: String = "",
         override val value: Int? = null
     ) : RepetitionsFormatState()
 
     public companion object {
         public fun of(display: String): RepetitionsFormatState {
-            return if (display.isEmpty()) {
-                Invalid(display)
-            } else {
-                try {
-                    val repetitions = display.toInt()
-                    if (RepetitionsValidator.isValid(repetitions)) {
-                        Valid(display, repetitions)
-                    } else {
-                        Invalid(display, repetitions)
-                    }
-                } catch (_: NumberFormatException) {
-                    Invalid(display)
+            if (display.isEmpty()) {
+                return Empty()
+            }
+
+            return try {
+                val n = display.toInt()
+
+                when {
+                    n == 0 -> Empty()
+
+                    RepetitionsValidator.isValid(n) -> Valid(
+                        display = display,
+                        value = n
+                    )
+
+                    else -> Invalid(
+                        display = display,
+                        value = n
+                    )
                 }
+            } catch (_: NumberFormatException) {
+                Invalid(
+                    display = display,
+                    value = null
+                )
             }
         }
 
         public fun of(value: Int): RepetitionsFormatState {
-            return if (RepetitionsValidator.isValid(value)) {
-                Valid(value.toString(), value)
-            } else {
-                Invalid(value.toString(), value)
+            return when {
+                value == 0 -> Empty()
+
+                RepetitionsValidator.isValid(value) -> Valid(
+                    display = value.toString(),
+                    value = value
+                )
+
+                else -> Invalid(
+                    display = value.toString(),
+                    value = value
+                )
             }
         }
     }
@@ -59,8 +86,6 @@ public sealed class RepetitionsFormatState : FormatState<Int> {
     }
 
     private object RepetitionsValidator {
-        fun isValid(value: Int): Boolean {
-            return value in 1..100
-        }
+        fun isValid(value: Int): Boolean = value in 1..100
     }
 }
