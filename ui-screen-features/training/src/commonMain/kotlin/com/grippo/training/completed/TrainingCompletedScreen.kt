@@ -22,7 +22,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,7 +56,6 @@ import com.grippo.state.trainings.TrainingListValue.Companion.shape
 import com.grippo.state.trainings.stubTraining
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.coroutines.delay
 
 @Composable
 internal fun TrainingCompletedScreen(
@@ -71,11 +69,8 @@ internal fun TrainingCompletedScreen(
         return@BaseComposeScreen
     }
 
-    val cardVisible = remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        delay(200)
-        cardVisible.value = true
+    val cardVisible = remember(state.training) {
+        mutableStateOf(state.training.isNotEmpty())
     }
 
     val alpha by animateFloatAsState(
@@ -121,7 +116,7 @@ internal fun TrainingCompletedScreen(
 
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-            if (state.training.isNotEmpty()) {
+            if (cardVisible.value) {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
