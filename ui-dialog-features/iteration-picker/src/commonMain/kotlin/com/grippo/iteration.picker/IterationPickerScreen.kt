@@ -157,7 +157,9 @@ internal fun IterationPickerScreen(
     val buttonState = remember(loaders, state.value.repetitions, state.value.volume) {
         when {
             state.value.repetitions is RepetitionsFormatState.Invalid -> ButtonState.Disabled
+            state.value.repetitions is RepetitionsFormatState.Empty -> ButtonState.Disabled
             state.value.volume is VolumeFormatState.Invalid -> ButtonState.Disabled
+            state.value.volume is VolumeFormatState.Empty -> ButtonState.Disabled
             else -> ButtonState.Enabled
         }
     }

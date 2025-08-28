@@ -103,7 +103,8 @@ internal fun LoginScreen(
             when {
                 loaders.contains(LoginLoader.LoginButton) -> ButtonState.Loading
                 state.email is EmailFormatState.Invalid -> ButtonState.Disabled
-                state.password is PasswordFormatState.Invalid -> ButtonState.Disabled
+                state.email is EmailFormatState.Empty -> ButtonState.Disabled
+                state.password is PasswordFormatState.Empty -> ButtonState.Disabled
                 else -> ButtonState.Enabled
             }
         }
