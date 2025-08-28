@@ -8,6 +8,7 @@
     <string name="sets_value">Sets (%1$s)</string>
     <string name="percent">%</string>
     <string name="complete">Complete</string>
+    <string name="suggestions">Suggestions</string>
     <string name="prepare_training">Prepare training</string>
     <string name="back">Back</string>
     <string name="selected">Selected</string>

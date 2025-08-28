@@ -1,20 +1,24 @@
 package com.grippo.iteration.picker
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
@@ -22,6 +26,10 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.chip.Chip
+import com.grippo.design.components.chip.ChipLabel
+import com.grippo.design.components.chip.ChipStype
+import com.grippo.design.components.chip.ChipTrailing
 import com.grippo.design.components.inputs.InputRepetitions
 import com.grippo.design.components.inputs.InputVolume
 import com.grippo.design.core.AppTokens
@@ -30,9 +38,11 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.set_label
 import com.grippo.design.resources.provider.submit_btn
+import com.grippo.design.resources.provider.suggestions
 import com.grippo.state.formatters.RepetitionsFormatState
 import com.grippo.state.formatters.VolumeFormatState
 import com.grippo.state.trainings.IterationFocus
+import com.grippo.state.trainings.stubExercises
 import com.grippo.state.trainings.stubIteration
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -100,6 +110,45 @@ internal fun IterationPickerScreen(
         )
     }
 
+    if (state.suggestions.isNotEmpty()) {
+        Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
+
+        Text(
+            modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+            text = AppTokens.strings.res(Res.string.suggestions),
+            style = AppTokens.typography.b14Bold(),
+            color = AppTokens.colors.text.primary,
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+
+        Row(
+            modifier = Modifier
+                .horizontalScroll(rememberScrollState())
+                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+        ) {
+            state.suggestions.forEach { item ->
+                key(item.id) {
+                    val clickProvider = remember(item.id) {
+                        { contract.onIterationClick(item.id) }
+                    }
+
+                    Chip(
+                        modifier = Modifier,
+                        label = ChipLabel.Empty,
+                        stype = ChipStype.Clickable(clickProvider),
+                        value = "${item.volume.short()} ${item.repetitions.short()}",
+                        trailing = ChipTrailing.Empty,
+                        contentColor = AppTokens.colors.text.primary,
+                        brush = SolidColor(AppTokens.colors.background.card)
+                    )
+                }
+            }
+        }
+    }
+
     Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
 
     val buttonState = remember(loaders, state.value.repetitions, state.value.volume) {
@@ -132,6 +181,7 @@ private fun ScreenPreview() {
         IterationPickerScreen(
             state = IterationPickerState(
                 value = stubIteration(),
+                suggestions = stubExercises().random().iterations,
                 focus = IterationFocus.UNIDENTIFIED
             ),
             loaders = persistentSetOf(),

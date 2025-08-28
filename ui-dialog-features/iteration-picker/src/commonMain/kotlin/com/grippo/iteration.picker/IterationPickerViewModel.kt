@@ -5,14 +5,17 @@ import com.grippo.state.formatters.RepetitionsFormatState
 import com.grippo.state.formatters.VolumeFormatState
 import com.grippo.state.trainings.IterationFocus
 import com.grippo.state.trainings.IterationState
+import kotlinx.collections.immutable.toPersistentList
 
 public class IterationPickerViewModel(
     initial: IterationState,
+    suggestions: List<IterationState>,
     focus: IterationFocus
 ) : BaseViewModel<IterationPickerState, IterationPickerDirection, IterationPickerLoader>(
     IterationPickerState(
+        value = initial,
+        suggestions = suggestions.toPersistentList(),
         focus = focus,
-        value = initial
     )
 ), IterationPickerContract {
 
@@ -26,6 +29,17 @@ public class IterationPickerViewModel(
     override fun onRepetitionsChange(value: String) {
         update {
             val iteration = it.value.copy(repetitions = RepetitionsFormatState.of(value))
+            it.copy(value = iteration)
+        }
+    }
+
+    override fun onIterationClick(id: String) {
+        update {
+            val selected = it.suggestions.find { f -> f.id == id } ?: return@update it
+            val iteration = it.value.copy(
+                volume = selected.volume,
+                repetitions = selected.repetitions
+            )
             it.copy(value = iteration)
         }
     }

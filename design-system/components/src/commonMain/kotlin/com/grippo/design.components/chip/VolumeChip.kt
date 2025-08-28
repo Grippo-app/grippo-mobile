@@ -42,6 +42,7 @@ public fun VolumeChip(
         label = text,
         value = value.short(),
         trailing = trailing,
+        stype = ChipStype.Default,
         contentColor = colors.contentColor,
         brush = Brush.horizontalGradient(
             colors = listOf(colors.startColor, colors.endColor)

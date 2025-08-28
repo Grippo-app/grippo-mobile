@@ -47,6 +47,7 @@ public sealed class DialogConfig(
     public data class Iteration(
         val initial: IterationState,
         val focus: IterationFocus,
+        val suggestions: List<IterationState>,
         @Transient val onResult: (iteration: IterationState) -> Unit = { },
     ) : DialogConfig(
         onDismiss = null,

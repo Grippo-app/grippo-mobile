@@ -30,8 +30,13 @@ internal class ExerciseViewModel(
             repetitions = RepetitionsFormatState.of("")
         )
 
+        val suggestions = state.value.exercise.iterations
+            .reversed()
+            .distinctBy { it -> it.volume.value to it.repetitions.value }
+
         val dialog = DialogConfig.Iteration(
             initial = value,
+            suggestions = suggestions,
             focus = IterationFocus.UNIDENTIFIED,
             onResult = { iteration ->
                 update {
@@ -76,8 +81,13 @@ internal class ExerciseViewModel(
     override fun onEditVolume(id: String) {
         val value = state.value.exercise.iterations.find { it.id == id } ?: return
 
+        val suggestions = state.value.exercise.iterations
+            .reversed()
+            .distinctBy { it -> it.volume.value to it.repetitions.value }
+
         val dialog = DialogConfig.Iteration(
             initial = value,
+            suggestions = suggestions,
             focus = IterationFocus.VOLUME,
             onResult = { iteration ->
                 update {
@@ -122,8 +132,13 @@ internal class ExerciseViewModel(
     override fun onEditRepetition(id: String) {
         val value = state.value.exercise.iterations.find { it.id == id } ?: return
 
+        val suggestions = state.value.exercise.iterations
+            .reversed()
+            .distinctBy { it -> it.volume.value to it.repetitions.value }
+
         val dialog = DialogConfig.Iteration(
             initial = value,
+            suggestions = suggestions,
             focus = IterationFocus.REPETITIONS,
             onResult = { iteration ->
                 update {

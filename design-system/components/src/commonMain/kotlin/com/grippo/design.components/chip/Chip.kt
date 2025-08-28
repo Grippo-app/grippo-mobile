@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -50,11 +51,21 @@ public sealed interface ChipTrailing {
     public data object Empty : ChipTrailing
 }
 
+@Stable
+public sealed interface ChipStype {
+    @Stable
+    public data class Clickable(val onClick: () -> Unit) : ChipStype
+
+    @Stable
+    public data object Default : ChipStype
+}
+
 @Composable
 public fun Chip(
     modifier: Modifier = Modifier,
     label: ChipLabel,
     value: String,
+    stype: ChipStype,
     trailing: ChipTrailing,
     contentColor: Color,
     brush: Brush,
@@ -67,6 +78,13 @@ public fun Chip(
                 brush = brush,
                 shape = shape
             )
+            .let {
+                if (stype is ChipStype.Clickable) {
+                    it.scalableClick(onClick = stype.onClick)
+                } else {
+                    it
+                }
+            }
             .padding(
                 horizontal = AppTokens.dp.chip.horizontalPadding,
                 vertical = AppTokens.dp.chip.verticalPadding
@@ -139,7 +157,8 @@ private fun ChipPreview() {
             value = "Value",
             trailing = ChipTrailing.Icon(AppTokens.icons.Weight),
             brush = Brush.linearGradient(listOf(Color.Gray, Color.LightGray)),
-            contentColor = Color.Black
+            contentColor = Color.Black,
+            stype = ChipStype.Default
         )
     }
 }
