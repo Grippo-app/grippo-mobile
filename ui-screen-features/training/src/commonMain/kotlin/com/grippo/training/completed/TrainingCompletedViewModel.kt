@@ -10,6 +10,7 @@ import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState
 import com.grippo.domain.state.training.toTrainingListValues
 import com.grippo.state.domain.training.toDomain
+import com.grippo.state.formatters.IntensityFormatState
 import com.grippo.state.formatters.RepetitionsFormatState
 import com.grippo.state.formatters.VolumeFormatState
 import com.grippo.state.trainings.ExerciseState
@@ -29,21 +30,19 @@ internal class TrainingCompletedViewModel(
         safeLaunch(loader = TrainingCompletedLoader.SaveTraining) {
             val duration = DateTimeUtils.ago(startAt)
 
-            val volume = exercises.mapNotNull { exercise ->
+            val volume = exercises.map { exercise ->
                 val v = (exercise.metrics.volume as? VolumeFormatState.Valid)
-                    ?: return@mapNotNull null
-                val r = (exercise.metrics.repetitions as? RepetitionsFormatState.Valid)
-                    ?: return@mapNotNull null
-                v.value * r.value
+                    ?: return@safeLaunch
+                v.value
             }.sum()
 
-            val repetition = exercises.mapNotNull { exercise ->
+            val repetition = exercises.map { exercise ->
                 val r = (exercise.metrics.repetitions as? RepetitionsFormatState.Valid)
-                    ?: return@mapNotNull null
+                    ?: return@safeLaunch
                 r.value
             }.sum()
 
-            val intensity = volume / repetition
+            val intensity = IntensityFormatState.of(volume / repetition).value ?: return@safeLaunch
 
             val training = SetTraining(
                 exercises = exercises.toDomain(),

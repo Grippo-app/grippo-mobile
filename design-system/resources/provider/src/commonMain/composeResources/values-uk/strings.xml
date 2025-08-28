@@ -4,7 +4,7 @@
     <string name="reps">повт.</string>
     <string name="search_placeholder">Пошук..</string>
     <string name="filters">Фільтри</string>
-    <string name="set_value">Сет: %1$s</string>
+    <string name="set_value">Сет #%1$s</string>
     <string name="sets_value">Сети (%1$s)</string>
     <string name="percent">%</string>
     <string name="complete">Завершити</string>

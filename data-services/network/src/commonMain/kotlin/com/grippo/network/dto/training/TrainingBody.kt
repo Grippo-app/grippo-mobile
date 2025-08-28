@@ -30,7 +30,7 @@ public data class ExerciseBody(
     @SerialName("volume")
     val volume: Float,
     @SerialName("exerciseExampleId")
-    val exerciseExampleId: String? = null,
+    val exerciseExampleId: String?,
 )
 
 @Serializable

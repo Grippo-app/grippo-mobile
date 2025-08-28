@@ -68,14 +68,14 @@ internal fun ExerciseScreen(
                     style = VolumeChipStyle.LONG
                 )
 
-                RepetitionsChip(
-                    value = state.exercise.metrics.repetitions,
-                    style = RepetitionsChipStyle.LONG
-                )
-
                 IntensityChip(
                     value = state.exercise.metrics.intensity,
                     style = IntensityChipStyle.LONG
+                )
+
+                RepetitionsChip(
+                    value = state.exercise.metrics.repetitions,
+                    style = RepetitionsChipStyle.LONG
                 )
             }
         }

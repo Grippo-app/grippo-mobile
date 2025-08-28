@@ -10,10 +10,12 @@ import kotlinx.collections.immutable.toPersistentList
 public class IterationPickerViewModel(
     initial: IterationState,
     suggestions: List<IterationState>,
+    number: Int,
     focus: IterationFocus
 ) : BaseViewModel<IterationPickerState, IterationPickerDirection, IterationPickerLoader>(
     IterationPickerState(
         value = initial,
+        number = number,
         suggestions = suggestions.toPersistentList(),
         focus = focus,
     )

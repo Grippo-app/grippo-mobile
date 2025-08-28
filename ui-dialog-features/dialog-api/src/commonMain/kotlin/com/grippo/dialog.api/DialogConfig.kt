@@ -46,6 +46,7 @@ public sealed class DialogConfig(
     @Serializable
     public data class Iteration(
         val initial: IterationState,
+        val number: Int,
         val focus: IterationFocus,
         val suggestions: List<IterationState>,
         @Transient val onResult: (iteration: IterationState) -> Unit = { },

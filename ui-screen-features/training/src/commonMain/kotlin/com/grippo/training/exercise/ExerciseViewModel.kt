@@ -30,12 +30,15 @@ internal class ExerciseViewModel(
             repetitions = RepetitionsFormatState.of("")
         )
 
+        val number = state.value.exercise.iterations.count() + 1
+
         val suggestions = state.value.exercise.iterations
             .reversed()
             .distinctBy { it -> it.volume.value to it.repetitions.value }
 
         val dialog = DialogConfig.Iteration(
             initial = value,
+            number = number,
             suggestions = suggestions,
             focus = IterationFocus.UNIDENTIFIED,
             onResult = { iteration ->
@@ -81,6 +84,8 @@ internal class ExerciseViewModel(
     override fun onEditVolume(id: String) {
         val value = state.value.exercise.iterations.find { it.id == id } ?: return
 
+        val number = state.value.exercise.iterations.indexOfFirst { it.id == id } + 1
+
         val suggestions = state.value.exercise.iterations
             .reversed()
             .distinctBy { it -> it.volume.value to it.repetitions.value }
@@ -88,6 +93,7 @@ internal class ExerciseViewModel(
         val dialog = DialogConfig.Iteration(
             initial = value,
             suggestions = suggestions,
+            number = number,
             focus = IterationFocus.VOLUME,
             onResult = { iteration ->
                 update {
@@ -132,6 +138,8 @@ internal class ExerciseViewModel(
     override fun onEditRepetition(id: String) {
         val value = state.value.exercise.iterations.find { it.id == id } ?: return
 
+        val number = state.value.exercise.iterations.indexOfFirst { it.id == id } + 1
+
         val suggestions = state.value.exercise.iterations
             .reversed()
             .distinctBy { it -> it.volume.value to it.repetitions.value }
@@ -139,6 +147,7 @@ internal class ExerciseViewModel(
         val dialog = DialogConfig.Iteration(
             initial = value,
             suggestions = suggestions,
+            number = number,
             focus = IterationFocus.REPETITIONS,
             onResult = { iteration ->
                 update {

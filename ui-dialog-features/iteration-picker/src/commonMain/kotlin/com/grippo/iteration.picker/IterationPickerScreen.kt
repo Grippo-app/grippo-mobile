@@ -36,7 +36,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.set_label
+import com.grippo.design.resources.provider.set_value
 import com.grippo.design.resources.provider.submit_btn
 import com.grippo.design.resources.provider.suggestions
 import com.grippo.state.formatters.RepetitionsFormatState
@@ -46,6 +46,7 @@ import com.grippo.state.trainings.stubExercises
 import com.grippo.state.trainings.stubIteration
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.coroutines.delay
 
 @Composable
 internal fun IterationPickerScreen(
@@ -60,6 +61,8 @@ internal fun IterationPickerScreen(
     LaunchedEffect(state.focus) {
         // run after composition
         withFrameNanos { /* no-op, just await a frame */ }
+
+        delay(250)
 
         when (state.focus) {
             IterationFocus.VOLUME -> {
@@ -78,7 +81,7 @@ internal fun IterationPickerScreen(
 
     Text(
         modifier = Modifier.fillMaxWidth(),
-        text = AppTokens.strings.res(Res.string.set_label),
+        text = AppTokens.strings.res(Res.string.set_value, state.number),
         style = AppTokens.typography.h3(),
         color = AppTokens.colors.text.primary,
         textAlign = TextAlign.Center
@@ -181,6 +184,7 @@ private fun ScreenPreview() {
         IterationPickerScreen(
             state = IterationPickerState(
                 value = stubIteration(),
+                number = 2,
                 suggestions = stubExercises().random().iterations,
                 focus = IterationFocus.UNIDENTIFIED
             ),

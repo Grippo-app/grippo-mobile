@@ -103,6 +103,7 @@ internal class DialogContentComponent(
                 IterationPickerComponent(
                     componentContext = context,
                     initial = router.initial,
+                    number = router.number,
                     focus = router.focus,
                     suggestions = router.suggestions,
                     onResult = { iteration -> viewModel.onBack { router.onResult.invoke(iteration) } },
