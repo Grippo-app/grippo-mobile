@@ -1,16 +1,24 @@
 package com.grippo.exercise.examples.list
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.example.ExerciseExampleCard
+import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.components.inputs.InputSearch
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
@@ -61,6 +69,38 @@ internal fun ExerciseExampleListScreen(
             }
         }
     )
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+        contentPadding = PaddingValues(
+            top = AppTokens.dp.contentPadding.content,
+            bottom = AppTokens.dp.screen.verticalPadding
+        ),
+    ) {
+        items(
+            items = state.exerciseExamples,
+            key = { it.hashCode() },
+            contentType = { it::class }
+        ) { item ->
+            val clickProvider = remember(item) {
+                { contract.onExerciseExampleClick(item.value.id) }
+            }
+
+            ExerciseExampleCard(
+                modifier = Modifier
+                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                    .fillMaxWidth(),
+                value = item,
+                style = ExerciseExampleCardStyle.Wide,
+                onClick = clickProvider
+            )
+        }
+    }
+
+    Spacer(modifier = Modifier.navigationBarsPadding())
 }
 
 @AppPreview

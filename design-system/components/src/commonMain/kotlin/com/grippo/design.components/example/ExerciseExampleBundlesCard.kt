@@ -25,6 +25,7 @@ import com.grippo.design.components.chart.DSPieSlice
 import com.grippo.design.components.chart.PieChart
 import com.grippo.design.components.chip.Chip
 import com.grippo.design.components.chip.ChipLabel
+import com.grippo.design.components.chip.ChipSize
 import com.grippo.design.components.chip.ChipStype
 import com.grippo.design.components.chip.ChipTrailing
 import com.grippo.design.core.AppTokens
@@ -120,6 +121,7 @@ public fun ExerciseExampleBundlesCard(
                         label = ChipLabel.Text(item.muscle.type.title()),
                         value = item.percentage.short(),
                         stype = ChipStype.Default,
+                        size = ChipSize.Medium,
                         trailing = ChipTrailing.Content {
                             Spacer(
                                 modifier = Modifier

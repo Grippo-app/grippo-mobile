@@ -2,26 +2,47 @@ package com.grippo.exercise.examples.list
 
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
+import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
+import com.grippo.domain.state.exercise.example.toState
 import com.grippo.state.exercise.examples.CategoryEnumState
 import com.grippo.state.exercise.examples.ForceTypeEnumState
 import com.grippo.state.exercise.examples.WeightTypeEnumState
 import com.grippo.state.filters.FilterValue
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.onEach
 
 internal class ExerciseExampleListViewModel(
-    private val exerciseExampleFeature: ExerciseExampleFeature,
+    exerciseExampleFeature: ExerciseExampleFeature,
     private val dialogController: DialogController,
 ) : BaseViewModel<ExerciseExampleListState, ExerciseExampleListDirection, ExerciseExampleListLoader>(
     ExerciseExampleListState()
 ), ExerciseExampleListContract {
+
+    init {
+        exerciseExampleFeature
+            .observeExerciseExamples()
+            .onEach(::provideExerciseExamples)
+            .safeLaunch()
+    }
+
+    private fun provideExerciseExamples(value: List<ExerciseExample>) {
+        val list = value.toState()
+        update { it.copy(exerciseExamples = list.toPersistentList()) }
+    }
 
     override fun onBack() {
         navigateTo(ExerciseExampleListDirection.Back)
     }
 
     override fun onExerciseExampleClick(id: String) {
+        val dialog = DialogConfig.ExerciseExample(
+            id = id,
+        )
+
+        dialogController.show(dialog)
     }
 
     override fun onQueryChange(value: String) {

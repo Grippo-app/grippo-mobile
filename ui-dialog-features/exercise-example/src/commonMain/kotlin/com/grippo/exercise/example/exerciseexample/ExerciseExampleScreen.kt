@@ -1,6 +1,8 @@
 package com.grippo.exercise.example.exerciseexample
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,8 +13,14 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.SolidColor
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
+import com.grippo.design.components.chip.Chip
+import com.grippo.design.components.chip.ChipLabel
+import com.grippo.design.components.chip.ChipSize
+import com.grippo.design.components.chip.ChipStype
+import com.grippo.design.components.chip.ChipTrailing
 import com.grippo.design.components.equipment.EquipmentsCard
 import com.grippo.design.components.example.ExerciseExampleBundlesCard
 import com.grippo.design.core.AppTokens
@@ -50,7 +58,61 @@ internal fun ExerciseExampleScreen(
             color = AppTokens.colors.text.primary,
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+
+        FlowRow(
+            modifier = Modifier
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
+        ) {
+            Chip(
+                modifier = Modifier,
+                label = ChipLabel.Empty,
+                value = example.value.category.title().text(),
+                size = ChipSize.Small,
+                stype = ChipStype.Default,
+                trailing = ChipTrailing.Empty,
+                contentColor = AppTokens.colors.text.primary,
+                brush = SolidColor(AppTokens.colors.background.screen)
+            )
+
+            Chip(
+                modifier = Modifier,
+                label = ChipLabel.Empty,
+                value = example.value.forceType.title().text(),
+                size = ChipSize.Small,
+                stype = ChipStype.Default,
+                trailing = ChipTrailing.Empty,
+                contentColor = AppTokens.colors.text.primary,
+                brush = SolidColor(AppTokens.colors.background.screen)
+            )
+
+            Chip(
+                modifier = Modifier,
+                label = ChipLabel.Empty,
+                value = example.value.weightType.title().text(),
+                size = ChipSize.Small,
+                stype = ChipStype.Default,
+                trailing = ChipTrailing.Empty,
+                contentColor = AppTokens.colors.text.primary,
+                brush = SolidColor(AppTokens.colors.background.screen)
+            )
+
+            Chip(
+                modifier = Modifier,
+                label = ChipLabel.Empty,
+                value = example.value.experience.title().text(),
+                size = ChipSize.Small,
+                stype = ChipStype.Default,
+                trailing = ChipTrailing.Empty,
+                contentColor = AppTokens.colors.text.primary,
+                brush = SolidColor(AppTokens.colors.background.screen)
+            )
+        }
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
         Text(
             modifier = Modifier

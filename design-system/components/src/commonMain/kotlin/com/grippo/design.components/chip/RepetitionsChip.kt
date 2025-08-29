@@ -42,6 +42,7 @@ public fun RepetitionsChip(
         label = text,
         value = value.short(),
         trailing = trailing,
+        size = ChipSize.Medium,
         stype = ChipStype.Default,
         contentColor = colors.contentColor,
         brush = Brush.horizontalGradient(

@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
+import com.grippo.design.components.chip.internal.resolveChipStyle
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -34,6 +35,15 @@ public sealed interface ChipLabel {
 
     @Stable
     public data object Empty : ChipLabel
+}
+
+@Stable
+public sealed interface ChipSize {
+    @Stable
+    public data object Small : ChipSize
+
+    @Stable
+    public data object Medium : ChipSize
 }
 
 @Stable
@@ -68,28 +78,23 @@ public fun Chip(
     value: String,
     stype: ChipStype,
     trailing: ChipTrailing,
+    size: ChipSize,
     contentColor: Color,
     brush: Brush,
 ) {
-    val shape = RoundedCornerShape(AppTokens.dp.chip.radius)
+    val tokens = resolveChipStyle(size)
+
+    val shape = RoundedCornerShape(tokens.radius)
 
     Row(
         modifier = modifier
             .animateContentSize()
-            .background(
-                brush = brush,
-                shape = shape
-            )
+            .background(brush = brush, shape = shape)
             .let {
-                if (stype is ChipStype.Clickable) {
-                    it.scalableClick(onClick = stype.onClick)
-                } else {
-                    it
-                }
-            }
-            .padding(
-                horizontal = AppTokens.dp.chip.horizontalPadding,
-                vertical = AppTokens.dp.chip.verticalPadding
+                if (stype is ChipStype.Clickable) it.scalableClick(onClick = stype.onClick) else it
+            }.padding(
+                horizontal = tokens.horizontalPadding,
+                vertical = tokens.verticalPadding
             ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -98,34 +103,32 @@ public fun Chip(
         Row(verticalAlignment = Alignment.CenterVertically) {
             when (trailing) {
                 is ChipTrailing.Content -> {
-                    Box(modifier = Modifier.size(AppTokens.dp.chip.trailingSize)) {
+                    Box(modifier = Modifier.size(tokens.trailingSize)) {
                         trailing.lambda.invoke()
                     }
-                    Spacer(modifier = Modifier.width(AppTokens.dp.chip.spaceBetween))
+                    Spacer(modifier = Modifier.width(tokens.spaceBetween))
                 }
 
                 is ChipTrailing.Icon -> {
-                    Box(modifier = Modifier.size(AppTokens.dp.chip.trailingSize)) {
+                    Box(modifier = Modifier.size(tokens.trailingSize)) {
                         Icon(
-                            modifier = Modifier.size(AppTokens.dp.chip.trailingSize),
+                            modifier = Modifier.size(tokens.trailingSize),
                             imageVector = trailing.icon,
                             contentDescription = null,
                             tint = contentColor
                         )
                     }
-                    Spacer(modifier = Modifier.width(AppTokens.dp.chip.spaceBetween))
+                    Spacer(modifier = Modifier.width(tokens.spaceBetween))
                 }
 
-                ChipTrailing.Empty -> {
-                    // Empty
-                }
+                ChipTrailing.Empty -> Unit
             }
 
             when (label) {
                 is ChipLabel.Text -> {
                     Text(
                         text = label.uiText.text(),
-                        style = AppTokens.typography.b14Semi(),
+                        style = tokens.labelTextStyle,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         color = contentColor
@@ -133,16 +136,13 @@ public fun Chip(
                     Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.text))
                 }
 
-                ChipLabel.Empty -> {
-                    // Empty
-                }
+                ChipLabel.Empty -> Unit
             }
         }
 
         Text(
-            modifier = Modifier,
             text = value,
-            style = AppTokens.typography.b14Bold(),
+            style = tokens.valueTextStyle,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             color = contentColor
@@ -160,7 +160,18 @@ private fun ChipPreview() {
             trailing = ChipTrailing.Icon(AppTokens.icons.Weight),
             brush = Brush.linearGradient(listOf(Color.Gray, Color.LightGray)),
             contentColor = Color.Black,
-            stype = ChipStype.Default
+            stype = ChipStype.Default,
+            size = ChipSize.Small
+        )
+
+        Chip(
+            label = ChipLabel.Text(UiText.Str(value = "Basic")),
+            value = "Value",
+            trailing = ChipTrailing.Icon(AppTokens.icons.Weight),
+            brush = Brush.linearGradient(listOf(Color.Gray, Color.LightGray)),
+            contentColor = Color.Black,
+            stype = ChipStype.Default,
+            size = ChipSize.Medium
         )
     }
 }

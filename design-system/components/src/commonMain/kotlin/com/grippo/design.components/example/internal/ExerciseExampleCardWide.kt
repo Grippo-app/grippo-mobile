@@ -19,17 +19,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import com.grippo.design.components.chip.Chip
 import com.grippo.design.components.chip.ChipLabel
+import com.grippo.design.components.chip.ChipSize
 import com.grippo.design.components.chip.ChipStype
 import com.grippo.design.components.chip.ChipTrailing
+import com.grippo.design.components.example.ExerciseExampleCard
+import com.grippo.design.components.example.ExerciseExampleCardStyle
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
-import com.grippo.state.exercise.examples.ExerciseExampleBundleState
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.state.exercise.examples.ExerciseExampleState
+import com.grippo.state.exercise.examples.stubExerciseExample
 import com.grippo.state.muscles.factory.MuscleColorStrategy
 import com.grippo.state.muscles.factory.MuscleEngine
 import kotlinx.collections.immutable.toPersistentList
@@ -44,12 +48,12 @@ internal fun ExerciseExampleCardWide(
 
     Column(
         modifier = modifier
+            .scalableClick(onClick = onClick)
             .background(AppTokens.colors.background.card, shape)
             .padding(
                 horizontal = AppTokens.dp.exerciseExampleCard.wide.horizontalPadding,
                 vertical = AppTokens.dp.exerciseExampleCard.wide.verticalPadding
             ),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
         Text(
             text = value.value.name,
@@ -59,13 +63,7 @@ internal fun ExerciseExampleCardWide(
             overflow = TextOverflow.Ellipsis
         )
 
-        Text(
-            text = value.value.description,
-            style = AppTokens.typography.b13Semi(),
-            color = AppTokens.colors.text.secondary,
-            maxLines = 3,
-            overflow = TextOverflow.Ellipsis
-        )
+        Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
 
         FlowRow(
             modifier = Modifier.fillMaxWidth(),
@@ -76,6 +74,7 @@ internal fun ExerciseExampleCardWide(
                 modifier = Modifier,
                 label = ChipLabel.Empty,
                 value = value.value.category.title().text(),
+                size = ChipSize.Small,
                 stype = ChipStype.Default,
                 trailing = ChipTrailing.Empty,
                 contentColor = AppTokens.colors.text.primary,
@@ -86,6 +85,7 @@ internal fun ExerciseExampleCardWide(
                 modifier = Modifier,
                 label = ChipLabel.Empty,
                 value = value.value.forceType.title().text(),
+                size = ChipSize.Small,
                 stype = ChipStype.Default,
                 trailing = ChipTrailing.Empty,
                 contentColor = AppTokens.colors.text.primary,
@@ -96,6 +96,7 @@ internal fun ExerciseExampleCardWide(
                 modifier = Modifier,
                 label = ChipLabel.Empty,
                 value = value.value.weightType.title().text(),
+                size = ChipSize.Small,
                 stype = ChipStype.Default,
                 trailing = ChipTrailing.Empty,
                 contentColor = AppTokens.colors.text.primary,
@@ -106,6 +107,7 @@ internal fun ExerciseExampleCardWide(
                 modifier = Modifier,
                 label = ChipLabel.Empty,
                 value = value.value.experience.title().text(),
+                size = ChipSize.Small,
                 stype = ChipStype.Default,
                 trailing = ChipTrailing.Empty,
                 contentColor = AppTokens.colors.text.primary,
@@ -113,14 +115,27 @@ internal fun ExerciseExampleCardWide(
             )
         }
 
+        Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
+
+        Text(
+            text = value.value.description,
+            style = AppTokens.typography.b13Semi(),
+            color = AppTokens.colors.text.secondary,
+            maxLines = 3,
+            overflow = TextOverflow.Ellipsis
+        )
+
         val topBundles = remember(value.bundles) {
             value.bundles
                 .sortedByDescending { it.percentage.value }
-                .take(3)
+                .take(2)
                 .toPersistentList()
         }
 
         if (topBundles.isNotEmpty()) {
+
+            Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+
             val preset = MuscleEngine.generatePreset(
                 MuscleColorStrategy.ByScaleStops(topBundles)
             )
@@ -137,8 +152,9 @@ internal fun ExerciseExampleCardWide(
 
                     key(item.muscle.id) {
                         Chip(
-                            label = ChipLabel.Text(item.muscle.type.title()),
-                            value = item.percentage.short(),
+                            label = ChipLabel.Empty,
+                            value = item.muscle.type.title().text(),
+                            size = ChipSize.Medium,
                             stype = ChipStype.Default,
                             trailing = ChipTrailing.Empty,
                             contentColor = AppTokens.colors.muscle.text,
@@ -152,14 +168,20 @@ internal fun ExerciseExampleCardWide(
         }
 
         if (value.equipments.isNotEmpty()) {
+
+            Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+
+            val equips = remember(value.equipments) {
+                value.equipments.take(3)
+            }
             Row(
                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                value.equipments.take(3).forEach { eq ->
+                equips.forEach { eq ->
                     key(eq.id) {
                         Image(
-                            modifier = Modifier.size(AppTokens.dp.overviewCard.icon),
+                            modifier = Modifier.size(AppTokens.dp.exerciseExampleCard.wide.icon),
                             imageVector = eq.image(),
                             contentDescription = null
                         )
@@ -170,61 +192,15 @@ internal fun ExerciseExampleCardWide(
     }
 }
 
+@AppPreview
 @Composable
-private fun Pill(
-    modifier: Modifier = Modifier,
-    text: String
-) {
-    Row(
-        modifier = modifier
-            .background(AppTokens.colors.background.screen, RoundedCornerShape(999.dp))
-            .padding(
-                horizontal = AppTokens.dp.contentPadding.subContent,
-                vertical = AppTokens.dp.contentPadding.text
-            ),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = text,
-            style = AppTokens.typography.b11Med(),
-            color = AppTokens.colors.text.secondary
+private fun ExerciseExampleCardWidePreview() {
+    PreviewContainer {
+        ExerciseExampleCard(
+            modifier = Modifier.fillMaxWidth(),
+            value = stubExerciseExample(),
+            style = ExerciseExampleCardStyle.Wide,
+            onClick = {}
         )
     }
 }
-
-@Composable
-private fun MuscleChip(
-    bundle: ExerciseExampleBundleState,
-    color: Color
-) {
-    Row(
-        modifier = Modifier
-            .background(
-                Brush.horizontalGradient(
-                    listOf(color.copy(alpha = 0.7f), color)
-                ),
-                RoundedCornerShape(999.dp)
-            )
-            .padding(
-                horizontal = AppTokens.dp.contentPadding.content,
-                vertical = AppTokens.dp.contentPadding.text
-            ),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = bundle.muscle.type.title().text(),
-            style = AppTokens.typography.b12Med(),
-            color = AppTokens.colors.muscle.text,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-        Spacer(modifier = Modifier.height(0.dp))
-        Text(
-            text = " ${'$'}{bundle.percentage.short()}",
-            style = AppTokens.typography.b12Bold(),
-            color = AppTokens.colors.muscle.text
-        )
-    }
-}
-
-

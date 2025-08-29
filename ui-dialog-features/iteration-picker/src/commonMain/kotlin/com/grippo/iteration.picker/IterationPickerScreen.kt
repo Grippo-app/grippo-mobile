@@ -28,6 +28,7 @@ import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.chip.Chip
 import com.grippo.design.components.chip.ChipLabel
+import com.grippo.design.components.chip.ChipSize
 import com.grippo.design.components.chip.ChipStype
 import com.grippo.design.components.chip.ChipTrailing
 import com.grippo.design.components.inputs.InputRepetitions
@@ -38,7 +39,6 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.set_value
 import com.grippo.design.resources.provider.submit_btn
-import com.grippo.design.resources.provider.suggestions
 import com.grippo.state.formatters.RepetitionsFormatState
 import com.grippo.state.formatters.VolumeFormatState
 import com.grippo.state.trainings.IterationFocus
@@ -114,16 +114,8 @@ internal fun IterationPickerScreen(
     }
 
     if (state.suggestions.isNotEmpty()) {
-        Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
 
-        Text(
-            modifier = Modifier.padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-            text = AppTokens.strings.res(Res.string.suggestions),
-            style = AppTokens.typography.b14Bold(),
-            color = AppTokens.colors.text.primary,
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Row(
             modifier = Modifier
@@ -144,7 +136,8 @@ internal fun IterationPickerScreen(
                         stype = ChipStype.Clickable(clickProvider),
                         value = "${item.volume.short()} ${item.repetitions.short()}",
                         trailing = ChipTrailing.Empty,
-                        contentColor = AppTokens.colors.text.primary,
+                        contentColor = AppTokens.colors.text.secondary,
+                        size = ChipSize.Medium,
                         brush = SolidColor(AppTokens.colors.background.card)
                     )
                 }

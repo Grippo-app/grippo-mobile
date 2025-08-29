@@ -1,9 +1,11 @@
 package com.grippo.design.components.example
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.grippo.design.components.example.internal.ExerciseExampleCardSquare
 import com.grippo.design.components.example.internal.ExerciseExampleCardWide
 import com.grippo.design.preview.AppPreview
@@ -25,7 +27,7 @@ public fun ExerciseExampleCard(
     modifier: Modifier = Modifier,
     value: ExerciseExampleState,
     style: ExerciseExampleCardStyle,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit
 ) {
     when (style) {
         ExerciseExampleCardStyle.Square -> ExerciseExampleCardSquare(
@@ -47,7 +49,7 @@ public fun ExerciseExampleCard(
 private fun ExerciseExampleCardSquarePreview() {
     PreviewContainer {
         ExerciseExampleCard(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.size(250.dp),
             value = stubExerciseExample(),
             style = ExerciseExampleCardStyle.Square,
             onClick = {}
