@@ -42,6 +42,7 @@ internal fun ExerciseExampleListScreen(
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.trainings),
+        onBack = contract::onBack,
         content = {
             Row(
                 modifier = Modifier
