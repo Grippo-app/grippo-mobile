@@ -92,7 +92,7 @@ internal fun Input(
     val interactionSource = remember { MutableInteractionSource() }
 
     // Internal TextFieldValue to control selection
-    var tfv by remember(value) {
+    var tfv by remember {
         mutableStateOf(TextFieldValue(text = value, selection = TextRange(value.length)))
     }
 
@@ -173,10 +173,14 @@ internal fun Input(
 
     BasicTextField(
         modifier = modifier
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null,
-                onClick = {}
+            .then(
+                if (inputStyle is InputStyle.Clickable)
+                    Modifier.clickable(
+                        interactionSource = interactionSource,
+                        indication = null,
+                        onClick = inputStyle.onClick
+                    )
+                else Modifier
             )
             .background(color = backgroundColor, shape = shape)
             .border(width = 1.dp, color = borderColor, shape = shape)
