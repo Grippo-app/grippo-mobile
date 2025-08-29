@@ -20,7 +20,7 @@ public interface ExerciseExampleDao {
     public fun getById(id: String): Flow<ExerciseExamplePack>
 
     @Transaction
-    @Query("SELECT * FROM exercise_example")
+    @Query("SELECT * FROM exercise_example ORDER BY updatedAt DESC")
     public fun get(): Flow<List<ExerciseExamplePack>>
 
     // ────────────── INSERT ──────────────
