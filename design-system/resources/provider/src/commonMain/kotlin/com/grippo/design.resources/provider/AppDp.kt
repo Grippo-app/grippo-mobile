@@ -69,6 +69,7 @@ public data object AppDp {
     val datePicker: DatePicker = DatePicker
     val periodPicker: PeriodPicker = PeriodPicker
     val exerciseCard: ExerciseCard = ExerciseCard
+    val exerciseExampleCard: ExerciseExampleCard = ExerciseExampleCard
     val iterationCard: IterationCard = IterationCard
     val iterationsCard: IterationsCard = IterationsCard
     val chip: Chip = Chip
@@ -224,6 +225,23 @@ public data object AppDp {
         val horizontalPadding: Dp = padding.large
         val verticalPadding: Dp = padding.medium
         val spacing: Dp = padding.medium
+    }
+
+    public data object ExerciseExampleCard {
+        val square: Square = Square
+        val wide: Wide = Wide
+
+        public data object Square {
+            val radius: Dp = AppDp.radius.medium
+            val horizontalPadding: Dp = padding.large
+            val verticalPadding: Dp = padding.medium
+        }
+
+        public data object Wide {
+            val radius: Dp = AppDp.radius.medium
+            val horizontalPadding: Dp = padding.large
+            val verticalPadding: Dp = padding.large
+        }
     }
 
     public data object EquipmentCard {
