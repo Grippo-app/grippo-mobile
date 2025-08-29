@@ -80,7 +80,7 @@ internal fun HomeProfileScreen(
 
         Button(
             modifier = Modifier.fillMaxWidth(),
-            style = ButtonStyle.Secondary,
+            style = ButtonStyle.Primary,
             content = ButtonContent.Text(
                 startIcon = AppTokens.icons.Rocket,
                 text = AppTokens.strings.res(Res.string.start_workout),
