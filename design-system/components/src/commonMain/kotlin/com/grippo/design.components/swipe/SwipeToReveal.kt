@@ -7,7 +7,6 @@ import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
@@ -72,7 +71,6 @@ public fun SwipeToReveal(
         // Measure actions with loose constraints to get their natural width
         val actionsMeasurables = subcompose(Slot.Actions) {
             Row(
-                modifier = Modifier.fillMaxHeight(), // height will match content/parent
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.End,
                 content = actions
@@ -114,14 +112,15 @@ public fun SwipeToReveal(
         val actionsX = layoutWidth - (actionsWidth - actionsSlidePx)
 
         layout(layoutWidth, layoutHeight) {
-            // Place actions (behind content), sliding in from the right
+            // Place actions (behind content), sliding in from the right, vertically centered
             var accX = actionsX
             actionsPlaceables.forEach { placeable ->
-                placeable.placeRelative(accX, 0)
+                val y = ((layoutHeight - placeable.height) / 2).coerceAtLeast(0)
+                placeable.placeRelative(accX, y)
                 accX += placeable.width
             }
 
-            // Place foreground content
+            // Foreground content stays the same
             contentPlaceables.forEach { placeable ->
                 placeable.placeRelative(contentOffsetX, 0)
             }

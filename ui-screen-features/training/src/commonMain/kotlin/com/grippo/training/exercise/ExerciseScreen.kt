@@ -124,7 +124,7 @@ internal fun ExerciseScreen(
                 { contract.onEditRepetition(iteration.id) }
             }
 
-            val editDeleteProvider = remember(iteration.id) {
+            val deleteIterationProvider = remember(iteration.id) {
                 { contract.onDeleteIteration(iteration.id) }
             }
 
@@ -132,8 +132,7 @@ internal fun ExerciseScreen(
                 modifier = Modifier.animateItem(),
                 actions = {
                     Button(
-                        modifier = Modifier
-                            .padding(end = AppTokens.dp.screen.horizontalPadding),
+                        modifier = Modifier.padding(end = AppTokens.dp.screen.horizontalPadding),
                         content = ButtonContent.Icon(
                             icon = AppTokens.icons.Cancel
                         ),
@@ -151,7 +150,7 @@ internal fun ExerciseScreen(
                                 icon = AppTokens.colors.button.contentPrimaryDisabled
                             ),
                         ),
-                        onClick = editDeleteProvider
+                        onClick = deleteIterationProvider
                     )
                 }
             ) {

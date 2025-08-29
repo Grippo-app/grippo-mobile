@@ -63,6 +63,19 @@ internal class TrainingRecordingViewModel(
         update { it.copy(tab = tab) }
     }
 
+    override fun onDeleteExercise(id: String) {
+        update { s ->
+            val exercises = s.exercises
+                .toMutableList()
+                .apply {
+                    val idx = indexOfFirst { it.id == id }
+                    if (idx >= 0) removeAt(idx)
+                }.toPersistentList()
+
+            s.copy(exercises = exercises)
+        }
+    }
+
     override fun onSave() {
         val direction = TrainingRecordingDirection.ToCompleted(
             exercises = state.value.exercises,
