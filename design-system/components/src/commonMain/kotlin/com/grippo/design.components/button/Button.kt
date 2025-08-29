@@ -2,11 +2,14 @@ package com.grippo.design.components.button
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -32,10 +35,12 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
@@ -120,44 +125,26 @@ public fun Button(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Start icon or loader
-                AnimatedContent(
-                    targetState = isLoading,
-                    transitionSpec = { fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut() },
-                    label = "btn_text_start_anim"
-                ) { loading ->
-                    if (loading) {
-                        val angle by loadingTransition.animateFloat(
-                            initialValue = 0f,
-                            targetValue = 360f,
-                            animationSpec = infiniteRepeatable(
-                                animation = tween(durationMillis = 1000, easing = LinearEasing),
-                                repeatMode = RepeatMode.Restart
-                            ),
-                            label = "btn_text_loader_rotation"
-                        )
-                        Icon(
-                            modifier = Modifier
-                                .size(iconSize)
-                                .graphicsLayer { rotationZ = angle },
-                            imageVector = AppTokens.icons.SystemRestart,
-                            tint = colorTokens.icon,
-                            contentDescription = null
-                        )
-                    } else {
-                        content.startIcon?.let {
-                            Icon(
-                                modifier = Modifier.size(iconSize),
-                                imageVector = it,
-                                tint = colorTokens.icon,
-                                contentDescription = null
-                            )
-                        }
-                    }
-                }
-
-                if (content.startIcon != null || isLoading) {
+                // Start slot
+                if (content.startIcon != null) {
+                    // Crossfade loader <-> start icon (width preserved)
+                    StartIconOrLoader(
+                        isLoading = isLoading,
+                        icon = content.startIcon,
+                        size = iconSize,
+                        tint = colorTokens.icon,
+                        label = "btn_text_start_crossfade"
+                    )
                     Spacer(modifier = Modifier.width(iconPadding))
+                } else {
+                    // Two-phase removal: fade out first, then collapse width to 0
+                    CollapsingLoaderSlot(
+                        visible = isLoading,
+                        size = iconSize,
+                        spaceAfter = iconPadding,
+                        tint = colorTokens.icon,
+                        label = "btn_text_loader_collapsing"
+                    )
                 }
 
                 Text(
@@ -170,12 +157,9 @@ public fun Button(
 
                 if (content.endIcon != null) {
                     Spacer(modifier = Modifier.width(iconPadding))
-                }
-
-                content.endIcon?.let {
                     Icon(
                         modifier = Modifier.size(iconSize),
-                        imageVector = it,
+                        imageVector = content.endIcon,
                         tint = colorTokens.icon,
                         contentDescription = null
                     )
@@ -222,6 +206,147 @@ public fun Button(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun StartIconOrLoader(
+    isLoading: Boolean,
+    icon: ImageVector,
+    size: Dp,
+    tint: Color,
+    label: String
+) {
+    // Separate transition tracks so loader fades out before/after as needed
+    val transition = updateTransition(targetState = isLoading, label = label)
+
+    val loaderAlpha by transition.animateFloat(
+        transitionSpec = {
+            if (false isTransitioningTo true) { // appear
+                tween(durationMillis = 160, delayMillis = 120, easing = LinearEasing)
+            } else { // disappear
+                tween(durationMillis = 160, easing = LinearEasing)
+            }
+        },
+        label = "$label-loaderAlpha"
+    ) { if (it) 1f else 0f }
+
+    val iconAlpha by transition.animateFloat(
+        transitionSpec = {
+            if (true isTransitioningTo false) { // appear
+                tween(durationMillis = 160, delayMillis = 120, easing = LinearEasing)
+            } else { // disappear
+                tween(durationMillis = 160, easing = LinearEasing)
+            }
+        },
+        label = "$label-iconAlpha"
+    ) { if (it) 0f else 1f }
+
+    val rot = rememberInfiniteTransition(label = "$label-rot")
+    val angle by rot.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "$label-rotation"
+    )
+
+    // Stack loader and icon; width is constant (the Row's spacer handles gap)
+    Box(modifier = Modifier.size(size), contentAlignment = Alignment.Center) {
+        // Icon layer
+        Icon(
+            modifier = Modifier
+                .matchParentSize()
+                .graphicsLayer { alpha = iconAlpha },
+            imageVector = icon,
+            tint = tint,
+            contentDescription = null
+        )
+        // Loader layer
+        Icon(
+            modifier = Modifier
+                .matchParentSize()
+                .graphicsLayer {
+                    alpha = loaderAlpha
+                    rotationZ = angle
+                },
+            imageVector = AppTokens.icons.SystemRestart,
+            tint = tint,
+            contentDescription = null
+        )
+    }
+}
+
+@Composable
+private fun CollapsingLoaderSlot(
+    visible: Boolean,
+    size: Dp,
+    spaceAfter: Dp,
+    tint: Color,
+    label: String
+) {
+    // Two tracks: alpha fades immediately; width collapses after alpha completes
+    val transition = updateTransition(targetState = visible, label = label)
+
+    val alpha by transition.animateFloat(
+        transitionSpec = {
+            if (false isTransitioningTo true) {
+                tween(durationMillis = 160, delayMillis = 80, easing = LinearEasing)
+            } else {
+                tween(durationMillis = 160, easing = LinearEasing)
+            }
+        },
+        label = "$label-alpha"
+    ) { if (it) 1f else 0f }
+
+    val width by transition.animateDp(
+        transitionSpec = {
+            if (false isTransitioningTo true) {
+                // Expanding: width first, then fade-in starts (handled by alpha delay above)
+                tween(durationMillis = 180, easing = LinearOutSlowInEasing)
+            } else {
+                // Collapsing: start after fade-out finished
+                tween(durationMillis = 220, delayMillis = 160, easing = LinearOutSlowInEasing)
+            }
+        },
+        label = "$label-width"
+    ) { if (it) size + spaceAfter else 0.dp }
+
+    if (width > 0.dp) {
+        val rot = rememberInfiniteTransition(label = "$label-rot")
+        val angle by rot.animateFloat(
+            initialValue = 0f,
+            targetValue = 360f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(durationMillis = 1000, easing = LinearEasing),
+                repeatMode = RepeatMode.Restart
+            ),
+            label = "$label-rotation"
+        )
+
+        Row(
+            modifier = Modifier.width(width),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(size)
+                    .graphicsLayer {
+                        this.alpha = alpha
+                        rotationZ = angle
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = AppTokens.icons.SystemRestart,
+                    tint = tint,
+                    contentDescription = null
+                )
+            }
+            // Trailing space is baked into `width` via `size + spaceAfter`
         }
     }
 }
