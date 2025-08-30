@@ -208,17 +208,17 @@ public data object AppDp {
     }
 
     public data object Toggle {
-        val width: Dp = 51.dp
-        val height: Dp = 31.dp
-        val radius: Dp = 18.dp
-        val thumbRadius: Dp = 13.5.dp
-        val horizontalPadding: Dp = 16.dp
+        val width: Dp = 48.dp
+        val height: Dp = 29.dp
+        val radius: Dp = 17.dp
+        val thumbRadius: Dp = 12.5.dp
+        val horizontalPadding: Dp = 15.dp
     }
 
     public data object Radio {
-        val size: Dp = 31.dp
-        val borderWidth: Dp = 2.dp
-        val innerCircleRadius: Dp = 7.75.dp
+        val size: Dp = 26.dp
+        val borderWidth: Dp = 1.5.dp
+        val innerCircleRadius: Dp = 7.dp
     }
 
     public data object ExerciseCard {
@@ -287,8 +287,8 @@ public data object AppDp {
         }
 
         public data object Small {
-            val height: Dp = size.medium
-            val horizontalPadding: Dp = padding.medium
+            val verticalPadding: Dp = padding.small
+            val horizontalPadding: Dp = padding.small
             val radius: Dp = AppDp.radius.large
         }
     }

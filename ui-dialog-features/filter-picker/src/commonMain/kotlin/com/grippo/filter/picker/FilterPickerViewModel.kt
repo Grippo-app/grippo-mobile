@@ -11,6 +11,21 @@ public class FilterPickerViewModel(
         list = initial.toPersistentList(),
     )
 ), FilterPickerContract {
+
+    override fun onItemClick(value: FilterValue) {
+        update { state ->
+            val list = state.list.map { item ->
+                when (value) {
+                    is FilterValue.WeightType -> if (item is FilterValue.WeightType) value else item
+                    is FilterValue.ForceType -> if (item is FilterValue.ForceType) value else item
+                    is FilterValue.Category -> if (item is FilterValue.Category) value else item
+                }
+            }
+
+            state.copy(list = list.toPersistentList())
+        }
+    }
+
     override fun onSubmitClick() {
         navigateTo(FilterPickerDirection.BackWithResult(state.value.list))
     }

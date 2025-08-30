@@ -3,7 +3,6 @@ package com.grippo.design.components.cards.selectable.internal
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,8 +31,10 @@ internal fun SelectableCardSmall(
         modifier = modifier
             .scalableClick(onClick = onClick)
             .background(AppTokens.colors.background.card, shape)
-            .height(AppTokens.dp.selectableCard.small.height)
-            .padding(horizontal = AppTokens.dp.selectableCard.small.horizontalPadding),
+            .padding(
+                horizontal = AppTokens.dp.selectableCard.small.horizontalPadding,
+                vertical = AppTokens.dp.selectableCard.small.verticalPadding,
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
 
@@ -42,7 +43,7 @@ internal fun SelectableCardSmall(
             onSelectedChange = onClick
         )
 
-        Spacer(Modifier.width(AppTokens.dp.contentPadding.content))
+        Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
 
         Text(
             text = style.title,

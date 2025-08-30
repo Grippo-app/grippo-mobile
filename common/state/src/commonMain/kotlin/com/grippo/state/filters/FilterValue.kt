@@ -16,13 +16,15 @@ import kotlinx.serialization.Serializable
 @Serializable
 @Immutable
 public sealed interface FilterValue {
+    public val id: String
 
     public fun title(): UiText
 
     @Serializable
     @Immutable
     public data class WeightType(
-        val value: WeightTypeEnumState,
+        override val id: String = "filter_value_weight_type",
+        val value: WeightTypeEnumState?,
         val available: ImmutableList<WeightTypeEnumState> = WeightTypeEnumState.entries.toPersistentList()
     ) : FilterValue {
 
@@ -34,7 +36,8 @@ public sealed interface FilterValue {
     @Serializable
     @Immutable
     public data class ForceType(
-        val value: ForceTypeEnumState,
+        override val id: String = "filter_value_force_type",
+        val value: ForceTypeEnumState?,
         val available: ImmutableList<ForceTypeEnumState> = ForceTypeEnumState.entries.toPersistentList()
     ) : FilterValue {
 
@@ -46,7 +49,8 @@ public sealed interface FilterValue {
     @Serializable
     @Immutable
     public data class Category(
-        val value: CategoryEnumState,
+        override val id: String = "filter_value_category",
+        val value: CategoryEnumState?,
         val available: ImmutableList<CategoryEnumState> = CategoryEnumState.entries.toPersistentList()
     ) : FilterValue {
 

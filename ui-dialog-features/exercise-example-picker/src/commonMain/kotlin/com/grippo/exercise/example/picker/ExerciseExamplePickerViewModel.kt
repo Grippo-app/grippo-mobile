@@ -7,11 +7,6 @@ import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
 import com.grippo.state.datetime.PeriodState
-import com.grippo.state.exercise.examples.CategoryEnumState
-import com.grippo.state.exercise.examples.ForceTypeEnumState
-import com.grippo.state.exercise.examples.WeightTypeEnumState
-import com.grippo.state.filters.FilterValue
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.onEach
 
@@ -47,13 +42,9 @@ public class ExerciseExamplePickerViewModel(
     }
 
     override fun onFiltersClick() {
-        val categories = FilterValue.Category(value = CategoryEnumState.COMPOUND)
-        val weightType = FilterValue.WeightType(value = WeightTypeEnumState.FREE)
-        val forceType = FilterValue.ForceType(value = ForceTypeEnumState.PUSH)
-
         val dialog = DialogConfig.FilterPicker(
-            initial = persistentListOf(categories, weightType, forceType),
-            onResult = { value -> }
+            initial = state.value.filters,
+            onResult = { value -> update { it.copy(filters = value.toPersistentList()) } }
         )
 
         dialogController.show(dialog)

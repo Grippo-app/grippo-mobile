@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -63,103 +64,105 @@ internal fun FilterPickerScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-        ) {
-            state.list.onEach {
-                key(it) {
-                    val content = remember(it) { it }
-
-                    Text(
-                        modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                        text = it.title().text(),
-                        style = AppTokens.typography.b14Bold(),
-                        color = AppTokens.colors.text.primary,
-                    )
-
-                    when (content) {
-                        is FilterValue.Category -> {
-                            Row(
-                                modifier = Modifier
-                                    .horizontalScroll(rememberScrollState())
-                                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                                    .fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-                            ) {
-                                content.available.onEach { item ->
-                                    key(item) {
-                                        SelectableCard(
-                                            style = SelectableCardStyle.Small(
-                                                title = item.title().text()
-                                            ),
-                                            isSelected = item == content.value,
-                                            onSelect = {}
-                                        )
-                                    }
-                                }
-                            }
-                        }
-
-                        is FilterValue.ForceType -> {
-                            Row(
-                                modifier = Modifier
-                                    .horizontalScroll(rememberScrollState())
-                                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                                    .fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-                            ) {
-                                content.available.onEach { item ->
-                                    key(item) {
-                                        SelectableCard(
-                                            style = SelectableCardStyle.Small(
-                                                title = item.title().text()
-                                            ),
-                                            isSelected = item == content.value,
-                                            onSelect = {}
-                                        )
-                                    }
-                                }
-                            }
-                        }
-
-                        is FilterValue.WeightType -> {
-                            Row(
-                                modifier = Modifier
-                                    .horizontalScroll(rememberScrollState())
-                                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                                    .fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-                            ) {
-                                content.available.onEach { item ->
-                                    key(item) {
-                                        SelectableCard(
-                                            style = SelectableCardStyle.Small(
-                                                title = item.title().text()
-                                            ),
-                                            isSelected = item == content.value,
-                                            onSelect = {}
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-        }
-
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
         ) {
             items(
                 items = state.list,
-                key = { it.hashCode() },
+                key = { it.id },
                 contentType = { it::class }
             ) { item ->
+                val content = remember(item) { item }
 
+                Text(
+                    modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                    text = content.title().text(),
+                    style = AppTokens.typography.b14Bold(),
+                    color = AppTokens.colors.text.primary,
+                )
+
+                Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+
+                when (content) {
+                    is FilterValue.Category -> {
+                        Row(
+                            modifier = Modifier
+                                .horizontalScroll(rememberScrollState())
+                                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+                        ) {
+                            content.available.onEach { value ->
+                                key(value.ordinal) {
+                                    val clickProvider = remember(value.ordinal) {
+                                        { contract.onItemClick(content.copy(value = value)) }
+                                    }
+
+                                    SelectableCard(
+                                        style = SelectableCardStyle.Small(
+                                            title = value.title().text()
+                                        ),
+                                        isSelected = value == content.value,
+                                        onSelect = clickProvider
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    is FilterValue.ForceType -> {
+                        Row(
+                            modifier = Modifier
+                                .horizontalScroll(rememberScrollState())
+                                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+                        ) {
+                            content.available.onEach { value ->
+                                key(value.ordinal) {
+                                    val clickProvider = remember(value.ordinal) {
+                                        { contract.onItemClick(content.copy(value = value)) }
+                                    }
+
+                                    SelectableCard(
+                                        style = SelectableCardStyle.Small(
+                                            title = value.title().text()
+                                        ),
+                                        isSelected = value == content.value,
+                                        onSelect = clickProvider
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    is FilterValue.WeightType -> {
+                        Row(
+                            modifier = Modifier
+                                .horizontalScroll(rememberScrollState())
+                                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+                        ) {
+                            content.available.onEach { value ->
+                                key(value.ordinal) {
+                                    val clickProvider = remember(value.ordinal) {
+                                        { contract.onItemClick(content.copy(value = value)) }
+                                    }
+
+                                    SelectableCard(
+                                        style = SelectableCardStyle.Small(
+                                            title = value.title().text()
+                                        ),
+                                        isSelected = value == content.value,
+                                        onSelect = clickProvider
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 

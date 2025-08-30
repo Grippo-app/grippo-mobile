@@ -1,7 +1,10 @@
 package com.grippo.state.exercise.examples
 
 import androidx.compose.runtime.Immutable
+import com.grippo.state.filters.FilterValue
 import com.grippo.state.profile.ExperienceEnumState
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
@@ -16,7 +19,17 @@ public data class ExerciseExampleValueState(
     val forceType: ForceTypeEnumState,
     val weightType: WeightTypeEnumState,
     val category: CategoryEnumState,
-)
+) {
+    public companion object {
+        public val filters: ImmutableList<FilterValue> = persistentListOf(
+            FilterValue.Category(value = null),
+            FilterValue.WeightType(value = null),
+            FilterValue.ForceType(value = null)
+            // todo add ExperienceEnumState
+        )
+    }
+}
+
 
 public fun stubExerciseExampleValueState(): ExerciseExampleValueState {
     return ExerciseExampleValueState(
