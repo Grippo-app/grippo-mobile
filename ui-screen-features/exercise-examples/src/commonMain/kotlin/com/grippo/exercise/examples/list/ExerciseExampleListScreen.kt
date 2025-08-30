@@ -83,7 +83,7 @@ internal fun ExerciseExampleListScreen(
     ) {
         items(
             items = state.exerciseExamples,
-            key = { it.hashCode() },
+            key = { it.value.id },
             contentType = { it::class }
         ) { item ->
             val clickProvider = remember(item) {

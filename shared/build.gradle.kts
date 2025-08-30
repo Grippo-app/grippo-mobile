@@ -63,6 +63,7 @@ kotlin {
         implementation(projects.uiDialogFeatures.exercise)
         implementation(projects.uiDialogFeatures.iterationPicker)
         implementation(projects.uiDialogFeatures.filterPicker)
+        implementation(projects.uiDialogFeatures.exerciseExamplePicker)
 
         implementation(libs.datetime)
         implementation(libs.immutable.collections)

@@ -24,18 +24,24 @@ internal class TrainingRecordingViewModel(
 ), TrainingRecordingContract {
 
     override fun onAddExercise() {
-        val exercise = ExerciseState(
-            id = Uuid.random().toString(),
-            name = "Test name",
-            iterations = persistentListOf(),
-            exerciseExample = null,
-            metrics = TrainingMetrics(
-                volume = VolumeFormatState.of(0f),
-                repetitions = RepetitionsFormatState.of(0),
-                intensity = IntensityFormatState.of(0f),
-            ),
+        val dialog = DialogConfig.ExerciseExamplePicker(
+            onResult = { example ->
+                val exercise = ExerciseState(
+                    id = Uuid.random().toString(),
+                    name = example.value.name,
+                    iterations = persistentListOf(),
+                    exerciseExample = null,
+                    metrics = TrainingMetrics(
+                        volume = VolumeFormatState.of(0f),
+                        repetitions = RepetitionsFormatState.of(0),
+                        intensity = IntensityFormatState.of(0f),
+                    ),
+                )
+                navigateTo(TrainingRecordingDirection.ToExercise(exercise))
+            }
         )
-        navigateTo(TrainingRecordingDirection.ToExercise(exercise))
+
+        dialogController.show(dialog)
     }
 
     override fun onEditExercise(id: String) {

@@ -16,6 +16,7 @@ import com.grippo.dialog.api.DialogConfig
 import com.grippo.error.display.ErrorDisplayComponent
 import com.grippo.exercise.ExerciseComponent
 import com.grippo.exercise.example.exerciseexample.ExerciseExampleComponent
+import com.grippo.exercise.example.picker.ExerciseExamplePickerComponent
 import com.grippo.filter.picker.FilterPickerComponent
 import com.grippo.height.picker.HeightPickerComponent
 import com.grippo.iteration.picker.IterationPickerComponent
@@ -132,6 +133,14 @@ internal class DialogContentComponent(
                 )
             )
 
+            is DialogConfig.ExerciseExamplePicker -> Child.ExerciseExamplePicker(
+                ExerciseExamplePickerComponent(
+                    componentContext = context,
+                    onResult = { example -> viewModel.onBack { router.onResult.invoke(example) } },
+                    back = { viewModel.onBack(null) }
+                )
+            )
+
             is DialogConfig.FilterPicker -> Child.FilterPicker(
                 FilterPickerComponent(
                     componentContext = context,
@@ -180,6 +189,9 @@ internal class DialogContentComponent(
             Child(component)
 
         data class PeriodPicker(override val component: PeriodPickerComponent) :
+            Child(component)
+
+        data class ExerciseExamplePicker(override val component: ExerciseExamplePickerComponent) :
             Child(component)
 
         data class IterationPicker(override val component: IterationPickerComponent) :
