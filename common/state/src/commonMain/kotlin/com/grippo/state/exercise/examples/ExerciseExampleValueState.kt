@@ -4,7 +4,7 @@ import androidx.compose.runtime.Immutable
 import com.grippo.state.filters.FilterValue
 import com.grippo.state.profile.ExperienceEnumState
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
@@ -21,12 +21,12 @@ public data class ExerciseExampleValueState(
     val category: CategoryEnumState,
 ) {
     public companion object {
-        public val filters: ImmutableList<FilterValue> = persistentListOf(
-            FilterValue.Category(value = null),
-            FilterValue.WeightType(value = null),
-            FilterValue.ForceType(value = null)
-            // todo add ExperienceEnumState
-        )
+        public val filters: ImmutableList<FilterValue> = buildList {
+            add(FilterValue.Category(value = null))
+            add(FilterValue.WeightType(value = null))
+            add(FilterValue.ForceType(value = null))
+            // todo add ExperienceEnumState)
+        }.toPersistentList()
     }
 }
 
