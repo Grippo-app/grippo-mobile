@@ -166,7 +166,9 @@ internal fun FilterPickerScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         Button(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                .fillMaxWidth(),
             content = ButtonContent.Text(
                 text = AppTokens.strings.res(Res.string.submit_btn),
             ),

@@ -53,8 +53,7 @@ public class ExerciseExamplePickerViewModel(
 
         val dialog = DialogConfig.FilterPicker(
             initial = persistentListOf(categories, weightType, forceType),
-            onResult = { value ->
-            }
+            onResult = { value -> }
         )
 
         dialogController.show(dialog)
