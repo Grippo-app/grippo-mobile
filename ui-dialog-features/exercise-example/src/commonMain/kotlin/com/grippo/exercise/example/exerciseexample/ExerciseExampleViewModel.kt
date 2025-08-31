@@ -27,6 +27,11 @@ public class ExerciseExampleViewModel(
         update { it.copy(example = value?.toState()) }
     }
 
+    override fun onSelectClick() {
+        val example = state.value.example ?: return
+        navigateTo(ExerciseExampleDirection.BackWithResult(example))
+    }
+
     override fun onDismiss() {
         navigateTo(ExerciseExampleDirection.Back)
     }

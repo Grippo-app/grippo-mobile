@@ -31,6 +31,7 @@ public sealed class DialogConfig(
     @Serializable
     public data class ExerciseExample(
         val id: String,
+        @Transient val onResult: ((exercise: ExerciseExampleState) -> Unit) = { },
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true

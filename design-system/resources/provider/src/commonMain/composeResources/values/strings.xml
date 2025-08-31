@@ -126,6 +126,7 @@
     <string name="select_end_date">Select end date</string>
     <string name="r">R</string>
     <string name="x">x</string>
+    <string name="select">Select</string>
     <string name="tonnage_chip">Tonnage</string>
     <string name="intensity_chip">Intensity</string>
     <string name="repetitions_chip">Repetitions</string>

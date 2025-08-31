@@ -105,6 +105,7 @@
     <string name="custom_range">Власний діапазон</string>
     <string name="r">R</string>
     <string name="x">x</string>
+    <string name="select">Обрати</string>
     <string name="tonnage_chip">Тоннаж</string>
     <string name="intensity_chip">Інтенсивність</string>
     <string name="repetitions_chip">Повторення</string>

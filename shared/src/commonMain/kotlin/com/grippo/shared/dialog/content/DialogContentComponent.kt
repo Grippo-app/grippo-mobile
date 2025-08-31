@@ -88,7 +88,8 @@ internal class DialogContentComponent(
                 ExerciseExampleComponent(
                     componentContext = context,
                     id = router.id,
-                    back = { viewModel.onBack(null) }
+                    back = { viewModel.onBack(null) },
+                    onResult = { exercise -> viewModel.onBack { router.onResult.invoke(exercise) } },
                 )
             )
 
