@@ -92,7 +92,6 @@ internal fun ExperienceScreen(
             items(
                 items = state.suggestions,
                 key = { it.ordinal },
-                contentType = { it::class }
             ) { item ->
                 val selectProvider = remember { { contract.onExperienceClick(item) } }
                 val isSelected = remember(state.selected) { state.selected == item }

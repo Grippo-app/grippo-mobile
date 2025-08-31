@@ -92,7 +92,6 @@ internal fun ExerciseExamplePickerScreen(
             items(
                 items = state.exerciseExamples,
                 key = { it.value.id },
-                contentType = { it::class }
             ) { item ->
                 val clickProvider = remember(item) {
                     { contract.onExerciseExampleDetailsClick(item.value.id) }

@@ -122,7 +122,7 @@ internal fun MissingEquipmentsScreen(
                 items(
                     items = equipments,
                     key = { it.id },
-                    contentType = { it::class }) { equipment ->
+                ) { equipment ->
                     EquipmentRow(
                         equipment = equipment,
                         selectedEquipmentIds = state.selectedEquipmentIds,

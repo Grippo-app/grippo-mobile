@@ -93,7 +93,6 @@ internal fun ExcludedMusclesScreen(
             itemsIndexed(
                 state.suggestions,
                 key = { _, item -> item.id },
-                contentType = { _, item -> item::class }
             ) { index, group ->
                 val isEven = index % 2 == 0
 

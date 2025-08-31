@@ -79,7 +79,7 @@ internal fun ProfileEquipmentsScreen(
         ),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
     ) {
-        items(items = equipments, key = { it.id }, contentType = { it::class }) { equipment ->
+        items(items = equipments, key = { it.id }) { equipment ->
             EquipmentRow(
                 equipment = equipment,
                 selectedEquipmentIds = state.selectedEquipmentIds,

@@ -26,7 +26,7 @@ public fun EquipmentsCard(
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
         contentPadding = contentPadding
     ) {
-        items(items = value, key = { it.id }, contentType = { it::class }) { item ->
+        items(items = value, key = { it.id }) { item ->
             EquipmentCard(
                 value = item
             )

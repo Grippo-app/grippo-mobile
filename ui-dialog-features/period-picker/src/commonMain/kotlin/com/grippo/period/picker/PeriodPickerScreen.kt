@@ -68,7 +68,6 @@ internal fun PeriodPickerScreen(
             items(
                 items = state.list,
                 key = { it.hashCode() },
-                contentType = { it::class }
             ) { item ->
                 val clickProvider = remember(item) { { contract.onSelectClick(item) } }
                 val isSelected = remember(state.value) { state.value == item }
