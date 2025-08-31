@@ -3,7 +3,7 @@ package com.grippo.dialog.api
 import com.grippo.date.utils.DateRange
 import com.grippo.state.datetime.PeriodState
 import com.grippo.state.error.AppErrorState
-import com.grippo.state.exercise.examples.ExerciseExampleDialogMode
+import com.grippo.state.exercise.examples.ExerciseExampleDialogView
 import com.grippo.state.exercise.examples.ExerciseExampleState
 import com.grippo.state.filters.FilterValue
 import com.grippo.state.formatters.DateFormatState
@@ -32,7 +32,7 @@ public sealed class DialogConfig(
     @Serializable
     public data class ExerciseExample(
         val id: String,
-        val mode: ExerciseExampleDialogMode,
+        val view: ExerciseExampleDialogView,
         @Transient val onResult: ((exercise: ExerciseExampleState) -> Unit) = { },
     ) : DialogConfig(
         onDismiss = null,

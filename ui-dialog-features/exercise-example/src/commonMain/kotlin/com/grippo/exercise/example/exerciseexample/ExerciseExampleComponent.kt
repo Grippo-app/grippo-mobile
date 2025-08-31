@@ -6,13 +6,13 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.platform.collectAsStateMultiplatform
-import com.grippo.state.exercise.examples.ExerciseExampleDialogMode
+import com.grippo.state.exercise.examples.ExerciseExampleDialogView
 import com.grippo.state.exercise.examples.ExerciseExampleState
 
 public class ExerciseExampleComponent(
     componentContext: ComponentContext,
     id: String,
-    mode: ExerciseExampleDialogMode,
+    view: ExerciseExampleDialogView,
     private val back: () -> Unit,
     private val onResult: (value: ExerciseExampleState) -> Unit,
 ) : BaseComponent<ExerciseExampleDirection>(componentContext) {
@@ -20,7 +20,7 @@ public class ExerciseExampleComponent(
     override val viewModel: ExerciseExampleViewModel = componentContext.retainedInstance {
         ExerciseExampleViewModel(
             id = id,
-            mode = mode,
+            view = view,
             exerciseExampleFeature = getKoin().get()
         )
     }

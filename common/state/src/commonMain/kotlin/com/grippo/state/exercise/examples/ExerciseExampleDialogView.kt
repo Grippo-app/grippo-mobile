@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Immutable
 @Serializable
-public enum class ExerciseExampleDialogMode {
+public enum class ExerciseExampleDialogView {
     PICK,
     READ,
 }

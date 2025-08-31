@@ -32,7 +32,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.required_equipment
 import com.grippo.design.resources.provider.select
-import com.grippo.state.exercise.examples.ExerciseExampleDialogMode
+import com.grippo.state.exercise.examples.ExerciseExampleDialogView
 import com.grippo.state.exercise.examples.stubExerciseExample
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -148,7 +148,7 @@ internal fun ExerciseExampleScreen(
             contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
         )
 
-        if (state.mode == ExerciseExampleDialogMode.PICK) {
+        if (state.view == ExerciseExampleDialogView.PICK) {
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
             Button(
@@ -174,7 +174,7 @@ private fun ScreenPreview1() {
         ExerciseExampleScreen(
             state = ExerciseExampleState(
                 example = stubExerciseExample(),
-                mode = ExerciseExampleDialogMode.READ
+                view = ExerciseExampleDialogView.READ
             ),
             contract = ExerciseExampleContract.Empty,
             loaders = persistentSetOf()
@@ -189,7 +189,7 @@ private fun ScreenPreview2() {
         ExerciseExampleScreen(
             state = ExerciseExampleState(
                 example = stubExerciseExample(),
-                mode = ExerciseExampleDialogMode.PICK
+                view = ExerciseExampleDialogView.PICK
             ),
             contract = ExerciseExampleContract.Empty,
             loaders = persistentSetOf()

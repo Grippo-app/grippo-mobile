@@ -6,7 +6,7 @@ import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState
-import com.grippo.state.exercise.examples.ExerciseExampleDialogMode
+import com.grippo.state.exercise.examples.ExerciseExampleDialogView
 import kotlinx.coroutines.flow.onEach
 
 public class ExerciseViewModel(
@@ -35,7 +35,7 @@ public class ExerciseViewModel(
     override fun onExampleDetailsClick(id: String) {
         val dialog = DialogConfig.ExerciseExample(
             id = id,
-            mode = ExerciseExampleDialogMode.READ
+            view = ExerciseExampleDialogView.READ
         )
 
         dialogController.show(dialog)

@@ -6,7 +6,7 @@ import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
-import com.grippo.state.exercise.examples.ExerciseExampleDialogMode
+import com.grippo.state.exercise.examples.ExerciseExampleDialogView
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.onEach
 
@@ -36,7 +36,7 @@ internal class ExerciseExampleListViewModel(
     override fun onExerciseExampleClick(id: String) {
         val dialog = DialogConfig.ExerciseExample(
             id = id,
-            mode = ExerciseExampleDialogMode.READ
+            view = ExerciseExampleDialogView.READ
         )
 
         dialogController.show(dialog)
