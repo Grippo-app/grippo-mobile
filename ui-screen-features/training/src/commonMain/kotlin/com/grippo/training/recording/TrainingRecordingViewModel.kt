@@ -30,7 +30,7 @@ internal class TrainingRecordingViewModel(
                     id = Uuid.random().toString(),
                     name = example.value.name,
                     iterations = persistentListOf(),
-                    exerciseExample = null,
+                    exerciseExample = example.value,
                     metrics = TrainingMetrics(
                         volume = VolumeFormatState.of(0f),
                         repetitions = RepetitionsFormatState.of(0),

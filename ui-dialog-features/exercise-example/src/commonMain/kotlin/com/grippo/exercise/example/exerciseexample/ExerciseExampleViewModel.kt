@@ -4,13 +4,17 @@ import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.domain.state.exercise.example.toState
+import com.grippo.state.exercise.examples.ExerciseExampleDialogMode
 import kotlinx.coroutines.flow.onEach
 
 public class ExerciseExampleViewModel(
     id: String,
+    mode: ExerciseExampleDialogMode,
     private val exerciseExampleFeature: ExerciseExampleFeature
 ) : BaseViewModel<ExerciseExampleState, ExerciseExampleDirection, ExerciseExampleLoader>(
-    ExerciseExampleState()
+    ExerciseExampleState(
+        mode = mode
+    )
 ), ExerciseExampleContract {
 
     init {

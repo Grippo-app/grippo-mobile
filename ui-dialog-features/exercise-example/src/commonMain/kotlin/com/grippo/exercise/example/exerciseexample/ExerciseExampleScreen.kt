@@ -32,6 +32,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.required_equipment
 import com.grippo.design.resources.provider.select
+import com.grippo.state.exercise.examples.ExerciseExampleDialogMode
 import com.grippo.state.exercise.examples.stubExerciseExample
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -147,18 +148,20 @@ internal fun ExerciseExampleScreen(
             contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+        if (state.mode == ExerciseExampleDialogMode.PICK) {
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        Button(
-            modifier = Modifier
-                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                .fillMaxWidth(),
-            content = ButtonContent.Text(
-                text = AppTokens.strings.res(Res.string.select),
-            ),
-            style = ButtonStyle.Primary,
-            onClick = contract::onSelectClick
-        )
+            Button(
+                modifier = Modifier
+                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                    .fillMaxWidth(),
+                content = ButtonContent.Text(
+                    text = AppTokens.strings.res(Res.string.select),
+                ),
+                style = ButtonStyle.Primary,
+                onClick = contract::onSelectClick
+            )
+        }
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
     }
@@ -166,11 +169,27 @@ internal fun ExerciseExampleScreen(
 
 @AppPreview
 @Composable
-private fun ScreenPreview() {
+private fun ScreenPreview1() {
     PreviewContainer {
         ExerciseExampleScreen(
             state = ExerciseExampleState(
                 example = stubExerciseExample(),
+                mode = ExerciseExampleDialogMode.READ
+            ),
+            contract = ExerciseExampleContract.Empty,
+            loaders = persistentSetOf()
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreview2() {
+    PreviewContainer {
+        ExerciseExampleScreen(
+            state = ExerciseExampleState(
+                example = stubExerciseExample(),
+                mode = ExerciseExampleDialogMode.PICK
             ),
             contract = ExerciseExampleContract.Empty,
             loaders = persistentSetOf()
