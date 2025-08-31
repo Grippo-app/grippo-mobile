@@ -236,14 +236,12 @@ public data object AppDp {
             val radius: Dp = AppDp.radius.medium
             val horizontalPadding: Dp = padding.large
             val verticalPadding: Dp = padding.medium
-            val icon: Dp = AppDp.icon.small
         }
 
         public data object Wide {
             val radius: Dp = AppDp.radius.medium
             val horizontalPadding: Dp = padding.large
             val verticalPadding: Dp = padding.large
-            val icon: Dp = size.medium
         }
     }
 
