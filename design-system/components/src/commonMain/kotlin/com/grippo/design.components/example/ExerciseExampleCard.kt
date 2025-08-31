@@ -16,10 +16,15 @@ import com.grippo.state.exercise.examples.stubExerciseExample
 @Immutable
 public sealed interface ExerciseExampleCardStyle {
     @Immutable
-    public data object Square : ExerciseExampleCardStyle
+    public data class Square(
+        val onCardClick: () -> Unit,
+        val onDetailsClick: () -> Unit
+    ) : ExerciseExampleCardStyle
 
     @Immutable
-    public data object Wide : ExerciseExampleCardStyle
+    public data class Wide(
+        val onCardClick: () -> Unit,
+    ) : ExerciseExampleCardStyle
 }
 
 @Composable
@@ -27,19 +32,19 @@ public fun ExerciseExampleCard(
     modifier: Modifier = Modifier,
     value: ExerciseExampleState,
     style: ExerciseExampleCardStyle,
-    onClick: () -> Unit
 ) {
     when (style) {
-        ExerciseExampleCardStyle.Square -> ExerciseExampleCardSquare(
+        is ExerciseExampleCardStyle.Square -> ExerciseExampleCardSquare(
             modifier = modifier,
             value = value,
-            onClick = onClick
+            onCardClick = style.onCardClick,
+            onDetailsClick = style.onDetailsClick
         )
 
-        ExerciseExampleCardStyle.Wide -> ExerciseExampleCardWide(
+        is ExerciseExampleCardStyle.Wide -> ExerciseExampleCardWide(
             modifier = modifier,
             value = value,
-            onClick = onClick
+            onCardClick = style.onCardClick
         )
     }
 }
@@ -51,8 +56,7 @@ private fun ExerciseExampleCardSquarePreview() {
         ExerciseExampleCard(
             modifier = Modifier.size(250.dp),
             value = stubExerciseExample(),
-            style = ExerciseExampleCardStyle.Square,
-            onClick = {}
+            style = ExerciseExampleCardStyle.Square({}, {}),
         )
     }
 }
@@ -64,8 +68,7 @@ private fun ExerciseExampleCardWidePreview() {
         ExerciseExampleCard(
             modifier = Modifier.fillMaxWidth(),
             value = stubExerciseExample(),
-            style = ExerciseExampleCardStyle.Wide,
-            onClick = {}
+            style = ExerciseExampleCardStyle.Wide({}),
         )
     }
 }

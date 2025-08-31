@@ -24,7 +24,6 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.icons.NavArrowDown
-import com.grippo.design.resources.provider.icons.Settings
 import com.grippo.segment.control.SegmentBox
 import com.grippo.segment.control.SegmentSizing
 import com.grippo.segment.control.SegmentedFrame
@@ -129,7 +128,6 @@ public fun SegmentSkeleton(modifier: Modifier = Modifier) {
 private fun SegmentPreview() {
     PreviewContainer {
         Tab(
-            modifier = Modifier,
             items = persistentListOf(
                 "Box" to TabItem(
                     text = UiText.Str("Box"),

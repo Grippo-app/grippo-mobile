@@ -6,7 +6,6 @@ import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
-import com.grippo.state.datetime.PeriodState
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.onEach
 
@@ -50,7 +49,9 @@ public class ExerciseExamplePickerViewModel(
         dialogController.show(dialog)
     }
 
-    override fun onExerciseExampleSelectClick(value: PeriodState) {
+    override fun onExerciseExampleSelectClick(id: String) {
+        val example = state.value.exerciseExamples.find { f -> f.value.id == id } ?: return
+        navigateTo(ExerciseExamplePickerDirection.BackWithResult(example))
     }
 
     override fun onDismiss() {

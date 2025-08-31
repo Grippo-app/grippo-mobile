@@ -117,7 +117,6 @@ public fun ExerciseExampleBundlesCard(
 
                 key(item.muscle.id) {
                     Chip(
-                        modifier = Modifier,
                         label = ChipLabel.Text(item.muscle.type.title()),
                         value = item.percentage.short(),
                         stype = ChipStype.Default,

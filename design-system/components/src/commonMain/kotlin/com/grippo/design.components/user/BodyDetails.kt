@@ -19,9 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
-import com.grippo.design.resources.provider.icons.ExpandLines
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.cm
+import com.grippo.design.resources.provider.icons.ExpandLines
 import com.grippo.design.resources.provider.icons.Weight
 import com.grippo.design.resources.provider.kg
 
@@ -92,7 +92,6 @@ internal fun BodyItem(
         Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
 
         Text(
-            modifier = Modifier,
             text = height.toString(),
             style = AppTokens.typography.b14Bold(),
             color = AppTokens.colors.text.secondary,
@@ -102,7 +101,6 @@ internal fun BodyItem(
         Spacer(Modifier.width(4.dp))
 
         Text(
-            modifier = Modifier,
             text = AppTokens.strings.res(Res.string.cm),
             style = AppTokens.typography.b14Bold(),
             color = AppTokens.colors.text.secondary,

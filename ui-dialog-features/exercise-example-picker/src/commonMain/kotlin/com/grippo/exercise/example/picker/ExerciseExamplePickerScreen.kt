@@ -31,7 +31,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.Filter
-import com.grippo.design.resources.provider.period_picker_title
+import com.grippo.design.resources.provider.select_exercise
 import com.grippo.state.exercise.examples.stubExerciseExample
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
@@ -53,7 +53,7 @@ internal fun ExerciseExamplePickerScreen(
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.period_picker_title),
+            text = AppTokens.strings.res(Res.string.select_exercise),
             style = AppTokens.typography.h3(),
             color = AppTokens.colors.text.primary,
             textAlign = TextAlign.Center
@@ -93,15 +93,21 @@ internal fun ExerciseExamplePickerScreen(
                 items = state.exerciseExamples,
                 key = { it.value.id },
             ) { item ->
-                val clickProvider = remember(item) {
+                val detailsClickProvider = remember(item) {
                     { contract.onExerciseExampleDetailsClick(item.value.id) }
+                }
+
+                val selectClickProvider = remember(item) {
+                    { contract.onExerciseExampleSelectClick(item.value.id) }
                 }
 
                 ExerciseExampleCard(
                     modifier = Modifier.width(220.dp),
                     value = item,
-                    style = ExerciseExampleCardStyle.Square,
-                    onClick = clickProvider
+                    style = ExerciseExampleCardStyle.Square(
+                        onCardClick = selectClickProvider,
+                        onDetailsClick = detailsClickProvider
+                    ),
                 )
             }
         }

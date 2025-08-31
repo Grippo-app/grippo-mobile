@@ -38,13 +38,13 @@ import kotlinx.collections.immutable.toPersistentList
 internal fun ExerciseExampleCardWide(
     modifier: Modifier,
     value: ExerciseExampleState,
-    onClick: () -> Unit
+    onCardClick: () -> Unit
 ) {
     val shape = RoundedCornerShape(AppTokens.dp.exerciseExampleCard.wide.radius)
 
     Column(
         modifier = modifier
-            .scalableClick(onClick = onClick)
+            .scalableClick(onClick = onCardClick)
             .background(AppTokens.colors.background.card, shape)
             .padding(
                 horizontal = AppTokens.dp.exerciseExampleCard.wide.horizontalPadding,
@@ -67,7 +67,6 @@ internal fun ExerciseExampleCardWide(
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
         ) {
             Chip(
-                modifier = Modifier,
                 label = ChipLabel.Empty,
                 value = value.value.category.title().text(),
                 size = ChipSize.Small,
@@ -78,7 +77,6 @@ internal fun ExerciseExampleCardWide(
             )
 
             Chip(
-                modifier = Modifier,
                 label = ChipLabel.Empty,
                 value = value.value.forceType.title().text(),
                 size = ChipSize.Small,
@@ -89,7 +87,6 @@ internal fun ExerciseExampleCardWide(
             )
 
             Chip(
-                modifier = Modifier,
                 label = ChipLabel.Empty,
                 value = value.value.weightType.title().text(),
                 size = ChipSize.Small,
@@ -100,7 +97,6 @@ internal fun ExerciseExampleCardWide(
             )
 
             Chip(
-                modifier = Modifier,
                 label = ChipLabel.Empty,
                 value = value.value.experience.title().text(),
                 size = ChipSize.Small,
@@ -172,8 +168,7 @@ private fun ExerciseExampleCardWidePreview() {
         ExerciseExampleCard(
             modifier = Modifier.fillMaxWidth(),
             value = stubExerciseExample(),
-            style = ExerciseExampleCardStyle.Wide,
-            onClick = {}
+            style = ExerciseExampleCardStyle.Wide({}),
         )
     }
 }

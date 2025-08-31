@@ -90,7 +90,6 @@ public fun <KEY> Segment(
 private fun SegmentPreview() {
     PreviewContainer {
         Segment(
-            modifier = Modifier,
             items = persistentListOf<Pair<String, UiText>>(
                 "Profile" to UiText.Str("Profile"),
                 "Home" to UiText.Str("Home"),
@@ -101,7 +100,6 @@ private fun SegmentPreview() {
         )
 
         Segment(
-            modifier = Modifier,
             items = persistentListOf<Pair<String, UiText>>(
                 "Profile" to UiText.Str("Profile"),
                 "Home" to UiText.Str("Home"),

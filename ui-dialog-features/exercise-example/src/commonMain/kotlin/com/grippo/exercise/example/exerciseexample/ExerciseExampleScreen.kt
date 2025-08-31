@@ -68,7 +68,6 @@ internal fun ExerciseExampleScreen(
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
         ) {
             Chip(
-                modifier = Modifier,
                 label = ChipLabel.Empty,
                 value = example.value.category.title().text(),
                 size = ChipSize.Small,
@@ -79,7 +78,6 @@ internal fun ExerciseExampleScreen(
             )
 
             Chip(
-                modifier = Modifier,
                 label = ChipLabel.Empty,
                 value = example.value.forceType.title().text(),
                 size = ChipSize.Small,
@@ -90,7 +88,6 @@ internal fun ExerciseExampleScreen(
             )
 
             Chip(
-                modifier = Modifier,
                 label = ChipLabel.Empty,
                 value = example.value.weightType.title().text(),
                 size = ChipSize.Small,
@@ -101,7 +98,6 @@ internal fun ExerciseExampleScreen(
             )
 
             Chip(
-                modifier = Modifier,
                 label = ChipLabel.Empty,
                 value = example.value.experience.title().text(),
                 size = ChipSize.Small,

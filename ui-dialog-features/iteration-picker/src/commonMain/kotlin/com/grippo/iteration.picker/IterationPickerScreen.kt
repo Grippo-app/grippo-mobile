@@ -131,7 +131,6 @@ internal fun IterationPickerScreen(
                     }
 
                     Chip(
-                        modifier = Modifier,
                         label = ChipLabel.Empty,
                         stype = ChipStype.Clickable(clickProvider),
                         value = "${item.volume.short()} ${item.repetitions.short()}",

@@ -137,6 +137,7 @@
     <string name="timeout_error">Час очікування минув</string>
     <string name="something_went_wrong">Щось пішло не так</string>
     <string name="unexpected_network_error">Неочікувана мережева помилка</string>
+    <string name="select_exercise">Виберіть вправу</string>
 
     <!-- Filter strings -->
     <string name="filter_weight_type">Тип ваги</string>

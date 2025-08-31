@@ -94,8 +94,7 @@ internal fun ExerciseExampleListScreen(
                     .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
                     .fillMaxWidth(),
                 value = item,
-                style = ExerciseExampleCardStyle.Wide,
-                onClick = clickProvider
+                style = ExerciseExampleCardStyle.Wide(onCardClick = clickProvider),
             )
         }
     }

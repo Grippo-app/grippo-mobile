@@ -91,7 +91,6 @@ public fun MenuCard(
 
             is MenuTrailing.Text -> {
                 Text(
-                    modifier = Modifier,
                     text = trailing.text.text(),
                     style = AppTokens.typography.b15Bold(),
                     color = AppTokens.colors.text.primary

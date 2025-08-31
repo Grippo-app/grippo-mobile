@@ -89,7 +89,6 @@ internal fun TrainingRecordingScreen(
                 }
 
                 Button(
-                    modifier = Modifier,
                     content = ButtonContent.Text(
                         text = AppTokens.strings.res(Res.string.save_btn),
                         endIcon = AppTokens.icons.NavArrowRight,
