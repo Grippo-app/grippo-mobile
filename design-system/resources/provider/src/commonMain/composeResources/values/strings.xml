@@ -162,6 +162,7 @@
     <string name="filter_weight_type">Weight type</string>
     <string name="filter_force_type">Force type</string>
     <string name="filter_category">Category</string>
+    <string name="filter_experience">Experience</string>
 
     <!-- ForceTypeEnumState -->
     <string name="force_type_pull">Pull</string>

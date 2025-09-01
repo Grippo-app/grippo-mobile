@@ -25,11 +25,10 @@ public data class ExerciseExampleValueState(
             add(FilterValue.Category(value = null))
             add(FilterValue.WeightType(value = null))
             add(FilterValue.ForceType(value = null))
-            // todo add ExperienceEnumState)
+            add(FilterValue.Experience(value = null))
         }.toPersistentList()
     }
 }
-
 
 public fun stubExerciseExampleValueState(): ExerciseExampleValueState {
     return ExerciseExampleValueState(
