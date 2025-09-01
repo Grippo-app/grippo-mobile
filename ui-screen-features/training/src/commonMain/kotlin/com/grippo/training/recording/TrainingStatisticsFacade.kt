@@ -4,10 +4,10 @@ import com.grippo.design.components.chart.DSAreaData
 import com.grippo.design.components.chart.DSBarData
 import com.grippo.design.components.chart.DSPieData
 import com.grippo.design.components.chart.DSProgressData
-import com.grippo.design.components.chart.DSRadarData
 import com.grippo.design.components.chart.DSSparklineData
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
+import com.grippo.state.exercise.examples.ExerciseExampleState
 import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.TrainingMetrics
 import com.grippo.training.recording.calculation.ExampleAnalyticsCalculator
@@ -88,13 +88,9 @@ internal class TrainingStatisticsFacade(
     // === Muscle Analytics ===
     suspend fun calculateMuscleLoadDistribution(
         exercises: List<ExerciseState>,
+        examples: List<ExerciseExampleState>
     ): DSProgressData =
-        muscles.calculateMuscleLoadDistribution(exercises)
-
-    suspend fun calculateMuscleGroupBalance(
-        exercises: List<ExerciseState>,
-    ): DSRadarData =
-        muscles.calculateMuscleGroupBalance(exercises)
+        muscles.calculateMuscleLoadDistribution(exercises, examples)
 
     suspend fun calculatePushPullBalance(
         exercises: List<ExerciseState>,

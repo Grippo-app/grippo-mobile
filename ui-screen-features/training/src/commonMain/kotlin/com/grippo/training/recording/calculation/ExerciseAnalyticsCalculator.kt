@@ -6,10 +6,8 @@ import com.grippo.design.components.chart.DSBarData
 import com.grippo.design.components.chart.DSBarItem
 import com.grippo.design.components.chart.DSProgressData
 import com.grippo.design.components.chart.DSProgressItem
-import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
-import com.grippo.design.resources.provider.volume
 import com.grippo.state.formatters.IntensityFormatState
 import com.grippo.state.trainings.ExerciseState
 
@@ -51,12 +49,7 @@ internal class ExerciseAnalyticsCalculator(
             )
         }
 
-        val yName = stringProvider.get(Res.string.volume)
-
-        return DSBarData(
-            items = items,
-            yName = yName,
-        )
+        return DSBarData(items = items)
     }
 
     /**
@@ -69,9 +62,7 @@ internal class ExerciseAnalyticsCalculator(
      * @param exercises list of exercises with iterations.
      * @return [DSBarData] showing relative exercise intensity.
      */
-    suspend fun calculateIntensityDistribution(
-        exercises: List<ExerciseState>,
-    ): DSBarData {
+    suspend fun calculateIntensityDistribution(exercises: List<ExerciseState>): DSBarData {
         val colors = colorProvider.get()
         val palette = colors.charts.categorical.palette
 
@@ -104,9 +95,7 @@ internal class ExerciseAnalyticsCalculator(
             )
         }
 
-        return DSBarData(
-            items = items,
-        )
+        return DSBarData(items = items)
     }
 
     /**
@@ -176,9 +165,7 @@ internal class ExerciseAnalyticsCalculator(
                 )
             }
 
-        return DSProgressData(
-            items = items,
-        )
+        return DSProgressData(items = items)
     }
 
     /**

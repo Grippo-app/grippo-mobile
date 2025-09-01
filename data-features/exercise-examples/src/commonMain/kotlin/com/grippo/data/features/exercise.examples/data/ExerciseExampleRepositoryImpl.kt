@@ -23,6 +23,12 @@ internal class ExerciseExampleRepositoryImpl(
             .map { it.toDomain() }
     }
 
+    override fun observeExerciseExamples(ids: List<String>): Flow<List<ExerciseExample>> {
+        return exerciseExampleDao
+            .get(ids)
+            .map { it.toDomain() }
+    }
+
     override fun observeExerciseExample(id: String): Flow<ExerciseExample?> {
         return exerciseExampleDao
             .getById(id)

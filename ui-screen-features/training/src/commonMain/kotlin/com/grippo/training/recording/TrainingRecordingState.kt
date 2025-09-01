@@ -6,8 +6,8 @@ import com.grippo.design.components.chart.DSAreaData
 import com.grippo.design.components.chart.DSBarData
 import com.grippo.design.components.chart.DSPieData
 import com.grippo.design.components.chart.DSProgressData
-import com.grippo.design.components.chart.DSRadarData
 import com.grippo.design.components.chart.DSSparklineData
+import com.grippo.state.exercise.examples.ExerciseExampleState
 import com.grippo.state.formatters.IntensityFormatState
 import com.grippo.state.formatters.RepetitionsFormatState
 import com.grippo.state.formatters.VolumeFormatState
@@ -20,6 +20,7 @@ import kotlinx.datetime.LocalDateTime
 internal data class TrainingRecordingState(
     val tab: RecordingTab = RecordingTab.Exercises,
     val exercises: ImmutableList<ExerciseState> = persistentListOf(),
+    val examples: ImmutableList<ExerciseExampleState> = persistentListOf(),
     val startAt: LocalDateTime = DateTimeUtils.now(),
 
     // === Basic metrics ===
@@ -36,7 +37,6 @@ internal data class TrainingRecordingState(
 
     // === Muscle analysis ===
     val muscleLoadData: DSProgressData = DSProgressData(items = emptyList()),
-    val muscleGroupBalanceData: DSRadarData = DSRadarData(axes = emptyList(), series = emptyList()),
 
     // === Performance ===
     val workoutEfficiencyData: DSProgressData = DSProgressData(items = emptyList()),

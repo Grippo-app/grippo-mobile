@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.Flow
 internal interface ExerciseExampleRepository {
     fun observeExerciseExamples(): Flow<List<ExerciseExample>>
 
+    fun observeExerciseExamples(ids: List<String>): Flow<List<ExerciseExample>>
+
     fun observeExerciseExample(id: String): Flow<ExerciseExample?>
 
     suspend fun getExerciseExamples(): Result<Unit>

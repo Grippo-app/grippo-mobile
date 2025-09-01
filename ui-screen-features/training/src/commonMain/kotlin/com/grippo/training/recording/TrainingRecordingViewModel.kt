@@ -1,11 +1,11 @@
 package com.grippo.training.recording
 
 import com.grippo.core.BaseViewModel
+import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.design.components.chart.DSAreaData
 import com.grippo.design.components.chart.DSBarData
 import com.grippo.design.components.chart.DSPieData
 import com.grippo.design.components.chart.DSProgressData
-import com.grippo.design.components.chart.DSRadarData
 import com.grippo.design.components.chart.DSSparklineData
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.providers.ColorProvider
@@ -21,9 +21,13 @@ import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.TrainingMetrics
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlin.uuid.Uuid
 
 internal class TrainingRecordingViewModel(
+    private val exerciseExampleFeature: ExerciseExampleFeature,
     private val dialogController: DialogController,
     private val stringProvider: StringProvider,
     private val colorProvider: ColorProvider,
@@ -35,6 +39,14 @@ internal class TrainingRecordingViewModel(
         stringProvider = stringProvider,
         colorProvider = colorProvider
     )
+
+    init {
+        state
+            .map { it.exercises.mapNotNull { m -> m.exerciseExample?.id }.toSet().toList() }
+            .distinctUntilChanged()
+            .flatMapLatest { ids -> exerciseExampleFeature.observeExerciseExamples(ids) }
+            .safeLaunch()
+    }
 
     override fun onAddExercise() {
         val dialog = DialogConfig.ExerciseExamplePicker(
@@ -124,6 +136,7 @@ internal class TrainingRecordingViewModel(
         colorProvider.get()
 
         val exercises = state.value.exercises
+        val examples = state.value.examples
 
         if (exercises.isEmpty()) {
             // Reset statistics to empty state
@@ -138,7 +151,6 @@ internal class TrainingRecordingViewModel(
                     experienceDistributionData = DSPieData(slices = emptyList()),
                     weightTypeDistributionData = DSPieData(slices = emptyList()),
                     muscleLoadData = DSProgressData(items = emptyList()),
-                    muscleGroupBalanceData = DSRadarData(axes = emptyList(), series = emptyList()),
                     workoutEfficiencyData = DSProgressData(items = emptyList()),
                     timeUnderTensionData = DSProgressData(items = emptyList()),
                     energyExpenditureData = DSProgressData(items = emptyList()),
@@ -190,10 +202,7 @@ internal class TrainingRecordingViewModel(
 
 
         val muscleLoadData = statisticsCalculator
-            .calculateMuscleLoadDistribution(exercises)
-
-        val muscleGroupBalanceData = statisticsCalculator
-            .calculateMuscleGroupBalance(exercises)
+            .calculateMuscleLoadDistribution(exercises, examples)
 
         val workoutEfficiencyData = statisticsCalculator
             .calculateWorkoutEfficiency(exercises, workoutDurationMinutes)
@@ -242,7 +251,6 @@ internal class TrainingRecordingViewModel(
                 forceTypeDistributionData = forceTypeDistributionData,
                 experienceDistributionData = experienceDistributionData,
                 muscleLoadData = muscleLoadData,
-                muscleGroupBalanceData = muscleGroupBalanceData,
                 workoutEfficiencyData = workoutEfficiencyData,
                 timeUnderTensionData = timeUnderTensionData,
                 energyExpenditureData = energyExpenditureData,

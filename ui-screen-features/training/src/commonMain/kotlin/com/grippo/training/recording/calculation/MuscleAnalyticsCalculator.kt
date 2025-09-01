@@ -4,53 +4,64 @@ import com.grippo.design.components.chart.DSPieData
 import com.grippo.design.components.chart.DSPieSlice
 import com.grippo.design.components.chart.DSProgressData
 import com.grippo.design.components.chart.DSProgressItem
-import com.grippo.design.components.chart.DSRadarAxis
-import com.grippo.design.components.chart.DSRadarData
-import com.grippo.design.components.chart.DSRadarSeries
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
-import com.grippo.state.exercise.examples.CategoryEnumState
+import com.grippo.state.exercise.examples.ExerciseExampleState
 import com.grippo.state.exercise.examples.ForceTypeEnumState
+import com.grippo.state.muscles.MuscleEnumState
 import com.grippo.state.trainings.ExerciseState
 
 internal class MuscleAnalyticsCalculator(
     private val stringProvider: StringProvider,
     private val colorProvider: ColorProvider,
 ) {
+    private companion object {
+        private const val MAX_VISIBLE_MUSCLES = 8
+    }
+
+    /**
+     * Distribution of load per muscle (top 8).
+     *
+     * Load = exercise volume × bundle.percentage
+     */
     suspend fun calculateMuscleLoadDistribution(
         exercises: List<ExerciseState>,
+        examples: List<ExerciseExampleState>
     ): DSProgressData {
         val colors = colorProvider.get()
-        // Calculate muscle load based on exercise volume and muscle involvement
-        val muscleLoads = mutableMapOf<String, Float>()
+        val muscleLoads = mutableMapOf<MuscleEnumState, Float>()
+
+        val exampleMap = examples.associateBy { it.value.id }
 
         exercises.forEach { exercise ->
-            val exerciseVolume =
-                exercise.iterations.sumOf { it.volume.value?.toDouble() ?: 0.0 }.toFloat()
+            val exerciseVolume = exercise.iterations
+                .sumOf { it.volume.value?.toDouble() ?: 0.0 }
+                .toFloat()
 
-            // Get muscle involvement based on exercise type and category
-            val muscleInvolvement = getMuscleInvolvementForExercise(exercise)
+            val exampleId = exercise.exerciseExample?.id ?: return@forEach
+            val example = exampleMap[exampleId] ?: return@forEach
 
-            muscleInvolvement.forEach { (muscleName, percentage) ->
+            example.bundles.forEach { bundle ->
+                val percentage = bundle.percentage.value ?: 0
+                if (percentage <= 0) return@forEach
                 val load = exerciseVolume * (percentage / 100f)
-                muscleLoads[muscleName] = (muscleLoads[muscleName] ?: 0f) + load
+                muscleLoads[bundle.muscle.type] =
+                    (muscleLoads[bundle.muscle.type] ?: 0f) + load
             }
         }
 
-        if (muscleLoads.isEmpty()) {
-            return DSProgressData(items = emptyList())
-        }
+        if (muscleLoads.isEmpty()) return DSProgressData(items = emptyList())
 
         val palette = colors.charts.progress.palette
         val maxLoad = muscleLoads.values.maxOrNull() ?: 1f
 
         val items = muscleLoads.entries
             .sortedByDescending { it.value }
-            .take(8) // Show top 8 muscles
-            .mapIndexed { index, (muscleName, load) ->
+            .take(MAX_VISIBLE_MUSCLES)
+            .mapIndexed { index, (muscle, load) ->
                 val percentage = (load / maxLoad) * 100f
                 DSProgressItem(
-                    label = muscleName,
+                    label = muscle.title().text(stringProvider),
                     value = percentage,
                     color = palette[index % palette.size]
                 )
@@ -63,47 +74,11 @@ internal class MuscleAnalyticsCalculator(
         )
     }
 
-    suspend fun calculateMuscleGroupBalance(
-        exercises: List<ExerciseState>,
-    ): DSRadarData {
-        val colors = colorProvider.get()
-        val muscleGroupLoads = mutableMapOf<String, Float>()
-
-        exercises.forEach { exercise ->
-            val exerciseVolume =
-                exercise.iterations.sumOf { it.volume.value?.toDouble() ?: 0.0 }.toFloat()
-            val muscleInvolvement = getMuscleInvolvementForExercise(exercise)
-
-            muscleInvolvement.forEach { (muscleName, percentage) ->
-                val muscleGroup = mapMuscleToGroup(muscleName)
-                val load = exerciseVolume * (percentage / 100f)
-                muscleGroupLoads[muscleGroup] = (muscleGroupLoads[muscleGroup] ?: 0f) + load
-            }
-        }
-
-        val maxLoad = muscleGroupLoads.values.maxOrNull() ?: 1f
-        val axes = listOf("Push", "Pull", "Legs", "Core").map { DSRadarAxis(it, it) }
-
-        val normalizedValues = mapOf(
-            "Push" to ((muscleGroupLoads["Push"] ?: 0f) / maxLoad),
-            "Pull" to ((muscleGroupLoads["Pull"] ?: 0f) / maxLoad),
-            "Legs" to ((muscleGroupLoads["Legs"] ?: 0f) / maxLoad),
-            "Core" to ((muscleGroupLoads["Core"] ?: 0f) / maxLoad)
-        )
-
-        val series = listOf(
-            DSRadarSeries(
-                name = "Current Load",
-                color = colors.charts.radar.palette.firstOrNull() ?: colors.text.primary,
-                valuesByAxisId = normalizedValues
-            )
-        )
-
-        return DSRadarData(axes = axes, series = series)
-    }
-
+    /**
+     * Push / Pull / Other balance based on ForceType.
+     */
     suspend fun calculatePushPullBalance(
-        exercises: List<ExerciseState>,
+        exercises: List<ExerciseState>
     ): DSPieData {
         val colors = colorProvider.get()
         var pushVolume = 0f
@@ -111,8 +86,9 @@ internal class MuscleAnalyticsCalculator(
         var otherVolume = 0f
 
         exercises.forEach { exercise ->
-            val exerciseVolume =
-                exercise.iterations.sumOf { it.volume.value?.toDouble() ?: 0.0 }.toFloat()
+            val exerciseVolume = exercise.iterations
+                .sumOf { it.volume.value?.toDouble() ?: 0.0 }
+                .toFloat()
 
             when (exercise.exerciseExample?.forceType) {
                 ForceTypeEnumState.PUSH -> pushVolume += exerciseVolume
@@ -129,101 +105,5 @@ internal class MuscleAnalyticsCalculator(
         )
 
         return DSPieData(slices = slices)
-    }
-
-    private fun getMuscleInvolvementForExercise(exercise: ExerciseState): Map<String, Float> {
-        val category = exercise.exerciseExample?.category
-        val forceType = exercise.exerciseExample?.forceType
-        val exerciseName = exercise.name.lowercase()
-
-        // Create realistic muscle involvement based on exercise patterns
-        return when {
-            // Chest exercises
-            exerciseName.contains("bench") || exerciseName.contains("press") && exerciseName.contains(
-                "chest"
-            ) -> mapOf(
-                "Chest" to 60f,
-                "Triceps" to 25f,
-                "Front Delts" to 15f
-            )
-
-            // Pull exercises (rows, pull-ups, etc.)
-            exerciseName.contains("row") || exerciseName.contains("pull") -> mapOf(
-                "Lats" to 40f,
-                "Rhomboids" to 25f,
-                "Rear Delts" to 20f,
-                "Biceps" to 15f
-            )
-
-            // Squat variations
-            exerciseName.contains("squat") -> mapOf(
-                "Quadriceps" to 45f,
-                "Glutes" to 30f,
-                "Hamstrings" to 15f,
-                "Core" to 10f
-            )
-
-            // Deadlift variations
-            exerciseName.contains("deadlift") -> mapOf(
-                "Hamstrings" to 35f,
-                "Glutes" to 30f,
-                "Lower Back" to 20f,
-                "Traps" to 15f
-            )
-
-            // Shoulder exercises
-            exerciseName.contains("shoulder") || exerciseName.contains("deltoid") -> mapOf(
-                "Front Delts" to 40f,
-                "Side Delts" to 35f,
-                "Rear Delts" to 25f
-            )
-
-            // Arm exercises
-            exerciseName.contains("curl") -> mapOf(
-                "Biceps" to 80f,
-                "Forearms" to 20f
-            )
-
-            exerciseName.contains("tricep") || exerciseName.contains("extension") -> mapOf(
-                "Triceps" to 85f,
-                "Front Delts" to 15f
-            )
-
-            // Based on category if name doesn't match
-            category == CategoryEnumState.COMPOUND -> when (forceType) {
-                ForceTypeEnumState.PUSH -> mapOf(
-                    "Chest" to 40f,
-                    "Triceps" to 30f,
-                    "Front Delts" to 30f
-                )
-
-                ForceTypeEnumState.PULL -> mapOf(
-                    "Lats" to 40f,
-                    "Rhomboids" to 30f,
-                    "Biceps" to 30f
-                )
-
-                ForceTypeEnumState.HINGE -> mapOf(
-                    "Hamstrings" to 40f,
-                    "Glutes" to 35f,
-                    "Lower Back" to 25f
-                )
-
-                else -> mapOf("Full Body" to 100f)
-            }
-
-            // Isolation exercises
-            else -> mapOf("Target Muscle" to 100f)
-        }
-    }
-
-    private fun mapMuscleToGroup(muscleName: String): String {
-        return when (muscleName.lowercase()) {
-            "chest", "triceps", "front delts" -> "Push"
-            "lats", "rhomboids", "rear delts", "biceps", "traps" -> "Pull"
-            "quadriceps", "glutes", "hamstrings", "calves" -> "Legs"
-            "core", "lower back" -> "Core"
-            else -> "Other"
-        }
     }
 }

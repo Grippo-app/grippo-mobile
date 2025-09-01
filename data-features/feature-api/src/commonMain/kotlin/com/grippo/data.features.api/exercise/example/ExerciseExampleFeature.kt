@@ -7,6 +7,8 @@ public interface ExerciseExampleFeature {
 
     public fun observeExerciseExamples(): Flow<List<ExerciseExample>>
 
+    public fun observeExerciseExamples(ids: List<String>): Flow<List<ExerciseExample>>
+
     public fun observeExerciseExample(id: String): Flow<ExerciseExample?>
 
     public suspend fun getExerciseExamples(): Result<Unit>

@@ -23,6 +23,10 @@ public interface ExerciseExampleDao {
     @Query("SELECT * FROM exercise_example ORDER BY updatedAt DESC")
     public fun get(): Flow<List<ExerciseExamplePack>>
 
+    @Transaction
+    @Query("SELECT * FROM exercise_example WHERE id IN (:ids) ORDER BY updatedAt DESC")
+    public fun get(ids: List<String>): Flow<List<ExerciseExamplePack>>
+
     // ────────────── INSERT ──────────────
 
     @Transaction
