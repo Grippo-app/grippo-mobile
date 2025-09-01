@@ -157,6 +157,16 @@ public object DarkColor : AppColor {
         }
     }
 
+    public override val profile: AppColor.ProfileColors = object : AppColor.ProfileColors {
+        override val experienceColors: AppColor.ProfileColors.ExperienceColors =
+            object : AppColor.ProfileColors.ExperienceColors {
+                override val beginner: Color = AppPalette.Semantic.Success
+                override val intermediate: Color = AppPalette.Semantic.Warning
+                override val advanced: Color = AppPalette.Semantic.Error
+                override val pro: Color = AppPalette.Primary.P500
+            }
+    }
+
     public override val example: AppColor.ExampleColors = object : AppColor.ExampleColors {
         override val category: AppColor.ExampleColors.CategoryColors =
             object : AppColor.ExampleColors.CategoryColors {

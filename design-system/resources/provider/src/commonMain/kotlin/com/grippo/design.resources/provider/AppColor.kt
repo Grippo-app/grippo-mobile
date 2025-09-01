@@ -23,6 +23,7 @@ public interface AppColor {
     public val radio: RadioColors
     public val charts: Charts
     public val example: ExampleColors
+    public val profile: ProfileColors
 
     public interface DividerColors {
         public val default: Color
@@ -133,6 +134,17 @@ public interface AppColor {
         public val disabled: Color
         public val accent: Color
         public val inverted: Color
+    }
+
+    public interface ProfileColors {
+        public val experienceColors: ExperienceColors
+
+        public interface ExperienceColors {
+            public val beginner: Color
+            public val intermediate: Color
+            public val advanced: Color
+            public val pro: Color
+        }
     }
 
     public interface ExampleColors {

@@ -4,6 +4,10 @@ import com.grippo.design.components.chart.DSPieData
 import com.grippo.design.components.chart.DSPieSlice
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
+import com.grippo.state.exercise.examples.CategoryEnumState
+import com.grippo.state.exercise.examples.ForceTypeEnumState
+import com.grippo.state.exercise.examples.WeightTypeEnumState
+import com.grippo.state.profile.ExperienceEnumState
 import com.grippo.state.trainings.ExerciseState
 
 internal class ExampleAnalyticsCalculator(
@@ -23,13 +27,16 @@ internal class ExampleAnalyticsCalculator(
             return DSPieData(slices = emptyList())
         }
 
-        val palette = colors.charts.categorical.palette
         val slices = categoryGroups.entries.mapIndexed { index, (category, count) ->
             DSPieSlice(
                 id = category.name,
                 label = category.title().text(stringProvider),
                 value = count.toFloat(),
-                color = palette[index % palette.size]
+                color = when (category) {
+                    CategoryEnumState.COMPOUND -> colors.example.category.compound
+                    CategoryEnumState.ISOLATION -> colors.example.category.isolation
+                }
+
             )
         }
 
@@ -50,13 +57,16 @@ internal class ExampleAnalyticsCalculator(
             return DSPieData(slices = emptyList())
         }
 
-        val palette = colors.charts.categorical.palette
         val slices = categoryGroups.entries.mapIndexed { index, (category, count) ->
             DSPieSlice(
                 id = category.name,
                 label = category.title().text(stringProvider),
                 value = count.toFloat(),
-                color = palette[index % palette.size]
+                color = when (category) {
+                    WeightTypeEnumState.FREE -> colors.example.weightType.free
+                    WeightTypeEnumState.FIXED -> colors.example.weightType.fixed
+                    WeightTypeEnumState.BODY_WEIGHT -> colors.example.weightType.bodyWeight
+                }
             )
         }
 
@@ -77,13 +87,16 @@ internal class ExampleAnalyticsCalculator(
             return DSPieData(slices = emptyList())
         }
 
-        val palette = colors.charts.categorical.palette
         val slices = categoryGroups.entries.mapIndexed { index, (category, count) ->
             DSPieSlice(
                 id = category.name,
                 label = category.title().text(stringProvider),
                 value = count.toFloat(),
-                color = palette[index % palette.size]
+                color = when (category) {
+                    ForceTypeEnumState.PULL -> colors.example.forceType.pull
+                    ForceTypeEnumState.PUSH -> colors.example.forceType.push
+                    ForceTypeEnumState.HINGE -> colors.example.forceType.hinge
+                }
             )
         }
 
@@ -104,13 +117,17 @@ internal class ExampleAnalyticsCalculator(
             return DSPieData(slices = emptyList())
         }
 
-        val palette = colors.charts.categorical.palette
         val slices = categoryGroups.entries.mapIndexed { index, (category, count) ->
             DSPieSlice(
                 id = category.name,
                 label = category.title().text(stringProvider),
                 value = count.toFloat(),
-                color = palette[index % palette.size]
+                color = when (category) {
+                    ExperienceEnumState.BEGINNER -> colors.profile.experienceColors.beginner
+                    ExperienceEnumState.INTERMEDIATE -> colors.profile.experienceColors.intermediate
+                    ExperienceEnumState.ADVANCED -> colors.profile.experienceColors.advanced
+                    ExperienceEnumState.PRO -> colors.profile.experienceColors.pro
+                }
             )
         }
 
