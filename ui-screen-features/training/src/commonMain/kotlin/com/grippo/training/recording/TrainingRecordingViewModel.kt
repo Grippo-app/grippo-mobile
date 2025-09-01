@@ -155,7 +155,6 @@ internal class TrainingRecordingViewModel(
                     rpeAnalysisData = DSBarData(items = emptyList()),
                     estimated1RMData = DSBarData(items = emptyList()),
                     workoutDensityData = DSSparklineData(points = emptyList()),
-                    exerciseTypeDistributionData = DSBarData(items = emptyList())
                 )
             }
             return
@@ -163,12 +162,11 @@ internal class TrainingRecordingViewModel(
 
         val workoutDurationMinutes = exercises.size * 15
 
+        // Total
         val totalMetrics = statisticsCalculator
             .calculateTotalMetrics(exercises)
 
-        val exerciseVolumeData = statisticsCalculator
-            .calculateExerciseVolumeChart(exercises)
-
+        // ExampleAnalytics
         val categoryDistributionData = statisticsCalculator
             .calculateCategoryDistribution(exercises)
         val weightTypeDistributionData = statisticsCalculator
@@ -178,49 +176,62 @@ internal class TrainingRecordingViewModel(
         val experienceDistributionData = statisticsCalculator
             .calculateExperienceDistribution(exercises)
 
-        statisticsCalculator
+        // ExerciseAnalytics
+        val exerciseVolumeData = statisticsCalculator
+            .calculateExerciseVolumeChart(exercises)
+
+        val muscleLoadData = statisticsCalculator
             .calculateMuscleLoadDistribution(exercises)
 
-        statisticsCalculator
+        val muscleGroupBalanceData = statisticsCalculator
             .calculateMuscleGroupBalance(exercises)
 
-        statisticsCalculator
+        val workoutEfficiencyData = statisticsCalculator
             .calculateWorkoutEfficiency(exercises, workoutDurationMinutes)
 
-        statisticsCalculator
+        val timeUnderTensionData = statisticsCalculator
             .calculateTimeUnderTension(exercises)
 
-        statisticsCalculator // 75kg default weight
+        val energyExpenditureData = statisticsCalculator // 75kg default weight
             .calculateEnergyExpenditure(exercises, 75f)
 
-        statisticsCalculator
+        val intraWorkoutProgressionData = statisticsCalculator
             .calculateIntraWorkoutProgression(exercises)
-        statisticsCalculator
+
+        val loadOverTimeData = statisticsCalculator
             .calculateLoadOverTime(exercises)
-        statisticsCalculator
+
+        val fatigueProgressionData = statisticsCalculator
             .calculateFatigueProgression(exercises)
 
-        statisticsCalculator
+        val pushPullBalanceData = statisticsCalculator
             .calculatePushPullBalance(exercises)
-        statisticsCalculator
+
+        val repRangeDistributionData = statisticsCalculator
             .calculateRepRangeDistribution(exercises)
-        statisticsCalculator
+
+        val movementPatternsData = statisticsCalculator
             .calculateMovementPatterns(exercises)
 
-        statisticsCalculator
+        val executionQualityData = statisticsCalculator
             .calculateExecutionQuality(exercises)
-        statisticsCalculator
+
+        val techniqueQualityData = statisticsCalculator
             .calculateTechniqueQuality(exercises)
-        statisticsCalculator
+
+        val weakPointsData = statisticsCalculator
             .calculateWeakPoints(exercises)
 
-        statisticsCalculator
+        val intensityDistributionData = statisticsCalculator
             .calculateIntensityDistribution(exercises)
-        statisticsCalculator
+
+        val rpeAnalysisData = statisticsCalculator
             .calculateRPEAnalysis(exercises)
-        statisticsCalculator
+
+        val estimated1RMData = statisticsCalculator
             .calculateEstimated1RM(exercises)
-        statisticsCalculator
+
+        val workoutDensityData = statisticsCalculator
             .calculateWorkoutDensity(exercises, workoutDurationMinutes)
 
         update {
@@ -233,27 +244,24 @@ internal class TrainingRecordingViewModel(
                 weightTypeDistributionData = weightTypeDistributionData,
                 forceTypeDistributionData = forceTypeDistributionData,
                 experienceDistributionData = experienceDistributionData,
-
-
-//                muscleLoadData = muscleLoadData,
-//                muscleGroupBalanceData = muscleGroupBalanceData,
-//                workoutEfficiencyData = workoutEfficiencyData,
-//                timeUnderTensionData = timeUnderTensionData,
-//                energyExpenditureData = energyExpenditureData,
-//                intraWorkoutProgressionData = intraWorkoutProgressionData,
-//                loadOverTimeData = loadOverTimeData,
-//                fatigueProgressionData = fatigueProgressionData,
-//                pushPullBalanceData = pushPullBalanceData,
-//                repRangeDistributionData = repRangeDistributionData,
-//                movementPatternsData = movementPatternsData,
-//                executionQualityData = executionQualityData,
-//                techniqueQualityData = techniqueQualityData,
-//                weakPointsData = weakPointsData,
-//                intensityDistributionData = intensityDistributionData,
-//                rpeAnalysisData = rpeAnalysisData,
-//                estimated1RMData = estimated1RMData,
-//                workoutDensityData = workoutDensityData,
-//                exerciseTypeDistributionData = exerciseTypeDistributionData
+                muscleLoadData = muscleLoadData,
+                muscleGroupBalanceData = muscleGroupBalanceData,
+                workoutEfficiencyData = workoutEfficiencyData,
+                timeUnderTensionData = timeUnderTensionData,
+                energyExpenditureData = energyExpenditureData,
+                intraWorkoutProgressionData = intraWorkoutProgressionData,
+                loadOverTimeData = loadOverTimeData,
+                fatigueProgressionData = fatigueProgressionData,
+                pushPullBalanceData = pushPullBalanceData,
+                repRangeDistributionData = repRangeDistributionData,
+                movementPatternsData = movementPatternsData,
+                executionQualityData = executionQualityData,
+                techniqueQualityData = techniqueQualityData,
+                weakPointsData = weakPointsData,
+                intensityDistributionData = intensityDistributionData,
+                rpeAnalysisData = rpeAnalysisData,
+                estimated1RMData = estimated1RMData,
+                workoutDensityData = workoutDensityData,
             )
         }
     }

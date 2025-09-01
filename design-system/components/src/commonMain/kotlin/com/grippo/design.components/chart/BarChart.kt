@@ -32,10 +32,17 @@ public data class DSBarData(
     val yUnit: String? = null,
 )
 
+@Immutable
+public enum class XAxisLabelStyle {
+    ADAPTIVE,
+    SHOW_ALL,
+}
+
 @Composable
 public fun BarChart(
     modifier: Modifier = Modifier,
     data: DSBarData,
+    xAxisLabelStyle: XAxisLabelStyle
 ) {
     val style = BarStyle(
         layout = BarStyle.Layout(
@@ -57,10 +64,18 @@ public fun BarChart(
             color = AppTokens.colors.divider.default,
             width = 1.dp
         ),
-        xAxis = BarStyle.XAxis.LabelsAdaptive(
-            textStyle = AppTokens.typography.b11Reg().copy(color = AppTokens.colors.text.secondary),
-            minGapDp = 1.dp
-        ),
+        xAxis = when (xAxisLabelStyle) {
+            XAxisLabelStyle.ADAPTIVE -> BarStyle.XAxis.LabelsAdaptive(
+                textStyle = AppTokens.typography.b11Reg()
+                    .copy(color = AppTokens.colors.text.secondary),
+                minGapDp = 1.dp
+            )
+
+            XAxisLabelStyle.SHOW_ALL -> BarStyle.XAxis.LabelsShowAll(
+                textStyle = AppTokens.typography.b11Reg()
+                    .copy(color = AppTokens.colors.text.secondary),
+            )
+        },
         xBaseline = BarStyle.Baseline(
             color = AppTokens.colors.divider.default,
             width = 3.dp
@@ -126,7 +141,8 @@ private fun BarChartPreview() {
 
         BarChart(
             modifier = Modifier.size(300.dp),
-            data = ds
+            data = ds,
+            xAxisLabelStyle = XAxisLabelStyle.ADAPTIVE
         )
     }
 }

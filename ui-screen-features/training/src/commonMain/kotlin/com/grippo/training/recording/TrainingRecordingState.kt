@@ -63,9 +63,6 @@ internal data class TrainingRecordingState(
     val rpeAnalysisData: DSBarData = DSBarData(items = emptyList()),
     val estimated1RMData: DSBarData = DSBarData(items = emptyList()),
     val workoutDensityData: DSSparklineData = DSSparklineData(points = emptyList()),
-
-    // === Additinal ===
-    val exerciseTypeDistributionData: DSBarData = DSBarData(items = emptyList())
 )
 
 @Immutable

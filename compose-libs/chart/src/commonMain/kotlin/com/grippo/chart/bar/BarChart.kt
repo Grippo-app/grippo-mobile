@@ -380,13 +380,35 @@ public fun BarChart(
                     val left = startX + i * (bw + sp)
                     left + bw / 2f
                 }
-                val layouts = xAxisSpecs
-                for (i in data.items.indices) {
-                    val lay = layouts[i]
-                    val w = lay.size.width.toFloat()
+
+                data.items.indices.forEach { i ->
+                    val maxWidth = bw
+                    val style = xCfg.textStyle
+
+                    var text = data.items[i].label
+                    var layout = measurer.measure(AnnotatedString(text), style)
+
+                    // truncate with ellipsis if needed
+                    if (layout.size.width > maxWidth) {
+                        val ellipsis = "…"
+                        var cut = text.length
+                        while (cut > 0) {
+                            val candidate = text.take(cut) + ellipsis
+                            val candidateLayout =
+                                measurer.measure(AnnotatedString(candidate), style)
+                            if (candidateLayout.size.width <= maxWidth) {
+                                text = candidate
+                                layout = candidateLayout
+                                break
+                            }
+                            cut--
+                        }
+                    }
+
+                    val w = layout.size.width.toFloat()
                     val cx = centers[i]
                     val left = (cx - w / 2f).coerceIn(chart.left, chart.right - w)
-                    drawText(lay, topLeft = Offset(left, chart.bottom))
+                    drawText(layout, topLeft = Offset(left, chart.bottom))
                 }
             }
 

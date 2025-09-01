@@ -66,6 +66,23 @@ public sealed class IntensityFormatState : FormatState<Float> {
         return "${value?.roundToInt() ?: "-"}${percent}"
     }
 
+    @Immutable
+    public enum class Average {
+        LOW,
+        MEDIUM,
+        LARGE
+    }
+
+    public fun average(): Average? {
+        val v = value ?: return null
+
+        return when {
+            v < 20f -> Average.LOW
+            v < 40f -> Average.MEDIUM
+            else -> Average.LARGE
+        }
+    }
+
     private object IntensityValidator {
         fun isValid(value: Float): Boolean {
             return true

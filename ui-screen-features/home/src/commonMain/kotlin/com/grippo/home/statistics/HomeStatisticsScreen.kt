@@ -23,6 +23,7 @@ import com.grippo.design.components.chart.HeatmapChart
 import com.grippo.design.components.chart.ProgressChart
 import com.grippo.design.components.chart.RadarChart
 import com.grippo.design.components.chart.Sparkline
+import com.grippo.design.components.chart.XAxisLabelStyle
 import com.grippo.design.components.chip.IntensityChip
 import com.grippo.design.components.chip.IntensityChipStyle
 import com.grippo.design.components.chip.RepetitionsChip
@@ -131,7 +132,8 @@ internal fun HomeStatisticsScreen(
                 content = {
                     BarChart(
                         modifier = Modifier.fillMaxWidth().weight(1f),
-                        data = state.barData
+                        data = state.barData,
+                        xAxisLabelStyle = XAxisLabelStyle.ADAPTIVE
                     )
                 }
             )
