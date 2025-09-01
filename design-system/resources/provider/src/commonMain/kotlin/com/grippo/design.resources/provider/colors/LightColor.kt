@@ -157,6 +157,28 @@ public object LightColor : AppColor {
         }
     }
 
+    public override val example: AppColor.ExampleColors = object : AppColor.ExampleColors {
+        override val category: AppColor.ExampleColors.CategoryColors =
+            object : AppColor.ExampleColors.CategoryColors {
+                override val compound: Color = AppPalette.Semantic.Success
+                override val isolation: Color = AppPalette.Semantic.Error
+
+            }
+        override val weightType: AppColor.ExampleColors.WeightTypeColors =
+            object : AppColor.ExampleColors.WeightTypeColors {
+                override val free: Color = AppPalette.Semantic.Success
+                override val fixed: Color = AppPalette.Semantic.Warning
+                override val bodyWeight: Color = AppPalette.Semantic.Error
+
+            }
+        override val forceType: AppColor.ExampleColors.ForceTypeColors =
+            object : AppColor.ExampleColors.ForceTypeColors {
+                override val pull: Color = AppPalette.Semantic.Success
+                override val push: Color = AppPalette.Semantic.Warning
+                override val hinge: Color = AppPalette.Semantic.Error
+            }
+    }
+
     override val muscle: AppColor.MuscleColors = object : AppColor.MuscleColors {
         override val focused = AppPalette.Primary.P600
         override val active = AppPalette.Primary.P400

@@ -22,6 +22,7 @@ public interface AppColor {
     public val theme: ThemeColors
     public val radio: RadioColors
     public val charts: Charts
+    public val example: ExampleColors
 
     public interface DividerColors {
         public val default: Color
@@ -132,6 +133,29 @@ public interface AppColor {
         public val disabled: Color
         public val accent: Color
         public val inverted: Color
+    }
+
+    public interface ExampleColors {
+        public val category: CategoryColors
+        public val weightType: WeightTypeColors
+        public val forceType: ForceTypeColors
+
+        public interface CategoryColors {
+            public val compound: Color
+            public val isolation: Color
+        }
+
+        public interface WeightTypeColors {
+            public val free: Color
+            public val fixed: Color
+            public val bodyWeight: Color
+        }
+
+        public interface ForceTypeColors {
+            public val pull: Color
+            public val push: Color
+            public val hinge: Color
+        }
     }
 
     public interface MuscleColors {
