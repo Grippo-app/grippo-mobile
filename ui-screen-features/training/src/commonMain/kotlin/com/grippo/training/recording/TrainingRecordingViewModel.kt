@@ -179,6 +179,15 @@ internal class TrainingRecordingViewModel(
         // ExerciseAnalytics
         val exerciseVolumeData = statisticsCalculator
             .calculateExerciseVolumeChart(exercises)
+        val intensityDistributionData = statisticsCalculator
+            .calculateIntensityDistribution(exercises)
+        val intraWorkoutProgressionData = statisticsCalculator
+            .calculateIntraWorkoutProgression(exercises)
+        val weakPointsData = statisticsCalculator
+            .calculateWeakPoints(exercises)
+        val estimated1RMData = statisticsCalculator
+            .calculateEstimated1RM(exercises)
+
 
         val muscleLoadData = statisticsCalculator
             .calculateMuscleLoadDistribution(exercises)
@@ -194,9 +203,6 @@ internal class TrainingRecordingViewModel(
 
         val energyExpenditureData = statisticsCalculator // 75kg default weight
             .calculateEnergyExpenditure(exercises, 75f)
-
-        val intraWorkoutProgressionData = statisticsCalculator
-            .calculateIntraWorkoutProgression(exercises)
 
         val loadOverTimeData = statisticsCalculator
             .calculateLoadOverTime(exercises)
@@ -219,17 +225,8 @@ internal class TrainingRecordingViewModel(
         val techniqueQualityData = statisticsCalculator
             .calculateTechniqueQuality(exercises)
 
-        val weakPointsData = statisticsCalculator
-            .calculateWeakPoints(exercises)
-
-        val intensityDistributionData = statisticsCalculator
-            .calculateIntensityDistribution(exercises)
-
         val rpeAnalysisData = statisticsCalculator
             .calculateRPEAnalysis(exercises)
-
-        val estimated1RMData = statisticsCalculator
-            .calculateEstimated1RM(exercises)
 
         val workoutDensityData = statisticsCalculator
             .calculateWorkoutDensity(exercises, workoutDurationMinutes)
