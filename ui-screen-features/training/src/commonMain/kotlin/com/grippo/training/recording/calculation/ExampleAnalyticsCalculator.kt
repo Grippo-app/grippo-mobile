@@ -10,13 +10,23 @@ import com.grippo.state.exercise.examples.WeightTypeEnumState
 import com.grippo.state.profile.ExperienceEnumState
 import com.grippo.state.trainings.ExerciseState
 
+/**
+ * Provides analytics calculations for exercise distributions by category, weight type,
+ * force type, and experience level. Produces [DSPieData] suitable for pie chart visualization.
+ *
+ * @param stringProvider used to localize enum titles into human-readable strings
+ * @param colorProvider used to resolve colors for each slice of the chart
+ */
 internal class ExampleAnalyticsCalculator(
     private val stringProvider: StringProvider,
     private val colorProvider: ColorProvider
 ) {
-    suspend fun calculateCategoryDistribution(
-        exercises: List<ExerciseState>,
-    ): DSPieData {
+
+    /**
+     * Calculates distribution of exercises by [CategoryEnumState] (Compound / Isolation).
+     * Each slice is colored using [colors.example.category].
+     */
+    suspend fun calculateCategoryDistribution(exercises: List<ExerciseState>): DSPieData {
         val colors = colorProvider.get()
         val categoryGroups = exercises
             .mapNotNull { it.exerciseExample?.category }
@@ -27,7 +37,7 @@ internal class ExampleAnalyticsCalculator(
             return DSPieData(slices = emptyList())
         }
 
-        val slices = categoryGroups.entries.mapIndexed { index, (category, count) ->
+        val slices = categoryGroups.entries.map { (category, count) ->
             DSPieSlice(
                 id = category.name,
                 label = category.title().text(stringProvider),
@@ -36,18 +46,18 @@ internal class ExampleAnalyticsCalculator(
                     CategoryEnumState.COMPOUND -> colors.example.category.compound
                     CategoryEnumState.ISOLATION -> colors.example.category.isolation
                 }
-
             )
         }
 
         return DSPieData(slices = slices)
     }
 
-    suspend fun calculateWeightTypeDistribution(
-        exercises: List<ExerciseState>,
-    ): DSPieData {
+    /**
+     * Calculates distribution of exercises by [WeightTypeEnumState] (Free / Fixed / Body weight).
+     * Each slice is colored using [colors.example.weightType].
+     */
+    suspend fun calculateWeightTypeDistribution(exercises: List<ExerciseState>): DSPieData {
         val colors = colorProvider.get()
-
         val categoryGroups = exercises
             .mapNotNull { it.exerciseExample?.weightType }
             .groupBy { it }
@@ -57,7 +67,7 @@ internal class ExampleAnalyticsCalculator(
             return DSPieData(slices = emptyList())
         }
 
-        val slices = categoryGroups.entries.mapIndexed { index, (category, count) ->
+        val slices = categoryGroups.entries.map { (category, count) ->
             DSPieSlice(
                 id = category.name,
                 label = category.title().text(stringProvider),
@@ -73,11 +83,12 @@ internal class ExampleAnalyticsCalculator(
         return DSPieData(slices = slices)
     }
 
-    suspend fun calculateForceTypeDistribution(
-        exercises: List<ExerciseState>,
-    ): DSPieData {
+    /**
+     * Calculates distribution of exercises by [ForceTypeEnumState] (Pull / Push / Hinge).
+     * Each slice is colored using [colors.example.forceType].
+     */
+    suspend fun calculateForceTypeDistribution(exercises: List<ExerciseState>): DSPieData {
         val colors = colorProvider.get()
-
         val categoryGroups = exercises
             .mapNotNull { it.exerciseExample?.forceType }
             .groupBy { it }
@@ -87,7 +98,7 @@ internal class ExampleAnalyticsCalculator(
             return DSPieData(slices = emptyList())
         }
 
-        val slices = categoryGroups.entries.mapIndexed { index, (category, count) ->
+        val slices = categoryGroups.entries.map { (category, count) ->
             DSPieSlice(
                 id = category.name,
                 label = category.title().text(stringProvider),
@@ -103,11 +114,13 @@ internal class ExampleAnalyticsCalculator(
         return DSPieData(slices = slices)
     }
 
-    suspend fun calculateExperienceDistribution(
-        exercises: List<ExerciseState>,
-    ): DSPieData {
+    /**
+     * Calculates distribution of exercises by [ExperienceEnumState]
+     * (Beginner / Intermediate / Advanced / Pro).
+     * Each slice is colored using [colors.profile.experienceColors].
+     */
+    suspend fun calculateExperienceDistribution(exercises: List<ExerciseState>): DSPieData {
         val colors = colorProvider.get()
-
         val categoryGroups = exercises
             .mapNotNull { it.exerciseExample?.experience }
             .groupBy { it }
@@ -117,7 +130,7 @@ internal class ExampleAnalyticsCalculator(
             return DSPieData(slices = emptyList())
         }
 
-        val slices = categoryGroups.entries.mapIndexed { index, (category, count) ->
+        val slices = categoryGroups.entries.map { (category, count) ->
             DSPieSlice(
                 id = category.name,
                 label = category.title().text(stringProvider),
