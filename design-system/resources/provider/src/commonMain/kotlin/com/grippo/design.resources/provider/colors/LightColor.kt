@@ -141,18 +141,18 @@ public object LightColor : AppColor {
 
     override val chip: AppColor.ChipColors = object : AppColor.ChipColors {
         override val intensity = object : AppColor.ChipColors.GradientColors {
-            override val startColor = Color(0xFFFF5757)
-            override val endColor = Color(0xFFFF8C29)
+            override val startColor = AppPalette.Unique.intensity1
+            override val endColor = AppPalette.Unique.intensity2
             override val contentColor = AppPalette.Common.White
         }
         override val volume = object : AppColor.ChipColors.GradientColors {
-            override val startColor = Color(0xFF2B7FFF)
-            override val endColor = Color(0xFF00C2FF)
+            override val startColor = AppPalette.Unique.volume1
+            override val endColor = AppPalette.Unique.volume2
             override val contentColor = AppPalette.Common.White
         }
         override val repetitions = object : AppColor.ChipColors.GradientColors {
-            override val startColor = Color(0xFF8C52FF)
-            override val endColor = Color(0xFFAF5CF7)
+            override val startColor = AppPalette.Unique.repetitions1
+            override val endColor = AppPalette.Unique.repetitions2
             override val contentColor = AppPalette.Common.White
         }
     }

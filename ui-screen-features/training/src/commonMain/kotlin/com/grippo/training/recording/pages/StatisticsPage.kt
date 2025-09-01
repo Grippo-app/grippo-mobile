@@ -88,7 +88,7 @@ internal fun StatisticsPage(
         }
 
         if (state.categoryDistributionData.slices.isNotEmpty()) {
-            item(key = "category_distribution", span = { GridItemSpan(1) }) {
+            item(key = "category_distribution", span = { GridItemSpan(2) }) {
                 ChartCard(
                     modifier = Modifier
                         .animateItem()
@@ -106,7 +106,7 @@ internal fun StatisticsPage(
         }
 
         if (state.weightTypeDistributionData.slices.isNotEmpty()) {
-            item(key = "weight_type_distribution", span = { GridItemSpan(1) }) {
+            item(key = "weight_type_distribution", span = { GridItemSpan(2) }) {
                 ChartCard(
                     modifier = Modifier
                         .animateItem()
@@ -124,7 +124,7 @@ internal fun StatisticsPage(
         }
 
         if (state.experienceDistributionData.slices.isNotEmpty()) {
-            item(key = "experience_distribution", span = { GridItemSpan(1) }) {
+            item(key = "experience_distribution", span = { GridItemSpan(2) }) {
                 ChartCard(
                     modifier = Modifier
                         .animateItem()
@@ -142,7 +142,7 @@ internal fun StatisticsPage(
         }
 
         if (state.forceTypeDistributionData.slices.isNotEmpty()) {
-            item(key = "force_type_distribution", span = { GridItemSpan(1) }) {
+            item(key = "force_type_distribution", span = { GridItemSpan(2) }) {
                 ChartCard(
                     modifier = Modifier
                         .animateItem()

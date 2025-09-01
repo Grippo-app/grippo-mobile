@@ -31,7 +31,10 @@ internal class TrainingRecordingViewModel(
     TrainingRecordingState()
 ), TrainingRecordingContract {
 
-    private val statisticsCalculator = TrainingStatisticsCalculator(stringProvider)
+    private val statisticsCalculator = TrainingStatisticsFacade(
+        stringProvider = stringProvider,
+        colorProvider = colorProvider
+    )
 
     override fun onAddExercise() {
         val dialog = DialogConfig.ExerciseExamplePicker(
@@ -118,7 +121,7 @@ internal class TrainingRecordingViewModel(
     }
 
     private suspend fun generateStatistics() {
-        val colors = colorProvider.get()
+        colorProvider.get()
 
         val exercises = state.value.exercises
 
@@ -164,64 +167,61 @@ internal class TrainingRecordingViewModel(
             .calculateTotalMetrics(exercises)
 
         val exerciseVolumeData = statisticsCalculator
-            .calculateExerciseVolumeChart(exercises, colors)
+            .calculateExerciseVolumeChart(exercises)
 
         val categoryDistributionData = statisticsCalculator
-            .calculateCategoryDistribution(exercises, colors)
+            .calculateCategoryDistribution(exercises)
         val weightTypeDistributionData = statisticsCalculator
-            .calculateWeightTypeDistribution(exercises, colors)
+            .calculateWeightTypeDistribution(exercises)
         val forceTypeDistributionData = statisticsCalculator
-            .calculateForceTypeDistribution(exercises, colors)
+            .calculateForceTypeDistribution(exercises)
         val experienceDistributionData = statisticsCalculator
-            .calculateExperienceDistribution(exercises, colors)
+            .calculateExperienceDistribution(exercises)
 
         statisticsCalculator
-            .calculateMuscleLoadDistribution(exercises, colors)
+            .calculateMuscleLoadDistribution(exercises)
 
         statisticsCalculator
-            .calculateMuscleGroupBalance(exercises, colors)
+            .calculateMuscleGroupBalance(exercises)
 
         statisticsCalculator
-            .calculateWorkoutEfficiency(exercises, workoutDurationMinutes, colors)
+            .calculateWorkoutEfficiency(exercises, workoutDurationMinutes)
 
         statisticsCalculator
-            .calculateTimeUnderTension(exercises, colors)
+            .calculateTimeUnderTension(exercises)
 
         statisticsCalculator // 75kg default weight
-            .calculateEnergyExpenditure(exercises, 75f, colors)
+            .calculateEnergyExpenditure(exercises, 75f)
 
         statisticsCalculator
-            .calculateIntraWorkoutProgression(exercises, colors)
+            .calculateIntraWorkoutProgression(exercises)
         statisticsCalculator
-            .calculateLoadOverTime(exercises, colors)
+            .calculateLoadOverTime(exercises)
         statisticsCalculator
-            .calculateFatigueProgression(exercises, colors)
+            .calculateFatigueProgression(exercises)
 
         statisticsCalculator
-            .calculatePushPullBalance(exercises, colors)
+            .calculatePushPullBalance(exercises)
         statisticsCalculator
-            .calculateRepRangeDistribution(exercises, colors)
+            .calculateRepRangeDistribution(exercises)
         statisticsCalculator
-            .calculateMovementPatterns(exercises, colors)
+            .calculateMovementPatterns(exercises)
 
         statisticsCalculator
-            .calculateExecutionQuality(exercises, colors)
+            .calculateExecutionQuality(exercises)
         statisticsCalculator
-            .calculateTechniqueQuality(exercises, colors)
+            .calculateTechniqueQuality(exercises)
         statisticsCalculator
-            .calculateWeakPoints(exercises, colors)
+            .calculateWeakPoints(exercises)
 
         statisticsCalculator
-            .calculateIntensityDistribution(exercises, colors)
+            .calculateIntensityDistribution(exercises)
         statisticsCalculator
-            .calculateRPEAnalysis(exercises, colors)
+            .calculateRPEAnalysis(exercises)
         statisticsCalculator
-            .calculateEstimated1RM(exercises, colors)
+            .calculateEstimated1RM(exercises)
         statisticsCalculator
-            .calculateWorkoutDensity(exercises, workoutDurationMinutes, colors)
-
-        statisticsCalculator
-            .calculateExerciseTypeDistribution(exercises, colors)
+            .calculateWorkoutDensity(exercises, workoutDurationMinutes)
 
         update {
             it.copy(

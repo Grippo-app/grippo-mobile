@@ -60,6 +60,15 @@ internal object AppPalette {
         val N800 = Color(0xFFF4F7FA)
     }
 
+    object Unique {
+        val intensity1 = Color(0xFFFF5757)
+        val intensity2 = Color(0xFFFF8C29)
+        val volume1 = Color(0xFF2B7FFF)
+        val volume2 = Color(0xFF00C2FF)
+        val repetitions1 = Color(0xFF8C52FF)
+        val repetitions2 = Color(0xFFAF5CF7)
+    }
+
     object Ramps {
         val BlueOrangeRed: List<Pair<Float, Color>> = listOf(
             0.00f to Primary.P400,

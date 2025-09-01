@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import com.grippo.design.core.AppTokens
+import com.grippo.design.resources.provider.providers.StringProvider
 import org.jetbrains.compose.resources.StringResource
 
 @Stable
@@ -20,6 +21,13 @@ public sealed interface UiText {
         return when (this) {
             is Str -> value
             is Res -> AppTokens.strings.res(value, *formatArgs.toTypedArray())
+        }
+    }
+
+    public suspend fun text(stringProvider: StringProvider): String {
+        return when (this) {
+            is Str -> value
+            is Res -> stringProvider.get(value)
         }
     }
 }
