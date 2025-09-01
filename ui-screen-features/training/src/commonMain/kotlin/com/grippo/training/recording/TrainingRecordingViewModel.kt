@@ -131,6 +131,9 @@ internal class TrainingRecordingViewModel(
                     averageIntensity = IntensityFormatState.of(0f),
                     exerciseVolumeData = DSBarData(items = emptyList()),
                     categoryDistributionData = DSPieData(slices = emptyList()),
+                    forceTypeDistributionData = DSPieData(slices = emptyList()),
+                    experienceDistributionData = DSPieData(slices = emptyList()),
+                    weightTypeDistributionData = DSPieData(slices = emptyList()),
                     muscleLoadData = DSProgressData(items = emptyList()),
                     muscleGroupBalanceData = DSRadarData(axes = emptyList(), series = emptyList()),
                     workoutEfficiencyData = DSProgressData(items = emptyList()),
@@ -165,53 +168,59 @@ internal class TrainingRecordingViewModel(
 
         val categoryDistributionData = statisticsCalculator
             .calculateCategoryDistribution(exercises, colors)
+        val weightTypeDistributionData = statisticsCalculator
+            .calculateWeightTypeDistribution(exercises, colors)
+        val forceTypeDistributionData = statisticsCalculator
+            .calculateForceTypeDistribution(exercises, colors)
+        val experienceDistributionData = statisticsCalculator
+            .calculateExperienceDistribution(exercises, colors)
 
-        val muscleLoadData = statisticsCalculator
+        statisticsCalculator
             .calculateMuscleLoadDistribution(exercises, colors)
 
-        val muscleGroupBalanceData = statisticsCalculator
+        statisticsCalculator
             .calculateMuscleGroupBalance(exercises, colors)
 
-        val workoutEfficiencyData = statisticsCalculator
+        statisticsCalculator
             .calculateWorkoutEfficiency(exercises, workoutDurationMinutes, colors)
 
-        val timeUnderTensionData = statisticsCalculator
+        statisticsCalculator
             .calculateTimeUnderTension(exercises, colors)
 
-        val energyExpenditureData = statisticsCalculator // 75kg default weight
+        statisticsCalculator // 75kg default weight
             .calculateEnergyExpenditure(exercises, 75f, colors)
 
-        val intraWorkoutProgressionData = statisticsCalculator
+        statisticsCalculator
             .calculateIntraWorkoutProgression(exercises, colors)
-        val loadOverTimeData = statisticsCalculator
+        statisticsCalculator
             .calculateLoadOverTime(exercises, colors)
-        val fatigueProgressionData = statisticsCalculator
+        statisticsCalculator
             .calculateFatigueProgression(exercises, colors)
 
-        val pushPullBalanceData = statisticsCalculator
+        statisticsCalculator
             .calculatePushPullBalance(exercises, colors)
-        val repRangeDistributionData = statisticsCalculator
+        statisticsCalculator
             .calculateRepRangeDistribution(exercises, colors)
-        val movementPatternsData = statisticsCalculator
+        statisticsCalculator
             .calculateMovementPatterns(exercises, colors)
 
-        val executionQualityData = statisticsCalculator
+        statisticsCalculator
             .calculateExecutionQuality(exercises, colors)
-        val techniqueQualityData = statisticsCalculator
+        statisticsCalculator
             .calculateTechniqueQuality(exercises, colors)
-        val weakPointsData = statisticsCalculator
+        statisticsCalculator
             .calculateWeakPoints(exercises, colors)
 
-        val intensityDistributionData = statisticsCalculator
+        statisticsCalculator
             .calculateIntensityDistribution(exercises, colors)
-        val rpeAnalysisData = statisticsCalculator
+        statisticsCalculator
             .calculateRPEAnalysis(exercises, colors)
-        val estimated1RMData = statisticsCalculator
+        statisticsCalculator
             .calculateEstimated1RM(exercises, colors)
-        val workoutDensityData = statisticsCalculator
+        statisticsCalculator
             .calculateWorkoutDensity(exercises, workoutDurationMinutes, colors)
 
-        val exerciseTypeDistributionData = statisticsCalculator
+        statisticsCalculator
             .calculateExerciseTypeDistribution(exercises, colors)
 
         update {
@@ -221,25 +230,30 @@ internal class TrainingRecordingViewModel(
                 averageIntensity = totalMetrics.intensity,
                 exerciseVolumeData = exerciseVolumeData,
                 categoryDistributionData = categoryDistributionData,
-                muscleLoadData = muscleLoadData,
-                muscleGroupBalanceData = muscleGroupBalanceData,
-                workoutEfficiencyData = workoutEfficiencyData,
-                timeUnderTensionData = timeUnderTensionData,
-                energyExpenditureData = energyExpenditureData,
-                intraWorkoutProgressionData = intraWorkoutProgressionData,
-                loadOverTimeData = loadOverTimeData,
-                fatigueProgressionData = fatigueProgressionData,
-                pushPullBalanceData = pushPullBalanceData,
-                repRangeDistributionData = repRangeDistributionData,
-                movementPatternsData = movementPatternsData,
-                executionQualityData = executionQualityData,
-                techniqueQualityData = techniqueQualityData,
-                weakPointsData = weakPointsData,
-                intensityDistributionData = intensityDistributionData,
-                rpeAnalysisData = rpeAnalysisData,
-                estimated1RMData = estimated1RMData,
-                workoutDensityData = workoutDensityData,
-                exerciseTypeDistributionData = exerciseTypeDistributionData
+                weightTypeDistributionData = weightTypeDistributionData,
+                forceTypeDistributionData = forceTypeDistributionData,
+                experienceDistributionData = experienceDistributionData,
+
+
+//                muscleLoadData = muscleLoadData,
+//                muscleGroupBalanceData = muscleGroupBalanceData,
+//                workoutEfficiencyData = workoutEfficiencyData,
+//                timeUnderTensionData = timeUnderTensionData,
+//                energyExpenditureData = energyExpenditureData,
+//                intraWorkoutProgressionData = intraWorkoutProgressionData,
+//                loadOverTimeData = loadOverTimeData,
+//                fatigueProgressionData = fatigueProgressionData,
+//                pushPullBalanceData = pushPullBalanceData,
+//                repRangeDistributionData = repRangeDistributionData,
+//                movementPatternsData = movementPatternsData,
+//                executionQualityData = executionQualityData,
+//                techniqueQualityData = techniqueQualityData,
+//                weakPointsData = weakPointsData,
+//                intensityDistributionData = intensityDistributionData,
+//                rpeAnalysisData = rpeAnalysisData,
+//                estimated1RMData = estimated1RMData,
+//                workoutDensityData = workoutDensityData,
+//                exerciseTypeDistributionData = exerciseTypeDistributionData
             )
         }
     }

@@ -27,7 +27,12 @@ internal data class TrainingRecordingState(
     val totalRepetitions: RepetitionsFormatState = RepetitionsFormatState.of(0),
     val averageIntensity: IntensityFormatState = IntensityFormatState.of(0f),
     val exerciseVolumeData: DSBarData = DSBarData(items = emptyList()),
+
+    // Exercise example circle
     val categoryDistributionData: DSPieData = DSPieData(slices = emptyList()),
+    val weightTypeDistributionData: DSPieData = DSPieData(slices = emptyList()),
+    val forceTypeDistributionData: DSPieData = DSPieData(slices = emptyList()),
+    val experienceDistributionData: DSPieData = DSPieData(slices = emptyList()),
 
     // === Muscle analysis ===
     val muscleLoadData: DSProgressData = DSProgressData(items = emptyList()),
