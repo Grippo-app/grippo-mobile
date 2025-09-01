@@ -1,5 +1,6 @@
 package com.grippo.chart.progress
 
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -10,6 +11,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.times
 import com.grippo.chart.utils.chooseContrastingText
 import kotlin.math.max
 
@@ -21,7 +23,12 @@ public fun ProgressChart(
 ) {
     val measurer = rememberTextMeasurer()
 
-    androidx.compose.foundation.Canvas(modifier) {
+    val h = style.layout.barHeight
+    val gap = style.layout.spacing
+    val totalHeight = data.items.size * h + (data.items.size - 1) * gap
+
+    androidx.compose.foundation.Canvas(modifier.height(totalHeight)) {
+
         if (data.items.isEmpty()) return@Canvas
 
         // ----- Domain -----

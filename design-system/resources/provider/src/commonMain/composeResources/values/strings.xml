@@ -286,5 +286,9 @@
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
 
-    <string name="exercise_volume">Exercise volume</string>
+    <string name="chart_title_exercise_volume">Exercise volume</string>
+    <string name="chart_title_category">Category</string>
+    <string name="chart_title_weight_type">Weight type</string>
+    <string name="chart_title_experience">Experience</string>
+    <string name="chart_title_force_type">Force type</string>
 </resources>

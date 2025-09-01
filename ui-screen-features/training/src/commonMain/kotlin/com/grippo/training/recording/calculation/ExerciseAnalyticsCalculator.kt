@@ -123,13 +123,12 @@ internal class ExerciseAnalyticsCalculator(
      */
     suspend fun calculateIntraWorkoutProgression(exercises: List<ExerciseState>): DSAreaData {
         val points = exercises.mapIndexed { index, exercise ->
-            val avgWeight = exercise.iterations.mapNotNull { it.volume.value }
-                .let { volumes ->
-                    val totalReps = exercise.iterations.sumOf { it.repetitions.value ?: 0 }
-                    if (volumes.isNotEmpty() && totalReps > 0) {
-                        volumes.sum() / totalReps
-                    } else 0f
-                }
+            val avgWeight = exercise.iterations.mapNotNull { it.volume.value }.let { volumes ->
+                val totalReps = exercise.iterations.sumOf { it.repetitions.value ?: 0 }
+                if (volumes.isNotEmpty() && totalReps > 0) {
+                    volumes.sum() / totalReps
+                } else 0f
+            }
 
             DSAreaPoint(
                 x = index.toFloat(),
@@ -171,7 +170,7 @@ internal class ExerciseAnalyticsCalculator(
             .take(5) // minimal intensity
             .mapIndexed { index, (exercise, intensity) ->
                 DSProgressItem(
-                    label = exercise.name.take(10),
+                    label = exercise.name,
                     value = intensity * 2, // x2 to visualize
                     color = palette[index % palette.size]
                 )
@@ -187,8 +186,9 @@ internal class ExerciseAnalyticsCalculator(
      *
      * Formula:
      * ```
-     * 1RM = (weight / reps) / (1.0278 - 0.0278 × reps)
+     * 1RM = weight / (1.0278 - 0.0278 × reps)
      * ```
+     * - `weight` here is the load used in the set (`iteration.volume.value`).
      * - Only valid for reps ≤ 12 (beyond this, accuracy degrades).
      * - For each exercise, the maximum estimated 1RM across all sets is taken.
      * - Colors assigned from categorical palette.
@@ -201,14 +201,13 @@ internal class ExerciseAnalyticsCalculator(
         val palette = colors.charts.categorical.palette
 
         val items = exercises.mapIndexed { index, exercise ->
-            // Используем формулу Brzycki: 1RM = weight / (1.0278 - 0.0278 × reps)
             val estimated1RM = exercise.iterations.mapNotNull { iteration ->
                 val weight = iteration.volume.value ?: 0f
                 val reps = iteration.repetitions.value ?: 0
                 if (weight > 0 && reps > 0 && reps <= 12) {
-                    (weight / reps) / (1.0278 - 0.0278 * reps)
+                    weight / (1.0278f - 0.0278f * reps)
                 } else null
-            }.maxOrNull()?.toFloat() ?: 0f
+            }.maxOrNull() ?: 0f
 
             DSBarItem(
                 label = exercise.name,
@@ -217,8 +216,6 @@ internal class ExerciseAnalyticsCalculator(
             )
         }
 
-        return DSBarData(
-            items = items,
-        )
+        return DSBarData(items = items)
     }
 }
