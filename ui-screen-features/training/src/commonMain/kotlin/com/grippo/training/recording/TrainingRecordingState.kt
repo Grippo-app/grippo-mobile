@@ -2,11 +2,9 @@ package com.grippo.training.recording
 
 import androidx.compose.runtime.Immutable
 import com.grippo.date.utils.DateTimeUtils
-import com.grippo.design.components.chart.DSAreaData
 import com.grippo.design.components.chart.DSBarData
 import com.grippo.design.components.chart.DSPieData
 import com.grippo.design.components.chart.DSProgressData
-import com.grippo.design.components.chart.DSSparklineData
 import com.grippo.state.exercise.examples.ExerciseExampleState
 import com.grippo.state.formatters.IntensityFormatState
 import com.grippo.state.formatters.RepetitionsFormatState
@@ -42,31 +40,6 @@ internal data class TrainingRecordingState(
 
     // === Muscle analysis ===
     val muscleLoadData: DSProgressData = DSProgressData(items = emptyList()),
-
-
-    // === Performance ===
-    val workoutEfficiencyData: DSProgressData = DSProgressData(items = emptyList()),
-    val timeUnderTensionData: DSProgressData = DSProgressData(items = emptyList()),
-    val energyExpenditureData: DSProgressData = DSProgressData(items = emptyList()),
-
-    // === Progression and trends ===
-    val intraWorkoutProgressionData: DSAreaData = DSAreaData(points = emptyList()),
-    val loadOverTimeData: DSAreaData = DSAreaData(points = emptyList()),
-    val fatigueProgressionData: DSAreaData = DSAreaData(points = emptyList()),
-
-    // === Training balance ===
-    val repRangeDistributionData: DSPieData = DSPieData(slices = emptyList()),
-    val movementPatternsData: DSPieData = DSPieData(slices = emptyList()),
-
-    // === Quality execution ===
-    val executionQualityData: DSProgressData = DSProgressData(items = emptyList()),
-    val techniqueQualityData: DSSparklineData = DSSparklineData(points = emptyList()),
-
-    // === Intensity ===
-    val intensityDistributionData: DSBarData = DSBarData(items = emptyList()),
-    val rpeAnalysisData: DSBarData = DSBarData(items = emptyList()),
-    val estimated1RMData: DSBarData = DSBarData(items = emptyList()),
-    val workoutDensityData: DSSparklineData = DSSparklineData(points = emptyList()),
 )
 
 @Immutable

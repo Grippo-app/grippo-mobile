@@ -1,15 +1,17 @@
 package com.grippo.training.recording
 
+import com.grippo.calculation.ExamplesCalculator
+import com.grippo.calculation.ExercisesCalculator
+import com.grippo.calculation.MetricsCalculator
+import com.grippo.calculation.MusclesCalculator
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
-import com.grippo.design.components.chart.DSAreaData
 import com.grippo.design.components.chart.DSBarData
 import com.grippo.design.components.chart.DSPieData
 import com.grippo.design.components.chart.DSProgressData
-import com.grippo.design.components.chart.DSSparklineData
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
@@ -33,8 +35,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlin.uuid.Uuid
 
 internal class TrainingRecordingViewModel(
+    muscleFeature: MuscleFeature,
     private val exerciseExampleFeature: ExerciseExampleFeature,
-    private val muscleFeature: MuscleFeature,
     private val dialogController: DialogController,
     private val stringProvider: StringProvider,
     private val colorProvider: ColorProvider,
@@ -42,10 +44,14 @@ internal class TrainingRecordingViewModel(
     TrainingRecordingState()
 ), TrainingRecordingContract {
 
-    private val statisticsCalculator = TrainingStatisticsFacade(
-        stringProvider = stringProvider,
-        colorProvider = colorProvider
-    )
+    private val metricsCalculator: MetricsCalculator =
+        MetricsCalculator()
+    private val exercisesCalculator: ExercisesCalculator =
+        ExercisesCalculator(colorProvider)
+    private val examplesCalculator: ExamplesCalculator =
+        ExamplesCalculator(stringProvider, colorProvider)
+    private val muscleCalculator: MusclesCalculator =
+        MusclesCalculator(stringProvider, colorProvider)
 
     init {
         muscleFeature.observeMuscles()
@@ -174,87 +180,31 @@ internal class TrainingRecordingViewModel(
                     experienceDistributionData = DSPieData(slices = emptyList()),
                     weightTypeDistributionData = DSPieData(slices = emptyList()),
                     muscleLoadData = DSProgressData(items = emptyList()),
-                    workoutEfficiencyData = DSProgressData(items = emptyList()),
-                    timeUnderTensionData = DSProgressData(items = emptyList()),
-                    energyExpenditureData = DSProgressData(items = emptyList()),
-                    intraWorkoutProgressionData = DSAreaData(points = emptyList()),
-                    loadOverTimeData = DSAreaData(points = emptyList()),
-                    fatigueProgressionData = DSAreaData(points = emptyList()),
-                    repRangeDistributionData = DSPieData(slices = emptyList()),
-                    movementPatternsData = DSPieData(slices = emptyList()),
-                    executionQualityData = DSProgressData(items = emptyList()),
-                    techniqueQualityData = DSSparklineData(points = emptyList()),
-                    intensityDistributionData = DSBarData(items = emptyList()),
-                    rpeAnalysisData = DSBarData(items = emptyList()),
-                    estimated1RMData = DSBarData(items = emptyList()),
-                    workoutDensityData = DSSparklineData(points = emptyList()),
                 )
             }
             return
         }
 
-        val workoutDurationMinutes = exercises.size * 15
-
-        // Total
-        val totalMetrics = statisticsCalculator
+        val totalMetrics = metricsCalculator
             .calculateTotalMetrics(exercises)
 
         // ExampleAnalytics
-        val categoryDistributionData = statisticsCalculator
+        val categoryDistributionData = examplesCalculator
             .calculateCategoryDistribution(exercises)
-        val weightTypeDistributionData = statisticsCalculator
+        val weightTypeDistributionData = examplesCalculator
             .calculateWeightTypeDistribution(exercises)
-        val forceTypeDistributionData = statisticsCalculator
+        val forceTypeDistributionData = examplesCalculator
             .calculateForceTypeDistribution(exercises)
-        val experienceDistributionData = statisticsCalculator
+        val experienceDistributionData = examplesCalculator
             .calculateExperienceDistribution(exercises)
 
         // ExerciseAnalytics
-        val exerciseVolumeData = statisticsCalculator
+        val exerciseVolumeData = exercisesCalculator
             .calculateExerciseVolumeChart(exercises)
-        val intensityDistributionData = statisticsCalculator
-            .calculateIntensityDistribution(exercises)
-        val intraWorkoutProgressionData = statisticsCalculator
-            .calculateIntraWorkoutProgression(exercises)
-        val estimated1RMData = statisticsCalculator
-            .calculateEstimated1RM(exercises)
 
         // MuscleAnalytics
-        val muscleLoadData = statisticsCalculator
+        val muscleLoadData = muscleCalculator
             .calculateMuscleLoadDistribution(exercises, examples, muscles)
-
-        val workoutEfficiencyData = statisticsCalculator
-            .calculateWorkoutEfficiency(exercises, workoutDurationMinutes)
-
-        val timeUnderTensionData = statisticsCalculator
-            .calculateTimeUnderTension(exercises)
-
-        val energyExpenditureData = statisticsCalculator // 75kg default weight
-            .calculateEnergyExpenditure(exercises, 75f)
-
-        val loadOverTimeData = statisticsCalculator
-            .calculateLoadOverTime(exercises)
-
-        val fatigueProgressionData = statisticsCalculator
-            .calculateFatigueProgression(exercises)
-
-        val repRangeDistributionData = statisticsCalculator
-            .calculateRepRangeDistribution(exercises)
-
-        val movementPatternsData = statisticsCalculator
-            .calculateMovementPatterns(exercises)
-
-        val executionQualityData = statisticsCalculator
-            .calculateExecutionQuality(exercises)
-
-        val techniqueQualityData = statisticsCalculator
-            .calculateTechniqueQuality(exercises)
-
-        val rpeAnalysisData = statisticsCalculator
-            .calculateRPEAnalysis(exercises)
-
-        val workoutDensityData = statisticsCalculator
-            .calculateWorkoutDensity(exercises, workoutDurationMinutes)
 
         update {
             it.copy(
@@ -267,20 +217,6 @@ internal class TrainingRecordingViewModel(
                 forceTypeDistributionData = forceTypeDistributionData,
                 experienceDistributionData = experienceDistributionData,
                 muscleLoadData = muscleLoadData,
-                workoutEfficiencyData = workoutEfficiencyData,
-                timeUnderTensionData = timeUnderTensionData,
-                energyExpenditureData = energyExpenditureData,
-                intraWorkoutProgressionData = intraWorkoutProgressionData,
-                loadOverTimeData = loadOverTimeData,
-                fatigueProgressionData = fatigueProgressionData,
-                repRangeDistributionData = repRangeDistributionData,
-                movementPatternsData = movementPatternsData,
-                executionQualityData = executionQualityData,
-                techniqueQualityData = techniqueQualityData,
-                intensityDistributionData = intensityDistributionData,
-                rpeAnalysisData = rpeAnalysisData,
-                estimated1RMData = estimated1RMData,
-                workoutDensityData = workoutDensityData,
             )
         }
     }

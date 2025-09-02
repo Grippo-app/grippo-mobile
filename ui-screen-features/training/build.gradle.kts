@@ -9,6 +9,7 @@ kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.common.core)
         implementation(projects.common.state)
+        implementation(projects.common.calculation)
         implementation(projects.common.error.errorProvider)
         implementation(projects.common.dateUtils)
         implementation(projects.designSystem.core)
