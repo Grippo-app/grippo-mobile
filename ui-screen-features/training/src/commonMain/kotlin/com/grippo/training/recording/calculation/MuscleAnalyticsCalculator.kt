@@ -14,10 +14,6 @@ internal class MuscleAnalyticsCalculator(
     private val stringProvider: StringProvider,
     private val colorProvider: ColorProvider,
 ) {
-    private companion object {
-        private const val MAX_VISIBLE_ITEMS = 8
-    }
-
     enum class Mode {
         ABSOLUTE,   // show raw kg
         RELATIVE    // normalize to % of max
@@ -77,7 +73,7 @@ internal class MuscleAnalyticsCalculator(
                     acc + (muscleLoads[m.value.type] ?: 0f)
                 }
                 group.type.title().text(stringProvider) to groupLoad
-            }
+            }.filter { it.value > 0f }
         } else {
             muscleLoads.mapKeys { (muscle, _) -> muscle.title().text(stringProvider) }
         }
@@ -87,7 +83,6 @@ internal class MuscleAnalyticsCalculator(
 
         val items = data.entries
             .sortedByDescending { it.value }
-            .take(MAX_VISIBLE_ITEMS)
             .mapIndexed { index, (label, load) ->
                 val value = when (mode) {
                     Mode.ABSOLUTE -> load
@@ -102,10 +97,6 @@ internal class MuscleAnalyticsCalculator(
 
         return DSProgressData(
             items = items,
-            valueUnit = when (mode) {
-                Mode.ABSOLUTE -> "kg"
-                Mode.RELATIVE -> "%"
-            }
         )
     }
 }
