@@ -27,7 +27,7 @@ internal class MuscleAnalyticsCalculator(
      * 📊 Calculates distribution of training load across muscles or muscle groups.
      *
      * - **Step 1**: compute exercise volume = `sum(iteration.volume)`.
-     * - **Step 2**: distribute this volume across muscles via [ExerciseExampleBundleState.percentage].
+     * - **Step 2**: distribute this volume across muscles via [com.grippo.data.features.api.exercise.example.models.ExerciseExampleBundle.percentage].
      * - **Step 3**: optionally aggregate by [MuscleGroupState] (Chest, Legs, etc.).
      * - **Step 4**: normalize values (ABSOLUTE = kg, RELATIVE = % of max).
      *
@@ -76,7 +76,7 @@ internal class MuscleAnalyticsCalculator(
                 val groupLoad = group.muscles.fold(0f) { acc, m ->
                     acc + (muscleLoads[m.value.type] ?: 0f)
                 }
-                group.type.name to groupLoad
+                group.type.title().text(stringProvider) to groupLoad
             }
         } else {
             muscleLoads.mapKeys { (muscle, _) -> muscle.title().text(stringProvider) }

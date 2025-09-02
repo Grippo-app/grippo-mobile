@@ -26,13 +26,15 @@ internal data class TrainingRecordingState(
     val muscles: ImmutableList<MuscleGroupState<MuscleRepresentationState.Plain>> = persistentListOf(),
     val startAt: LocalDateTime = DateTimeUtils.now(),
 
-    // === Basic metrics ===
+    // === Basic metrics chips ===
     val totalVolume: VolumeFormatState = VolumeFormatState.of(0f),
     val totalRepetitions: RepetitionsFormatState = RepetitionsFormatState.of(0),
     val averageIntensity: IntensityFormatState = IntensityFormatState.of(0f),
+
+    // === Exercise volume bar ===
     val exerciseVolumeData: DSBarData = DSBarData(items = emptyList()),
 
-    // Exercise example circle
+    // === Exercise example circles ===
     val categoryDistributionData: DSPieData = DSPieData(slices = emptyList()),
     val weightTypeDistributionData: DSPieData = DSPieData(slices = emptyList()),
     val forceTypeDistributionData: DSPieData = DSPieData(slices = emptyList()),
@@ -40,6 +42,7 @@ internal data class TrainingRecordingState(
 
     // === Muscle analysis ===
     val muscleLoadData: DSProgressData = DSProgressData(items = emptyList()),
+
 
     // === Performance ===
     val workoutEfficiencyData: DSProgressData = DSProgressData(items = emptyList()),

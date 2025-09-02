@@ -122,6 +122,23 @@ internal fun StatisticsPage(
             }
         }
 
+        if (state.muscleLoadData.items.isNotEmpty()) {
+            item(key = "muscle_load", span = { GridItemSpan(4) }) {
+                ChartCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    title = "Muscle Load Distribution",
+                    content = {
+                        ProgressChart(
+                            modifier = Modifier.fillMaxWidth(),
+                            data = state.muscleLoadData
+                        )
+                    }
+                )
+            }
+        }
+
+        // todo here
+
         if (state.intraWorkoutProgressionData.points.isNotEmpty()) {
             item(key = "intra_workout_progression", span = { GridItemSpan(4) }) {
                 ChartCard(
@@ -151,21 +168,6 @@ internal fun StatisticsPage(
                             modifier = Modifier.fillMaxWidth().weight(1f),
                             data = state.intensityDistributionData,
                             xAxisLabelStyle = XAxisLabelStyle.SHOW_ALL
-                        )
-                    }
-                )
-            }
-        }
-
-        if (state.muscleLoadData.items.isNotEmpty()) {
-            item(key = "muscle_load", span = { GridItemSpan(4) }) {
-                ChartCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    title = "Muscle Load Distribution",
-                    content = {
-                        ProgressChart(
-                            modifier = Modifier.fillMaxWidth(),
-                            data = state.muscleLoadData
                         )
                     }
                 )
