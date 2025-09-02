@@ -8,7 +8,6 @@ import com.grippo.data.features.api.settings.models.Settings
 import com.grippo.design.components.connection.snackbar.ConnectionSnackbarState
 import com.grippo.domain.state.settings.toState
 import com.grippo.state.settings.ThemeState
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 public class RootViewModel(
@@ -31,7 +30,7 @@ public class RootViewModel(
         connectivity
             .statusUpdates
             .onEach(::provideConnectionStatus)
-            .launchIn(coroutineScope)
+            .safeLaunch()
     }
 
     private fun provideSettings(value: Settings?) {

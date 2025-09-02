@@ -2,6 +2,9 @@ package com.grippo.training.recording
 
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
+import com.grippo.data.features.api.exercise.example.models.ExerciseExample
+import com.grippo.data.features.api.muscle.MuscleFeature
+import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.design.components.chart.DSAreaData
 import com.grippo.design.components.chart.DSBarData
 import com.grippo.design.components.chart.DSPieData
@@ -14,6 +17,8 @@ import com.grippo.design.resources.provider.training_progress_lost_description
 import com.grippo.design.resources.provider.training_progress_lost_title
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
+import com.grippo.domain.state.exercise.example.toState
+import com.grippo.domain.state.muscles.toState
 import com.grippo.state.formatters.IntensityFormatState
 import com.grippo.state.formatters.RepetitionsFormatState
 import com.grippo.state.formatters.VolumeFormatState
@@ -24,10 +29,12 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlin.uuid.Uuid
 
 internal class TrainingRecordingViewModel(
     private val exerciseExampleFeature: ExerciseExampleFeature,
+    private val muscleFeature: MuscleFeature,
     private val dialogController: DialogController,
     private val stringProvider: StringProvider,
     private val colorProvider: ColorProvider,
@@ -41,10 +48,15 @@ internal class TrainingRecordingViewModel(
     )
 
     init {
+        muscleFeature.observeMuscles()
+            .onEach(::provideMuscles)
+            .safeLaunch()
+
         state
             .map { it.exercises.mapNotNull { m -> m.exerciseExample?.id }.toSet().toList() }
             .distinctUntilChanged()
             .flatMapLatest { ids -> exerciseExampleFeature.observeExerciseExamples(ids) }
+            .onEach(::provideExerciseExamples)
             .safeLaunch()
     }
 
@@ -67,6 +79,16 @@ internal class TrainingRecordingViewModel(
         )
 
         dialogController.show(dialog)
+    }
+
+    private fun provideMuscles(value: List<MuscleGroup>) {
+        val muscles = value.toState()
+        update { it.copy(muscles = muscles) }
+    }
+
+    private fun provideExerciseExamples(value: List<ExerciseExample>) {
+        val examples = value.toState()
+        update { it.copy(examples = examples) }
     }
 
     override fun onEditExercise(id: String) {
@@ -137,6 +159,7 @@ internal class TrainingRecordingViewModel(
 
         val exercises = state.value.exercises
         val examples = state.value.examples
+        val muscles = state.value.muscles
 
         if (exercises.isEmpty()) {
             // Reset statistics to empty state
@@ -157,12 +180,10 @@ internal class TrainingRecordingViewModel(
                     intraWorkoutProgressionData = DSAreaData(points = emptyList()),
                     loadOverTimeData = DSAreaData(points = emptyList()),
                     fatigueProgressionData = DSAreaData(points = emptyList()),
-                    pushPullBalanceData = DSPieData(slices = emptyList()),
                     repRangeDistributionData = DSPieData(slices = emptyList()),
                     movementPatternsData = DSPieData(slices = emptyList()),
                     executionQualityData = DSProgressData(items = emptyList()),
                     techniqueQualityData = DSSparklineData(points = emptyList()),
-                    weakPointsData = DSProgressData(items = emptyList()),
                     intensityDistributionData = DSBarData(items = emptyList()),
                     rpeAnalysisData = DSBarData(items = emptyList()),
                     estimated1RMData = DSBarData(items = emptyList()),
@@ -195,14 +216,12 @@ internal class TrainingRecordingViewModel(
             .calculateIntensityDistribution(exercises)
         val intraWorkoutProgressionData = statisticsCalculator
             .calculateIntraWorkoutProgression(exercises)
-        val weakPointsData = statisticsCalculator
-            .calculateWeakPoints(exercises)
         val estimated1RMData = statisticsCalculator
             .calculateEstimated1RM(exercises)
 
-
+        // MuscleAnalytics
         val muscleLoadData = statisticsCalculator
-            .calculateMuscleLoadDistribution(exercises, examples)
+            .calculateMuscleLoadDistribution(exercises, examples, muscles)
 
         val workoutEfficiencyData = statisticsCalculator
             .calculateWorkoutEfficiency(exercises, workoutDurationMinutes)
@@ -218,9 +237,6 @@ internal class TrainingRecordingViewModel(
 
         val fatigueProgressionData = statisticsCalculator
             .calculateFatigueProgression(exercises)
-
-        val pushPullBalanceData = statisticsCalculator
-            .calculatePushPullBalance(exercises)
 
         val repRangeDistributionData = statisticsCalculator
             .calculateRepRangeDistribution(exercises)
@@ -257,12 +273,10 @@ internal class TrainingRecordingViewModel(
                 intraWorkoutProgressionData = intraWorkoutProgressionData,
                 loadOverTimeData = loadOverTimeData,
                 fatigueProgressionData = fatigueProgressionData,
-                pushPullBalanceData = pushPullBalanceData,
                 repRangeDistributionData = repRangeDistributionData,
                 movementPatternsData = movementPatternsData,
                 executionQualityData = executionQualityData,
                 techniqueQualityData = techniqueQualityData,
-                weakPointsData = weakPointsData,
                 intensityDistributionData = intensityDistributionData,
                 rpeAnalysisData = rpeAnalysisData,
                 estimated1RMData = estimated1RMData,

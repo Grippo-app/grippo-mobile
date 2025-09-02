@@ -26,7 +26,7 @@ public class ExerciseExamplePickerViewModel(
 
     private fun provideExerciseExamples(value: List<ExerciseExample>) {
         val list = value.toState()
-        update { it.copy(exerciseExamples = list.toPersistentList()) }
+        update { it.copy(exerciseExamples = list) }
     }
 
     override fun onExerciseExampleDetailsClick(id: String) {

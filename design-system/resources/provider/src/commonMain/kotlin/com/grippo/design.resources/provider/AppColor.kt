@@ -264,7 +264,8 @@ public interface AppColor {
         }
 
         public interface CategoricalColors {
-            public val palette: List<Color>
+            public val palette1: List<Color>
+            public val palette2: List<Color>
         }
     }
 }

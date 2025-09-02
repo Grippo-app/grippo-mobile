@@ -8,6 +8,8 @@ import com.grippo.design.components.chart.DSSparklineData
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.state.exercise.examples.ExerciseExampleState
+import com.grippo.state.muscles.MuscleGroupState
+import com.grippo.state.muscles.MuscleRepresentationState
 import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.TrainingMetrics
 import com.grippo.training.recording.calculation.ExampleAnalyticsCalculator
@@ -24,7 +26,7 @@ internal class TrainingStatisticsFacade(
     private val metrics: TrainingMetricsCalculator =
         TrainingMetricsCalculator(stringProvider)
     private val exercises: ExerciseAnalyticsCalculator =
-        ExerciseAnalyticsCalculator(stringProvider, colorProvider)
+        ExerciseAnalyticsCalculator(colorProvider)
     private val examples: ExampleAnalyticsCalculator =
         ExampleAnalyticsCalculator(stringProvider, colorProvider)
     private val muscles: MuscleAnalyticsCalculator =
@@ -56,11 +58,6 @@ internal class TrainingStatisticsFacade(
     ): DSAreaData =
         this.exercises.calculateIntraWorkoutProgression(exercises)
 
-    suspend fun calculateWeakPoints(
-        exercises: List<ExerciseState>,
-    ): DSProgressData =
-        this.exercises.calculateWeakPoints(exercises)
-
     suspend fun calculateEstimated1RM(exercises: List<ExerciseState>): DSBarData =
         this.exercises.calculateEstimated1RM(exercises)
 
@@ -88,14 +85,10 @@ internal class TrainingStatisticsFacade(
     // === Muscle Analytics ===
     suspend fun calculateMuscleLoadDistribution(
         exercises: List<ExerciseState>,
-        examples: List<ExerciseExampleState>
+        examples: List<ExerciseExampleState>,
+        groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
     ): DSProgressData =
-        muscles.calculateMuscleLoadDistribution(exercises, examples)
-
-    suspend fun calculatePushPullBalance(
-        exercises: List<ExerciseState>,
-    ): DSPieData =
-        muscles.calculatePushPullBalance(exercises)
+        muscles.calculateMuscleLoadDistribution(exercises, examples, groups)
 
     // === Efficiency Analytics ===
     suspend fun calculateWorkoutEfficiency(

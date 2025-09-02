@@ -122,7 +122,7 @@ internal class HomeStatisticsViewModel(
     }
 
     private suspend fun generateBarData(period: PeriodState, colors: AppColor) {
-        val palette = colors.charts.categorical.palette
+        val palette = colors.charts.categorical.palette1
         val timeLabels = buildTimelineLabels(period)
         val entries: List<Pair<String, Float>> = timeLabels.mapIndexed { i, l ->
             l to (5f + (i % 6) * 2 + (i % 4))

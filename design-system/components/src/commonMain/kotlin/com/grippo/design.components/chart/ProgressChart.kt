@@ -65,7 +65,7 @@ public fun ProgressChart(
         ),
         values = ProgressStyle.Values.Inside(
             textStyle = AppTokens.typography.b11Bold().copy(color = AppTokens.colors.text.primary),
-            formatter = { v, d -> v.toString() },
+            formatter = { v, d -> v.toInt().toString() },
             minInnerPadding = 6.dp,
             insideColor = null,
             preferNormalizedLabels = true,

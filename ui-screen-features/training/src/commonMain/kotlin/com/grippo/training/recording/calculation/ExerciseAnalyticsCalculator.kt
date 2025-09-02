@@ -4,41 +4,44 @@ import com.grippo.design.components.chart.DSAreaData
 import com.grippo.design.components.chart.DSAreaPoint
 import com.grippo.design.components.chart.DSBarData
 import com.grippo.design.components.chart.DSBarItem
-import com.grippo.design.components.chart.DSProgressData
-import com.grippo.design.components.chart.DSProgressItem
 import com.grippo.design.resources.provider.providers.ColorProvider
-import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.state.formatters.IntensityFormatState
 import com.grippo.state.trainings.ExerciseState
 
 /**
- * Calculator for different types of exercise analytics used in charts and progress views.
+ * Calculator for exercise-related analytics used in charts and progress views.
  *
  * 📌 Responsibilities:
- * - Aggregates raw `ExerciseState` data into chart-friendly models (`DSBarData`, `DSAreaData`, `DSProgressData`).
- * - Provides multiple perspectives: volume, intensity, progression, weak points, estimated 1RM.
+ * - Aggregates raw `ExerciseState` data into chart-ready models (`DSBarData`, `DSAreaData`).
+ * - Provides multiple perspectives on training load: total volume, relative intensity,
+ *   progression within a workout, and estimated one-rep max (1RM).
  *
  * ⚠️ Notes:
- * - Name truncation (`take(8)` / `take(10)`) is UI-specific and may be better handled in the presentation layer.
- * - Some formulas (e.g., Brzycki for 1RM) have inherent domain limitations (e.g., reps ≤ 12).
+ * - Formulas rely on iteration fields: `volume.value` (weight × reps) and `repetitions.value`.
+ * - Brzycki 1RM formula is only valid for sets with ≤ 12 reps.
+ * - Intensity comparisons are more meaningful **within the same exercise/muscle group**.
  */
 internal class ExerciseAnalyticsCalculator(
-    private val stringProvider: StringProvider,
     private val colorProvider: ColorProvider
 ) {
     /**
-     * 📊 Builds a bar chart of exercise volume.
+     * 📊 Exercise Volume Chart
      *
-     * - **Volume**: sum of all iteration volumes (`sum(iteration.volume)`).
-     * - Each bar = one exercise.
-     * - Color palette = categorical.
+     * - **Definition**: total workload (tonnage) per exercise.
+     *   ```
+     *   volumeExercise = Σ (iteration.volume)
+     *   ```
+     * - **X-axis**: exercise name.
+     * - **Y-axis**: total volume (kg).
+     * - **Use case**: shows which exercises contribute the most load to the workout.
      *
-     * @param exercises list of exercises with iterations.
-     * @return [DSBarData] with volume distribution.
+     * Example:
+     * - Bench Press: (100×5 + 90×8) = 1220 kg
+     * - Pull-Ups: (80×10) = 800 kg
      */
     suspend fun calculateExerciseVolumeChart(exercises: List<ExerciseState>): DSBarData {
         val colors = colorProvider.get()
-        val palette = colors.charts.categorical.palette
+        val palette = colors.charts.categorical.palette1
 
         val items = exercises.mapIndexed { index, exercise ->
             val volume = exercise.iterations.sumOf { it.volume.value?.toDouble() ?: 0.0 }.toFloat()
@@ -53,21 +56,27 @@ internal class ExerciseAnalyticsCalculator(
     }
 
     /**
-     * 📊 Builds a bar chart of average intensity per exercise.
+     * 📊 Exercise Intensity Distribution
      *
-     * - **Intensity formula**: total volume / total reps.
-     * - Bars colored by intensity zone (light/medium/high).
-     * - Labels are truncated (`take(8)`).
+     * - **Definition**: average load per repetition for each exercise.
+     *   ```
+     *   intensity = totalVolume / totalReps
+     *   ```
+     * - Bars colored by semantic zones (low / medium / high intensity).
+     * - **Use case**: useful for comparing different *sets of the same exercise*,
+     *   or exercises within the same muscle group.
      *
-     * @param exercises list of exercises with iterations.
-     * @return [DSBarData] showing relative exercise intensity.
+     * ⚠️ Caution: absolute intensity values across unrelated exercises
+     *   (e.g. biceps curl vs squat) are not directly comparable.
+     *
+     * Example:
+     * - Bench Press: 1220 volume / 13 reps ≈ 94 kg
+     * - Pull-Ups: 800 volume / 10 reps = 80 kg
      */
     suspend fun calculateIntensityDistribution(exercises: List<ExerciseState>): DSBarData {
         val colors = colorProvider.get()
-        val palette = colors.charts.categorical.palette
 
-        val items = exercises.mapIndexed { index, exercise ->
-            // Calculate average intensity = totalVolume / totalReps
+        val items = exercises.mapIndexedNotNull { index, exercise ->
             val avgIntensity = exercise.iterations.mapNotNull { it.volume.value }
                 .let { volumes ->
                     if (volumes.isNotEmpty()) {
@@ -77,15 +86,12 @@ internal class ExerciseAnalyticsCalculator(
                     } else 0f
                 }
 
-            // Wrap in IntensityFormatState
             val intensityState = IntensityFormatState.of(avgIntensity)
 
-            // Map enum → color
-            val color = when (intensityState.average()) {
-                IntensityFormatState.Average.LOW -> palette[0]     // low load
-                IntensityFormatState.Average.MEDIUM -> palette[1]  // medium load
-                IntensityFormatState.Average.LARGE -> palette[2]   // high load
-                null -> palette[index % palette.size]              // fallback
+            val color = when (intensityState.average() ?: return@mapIndexedNotNull null) {
+                IntensityFormatState.Average.LOW -> colors.semantic.error
+                IntensityFormatState.Average.MEDIUM -> colors.semantic.warning
+                IntensityFormatState.Average.LARGE -> colors.semantic.success
             }
 
             DSBarItem(
@@ -99,16 +105,24 @@ internal class ExerciseAnalyticsCalculator(
     }
 
     /**
-     * 📈 Builds an area chart representing average load progression across exercises in a workout.
+     * 📈 Intra-Workout Load Progression
      *
-     * - **X-axis**: sequential exercise index (Ex1, Ex2, ...).
-     * - **Y-axis**: average load per exercise (`sum(volumes) / totalReps`).
-     * - Used to visualize how the relative load changes across workout order.
+     * - **Definition**: how the average load per rep changes
+     *   across exercises in workout order.
+     *   ```
+     *   avgWeightExercise = Σ(volume) / Σ(reps)
+     *   ```
+     * - **X-axis**: exercise sequence (Ex1, Ex2, ...).
+     * - **Y-axis**: average load per repetition (kg).
+     * - **Use case**: visualizes whether load decreases (fatigue),
+     *   stays stable, or increases (heavy exercises at the end).
      *
-     * ⚠️ Note: This is not time-based progression, but based on exercise sequence.
+     * ⚠️ This is sequence-based, not real-time.
      *
-     * @param exercises list of performed exercises with iterations.
-     * @return [DSAreaData] containing chart points.
+     * Example:
+     * - Ex1 Bench Press ≈ 94 kg
+     * - Ex2 Pull-Ups ≈ 80 kg
+     * 👉 curve slopes down → intensity dropped later in the workout.
      */
     suspend fun calculateIntraWorkoutProgression(exercises: List<ExerciseState>): DSAreaData {
         val points = exercises.mapIndexed { index, exercise ->
@@ -122,7 +136,7 @@ internal class ExerciseAnalyticsCalculator(
             DSAreaPoint(
                 x = index.toFloat(),
                 y = avgWeight,
-                xLabel = "Ex${index + 1}"
+                xLabel = exercise.exerciseExample?.name ?: "-"
             )
         }
 
@@ -130,62 +144,27 @@ internal class ExerciseAnalyticsCalculator(
     }
 
     /**
-     * 📉 Identifies weakest exercises by average intensity and builds a progress chart.
+     * 🏋 Estimated One-Rep Max (1RM)
      *
-     * - **Intensity formula**: `volume / reps` for each iteration, averaged per exercise.
-     * - Exercises sorted ascending by intensity.
-     * - Top 5 weakest exercises are selected (`take(5)`).
-     * - Values scaled ×2 for better visual separation in progress bars.
-     *
-     * @param exercises list of performed exercises with iterations.
-     * @return [DSProgressData] with weakest exercises for progress visualization.
-     */
-    suspend fun calculateWeakPoints(exercises: List<ExerciseState>): DSProgressData {
-        val colors = colorProvider.get()
-        val palette = colors.charts.progress.palette
-
-        val items = exercises.map { exercise ->
-            val avgIntensity = exercise.iterations.mapNotNull { iteration ->
-                val reps = iteration.repetitions.value ?: 0
-                val volume = iteration.volume.value ?: 0f
-                if (reps > 0) volume / reps else null
-            }.let { weights ->
-                if (weights.isNotEmpty()) weights.average().toFloat() else 0f
-            }
-
-            exercise to avgIntensity
-        }
-            .sortedBy { it.second }
-            .take(5) // minimal intensity
-            .mapIndexed { index, (exercise, intensity) ->
-                DSProgressItem(
-                    label = exercise.name,
-                    value = intensity * 2, // x2 to visualize
-                    color = palette[index % palette.size]
-                )
-            }
-
-        return DSProgressData(items = items)
-    }
-
-    /**
-     * 🏋 Estimates one-repetition maximum (1RM) for each exercise using Brzycki formula.
-     *
-     * Formula:
-     * ```
-     * 1RM = weight / (1.0278 - 0.0278 × reps)
-     * ```
-     * - `weight` here is the load used in the set (`iteration.volume.value`).
-     * - Only valid for reps ≤ 12 (beyond this, accuracy degrades).
-     * - For each exercise, the maximum estimated 1RM across all sets is taken.
+     * - **Definition**: maximum predicted weight for a single rep,
+     *   based on the Brzycki formula:
+     *   ```
+     *   1RM = weight / (1.0278 - 0.0278 × reps)
+     *   ```
+     * - For each exercise, takes the maximum 1RM value across all sets.
      * - Colors assigned from categorical palette.
+     * - **Use case**: safe way to monitor strength progress without testing true 1RM.
      *
-     * @param exercises list of performed exercises with iterations.
-     * @return [DSBarData] with estimated 1RM values per exercise.
+     * ⚠️ Valid only for reps ≤ 12. Accuracy decreases with higher reps.
+     *
+     * Example:
+     * - 100 kg × 5 reps → 1RM ≈ 112 kg
+     * - 90 kg × 10 reps → 1RM ≈ 120 kg
+     * 👉 Predicted 1RM for Bench Press = 120 kg.
      */
     suspend fun calculateEstimated1RM(exercises: List<ExerciseState>): DSBarData {
         val colors = colorProvider.get()
-        val palette = colors.charts.categorical.palette
+        val palette = colors.charts.categorical.palette2
 
         val items = exercises.mapIndexed { index, exercise ->
             val estimated1RM = exercise.iterations.mapNotNull { iteration ->

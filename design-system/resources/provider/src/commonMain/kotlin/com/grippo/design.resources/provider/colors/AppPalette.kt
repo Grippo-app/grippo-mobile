@@ -61,12 +61,36 @@ internal object AppPalette {
     }
 
     object Unique {
-        val intensity1 = Color(0xFFFF5757)
-        val intensity2 = Color(0xFFFF8C29)
-        val volume1 = Color(0xFF2B7FFF)
-        val volume2 = Color(0xFF00C2FF)
-        val repetitions1 = Color(0xFF8C52FF)
-        val repetitions2 = Color(0xFFAF5CF7)
+        // Red / Orange
+        val Red = Color(0xFFFF4C4C)
+        val Orange = Color(0xFFFF7A29)
+        val Coral = Color(0xFFFF7F50)
+
+        // Yellow/Amber
+        val Amber = Color(0xFFFFA726)
+
+        // Green / Teal
+        val Green = Color(0xFF43A047)
+        val Teal = Color(0xFF00897B)
+
+        // Blue
+        val Sky = Color(0xFF1E88E5)
+        val Blue = Color(0xFF1565C0)
+        val Navy = Color(0xFF283593)
+
+        // Purple / Magenta
+        val Purple = Color(0xFF7E57C2)
+        val Violet = Color(0xFF8E24AA)
+        val Magenta = Color(0xFFD81B60)
+
+        // Brown / Warm
+        val Brown = Color(0xFF6D4C41)
+        val Burgundy = Color(0xFF880E4F)
+
+        // Extra
+        val Olive = Color(0xFF6B8E23)
+        val Cyan = Color(0xFF0097A7)
+        val Indigo = Color(0xFF3F51B5)
     }
 
     object Ramps {
@@ -90,7 +114,7 @@ internal object AppPalette {
     }
 
     object Qualitative {
-        val Palette12: List<Color> = listOf(
+        val Palette9Blue: List<Color> = listOf(
             Primary.P300,
             Primary.P400,
             Primary.P500,
@@ -98,11 +122,31 @@ internal object AppPalette {
             Primary.P700,
             Primary.P800,
             Primary.P900,
-            Semantic.Success,
-            Semantic.Warning,
-            Semantic.Error,
             Primary.P250,
             Primary.P100
+        )
+
+        val Palette20Colorful: List<Color> = listOf(
+            Unique.Red,
+            Unique.Orange,
+            Unique.Coral,
+            Unique.Amber,
+            Unique.Green,
+            Unique.Teal,
+            Unique.Sky,
+            Unique.Blue,
+            Unique.Navy,
+            Unique.Purple,
+            Unique.Violet,
+            Unique.Magenta,
+            Unique.Brown,
+            Unique.Burgundy,
+            Unique.Olive,
+            Unique.Cyan,
+            Unique.Indigo,
+            Common.Accent,
+            Semantic.Success,
+            Semantic.Error
         )
     }
 }

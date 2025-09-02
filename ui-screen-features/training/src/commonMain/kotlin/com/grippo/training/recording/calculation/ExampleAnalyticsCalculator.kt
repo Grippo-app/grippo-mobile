@@ -11,11 +11,15 @@ import com.grippo.state.profile.ExperienceEnumState
 import com.grippo.state.trainings.ExerciseState
 
 /**
- * Provides analytics calculations for exercise distributions by category, weight type,
- * force type, and experience level. Produces [DSPieData] suitable for pie chart visualization.
+ * Calculator for distributions of exercises by categorical attributes.
+ *
+ * 📌 Responsibilities:
+ * - Aggregates `ExerciseState` metadata (category, weight type, force type, experience).
+ * - Produces [DSPieData] ready for pie chart visualization.
+ * - Helps visualize training structure and balance between different types of exercises.
  *
  * @param stringProvider used to localize enum titles into human-readable strings
- * @param colorProvider used to resolve colors for each slice of the chart
+ * @param colorProvider used to resolve consistent colors for each slice
  */
 internal class ExampleAnalyticsCalculator(
     private val stringProvider: StringProvider,
@@ -23,8 +27,15 @@ internal class ExampleAnalyticsCalculator(
 ) {
 
     /**
-     * Calculates distribution of exercises by [CategoryEnumState] (Compound / Isolation).
-     * Each slice is colored using [colors.example.category].
+     * 🏗 Category Distribution
+     *
+     * - **Definition**: counts how many exercises are Compound vs Isolation.
+     * - **Use case**: shows balance between multi-joint and single-joint work.
+     *
+     * Example:
+     * - Bench Press → Compound
+     * - Biceps Curl → Isolation
+     * 👉 Pie chart: 70% Compound, 30% Isolation
      */
     suspend fun calculateCategoryDistribution(exercises: List<ExerciseState>): DSPieData {
         val colors = colorProvider.get()
@@ -33,9 +44,7 @@ internal class ExampleAnalyticsCalculator(
             .groupBy { it }
             .mapValues { (_, list) -> list.size }
 
-        if (categoryGroups.isEmpty()) {
-            return DSPieData(slices = emptyList())
-        }
+        if (categoryGroups.isEmpty()) return DSPieData(slices = emptyList())
 
         val slices = categoryGroups.entries.map { (category, count) ->
             DSPieSlice(
@@ -53,8 +62,16 @@ internal class ExampleAnalyticsCalculator(
     }
 
     /**
-     * Calculates distribution of exercises by [WeightTypeEnumState] (Free / Fixed / Body weight).
-     * Each slice is colored using [colors.example.weightType].
+     * ⚖️ Weight Type Distribution
+     *
+     * - **Definition**: counts how many exercises are Free weights, Fixed machines, or Bodyweight.
+     * - **Use case**: shows equipment balance in the workout.
+     *
+     * Example:
+     * - Bench Press → Free
+     * - Leg Press → Fixed
+     * - Push-Ups → Bodyweight
+     * 👉 Pie chart: 50% Free, 30% Fixed, 20% Bodyweight
      */
     suspend fun calculateWeightTypeDistribution(exercises: List<ExerciseState>): DSPieData {
         val colors = colorProvider.get()
@@ -63,9 +80,7 @@ internal class ExampleAnalyticsCalculator(
             .groupBy { it }
             .mapValues { (_, list) -> list.size }
 
-        if (categoryGroups.isEmpty()) {
-            return DSPieData(slices = emptyList())
-        }
+        if (categoryGroups.isEmpty()) return DSPieData(slices = emptyList())
 
         val slices = categoryGroups.entries.map { (category, count) ->
             DSPieSlice(
@@ -84,8 +99,16 @@ internal class ExampleAnalyticsCalculator(
     }
 
     /**
-     * Calculates distribution of exercises by [ForceTypeEnumState] (Pull / Push / Hinge).
-     * Each slice is colored using [colors.example.forceType].
+     * 🔄 Force Type Distribution
+     *
+     * - **Definition**: counts how many exercises are Push, Pull, or Hinge.
+     * - **Use case**: helps check balance of movement patterns in the program.
+     *
+     * Example:
+     * - Bench Press → Push
+     * - Pull-Ups → Pull
+     * - Deadlift → Hinge
+     * 👉 Pie chart: 40% Push, 40% Pull, 20% Hinge
      */
     suspend fun calculateForceTypeDistribution(exercises: List<ExerciseState>): DSPieData {
         val colors = colorProvider.get()
@@ -94,9 +117,7 @@ internal class ExampleAnalyticsCalculator(
             .groupBy { it }
             .mapValues { (_, list) -> list.size }
 
-        if (categoryGroups.isEmpty()) {
-            return DSPieData(slices = emptyList())
-        }
+        if (categoryGroups.isEmpty()) return DSPieData(slices = emptyList())
 
         val slices = categoryGroups.entries.map { (category, count) ->
             DSPieSlice(
@@ -115,9 +136,16 @@ internal class ExampleAnalyticsCalculator(
     }
 
     /**
-     * Calculates distribution of exercises by [ExperienceEnumState]
-     * (Beginner / Intermediate / Advanced / Pro).
-     * Each slice is colored using [colors.profile.experienceColors].
+     * 🎯 Experience Level Distribution
+     *
+     * - **Definition**: counts how many exercises are tagged as Beginner, Intermediate, Advanced, or Pro.
+     * - **Use case**: shows difficulty bias of the workout plan.
+     *
+     * Example:
+     * - Push-Ups → Beginner
+     * - Bench Press → Intermediate
+     * - Muscle-Up → Advanced
+     * 👉 Pie chart: 1 Beginner, 1 Intermediate, 1 Advanced
      */
     suspend fun calculateExperienceDistribution(exercises: List<ExerciseState>): DSPieData {
         val colors = colorProvider.get()
@@ -126,9 +154,7 @@ internal class ExampleAnalyticsCalculator(
             .groupBy { it }
             .mapValues { (_, list) -> list.size }
 
-        if (categoryGroups.isEmpty()) {
-            return DSPieData(slices = emptyList())
-        }
+        if (categoryGroups.isEmpty()) return DSPieData(slices = emptyList())
 
         val slices = categoryGroups.entries.map { (category, count) ->
             DSPieSlice(

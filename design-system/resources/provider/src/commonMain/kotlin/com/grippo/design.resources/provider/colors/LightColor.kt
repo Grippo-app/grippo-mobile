@@ -141,51 +141,53 @@ public object LightColor : AppColor {
 
     override val chip: AppColor.ChipColors = object : AppColor.ChipColors {
         override val intensity = object : AppColor.ChipColors.GradientColors {
-            override val startColor = AppPalette.Unique.intensity1
-            override val endColor = AppPalette.Unique.intensity2
+            override val startColor = AppPalette.Unique.Red
+            override val endColor = AppPalette.Unique.Orange
             override val contentColor = AppPalette.Common.White
         }
         override val volume = object : AppColor.ChipColors.GradientColors {
-            override val startColor = AppPalette.Unique.volume1
-            override val endColor = AppPalette.Unique.volume2
+            override val startColor = AppPalette.Unique.Blue
+            override val endColor = AppPalette.Unique.Cyan
             override val contentColor = AppPalette.Common.White
         }
         override val repetitions = object : AppColor.ChipColors.GradientColors {
-            override val startColor = AppPalette.Unique.repetitions1
-            override val endColor = AppPalette.Unique.repetitions2
+            override val startColor = AppPalette.Unique.Purple
+            override val endColor = AppPalette.Unique.Violet
             override val contentColor = AppPalette.Common.White
         }
     }
 
+    public override val example: AppColor.ExampleColors = object : AppColor.ExampleColors {
+
+        override val category: AppColor.ExampleColors.CategoryColors =
+            object : AppColor.ExampleColors.CategoryColors {
+                override val compound: Color = AppPalette.Unique.Sky
+                override val isolation: Color = AppPalette.Unique.Indigo
+            }
+
+        override val weightType: AppColor.ExampleColors.WeightTypeColors =
+            object : AppColor.ExampleColors.WeightTypeColors {
+                override val free: Color = AppPalette.Unique.Coral
+                override val fixed: Color = AppPalette.Unique.Orange
+                override val bodyWeight: Color = AppPalette.Unique.Green
+            }
+
+        override val forceType: AppColor.ExampleColors.ForceTypeColors =
+            object : AppColor.ExampleColors.ForceTypeColors {
+                override val pull: Color = AppPalette.Unique.Teal
+                override val push: Color = AppPalette.Unique.Red
+                override val hinge: Color = AppPalette.Unique.Purple
+            }
+    }
+
     public override val profile: AppColor.ProfileColors = object : AppColor.ProfileColors {
+
         override val experienceColors: AppColor.ProfileColors.ExperienceColors =
             object : AppColor.ProfileColors.ExperienceColors {
                 override val beginner: Color = AppPalette.Semantic.Success
                 override val intermediate: Color = AppPalette.Semantic.Warning
                 override val advanced: Color = AppPalette.Semantic.Error
-                override val pro: Color = AppPalette.Primary.P500
-            }
-    }
-
-    public override val example: AppColor.ExampleColors = object : AppColor.ExampleColors {
-        override val category: AppColor.ExampleColors.CategoryColors =
-            object : AppColor.ExampleColors.CategoryColors {
-                override val compound: Color = AppPalette.Semantic.Success
-                override val isolation: Color = AppPalette.Semantic.Error
-
-            }
-        override val weightType: AppColor.ExampleColors.WeightTypeColors =
-            object : AppColor.ExampleColors.WeightTypeColors {
-                override val free: Color = AppPalette.Semantic.Success
-                override val fixed: Color = AppPalette.Semantic.Warning
-                override val bodyWeight: Color = AppPalette.Semantic.Error
-
-            }
-        override val forceType: AppColor.ExampleColors.ForceTypeColors =
-            object : AppColor.ExampleColors.ForceTypeColors {
-                override val pull: Color = AppPalette.Semantic.Success
-                override val push: Color = AppPalette.Semantic.Warning
-                override val hinge: Color = AppPalette.Semantic.Error
+                override val pro: Color = AppPalette.Unique.Navy
             }
     }
 
@@ -196,7 +198,7 @@ public object LightColor : AppColor {
         override val background = AppPalette.NeutralLight.N200
         override val outline = AppPalette.NeutralLight.N200
         override val text = AppPalette.Common.White
-        override val palette = AppPalette.Qualitative.Palette12
+        override val palette = AppPalette.Qualitative.Palette9Blue
         override val scaleStops = AppPalette.Ramps.OrangeRed
     }
 
@@ -217,7 +219,8 @@ public object LightColor : AppColor {
             override val dot = AppPalette.Semantic.Success
         }
         override val categorical = object : AppColor.Charts.CategoricalColors {
-            override val palette = AppPalette.Qualitative.Palette12
+            override val palette1 = AppPalette.Qualitative.Palette9Blue
+            override val palette2 = AppPalette.Qualitative.Palette20Colorful
         }
         override val heatmap = object : AppColor.Charts.HeatmapColors {
             override val scaleStops = AppPalette.Ramps.OrangeRed
@@ -225,12 +228,12 @@ public object LightColor : AppColor {
         }
         override val radar = object : AppColor.Charts.RadarColors {
             override val strokeFallback = AppPalette.Primary.P500
-            override val palette = AppPalette.Qualitative.Palette12
+            override val palette = AppPalette.Qualitative.Palette9Blue
             override val scaleStops = AppPalette.Ramps.OrangeRed
         }
         override val progress = object : AppColor.Charts.ProgressColors {
             override val track = AppPalette.Common.Black.copy(alpha = 0.08f)
-            override val palette = AppPalette.Qualitative.Palette12
+            override val palette = AppPalette.Qualitative.Palette9Blue
         }
     }
 }

@@ -11,6 +11,8 @@ import com.grippo.state.exercise.examples.ExerciseExampleState
 import com.grippo.state.formatters.IntensityFormatState
 import com.grippo.state.formatters.RepetitionsFormatState
 import com.grippo.state.formatters.VolumeFormatState
+import com.grippo.state.muscles.MuscleGroupState
+import com.grippo.state.muscles.MuscleRepresentationState
 import com.grippo.state.trainings.ExerciseState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -21,6 +23,7 @@ internal data class TrainingRecordingState(
     val tab: RecordingTab = RecordingTab.Exercises,
     val exercises: ImmutableList<ExerciseState> = persistentListOf(),
     val examples: ImmutableList<ExerciseExampleState> = persistentListOf(),
+    val muscles: ImmutableList<MuscleGroupState<MuscleRepresentationState.Plain>> = persistentListOf(),
     val startAt: LocalDateTime = DateTimeUtils.now(),
 
     // === Basic metrics ===
@@ -49,14 +52,12 @@ internal data class TrainingRecordingState(
     val fatigueProgressionData: DSAreaData = DSAreaData(points = emptyList()),
 
     // === Training balance ===
-    val pushPullBalanceData: DSPieData = DSPieData(slices = emptyList()),
     val repRangeDistributionData: DSPieData = DSPieData(slices = emptyList()),
     val movementPatternsData: DSPieData = DSPieData(slices = emptyList()),
 
     // === Quality execution ===
     val executionQualityData: DSProgressData = DSProgressData(items = emptyList()),
     val techniqueQualityData: DSSparklineData = DSSparklineData(points = emptyList()),
-    val weakPointsData: DSProgressData = DSProgressData(items = emptyList()),
 
     // === Intensity ===
     val intensityDistributionData: DSBarData = DSBarData(items = emptyList()),

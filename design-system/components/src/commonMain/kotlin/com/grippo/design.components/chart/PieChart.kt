@@ -38,7 +38,7 @@ public fun PieChart(
             startAngleDeg = -90f,
         ),
         arc = PieStyle.Arc(
-            width = AppTokens.dp.chart.pie.width,
+            width = 18.dp,
             paddingAngleDeg = 2f,
             cornerRadius = 6.dp,
         ),

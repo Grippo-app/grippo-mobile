@@ -72,7 +72,7 @@ internal class QualityAnalyticsCalculator(
             }
         }
 
-        val palette = colors.charts.categorical.palette
+        val palette = colors.charts.categorical.palette1
         val slices = repRanges.entries.mapIndexed { index, (range, count) ->
             DSPieSlice(
                 id = range,
@@ -140,7 +140,7 @@ internal class QualityAnalyticsCalculator(
         exercises: List<ExerciseState>,
     ): DSBarData {
         val colors = colorProvider.get()
-        val palette = colors.charts.categorical.palette
+        val palette = colors.charts.categorical.palette1
 
         val items = exercises.mapIndexed { index, exercise ->
             // Симулируем RPE на основе интенсивности и объема
@@ -199,7 +199,7 @@ internal class QualityAnalyticsCalculator(
             patterns[pattern] = (patterns[pattern] ?: 0) + 1
         }
 
-        val palette = colors.charts.categorical.palette
+        val palette = colors.charts.categorical.palette1
         val slices = patterns.entries.mapIndexed { index, (pattern, count) ->
             DSPieSlice(
                 id = pattern,

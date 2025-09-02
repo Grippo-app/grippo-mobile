@@ -32,7 +32,7 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
     state: STATE,
 ) : InstanceKeeper.Instance, KoinComponent {
 
-    public val coroutineScope: CoroutineScope = CoroutineScope(
+    private val coroutineScope: CoroutineScope = CoroutineScope(
         context = SupervisorJob() + Dispatchers.Main.immediate
     )
 

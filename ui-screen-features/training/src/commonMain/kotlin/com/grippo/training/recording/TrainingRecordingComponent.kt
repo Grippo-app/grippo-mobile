@@ -28,6 +28,7 @@ internal class TrainingRecordingComponent(
     override val viewModel: TrainingRecordingViewModel = componentContext.retainedInstance {
         TrainingRecordingViewModel(
             exerciseExampleFeature = getKoin().get(),
+            muscleFeature = getKoin().get(),
             dialogController = getKoin().get(),
             stringProvider = getKoin().get(),
             colorProvider = getKoin().get(),

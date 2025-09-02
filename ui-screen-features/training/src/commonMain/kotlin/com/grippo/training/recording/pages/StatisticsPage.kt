@@ -25,11 +25,7 @@ import com.grippo.design.components.chip.VolumeChipStyle
 import com.grippo.design.components.statistics.ChartCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.chart_title_category
 import com.grippo.design.resources.provider.chart_title_exercise_volume
-import com.grippo.design.resources.provider.chart_title_experience
-import com.grippo.design.resources.provider.chart_title_force_type
-import com.grippo.design.resources.provider.chart_title_weight_type
 import com.grippo.training.recording.TrainingRecordingContract
 import com.grippo.training.recording.TrainingRecordingState
 
@@ -77,7 +73,7 @@ internal fun StatisticsPage(
                 ChartCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(1.8f),
+                        .aspectRatio(1.4f),
                     title = AppTokens.strings.res(Res.string.chart_title_exercise_volume),
                     content = {
                         BarChart(
@@ -91,87 +87,37 @@ internal fun StatisticsPage(
         }
 
         if (state.categoryDistributionData.slices.isNotEmpty()) {
-            item(key = "category_distribution", span = { GridItemSpan(2) }) {
-                ChartCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1f),
-                    title = AppTokens.strings.res(Res.string.chart_title_category),
-                    content = {
-                        PieChart(
-                            modifier = Modifier.fillMaxWidth().weight(1f),
-                            data = state.categoryDistributionData
-                        )
-                    }
+            item(key = "category_distribution", span = { GridItemSpan(1) }) {
+                PieChart(
+                    modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+                    data = state.categoryDistributionData
                 )
             }
         }
 
         if (state.weightTypeDistributionData.slices.isNotEmpty()) {
-            item(key = "weight_type_distribution", span = { GridItemSpan(2) }) {
-                ChartCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1f),
-                    title = AppTokens.strings.res(Res.string.chart_title_weight_type),
-                    content = {
-                        PieChart(
-                            modifier = Modifier.fillMaxWidth().weight(1f),
-                            data = state.weightTypeDistributionData
-                        )
-                    }
+            item(key = "weight_type_distribution", span = { GridItemSpan(1) }) {
+                PieChart(
+                    modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+                    data = state.weightTypeDistributionData
                 )
             }
         }
 
         if (state.experienceDistributionData.slices.isNotEmpty()) {
-            item(key = "experience_distribution", span = { GridItemSpan(2) }) {
-                ChartCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1f),
-                    title = AppTokens.strings.res(Res.string.chart_title_experience),
-                    content = {
-                        PieChart(
-                            modifier = Modifier.fillMaxWidth().weight(1f),
-                            data = state.experienceDistributionData
-                        )
-                    }
+            item(key = "experience_distribution", span = { GridItemSpan(1) }) {
+                PieChart(
+                    modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+                    data = state.experienceDistributionData
                 )
             }
         }
 
         if (state.forceTypeDistributionData.slices.isNotEmpty()) {
-            item(key = "force_type_distribution", span = { GridItemSpan(2) }) {
-                ChartCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1f),
-                    title = AppTokens.strings.res(Res.string.chart_title_force_type),
-                    content = {
-                        PieChart(
-                            modifier = Modifier.fillMaxWidth().weight(1f),
-                            data = state.forceTypeDistributionData
-                        )
-                    }
-                )
-            }
-        }
-
-        if (state.estimated1RMData.items.isNotEmpty()) {
-            item(key = "estimated_1rm", span = { GridItemSpan(4) }) {
-                ChartCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1.4f),
-                    title = "Estimated 1RM",
-                    content = {
-                        BarChart(
-                            modifier = Modifier.fillMaxWidth().weight(1f),
-                            data = state.estimated1RMData,
-                            xAxisLabelStyle = XAxisLabelStyle.SHOW_ALL
-                        )
-                    }
+            item(key = "force_type_distribution", span = { GridItemSpan(1) }) {
+                PieChart(
+                    modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+                    data = state.forceTypeDistributionData
                 )
             }
         }
@@ -187,21 +133,6 @@ internal fun StatisticsPage(
                         AreaChart(
                             modifier = Modifier.fillMaxWidth().weight(1f),
                             data = state.intraWorkoutProgressionData
-                        )
-                    }
-                )
-            }
-        }
-
-        if (state.weakPointsData.items.isNotEmpty()) {
-            item(key = "weak_points", span = { GridItemSpan(4) }) {
-                ChartCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    title = "Potential Weak Points",
-                    content = {
-                        ProgressChart(
-                            modifier = Modifier.fillMaxWidth(),
-                            data = state.weakPointsData
                         )
                     }
                 )
@@ -268,23 +199,6 @@ internal fun StatisticsPage(
                             modifier = Modifier.fillMaxWidth().weight(1f),
                             data = state.rpeAnalysisData,
                             xAxisLabelStyle = XAxisLabelStyle.SHOW_ALL
-                        )
-                    }
-                )
-            }
-        }
-
-        if (state.pushPullBalanceData.slices.isNotEmpty()) {
-            item(key = "push_pull_balance", span = { GridItemSpan(4) }) {
-                ChartCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1f),
-                    title = "Push/Pull Balance",
-                    content = {
-                        PieChart(
-                            modifier = Modifier.fillMaxWidth().weight(1f),
-                            data = state.pushPullBalanceData
                         )
                     }
                 )
