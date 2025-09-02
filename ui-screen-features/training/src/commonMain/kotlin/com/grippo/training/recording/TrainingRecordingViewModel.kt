@@ -1,9 +1,9 @@
 package com.grippo.training.recording
 
-import com.grippo.calculation.ExamplesCalculator
-import com.grippo.calculation.ExercisesCalculator
-import com.grippo.calculation.MetricsCalculator
-import com.grippo.calculation.MusclesCalculator
+import com.grippo.calculation.TrainingExamplesCalculator
+import com.grippo.calculation.TrainingExercisesCalculator
+import com.grippo.calculation.TrainingMetricsCalculator
+import com.grippo.calculation.TrainingMusclesCalculator
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
@@ -44,14 +44,14 @@ internal class TrainingRecordingViewModel(
     TrainingRecordingState()
 ), TrainingRecordingContract {
 
-    private val metricsCalculator: MetricsCalculator =
-        MetricsCalculator()
-    private val exercisesCalculator: ExercisesCalculator =
-        ExercisesCalculator(colorProvider)
-    private val examplesCalculator: ExamplesCalculator =
-        ExamplesCalculator(stringProvider, colorProvider)
-    private val muscleCalculator: MusclesCalculator =
-        MusclesCalculator(stringProvider, colorProvider)
+    private val trainingMetricsCalculator: TrainingMetricsCalculator =
+        TrainingMetricsCalculator()
+    private val trainingExercisesCalculator: TrainingExercisesCalculator =
+        TrainingExercisesCalculator(colorProvider)
+    private val trainingExamplesCalculator: TrainingExamplesCalculator =
+        TrainingExamplesCalculator(stringProvider, colorProvider)
+    private val trainingMuscleCalculator: TrainingMusclesCalculator =
+        TrainingMusclesCalculator(stringProvider, colorProvider)
 
     init {
         muscleFeature.observeMuscles()
@@ -185,25 +185,25 @@ internal class TrainingRecordingViewModel(
             return
         }
 
-        val totalMetrics = metricsCalculator
+        val totalMetrics = trainingMetricsCalculator
             .calculateTotalMetrics(exercises)
 
         // ExampleAnalytics
-        val categoryDistributionData = examplesCalculator
+        val categoryDistributionData = trainingExamplesCalculator
             .calculateCategoryDistribution(exercises)
-        val weightTypeDistributionData = examplesCalculator
+        val weightTypeDistributionData = trainingExamplesCalculator
             .calculateWeightTypeDistribution(exercises)
-        val forceTypeDistributionData = examplesCalculator
+        val forceTypeDistributionData = trainingExamplesCalculator
             .calculateForceTypeDistribution(exercises)
-        val experienceDistributionData = examplesCalculator
+        val experienceDistributionData = trainingExamplesCalculator
             .calculateExperienceDistribution(exercises)
 
         // ExerciseAnalytics
-        val exerciseVolumeData = exercisesCalculator
+        val exerciseVolumeData = trainingExercisesCalculator
             .calculateExerciseVolumeChart(exercises)
 
         // MuscleAnalytics
-        val muscleLoadData = muscleCalculator
+        val muscleLoadData = trainingMuscleCalculator
             .calculateMuscleLoadDistribution(exercises, examples, muscles)
 
         update {

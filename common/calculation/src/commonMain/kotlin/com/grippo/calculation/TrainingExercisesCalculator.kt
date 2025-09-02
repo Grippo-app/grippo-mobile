@@ -9,7 +9,7 @@ import com.grippo.state.exercise.examples.WeightTypeEnumState
 import com.grippo.state.formatters.IntensityFormatState
 import com.grippo.state.trainings.ExerciseState
 
-public class ExercisesCalculator(
+public class TrainingExercisesCalculator(
     private val colorProvider: ColorProvider
 ) {
 

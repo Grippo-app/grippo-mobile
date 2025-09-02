@@ -21,7 +21,6 @@ internal class TrainingCompletedComponent(
             exercises = exercises,
             startAt = startAt,
             trainingFeature = getKoin().get(),
-            stringProvider = getKoin().get(),
             dialogController = getKoin().get(),
         )
     }

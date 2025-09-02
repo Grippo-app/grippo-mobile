@@ -10,7 +10,7 @@ import com.grippo.state.exercise.examples.WeightTypeEnumState
 import com.grippo.state.profile.ExperienceEnumState
 import com.grippo.state.trainings.ExerciseState
 
-public class ExamplesCalculator(
+public class TrainingExamplesCalculator(
     private val stringProvider: StringProvider,
     private val colorProvider: ColorProvider
 ) {

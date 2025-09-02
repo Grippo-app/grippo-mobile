@@ -10,7 +10,7 @@ import com.grippo.state.muscles.MuscleGroupState
 import com.grippo.state.muscles.MuscleRepresentationState
 import com.grippo.state.trainings.ExerciseState
 
-public class MusclesCalculator(
+public class TrainingMusclesCalculator(
     private val stringProvider: StringProvider,
     private val colorProvider: ColorProvider,
 ) {
@@ -28,9 +28,14 @@ public class MusclesCalculator(
 
     // Optional workload model (defaults to Volume to preserve current semantics)
     public sealed interface Workload {
-        public data object Volume : Workload                  // Σ(volume)
-        public data object Reps : Workload                    // Σ(reps)
-        public data class TUT(val secPerRep: Float = 3f) : Workload // Σ(reps) * secPerRep
+        public data object Volume :
+            Workload                  // Σ(volume)
+
+        public data object Reps :
+            Workload                    // Σ(reps)
+
+        public data class TUT(val secPerRep: Float = 3f) :
+            Workload // Σ(reps) * secPerRep
     }
 
     /**
@@ -90,7 +95,7 @@ public class MusclesCalculator(
                 is Workload.TUT -> {
                     val reps =
                         ex.iterations.fold(0) { acc, itn -> acc + (itn.repetitions.value ?: 0) }
-                    (reps * workload.secPerRep).toFloat()
+                    (reps * workload.secPerRep)
                 }
             }.coerceAtLeast(0f)
 

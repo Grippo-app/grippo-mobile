@@ -1,15 +1,14 @@
 package com.grippo.training.exercise
 
+import com.grippo.calculation.ExerciseMetricsCalculator
 import com.grippo.core.BaseViewModel
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
-import com.grippo.state.formatters.IntensityFormatState
 import com.grippo.state.formatters.RepetitionsFormatState
 import com.grippo.state.formatters.VolumeFormatState
 import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.IterationFocus
 import com.grippo.state.trainings.IterationState
-import com.grippo.state.trainings.TrainingMetrics
 import kotlinx.collections.immutable.toPersistentList
 import kotlin.uuid.Uuid
 import com.grippo.training.exercise.ExerciseState as ScreenExerciseState
@@ -23,6 +22,8 @@ internal class ExerciseViewModel(
     )
 ), ExerciseContract {
 
+    private val exerciseMetricsCalculator = ExerciseMetricsCalculator()
+
     override fun onAddIteration() {
         val value = IterationState(
             id = Uuid.random().toString(),
@@ -34,7 +35,7 @@ internal class ExerciseViewModel(
 
         val suggestions = state.value.exercise.iterations
             .reversed()
-            .distinctBy { it -> it.volume.value to it.repetitions.value }
+            .distinctBy { it.volume.value to it.repetitions.value }
 
         val dialog = DialogConfig.Iteration(
             initial = value,
@@ -42,38 +43,21 @@ internal class ExerciseViewModel(
             suggestions = suggestions,
             focus = IterationFocus.UNIDENTIFIED,
             onResult = { iteration ->
-                update {
-                    val iterations = it.exercise.iterations
+                update { s ->
+                    // Build new iterations
+                    val iterations = s.exercise.iterations
                         .toMutableList()
                         .apply { add(iteration) }
                         .toPersistentList()
 
-                    val volume = iterations.mapNotNull { iteration ->
-                        val v = (iteration.volume as? VolumeFormatState.Valid)
-                            ?: return@mapNotNull null
-                        val r = (iteration.repetitions as? RepetitionsFormatState.Valid)
-                            ?: return@mapNotNull null
-                        v.value * r.value
-                    }.sum()
+                    // Recompute metrics for this exercise
+                    val metrics = exerciseMetricsCalculator.compute(iterations)
 
-                    val repetition = iterations.mapNotNull { iteration ->
-                        val r = (iteration.repetitions as? RepetitionsFormatState.Valid)
-                            ?: return@mapNotNull null
-                        r.value
-                    }.sum()
-
-                    val intensity = volume / repetition
-
-                    val exercise = it.exercise.copy(
+                    val exercise = s.exercise.copy(
                         iterations = iterations,
-                        metrics = TrainingMetrics(
-                            volume = VolumeFormatState.of(volume),
-                            repetitions = RepetitionsFormatState.of(repetition),
-                            intensity = IntensityFormatState.of(intensity)
-                        )
+                        metrics = metrics
                     )
-
-                    it.copy(exercise = exercise)
+                    s.copy(exercise = exercise)
                 }
             }
         )
@@ -83,27 +67,33 @@ internal class ExerciseViewModel(
 
     override fun onDeleteIteration(id: String) {
         update { s ->
+            // Remove by index if present
             val iterations = s.exercise.iterations
                 .toMutableList()
                 .apply {
                     val idx = indexOfFirst { it.id == id }
                     if (idx >= 0) removeAt(idx)
-                }.toPersistentList()
+                }
+                .toPersistentList()
 
-            val exercise = s.exercise.copy(iterations = iterations)
+            // Recompute metrics after deletion
+            val metrics = exerciseMetricsCalculator.compute(iterations)
 
+            val exercise = s.exercise.copy(
+                iterations = iterations,
+                metrics = metrics
+            )
             s.copy(exercise = exercise)
         }
     }
 
     override fun onEditVolume(id: String) {
         val value = state.value.exercise.iterations.find { it.id == id } ?: return
-
         val number = state.value.exercise.iterations.indexOfFirst { it.id == id } + 1
 
         val suggestions = state.value.exercise.iterations
             .reversed()
-            .distinctBy { it -> it.volume.value to it.repetitions.value }
+            .distinctBy { it.volume.value to it.repetitions.value }
 
         val dialog = DialogConfig.Iteration(
             initial = value,
@@ -111,38 +101,21 @@ internal class ExerciseViewModel(
             number = number,
             focus = IterationFocus.VOLUME,
             onResult = { iteration ->
-                update {
-                    val iterations = it.exercise.iterations
+                update { s ->
+                    // Replace updated iteration
+                    val iterations = s.exercise.iterations
                         .toMutableList()
                         .map { m -> if (m.id == id) iteration else m }
                         .toPersistentList()
 
-                    val volume = iterations.mapNotNull { iteration ->
-                        val v = (iteration.volume as? VolumeFormatState.Valid)
-                            ?: return@mapNotNull null
-                        val r = (iteration.repetitions as? RepetitionsFormatState.Valid)
-                            ?: return@mapNotNull null
-                        v.value * r.value
-                    }.sum()
+                    // Recompute metrics after edit
+                    val metrics = exerciseMetricsCalculator.compute(iterations)
 
-                    val repetition = iterations.mapNotNull { iteration ->
-                        val r = (iteration.repetitions as? RepetitionsFormatState.Valid)
-                            ?: return@mapNotNull null
-                        r.value
-                    }.sum()
-
-                    val intensity = volume / repetition
-
-                    val exercise = it.exercise.copy(
+                    val exercise = s.exercise.copy(
                         iterations = iterations,
-                        metrics = TrainingMetrics(
-                            volume = VolumeFormatState.of(volume),
-                            repetitions = RepetitionsFormatState.of(repetition),
-                            intensity = IntensityFormatState.of(intensity)
-                        )
+                        metrics = metrics
                     )
-
-                    it.copy(exercise = exercise)
+                    s.copy(exercise = exercise)
                 }
             }
         )
@@ -152,12 +125,11 @@ internal class ExerciseViewModel(
 
     override fun onEditRepetition(id: String) {
         val value = state.value.exercise.iterations.find { it.id == id } ?: return
-
         val number = state.value.exercise.iterations.indexOfFirst { it.id == id } + 1
 
         val suggestions = state.value.exercise.iterations
             .reversed()
-            .distinctBy { it -> it.volume.value to it.repetitions.value }
+            .distinctBy { it.volume.value to it.repetitions.value }
 
         val dialog = DialogConfig.Iteration(
             initial = value,
@@ -165,38 +137,21 @@ internal class ExerciseViewModel(
             number = number,
             focus = IterationFocus.REPETITIONS,
             onResult = { iteration ->
-                update {
-                    val iterations = it.exercise.iterations
+                update { s ->
+                    // Replace updated iteration
+                    val iterations = s.exercise.iterations
                         .toMutableList()
                         .map { m -> if (m.id == id) iteration else m }
                         .toPersistentList()
 
-                    val volume = iterations.mapNotNull { iteration ->
-                        val v = (iteration.volume as? VolumeFormatState.Valid)
-                            ?: return@mapNotNull null
-                        val r = (iteration.repetitions as? RepetitionsFormatState.Valid)
-                            ?: return@mapNotNull null
-                        v.value * r.value
-                    }.sum()
+                    // Recompute metrics after edit
+                    val metrics = exerciseMetricsCalculator.compute(iterations)
 
-                    val repetition = iterations.mapNotNull { iteration ->
-                        val r = (iteration.repetitions as? RepetitionsFormatState.Valid)
-                            ?: return@mapNotNull null
-                        r.value
-                    }.sum()
-
-                    val intensity = volume / repetition
-
-                    val exercise = it.exercise.copy(
+                    val exercise = s.exercise.copy(
                         iterations = iterations,
-                        metrics = TrainingMetrics(
-                            volume = VolumeFormatState.of(volume),
-                            repetitions = RepetitionsFormatState.of(repetition),
-                            intensity = IntensityFormatState.of(intensity)
-                        )
+                        metrics = metrics
                     )
-
-                    it.copy(exercise = exercise)
+                    s.copy(exercise = exercise)
                 }
             }
         )
@@ -205,14 +160,20 @@ internal class ExerciseViewModel(
     }
 
     override fun onRemoveIteration(id: String) {
-        update {
-            val iterations = it.exercise.iterations
-                .filter { f -> f.id != id }
+        update { s ->
+            // Filter out the iteration by id
+            val iterations = s.exercise.iterations
+                .filter { it.id != id }
                 .toPersistentList()
 
-            val exercise = it.exercise.copy(iterations = iterations)
+            // Recompute metrics after removal
+            val metrics = exerciseMetricsCalculator.compute(iterations)
 
-            it.copy(exercise = exercise)
+            val exercise = s.exercise.copy(
+                iterations = iterations,
+                metrics = metrics
+            )
+            s.copy(exercise = exercise)
         }
     }
 
@@ -220,7 +181,6 @@ internal class ExerciseViewModel(
         val direction = ExerciseDirection.Save(
             exercise = state.value.exercise
         )
-
         navigateTo(direction)
     }
 
