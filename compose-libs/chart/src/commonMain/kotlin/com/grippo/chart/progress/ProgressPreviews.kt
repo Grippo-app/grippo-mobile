@@ -50,7 +50,8 @@ private fun progressStyle(values: ProgressStyle.Values): ProgressStyle = Progres
     ),
     labels = ProgressStyle.Labels(textStyle = TextStyle(color = Color(0xFF333333))),
     values = values,
-    target = ProgressStyle.Target(value = 80f, color = Color(0x33000000), width = 1.dp)
+    target = ProgressStyle.Target(value = 80f, color = Color(0x33000000), width = 1.dp),
+    progression = ProgressStyle.Progression.Power(0.5f)
 )
 
 @Preview

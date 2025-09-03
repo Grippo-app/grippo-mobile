@@ -71,7 +71,8 @@ public fun ProgressChart(
             insideColor = null,
             preferNormalizedLabels = true,
         ),
-        target = null
+        target = null,
+        progression = ProgressStyle.Progression.Power(0.5f)
     )
 
     ProgressChart(

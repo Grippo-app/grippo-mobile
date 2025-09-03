@@ -13,6 +13,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.times
+import kotlin.math.ln
 import kotlin.math.max
 import kotlin.math.pow
 
@@ -21,7 +22,6 @@ public fun ProgressChart(
     modifier: Modifier = Modifier,
     data: ProgressData,
     style: ProgressStyle,
-    alpha: Float = 0.5f // коэффициент степенной шкалы (0.5 = sqrt, 1 = линейная, >1 = усиливает разницу вверху)
 ) {
     val measurer = rememberTextMeasurer()
 
@@ -43,20 +43,16 @@ public fun ProgressChart(
         // ----- Gutters -----
         val labelPad = style.layout.labelPadding.toPx()
 
-        // left gutter for labels
         val maxLabelW = data.items.maxOf { e ->
             measurer.measure(AnnotatedString(e.label), style.labels.textStyle).size.width
         }
         val leftGutter = maxLabelW + labelPad
 
-        // right gutter если values = Outside
         val rightGutter = when (val vCfg = style.values) {
             is ProgressStyle.Values.Outside -> {
                 val sampleValues = data.items.map { e ->
-                    val disp = if (isNormalized && vCfg.preferNormalizedLabels) e.value.coerceIn(
-                        0f,
-                        1f
-                    ) else e.value
+                    val disp = if (isNormalized && vCfg.preferNormalizedLabels)
+                        e.value.coerceIn(0f, 1f) else e.value
                     vCfg.formatter(disp, data)
                 }
                 val maxValueW = sampleValues.maxOfOrNull { t ->
@@ -88,36 +84,43 @@ public fun ProgressChart(
 
         val domain = maxV.coerceAtLeast(1e-6f)
 
-        // 1. Степенные ширины
-        val powerWidths = data.items.map { e ->
-            val v = if (isNormalized) e.value.coerceIn(0f, 1f) else e.value
+        // ----- Scaling function -----
+        fun scaledWidth(value: Float): Float {
+            val v = if (isNormalized) value.coerceIn(0f, 1f) else value
             val ratio = (v / domain).coerceIn(0f, 1f)
-            (ratio.pow(alpha) * chartW)
+            return when (val prog = style.progression) {
+                is ProgressStyle.Progression.Linear -> ratio * chartW
+                is ProgressStyle.Progression.Power -> ratio.pow(prog.alpha) * chartW
+                is ProgressStyle.Progression.Logarithmic -> {
+                    val safeV = max(v, 0f)
+                    (ln(safeV + 1.0) / ln(domain + 1.0)).toFloat() * chartW
+                }
+            }
         }
+
+        // 1. Базовые ширины
+        val baseWidths = data.items.map { e -> scaledWidth(e.value) }
 
         // 2. Гарантия для текста (Inside)
         val finalWidths = when (val vCfg = style.values) {
             is ProgressStyle.Values.Inside -> {
                 data.items.mapIndexed { i, e ->
-                    val disp = if (isNormalized && vCfg.preferNormalizedLabels) e.value.coerceIn(
-                        0f,
-                        1f
-                    ) else e.value
+                    val disp = if (isNormalized && vCfg.preferNormalizedLabels)
+                        e.value.coerceIn(0f, 1f) else e.value
                     val txt = vCfg.formatter(disp, data)
                     val textLayout = measurer.measure(AnnotatedString(txt), vCfg.textStyle)
                     val needed = textLayout.size.width + 2 * vCfg.minInnerPadding.toPx()
-                    max(powerWidths[i], needed)
+                    max(baseWidths[i], needed)
                 }
             }
 
-            else -> powerWidths
+            else -> baseWidths
         }
 
         // target marker
         style.target?.let { t ->
             val v = if (isNormalized) t.value.coerceIn(0f, 1f) else t.value
-            val ratio = (v / domain).coerceIn(0f, 1f)
-            val x = chart.left + (ratio.pow(alpha) * chartW)
+            val x = chart.left + scaledWidth(v)
             drawLine(
                 color = t.color,
                 start = Offset(x, chart.top),
@@ -180,10 +183,8 @@ public fun ProgressChart(
             when (val vCfg = style.values) {
                 is ProgressStyle.Values.None -> Unit
                 is ProgressStyle.Values.Inside -> {
-                    val disp = if (isNormalized && vCfg.preferNormalizedLabels) e.value.coerceIn(
-                        0f,
-                        1f
-                    ) else e.value
+                    val disp = if (isNormalized && vCfg.preferNormalizedLabels)
+                        e.value.coerceIn(0f, 1f) else e.value
                     val txt = vCfg.formatter(disp, data)
                     val textLayout = measurer.measure(
                         AnnotatedString(txt),
@@ -195,10 +196,8 @@ public fun ProgressChart(
                 }
 
                 is ProgressStyle.Values.Outside -> {
-                    val disp = if (isNormalized && vCfg.preferNormalizedLabels) e.value.coerceIn(
-                        0f,
-                        1f
-                    ) else e.value
+                    val disp = if (isNormalized && vCfg.preferNormalizedLabels)
+                        e.value.coerceIn(0f, 1f) else e.value
                     val txt = vCfg.formatter(disp, data)
                     val textLayout = measurer.measure(AnnotatedString(txt), vCfg.textStyle)
                     val vx = barRect.right + labelPad

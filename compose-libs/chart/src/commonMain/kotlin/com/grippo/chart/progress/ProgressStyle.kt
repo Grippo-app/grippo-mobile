@@ -26,6 +26,7 @@ public data class ProgressStyle(
     val labels: Labels,
     val values: Values,
     val target: Target?,
+    val progression: Progression,
 ) {
     /** Row/bar geometry and paddings. */
     @Immutable
@@ -96,4 +97,20 @@ public data class ProgressStyle(
         val color: Color,
         val width: Dp,
     )
+
+    /** Progression scaling for bar widths. */
+    @Immutable
+    public sealed interface Progression {
+        /** Linear scaling: barWidth = (v/max) * chartW */
+        @Immutable
+        public data object Linear : Progression
+
+        /** Power scaling: barWidth = (v/max)^alpha * chartW */
+        @Immutable
+        public data class Power(val alpha: Float) : Progression
+
+        /** Logarithmic scaling: barWidth = ln(v+1)/ln(max+1) * chartW */
+        @Immutable
+        public data object Logarithmic : Progression
+    }
 }
