@@ -35,7 +35,7 @@ public fun PieChart(
     val style = PieStyle(
         layout = PieStyle.Layout(
             padding = 0.dp,
-            startAngleDeg = -90f,
+            startAngleDeg = -60f,
         ),
         arc = PieStyle.Arc(
             width = 18.dp,
