@@ -110,6 +110,12 @@ internal fun ExerciseExamplePickerScreen(
                     ),
                 )
             }
+
+            if (state.exerciseExamples.isEmpty()) {
+               item {
+                   Spacer(modifier = Modifier.size(220.dp))
+               }
+            }
         }
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
