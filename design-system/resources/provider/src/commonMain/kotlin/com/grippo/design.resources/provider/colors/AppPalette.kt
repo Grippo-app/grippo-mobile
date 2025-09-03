@@ -10,12 +10,6 @@ internal object AppPalette {
         val Accent = Color(0xFF3366FF)
     }
 
-    object Semantic {
-        val Error = Color(0xFFFF4D4F)
-        val Warning = Color(0xFFFFAA2C)
-        val Success = Color(0xFF3AC86B)
-    }
-
     object Primary {
         val P100 = Color(0xFFE6ECFF)
         val P150 = Color(0xFFD4DFFF)
@@ -101,7 +95,7 @@ internal object AppPalette {
             0.56f to Color(0xFFFFB24D),
             0.76f to Color(0xFFFF7A33),
             0.90f to Color(0xFFFF5A2A),
-            1.00f to Semantic.Error
+            1.00f to Unique.Red
         )
 
         val OrangeRed: List<Pair<Float, Color>> = listOf(
@@ -109,7 +103,7 @@ internal object AppPalette {
             0.30f to Color(0xFFFFB24D),
             0.60f to Color(0xFFFF7A33),
             0.85f to Color(0xFFFF5A2A),
-            1.00f to Semantic.Error
+            1.00f to Unique.Red
         )
     }
 
@@ -126,7 +120,7 @@ internal object AppPalette {
             Primary.P100
         )
 
-        val Palette20Colorful: List<Color> = listOf(
+        val Palette18Colorful: List<Color> = listOf(
             Unique.Red,
             Unique.Orange,
             Unique.Coral,
@@ -145,8 +139,6 @@ internal object AppPalette {
             Unique.Cyan,
             Unique.Indigo,
             Common.Accent,
-            Semantic.Success,
-            Semantic.Error
         )
     }
 }

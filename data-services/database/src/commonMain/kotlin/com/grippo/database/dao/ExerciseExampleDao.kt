@@ -24,6 +24,26 @@ public interface ExerciseExampleDao {
     public fun get(): Flow<List<ExerciseExamplePack>>
 
     @Transaction
+    @Query(
+        """
+        SELECT * FROM exercise_example
+        WHERE (LENGTH(TRIM(:name)) = 0 OR LOWER(name) LIKE LOWER('%' || :name || '%'))
+        AND (:forceType IS NULL OR forceType = :forceType)
+        AND (:weightType IS NULL OR weightType = :weightType)
+        AND (:category IS NULL OR category = :category)
+        AND (:experience IS NULL OR experience = :experience)
+        ORDER BY updatedAt DESC
+    """
+    )
+    public fun getFiltered(
+        name: String,
+        forceType: String? = null,
+        weightType: String? = null,
+        category: String? = null,
+        experience: String? = null
+    ): Flow<List<ExerciseExamplePack>>
+
+    @Transaction
     @Query("SELECT * FROM exercise_example WHERE id IN (:ids) ORDER BY updatedAt DESC")
     public fun get(ids: List<String>): Flow<List<ExerciseExamplePack>>
 

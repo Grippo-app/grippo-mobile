@@ -1,6 +1,10 @@
 package com.grippo.data.features.exercise.examples.data
 
+import com.grippo.data.features.api.exercise.example.models.CategoryEnum
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
+import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
+import com.grippo.data.features.api.exercise.example.models.ForceTypeEnum
+import com.grippo.data.features.api.exercise.example.models.WeightTypeEnum
 import com.grippo.data.features.exercise.examples.domain.ExerciseExampleRepository
 import com.grippo.database.dao.ExerciseExampleDao
 import com.grippo.database.domain.exercise.equipment.toDomain
@@ -17,9 +21,21 @@ internal class ExerciseExampleRepositoryImpl(
     private val exerciseExampleDao: ExerciseExampleDao,
 ) : ExerciseExampleRepository {
 
-    override fun observeExerciseExamples(): Flow<List<ExerciseExample>> {
+    override fun observeExerciseExamples(
+        name: String,
+        forceType: ForceTypeEnum?,
+        weightType: WeightTypeEnum?,
+        experience: ExperienceEnum?,
+        category: CategoryEnum?
+    ): Flow<List<ExerciseExample>> {
         return exerciseExampleDao
-            .get()
+            .getFiltered(
+                name = name,
+                forceType = forceType?.key,
+                weightType = weightType?.key,
+                experience = experience?.key,
+                category = category?.key
+            )
             .map { it.toDomain() }
     }
 

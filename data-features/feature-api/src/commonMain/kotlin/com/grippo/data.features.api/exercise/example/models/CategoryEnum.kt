@@ -1,6 +1,6 @@
 package com.grippo.data.features.api.exercise.example.models
 
-public enum class CategoryEnum(private val key: String) {
+public enum class CategoryEnum(public val key: String) {
     COMPOUND(key = "compound"),
     ISOLATION(key = "isolation");
 

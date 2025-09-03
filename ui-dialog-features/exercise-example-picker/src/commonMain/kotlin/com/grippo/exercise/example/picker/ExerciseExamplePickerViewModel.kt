@@ -6,8 +6,14 @@ import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
+import com.grippo.state.domain.example.toDomain
+import com.grippo.state.domain.user.toDomain
 import com.grippo.state.exercise.examples.ExerciseExampleDialogView
+import com.grippo.state.filters.FilterValue
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
 public class ExerciseExamplePickerViewModel(
@@ -18,8 +24,27 @@ public class ExerciseExamplePickerViewModel(
 ), ExerciseExamplePickerContract {
 
     init {
-        exerciseExampleFeature
-            .observeExerciseExamples()
+        state.map { it.query to it.filters }
+            .distinctUntilChanged()
+            .flatMapLatest {
+                val name = it.first
+                val weightType = it.second.filterIsInstance<FilterValue.WeightType>().firstOrNull()
+                    ?.value?.toDomain()
+                val forceType = it.second.filterIsInstance<FilterValue.ForceType>().firstOrNull()
+                    ?.value?.toDomain()
+                val category = it.second.filterIsInstance<FilterValue.Category>().firstOrNull()
+                    ?.value?.toDomain()
+                val experience = it.second.filterIsInstance<FilterValue.Experience>().firstOrNull()
+                    ?.value?.toDomain()
+
+                exerciseExampleFeature.observeExerciseExamples(
+                    name = name,
+                    weightType = weightType,
+                    forceType = forceType,
+                    category = category,
+                    experience = experience,
+                )
+            }
             .onEach(::provideExerciseExamples)
             .safeLaunch()
     }

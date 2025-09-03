@@ -91,9 +91,9 @@ public object LightColor : AppColor {
     }
 
     override val semantic: AppColor.SemanticColors = object : AppColor.SemanticColors {
-        override val success = AppPalette.Semantic.Success
-        override val error = AppPalette.Semantic.Error
-        override val warning = AppPalette.Semantic.Warning
+        override val success = AppPalette.Unique.Green
+        override val error = AppPalette.Unique.Red
+        override val warning = AppPalette.Unique.Orange
         override val info = AppPalette.Common.Accent
         override val accent = AppPalette.Common.Accent
     }
@@ -127,9 +127,9 @@ public object LightColor : AppColor {
     }
 
     override val konfetti: AppColor.Konfetti = object : AppColor.Konfetti {
-        override val confettiColor1 = AppPalette.Semantic.Success
-        override val confettiColor2 = AppPalette.Semantic.Warning
-        override val confettiColor3 = AppPalette.Semantic.Error
+        override val confettiColor1 = AppPalette.Unique.Green
+        override val confettiColor2 = AppPalette.Unique.Orange
+        override val confettiColor3 = AppPalette.Unique.Red
         override val confettiColor4 = AppPalette.Common.Accent
         override val confettiColor5 = AppPalette.Primary.P300
         override val confettiColor6 = AppPalette.Primary.P400
@@ -184,9 +184,9 @@ public object LightColor : AppColor {
 
         override val experienceColors: AppColor.ProfileColors.ExperienceColors =
             object : AppColor.ProfileColors.ExperienceColors {
-                override val beginner: Color = AppPalette.Semantic.Success
-                override val intermediate: Color = AppPalette.Semantic.Warning
-                override val advanced: Color = AppPalette.Semantic.Error
+                override val beginner: Color = AppPalette.Unique.Green
+                override val intermediate: Color = AppPalette.Unique.Orange
+                override val advanced: Color = AppPalette.Unique.Red
                 override val pro: Color = AppPalette.Unique.Navy
             }
     }
@@ -205,22 +205,22 @@ public object LightColor : AppColor {
     override val charts: AppColor.Charts = object : AppColor.Charts {
         override val sparkline = object : AppColor.Charts.SparklineColors {
             override val lineA = AppPalette.Primary.P400
-            override val lineB = AppPalette.Semantic.Success
+            override val lineB = AppPalette.Unique.Green
             override val fillBase = AppPalette.Primary.P400
             override val dot = AppPalette.Primary.P400
-            override val min = AppPalette.Semantic.Warning
-            override val max = AppPalette.Semantic.Success
+            override val max = AppPalette.Unique.Orange
+            override val min = AppPalette.Unique.Green
         }
         override val area = object : AppColor.Charts.AreaColors {
-            override val lineA = AppPalette.Semantic.Success
+            override val lineA = AppPalette.Unique.Green
             override val lineB = AppPalette.Primary.P400
-            override val fillBase = AppPalette.Semantic.Success
-            override val glow = AppPalette.Semantic.Success
-            override val dot = AppPalette.Semantic.Success
+            override val fillBase = AppPalette.Unique.Green
+            override val glow = AppPalette.Unique.Green
+            override val dot = AppPalette.Unique.Green
         }
         override val categorical = object : AppColor.Charts.CategoricalColors {
             override val palette1 = AppPalette.Qualitative.Palette9Blue
-            override val palette2 = AppPalette.Qualitative.Palette20Colorful
+            override val palette2 = AppPalette.Qualitative.Palette18Colorful
         }
         override val heatmap = object : AppColor.Charts.HeatmapColors {
             override val scaleStops = AppPalette.Ramps.OrangeRed

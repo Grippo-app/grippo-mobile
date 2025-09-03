@@ -11,6 +11,7 @@ kotlin {
         implementation(projects.common.state)
         implementation(projects.common.dateUtils)
         implementation(projects.designSystem.core)
+        implementation(projects.dataMappers.stateToDomain)
         implementation(projects.designSystem.resources.provider)
         implementation(projects.designSystem.preview)
         implementation(projects.designSystem.components)
