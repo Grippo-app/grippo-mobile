@@ -1,8 +1,8 @@
 package com.grippo.database.domain.exercise.equipment
 
 import com.grippo.data.features.api.equipment.models.Equipment
-import com.grippo.database.models.ExerciseEquipmentWithEquipment
 import com.grippo.database.domain.equipment.toDomain
+import com.grippo.database.models.ExerciseEquipmentWithEquipment
 import com.grippo.logger.AppLogger
 
 public fun List<ExerciseEquipmentWithEquipment>.toDomain(): List<Equipment> {

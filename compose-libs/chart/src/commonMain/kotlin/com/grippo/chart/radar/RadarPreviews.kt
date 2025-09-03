@@ -36,7 +36,11 @@ private fun radarData(): RadarData {
 private fun radarTwoAxes(): RadarData {
     val axes = listOf(RadarAxis("a", "A"), RadarAxis("b", "B"))
     val series = listOf(
-        RadarSeries(name = "Two", color = Color(0xFFB049F8), values = RadarValues.ByIndex(listOf(0.3f, 0.9f)))
+        RadarSeries(
+            name = "Two",
+            color = Color(0xFFB049F8),
+            values = RadarValues.ByIndex(listOf(0.3f, 0.9f))
+        )
     )
     return RadarData(axes = axes, series = series)
 }

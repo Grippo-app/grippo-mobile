@@ -25,8 +25,8 @@ cd grippo-mobile
 2. Select "Open an Existing Project" and navigate to the cloned repository
 3. Wait for the Gradle sync to complete
 4. Android Studio should prompt you to install any missing SDK components
-   - Required SDK versions are defined in the project's build files
-   - Make sure to install any recommended components
+    - Required SDK versions are defined in the project's build files
+    - Make sure to install any recommended components
 
 ### 3. iOS Setup
 
@@ -55,17 +55,20 @@ cd grippo-mobile
 ### Building for Android
 
 From the command line:
+
 ```bash
 ./gradlew :androidApp:assembleDebug
 ```
 
 Or in Android Studio:
+
 1. Select the `androidApp` configuration
 2. Click the "Run" button
 
 ### Building for iOS
 
 From the command line:
+
 ```bash
 ./gradlew :shared:embedAndSignAppleFrameworkForXcode
 cd iosApp
@@ -73,11 +76,11 @@ xcodebuild -workspace iosApp.xcworkspace -scheme iosApp -configuration Debug -sd
 ```
 
 Or in Xcode:
+
 1. Open `iosApp.xcworkspace`
 2. Select the `iosApp` scheme
 3. Select a simulator or device
 4. Click the "Run" button
-
 
 ## Troubleshooting
 
@@ -86,6 +89,7 @@ Or in Xcode:
 #### Gradle Sync Failed
 
 If Gradle sync fails:
+
 1. Ensure you have the correct JDK version
 2. Try invalidating caches: `File > Invalidate Caches / Restart`
 3. Check your internet connection for dependency downloads
@@ -93,6 +97,7 @@ If Gradle sync fails:
 #### iOS Build Errors
 
 If you encounter iOS build errors:
+
 1. Ensure CocoaPods is installed correctly
 2. Try cleaning the build: `Product > Clean Build Folder` in Xcode
 3. Rebuild the shared module: `./gradlew :shared:embedAndSignAppleFrameworkForXcode`
@@ -100,6 +105,7 @@ If you encounter iOS build errors:
 #### KMM Plugin Issues
 
 If the KMM plugin isn't working properly:
+
 1. Ensure you have the latest version installed
 2. Restart Android Studio
 3. Check for compatibility issues with your Android Studio version
@@ -109,12 +115,12 @@ If the KMM plugin isn't working properly:
 If you encounter persistent build issues, you may need to perform a full clean:
 
 1. **Clean Gradle Build Files**
-   - Run `./gradlew clean --no-daemon`
-   - Remove build directories and Gradle caches
+    - Run `./gradlew clean --no-daemon`
+    - Remove build directories and Gradle caches
 
 2. **Clean iOS Build Files** (for iOS development)
-   - Remove Pods directory and Podfile.lock
-   - Clean Xcode derived data
-   - Reinstall pods
+    - Remove Pods directory and Podfile.lock
+    - Clean Xcode derived data
+    - Reinstall pods
 
 A helper script for this process is available in the project root. See the README for more details.

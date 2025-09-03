@@ -28,18 +28,22 @@ public fun HeatmapChart(
         is HeatmapStyle.AxisLabels.ShowAll -> (0 until data.matrix.rows).map { r ->
             (data.rowLabels.getOrNull(r) ?: "") to rLbl.textStyle
         }
+
         is HeatmapStyle.AxisLabels.Adaptive -> (0 until data.matrix.rows).map { r ->
             (data.rowLabels.getOrNull(r) ?: "") to rLbl.textStyle
         }
+
         is HeatmapStyle.AxisLabels.None -> emptyList()
     }
     val colLabelSpecs = when (val cLbl = style.colLabels) {
         is HeatmapStyle.AxisLabels.ShowAll -> (0 until data.matrix.cols).map { c ->
             (data.colLabels.getOrNull(c) ?: "") to cLbl.textStyle
         }
+
         is HeatmapStyle.AxisLabels.Adaptive -> (0 until data.matrix.cols).map { c ->
             (data.colLabels.getOrNull(c) ?: "") to cLbl.textStyle
         }
+
         is HeatmapStyle.AxisLabels.None -> emptyList()
     }
 
@@ -77,6 +81,7 @@ public fun HeatmapChart(
                     leftGutter += maxW + labelPadPx
                 }
             }
+
             is HeatmapStyle.AxisLabels.None -> Unit
         }
 
@@ -90,6 +95,7 @@ public fun HeatmapChart(
                     bottomGutter += colLabelsMaxH + labelPadPx
                 }
             }
+
             is HeatmapStyle.AxisLabels.None -> Unit
         }
 

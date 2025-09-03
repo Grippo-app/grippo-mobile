@@ -227,7 +227,7 @@ internal class TrainingRecordingViewModel(
             examples = examples,
             groups = muscles,
             mode = TrainingMusclesCalculator.Mode.RELATIVE,
-            relativeMode = RelativeMode.MAX,
+            relativeMode = RelativeMode.SUM,
             workload = TrainingMusclesCalculator.Workload.Volume
         )
 

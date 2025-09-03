@@ -19,14 +19,14 @@ import com.grippo.design.components.connection.snackbar.ConnectionSnackbar
 import com.grippo.design.core.AppTheme
 import com.grippo.exercise.examples.ExerciseExamplesComponent
 import com.grippo.home.BottomNavigationComponent
-import com.grippo.screen.api.RootRouter
+import com.grippo.profile.ProfileComponent
 import com.grippo.screen.api.AuthRouter
 import com.grippo.screen.api.BottomNavigationRouter
 import com.grippo.screen.api.ExerciseExamplesRouter
 import com.grippo.screen.api.ProfileRouter
+import com.grippo.screen.api.RootRouter
 import com.grippo.screen.api.SettingsRouter
 import com.grippo.screen.api.TrainingRouter
-import com.grippo.profile.ProfileComponent
 import com.grippo.settings.SettingsComponent
 import com.grippo.shared.dialog.DialogComponent
 import com.grippo.shared.root.RootComponent.Child.Authorization

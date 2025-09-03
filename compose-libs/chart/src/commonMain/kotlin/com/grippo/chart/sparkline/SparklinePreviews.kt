@@ -7,7 +7,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.grippo.chart.sparkline.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private fun sparkStyle(curved: Boolean): SparklineStyle = SparklineStyle(
@@ -95,7 +94,12 @@ private fun PreviewSparkLinear() {
 private fun PreviewSparkFew() {
     Sparkline(
         modifier = Modifier.fillMaxWidth().height(100.dp),
-        data = SparklineData(points = listOf(4f, 7f, 3f).mapIndexed { i, v -> SparklinePoint(i.toFloat(), v) }),
+        data = SparklineData(
+            points = listOf(
+                4f,
+                7f,
+                3f
+            ).mapIndexed { i, v -> SparklinePoint(i.toFloat(), v) }),
         style = sparkStyle(curved = true)
     )
 }

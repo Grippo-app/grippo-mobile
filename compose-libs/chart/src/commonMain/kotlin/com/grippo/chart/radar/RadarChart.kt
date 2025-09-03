@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.drawText
@@ -30,6 +30,7 @@ public fun RadarChart(
         is RadarStyle.Labels.Visible -> data.axes.map {
             measurer.measure(AnnotatedString(it.label), lbl.textStyle)
         }
+
         is RadarStyle.Labels.None -> emptyList()
     }
     val resolvedStops: List<Pair<Float, Color>> = style.colorStops
@@ -187,7 +188,10 @@ public fun RadarChart(
                 }
             }
             val vvList: List<Float?> = rawList.map { raw ->
-                if (raw == null && !style.dataPolicy.missingAsZero) null else (raw ?: 0f).coerceIn(0f, 1f)
+                if (raw == null && !style.dataPolicy.missingAsZero) null else (raw ?: 0f).coerceIn(
+                    0f,
+                    1f
+                )
             }
             val valuesForNormalization = vvList.filterNotNull()
             val seriesMinValue = valuesForNormalization.minOrNull() ?: 0f
@@ -208,7 +212,11 @@ public fun RadarChart(
                 val expanded = ((valueNormalized - 0.5f) * 1.4f + 0.5f).coerceIn(0f, 1f)
                 val boostedAbsolute = (seriesMinValue + seriesRange * expanded).coerceIn(0f, 1f)
                 val smallPull = 0.05f * (1f - valueNormalized)
-                val vvGeom = (vv * (1f - mixFactor) + boostedAbsolute * mixFactor - smallPull).coerceIn(0f, 1f)
+                val vvGeom =
+                    (vv * (1f - mixFactor) + boostedAbsolute * mixFactor - smallPull).coerceIn(
+                        0f,
+                        1f
+                    )
                 vvGeomByIndex[i] = vvGeom
                 normalizedByIndex[i] = valueNormalized
                 val p = polar(a, r * vvGeom)
@@ -229,7 +237,9 @@ public fun RadarChart(
             // Apply slight non-linear mapping to t to increase perceived contrast of the fill
             val adjustedStops = cs.map { (t, col) ->
                 val gamma = 0.85f
-                val tAdj = if (t <= 0f) 0f else kotlin.math.exp(kotlin.math.ln(t.toDouble()) * gamma.toDouble()).toFloat()
+                val tAdj =
+                    if (t <= 0f) 0f else kotlin.math.exp(kotlin.math.ln(t.toDouble()) * gamma.toDouble())
+                        .toFloat()
                 tAdj to col
             }.sortedBy { it.first }
 

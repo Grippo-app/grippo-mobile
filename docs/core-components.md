@@ -4,7 +4,8 @@ This document describes the core components of the Grippo Mobile application arc
 
 ## BaseComponent
 
-The `BaseComponent` class is the foundation for all UI components in the application. It integrates with Decompose for lifecycle management and navigation.
+The `BaseComponent` class is the foundation for all UI components in the application. It integrates
+with Decompose for lifecycle management and navigation.
 
 ### Purpose
 
@@ -16,6 +17,7 @@ The `BaseComponent` class is the foundation for all UI components in the applica
 ### Key Features
 
 The BaseComponent class:
+
 - Takes a ComponentContext from Decompose
 - Creates a coroutine scope for async operations
 - Connects to a ViewModel for state and events
@@ -70,6 +72,7 @@ The `BaseViewModel` class provides core functionality for all ViewModels in the 
 ### Key Features
 
 The BaseViewModel class:
+
 - Manages UI state using StateFlow
 - Provides navigation through a Channel
 - Tracks loading states for UI feedback
@@ -158,7 +161,8 @@ data class MyState(
 
 The component lifecycle follows Decompose's lifecycle:
 
-1. **onCreate**: Component is created, ViewModel is initialized, and navigation subscription is set up
+1. **onCreate**: Component is created, ViewModel is initialized, and navigation subscription is set
+   up
 2. **onStart**: Component becomes visible
 3. **onStop**: Component becomes invisible
 4. **onDestroy**: Component is destroyed, coroutine scope is canceled

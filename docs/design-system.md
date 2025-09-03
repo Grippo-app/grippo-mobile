@@ -13,7 +13,8 @@ The design system is organized into several modules:
 
 ## Design Tokens
 
-Design tokens are the foundation of the design system, providing consistent values for colors, typography, spacing, and other visual elements.
+Design tokens are the foundation of the design system, providing consistent values for colors,
+typography, spacing, and other visual elements.
 
 ### AppTokens
 
@@ -135,28 +136,33 @@ fun AppTheme(
 
 ## Components
 
-The design system provides a set of reusable components that implement the design system. Here are some examples:
+The design system provides a set of reusable components that implement the design system. Here are
+some examples:
 
 ### Common Components
 
 The design system provides a variety of reusable components:
 
 #### Buttons
+
 - `PrimaryButton`: Main call-to-action button with loading state support
 - `SecondaryButton`: Alternative action button
 - `TextButton`: Text-only button for less prominent actions
 
 #### Cards
+
 - `ContentCard`: General-purpose card for content display
 - `ExerciseCard`: Specialized card for exercise information
 - `UserCard`: Card displaying user information
 
 #### Text Fields
+
 - `AppTextField`: Standard text input with validation support
 - `PasswordField`: Secure text input with visibility toggle
 - `SearchField`: Text field optimized for search functionality
 
 Each component:
+
 - Uses design tokens for consistent styling
 - Supports common modifiers for customization
 - Handles states like loading, error, and disabled
@@ -169,6 +175,7 @@ The design system includes preview utilities to help with component development:
 ### Preview Annotation
 
 The `@AppPreview` annotation simplifies creating standardized previews:
+
 - Applies consistent preview settings
 - Works with the standard Compose Preview panel
 - Supports both light and dark themes
@@ -176,6 +183,7 @@ The `@AppPreview` annotation simplifies creating standardized previews:
 ### Preview Container
 
 The `PreviewContainer` composable provides a consistent environment for previews:
+
 - Applies the app theme
 - Sets up the correct background color
 - Handles both light and dark mode
@@ -199,22 +207,22 @@ private fun ComponentPreview() {
 The design system is designed to be used throughout the application:
 
 1. **Apply the Theme**
-   - Wrap your UI with the `AppTheme` composable
-   - This ensures consistent styling across the application
+    - Wrap your UI with the `AppTheme` composable
+    - This ensures consistent styling across the application
 
 2. **Use Design Tokens**
-   - Access tokens through the `AppTokens` object
-   - Use tokens for colors, typography, spacing, and other visual properties
-   - This ensures consistency and supports theme changes
+    - Access tokens through the `AppTokens` object
+    - Use tokens for colors, typography, spacing, and other visual properties
+    - This ensures consistency and supports theme changes
 
 3. **Leverage Components**
-   - Use pre-built components for common UI elements
-   - Customize through parameters rather than modifying the components
-   - This ensures consistent behavior and appearance
+    - Use pre-built components for common UI elements
+    - Customize through parameters rather than modifying the components
+    - This ensures consistent behavior and appearance
 
 4. **Follow Patterns**
-   - Study existing screens for patterns and conventions
-   - Maintain consistency in layout, spacing, and interaction patterns
+    - Study existing screens for patterns and conventions
+    - Maintain consistency in layout, spacing, and interaction patterns
 
 ## Extending the Design System
 
@@ -223,17 +231,17 @@ The design system is designed to be extensible. When adding new components:
 ### Guidelines
 
 1. **Follow Design Principles**
-   - Maintain consistency with existing components
-   - Use design tokens for all visual properties
-   - Support light and dark themes
+    - Maintain consistency with existing components
+    - Use design tokens for all visual properties
+    - Support light and dark themes
 
 2. **Component Structure**
-   - Place components in the appropriate package
-   - Use clear, descriptive parameter names
-   - Provide sensible defaults
-   - Support common modifiers
+    - Place components in the appropriate package
+    - Use clear, descriptive parameter names
+    - Provide sensible defaults
+    - Support common modifiers
 
 3. **Documentation and Testing**
-   - Add preview functions for visual testing
-   - Document the component's purpose and usage
-   - Include examples of common configurations
+    - Add preview functions for visual testing
+    - Document the component's purpose and usage
+    - Include examples of common configurations

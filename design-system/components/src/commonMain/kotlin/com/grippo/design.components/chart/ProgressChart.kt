@@ -71,11 +71,7 @@ public fun ProgressChart(
             insideColor = null,
             preferNormalizedLabels = true,
         ),
-        target = ProgressStyle.Target(
-            value = 80f,
-            color = AppTokens.colors.text.primary.copy(alpha = 0.27f),
-            width = 1.dp,
-        )
+        target = null
     )
 
     ProgressChart(

@@ -10,13 +10,13 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.platform.collectAsStateMultiplatform
-import com.grippo.screen.api.ProfileRouter
 import com.grippo.profile.ProfileComponent.Child.Equipments
 import com.grippo.profile.ProfileComponent.Child.Muscles
 import com.grippo.profile.ProfileComponent.Child.WeightHistory
 import com.grippo.profile.equipments.ProfileEquipmentsComponent
 import com.grippo.profile.muscles.ProfileMusclesComponent
 import com.grippo.profile.weight.history.WeightHistoryComponent
+import com.grippo.screen.api.ProfileRouter
 
 public class ProfileComponent(
     initial: ProfileRouter,

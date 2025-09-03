@@ -2,22 +2,27 @@
 
 ## Introduction
 
-Grippo Mobile is built as a Kotlin Multiplatform Mobile (KMM) application that shares code between Android and iOS platforms. The architecture follows MVVM (Model-View-ViewModel) principles with a component-based approach using Decompose for navigation and lifecycle management.
+Grippo Mobile is built as a Kotlin Multiplatform Mobile (KMM) application that shares code between
+Android and iOS platforms. The architecture follows MVVM (Model-View-ViewModel) principles with a
+component-based approach using Decompose for navigation and lifecycle management.
 
 ## Architectural Layers
 
 The application is organized into the following layers:
 
 ### Presentation Layer
+
 - **Components**: Decompose components that manage lifecycle and navigation
 - **ViewModels**: Handle business logic and state management
 - **UI**: Jetpack Compose UI components for rendering
 
 ### Domain Layer
+
 - **Features**: Business logic interfaces exposed to the presentation layer
 - **Models**: Domain models representing business entities
 
 ### Data Layer
+
 - **Repositories**: Implement data access logic
 - **Network**: API communication using Ktor
 - **Database**: Local storage using Room
@@ -38,6 +43,7 @@ public abstract class BaseComponent<DIRECTION : BaseDirection>(
 ```
 
 BaseComponent handles:
+
 - Lifecycle management
 - Navigation events
 - ViewModel integration
@@ -56,6 +62,7 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
 ```
 
 BaseViewModel handles:
+
 - State management
 - Navigation events
 - Loading state
@@ -92,6 +99,7 @@ Koin is used for dependency injection throughout the application:
 ## Error Handling
 
 Errors are handled through:
+
 1. CoroutineExceptionHandler in ViewModels
 2. ErrorProvider service for displaying errors to users
 3. Result type for handling expected errors
@@ -99,6 +107,7 @@ Errors are handled through:
 ## Concurrency
 
 Coroutines are used for asynchronous operations:
+
 1. ViewModels create a CoroutineScope with SupervisorJob
 2. The scope is canceled when the ViewModel is destroyed
 3. safeLaunch extensions provide structured concurrency with error handling

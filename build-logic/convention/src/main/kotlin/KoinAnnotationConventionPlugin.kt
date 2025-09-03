@@ -7,7 +7,6 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 class KoinAnnotationConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {

@@ -14,20 +14,23 @@
 
 ## 📱 Overview
 
-Grippo Mobile is a cutting-edge fitness tracking application that helps users monitor their workouts, track progress, and achieve their fitness goals. Built with Kotlin Multiplatform Mobile (KMM), the app delivers a native experience on both Android and iOS platforms while sharing business logic and UI components.
+Grippo Mobile is a cutting-edge fitness tracking application that helps users monitor their
+workouts, track progress, and achieve their fitness goals. Built with Kotlin Multiplatform Mobile (
+KMM), the app delivers a native experience on both Android and iOS platforms while sharing business
+logic and UI components.
 
 ## 📚 Documentation
 
 Comprehensive documentation is available in the `docs` directory:
 
-| Document | Description |
-|----------|-------------|
-| [📖 Documentation Index](docs/index.md) | Start here for a complete overview of the documentation |
-| [🏗️ Architecture Overview](docs/architecture-overview.md) | Learn about the MVVM architecture and component structure |
-| [🚀 Setup and Installation](docs/installation.md) | Step-by-step instructions for setting up the development environment |
-| [📦 Module Descriptions](docs/module-descriptions.md) | Detailed explanations of all modules and their relationships |
-| [⚙️ Core Components](docs/core-components.md) | In-depth information about the core architectural components |
-| [🎨 Design System](docs/design-system.md) | Comprehensive guide to the design system and UI components |
+| Document                                                   | Description                                                          |
+|------------------------------------------------------------|----------------------------------------------------------------------|
+| [📖 Documentation Index](docs/index.md)                    | Start here for a complete overview of the documentation              |
+| [🏗️ Architecture Overview](docs/architecture-overview.md) | Learn about the MVVM architecture and component structure            |
+| [🚀 Setup and Installation](docs/installation.md)          | Step-by-step instructions for setting up the development environment |
+| [📦 Module Descriptions](docs/module-descriptions.md)      | Detailed explanations of all modules and their relationships         |
+| [⚙️ Core Components](docs/core-components.md)              | In-depth information about the core architectural components         |
+| [🎨 Design System](docs/design-system.md)                  | Comprehensive guide to the design system and UI components           |
 
 ## 🏗️ Project Structure
 
@@ -35,70 +38,83 @@ The project follows a modular architecture organized by feature and layer:
 
 ### 📱 Platform-Specific
 
-| Module | Description |
-|--------|-------------|
+| Module        | Description                                                         |
+|---------------|---------------------------------------------------------------------|
 | `androidApp/` | Android launcher application with platform-specific implementations |
-| `iosApp/` | iOS application with SwiftUI wrapper around the shared code |
+| `iosApp/`     | iOS application with SwiftUI wrapper around the shared code         |
 
 ### 🧩 Core Modules
 
-| Module | Description |
-|--------|-------------|
-| `shared/` | Main KMM module containing core application logic and UI components |
-| `design-system/` | Shared design tokens, themes, and Compose UI components |
-| `common/` | Utility modules for platform-specific helpers, validation, date utils, etc. |
+| Module           | Description                                                                 |
+|------------------|-----------------------------------------------------------------------------|
+| `shared/`        | Main KMM module containing core application logic and UI components         |
+| `design-system/` | Shared design tokens, themes, and Compose UI components                     |
+| `common/`        | Utility modules for platform-specific helpers, validation, date utils, etc. |
 
 ### 📊 Data Layer
 
-| Module | Description |
-|--------|-------------|
-| `data-services/` | Network (Ktor) and database (Room) infrastructure |
-| `data-features/` | Business features exposing domain interfaces |
-| `data-mappers/` | Mapping between network, database, and domain models |
+| Module           | Description                                          |
+|------------------|------------------------------------------------------|
+| `data-services/` | Network (Ktor) and database (Room) infrastructure    |
+| `data-features/` | Business features exposing domain interfaces         |
+| `data-mappers/`  | Mapping between network, database, and domain models |
 
 ### 🖼️ Presentation Layer
 
-| Module | Description |
-|--------|-------------|
-| `presentation-features/` | UI screens and components built with Jetpack Compose |
-| `dialog-features/` | Reusable dialog components (pickers, alerts, etc.) with stack-based navigation |
-| `compose-libs/` | Standalone Compose libraries (segment control, wheel picker, etc.) |
+| Module                   | Description                                                                    |
+|--------------------------|--------------------------------------------------------------------------------|
+| `presentation-features/` | UI screens and components built with Jetpack Compose                           |
+| `dialog-features/`       | Reusable dialog components (pickers, alerts, etc.) with stack-based navigation |
+| `compose-libs/`          | Standalone Compose libraries (segment control, wheel picker, etc.)             |
 
-The build is managed using Gradle Kotlin DSL with a version catalog defining consistent dependencies across all modules.
+The build is managed using Gradle Kotlin DSL with a version catalog defining consistent dependencies
+across all modules.
 
 ## ⚙️ Build Configuration
 
 The project uses a centralized build configuration approach with shared Gradle scripts:
 
-| Script | Purpose |
-|--------|---------|
+| Script               | Purpose                                               |
+|----------------------|-------------------------------------------------------|
 | **`android.gradle`** | Configures Android SDK version and Java compatibility |
-| **`ios.gradle`** | Sets up CocoaPods integration for the shared module |
-| **`kotlin.gradle`** | Applies KMM targets and opts-in to experimental APIs |
-| **`compose.gradle`** | Enables Jetpack Compose features and optimizations |
+| **`ios.gradle`**     | Sets up CocoaPods integration for the shared module   |
+| **`kotlin.gradle`**  | Applies KMM targets and opts-in to experimental APIs  |
+| **`compose.gradle`** | Enables Jetpack Compose features and optimizations    |
 
-Each module applies these shared scripts to ensure consistent configuration across the entire project.
+Each module applies these shared scripts to ensure consistent configuration across the entire
+project.
 
 ## 🛠️ Technology Stack
 
 The project leverages modern libraries and frameworks:
 
 ### UI & Navigation
-- **[Jetpack Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform)** - Modern declarative UI framework
-- **[Decompose](https://github.com/arkivanov/Decompose)** - Component-based navigation and lifecycle management
+
+- **[Jetpack Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform)** - Modern
+  declarative UI framework
+- **[Decompose](https://github.com/arkivanov/Decompose)** - Component-based navigation and lifecycle
+  management
 
 ### Data & Networking
+
 - **[Ktor](https://ktor.io/)** - Kotlin-first HTTP client with coroutines support
-- **[Room](https://developer.android.com/training/data-storage/room)** - Database persistence with compile-time SQL validation
+- **[Room](https://developer.android.com/training/data-storage/room)** - Database persistence with
+  compile-time SQL validation
 
 ### Architecture & Utilities
-- **[Koin](https://insert-koin.io/)** - Lightweight dependency injection framework
-- **[Kotlinx Coroutines](https://github.com/Kotlin/kotlinx.coroutines)** - Asynchronous programming with coroutines
-- **[Kotlinx Serialization](https://github.com/Kotlin/kotlinx.serialization)** - Type-safe JSON serialization
-- **[Kotlinx DateTime](https://github.com/Kotlin/kotlinx-datetime)** - Cross-platform date/time library
-- **[Kotlinx Immutable Collections](https://github.com/Kotlin/kotlinx.collections.immutable)** - Immutable collection types
 
-All dependencies are managed through a version catalog in `gradle/libs.versions.toml` to ensure consistency.
+- **[Koin](https://insert-koin.io/)** - Lightweight dependency injection framework
+- **[Kotlinx Coroutines](https://github.com/Kotlin/kotlinx.coroutines)** - Asynchronous programming
+  with coroutines
+- **[Kotlinx Serialization](https://github.com/Kotlin/kotlinx.serialization)** - Type-safe JSON
+  serialization
+- **[Kotlinx DateTime](https://github.com/Kotlin/kotlinx-datetime)** - Cross-platform date/time
+  library
+- **[Kotlinx Immutable Collections](https://github.com/Kotlin/kotlinx.collections.immutable)** -
+  Immutable collection types
+
+All dependencies are managed through a version catalog in `gradle/libs.versions.toml` to ensure
+consistency.
 
 ## 🏛️ Architecture
 
@@ -106,12 +122,12 @@ The application follows a clean, modular architecture based on MVVM principles:
 
 ### 🧩 Core Components
 
-| Component | Description |
-|-----------|-------------|
-| **BaseComponent** | Decompose component that manages lifecycle and connects to ViewModels |
-| **BaseViewModel** | Provides state management, navigation events, and loading indicators |
-| **Contracts** | Interfaces defining events that screens/ViewModels must implement |
-| **Direction/Loader/State** | Sealed classes for navigation, loading states, and UI state |
+| Component                  | Description                                                           |
+|----------------------------|-----------------------------------------------------------------------|
+| **BaseComponent**          | Decompose component that manages lifecycle and connects to ViewModels |
+| **BaseViewModel**          | Provides state management, navigation events, and loading indicators  |
+| **Contracts**              | Interfaces defining events that screens/ViewModels must implement     |
+| **Direction/Loader/State** | Sealed classes for navigation, loading states, and UI state           |
 
 ### 🔄 Data Flow
 
@@ -232,7 +248,8 @@ If you encounter build issues, you can perform a full clean:
 ./gradlew clean --no-daemon
 ```
 
-For a more thorough clean, see the detailed instructions in the [Setup and Installation](docs/installation.md) guide.
+For a more thorough clean, see the detailed instructions in
+the [Setup and Installation](docs/installation.md) guide.
 
 ## 🌟 Key Features
 
@@ -255,7 +272,8 @@ Grippo Mobile showcases my expertise in:
 - Asynchronous programming with Coroutines
 - Dependency injection and modularization
 
-This project demonstrates my ability to build complex, production-ready mobile applications using cutting-edge technologies and best practices.
+This project demonstrates my ability to build complex, production-ready mobile applications using
+cutting-edge technologies and best practices.
 
 ## 📬 Contact
 

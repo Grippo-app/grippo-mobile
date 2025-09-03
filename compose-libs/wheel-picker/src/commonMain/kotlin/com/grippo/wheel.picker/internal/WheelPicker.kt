@@ -42,8 +42,10 @@ internal fun WheelPicker(
     val layoutInfo = remember(listState, rowCount) { derivedStateOf { listState.layoutInfo } }
     val viewportHeight = layoutInfo.value.viewportSize.height.toFloat()
     val singleViewportHeight = viewportHeight / rowCount
-    val centerIndexState = remember(listState) { derivedStateOf { listState.firstVisibleItemIndex } }
-    val centerOffsetState = remember(listState) { derivedStateOf { listState.firstVisibleItemScrollOffset } }
+    val centerIndexState =
+        remember(listState) { derivedStateOf { listState.firstVisibleItemIndex } }
+    val centerOffsetState =
+        remember(listState) { derivedStateOf { listState.firstVisibleItemScrollOffset } }
 
     LazyColumn(
         modifier = modifier
@@ -84,7 +86,8 @@ private fun calculateAnimatedAlphaAndRotationX(
     centerIndexOffset: Int
 ): Pair<Float, Float> {
     val distanceToCenterIndex = index - centerIndex
-    val distanceToIndexSnap = distanceToCenterIndex * singleViewportHeight.toInt() - centerIndexOffset
+    val distanceToIndexSnap =
+        distanceToCenterIndex * singleViewportHeight.toInt() - centerIndexOffset
     val distanceToIndexSnapAbs = abs(distanceToIndexSnap)
 
     val animatedAlpha = if (abs(distanceToIndexSnap) in 0..singleViewportHeight.toInt()) {
@@ -93,7 +96,8 @@ private fun calculateAnimatedAlphaAndRotationX(
         0.2f
     }
 
-    val animatedRotationX = (-20 * (distanceToIndexSnap / singleViewportHeight)).takeUnless { it.isNaN() } ?: 0f
+    val animatedRotationX =
+        (-20 * (distanceToIndexSnap / singleViewportHeight)).takeUnless { it.isNaN() } ?: 0f
 
     return animatedAlpha to animatedRotationX
 }
