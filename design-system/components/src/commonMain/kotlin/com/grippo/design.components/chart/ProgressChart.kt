@@ -15,6 +15,7 @@ import com.grippo.chart.progress.ProgressStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import kotlin.math.ceil
 
 @Immutable
 public data class DSProgressItem(
@@ -65,7 +66,7 @@ public fun ProgressChart(
         ),
         values = ProgressStyle.Values.Inside(
             textStyle = AppTokens.typography.b11Bold().copy(color = AppTokens.colors.text.primary),
-            formatter = { v, d -> v.toInt().toString() },
+            formatter = { v, d -> ceil(v).toInt().toString() },
             minInnerPadding = 6.dp,
             insideColor = null,
             preferNormalizedLabels = true,
