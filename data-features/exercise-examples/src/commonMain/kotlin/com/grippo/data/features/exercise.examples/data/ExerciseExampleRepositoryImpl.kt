@@ -91,14 +91,4 @@ internal class ExerciseExampleRepositoryImpl(
 
         return response.map { }
     }
-
-    override suspend fun getRecommendedExerciseExamples(
-        page: Int,
-        size: Int,
-        targetMuscleId: String?,
-        exerciseCount: Int?,
-        exerciseExampleIds: List<String>
-    ): Result<List<ExerciseExample>> {
-        TODO()
-    }
 }

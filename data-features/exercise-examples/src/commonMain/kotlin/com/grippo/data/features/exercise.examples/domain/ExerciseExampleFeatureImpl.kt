@@ -39,20 +39,4 @@ internal class ExerciseExampleFeatureImpl(
     override suspend fun getExerciseExampleById(id: String): Result<Unit> {
         return repository.getExerciseExampleById(id)
     }
-
-    override suspend fun getRecommendedExerciseExamples(
-        page: Int,
-        size: Int,
-        targetMuscleId: String?,
-        exerciseCount: Int?,
-        exerciseExampleIds: List<String>
-    ): Result<List<ExerciseExample>> {
-        return repository.getRecommendedExerciseExamples(
-            page,
-            size,
-            targetMuscleId,
-            exerciseCount,
-            exerciseExampleIds
-        )
-    }
 }

@@ -30,12 +30,15 @@ import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.TrainingMetrics
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlin.uuid.Uuid
 
+@OptIn(FlowPreview::class)
 internal class TrainingRecordingViewModel(
     muscleFeature: MuscleFeature,
     private val exerciseExampleFeature: ExerciseExampleFeature,
@@ -65,6 +68,13 @@ internal class TrainingRecordingViewModel(
             .distinctUntilChanged()
             .flatMapLatest { ids -> exerciseExampleFeature.observeExerciseExamples(ids) }
             .onEach(::provideExerciseExamples)
+            .safeLaunch()
+
+        state
+            .map { Triple(it.exercises, it.examples, it.muscles) }
+            .debounce(200)
+            .distinctUntilChanged()
+            .onEach { generateStatistics() }
             .safeLaunch()
     }
 
@@ -118,8 +128,6 @@ internal class TrainingRecordingViewModel(
 
             it.copy(exercises = updatedExercises.toPersistentList())
         }
-
-        safeLaunch { generateStatistics() }
     }
 
     override fun onSelectTab(tab: RecordingTab) {
@@ -137,8 +145,6 @@ internal class TrainingRecordingViewModel(
 
             s.copy(exercises = exercises)
         }
-
-        safeLaunch { generateStatistics() }
     }
 
     override fun onSave() {
@@ -236,8 +242,8 @@ internal class TrainingRecordingViewModel(
                 forceTypeDistributionData = forceTypeDistributionData,
                 experienceDistributionData = experienceDistributionData,
                 muscleLoadData = muscleLoadData,
-                estimated1RMData =estimated1RMData,
-                intraProgressionData =intraProgressionData,
+                estimated1RMData = estimated1RMData,
+                intraProgressionData = intraProgressionData,
                 intensityDistributionData = intensityDistributionData
 
             )
