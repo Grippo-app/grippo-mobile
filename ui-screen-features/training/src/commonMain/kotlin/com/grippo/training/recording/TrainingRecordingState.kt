@@ -2,6 +2,7 @@ package com.grippo.training.recording
 
 import androidx.compose.runtime.Immutable
 import com.grippo.date.utils.DateTimeUtils
+import com.grippo.design.components.chart.DSAreaData
 import com.grippo.design.components.chart.DSBarData
 import com.grippo.design.components.chart.DSPieData
 import com.grippo.design.components.chart.DSProgressData
@@ -31,6 +32,9 @@ internal data class TrainingRecordingState(
 
     // === Exercise volume bar ===
     val exerciseVolumeData: DSBarData = DSBarData(items = emptyList()),
+    val estimated1RMData: DSBarData = DSBarData(items = emptyList()),
+    val intraProgressionData: DSAreaData = DSAreaData(points = emptyList()),
+    val intensityDistributionData: DSBarData = DSBarData(items = emptyList()),
 
     // === Exercise example circles ===
     val categoryDistributionData: DSPieData = DSPieData(slices = emptyList()),

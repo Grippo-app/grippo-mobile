@@ -4,11 +4,13 @@ import com.grippo.calculation.TrainingExamplesCalculator
 import com.grippo.calculation.TrainingExercisesCalculator
 import com.grippo.calculation.TrainingMetricsCalculator
 import com.grippo.calculation.TrainingMusclesCalculator
+import com.grippo.calculation.TrainingMusclesCalculator.RelativeMode
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
+import com.grippo.design.components.chart.DSAreaData
 import com.grippo.design.components.chart.DSBarData
 import com.grippo.design.components.chart.DSPieData
 import com.grippo.design.components.chart.DSProgressData
@@ -168,7 +170,6 @@ internal class TrainingRecordingViewModel(
         val muscles = state.value.muscles
 
         if (exercises.isEmpty()) {
-            // Reset statistics to empty state
             update {
                 it.copy(
                     totalVolume = VolumeFormatState.of(0f),
@@ -180,31 +181,49 @@ internal class TrainingRecordingViewModel(
                     experienceDistributionData = DSPieData(slices = emptyList()),
                     weightTypeDistributionData = DSPieData(slices = emptyList()),
                     muscleLoadData = DSProgressData(items = emptyList()),
+                    estimated1RMData = DSBarData(items = emptyList()),
+                    intraProgressionData = DSAreaData(points = emptyList()),
+                    intensityDistributionData = DSBarData(items = emptyList()),
                 )
             }
             return
         }
 
-        val totalMetrics = trainingMetricsCalculator
-            .calculateTotalMetrics(exercises)
-
-        // ExampleAnalytics
-        val categoryDistributionData = trainingExamplesCalculator
-            .calculateCategoryDistribution(exercises)
-        val weightTypeDistributionData = trainingExamplesCalculator
-            .calculateWeightTypeDistribution(exercises)
-        val forceTypeDistributionData = trainingExamplesCalculator
-            .calculateForceTypeDistribution(exercises)
-        val experienceDistributionData = trainingExamplesCalculator
-            .calculateExperienceDistribution(exercises)
-
-        // ExerciseAnalytics
-        val exerciseVolumeData = trainingExercisesCalculator
-            .calculateExerciseVolumeChart(exercises)
-
-        // MuscleAnalytics
-        val muscleLoadData = trainingMuscleCalculator
-            .calculateMuscleLoadDistribution(exercises, examples, muscles)
+        val totalMetrics = trainingMetricsCalculator.calculateTotalMetrics(
+            exercises = exercises
+        )
+        val categoryDistributionData = trainingExamplesCalculator.calculateCategoryDistribution(
+            exercises = exercises
+        )
+        val weightTypeDistributionData = trainingExamplesCalculator.calculateWeightTypeDistribution(
+            exercises = exercises
+        )
+        val forceTypeDistributionData = trainingExamplesCalculator.calculateForceTypeDistribution(
+            exercises = exercises
+        )
+        val experienceDistributionData = trainingExamplesCalculator.calculateExperienceDistribution(
+            exercises = exercises
+        )
+        val exerciseVolumeData = trainingExercisesCalculator.calculateExerciseVolumeChart(
+            exercises = exercises
+        )
+        val intensityDistributionData = trainingExercisesCalculator.calculateIntensityDistribution(
+            exercises = exercises
+        )
+        val intraProgressionData = trainingExercisesCalculator.calculateIntraProgression(
+            exercises = exercises
+        )
+        val estimated1RMData = trainingExercisesCalculator.calculateEstimated1RM(
+            exercises = exercises
+        )
+        val muscleLoadData = trainingMuscleCalculator.calculateMuscleLoadDistribution(
+            exercises = exercises,
+            examples = examples,
+            groups = muscles,
+            mode = TrainingMusclesCalculator.Mode.RELATIVE,
+            relativeMode = RelativeMode.MAX,
+            workload = TrainingMusclesCalculator.Workload.Volume
+        )
 
         update {
             it.copy(
@@ -217,6 +236,10 @@ internal class TrainingRecordingViewModel(
                 forceTypeDistributionData = forceTypeDistributionData,
                 experienceDistributionData = experienceDistributionData,
                 muscleLoadData = muscleLoadData,
+                estimated1RMData =estimated1RMData,
+                intraProgressionData =intraProgressionData,
+                intensityDistributionData = intensityDistributionData
+
             )
         }
     }

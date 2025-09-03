@@ -28,14 +28,9 @@ public class TrainingMusclesCalculator(
 
     // Optional workload model (defaults to Volume to preserve current semantics)
     public sealed interface Workload {
-        public data object Volume :
-            Workload                  // Σ(volume)
-
-        public data object Reps :
-            Workload                    // Σ(reps)
-
-        public data class TUT(val secPerRep: Float = 3f) :
-            Workload // Σ(reps) * secPerRep
+        public data object Volume : Workload                  // Σ(volume)
+        public data object Reps : Workload                    // Σ(reps)
+        public data class TUT(val secPerRep: Float = 3f) : Workload // Σ(reps) * secPerRep
     }
 
     /**
@@ -62,9 +57,9 @@ public class TrainingMusclesCalculator(
         exercises: List<ExerciseState>,
         examples: List<ExerciseExampleState>,
         groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
-        mode: Mode = Mode.RELATIVE,
-        relativeMode: RelativeMode = RelativeMode.MAX,
-        workload: Workload = Workload.Volume
+        mode: Mode,// = Mode.RELATIVE,
+        relativeMode: RelativeMode,// = RelativeMode.MAX,
+        workload: Workload,// = Workload.Volume
     ): DSProgressData {
         val colors = colorProvider.get()
         val palette = colors.charts.progress.palette

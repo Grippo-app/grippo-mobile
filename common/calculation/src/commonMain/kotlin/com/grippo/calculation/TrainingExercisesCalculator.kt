@@ -128,7 +128,7 @@ public class TrainingExercisesCalculator(
      * - Sequence-based, not real-time.
      * - Mixing very different exercises is fine for trend shape, not for absolute compare.
      */
-    public fun calculateIntraWorkoutProgression(
+    public fun calculateIntraProgression(
         exercises: List<ExerciseState>
     ): DSAreaData {
         val points = exercises.mapIndexed { index, exercise ->

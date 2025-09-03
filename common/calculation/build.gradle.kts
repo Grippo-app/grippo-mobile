@@ -1,8 +1,8 @@
 plugins {
     id("android.library.convention")
     id("kotlin.multiplatform.convention")
-    id("koin.annotation.convention")
     id("compose.multiplatform.convention")
+    id("koin.annotation.convention")
 }
 
 kotlin {
@@ -12,6 +12,7 @@ kotlin {
         implementation(projects.designSystem.resources.provider)
 
         implementation(compose.foundation)
+
         implementation(libs.immutable.collections)
     }
 }
