@@ -250,8 +250,16 @@ public fun BarChart(
         val sizing = style.bars.sizing
         val (bw, sp, startX) = when (sizing) {
             is BarStyle.BarsSizing.AutoEqualBarsAndGaps -> {
-                val w = if (nBars > 0) chartW / (2f * nBars - 1f) else 0f
-                Triple(w, w, chart.left)
+                if (nBars == 1) {
+                    // Special case: single bar = 1/3 of chart width, centered
+                    val w = chartW / 3f
+                    val sx = chart.left + (chartW - w) / 2f
+                    Triple(w, 0f, sx)
+                } else {
+                    // Default case: equal bars and gaps
+                    val w = chartW / (2f * nBars - 1f)
+                    Triple(w, w, chart.left)
+                }
             }
 
             is BarStyle.BarsSizing.FixedBarWidth -> {
