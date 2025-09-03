@@ -37,13 +37,31 @@ public data class PieStyle(
 
     /** Labels inside/outside with threshold angles. */
     @Immutable
-    public data class Labels(
-        val insideMinAngleDeg: Float,
-        val outsideMinAngleDeg: Float,
-        val textStyle: TextStyle,
-        val labelPadding: Dp,
-        val formatter: (slice: PieSlice, percentInt: Int) -> String,
-    )
+    public sealed class Labels {
+
+        @Immutable
+        public data class Adaptive(
+            val insideMinAngleDeg: Float,
+            val outsideMinAngleDeg: Float,
+            val textStyle: TextStyle,
+            val labelPadding: Dp,
+            val formatter: (slice: PieSlice, percentInt: Int) -> String,
+        ) : Labels()
+
+        @Immutable
+        public data class Inside(
+            val textStyle: TextStyle,
+            val labelPadding: Dp,
+            val formatter: (slice: PieSlice, percentInt: Int) -> String,
+        ) : Labels()
+
+        @Immutable
+        public data class Outside(
+            val textStyle: TextStyle,
+            val labelPadding: Dp,
+            val formatter: (slice: PieSlice, percentInt: Int) -> String,
+        ) : Labels()
+    }
 
     /** Leader (connector) lines for outside labels. */
     @Immutable

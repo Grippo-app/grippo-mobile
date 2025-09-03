@@ -42,7 +42,7 @@ public fun PieChart(
             paddingAngleDeg = 2f,
             cornerRadius = 6.dp,
         ),
-        labels = PieStyle.Labels(
+        labels = PieStyle.Labels.Adaptive(
             insideMinAngleDeg = 14f,
             outsideMinAngleDeg = 5f,
             textStyle = AppTokens.typography.b11Bold().copy(color = AppTokens.colors.text.primary),

@@ -23,7 +23,7 @@ private fun PreviewPieBasic() {
     val style = PieStyle(
         layout = PieStyle.Layout(padding = 8.dp, startAngleDeg = -90f),
         arc = PieStyle.Arc(width = 20.dp, paddingAngleDeg = 2f, cornerRadius = 6.dp),
-        labels = PieStyle.Labels(
+        labels = PieStyle.Labels.Adaptive(
             insideMinAngleDeg = 36f,
             outsideMinAngleDeg = 12f,
             textStyle = TextStyle(color = Color(0xFF333333)),

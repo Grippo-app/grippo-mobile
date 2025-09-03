@@ -48,14 +48,16 @@ public fun PieChart(
     }
 
     // Build label layouts via formatter
-    val labelLayouts = remember(textMeasurer, style.labels.textStyle, slices, percents) {
+    val labelLayouts = remember(textMeasurer, style.labels, slices, percents) {
         if (sweeps.isEmpty()) emptyList()
         else slices.indices.map { i ->
-            val label = style.labels.formatter(slices[i], percents.getOrElse(i) { 0 })
-            textMeasurer.measure(
-                text = AnnotatedString(label),
-                style = style.labels.textStyle
-            )
+            val (textStyle, formatter) = when (val labels = style.labels) {
+                is PieStyle.Labels.Adaptive -> labels.textStyle to labels.formatter
+                is PieStyle.Labels.Inside -> labels.textStyle to labels.formatter
+                is PieStyle.Labels.Outside -> labels.textStyle to labels.formatter
+            }
+            val label = formatter(slices[i], percents.getOrElse(i) { 0 })
+            textMeasurer.measure(AnnotatedString(label), textStyle)
         }
     }
 
@@ -71,8 +73,11 @@ public fun PieChart(
         val cornerRadiusPx = style.arc.cornerRadius.toPx()
         val connectorWidthPx = style.leaders.lineWidth.toPx()
         val labelRadiusExtra = style.leaders.offset.toPx()
-        val labelPaddingH = style.labels.labelPadding.toPx()
-        val minOutsideAngle = style.labels.outsideMinAngleDeg
+        val (labelPaddingH, _) = when (val labels = style.labels) {
+            is PieStyle.Labels.Adaptive -> labels.labelPadding.toPx() to labels.outsideMinAngleDeg
+            is PieStyle.Labels.Inside -> labels.labelPadding.toPx() to 0f
+            is PieStyle.Labels.Outside -> labels.labelPadding.toPx() to 0f
+        }
         val epsDeg = 0.1f
 
         val center = Offset(chart.left + chart.width / 2f, chart.top + chart.height / 2f)
@@ -119,9 +124,8 @@ public fun PieChart(
             }
 
             // Labels: inside for big slices, outside for smaller ones
-            if (labelLayouts.isNotEmpty()) {
-                if (baseSweep >= style.labels.insideMinAngleDeg) {
-                    // Inside label
+            when (val labels = style.labels) {
+                is PieStyle.Labels.Inside -> {
                     val layout = labelLayouts[i]
                     val midRad = mid * PI.toFloat() / 180f
                     val x = center.x + centerRadius * cos(midRad)
@@ -133,8 +137,9 @@ public fun PieChart(
                             y - layout.size.height / 2f
                         )
                     )
-                } else if (baseSweep >= minOutsideAngle && style.leaders.show) {
-                    // Prepare outside label (position resolved in second pass)
+                }
+
+                is PieStyle.Labels.Outside -> {
                     val layout = labelLayouts[i]
                     val midRad = mid * PI.toFloat() / 180f
                     val anchorY = center.y + (outerRadius + labelRadiusExtra) * sin(midRad)
@@ -147,6 +152,35 @@ public fun PieChart(
                         height = layout.size.height,
                         rightSide = right
                     )
+                }
+
+                is PieStyle.Labels.Adaptive -> {
+                    if (baseSweep >= labels.insideMinAngleDeg) {
+                        val layout = labelLayouts[i]
+                        val midRad = mid * PI.toFloat() / 180f
+                        val x = center.x + centerRadius * cos(midRad)
+                        val y = center.y + centerRadius * sin(midRad)
+                        drawText(
+                            layout,
+                            topLeft = Offset(
+                                x - layout.size.width / 2f,
+                                y - layout.size.height / 2f
+                            )
+                        )
+                    } else if (baseSweep >= labels.outsideMinAngleDeg && style.leaders.show) {
+                        val layout = labelLayouts[i]
+                        val midRad = mid * PI.toFloat() / 180f
+                        val anchorY = center.y + (outerRadius + labelRadiusExtra) * sin(midRad)
+                        val right = cos(midRad) >= 0f
+                        outside += OutsideLabel(
+                            index = i,
+                            angleDeg = mid,
+                            y = anchorY,
+                            width = layout.size.width,
+                            height = layout.size.height,
+                            rightSide = right
+                        )
+                    }
                 }
             }
 
