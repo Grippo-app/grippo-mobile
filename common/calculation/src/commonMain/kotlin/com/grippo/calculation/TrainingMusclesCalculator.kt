@@ -57,9 +57,9 @@ public class TrainingMusclesCalculator(
         exercises: List<ExerciseState>,
         examples: List<ExerciseExampleState>,
         groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
-        mode: Mode,// = Mode.RELATIVE,
-        relativeMode: RelativeMode,// = RelativeMode.MAX,
-        workload: Workload,// = Workload.Volume
+        mode: Mode,
+        relativeMode: RelativeMode,
+        workload: Workload,
     ): DSProgressData {
         val colors = colorProvider.get()
         val palette = colors.charts.progress.palette

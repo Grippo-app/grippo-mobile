@@ -32,9 +32,9 @@ internal data class TrainingRecordingState(
 
     // === Exercise volume bar ===
     val exerciseVolumeData: DSBarData = DSBarData(items = emptyList()),
-    val estimated1RMData: DSBarData = DSBarData(items = emptyList()),
-    val intraProgressionData: DSAreaData = DSAreaData(points = emptyList()),
-    val intensityDistributionData: DSBarData = DSBarData(items = emptyList()),
+
+    // === Muscle analysis ===
+    val muscleLoadData: DSProgressData = DSProgressData(items = emptyList()),
 
     // === Exercise example circles ===
     val categoryDistributionData: DSPieData = DSPieData(slices = emptyList()),
@@ -42,8 +42,10 @@ internal data class TrainingRecordingState(
     val forceTypeDistributionData: DSPieData = DSPieData(slices = emptyList()),
     val experienceDistributionData: DSPieData = DSPieData(slices = emptyList()),
 
-    // === Muscle analysis ===
-    val muscleLoadData: DSProgressData = DSProgressData(items = emptyList()),
+    // === Exercise volume bar ===
+    val estimated1RMData: DSBarData = DSBarData(items = emptyList()),
+    val intraProgressionData: DSAreaData = DSAreaData(points = emptyList()),
+    val intensityDistributionData: DSBarData = DSBarData(items = emptyList()),
 )
 
 @Immutable
