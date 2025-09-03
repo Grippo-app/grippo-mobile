@@ -8,7 +8,6 @@ import androidx.room.Transaction
 import com.grippo.database.entity.ExerciseExampleBundleEntity
 import com.grippo.database.entity.ExerciseExampleEntity
 import com.grippo.database.entity.ExerciseExampleEquipmentEntity
-import com.grippo.database.entity.ExerciseExampleFtsEntity
 import com.grippo.database.entity.ExerciseExampleTutorialEntity
 import com.grippo.database.models.ExerciseExamplePack
 import kotlinx.coroutines.flow.Flow
@@ -27,38 +26,18 @@ public interface ExerciseExampleDao {
     @Transaction
     @Query(
         """
-        SELECT ee.* 
-        FROM exercise_example ee
-        WHERE (:forceType IS NULL OR ee.forceType = :forceType)
-        AND (:weightType IS NULL OR ee.weightType = :weightType)
-        AND (:category IS NULL OR ee.category = :category)
-        AND (:experience IS NULL OR ee.experience = :experience)
-        ORDER BY ee.updatedAt DESC
-        """
+    SELECT DISTINCT ee.*
+    FROM exercise_example ee
+    WHERE (:name IS NULL OR LOWER(ee.name) LIKE '%' || LOWER(:name) || '%')
+    AND (:forceType IS NULL OR ee.forceType = :forceType)
+    AND (:weightType IS NULL OR ee.weightType = :weightType)
+    AND (:category IS NULL OR ee.category = :category)
+    AND (:experience IS NULL OR ee.experience = :experience)
+    ORDER BY ee.updatedAt DESC
+    """
     )
-    public fun getAllFiltered(
-        forceType: String? = null,
-        weightType: String? = null,
-        category: String? = null,
-        experience: String? = null
-    ): Flow<List<ExerciseExamplePack>>
-
-    @Transaction
-    @Query(
-        """
-        SELECT DISTINCT ee.*
-        FROM exercise_example ee
-        JOIN exercise_example_fts fts ON ee.id = fts.id
-        WHERE exercise_example_fts MATCH :name
-        AND (:forceType IS NULL OR ee.forceType = :forceType)
-        AND (:weightType IS NULL OR ee.weightType = :weightType)
-        AND (:category IS NULL OR ee.category = :category)
-        AND (:experience IS NULL OR ee.experience = :experience)
-        ORDER BY ee.updatedAt DESC
-        """
-    )
-    public fun searchFiltered(
-        name: String,
+    public fun getAll(
+        name: String? = null,
         forceType: String? = null,
         weightType: String? = null,
         category: String? = null,
@@ -82,20 +61,10 @@ public interface ExerciseExampleDao {
         insertBundles(bundles)
         insertEquipments(equipments)
         insertTutorials(tutorials)
-
-        val fts = ExerciseExampleFtsEntity(
-            id = example.id,
-            name = example.name,
-            description = example.description
-        )
-        insertExerciseExampleFts(fts)
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public suspend fun insertExerciseExample(example: ExerciseExampleEntity)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public suspend fun insertExerciseExampleFts(fts: ExerciseExampleFtsEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public suspend fun insertBundles(bundles: List<ExerciseExampleBundleEntity>)

@@ -19,8 +19,8 @@ echo "🧹 Deintegrating old CocoaPods..."
 echo "📦 Generating dummy framework for CocoaPods..."
 (cd "$PROJECT_ROOT" && ./gradlew :shared:generateDummyFramework)
 
-echo "🏗 Building actual KMM frameworks..."
-(cd "$PROJECT_ROOT" && ./gradlew :shared:assembleDebugXCFramework :shared:assembleReleaseXCFramework)
+echo "🏗 Building XCFrameworks for CocoaPods (Debug)..."
+(cd "$PROJECT_ROOT" && ./gradlew :shared:podPublishDebugXCFramework)
 
 echo "📦 Installing CocoaPods..."
 (cd "$PROJECT_ROOT/iosApp" && pod install)

@@ -28,26 +28,13 @@ internal class ExerciseExampleRepositoryImpl(
         experience: ExperienceEnum?,
         category: CategoryEnum?
     ): Flow<List<ExerciseExample>> {
-        return if (name.isNullOrBlank()) {
-            exerciseExampleDao.getAllFiltered(
-                forceType = forceType?.key,
-                weightType = weightType?.key,
-                category = category?.key,
-                experience = experience?.key
-            )
-        } else {
-            val query = name.trim()
-                .split("\\s+".toRegex())
-                .joinToString(" ") { "$it*" }
-
-            exerciseExampleDao.searchFiltered(
-                name = query,
-                forceType = forceType?.key,
-                weightType = weightType?.key,
-                category = category?.key,
-                experience = experience?.key
-            )
-        }.map { it.toDomain() }
+        return exerciseExampleDao.getAll(
+            name = name,
+            forceType = forceType?.key,
+            weightType = weightType?.key,
+            category = category?.key,
+            experience = experience?.key
+        ).map { it.toDomain() }
     }
 
     override fun observeExerciseExamples(ids: List<String>): Flow<List<ExerciseExample>> {
