@@ -6,9 +6,11 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
@@ -31,6 +33,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.Filter
+import com.grippo.design.resources.provider.not_found
 import com.grippo.design.resources.provider.select_exercise
 import com.grippo.state.exercise.examples.stubExerciseExample
 import kotlinx.collections.immutable.ImmutableSet
@@ -84,7 +87,7 @@ internal fun ExerciseExamplePickerScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-        LazyRow(
+        if (state.exerciseExamples.isNotEmpty()) LazyRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
             contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
@@ -110,12 +113,17 @@ internal fun ExerciseExamplePickerScreen(
                     ),
                 )
             }
-
-            if (state.exerciseExamples.isEmpty()) {
-               item {
-                   Spacer(modifier = Modifier.size(220.dp))
-               }
-            }
+        } else {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(220.dp)
+                    .wrapContentHeight(),
+                text = AppTokens.strings.res(Res.string.not_found),
+                textAlign = TextAlign.Center,
+                style = AppTokens.typography.b14Med(),
+                color = AppTokens.colors.text.secondary
+            )
         }
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
@@ -132,6 +140,14 @@ private fun ScreenPreview() {
                     stubExerciseExample(),
                     stubExerciseExample()
                 ),
+            ),
+            loaders = persistentSetOf(),
+            contract = ExerciseExamplePickerContract.Empty
+        )
+
+        ExerciseExamplePickerScreen(
+            state = ExerciseExamplePickerState(
+                exerciseExamples = persistentListOf(),
             ),
             loaders = persistentSetOf(),
             contract = ExerciseExamplePickerContract.Empty
