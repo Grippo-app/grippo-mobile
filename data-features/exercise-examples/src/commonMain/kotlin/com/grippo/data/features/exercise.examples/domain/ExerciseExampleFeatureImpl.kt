@@ -15,7 +15,7 @@ internal class ExerciseExampleFeatureImpl(
 ) : ExerciseExampleFeature {
 
     override fun observeExerciseExamples(
-        name: String,
+        name: String?,
         forceType: ForceTypeEnum?,
         weightType: WeightTypeEnum?,
         experience: ExperienceEnum?,

@@ -22,13 +22,13 @@ internal class ExerciseExampleRepositoryImpl(
 ) : ExerciseExampleRepository {
 
     override fun observeExerciseExamples(
-        name: String,
+        name: String?,
         forceType: ForceTypeEnum?,
         weightType: WeightTypeEnum?,
         experience: ExperienceEnum?,
         category: CategoryEnum?
     ): Flow<List<ExerciseExample>> {
-        return if (name.isBlank()) {
+        return if (name.isNullOrBlank()) {
             exerciseExampleDao.getAllFiltered(
                 forceType = forceType?.key,
                 weightType = weightType?.key,

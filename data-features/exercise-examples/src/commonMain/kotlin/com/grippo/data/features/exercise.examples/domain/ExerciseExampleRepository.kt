@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 internal interface ExerciseExampleRepository {
     fun observeExerciseExamples(
-        name: String,
+        name: String?,
         forceType: ForceTypeEnum?,
         weightType: WeightTypeEnum?,
         experience: ExperienceEnum?,
