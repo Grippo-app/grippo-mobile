@@ -128,11 +128,14 @@ public class DistributionCalculator(
         public data object Volume : Weighting
     }
 
+    // FIXED: Volume = Σ(weight × reps), not just Σ(weight)
     private fun weightOfExercise(ex: ExerciseState, w: Weighting): Float = when (w) {
         Weighting.Count -> 1f
         Weighting.Sets -> ex.iterations.size.toFloat()
         Weighting.Reps -> ex.iterations.sumOf { it.repetitions.value ?: 0 }.toFloat()
-        Weighting.Volume -> ex.iterations.sumOf { (it.volume.value ?: 0f).toDouble() }.toFloat()
+        Weighting.Volume -> ex.iterations
+            .sumOf { ((it.volume.value ?: 0f) * (it.repetitions.value ?: 0)).toDouble() }
+            .toFloat()
     }.coerceAtLeast(0f)
 
     private inline fun <reified E : Enum<E>> stableOrder(): List<E> =
@@ -336,4 +339,5 @@ public class DistributionCalculator(
         return DSPieData(slices)
     }
 }
+
 

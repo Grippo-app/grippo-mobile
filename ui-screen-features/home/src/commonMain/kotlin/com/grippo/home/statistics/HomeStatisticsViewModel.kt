@@ -3,7 +3,6 @@ package com.grippo.home.statistics
 import com.grippo.calculation.AnalyticsCalculator
 import com.grippo.calculation.DistributionCalculator
 import com.grippo.calculation.LoadCalculator
-import com.grippo.calculation.LoadCalculator.RelativeMode
 import com.grippo.calculation.MetricsAggregator
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
@@ -182,9 +181,6 @@ internal class HomeStatisticsViewModel(
             trainings = trainings,
             examples = examples,
             groups = muscles,
-            mode = LoadCalculator.Mode.RELATIVE,
-            relativeMode = RelativeMode.SUM,
-            workload = LoadCalculator.Workload.Volume,
             period = period
         )
         val intraProgressionData =

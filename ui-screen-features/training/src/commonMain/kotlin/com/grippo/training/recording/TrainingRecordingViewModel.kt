@@ -3,7 +3,6 @@ package com.grippo.training.recording
 import com.grippo.calculation.AnalyticsCalculator
 import com.grippo.calculation.DistributionCalculator
 import com.grippo.calculation.LoadCalculator
-import com.grippo.calculation.LoadCalculator.RelativeMode
 import com.grippo.calculation.MetricsAggregator
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
@@ -217,15 +216,11 @@ internal class TrainingRecordingViewModel(
             exercises = exercises,
             examples = examples,
             groups = muscles,
-            mode = LoadCalculator.Mode.RELATIVE,
-            relativeMode = RelativeMode.SUM,
-            workload = LoadCalculator.Workload.Volume
         )
         val intraProgressionData =
             analyticsCalculator.calculateIntraProgressionPercent1RMFromExercises(
                 exercises = exercises
             )
-
         val percent1RMData =
             analyticsCalculator.calculateIntraProgressionPercent1RMFromExercises(
                 exercises = exercises

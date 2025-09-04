@@ -229,7 +229,7 @@ public class AnalyticsCalculator(
         val points = mutableListOf<DSAreaPoint>()
         var xIdx = 0
 
-        // rolling map per exercise key across buckets (light smoothing)
+        // rolling map per exercise key across buckets (EWMA with clamp)
         val rollingPrev = mutableMapOf<String, Float>()
 
         buckets.forEach { (start, ts) ->
@@ -243,8 +243,7 @@ public class AnalyticsCalculator(
             }.toMap()
 
             val rolling = session.mapValues { (k, cur) ->
-                val prev = rollingPrev[k]
-                val smoothed = if (prev == null) cur else (prev * 0.8f + cur * 0.2f)
+                val smoothed = smooth(rollingPrev[k], cur, alpha = 0.20f, clamp = 0.05f)
                 rollingPrev[k] = smoothed
                 smoothed
             }
@@ -253,7 +252,7 @@ public class AnalyticsCalculator(
             var den = 0f
             exs.forEach { ex ->
                 val key = exerciseKey(ex)
-                val r1rm = rolling[key] ?: return@forEach
+                val r1rm = rolling[key] ?: rollingPrev[key] ?: return@forEach
                 val (sumT, sumR) = sums(ex)
                 if (sumR <= 0 || r1rm <= 0f) return@forEach
                 val avg = sumT / sumR
@@ -342,7 +341,7 @@ public class AnalyticsCalculator(
         val points = mutableListOf<DSAreaPoint>()
         var xIdx = 0
 
-        // rolling 1RM per exercise across buckets (light smoothing)
+        // rolling 1RM per exercise across buckets (EWMA with clamp)
         val rollingPrev = mutableMapOf<String, Float>()
 
         buckets.forEach { (start, ts) ->
@@ -354,15 +353,15 @@ public class AnalyticsCalculator(
             }.toMap()
 
             val rolling = session.mapValues { (k, cur) ->
-                val prev = rollingPrev[k]
-                val smoothed = if (prev == null) cur else (prev * 0.8f + cur * 0.2f)
+                val smoothed = smooth(rollingPrev[k], cur, alpha = 0.20f, clamp = 0.05f)
                 rollingPrev[k] = smoothed
                 smoothed
             }
 
             var sumStimulus = 0f
             exs.forEach { ex ->
-                val r1rm = rolling[exerciseKey(ex)] ?: return@forEach
+                val key = exerciseKey(ex)
+                val r1rm = rolling[key] ?: rollingPrev[key] ?: return@forEach
                 val (sumT, sumR) = sums(ex)
                 if (sumR <= 0 || r1rm <= 0f) return@forEach
                 val avg = sumT / sumR
@@ -407,7 +406,7 @@ public class AnalyticsCalculator(
                 color = palette[index % palette.size]
             )
         }
-        val data = DSBarData(items = items)
+        val data = DSBarData(items)
         val tip = instructionFor(metric = Metric.E1RM, scale = BucketScale.EXERCISE)
         return Pair(data, tip)
     }
@@ -433,14 +432,16 @@ public class AnalyticsCalculator(
             val buckets: List<Pair<LocalDate, List<TrainingState>>> =
                 groupTrainingsByBucket(inRange, scale).toList().sortedBy { (start, _) -> start }
 
-            val items = buckets.mapIndexed { idx, (start, ts) ->
+            val items = buckets.mapIndexedNotNull { idx, (start, ts) ->
                 val e1s = ts
                     .flatMap { it.exercises }
                     .mapNotNull { estimateSession1RM(it) }
                     .filter { it.isFinite() && it > 0f }
 
+                if (e1s.isEmpty()) return@mapIndexedNotNull null
+
                 val reduced = when (policy.oneRMReducer) {
-                    OneRMAggregator.Max -> e1s.maxOrNull() ?: 0f
+                    OneRMAggregator.Max -> e1s.maxOrNull()!!
                     OneRMAggregator.P90 -> percentile(e1s, 0.90f)
                     OneRMAggregator.Median -> percentile(e1s, 0.50f)
                 }
@@ -463,7 +464,7 @@ public class AnalyticsCalculator(
         BucketScale.EXERCISE -> 1.30f  // day/session: show peaks
         BucketScale.DAY -> 1.25f
         BucketScale.WEEK -> 1.20f
-        BucketScale.MONTH -> if (days > 365) 1.10f else 1.15f
+        BucketScale.MONTH -> if (days >= 365) 1.10f else 1.15f
     }
 
     private fun stimulusAlphaFor(scale: BucketScale, days: Int): Float {
@@ -581,7 +582,7 @@ public class AnalyticsCalculator(
         }
     }
 
-    // -------------------------- Helpers: math, tonnage, keys --------------------------
+    // -------------------------- Helpers: math, tonnage, keys, smoothing --------------------------
 
     /** Returns (Σ(weight*reps), Σ(reps)). */
     private fun sums(ex: ExerciseState): Pair<Float, Int> {
@@ -631,6 +632,20 @@ public class AnalyticsCalculator(
     /** Key to identify an exercise when storing/smoothing rolling 1RM. */
     private fun exerciseKey(ex: ExerciseState): String {
         return ex.exerciseExample?.id ?: ex.name
+    }
+
+    /** EWMA smoothing with change clamp (±maxChangePct). */
+    private fun smooth(
+        prev: Float?,
+        cur: Float,
+        alpha: Float = 0.20f,
+        clamp: Float = 0.05f
+    ): Float {
+        if (prev == null) return cur
+        val raw = prev * (1 - alpha) + cur * alpha
+        val minAllowed = prev * (1 - clamp)
+        val maxAllowed = prev * (1 + clamp)
+        return raw.coerceIn(minAllowed, maxAllowed)
     }
 
     // -------------------------- 1RM estimation core --------------------------
@@ -705,21 +720,23 @@ public class AnalyticsCalculator(
      * CUSTOM rules:
      * 1) If it's a day → EXERCISE
      * 2) If < 1 month AND days not divisible by 7 → DAY
-     * 3) If up to a year but > month → if whole-month aligned → MONTH, else → WEEK
-     * 4) Otherwise → MONTH
+     * 3) If < 1 month AND days divisible by 7 → WEEK   ← (fixed)
+     * 4) If up to a year (> month) → if whole-month aligned → MONTH, else → WEEK
+     * 5) Otherwise → MONTH
      */
     private fun deriveCustomScale(range: DateRange): BucketScale {
         val from = range.from.date
-        the@ run {
-            val to = range.to.date
-            if (from == to) return BucketScale.EXERCISE
-            val days = daysInclusive(from, to)
-            val fullMonths = isWholeMonths(range)
-            return when {
-                days < 30 && (days % 7 != 0) -> BucketScale.DAY
-                days in 30..366 -> if (fullMonths) BucketScale.MONTH else BucketScale.WEEK
-                else -> BucketScale.MONTH
-            }
+        val to = range.to.date
+        if (from == to) return BucketScale.EXERCISE
+
+        val days = daysInclusive(from, to)
+        val fullMonths = isWholeMonths(range)
+
+        return when {
+            days < 30 && (days % 7 != 0) -> BucketScale.DAY
+            days < 30 && (days % 7 == 0) -> BucketScale.WEEK
+            days in 30..366 -> if (fullMonths) BucketScale.MONTH else BucketScale.WEEK
+            else -> BucketScale.MONTH
         }
     }
 
@@ -792,7 +809,10 @@ public class AnalyticsCalculator(
 
     private fun defaultLabeler(scale: BucketScale): (Bucket) -> String = when (scale) {
         BucketScale.DAY -> { b -> DateTimeUtils.format(b.start, DateFormat.WEEKDAY_SHORT) }
-        BucketScale.WEEK -> { b -> "W${isoWeekNumber(b.start)} ${b.start}" }
+        BucketScale.WEEK -> { b ->
+            "W${isoWeekNumber(b.start)} ${DateTimeUtils.format(b.start, DateFormat.MONTH_SHORT)}"
+        }
+
         BucketScale.MONTH -> { b ->
             "${b.start.year}-${b.start.monthNumber.toString().padStart(2, '0')}"
         }
