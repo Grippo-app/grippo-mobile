@@ -1,6 +1,6 @@
 package com.grippo.training.completed
 
-import com.grippo.calculation.TrainingMetricsCalculator
+import com.grippo.calculation.MetricsAggregator
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.SetTraining
@@ -24,13 +24,13 @@ internal class TrainingCompletedViewModel(
     TrainingCompletedState()
 ), TrainingCompletedContract {
 
-    private val trainingMetricsCalculator = TrainingMetricsCalculator()
+    private val metricsAggregator = MetricsAggregator()
 
     init {
         safeLaunch(loader = TrainingCompletedLoader.SaveTraining) {
             val duration = DateTimeUtils.ago(startAt)
 
-            val totals = trainingMetricsCalculator.calculateTotalMetrics(exercises)
+            val totals = metricsAggregator.calculateExercises(exercises)
 
             val training = SetTraining(
                 exercises = exercises.toDomain(),

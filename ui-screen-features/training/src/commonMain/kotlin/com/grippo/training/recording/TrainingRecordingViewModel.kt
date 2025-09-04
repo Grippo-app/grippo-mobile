@@ -1,8 +1,8 @@
 package com.grippo.training.recording
 
+import com.grippo.calculation.MetricsAggregator
 import com.grippo.calculation.TrainingExamplesCalculator
 import com.grippo.calculation.TrainingExercisesCalculator
-import com.grippo.calculation.TrainingMetricsCalculator
 import com.grippo.calculation.TrainingMusclesCalculator
 import com.grippo.calculation.TrainingMusclesCalculator.RelativeMode
 import com.grippo.core.BaseViewModel
@@ -49,8 +49,8 @@ internal class TrainingRecordingViewModel(
     TrainingRecordingState()
 ), TrainingRecordingContract {
 
-    private val trainingMetricsCalculator: TrainingMetricsCalculator =
-        TrainingMetricsCalculator()
+    private val metricsAggregator: MetricsAggregator =
+        MetricsAggregator()
     private val trainingExercisesCalculator: TrainingExercisesCalculator =
         TrainingExercisesCalculator(colorProvider)
     private val trainingExamplesCalculator: TrainingExamplesCalculator =
@@ -195,7 +195,7 @@ internal class TrainingRecordingViewModel(
             return
         }
 
-        val totalMetrics = trainingMetricsCalculator.calculateTotalMetrics(
+        val totalMetrics = metricsAggregator.calculateExercises(
             exercises = exercises
         )
         val categoryDistributionData = trainingExamplesCalculator.calculateCategoryDistribution(
