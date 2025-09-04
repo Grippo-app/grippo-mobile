@@ -8,21 +8,49 @@ import com.grippo.state.trainings.IterationState
 import com.grippo.state.trainings.TrainingMetrics
 import com.grippo.state.trainings.TrainingState
 
+/**
+ * 📊 **Metrics Aggregator**
+ *
+ * Calculates training metrics (Volume, Repetitions, Intensity) on 3 levels:
+ *
+ * - 🟢 **Iterations** → raw sets
+ * - 🔵 **Exercises** → aggregate over multiple iterations
+ * - 🟣 **Trainings** → aggregate over multiple exercises across sessions
+ *
+ * ---
+ * 🔎 **Definitions**
+ * - **Volume (kg·rep)**: Σ(weight × reps)
+ * - **Repetitions**: Σ(reps)
+ * - **Intensity (kg/rep)**: Volume ÷ Repetitions
+ *
+ * ⚠️ Valid only if: `weight != null` AND `reps != null` AND `reps > 0`
+ */
 public class MetricsAggregator {
 
-    /**
-     * Calculate metrics from raw iterations.
-     *
-     * Valid set: weight != null AND reps != null AND reps > 0
-     * Volume (tonnage)   = Σ(weight * reps) over valid sets
-     * Repetitions        = Σ(reps)          over valid sets
-     * Intensity (kg/rep) = Volume / Repetitions
-     */
+    /** Aggregate metrics from raw iterations. */
     public fun calculateIterations(iterations: List<IterationState>): TrainingMetrics {
-        var sumTonnage = 0.0   // Σ(weight * reps) over valid sets
-        var sumReps = 0        // Σ(reps)          over valid sets
+        return aggregateMetrics(iterations.asSequence())
+    }
 
-        iterations.forEach { itn ->
+    /** Aggregate metrics from a list of exercises. */
+    public fun calculateExercises(exercises: List<ExerciseState>): TrainingMetrics {
+        val allIterations = exercises.asSequence().flatMap { it.iterations.asSequence() }
+        return aggregateMetrics(allIterations)
+    }
+
+    /** Aggregate metrics from multiple training sessions. */
+    public fun calculateTrainings(trainings: List<TrainingState>): TrainingMetrics {
+        val allExercises = trainings.asSequence().flatMap { it.exercises.asSequence() }
+        val allIterations = allExercises.flatMap { it.iterations.asSequence() }
+        return aggregateMetrics(allIterations)
+    }
+
+    // ---- Core aggregation logic ----
+    private fun aggregateMetrics(iterations: Sequence<IterationState>): TrainingMetrics {
+        var sumTonnage = 0.0
+        var sumReps = 0
+
+        for (itn in iterations) {
             val weight = (itn.volume as? VolumeFormatState.Valid)?.value
             val reps = (itn.repetitions as? RepetitionsFormatState.Valid)?.value
             if (weight != null && reps != null && reps > 0) {
@@ -40,21 +68,5 @@ public class MetricsAggregator {
             repetitions = RepetitionsFormatState.of(totalReps),
             intensity = IntensityFormatState.of(avgIntensity)
         )
-    }
-
-    /**
-     * Calculate metrics for a list of exercises.
-     */
-    public fun calculateExercises(exercises: List<ExerciseState>): TrainingMetrics {
-        val allIterations = exercises.flatMap { it.iterations }
-        return calculateIterations(allIterations)
-    }
-
-    /**
-     * Calculate metrics for multiple training sessions (each with its exercises).
-     */
-    public fun calculateTrainings(trainings: List<TrainingState>): TrainingMetrics {
-        val allExercises = trainings.flatMap { it.exercises }
-        return calculateExercises(allExercises)
     }
 }
