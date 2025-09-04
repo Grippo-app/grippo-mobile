@@ -179,7 +179,7 @@ internal class HomeStatisticsViewModel(
             analyticsCalculator.calculateIntraProgressionPercent1RMFromTrainings(
                 trainings = trainings,
                 period = period
-            ).data
+            )
         val muscleLoadData = loadCalculator.calculateMuscleLoadDistributionFromTrainings(
             trainings = trainings,
             examples = examples,

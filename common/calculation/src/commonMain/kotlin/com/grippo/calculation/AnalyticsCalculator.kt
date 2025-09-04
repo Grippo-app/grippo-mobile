@@ -11,7 +11,6 @@ import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.state.datetime.PeriodState
 import com.grippo.state.exercise.examples.WeightTypeEnumState
 import com.grippo.state.trainings.ExerciseState
-import com.grippo.state.trainings.IterationState
 import com.grippo.state.trainings.TrainingState
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
@@ -27,21 +26,20 @@ import kotlin.math.pow
  * Provides multiple analytic charts and metrics:
  * - 📦 Exercise Volume (Σ weight × reps)
  * - 📈 Intra-Workout Progression:
- *     - Absolute (avg kg/rep by exercise order)
- *     - %1RM-normalized (relative intensity by exercise order)
+ *     - %1RM-normalized (relative intensity by exercise order / time buckets)
  *     - Stimulus (tonnage × rel_intensity^α)
  * - 🏋 Estimated 1RM (robust session estimate using Brzycki+Epley)
  *
  * ---
  * 🔎 Inputs
- * - `List<ExerciseState>` → single training
- * - `List<TrainingState>` → multiple trainings (flattened)
+ * - `List<ExerciseState>` → single training (ThisDay)
+ * - `List<TrainingState>` → multi-trainings bucketed by PeriodState
  *
  * ⚠️ Assumptions
  * - `iteration.volume.value` stores **weight (kg)**, NOT tonnage.
  * - `iteration.repetitions.value` stores **reps**.
- * - Exercises are ordered by execution for progression charts.
- * - 1RM is only estimated for non-bodyweight exercises (unless system load is provided).
+ * - Exercises are ordered by execution (for ThisDay charts).
+ * - 1RM is estimated only for non-bodyweight exercises by default.
  *
  * Notes:
  * - Comments are in English by user's preference.
@@ -51,13 +49,12 @@ public class AnalyticsCalculator(
     private val policy: Policy = Policy()
 ) {
 
-    // -------------------------- Policy knobs --------------------------
+    // -------------------------- Policy knobs (public config) --------------------------
 
     /** Aggregation policies for period buckets. */
     public data class Policy(
         val intensityAggregator: IntensityAggregator = IntensityAggregator.RepsWeighted,
-        val stimulusAlpha: Float = 0.75f,      // exponent for relative intensity
-        val relCap: Float = 1.2f,              // cap for rel in bucketed modes
+        // alpha & relCap are internally adapted by period; external tuning is not exposed.
         val oneRMReducer: OneRMAggregator = OneRMAggregator.P90
     )
 
@@ -67,23 +64,9 @@ public class AnalyticsCalculator(
     /** How to reduce multiple session 1RMs within a bucket to one value. */
     public enum class OneRMAggregator { Max, P90, Median }
 
-    // -------------------------- Public result/metrics models --------------------------
+    // -------------------------- Public API (only used methods) --------------------------
 
-    /** Trend KPIs computed from a Y-series over time or exercise order. */
-    public data class IntraTrendMetrics(
-        val slopePerStep: Float,   // linear regression slope in y-units per step
-        val dropPercent: Float     // (%): tail avg vs head avg (last 2 vs first 2)
-    )
-
-    /** Container returning chart data together with its trend metrics. */
-    public data class IntraResult(
-        val data: DSAreaData,
-        val metrics: IntraTrendMetrics
-    )
-
-    // -------------------------- Exercise Volume --------------------------
-
-    /** 📦 Exercise Volume Chart — Σ(weight × reps) per exercise (single-day view). */
+    /** 📦 Exercise Volume Chart — Σ(weight × reps) per exercise (ThisDay). */
     public suspend fun calculateExerciseVolumeChartFromExercises(
         exercises: List<ExerciseState>
     ): DSBarData {
@@ -98,7 +81,6 @@ public class AnalyticsCalculator(
                 color = palette[index % palette.size]
             )
         }
-
         return DSBarData(items = items)
     }
 
@@ -107,7 +89,7 @@ public class AnalyticsCalculator(
      *
      * - ThisDay    -> per-exercise bars (labels = exercise names)
      * - ThisWeek   -> per-day bars       (labels = dates)
-     * - ThisMonth  -> per-week bars      (labels = week ranges or W##)
+     * - ThisMonth  -> per-week bars      (labels = W##)
      * - CUSTOM     -> derived per rules (see deriveScale)
      */
     public suspend fun calculateExerciseVolumeChartFromTrainings(
@@ -122,7 +104,6 @@ public class AnalyticsCalculator(
 
         return when (scale) {
             BucketScale.EXERCISE -> {
-                // Day-mode: per-exercise within range
                 val exercises = inRange.flatMap { it.exercises }
                 calculateExerciseVolumeChartFromExercises(exercises)
             }
@@ -147,95 +128,27 @@ public class AnalyticsCalculator(
         }
     }
 
-    // -------------------------- Intra-Workout Progression (Absolute) --------------------------
-
-    /** 📈 Intra-Workout Load Progression (absolute avg kg/rep by exercise order). */
-    public fun calculateIntraProgressionAbsoluteFromExercises(
-        exercises: List<ExerciseState>
-    ): IntraResult {
-        val points = exercises.mapIndexed { index, ex ->
-            val avg = avgWeightPerRep(ex)
-            DSAreaPoint(x = index.toFloat(), y = avg.coerceAtLeast(0f), xLabel = ex.name)
-        }
-        val data = DSAreaData(points = points)
-        val metrics = computeTrend(points) { it.y }
-        return IntraResult(data, metrics)
-    }
-
-    /** 📈 Intra Absolute across trainings with PeriodState. */
-    public fun calculateIntraProgressionAbsoluteFromTrainings(
-        trainings: List<TrainingState>,
-        period: PeriodState
-    ): IntraResult {
-        val inRange = trainings.filter { it.createdAt in period.range }
-        val scale = deriveScale(period)
-
-        if (scale == BucketScale.EXERCISE) {
-            val exs = inRange.flatMap { it.exercises }
-            return calculateIntraProgressionAbsoluteFromExercises(exs)
-        }
-
-        val buckets: List<Pair<LocalDate, List<TrainingState>>> =
-            groupTrainingsByBucket(inRange, scale)
-                .toList()
-                .sortedBy { (start, _) -> start }
-
-        val points = buckets.mapIndexedNotNull { idx, (start, ts) ->
-            val (sumT, sumR) = ts.flatMap { it.exercises }.fold(0f to 0) { acc, ex ->
-                val (t, r) = sums(ex)
-                (acc.first + t) to (acc.second + r)
-            }
-            if (sumR <= 0) null
-            else DSAreaPoint(idx.toFloat(), (sumT / sumR).coerceAtLeast(0f), start.label(scale))
-        }
-        val data = DSAreaData(points)
-        val metrics = computeTrend(points) { it.y }
-        return IntraResult(data, metrics)
-    }
-
-    // -------------------------- Intra-Workout Progression (%1RM) --------------------------
-
-    /**
-     * 📈 Intra-Workout %1RM-normalized trend (single session).
-     * Each exercise is mapped to relative intensity:
-     * rel = avgWeightPerRep / rolling1RM  (returned as % on Y-axis).
-     */
+    /** 📈 %1RM by exercise order (ThisDay). */
     public fun calculateIntraProgressionPercent1RMFromExercises(
-        exercises: List<ExerciseState>,
-        previous1RM: Map<String, Float>? = null,
-        ewmaAlpha: Float = 0.20f,
-        maxChangeClamp: Float = 0.05f,
-        skipBodyweight: Boolean = true,
-        systemLoad: ((ExerciseState) -> Float?)? = null
-    ): IntraResult {
-        // 1) session 1RM per exercise (robust estimate)
+        exercises: List<ExerciseState>
+    ): DSAreaData {
+        // 1) session 1RM per exercise (robust estimate, skip bodyweight)
         val session1RMs: Map<String, Float> = buildMap {
             exercises.forEach { ex ->
-                val key = exerciseKey(ex)
                 val isBW = ex.exerciseExample?.weightType == WeightTypeEnumState.BODY_WEIGHT
-                val e1 = if (isBW && systemLoad != null) {
-                    estimateSession1RMWithLoader(ex) { itn ->
-                        val r = itn.repetitions.value ?: return@estimateSession1RMWithLoader null
-                        val w = systemLoad(ex) ?: return@estimateSession1RMWithLoader null
-                        w to r
+                if (!isBW) {
+                    val e1 = estimateSession1RM(ex)
+                    if (e1 != null && e1.isFinite() && e1 > 0f) {
+                        put(exerciseKey(ex), e1)
                     }
-                } else {
-                    if (isBW && skipBodyweight) null else estimateSession1RM(ex)
                 }
-                if (e1 != null && e1.isFinite() && e1 > 0f) put(key, e1)
             }
         }
 
-        // 2) rolling 1RM smoothing
-        val rolling1RM: Map<String, Float> = buildMap {
-            session1RMs.forEach { (key, current) ->
-                val prev = previous1RM?.get(key)
-                val smoothed = smoothRolling1RM(current, prev, ewmaAlpha, maxChangeClamp)
-                put(key, smoothed)
-            }
-        }
+        // 2) rolling 1RM smoothing (no prior map in ThisDay)
+        val rolling1RM: Map<String, Float> = session1RMs.mapValues { (_, current) -> current }
 
-        // 3) %1RM per exercise order
+        // 3) %1RM per exercise index
         val points = exercises.mapIndexedNotNull { index, ex ->
             val key = exerciseKey(ex)
             val r1rm = rolling1RM[key] ?: return@mapIndexedNotNull null
@@ -244,70 +157,54 @@ public class AnalyticsCalculator(
                 if (r1rm > 0f) (avg / r1rm).coerceIn(0f, 2f) else return@mapIndexedNotNull null
             DSAreaPoint(
                 x = index.toFloat(),
-                y = rel * 100f, // % on Y axis
+                y = rel * 100f,
                 xLabel = ex.name
             )
         }
-
-        val data = DSAreaData(points = points)
-        val metrics = computeTrend(points) { it.y }
-        return IntraResult(data, metrics)
+        return DSAreaData(points = points)
     }
 
-    /** 📈 Intra %1RM across trainings with PeriodState (bucketed). */
+    /** 📈 %1RM across trainings bucketed by PeriodState. */
     public fun calculateIntraProgressionPercent1RMFromTrainings(
         trainings: List<TrainingState>,
-        period: PeriodState,
-        previous1RM: Map<String, Float>? = null,
-        ewmaAlpha: Float = 0.20f,
-        maxChangeClamp: Float = 0.05f,
-        skipBodyweight: Boolean = true,
-        systemLoad: ((ExerciseState) -> Float?)? = null
-    ): IntraResult {
+        period: PeriodState
+    ): DSAreaData {
         val inRange = trainings.filter { it.createdAt in period.range }
         val scale = deriveScale(period)
+        val days = daysInclusive(period.range.from.date, period.range.to.date)
+        val relCap = relCapFor(scale, days)
 
         if (scale == BucketScale.EXERCISE) {
-            val exercises = inRange.flatMap { it.exercises }
-            return calculateIntraProgressionPercent1RMFromExercises(
-                exercises, previous1RM, ewmaAlpha, maxChangeClamp, skipBodyweight, systemLoad
-            )
+            val exs = inRange.flatMap { it.exercises }
+            return calculateIntraProgressionPercent1RMFromExercises(exs)
         }
 
         val buckets: List<Pair<LocalDate, List<TrainingState>>> =
-            groupTrainingsByBucket(inRange, scale)
-                .toList()
-                .sortedBy { (start, _) -> start }
+            groupTrainingsByBucket(inRange, scale).toList().sortedBy { (start, _) -> start }
 
-        val rollingPrev = previous1RM?.toMutableMap() ?: mutableMapOf()
         val points = mutableListOf<DSAreaPoint>()
         var xIdx = 0
+
+        // rolling map per exercise key across buckets (EWMA inside buckets not required here)
+        val rollingPrev = mutableMapOf<String, Float>()
 
         buckets.forEach { (start, ts) ->
             val exs = ts.flatMap { it.exercises }
 
-            val session = buildMap {
-                exs.forEach { ex ->
-                    val key = exerciseKey(ex)
-                    val isBW = ex.exerciseExample?.weightType == WeightTypeEnumState.BODY_WEIGHT
-                    val e1 = if (isBW && systemLoad != null) {
-                        estimateSession1RMWithLoader(ex) { itn ->
-                            val r =
-                                itn.repetitions.value ?: return@estimateSession1RMWithLoader null
-                            val w = systemLoad(ex) ?: return@estimateSession1RMWithLoader null
-                            w to r
-                        }
-                    } else {
-                        if (isBW && skipBodyweight) null else estimateSession1RM(ex)
-                    }
-                    if (e1 != null && e1.isFinite() && e1 > 0f) put(key, e1)
-                }
-            }
+            val session = exs.mapNotNull { ex ->
+                val isBW = ex.exerciseExample?.weightType == WeightTypeEnumState.BODY_WEIGHT
+                if (isBW) null
+                else estimateSession1RM(ex)?.takeIf { it.isFinite() && it > 0f }
+                    ?.let { exerciseKey(ex) to it }
+            }.toMap()
 
+            // simple smoothing to avoid jumpy %1RM between buckets
             val rolling = session.mapValues { (k, cur) ->
-                smoothRolling1RM(cur, rollingPrev[k], ewmaAlpha, maxChangeClamp)
+                val prev = rollingPrev[k]
+                val smoothed = if (prev == null) cur else (prev * 0.8f + cur * 0.2f)
+                rollingPrev[k] = smoothed
+                smoothed
             }
-            rolling.forEach { (k, v) -> rollingPrev[k] = v }
 
             var num = 0f
             var den = 0f
@@ -317,7 +214,9 @@ public class AnalyticsCalculator(
                 val (sumT, sumR) = sums(ex)
                 if (sumR <= 0 || r1rm <= 0f) return@forEach
                 val avg = sumT / sumR
-                val rel = (avg / r1rm).coerceAtMost(policy.relCap).coerceAtLeast(0f)
+                val rel = (avg / r1rm)
+                    .coerceAtLeast(0f)
+                    .coerceAtMost(relCap)
 
                 when (policy.intensityAggregator) {
                     IntensityAggregator.RepsWeighted -> {
@@ -340,78 +239,62 @@ public class AnalyticsCalculator(
                 )
             }
         }
-
-        val data = DSAreaData(points)
-        val metrics = computeTrend(points) { it.y }
-        return IntraResult(data, metrics)
+        return DSAreaData(points = points)
     }
 
-    // -------------------------- Intra-Workout Progression (Stimulus) --------------------------
-
     /**
-     * 📈 Stimulus by exercise order:
-     * stimulus = tonnage × (rel_intensity^alpha),
+     * 📈 Stimulus (ThisDay):
+     * stimulus = tonnage × (rel_intensity^alpha)
      * where rel_intensity = avgWeightPerRep / rolling1RM.
      */
     public fun calculateIntraProgressionStimulusFromExercises(
-        exercises: List<ExerciseState>,
-        previous1RM: Map<String, Float>? = null,
-        alphaRelIntensity: Float = policy.stimulusAlpha,
-        ewmaAlpha: Float = 0.20f,
-        maxChangeClamp: Float = 0.05f
-    ): IntraResult {
-        // session 1RM and rolling smoothing
+        exercises: List<ExerciseState>
+    ): DSAreaData {
+        // session 1RM, no prior smoothing
         val session1RMs =
             exercises.associate { exerciseKey(it) to (estimateSession1RM(it) ?: Float.NaN) }
                 .filterValues { it.isFinite() && it > 0f }
-        val rolling = session1RMs.mapValues { (k, cur) ->
-            smoothRolling1RM(cur, previous1RM?.get(k), ewmaAlpha, maxChangeClamp)
-        }
 
         val points = exercises.mapIndexedNotNull { index, ex ->
-            val r1rm = rolling[exerciseKey(ex)] ?: return@mapIndexedNotNull null
-            val (sumTonnage, sumReps) = sums(ex)
-            if (sumReps <= 0) return@mapIndexedNotNull null
-            val avg = sumTonnage / sumReps
+            val r1rm = session1RMs[exerciseKey(ex)] ?: return@mapIndexedNotNull null
+            val (sumT, sumR) = sums(ex)
+            if (sumR <= 0) return@mapIndexedNotNull null
+            val avg = sumT / sumR
             val rel = (avg / r1rm).coerceAtLeast(0f)
-            val stimulus = sumTonnage * rel.pow(alphaRelIntensity)
+            val alpha = 0.75f // fixed for session view
+            val stimulus = sumT * rel.pow(alpha)
             DSAreaPoint(x = index.toFloat(), y = stimulus, xLabel = ex.name)
         }
-
-        val data = DSAreaData(points = points)
-        val metrics = computeTrend(points) { it.y }
-        return IntraResult(data, metrics)
+        return DSAreaData(points = points)
     }
 
-    /** 📈 Stimulus across trainings with PeriodState (bucketed). */
+    /**
+     * 📈 Stimulus across trainings bucketed by PeriodState:
+     * stimulus = Σ(tonnage × (rel^alpha)), alpha internally adapted by span.
+     */
     public fun calculateIntraProgressionStimulusFromTrainings(
         trainings: List<TrainingState>,
-        period: PeriodState,
-        alphaRelIntensity: Float = policy.stimulusAlpha,
-        ewmaAlpha: Float = 0.20f,
-        maxChangeClamp: Float = 0.05f
-    ): IntraResult {
+        period: PeriodState
+    ): DSAreaData {
         val inRange = trainings.filter { it.createdAt in period.range }
         val scale = deriveScale(period)
+        val days = daysInclusive(period.range.from.date, period.range.to.date)
+        val relCap = relCapFor(scale, days)
+        val alpha = stimulusAlphaFor(scale, days)
 
         if (scale == BucketScale.EXERCISE) {
-            val exercises = inRange.flatMap { it.exercises }
-            return calculateIntraProgressionStimulusFromExercises(
-                exercises, previous1RM = null,
-                alphaRelIntensity = alphaRelIntensity,
-                ewmaAlpha = ewmaAlpha,
-                maxChangeClamp = maxChangeClamp
-            )
+            val exs = inRange.flatMap { it.exercises }
+            return calculateIntraProgressionStimulusFromExercises(exs)
         }
 
         val buckets: List<Pair<LocalDate, List<TrainingState>>> =
-            groupTrainingsByBucket(inRange, scale)
-                .toList()
-                .sortedBy { (start, _) -> start }
+            groupTrainingsByBucket(inRange, scale).toList().sortedBy { (start, _) -> start }
 
-        val rollingPrev = mutableMapOf<String, Float>()
         val points = mutableListOf<DSAreaPoint>()
         var xIdx = 0
+
+        // rolling 1RM per exercise id across buckets (EWMA to stabilize)
+        val rollingPrev = mutableMapOf<String, Float>()
 
         buckets.forEach { (start, ts) ->
             val exs = ts.flatMap { it.exercises }
@@ -422,9 +305,11 @@ public class AnalyticsCalculator(
             }.toMap()
 
             val rolling = session.mapValues { (k, cur) ->
-                smoothRolling1RM(cur, rollingPrev[k], ewmaAlpha, maxChangeClamp)
+                val prev = rollingPrev[k]
+                val smoothed = if (prev == null) cur else (prev * 0.8f + cur * 0.2f)
+                rollingPrev[k] = smoothed
+                smoothed
             }
-            rolling.forEach { (k, v) -> rollingPrev[k] = v }
 
             var sumStimulus = 0f
             exs.forEach { ex ->
@@ -432,8 +317,10 @@ public class AnalyticsCalculator(
                 val (sumT, sumR) = sums(ex)
                 if (sumR <= 0 || r1rm <= 0f) return@forEach
                 val avg = sumT / sumR
-                val rel = (avg / r1rm).coerceAtMost(policy.relCap).coerceAtLeast(0f)
-                sumStimulus += sumT * rel.pow(alphaRelIntensity)
+                val rel = (avg / r1rm)
+                    .coerceAtLeast(0f)
+                    .coerceAtMost(relCap)
+                sumStimulus += sumT * rel.pow(alpha)
             }
 
             points += DSAreaPoint(
@@ -442,30 +329,24 @@ public class AnalyticsCalculator(
                 xLabel = start.label(scale)
             )
         }
-
-        val data = DSAreaData(points)
-        val metrics = computeTrend(points) { it.y }
-        return IntraResult(data, metrics)
+        return DSAreaData(points = points)
     }
 
-    // -------------------------- Estimated 1RM (robust) --------------------------
-
     /**
-     * 🏋 Robust per-exercise 1RM estimate (within this session) using:
+     * 🏋 Robust per-exercise 1RM estimate (ThisDay) using:
      * - Brzycki & Epley formulas on sets with 1..12 reps
      * - quality weights favoring lower reps
      * - weighted median across sets (robust to outliers)
      */
     public suspend fun calculateEstimated1RMFromExercises(
-        exercises: List<ExerciseState>,
-        skipBodyweight: Boolean = true
+        exercises: List<ExerciseState>
     ): DSBarData {
         val colors = colorProvider.get()
         val palette = colors.palette.palette18Colorful
 
         val items = exercises.mapIndexedNotNull { index, ex ->
             val isBodyweight = ex.exerciseExample?.weightType == WeightTypeEnumState.BODY_WEIGHT
-            if (isBodyweight && skipBodyweight) return@mapIndexedNotNull null
+            if (isBodyweight) return@mapIndexedNotNull null
 
             val e1 = estimateSession1RM(ex) ?: return@mapIndexedNotNull null
             DSBarItem(
@@ -479,12 +360,11 @@ public class AnalyticsCalculator(
 
     /**
      * 🏋 Robust 1RM across trainings with PeriodState.
-     * For non-day buckets, reduces multiple session 1RMs via policy.oneRMReducer (Max|P90|Median).
+     * Reduces multiple session 1RMs per bucket via policy.oneRMReducer (Max|P90|Median).
      */
     public suspend fun calculateEstimated1RMFromTrainings(
         trainings: List<TrainingState>,
-        period: PeriodState,
-        skipBodyweight: Boolean = true
+        period: PeriodState
     ): DSBarData {
         val colors = colorProvider.get()
         val palette = colors.palette.palette18Colorful
@@ -494,16 +374,15 @@ public class AnalyticsCalculator(
 
         if (scale == BucketScale.EXERCISE) {
             val exs = inRange.flatMap { it.exercises }
-            return calculateEstimated1RMFromExercises(exs, skipBodyweight)
+            return calculateEstimated1RMFromExercises(exs)
         }
 
         val buckets: List<Pair<LocalDate, List<TrainingState>>> =
-            groupTrainingsByBucket(inRange, scale)
-                .toList()
-                .sortedBy { (start, _) -> start }
+            groupTrainingsByBucket(inRange, scale).toList().sortedBy { (start, _) -> start }
 
         val items = buckets.mapIndexed { idx, (start, ts) ->
-            val e1s = ts.flatMap { it.exercises }
+            val e1s = ts
+                .flatMap { it.exercises }
                 .mapNotNull { estimateSession1RM(it) }
                 .filter { it.isFinite() && it > 0f }
 
@@ -520,6 +399,20 @@ public class AnalyticsCalculator(
             )
         }
         return DSBarData(items)
+    }
+
+    // -------------------------- Internals: relCap & alpha adaptation --------------------------
+
+    private fun relCapFor(scale: BucketScale, days: Int): Float = when (scale) {
+        BucketScale.EXERCISE -> 1.30f  // day/session: show peaks
+        BucketScale.DAY -> 1.25f
+        BucketScale.WEEK -> 1.20f
+        BucketScale.MONTH -> if (days > 365) 1.10f else 1.15f
+    }
+
+    private fun stimulusAlphaFor(scale: BucketScale, days: Int): Float {
+        // Default hypertrophy-friendly curvature; slightly soften on very long spans
+        return if (days >= 180) 0.70f else 0.75f
     }
 
     // -------------------------- Helpers: math, tonnage, keys --------------------------
@@ -550,7 +443,7 @@ public class AnalyticsCalculator(
         return t
     }
 
-    /** Total session tonnage across all exercises in a training (Double to avoid float round-trip). */
+    /** Total session tonnage across a training (Double to avoid float round-trip). */
     private fun TrainingState.tonnage(): Double {
         var t = 0.0
         this.exercises.forEach { ex ->
@@ -569,7 +462,7 @@ public class AnalyticsCalculator(
         return if (sumR > 0) sumT / sumR else 0f
     }
 
-    /** Key to identify an exercise when storing rolling 1RM. */
+    /** Key to identify an exercise when storing/smoothing rolling 1RM. */
     private fun exerciseKey(ex: ExerciseState): String {
         return ex.exerciseExample?.id ?: ex.name
     }
@@ -628,87 +521,6 @@ public class AnalyticsCalculator(
         return weightedMedian(pairs)
     }
 
-    /**
-     * Estimate session 1RM with a custom loader for (weight,reps),
-     * e.g., to inject system load for bodyweight moves.
-     */
-    private fun estimateSession1RMWithLoader(
-        ex: ExerciseState,
-        loader: (itn: IterationState) -> Pair<Float, Int>?
-    ): Float? {
-        val pairs = mutableListOf<Pair<Float, Float>>() // (e1rm, weight)
-        ex.iterations.forEach { itn ->
-            val wp = loader(itn) ?: return@forEach
-            val w = wp.first
-            val r = wp.second.toFloat()
-            val b = brzycki(w, r)
-            val e = epley(w, r)
-            val avg = listOfNotNull(b, e).let { if (it.isEmpty()) null else it.sum() / it.size }
-            if (avg != null) {
-                val q = qualityWeight(r)
-                pairs += avg to q
-            }
-        }
-        if (pairs.isEmpty()) return null
-        return weightedMedian(pairs)
-    }
-
-    /** EWMA smoothing with change clamp (±maxChangePct). */
-    private fun smoothRolling1RM(
-        current: Float,
-        previous: Float?,
-        alpha: Float,
-        maxChangePct: Float
-    ): Float {
-        val raw = if (previous == null) current else (previous * (1f - alpha) + current * alpha)
-        if (previous == null) return raw
-        val minAllowed = previous * (1f - maxChangePct)
-        val maxAllowed = previous * (1f + maxChangePct)
-        return raw.coerceIn(minAllowed, maxAllowed)
-    }
-
-    // -------------------------- Trend metrics --------------------------
-
-    /** Compute trend metrics (slope & drop%) for a list of DSAreaPoints. */
-    private inline fun computeTrend(
-        points: List<DSAreaPoint>,
-        crossinline yOf: (DSAreaPoint) -> Float
-    ): IntraTrendMetrics {
-        if (points.isEmpty()) return IntraTrendMetrics(0f, 0f)
-        val xs = points.indices.map { it.toFloat() }
-        val ys = points.map { yOf(it) }
-
-        val slope = linearSlope(xs, ys)
-        val drop = dropPercent(ys)
-        return IntraTrendMetrics(slopePerStep = slope, dropPercent = drop)
-    }
-
-    /** Ordinary least squares slope for y ~ x. */
-    private fun linearSlope(xs: List<Float>, ys: List<Float>): Float {
-        val n = xs.size
-        if (n < 2) return 0f
-        val xMean = xs.average().toFloat()
-        val yMean = ys.average().toFloat()
-        var num = 0f
-        var den = 0f
-        for (i in 0 until n) {
-            val dx = xs[i] - xMean
-            num += dx * (ys[i] - yMean)
-            den += dx * dx
-        }
-        return if (den == 0f) 0f else num / den
-    }
-
-    /** Drop% between first-two and last-two points. */
-    private fun dropPercent(vals: List<Float>): Float {
-        if (vals.isEmpty()) return 0f
-        val head = if (vals.size >= 2) (vals[0] + vals[1]) / 2f else vals[0]
-        val tail =
-            if (vals.size >= 2) (vals[vals.size - 1] + vals[vals.size - 2]) / 2f else vals.last()
-        if (head <= 0f) return 0f
-        return ((tail / head) - 1f) * 100f
-    }
-
     // -------------------------- Period → Buckets logic --------------------------
 
     private enum class BucketScale { EXERCISE, DAY, WEEK, MONTH }
@@ -724,10 +536,10 @@ public class AnalyticsCalculator(
     }
 
     /**
-     * CUSTOM rules (exactly as requested):
+     * CUSTOM rules:
      * 1) If it's a day → EXERCISE
      * 2) If < 1 month AND days not divisible by 7 → DAY
-     * 3) If up to a year but > month → if fully month-aligned → MONTH, else → WEEK
+     * 3) If up to a year but > month → if whole-month aligned → MONTH, else → WEEK
      * 4) Otherwise → MONTH
      */
     private fun deriveCustomScale(range: DateRange): BucketScale {
@@ -804,7 +616,7 @@ public class AnalyticsCalculator(
         return trainings.groupBy { t ->
             val d = t.createdAt.date
             when (scale) {
-                BucketScale.EXERCISE -> d // not used in grouping path
+                BucketScale.EXERCISE -> d // not used
                 BucketScale.DAY -> d
                 BucketScale.WEEK -> startOfWeek(d)
                 BucketScale.MONTH -> startOfMonth(d)
@@ -878,8 +690,6 @@ public class AnalyticsCalculator(
         val doy = dayOfYear(weekStartMonday)
         return ((doy - 1) / 7) + 1
     }
-
-    private fun dayOfYear(d: LocalDateTime): Int = dayOfYear(d.date)
 
     private fun dayOfYear(d: LocalDate): Int {
         var count = 0
