@@ -198,8 +198,6 @@ public object LightColor : AppColor {
         override val background = AppPalette.NeutralLight.N200
         override val outline = AppPalette.NeutralLight.N200
         override val text = AppPalette.Common.White
-        override val palette = AppPalette.Qualitative.Palette9Blue
-        override val scaleStops = AppPalette.Ramps.OrangeRed
     }
 
     override val charts: AppColor.Charts = object : AppColor.Charts {
@@ -218,22 +216,20 @@ public object LightColor : AppColor {
             override val glow = AppPalette.Unique.Green
             override val dot = AppPalette.Unique.Green
         }
-        override val categorical = object : AppColor.Charts.CategoricalColors {
-            override val palette1 = AppPalette.Qualitative.Palette9Blue
-            override val palette2 = AppPalette.Qualitative.Palette18Colorful
-        }
         override val heatmap = object : AppColor.Charts.HeatmapColors {
-            override val scaleStops = AppPalette.Ramps.OrangeRed
             override val missingCell = AppPalette.Common.Black.copy(alpha = 0.07f)
         }
         override val radar = object : AppColor.Charts.RadarColors {
             override val strokeFallback = AppPalette.Primary.P500
-            override val palette = AppPalette.Qualitative.Palette9Blue
-            override val scaleStops = AppPalette.Ramps.OrangeRed
         }
         override val progress = object : AppColor.Charts.ProgressColors {
             override val track = AppPalette.Common.Black.copy(alpha = 0.08f)
-            override val palette = AppPalette.Qualitative.Palette9Blue
         }
+    }
+
+    override val palette: AppColor.PaletteColors = object : AppColor.PaletteColors {
+        override val scaleStopsOrangeRed: List<Pair<Float, Color>> = AppPalette.Ramps.OrangeRed
+        override val palette9Blue: List<Color> = AppPalette.Qualitative.Palette9Blue
+        override val palette18Colorful: List<Color> = AppPalette.Qualitative.Palette18Colorful
     }
 }

@@ -24,6 +24,7 @@ public interface AppColor {
     public val charts: Charts
     public val example: ExampleColors
     public val profile: ProfileColors
+    public val palette: PaletteColors
 
     public interface DividerColors {
         public val default: Color
@@ -178,8 +179,6 @@ public interface AppColor {
         public val outline: Color
 
         public val text: Color
-        public val palette: List<Color>
-        public val scaleStops: List<Pair<Float, Color>>
     }
 
     public interface SegmentColors {
@@ -224,7 +223,6 @@ public interface AppColor {
 
     public interface Charts {
         public val area: AreaColors
-        public val categorical: CategoricalColors
         public val heatmap: HeatmapColors
         public val progress: ProgressColors
         public val radar: RadarColors
@@ -241,12 +239,9 @@ public interface AppColor {
 
         public interface RadarColors {
             public val strokeFallback: Color
-            public val palette: List<Color>
-            public val scaleStops: List<Pair<Float, Color>>
         }
 
         public interface HeatmapColors {
-            public val scaleStops: List<Pair<Float, Color>>
             public val missingCell: Color
         }
 
@@ -260,12 +255,12 @@ public interface AppColor {
 
         public interface ProgressColors {
             public val track: Color
-            public val palette: List<Color>
         }
+    }
 
-        public interface CategoricalColors {
-            public val palette1: List<Color>
-            public val palette2: List<Color>
-        }
+    public interface PaletteColors {
+        public val scaleStopsOrangeRed: List<Pair<Float, Color>>
+        public val palette9Blue: List<Color>
+        public val palette18Colorful: List<Color>
     }
 }

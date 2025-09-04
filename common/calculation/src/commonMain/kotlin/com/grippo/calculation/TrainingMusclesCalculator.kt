@@ -44,7 +44,7 @@ public class TrainingMusclesCalculator(
         workload: Workload,
     ): DSProgressData {
         val colors = colorProvider.get()
-        val scaleStops = colors.muscle.scaleStops.sortedBy { it.first }
+        val scaleStops = colors.palette.scaleStopsOrangeRed.sortedBy { it.first }
 
         val exampleMap = examples.associateBy { it.value.id }
         val muscleLoadMap = mutableMapOf<MuscleEnumState, Float>()

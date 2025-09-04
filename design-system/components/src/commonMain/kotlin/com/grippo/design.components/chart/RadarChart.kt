@@ -43,6 +43,7 @@ public fun RadarChart(
     data: DSRadarData
 ) {
     val charts = AppTokens.colors.charts
+    val palette = AppTokens.colors.palette
 
     val style = RadarStyle(
         layout = RadarStyle.Layout(
@@ -78,7 +79,7 @@ public fun RadarChart(
             requireCompleteSeries = true,
             missingAsZero = true,
         ),
-        colorStops = charts.radar.scaleStops,
+        colorStops = palette.scaleStopsOrangeRed,
     )
 
     RadarChart(

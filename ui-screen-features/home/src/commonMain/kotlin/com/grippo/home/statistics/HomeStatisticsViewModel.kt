@@ -113,7 +113,7 @@ internal class HomeStatisticsViewModel(
         navigateTo(HomeStatisticsDirection.Back)
     }
 
-    private suspend fun generateAreaData(period: PeriodState, colors: AppColor) {
+    private suspend fun generateAreaData(period: PeriodState) {
         val labels = buildTimelineLabels(period)
         val values = labels.indices.map { i -> (6f + (i % 7) * 1.6f + (i % 3)) }
         val points =
@@ -122,7 +122,7 @@ internal class HomeStatisticsViewModel(
     }
 
     private suspend fun generateBarData(period: PeriodState, colors: AppColor) {
-        val palette = colors.charts.categorical.palette1
+        val palette = colors.palette.palette9Blue
         val timeLabels = buildTimelineLabels(period)
         val entries: List<Pair<String, Float>> = timeLabels.mapIndexed { i, l ->
             l to (5f + (i % 6) * 2 + (i % 4))
@@ -149,7 +149,7 @@ internal class HomeStatisticsViewModel(
         }
     }
 
-    private suspend fun generateHeatmapData(period: PeriodState, colors: AppColor) {
+    private suspend fun generateHeatmapData(period: PeriodState) {
         val rows = 6
         val labelsRow = listOf(
             stringProvider.get(Res.string.chest_muscle),
@@ -202,7 +202,7 @@ internal class HomeStatisticsViewModel(
             DSRadarAxis("arms", stringProvider.get(Res.string.arms_muscle)),
             DSRadarAxis("core", stringProvider.get(Res.string.core_muscle)),
         )
-        val palette = colors.charts.radar.palette
+        val palette = colors.palette.palette9Blue
         val factor = when (period) {
             PeriodState.ThisDay -> 0.95f
             PeriodState.ThisWeek -> 1.0f
@@ -225,7 +225,7 @@ internal class HomeStatisticsViewModel(
     }
 
     private suspend fun generateProgressData(period: PeriodState, colors: AppColor) {
-        val palette = colors.charts.progress.palette
+        val palette = colors.palette.palette9Blue
         val shift = when (period) {
             PeriodState.ThisDay -> -4f
             PeriodState.ThisWeek -> 0f
@@ -273,14 +273,14 @@ internal class HomeStatisticsViewModel(
         }
     }
 
-    private suspend fun generateSparklineData(period: PeriodState, colors: AppColor) {
+    private suspend fun generateSparklineData(period: PeriodState) {
         val count = buildTimelineLabels(period).size
         val values: List<Float> = List(count) { i -> (4 + (i % 6) + (i % 4)).toFloat() }
         val points = values.mapIndexed { i, v -> DSSparklinePoint(x = i.toFloat(), y = v) }
         update { it.copy(sparklineData = DSSparklineData(points = points)) }
     }
 
-    private suspend fun generateVolumeData(period: PeriodState, colors: AppColor) {
+    private suspend fun generateVolumeData(period: PeriodState) {
         val baseVolume = when (period) {
             PeriodState.ThisDay -> 1250f
             PeriodState.ThisWeek -> 8750f
@@ -299,7 +299,7 @@ internal class HomeStatisticsViewModel(
         update { it.copy(volume = volume) }
     }
 
-    private suspend fun generateRepetitionsData(period: PeriodState, colors: AppColor) {
+    private suspend fun generateRepetitionsData(period: PeriodState) {
         val baseRepetitions = when (period) {
             PeriodState.ThisDay -> 45
             PeriodState.ThisWeek -> 315
@@ -318,7 +318,7 @@ internal class HomeStatisticsViewModel(
         update { it.copy(repetitions = repetitions) }
     }
 
-    private suspend fun generateIntensityData(period: PeriodState, colors: AppColor) {
+    private suspend fun generateIntensityData(period: PeriodState) {
         val baseIntensity = when (period) {
             PeriodState.ThisDay -> 75f
             PeriodState.ThisWeek -> 78f
@@ -338,15 +338,15 @@ internal class HomeStatisticsViewModel(
     }
 
     private suspend fun regenerateAllFor(period: PeriodState, colors: AppColor) {
-        generateAreaData(period, colors)
+        generateAreaData(period)
         generateBarData(period, colors)
-        generateHeatmapData(period, colors)
+        generateHeatmapData(period)
         generateRadarData(period, colors)
         generateProgressData(period, colors)
-        generateSparklineData(period, colors)
-        generateVolumeData(period, colors)
-        generateRepetitionsData(period, colors)
-        generateIntensityData(period, colors)
+        generateSparklineData(period)
+        generateVolumeData(period)
+        generateRepetitionsData(period)
+        generateIntensityData(period)
     }
 
     // --- timeline helpers ---

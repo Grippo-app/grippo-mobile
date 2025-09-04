@@ -33,6 +33,7 @@ public fun HeatmapChart(
     data: DSHeatmapData
 ) {
     val charts = AppTokens.colors.charts
+    val palette = AppTokens.colors.palette
 
     fun scaleColorOf(stops: List<Pair<Float, Color>>): (Float) -> Color = { tIn ->
         val t = tIn.coerceIn(0f, 1f)
@@ -70,14 +71,14 @@ public fun HeatmapChart(
         ),
         legend = HeatmapStyle.Legend.Visible(
             height = 8.dp,
-            stops = charts.heatmap.scaleStops,
+            stops = palette.scaleStopsOrangeRed,
             labelStyle = AppTokens.typography.b11Reg()
                 .copy(color = AppTokens.colors.text.secondary),
             minText = { "0%" },
             maxText = { "100%" }
         ),
         palette = HeatmapStyle.Palette(
-            colorScale = scaleColorOf(charts.heatmap.scaleStops),
+            colorScale = scaleColorOf(palette.scaleStopsOrangeRed),
             autoNormalize = false,
             missingCellColor = charts.heatmap.missingCell
         ),

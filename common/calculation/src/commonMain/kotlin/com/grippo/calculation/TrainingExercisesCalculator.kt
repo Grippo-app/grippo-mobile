@@ -35,7 +35,7 @@ public class TrainingExercisesCalculator(
         exercises: List<ExerciseState>
     ): DSBarData {
         val colors = colorProvider.get()
-        val palette = colors.charts.categorical.palette1
+        val palette = colors.palette.palette9Blue
 
         val items = exercises.mapIndexed { index, exercise ->
             // Sum volume safely (null -> 0f)
@@ -181,7 +181,7 @@ public class TrainingExercisesCalculator(
         exercises: List<ExerciseState>
     ): DSBarData {
         val colors = colorProvider.get()
-        val palette = colors.charts.categorical.palette2
+        val palette = colors.palette.palette18Colorful
 
         val items = exercises.mapIndexed { index, exercise ->
             val isBodyweight =
