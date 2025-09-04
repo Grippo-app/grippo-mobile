@@ -1,8 +1,8 @@
 package com.grippo.training.recording
 
 import com.grippo.calculation.MetricsAggregator
+import com.grippo.calculation.TrainingAnalyticsCalculator
 import com.grippo.calculation.TrainingDistributionCalculator
-import com.grippo.calculation.TrainingExercisesCalculator
 import com.grippo.calculation.TrainingMusclesCalculator
 import com.grippo.calculation.TrainingMusclesCalculator.RelativeMode
 import com.grippo.core.BaseViewModel
@@ -51,8 +51,8 @@ internal class TrainingRecordingViewModel(
 
     private val metricsAggregator: MetricsAggregator =
         MetricsAggregator()
-    private val trainingExercisesCalculator: TrainingExercisesCalculator =
-        TrainingExercisesCalculator(colorProvider)
+    private val trainingAnalyticsCalculator: TrainingAnalyticsCalculator =
+        TrainingAnalyticsCalculator(colorProvider)
     private val trainingExamplesCalculator: TrainingDistributionCalculator =
         TrainingDistributionCalculator(stringProvider, colorProvider)
     private val trainingMuscleCalculator: TrainingMusclesCalculator =
@@ -214,16 +214,19 @@ internal class TrainingRecordingViewModel(
             trainingExamplesCalculator.calculateExperienceDistributionFromExercises(
                 exercises = exercises
             )
-        val exerciseVolumeData = trainingExercisesCalculator.calculateExerciseVolumeChart(
-            exercises = exercises
-        )
-        val intensityDistributionData = trainingExercisesCalculator.calculateIntensityDistribution(
-            exercises = exercises
-        )
-        val intraProgressionData = trainingExercisesCalculator.calculateIntraProgression(
-            exercises = exercises
-        )
-        val estimated1RMData = trainingExercisesCalculator.calculateEstimated1RM(
+        val exerciseVolumeData =
+            trainingAnalyticsCalculator.calculateExerciseVolumeChartFromExercises(
+                exercises = exercises
+            )
+        val intensityDistributionData =
+            trainingAnalyticsCalculator.calculateIntensityDistributionFromExercises(
+                exercises = exercises
+            )
+        val intraProgressionData =
+            trainingAnalyticsCalculator.calculateIntraProgressionFromExercises(
+                exercises = exercises
+            )
+        val estimated1RMData = trainingAnalyticsCalculator.calculateEstimated1RMFromExercises(
             exercises = exercises
         )
         val muscleLoadData = trainingMuscleCalculator.calculateMuscleLoadDistribution(
