@@ -169,8 +169,6 @@ internal class TrainingRecordingViewModel(
     }
 
     private suspend fun generateStatistics() {
-        colorProvider.get()
-
         val exercises = state.value.exercises
         val examples = state.value.examples
         val muscles = state.value.muscles

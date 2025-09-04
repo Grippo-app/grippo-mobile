@@ -14,9 +14,12 @@ internal class HomeStatisticsComponent(
 
     override val viewModel = componentContext.retainedInstance {
         HomeStatisticsViewModel(
+            trainingFeature = getKoin().get(),
+            exerciseExampleFeature = getKoin().get(),
+            muscleFeature = getKoin().get(),
             dialogController = getKoin().get(),
             colorProvider = getKoin().get(),
-            stringProvider = getKoin().get()
+            stringProvider = getKoin().get(),
         )
     }
 

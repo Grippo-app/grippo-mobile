@@ -1,16 +1,14 @@
 package com.grippo.home.statistics
 
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,10 +17,8 @@ import com.grippo.core.ScreenBackground
 import com.grippo.date.utils.DateFormat
 import com.grippo.design.components.chart.AreaChart
 import com.grippo.design.components.chart.BarChart
-import com.grippo.design.components.chart.HeatmapChart
+import com.grippo.design.components.chart.PieChart
 import com.grippo.design.components.chart.ProgressChart
-import com.grippo.design.components.chart.RadarChart
-import com.grippo.design.components.chart.Sparkline
 import com.grippo.design.components.chart.XAxisLabelStyle
 import com.grippo.design.components.chip.IntensityChip
 import com.grippo.design.components.chip.IntensityChipStyle
@@ -37,6 +33,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.chart_title_exercise_volume
 import com.grippo.design.resources.provider.statistics
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -71,136 +68,125 @@ internal fun HomeStatisticsScreen(
         }
     )
 
-    LazyVerticalStaggeredGrid(
+    LazyVerticalGrid(
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f),
-        columns = StaggeredGridCells.Fixed(2),
+        columns = GridCells.Fixed(4),
+        contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-        verticalItemSpacing = AppTokens.dp.contentPadding.content,
-        contentPadding = PaddingValues(vertical = AppTokens.dp.contentPadding.content)
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
 
-        item(key = "chips", span = StaggeredGridItemSpan.FullLine) {
+        item(key = "summary_chips", span = { GridItemSpan(4) }) {
             Row(
-                modifier = Modifier
-                    .horizontalScroll(rememberScrollState())
-                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
             ) {
                 VolumeChip(
-                    value = state.volume,
-                    style = VolumeChipStyle.LONG
+                    modifier = Modifier.weight(1f),
+                    value = state.totalVolume,
+                    style = VolumeChipStyle.SHORT
                 )
 
                 RepetitionsChip(
-                    value = state.repetitions,
-                    style = RepetitionsChipStyle.LONG
+                    modifier = Modifier.weight(1f),
+                    value = state.totalRepetitions,
+                    style = RepetitionsChipStyle.SHORT
                 )
 
                 IntensityChip(
-                    value = state.intensity,
-                    style = IntensityChipStyle.LONG
+                    modifier = Modifier.weight(1f),
+                    value = state.averageIntensity,
+                    style = IntensityChipStyle.SHORT
                 )
             }
         }
 
-        item(key = "area_chart", span = StaggeredGridItemSpan.FullLine) {
-            ChartCard(
-                modifier = Modifier
-                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                    .fillMaxWidth()
-                    .aspectRatio(1.8f),
-                title = AppTokens.strings.res(Res.string.statistics),
-                content = {
-                    AreaChart(
-                        modifier = Modifier.fillMaxWidth().weight(1f),
-                        data = state.areaData
-                    )
-                }
-            )
+        if (state.exerciseVolumeData.items.isNotEmpty()) {
+            item(key = "exercise_volume", span = { GridItemSpan(4) }) {
+                ChartCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1.4f),
+                    title = AppTokens.strings.res(Res.string.chart_title_exercise_volume),
+                    content = {
+                        BarChart(
+                            modifier = Modifier.fillMaxWidth().weight(1f),
+                            data = state.exerciseVolumeData,
+                            xAxisLabelStyle = XAxisLabelStyle.SHOW_ALL
+                        )
+                    }
+                )
+            }
         }
 
-        item(key = "bar_chart") {
-            ChartCard(
-                modifier = Modifier
-                    .padding(start = AppTokens.dp.screen.horizontalPadding)
-                    .fillMaxWidth()
-                    .aspectRatio(1f),
-                title = "Weekly Volume",
-                content = {
-                    BarChart(
-                        modifier = Modifier.fillMaxWidth().weight(1f),
-                        data = state.barData,
-                        xAxisLabelStyle = XAxisLabelStyle.ADAPTIVE
-                    )
-                }
-            )
+        if (state.categoryDistributionData.slices.isNotEmpty()) {
+            item(key = "category_distribution", span = { GridItemSpan(1) }) {
+                PieChart(
+                    modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+                    data = state.categoryDistributionData
+                )
+            }
         }
 
-        item(key = "sparkline_chart") {
-            ChartCard(
-                modifier = Modifier
-                    .padding(end = AppTokens.dp.screen.horizontalPadding)
-                    .fillMaxWidth()
-                    .aspectRatio(1f),
-                title = "Trend",
-                content = {
-                    Sparkline(
-                        modifier = Modifier.fillMaxWidth().weight(1f),
-                        data = state.sparklineData
-                    )
-                }
-            )
+        if (state.weightTypeDistributionData.slices.isNotEmpty()) {
+            item(key = "weight_type_distribution", span = { GridItemSpan(1) }) {
+                PieChart(
+                    modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+                    data = state.weightTypeDistributionData
+                )
+            }
         }
 
-        item(key = "heatmap_chart", span = StaggeredGridItemSpan.FullLine) {
-            ChartCard(
-                modifier = Modifier
-                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                    .fillMaxWidth()
-                    .aspectRatio(1.5f),
-                title = "Activity Heatmap",
-                content = {
-                    HeatmapChart(
-                        modifier = Modifier.fillMaxWidth().weight(1f),
-                        data = state.heatmapData
-                    )
-                }
-            )
+        if (state.experienceDistributionData.slices.isNotEmpty()) {
+            item(key = "experience_distribution", span = { GridItemSpan(1) }) {
+                PieChart(
+                    modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+                    data = state.experienceDistributionData
+                )
+            }
         }
 
-        item(key = "radar_chart") {
-            ChartCard(
-                modifier = Modifier
-                    .padding(start = AppTokens.dp.screen.horizontalPadding)
-                    .fillMaxWidth()
-                    .aspectRatio(1f),
-                title = "Muscle Balance",
-                content = {
-                    RadarChart(
-                        modifier = Modifier.fillMaxWidth().weight(1f),
-                        data = state.radarData
-                    )
-                }
-            )
+        if (state.forceTypeDistributionData.slices.isNotEmpty()) {
+            item(key = "force_type_distribution", span = { GridItemSpan(1) }) {
+                PieChart(
+                    modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+                    data = state.forceTypeDistributionData
+                )
+            }
         }
 
-        item(key = "progress_chart") {
-            ChartCard(
-                modifier = Modifier
-                    .padding(end = AppTokens.dp.screen.horizontalPadding)
-                    .fillMaxWidth()
-                    .aspectRatio(1f),
-                title = "Progress",
-                content = {
-                    ProgressChart(
-                        modifier = Modifier.fillMaxWidth().weight(1f),
-                        data = state.progressData
-                    )
-                }
-            )
+        if (state.muscleLoadData.items.isNotEmpty()) {
+            item(key = "muscle_load", span = { GridItemSpan(4) }) {
+                ChartCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    title = "Muscle Load Distribution",
+                    content = {
+                        ProgressChart(
+                            modifier = Modifier.fillMaxWidth(),
+                            data = state.muscleLoadData
+                        )
+                    }
+                )
+            }
+        }
+
+        if (state.intraProgressionData.points.isNotEmpty()) {
+            item(key = "intra_progression", span = { GridItemSpan(4) }) {
+                ChartCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1.4f),
+                    title = "Intra progression",
+                    content = {
+                        AreaChart(
+                            modifier = Modifier.fillMaxWidth().weight(1f),
+                            data = state.intraProgressionData
+                        )
+                    }
+                )
+            }
         }
     }
 }
