@@ -1,10 +1,10 @@
 package com.grippo.training.recording
 
 import com.grippo.calculation.MetricsAggregator
+import com.grippo.calculation.MuscleLoadCalculator
+import com.grippo.calculation.MuscleLoadCalculator.RelativeMode
 import com.grippo.calculation.TrainingAnalyticsCalculator
 import com.grippo.calculation.TrainingDistributionCalculator
-import com.grippo.calculation.TrainingMusclesCalculator
-import com.grippo.calculation.TrainingMusclesCalculator.RelativeMode
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
@@ -55,8 +55,8 @@ internal class TrainingRecordingViewModel(
         TrainingAnalyticsCalculator(colorProvider)
     private val trainingExamplesCalculator: TrainingDistributionCalculator =
         TrainingDistributionCalculator(stringProvider, colorProvider)
-    private val trainingMuscleCalculator: TrainingMusclesCalculator =
-        TrainingMusclesCalculator(stringProvider, colorProvider)
+    private val trainingMuscleCalculator: MuscleLoadCalculator =
+        MuscleLoadCalculator(stringProvider, colorProvider)
 
     init {
         muscleFeature.observeMuscles()
@@ -229,13 +229,13 @@ internal class TrainingRecordingViewModel(
         val estimated1RMData = trainingAnalyticsCalculator.calculateEstimated1RMFromExercises(
             exercises = exercises
         )
-        val muscleLoadData = trainingMuscleCalculator.calculateMuscleLoadDistribution(
+        val muscleLoadData = trainingMuscleCalculator.calculateMuscleLoadDistributionFromExercises(
             exercises = exercises,
             examples = examples,
             groups = muscles,
-            mode = TrainingMusclesCalculator.Mode.RELATIVE,
+            mode = MuscleLoadCalculator.Mode.RELATIVE,
             relativeMode = RelativeMode.SUM,
-            workload = TrainingMusclesCalculator.Workload.Volume
+            workload = MuscleLoadCalculator.Workload.Volume
         )
 
         update {

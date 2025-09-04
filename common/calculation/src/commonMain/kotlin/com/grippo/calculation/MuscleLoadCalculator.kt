@@ -10,21 +10,42 @@ import com.grippo.state.muscles.MuscleEnumState
 import com.grippo.state.muscles.MuscleGroupState
 import com.grippo.state.muscles.MuscleRepresentationState
 import com.grippo.state.trainings.ExerciseState
+import com.grippo.state.trainings.TrainingState
 
-public class TrainingMusclesCalculator(
+/**
+ * 💪 **Muscle Load Calculator**
+ *
+ * Calculates load distribution across muscles or muscle groups
+ * with configurable workload models and heatmap coloring.
+ *
+ * ---
+ * 🔎 **Workload modes**
+ * - Volume → Σ(weight × reps)
+ * - Reps → Σ(reps)
+ * - TUT (time under tension) → Σ(reps × secPerRep)
+ *
+ * 📐 **Output modes**
+ * - ABSOLUTE → raw values in workload units
+ * - RELATIVE → normalized to %
+ *   - by MAX → relative to maximum muscle load
+ *   - by SUM → relative to total workload
+ *
+ * ---
+ * 🛠 **Usage**
+ * - Pass a list of `ExerciseState` for single training
+ * - Pass a list of `TrainingState` for multiple trainings
+ *
+ * 🎨 **Heatmap coloring**
+ * - Uses [scaleStopsOrangeRed] palette with interpolation
+ */
+public class MuscleLoadCalculator(
     private val stringProvider: StringProvider,
     private val colorProvider: ColorProvider,
 ) {
 
-    public enum class Mode {
-        ABSOLUTE,
-        RELATIVE
-    }
+    public enum class Mode { ABSOLUTE, RELATIVE }
 
-    public enum class RelativeMode {
-        MAX,
-        SUM
-    }
+    public enum class RelativeMode { MAX, SUM }
 
     public sealed interface Workload {
         public data object Volume : Workload
@@ -32,10 +53,8 @@ public class TrainingMusclesCalculator(
         public data class TUT(val secPerRep: Float = 3f) : Workload
     }
 
-    /**
-     * 📊 Muscle/Muscle-Group Load Distribution with heatmap coloring
-     */
-    public suspend fun calculateMuscleLoadDistribution(
+    /** 📊 Muscle/Muscle-Group Load Distribution (per exercises) */
+    public suspend fun calculateMuscleLoadDistributionFromExercises(
         exercises: List<ExerciseState>,
         examples: List<ExerciseExampleState>,
         groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
@@ -49,7 +68,7 @@ public class TrainingMusclesCalculator(
         val exampleMap = examples.associateBy { it.value.id }
         val muscleLoadMap = mutableMapOf<MuscleEnumState, Float>()
 
-        // ---- Step 1 & 2 ----
+        // ---- Step 1 & 2: workload aggregation ----
         exercises.forEach { ex ->
             val exampleId = ex.exerciseExample?.id ?: return@forEach
             val example = exampleMap[exampleId] ?: return@forEach
@@ -72,10 +91,10 @@ public class TrainingMusclesCalculator(
 
             if (exWorkload <= 0f) return@forEach
 
-            var denom = 0f
-            example.bundles.forEach { b ->
-                denom += (b.percentage.value ?: 0).coerceAtLeast(0).toFloat()
+            val denom = example.bundles.fold(0f) { acc, b ->
+                acc + (b.percentage.value ?: 0).coerceAtLeast(0).toFloat()
             }
+
             if (denom <= 0f) return@forEach
 
             example.bundles.forEach { b ->
@@ -88,11 +107,9 @@ public class TrainingMusclesCalculator(
             }
         }
 
-        if (muscleLoadMap.isEmpty()) {
-            return DSProgressData(items = emptyList())
-        }
+        if (muscleLoadMap.isEmpty()) return DSProgressData(items = emptyList())
 
-        // ---- Step 3 ----
+        // ---- Step 3: group aggregation ----
         val labelValueMap: Map<String, Float> = if (groups.isNotEmpty()) {
             groups.map { group ->
                 val sum =
@@ -103,16 +120,14 @@ public class TrainingMusclesCalculator(
             muscleLoadMap.mapKeys { (muscle, _) -> muscle.title().text(stringProvider) }
         }
 
-        if (labelValueMap.isEmpty()) {
-            return DSProgressData(items = emptyList())
-        }
+        if (labelValueMap.isEmpty()) return DSProgressData(items = emptyList())
 
-        // ---- Step 4 ----
+        // ---- Step 4: normalization ----
         val values = labelValueMap.values
         val maxVal = values.maxOrNull() ?: 1f
         val sumVal = values.sum().takeIf { it > 0f } ?: 1f
 
-        // ---- Step 5: heatmap coloring ----
+        // ---- Step 5: build items with heatmap ----
         val items = labelValueMap.entries
             .sortedByDescending { it.value }
             .map { (label, raw) ->
@@ -127,15 +142,30 @@ public class TrainingMusclesCalculator(
                 val ratio = if (maxVal == 0f) 0f else (raw / maxVal).coerceIn(0f, 1f)
                 val color = interpolateColor(ratio, scaleStops)
 
-                DSProgressItem(
-                    label = label,
-                    value = display,
-                    color = color
-                )
+                DSProgressItem(label = label, value = display, color = color)
             }
 
         return DSProgressData(items = items)
     }
+
+    /** 📊 Muscle/Muscle-Group Load Distribution (per trainings) */
+    public suspend fun calculateMuscleLoadDistributionFromTrainings(
+        trainings: List<TrainingState>,
+        examples: List<ExerciseExampleState>,
+        groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
+        mode: Mode,
+        relativeMode: RelativeMode,
+        workload: Workload,
+    ): DSProgressData = calculateMuscleLoadDistributionFromExercises(
+        trainings.flatMap { it.exercises },
+        examples,
+        groups,
+        mode,
+        relativeMode,
+        workload
+    )
+
+    // ---------------- Helpers ----------------
 
     private fun interpolateColor(ratio: Float, stops: List<Pair<Float, Color>>): Color {
         for (i in 0 until stops.size - 1) {
@@ -149,12 +179,11 @@ public class TrainingMusclesCalculator(
         return stops.last().second
     }
 
-    private fun lerpColor(c1: Color, c2: Color, t: Float): Color {
-        return Color(
+    private fun lerpColor(c1: Color, c2: Color, t: Float): Color =
+        Color(
             red = (c1.red + (c2.red - c1.red) * t),
             green = (c1.green + (c2.green - c1.green) * t),
             blue = (c1.blue + (c2.blue - c1.blue) * t),
             alpha = (c1.alpha + (c2.alpha - c1.alpha) * t),
         )
-    }
 }
