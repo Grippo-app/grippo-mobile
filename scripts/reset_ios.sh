@@ -17,6 +17,9 @@ echo "🧹 Deintegrating old CocoaPods..."
 (cd "$PROJECT_ROOT/iosApp" && pod deintegrate || true)
 
 echo "📦 Generating dummy framework for CocoaPods..."
+(cd "$PROJECT_ROOT" && ./gradlew podinstall)
+
+echo "📦 Generating dummy framework for CocoaPods..."
 (cd "$PROJECT_ROOT" && ./gradlew :shared:generateDummyFramework)
 
 echo "🏗 Building XCFrameworks for CocoaPods (Debug)..."
