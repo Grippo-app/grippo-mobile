@@ -43,14 +43,16 @@ public class TrainingAnalyticsCalculator(
         val colors = colorProvider.get()
         val palette = colors.palette.palette9Blue
 
-        val items = exercises.mapIndexed { index, exercise ->
-            val totalVolume = exercise.iterations.fold(0f) { acc, it ->
-                acc + (it.volume.value ?: 0f)
+        val items = exercises.mapIndexed { index, ex ->
+            val tonnage = ex.iterations.fold(0f) { acc, it ->
+                val w = it.volume.value ?: 0f
+                val r = it.repetitions.value ?: 0
+                acc + (w * r)
             }.coerceAtLeast(0f)
 
             DSBarItem(
-                label = exercise.name,
-                value = totalVolume,
+                label = ex.name,
+                value = tonnage,
                 color = palette[index % palette.size]
             )
         }
@@ -71,29 +73,27 @@ public class TrainingAnalyticsCalculator(
     ): DSBarData {
         val colors = colorProvider.get()
 
-        val items = exercises.mapNotNull { exercise ->
-            var sumVolume = 0f
-            var sumReps = 0
-            exercise.iterations.forEach { itn ->
-                val v = itn.volume.value
+        val items = exercises.mapNotNull { ex ->
+            var sumTonnage = 0f // Σ(weight * reps)
+            var sumReps = 0     // Σ(reps)
+            ex.iterations.forEach { itn ->
+                val w = itn.volume.value
                 val r = itn.repetitions.value
-                if (v != null && r != null && r > 0) {
-                    sumVolume += v
+                if (w != null && r != null && r > 0) {
+                    sumTonnage += w * r
                     sumReps += r
                 }
             }
             if (sumReps <= 0) return@mapNotNull null
 
-            val avgIntensity = (sumVolume / sumReps).coerceAtLeast(0f)
+            val avgIntensity = (sumTonnage / sumReps).coerceAtLeast(0f)
             val state = IntensityFormatState.of(avgIntensity)
-
             val color = when (state.average() ?: return@mapNotNull null) {
                 IntensityFormatState.Average.LOW -> colors.semantic.success
                 IntensityFormatState.Average.MEDIUM -> colors.semantic.warning
                 IntensityFormatState.Average.LARGE -> colors.semantic.error
             }
-
-            DSBarItem(label = exercise.name, value = avgIntensity, color = color)
+            DSBarItem(label = ex.name, value = avgIntensity, color = color)
         }
 
         return DSBarData(items = items)
@@ -110,27 +110,20 @@ public class TrainingAnalyticsCalculator(
     public fun calculateIntraProgressionFromExercises(
         exercises: List<ExerciseState>
     ): DSAreaData {
-        val points = exercises.mapIndexed { index, exercise ->
-            var sumVolume = 0f
+        val points = exercises.mapIndexed { index, ex ->
+            var sumTonnage = 0f
             var sumReps = 0
-            exercise.iterations.forEach { itn ->
-                val v = itn.volume.value
+            ex.iterations.forEach { itn ->
+                val w = itn.volume.value
                 val r = itn.repetitions.value
-                if (v != null && r != null && r > 0) {
-                    sumVolume += v
+                if (w != null && r != null && r > 0) {
+                    sumTonnage += w * r
                     sumReps += r
                 }
             }
-
-            val avgWeight = if (sumReps > 0) (sumVolume / sumReps) else 0f
-
-            DSAreaPoint(
-                x = index.toFloat(),
-                y = avgWeight.coerceAtLeast(0f),
-                xLabel = exercise.name
-            )
+            val avgWeight = if (sumReps > 0) (sumTonnage / sumReps) else 0f
+            DSAreaPoint(x = index.toFloat(), y = avgWeight.coerceAtLeast(0f), xLabel = ex.name)
         }
-
         return DSAreaData(points = points)
     }
 
@@ -148,20 +141,18 @@ public class TrainingAnalyticsCalculator(
         val colors = colorProvider.get()
         val palette = colors.palette.palette18Colorful
 
-        val items = exercises.mapIndexed { index, exercise ->
-            val isBodyweight =
-                exercise.exerciseExample?.weightType == WeightTypeEnumState.BODY_WEIGHT
+        val items = exercises.mapIndexed { index, ex ->
+            val isBodyweight = ex.exerciseExample?.weightType == WeightTypeEnumState.BODY_WEIGHT
 
             val best1RM = if (isBodyweight) null else {
                 var max1rm = Float.NEGATIVE_INFINITY
-                exercise.iterations.forEach { itn ->
+                ex.iterations.forEach { itn ->
                     val reps = itn.repetitions.value ?: 0
-                    val volume = itn.volume.value
-                    if (volume != null && reps in 1..12) {
-                        val load = volume / reps
+                    val weight = itn.volume.value
+                    if (weight != null && reps in 1..12) {
                         val denom = (1.0278f - 0.0278f * reps)
-                        if (load > 0f && denom > 0f) {
-                            val e1rm = load / denom
+                        if (weight > 0f && denom > 0f) {
+                            val e1rm = weight / denom
                             if (e1rm > max1rm) max1rm = e1rm
                         }
                     }
@@ -170,7 +161,7 @@ public class TrainingAnalyticsCalculator(
             }
 
             DSBarItem(
-                label = exercise.name,
+                label = ex.name,
                 value = (best1RM ?: 0f).coerceAtLeast(0f),
                 color = palette[index % palette.size]
             )

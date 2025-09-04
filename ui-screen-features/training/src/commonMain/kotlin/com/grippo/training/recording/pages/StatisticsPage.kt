@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.grippo.design.components.chart.AreaChart
 import com.grippo.design.components.chart.BarChart
 import com.grippo.design.components.chart.PieChart
 import com.grippo.design.components.chart.ProgressChart
@@ -129,6 +130,22 @@ internal fun StatisticsPage(
                         ProgressChart(
                             modifier = Modifier.fillMaxWidth(),
                             data = state.muscleLoadData
+                        )
+                    }
+                )
+            }
+        }
+        if (state.intraProgressionData.points.isNotEmpty()) {
+            item(key = "intra_progression", span = { GridItemSpan(4) }) {
+                ChartCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1.4f),
+                    title = "Intra progression",
+                    content = {
+                        AreaChart(
+                            modifier = Modifier.fillMaxWidth().weight(1f),
+                            data = state.intraProgressionData
                         )
                     }
                 )
