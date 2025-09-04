@@ -187,9 +187,7 @@ internal class TrainingRecordingViewModel(
                     experienceDistributionData = DSPieData(slices = emptyList()),
                     weightTypeDistributionData = DSPieData(slices = emptyList()),
                     muscleLoadData = DSProgressData(items = emptyList()),
-                    estimated1RMData = DSBarData(items = emptyList()),
                     intraProgressionData = DSAreaData(points = emptyList()),
-                    intensityDistributionData = DSBarData(items = emptyList()),
                 )
             }
             return
@@ -218,17 +216,10 @@ internal class TrainingRecordingViewModel(
             trainingAnalyticsCalculator.calculateExerciseVolumeChartFromExercises(
                 exercises = exercises
             )
-        val intensityDistributionData =
-            trainingAnalyticsCalculator.calculateIntensityDistributionFromExercises(
-                exercises = exercises
-            )
         val intraProgressionData =
-            trainingAnalyticsCalculator.calculateIntraProgressionFromExercises(
+            trainingAnalyticsCalculator.calculateIntraProgressionPercent1RMFromExercises(
                 exercises = exercises
-            )
-        val estimated1RMData = trainingAnalyticsCalculator.calculateEstimated1RMFromExercises(
-            exercises = exercises
-        )
+            ).data
         val muscleLoadData = trainingMuscleCalculator.calculateMuscleLoadDistributionFromExercises(
             exercises = exercises,
             examples = examples,
@@ -249,10 +240,7 @@ internal class TrainingRecordingViewModel(
                 forceTypeDistributionData = forceTypeDistributionData,
                 experienceDistributionData = experienceDistributionData,
                 muscleLoadData = muscleLoadData,
-                estimated1RMData = estimated1RMData,
                 intraProgressionData = intraProgressionData,
-                intensityDistributionData = intensityDistributionData
-
             )
         }
     }

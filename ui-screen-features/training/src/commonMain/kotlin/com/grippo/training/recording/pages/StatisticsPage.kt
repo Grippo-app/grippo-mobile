@@ -135,6 +135,7 @@ internal fun StatisticsPage(
                 )
             }
         }
+
         if (state.intraProgressionData.points.isNotEmpty()) {
             item(key = "intra_progression", span = { GridItemSpan(4) }) {
                 ChartCard(

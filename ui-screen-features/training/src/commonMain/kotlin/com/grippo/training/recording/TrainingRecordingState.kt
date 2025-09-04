@@ -43,9 +43,7 @@ internal data class TrainingRecordingState(
     val experienceDistributionData: DSPieData = DSPieData(slices = emptyList()),
 
     // === Exercise volume bar ===
-    val estimated1RMData: DSBarData = DSBarData(items = emptyList()),
     val intraProgressionData: DSAreaData = DSAreaData(points = emptyList()),
-    val intensityDistributionData: DSBarData = DSBarData(items = emptyList()),
 )
 
 @Immutable
