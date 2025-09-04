@@ -13,7 +13,6 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
-import com.grippo.chart.utils.chooseContrastingText
 
 @Composable
 public fun HeatmapChart(
@@ -177,7 +176,7 @@ public fun HeatmapChart(
                 when (val v = style.values) {
                     is HeatmapStyle.Values.Visible -> {
                         val pTxt = v.formatter(t, data)
-                        val txtColor = chooseContrastingText(color, v.textStyle.color)
+                        val txtColor = color
                         val layout = measurer.measure(
                             AnnotatedString(pTxt),
                             v.textStyle.copy(color = txtColor)

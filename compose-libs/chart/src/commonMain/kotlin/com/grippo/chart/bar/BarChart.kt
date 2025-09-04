@@ -13,7 +13,6 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
-import com.grippo.chart.utils.chooseContrastingText
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.log10
@@ -355,9 +354,7 @@ public fun BarChart(
                         val x = left + bw - innerPad - baseLayout.size.width
                         val centerY = (top + bottom) / 2f
                         val y = centerY - baseLayout.size.height / 2f
-                        val insideColor = vCfg.insideColor ?: chooseContrastingText(
-                            e.color, vCfg.textStyle.color
-                        )
+                        val insideColor = vCfg.insideColor ?: e.color
                         val insideLayout = measurer.measure(
                             AnnotatedString(txt),
                             vCfg.textStyle.copy(color = insideColor)
