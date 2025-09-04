@@ -36,7 +36,7 @@ import com.grippo.state.trainings.TrainingState
  * - Pass a list of `ExerciseState` for single-session analysis
  * - Pass a list of `TrainingState` for multi-session analysis
  */
-public class TrainingDistributionCalculator(
+public class DistributionCalculator(
     private val stringProvider: StringProvider,
     private val colorProvider: ColorProvider
 ) {

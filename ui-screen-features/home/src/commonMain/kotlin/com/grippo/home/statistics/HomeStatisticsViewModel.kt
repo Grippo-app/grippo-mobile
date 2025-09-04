@@ -1,10 +1,10 @@
 package com.grippo.home.statistics
 
+import com.grippo.calculation.AnalyticsCalculator
+import com.grippo.calculation.DistributionCalculator
+import com.grippo.calculation.LoadCalculator
+import com.grippo.calculation.LoadCalculator.RelativeMode
 import com.grippo.calculation.MetricsAggregator
-import com.grippo.calculation.MuscleLoadCalculator
-import com.grippo.calculation.MuscleLoadCalculator.RelativeMode
-import com.grippo.calculation.TrainingAnalyticsCalculator
-import com.grippo.calculation.TrainingDistributionCalculator
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
@@ -28,7 +28,6 @@ import com.grippo.state.datetime.PeriodState
 import com.grippo.state.formatters.IntensityFormatState
 import com.grippo.state.formatters.RepetitionsFormatState
 import com.grippo.state.formatters.VolumeFormatState
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
@@ -49,14 +48,10 @@ internal class HomeStatisticsViewModel(
     HomeStatisticsState()
 ), HomeStatisticsContract {
 
-    private val metricsAggregator: MetricsAggregator =
-        MetricsAggregator()
-    private val trainingAnalyticsCalculator: TrainingAnalyticsCalculator =
-        TrainingAnalyticsCalculator(colorProvider)
-    private val trainingExamplesCalculator: TrainingDistributionCalculator =
-        TrainingDistributionCalculator(stringProvider, colorProvider)
-    private val trainingMuscleCalculator: MuscleLoadCalculator =
-        MuscleLoadCalculator(stringProvider, colorProvider)
+    private val metricsAggregator = MetricsAggregator()
+    private val analyticsCalculator = AnalyticsCalculator(colorProvider)
+    private val distributionCalculator = DistributionCalculator(stringProvider, colorProvider)
+    private val loadCalculator = LoadCalculator(stringProvider, colorProvider)
 
     init {
         muscleFeature.observeMuscles()
@@ -126,16 +121,6 @@ internal class HomeStatisticsViewModel(
         dialogController.show(dialog)
     }
 
-    override fun onFiltersClick() {
-        val dialog = DialogConfig.FilterPicker(
-            initial = persistentListOf(),
-            onResult = { value ->
-            }
-        )
-
-        dialogController.show(dialog)
-    }
-
     override fun onBack() {
         navigateTo(HomeStatisticsDirection.Back)
     }
@@ -167,36 +152,36 @@ internal class HomeStatisticsViewModel(
             exercises = exercises
         )
         val categoryDistributionData =
-            trainingExamplesCalculator.calculateCategoryDistributionFromExercises(
+            distributionCalculator.calculateCategoryDistributionFromExercises(
                 exercises = exercises
             )
         val weightTypeDistributionData =
-            trainingExamplesCalculator.calculateWeightTypeDistributionFromExercises(
+            distributionCalculator.calculateWeightTypeDistributionFromExercises(
                 exercises = exercises
             )
         val forceTypeDistributionData =
-            trainingExamplesCalculator.calculateForceTypeDistributionFromExercises(
+            distributionCalculator.calculateForceTypeDistributionFromExercises(
                 exercises = exercises
             )
         val experienceDistributionData =
-            trainingExamplesCalculator.calculateExperienceDistributionFromExercises(
+            distributionCalculator.calculateExperienceDistributionFromExercises(
                 exercises = exercises
             )
         val exerciseVolumeData =
-            trainingAnalyticsCalculator.calculateExerciseVolumeChartFromExercises(
+            analyticsCalculator.calculateExerciseVolumeChartFromExercises(
                 exercises = exercises
             )
         val intraProgressionData =
-            trainingAnalyticsCalculator.calculateIntraProgressionPercent1RMFromExercises(
+            analyticsCalculator.calculateIntraProgressionPercent1RMFromExercises(
                 exercises = exercises
             ).data
-        val muscleLoadData = trainingMuscleCalculator.calculateMuscleLoadDistributionFromExercises(
+        val muscleLoadData = loadCalculator.calculateMuscleLoadDistributionFromExercises(
             exercises = exercises,
             examples = examples,
             groups = muscles,
-            mode = MuscleLoadCalculator.Mode.RELATIVE,
+            mode = LoadCalculator.Mode.RELATIVE,
             relativeMode = RelativeMode.SUM,
-            workload = MuscleLoadCalculator.Workload.Volume
+            workload = LoadCalculator.Workload.Volume
         )
 
         update {

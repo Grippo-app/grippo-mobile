@@ -18,7 +18,7 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 internal data class HomeStatisticsState(
-    val period: PeriodState = PeriodState.ThisDay,
+    val period: PeriodState = PeriodState.ThisWeek,
     val exercises: ImmutableList<ExerciseState> = persistentListOf(),
     val examples: ImmutableList<ExerciseExampleState> = persistentListOf(),
     val muscles: ImmutableList<MuscleGroupState<MuscleRepresentationState.Plain>> = persistentListOf(),

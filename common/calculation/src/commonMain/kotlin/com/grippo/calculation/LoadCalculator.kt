@@ -34,11 +34,8 @@ import com.grippo.state.trainings.TrainingState
  * 🛠 **Usage**
  * - Pass a list of `ExerciseState` for single training
  * - Pass a list of `TrainingState` for multiple trainings
- *
- * 🎨 **Heatmap coloring**
- * - Uses [scaleStopsOrangeRed] palette with interpolation
  */
-public class MuscleLoadCalculator(
+public class LoadCalculator(
     private val stringProvider: StringProvider,
     private val colorProvider: ColorProvider,
 ) {
@@ -50,7 +47,8 @@ public class MuscleLoadCalculator(
     public sealed interface Workload {
         public data object Volume : Workload
         public data object Reps : Workload
-        public data class TUT(val secPerRep: Float = 3f) : Workload
+        public data class TUT(val secPerRep: Float = 3f) :
+            Workload
     }
 
     /** 📊 Muscle/Muscle-Group Load Distribution (per exercises) */

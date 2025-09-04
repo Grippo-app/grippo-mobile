@@ -36,7 +36,7 @@ import kotlin.math.pow
  * Notes:
  * - Comments are in English by user's preference.
  */
-public class TrainingAnalyticsCalculator(
+public class AnalyticsCalculator(
     private val colorProvider: ColorProvider
 ) {
 

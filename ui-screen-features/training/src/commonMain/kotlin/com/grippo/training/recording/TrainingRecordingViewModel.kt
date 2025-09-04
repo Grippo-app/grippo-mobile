@@ -1,10 +1,10 @@
 package com.grippo.training.recording
 
+import com.grippo.calculation.AnalyticsCalculator
+import com.grippo.calculation.DistributionCalculator
+import com.grippo.calculation.LoadCalculator
+import com.grippo.calculation.LoadCalculator.RelativeMode
 import com.grippo.calculation.MetricsAggregator
-import com.grippo.calculation.MuscleLoadCalculator
-import com.grippo.calculation.MuscleLoadCalculator.RelativeMode
-import com.grippo.calculation.TrainingAnalyticsCalculator
-import com.grippo.calculation.TrainingDistributionCalculator
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
@@ -49,14 +49,10 @@ internal class TrainingRecordingViewModel(
     TrainingRecordingState()
 ), TrainingRecordingContract {
 
-    private val metricsAggregator: MetricsAggregator =
-        MetricsAggregator()
-    private val trainingAnalyticsCalculator: TrainingAnalyticsCalculator =
-        TrainingAnalyticsCalculator(colorProvider)
-    private val trainingExamplesCalculator: TrainingDistributionCalculator =
-        TrainingDistributionCalculator(stringProvider, colorProvider)
-    private val trainingMuscleCalculator: MuscleLoadCalculator =
-        MuscleLoadCalculator(stringProvider, colorProvider)
+    private val metricsAggregator = MetricsAggregator()
+    private val analyticsCalculator = AnalyticsCalculator(colorProvider)
+    private val distributionCalculator = DistributionCalculator(stringProvider, colorProvider)
+    private val loadCalculator = LoadCalculator(stringProvider, colorProvider)
 
     init {
         muscleFeature.observeMuscles()
@@ -195,36 +191,36 @@ internal class TrainingRecordingViewModel(
             exercises = exercises
         )
         val categoryDistributionData =
-            trainingExamplesCalculator.calculateCategoryDistributionFromExercises(
+            distributionCalculator.calculateCategoryDistributionFromExercises(
                 exercises = exercises
             )
         val weightTypeDistributionData =
-            trainingExamplesCalculator.calculateWeightTypeDistributionFromExercises(
+            distributionCalculator.calculateWeightTypeDistributionFromExercises(
                 exercises = exercises
             )
         val forceTypeDistributionData =
-            trainingExamplesCalculator.calculateForceTypeDistributionFromExercises(
+            distributionCalculator.calculateForceTypeDistributionFromExercises(
                 exercises = exercises
             )
         val experienceDistributionData =
-            trainingExamplesCalculator.calculateExperienceDistributionFromExercises(
+            distributionCalculator.calculateExperienceDistributionFromExercises(
                 exercises = exercises
             )
         val exerciseVolumeData =
-            trainingAnalyticsCalculator.calculateExerciseVolumeChartFromExercises(
+            analyticsCalculator.calculateExerciseVolumeChartFromExercises(
                 exercises = exercises
             )
         val intraProgressionData =
-            trainingAnalyticsCalculator.calculateIntraProgressionPercent1RMFromExercises(
+            analyticsCalculator.calculateIntraProgressionPercent1RMFromExercises(
                 exercises = exercises
             ).data
-        val muscleLoadData = trainingMuscleCalculator.calculateMuscleLoadDistributionFromExercises(
+        val muscleLoadData = loadCalculator.calculateMuscleLoadDistributionFromExercises(
             exercises = exercises,
             examples = examples,
             groups = muscles,
-            mode = MuscleLoadCalculator.Mode.RELATIVE,
+            mode = LoadCalculator.Mode.RELATIVE,
             relativeMode = RelativeMode.SUM,
-            workload = MuscleLoadCalculator.Workload.Volume
+            workload = LoadCalculator.Workload.Volume
         )
 
         update {
