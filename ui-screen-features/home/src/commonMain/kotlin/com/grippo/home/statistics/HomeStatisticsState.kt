@@ -42,4 +42,7 @@ internal data class HomeStatisticsState(
 
     // === Exercise volume bar ===
     val intraProgressionData: DSAreaData = DSAreaData(points = emptyList()),
+    val percent1RMData: DSAreaData = DSAreaData(points = emptyList()),
+    val stimulusData: DSAreaData = DSAreaData(points = emptyList()),
+    val estimated1RMData: DSBarData = DSBarData(items = emptyList()),
 )

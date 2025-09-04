@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.tooltip.Tooltip
+import com.grippo.design.components.tooltip.TooltipData
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -36,6 +37,7 @@ import kotlinx.coroutines.launch
 public fun ChartCard(
     modifier: Modifier = Modifier,
     title: String,
+    tooltip: TooltipData,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val shape = RoundedCornerShape(AppTokens.dp.chartCard.radius)
@@ -70,8 +72,7 @@ public fun ChartCard(
                 tooltip = {
                     Tooltip(
                         modifier = Modifier.padding(AppTokens.dp.contentPadding.content),
-                        title = UiText.Str("Hello world"),
-                        description = UiText.Str("Hello my dear friend"),
+                        data = tooltip
                     )
                 },
                 content = {
@@ -98,7 +99,11 @@ public fun ChartCard(
 private fun ChartCardPreview() {
     PreviewContainer {
         ChartCard(
-            title = "My title",
+            title = "Chart title",
+            tooltip = TooltipData(
+                title = UiText.Str("Tooltip title"),
+                description = UiText.Str("Tooltip description"),
+            ),
             content = {
                 Box(modifier = Modifier.fillMaxWidth().height(40.dp).background(Color.LightGray))
             }

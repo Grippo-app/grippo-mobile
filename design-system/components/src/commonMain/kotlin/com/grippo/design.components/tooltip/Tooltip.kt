@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
@@ -16,11 +17,16 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.state.formatters.UiText
 
+@Immutable
+public data class TooltipData(
+    val title: UiText,
+    val description: UiText,
+)
+
 @Composable
 public fun Tooltip(
     modifier: Modifier = Modifier,
-    title: UiText,
-    description: UiText,
+    data: TooltipData
 ) {
     Column(
         modifier = modifier
@@ -34,7 +40,7 @@ public fun Tooltip(
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
         Text(
-            text = title.text(),
+            text = data.title.text(),
             style = AppTokens.typography.b14Bold(),
             color = AppTokens.colors.text.inverted,
         )
@@ -46,7 +52,7 @@ public fun Tooltip(
         )
 
         Text(
-            text = description.text(),
+            text = data.description.text(),
             style = AppTokens.typography.b13Med(),
             color = AppTokens.colors.text.inverted,
         )
@@ -58,8 +64,10 @@ public fun Tooltip(
 private fun TooltipPreview() {
     PreviewContainer {
         Tooltip(
-            title = UiText.Str("Hello world"),
-            description = UiText.Str("Hello my dear friend"),
+            data = TooltipData(
+                title = UiText.Str("Tooltip title"),
+                description = UiText.Str("Tooltip description"),
+            )
         )
     }
 }

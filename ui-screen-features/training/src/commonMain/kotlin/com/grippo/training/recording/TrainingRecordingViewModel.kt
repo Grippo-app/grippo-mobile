@@ -182,6 +182,9 @@ internal class TrainingRecordingViewModel(
                     weightTypeDistributionData = DSPieData(slices = emptyList()),
                     muscleLoadData = DSProgressData(items = emptyList()),
                     intraProgressionData = DSAreaData(points = emptyList()),
+                    percent1RMData = DSAreaData(points = emptyList()),
+                    stimulusData = DSAreaData(points = emptyList()),
+                    estimated1RMData = DSBarData(items = emptyList()),
                 )
             }
             return
@@ -210,10 +213,6 @@ internal class TrainingRecordingViewModel(
             analyticsCalculator.calculateExerciseVolumeChartFromExercises(
                 exercises = exercises
             )
-        val intraProgressionData =
-            analyticsCalculator.calculateIntraProgressionPercent1RMFromExercises(
-                exercises = exercises
-            )
         val muscleLoadData = loadCalculator.calculateMuscleLoadDistributionFromExercises(
             exercises = exercises,
             examples = examples,
@@ -222,6 +221,23 @@ internal class TrainingRecordingViewModel(
             relativeMode = RelativeMode.SUM,
             workload = LoadCalculator.Workload.Volume
         )
+        val intraProgressionData =
+            analyticsCalculator.calculateIntraProgressionPercent1RMFromExercises(
+                exercises = exercises
+            )
+
+        val percent1RMData =
+            analyticsCalculator.calculateIntraProgressionPercent1RMFromExercises(
+                exercises = exercises
+            )
+        val stimulusData =
+            analyticsCalculator.calculateIntraProgressionStimulusFromExercises(
+                exercises = exercises
+            )
+        val estimated1RMData =
+            analyticsCalculator.calculateEstimated1RMFromExercises(
+                exercises = exercises
+            )
 
         update {
             it.copy(
@@ -235,6 +251,9 @@ internal class TrainingRecordingViewModel(
                 experienceDistributionData = experienceDistributionData,
                 muscleLoadData = muscleLoadData,
                 intraProgressionData = intraProgressionData,
+                percent1RMData = percent1RMData,
+                stimulusData = stimulusData,
+                estimated1RMData = estimated1RMData,
             )
         }
     }

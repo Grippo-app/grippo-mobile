@@ -29,12 +29,24 @@ import com.grippo.design.components.chip.VolumeChipStyle
 import com.grippo.design.components.datetime.PeriodPicker
 import com.grippo.design.components.statistics.ChartCard
 import com.grippo.design.components.toolbar.Toolbar
+import com.grippo.design.components.tooltip.TooltipData
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.chart_title_exercise_volume
 import com.grippo.design.resources.provider.statistics
+import com.grippo.design.resources.provider.tooltip_estimated1rm_description_trainings
+import com.grippo.design.resources.provider.tooltip_estimated1rm_title_trainings
+import com.grippo.design.resources.provider.tooltip_muscle_load_description_trainings
+import com.grippo.design.resources.provider.tooltip_muscle_load_title_trainings
+import com.grippo.design.resources.provider.tooltip_percent1rm_description_trainings
+import com.grippo.design.resources.provider.tooltip_percent1rm_title_trainings
+import com.grippo.design.resources.provider.tooltip_stimulus_description_trainings
+import com.grippo.design.resources.provider.tooltip_stimulus_title_trainings
+import com.grippo.design.resources.provider.tooltip_volume_description_trainings
+import com.grippo.design.resources.provider.tooltip_volume_title_trainings
+import com.grippo.state.formatters.UiText
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -110,6 +122,10 @@ internal fun HomeStatisticsScreen(
                         .fillMaxWidth()
                         .aspectRatio(1.4f),
                     title = AppTokens.strings.res(Res.string.chart_title_exercise_volume),
+                    tooltip = TooltipData(
+                        title = UiText.Res(Res.string.tooltip_volume_title_trainings),
+                        description = UiText.Res(Res.string.tooltip_volume_description_trainings),
+                    ),
                     content = {
                         BarChart(
                             modifier = Modifier.fillMaxWidth().weight(1f),
@@ -162,6 +178,10 @@ internal fun HomeStatisticsScreen(
                 ChartCard(
                     modifier = Modifier.fillMaxWidth(),
                     title = "Muscle Load Distribution",
+                    tooltip = TooltipData(
+                        title = UiText.Res(Res.string.tooltip_muscle_load_title_trainings),
+                        description = UiText.Res(Res.string.tooltip_muscle_load_description_trainings),
+                    ),
                     content = {
                         ProgressChart(
                             modifier = Modifier.fillMaxWidth(),
@@ -179,10 +199,78 @@ internal fun HomeStatisticsScreen(
                         .fillMaxWidth()
                         .aspectRatio(1.4f),
                     title = "Intra progression",
+                    tooltip = TooltipData(
+                        title = UiText.Res(Res.string.tooltip_percent1rm_title_trainings),
+                        description = UiText.Res(Res.string.tooltip_percent1rm_description_trainings),
+                    ),
                     content = {
                         AreaChart(
                             modifier = Modifier.fillMaxWidth().weight(1f),
                             data = state.intraProgressionData
+                        )
+                    }
+                )
+            }
+        }
+
+        if (state.intraProgressionData.points.isNotEmpty()) {
+            item(key = "intra_progression_percent1rm", span = { GridItemSpan(4) }) {
+                ChartCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1.4f),
+                    title = "Intra progression (%1RM)",
+                    tooltip = TooltipData(
+                        title = UiText.Res(Res.string.tooltip_percent1rm_title_trainings),
+                        description = UiText.Res(Res.string.tooltip_percent1rm_description_trainings),
+                    ),
+                    content = {
+                        AreaChart(
+                            modifier = Modifier.fillMaxWidth().weight(1f),
+                            data = state.intraProgressionData
+                        )
+                    }
+                )
+            }
+        }
+
+        if (state.stimulusData.points.isNotEmpty()) {
+            item(key = "stimulus", span = { GridItemSpan(4) }) {
+                ChartCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1.4f),
+                    title = "Stimulus",
+                    tooltip = TooltipData(
+                        title = UiText.Res(Res.string.tooltip_stimulus_title_trainings),
+                        description = UiText.Res(Res.string.tooltip_stimulus_description_trainings),
+                    ),
+                    content = {
+                        AreaChart(
+                            modifier = Modifier.fillMaxWidth().weight(1f),
+                            data = state.stimulusData
+                        )
+                    }
+                )
+            }
+        }
+
+        if (state.estimated1RMData.items.isNotEmpty()) {
+            item(key = "estimated_1rm", span = { GridItemSpan(4) }) {
+                ChartCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1.4f),
+                    title = "Estimated 1RM",
+                    tooltip = TooltipData(
+                        title = UiText.Res(Res.string.tooltip_estimated1rm_title_trainings),
+                        description = UiText.Res(Res.string.tooltip_estimated1rm_description_trainings),
+                    ),
+                    content = {
+                        BarChart(
+                            modifier = Modifier.fillMaxWidth().weight(1f),
+                            data = state.estimated1RMData,
+                            xAxisLabelStyle = XAxisLabelStyle.SHOW_ALL
                         )
                     }
                 )

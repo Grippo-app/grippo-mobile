@@ -146,6 +146,9 @@ internal class HomeStatisticsViewModel(
                     weightTypeDistributionData = DSPieData(slices = emptyList()),
                     muscleLoadData = DSProgressData(items = emptyList()),
                     intraProgressionData = DSAreaData(points = emptyList()),
+                    percent1RMData = DSAreaData(points = emptyList()),
+                    stimulusData = DSAreaData(points = emptyList()),
+                    estimated1RMData = DSBarData(items = emptyList()),
                 )
             }
             return
@@ -175,11 +178,6 @@ internal class HomeStatisticsViewModel(
                 trainings = trainings,
                 period = period
             )
-        val intraProgressionData =
-            analyticsCalculator.calculateIntraProgressionPercent1RMFromTrainings(
-                trainings = trainings,
-                period = period
-            )
         val muscleLoadData = loadCalculator.calculateMuscleLoadDistributionFromTrainings(
             trainings = trainings,
             examples = examples,
@@ -188,6 +186,27 @@ internal class HomeStatisticsViewModel(
             relativeMode = RelativeMode.SUM,
             workload = LoadCalculator.Workload.Volume
         )
+        val intraProgressionData =
+            analyticsCalculator.calculateIntraProgressionPercent1RMFromTrainings(
+                trainings = trainings,
+                period = period
+            )
+
+        val percent1RMData =
+            analyticsCalculator.calculateIntraProgressionPercent1RMFromTrainings(
+                trainings = trainings,
+                period = period
+            )
+        val stimulusData =
+            analyticsCalculator.calculateIntraProgressionStimulusFromTrainings(
+                trainings = trainings,
+                period = period
+            )
+        val estimated1RMData =
+            analyticsCalculator.calculateEstimated1RMFromTrainings(
+                trainings = trainings,
+                period = period
+            )
 
         update {
             it.copy(
@@ -201,6 +220,9 @@ internal class HomeStatisticsViewModel(
                 experienceDistributionData = experienceDistributionData,
                 muscleLoadData = muscleLoadData,
                 intraProgressionData = intraProgressionData,
+                percent1RMData = percent1RMData,
+                stimulusData = stimulusData,
+                estimated1RMData = estimated1RMData,
             )
         }
     }

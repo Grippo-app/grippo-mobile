@@ -292,4 +292,34 @@
     <string name="chart_title_experience">Experience</string>
     <string name="chart_title_force_type">Force type</string>
     <string name="not_found">Not found</string>
+
+    <string name="tooltip_volume_title_training">Exercise Volume</string>
+    <string name="tooltip_volume_description_training">Total work per exercise (weight × reps). Shows which lifts drove today’s session. Aim to keep each main lift within about ±10% of your last similar day; avoid sudden jumps >20% unless you’re peaking.</string>
+
+    <string name="tooltip_volume_title_trainings">Volume over Time</string>
+    <string name="tooltip_volume_description_trainings">Total work per day/week/month in the selected period. Use it to balance load and plan deloads. Typical target: grow weekly volume by ~5–10%, avoid single-week spikes >20–30%, and deload −20–40% every 4–8 weeks.</string>
+
+    <string name="tooltip_percent1rm_title_training">Session Intensity (%1RM)</string>
+    <string name="tooltip_percent1rm_description_training">How heavy each exercise was vs your estimated 1-rep max (100% ≈ max single). Stay mostly in your goal zone: Technique 40–60%, Hypertrophy 60–75%, Strength 80–90%+. A gentle drop across the session is normal; a steep fall may mean fatigue.</string>
+
+    <string name="tooltip_percent1rm_title_trainings">Intensity over Time (%1RM)</string>
+    <string name="tooltip_percent1rm_description_trainings">Average relative intensity per day/week/month. Alternate hard, moderate, and light days. Typical weekly mix: Light 50–65%, Moderate 65–75%, Heavy 75–85%+. Keep at least one lighter day to aid recovery.</string>
+
+    <string name="tooltip_stimulus_title_training">Training Stimulus</string>
+    <string name="tooltip_stimulus_description_training">Combined “dose” of work and heaviness (volume × intensity). Compare exercises to see which blocks mattered most. For balanced sessions, try not to let one exercise exceed ~40–50% of total stimulus unless you’re specializing.</string>
+
+    <string name="tooltip_stimulus_title_trainings">Stimulus over Time</string>
+    <string name="tooltip_stimulus_description_trainings">Total training dose per day/week/month. Look for steady, step-by-step growth. Target +5–10% per week; avoid spikes >20–30%. Plan an intentional deload (−20–40%) when fatigue builds.</string>
+
+    <string name="tooltip_estimated1rm_title_training">Estimated 1RM</string>
+    <string name="tooltip_estimated1rm_description_training">Best strength estimate per exercise today from your sets and reps—no need to test a true max. Watch the trend: small PRs of +0.5–2.5% are meaningful; flat or −2–5% is common during high-volume phases.</string>
+
+    <string name="tooltip_estimated1rm_title_trainings">Estimated 1RM over Time</string>
+    <string name="tooltip_estimated1rm_description_trainings">Peak or near-peak strength for each time bucket. Use it to time your peaks. Aim to beat the last training block by ~1–3%; short dips during deloads are normal.</string>
+
+    <string name="tooltip_muscle_load_title_training">Muscle Load (Session)</string>
+    <string name="tooltip_muscle_load_description_training">Which muscles received the most work today. Choose Volume, Reps, or Time-Under-Tension; use Absolute for real work, Relative for percentage share. Targets: for balance, avoid muscles staying near 0% week after week; for specialization, expect your focus muscle to take ~30–50% of the session’s load.</string>
+
+    <string name="tooltip_muscle_load_title_trainings">Muscle Load (Period)</string>
+    <string name="tooltip_muscle_load_description_trainings">Totals by muscle across the selected period. Check that big movers (quads, hamstrings, back, chest) all get meaningful work. Flags: a target muscle sitting &lt;10–15% across weeks may be under-trained for growth.</string>
 </resources>
