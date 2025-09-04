@@ -78,6 +78,7 @@ public data object AppDp {
     val toggle: Toggle = Toggle
     val radio: Radio = Radio
     val themeCard: ThemeCard = ThemeCard
+    val tooltip: Tooltip = Tooltip
 
     public data object Screen {
         val toolbar: Toolbar = Toolbar
@@ -100,6 +101,13 @@ public data object AppDp {
         val content: Dp = padding.medium
         val subContent: Dp = padding.small
         val text: Dp = padding.extraSmall
+    }
+
+    public data object Tooltip {
+        val horizontalPadding: Dp = padding.large
+        val verticalPadding: Dp = padding.large
+        val radius: Dp = AppDp.radius.medium
+
     }
 
     public data object BottomSheet {
@@ -142,6 +150,7 @@ public data object AppDp {
         val horizontalPadding: Dp = padding.large
         val verticalPadding: Dp = padding.large
         val radius: Dp = AppDp.radius.medium
+        val icon: Dp = AppDp.icon.medium
     }
 
     public data object UserCard {

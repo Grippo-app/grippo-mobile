@@ -92,6 +92,7 @@ public interface AppColor {
         public val dialog: Color
         public val card: Color
         public val accent: Color
+        public val inverted: Color
     }
 
     public interface DialogColors {

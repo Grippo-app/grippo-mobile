@@ -75,6 +75,7 @@ public object LightColor : AppColor {
         override val dialog = AppPalette.NeutralLight.N100
         override val card = AppPalette.Common.White
         override val accent = AppPalette.Common.Accent
+        override val inverted = AppPalette.NeutralDark.N100
     }
 
     override val dialog: AppColor.DialogColors = object : AppColor.DialogColors {
