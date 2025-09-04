@@ -37,7 +37,7 @@ import kotlinx.coroutines.launch
 public fun ChartCard(
     modifier: Modifier = Modifier,
     title: String,
-    tooltip: TooltipData,
+    tooltip: TooltipData?,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val shape = RoundedCornerShape(AppTokens.dp.chartCard.radius)
@@ -66,26 +66,28 @@ public fun ChartCard(
                 color = AppTokens.colors.text.primary,
             )
 
-            TooltipBox(
-                positionProvider = positionProvider,
-                state = tooltipState,
-                tooltip = {
-                    Tooltip(
-                        modifier = Modifier.padding(AppTokens.dp.contentPadding.content),
-                        data = tooltip
-                    )
-                },
-                content = {
-                    Icon(
-                        modifier = Modifier
-                            .scalableClick(onClick = { scope.launch { tooltipState.show() } })
-                            .size(AppTokens.dp.chartCard.icon),
-                        imageVector = AppTokens.icons.QuestionMarkCircleOutline,
-                        tint = AppTokens.colors.icon.secondary,
-                        contentDescription = null
-                    )
-                }
-            )
+            if (tooltip != null) {
+                TooltipBox(
+                    positionProvider = positionProvider,
+                    state = tooltipState,
+                    tooltip = {
+                        Tooltip(
+                            modifier = Modifier.padding(AppTokens.dp.contentPadding.content),
+                            data = tooltip
+                        )
+                    },
+                    content = {
+                        Icon(
+                            modifier = Modifier
+                                .scalableClick(onClick = { scope.launch { tooltipState.show() } })
+                                .size(AppTokens.dp.chartCard.icon),
+                            imageVector = AppTokens.icons.QuestionMarkCircleOutline,
+                            tint = AppTokens.colors.icon.secondary,
+                            contentDescription = null
+                        )
+                    }
+                )
+            }
         }
 
         Spacer(Modifier.height(AppTokens.dp.contentPadding.content))

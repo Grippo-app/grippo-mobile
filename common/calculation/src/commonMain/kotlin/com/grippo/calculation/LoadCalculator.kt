@@ -1,16 +1,32 @@
 package com.grippo.calculation
 
 import androidx.compose.ui.graphics.Color
+import com.grippo.calculation.models.Instruction
+import com.grippo.date.utils.DateRange
 import com.grippo.design.components.chart.DSProgressData
 import com.grippo.design.components.chart.DSProgressItem
+import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
+import com.grippo.design.resources.provider.tooltip_muscle_load_description_day
+import com.grippo.design.resources.provider.tooltip_muscle_load_description_month
+import com.grippo.design.resources.provider.tooltip_muscle_load_description_training
+import com.grippo.design.resources.provider.tooltip_muscle_load_description_year
+import com.grippo.design.resources.provider.tooltip_muscle_load_title_day
+import com.grippo.design.resources.provider.tooltip_muscle_load_title_month
+import com.grippo.design.resources.provider.tooltip_muscle_load_title_training
+import com.grippo.design.resources.provider.tooltip_muscle_load_title_year
+import com.grippo.state.datetime.PeriodState
 import com.grippo.state.exercise.examples.ExerciseExampleState
+import com.grippo.state.formatters.UiText
 import com.grippo.state.muscles.MuscleEnumState
 import com.grippo.state.muscles.MuscleGroupState
 import com.grippo.state.muscles.MuscleRepresentationState
 import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.TrainingState
+import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.plus
 
 /**
  * 💪 **Muscle Load Calculator**
@@ -41,18 +57,65 @@ public class LoadCalculator(
 ) {
 
     public enum class Mode { ABSOLUTE, RELATIVE }
-
     public enum class RelativeMode { MAX, SUM }
 
     public sealed interface Workload {
         public data object Volume : Workload
         public data object Reps : Workload
-        public data class TUT(val secPerRep: Float = 3f) :
-            Workload
+        public data class TUT(val secPerRep: Float = 3f) : Workload
     }
 
-    /** 📊 Muscle/Muscle-Group Load Distribution (per exercises) */
+    // ---------------- Public API (returns Pair<Data, Instruction>) ----------------
+
+    /** 📊 Muscle/Muscle-Group Load Distribution — single training (session) */
     public suspend fun calculateMuscleLoadDistributionFromExercises(
+        exercises: List<ExerciseState>,
+        examples: List<ExerciseExampleState>,
+        groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
+        mode: Mode,
+        relativeMode: RelativeMode,
+        workload: Workload,
+    ): Pair<DSProgressData, Instruction> {
+        val data = calculateMuscleLoadDistributionCore(
+            exercises = exercises,
+            examples = examples,
+            groups = groups,
+            mode = mode,
+            relativeMode = relativeMode,
+            workload = workload
+        )
+        val instruction = Instruction(
+            title = UiText.Res(Res.string.tooltip_muscle_load_title_training),
+            description = UiText.Res(Res.string.tooltip_muscle_load_description_training),
+        )
+        return data to instruction
+    }
+
+    /** 📊 Muscle/Muscle-Group Load Distribution — multiple trainings (period-aware) */
+    public suspend fun calculateMuscleLoadDistributionFromTrainings(
+        trainings: List<TrainingState>,
+        examples: List<ExerciseExampleState>,
+        groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
+        mode: Mode,
+        relativeMode: RelativeMode,
+        workload: Workload,
+        period: PeriodState,
+    ): Pair<DSProgressData, Instruction> {
+        val data = calculateMuscleLoadDistributionCore(
+            exercises = trainings.flatMap { it.exercises },
+            examples = examples,
+            groups = groups,
+            mode = mode,
+            relativeMode = relativeMode,
+            workload = workload
+        )
+        val instruction = instructionForPeriod(period)
+        return data to instruction
+    }
+
+    // ---------------- Core computation ----------------
+
+    private suspend fun calculateMuscleLoadDistributionCore(
         exercises: List<ExerciseState>,
         examples: List<ExerciseExampleState>,
         groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
@@ -92,7 +155,6 @@ public class LoadCalculator(
             val denom = example.bundles.fold(0f) { acc, b ->
                 acc + (b.percentage.value ?: 0).coerceAtLeast(0).toFloat()
             }
-
             if (denom <= 0f) return@forEach
 
             example.bundles.forEach { b ->
@@ -146,22 +208,39 @@ public class LoadCalculator(
         return DSProgressData(items = items)
     }
 
-    /** 📊 Muscle/Muscle-Group Load Distribution (per trainings) */
-    public suspend fun calculateMuscleLoadDistributionFromTrainings(
-        trainings: List<TrainingState>,
-        examples: List<ExerciseExampleState>,
-        groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
-        mode: Mode,
-        relativeMode: RelativeMode,
-        workload: Workload,
-    ): DSProgressData = calculateMuscleLoadDistributionFromExercises(
-        trainings.flatMap { it.exercises },
-        examples,
-        groups,
-        mode,
-        relativeMode,
-        workload
-    )
+    // ---------------- Tooltip selection by period ----------------
+
+    private fun instructionForPeriod(period: PeriodState): Instruction {
+        val days = daysInclusive(period.range.from.date, period.range.to.date)
+        val isWholeMonths = isWholeMonths(period.range)
+
+        val (titleRes, descRes) = when (period) {
+            is PeriodState.ThisDay -> Res.string.tooltip_muscle_load_title_day to
+                    Res.string.tooltip_muscle_load_description_day
+
+            is PeriodState.ThisWeek -> Res.string.tooltip_muscle_load_title_day to
+                    Res.string.tooltip_muscle_load_description_day
+
+            is PeriodState.ThisMonth -> Res.string.tooltip_muscle_load_title_month to
+                    Res.string.tooltip_muscle_load_description_month
+
+            is PeriodState.CUSTOM -> when {
+                days > 365 -> Res.string.tooltip_muscle_load_title_year to
+                        Res.string.tooltip_muscle_load_description_year
+
+                days >= 30 && isWholeMonths -> Res.string.tooltip_muscle_load_title_month to
+                        Res.string.tooltip_muscle_load_description_month
+
+                else -> Res.string.tooltip_muscle_load_title_day to
+                        Res.string.tooltip_muscle_load_description_day
+            }
+        }
+
+        return Instruction(
+            title = UiText.Res(titleRes),
+            description = UiText.Res(descRes)
+        )
+    }
 
     // ---------------- Helpers ----------------
 
@@ -184,4 +263,24 @@ public class LoadCalculator(
             blue = (c1.blue + (c2.blue - c1.blue) * t),
             alpha = (c1.alpha + (c2.alpha - c1.alpha) * t),
         )
+
+    // ---- Date helpers for period mapping ----
+    private fun daysInclusive(from: LocalDate, to: LocalDate): Int {
+        var cnt = 0
+        var cur = from
+        while (cur <= to) {
+            cnt++
+            cur = cur.plus(DatePeriod(days = 1))
+        }
+        return cnt
+    }
+
+    /** Whole months = from is 1st day, to is last day of its month, and from <= to. */
+    private fun isWholeMonths(range: DateRange): Boolean {
+        val from = range.from.date
+        val to = range.to.date
+        if (from.dayOfMonth != 1) return false
+        val toIsLast = to.plus(DatePeriod(days = 1)).dayOfMonth == 1
+        return toIsLast && from <= to
+    }
 }

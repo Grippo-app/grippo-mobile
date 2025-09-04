@@ -139,16 +139,16 @@ internal class HomeStatisticsViewModel(
                     totalVolume = VolumeFormatState.of(0f),
                     totalRepetitions = RepetitionsFormatState.of(0),
                     averageIntensity = IntensityFormatState.of(0f),
-                    exerciseVolumeData = DSBarData(items = emptyList()),
-                    categoryDistributionData = DSPieData(slices = emptyList()),
-                    forceTypeDistributionData = DSPieData(slices = emptyList()),
-                    experienceDistributionData = DSPieData(slices = emptyList()),
-                    weightTypeDistributionData = DSPieData(slices = emptyList()),
-                    muscleLoadData = DSProgressData(items = emptyList()),
-                    intraProgressionData = DSAreaData(points = emptyList()),
-                    percent1RMData = DSAreaData(points = emptyList()),
-                    stimulusData = DSAreaData(points = emptyList()),
-                    estimated1RMData = DSBarData(items = emptyList()),
+                    exerciseVolumeData = DSBarData(items = emptyList()) to null,
+                    categoryDistributionData = DSPieData(slices = emptyList()) to null,
+                    forceTypeDistributionData = DSPieData(slices = emptyList()) to null,
+                    experienceDistributionData = DSPieData(slices = emptyList()) to null,
+                    weightTypeDistributionData = DSPieData(slices = emptyList()) to null,
+                    muscleLoadData = DSProgressData(items = emptyList()) to null,
+                    intraProgressionData = DSAreaData(points = emptyList()) to null,
+                    percent1RMData = DSAreaData(points = emptyList()) to null,
+                    stimulusData = DSAreaData(points = emptyList()) to null,
+                    estimated1RMData = DSBarData(items = emptyList()) to null,
                 )
             }
             return
@@ -184,7 +184,8 @@ internal class HomeStatisticsViewModel(
             groups = muscles,
             mode = LoadCalculator.Mode.RELATIVE,
             relativeMode = RelativeMode.SUM,
-            workload = LoadCalculator.Workload.Volume
+            workload = LoadCalculator.Workload.Volume,
+            period = period
         )
         val intraProgressionData =
             analyticsCalculator.calculateIntraProgressionPercent1RMFromTrainings(

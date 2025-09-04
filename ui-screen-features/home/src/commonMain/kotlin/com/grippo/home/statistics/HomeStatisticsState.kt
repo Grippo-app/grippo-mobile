@@ -1,6 +1,7 @@
 package com.grippo.home.statistics
 
 import androidx.compose.runtime.Immutable
+import com.grippo.calculation.models.Instruction
 import com.grippo.design.components.chart.DSAreaData
 import com.grippo.design.components.chart.DSBarData
 import com.grippo.design.components.chart.DSPieData
@@ -29,20 +30,20 @@ internal data class HomeStatisticsState(
     val averageIntensity: IntensityFormatState = IntensityFormatState.of(0f),
 
     // === Exercise volume bar ===
-    val exerciseVolumeData: DSBarData = DSBarData(items = emptyList()),
+    val exerciseVolumeData: Pair<DSBarData, Instruction?> = DSBarData(items = emptyList()) to null,
 
     // === Muscle analysis ===
-    val muscleLoadData: DSProgressData = DSProgressData(items = emptyList()),
+    val muscleLoadData: Pair<DSProgressData, Instruction?> = DSProgressData(items = emptyList()) to null,
 
     // === Exercise example circles ===
-    val categoryDistributionData: DSPieData = DSPieData(slices = emptyList()),
-    val weightTypeDistributionData: DSPieData = DSPieData(slices = emptyList()),
-    val forceTypeDistributionData: DSPieData = DSPieData(slices = emptyList()),
-    val experienceDistributionData: DSPieData = DSPieData(slices = emptyList()),
+    val categoryDistributionData: Pair<DSPieData, Instruction?> = DSPieData(slices = emptyList()) to null,
+    val weightTypeDistributionData: Pair<DSPieData, Instruction?> = DSPieData(slices = emptyList()) to null,
+    val forceTypeDistributionData: Pair<DSPieData, Instruction?> = DSPieData(slices = emptyList()) to null,
+    val experienceDistributionData: Pair<DSPieData, Instruction?> = DSPieData(slices = emptyList()) to null,
 
     // === Exercise volume bar ===
-    val intraProgressionData: DSAreaData = DSAreaData(points = emptyList()),
-    val percent1RMData: DSAreaData = DSAreaData(points = emptyList()),
-    val stimulusData: DSAreaData = DSAreaData(points = emptyList()),
-    val estimated1RMData: DSBarData = DSBarData(items = emptyList()),
+    val intraProgressionData: Pair<DSAreaData, Instruction?> = DSAreaData(points = emptyList()) to null,
+    val percent1RMData: Pair<DSAreaData, Instruction?> = DSAreaData(points = emptyList()) to null,
+    val stimulusData: Pair<DSAreaData, Instruction?> = DSAreaData(points = emptyList()) to null,
+    val estimated1RMData: Pair<DSBarData, Instruction?> = DSBarData(items = emptyList()) to null,
 )

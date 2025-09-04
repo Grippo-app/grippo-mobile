@@ -1,5 +1,6 @@
 package com.grippo.calculation
 
+import com.grippo.calculation.models.Instruction
 import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateRange
 import com.grippo.date.utils.DateTimeUtils
@@ -7,9 +8,43 @@ import com.grippo.design.components.chart.DSAreaData
 import com.grippo.design.components.chart.DSAreaPoint
 import com.grippo.design.components.chart.DSBarData
 import com.grippo.design.components.chart.DSBarItem
+import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.providers.ColorProvider
+import com.grippo.design.resources.provider.tooltip_estimated1rm_description_day
+import com.grippo.design.resources.provider.tooltip_estimated1rm_description_month
+import com.grippo.design.resources.provider.tooltip_estimated1rm_description_training
+import com.grippo.design.resources.provider.tooltip_estimated1rm_description_year
+import com.grippo.design.resources.provider.tooltip_estimated1rm_title_day
+import com.grippo.design.resources.provider.tooltip_estimated1rm_title_month
+import com.grippo.design.resources.provider.tooltip_estimated1rm_title_training
+import com.grippo.design.resources.provider.tooltip_estimated1rm_title_year
+import com.grippo.design.resources.provider.tooltip_percent1rm_description_day
+import com.grippo.design.resources.provider.tooltip_percent1rm_description_month
+import com.grippo.design.resources.provider.tooltip_percent1rm_description_training
+import com.grippo.design.resources.provider.tooltip_percent1rm_description_year
+import com.grippo.design.resources.provider.tooltip_percent1rm_title_day
+import com.grippo.design.resources.provider.tooltip_percent1rm_title_month
+import com.grippo.design.resources.provider.tooltip_percent1rm_title_training
+import com.grippo.design.resources.provider.tooltip_percent1rm_title_year
+import com.grippo.design.resources.provider.tooltip_stimulus_description_day
+import com.grippo.design.resources.provider.tooltip_stimulus_description_month
+import com.grippo.design.resources.provider.tooltip_stimulus_description_training
+import com.grippo.design.resources.provider.tooltip_stimulus_description_year
+import com.grippo.design.resources.provider.tooltip_stimulus_title_day
+import com.grippo.design.resources.provider.tooltip_stimulus_title_month
+import com.grippo.design.resources.provider.tooltip_stimulus_title_training
+import com.grippo.design.resources.provider.tooltip_stimulus_title_year
+import com.grippo.design.resources.provider.tooltip_volume_description_day
+import com.grippo.design.resources.provider.tooltip_volume_description_month
+import com.grippo.design.resources.provider.tooltip_volume_description_training
+import com.grippo.design.resources.provider.tooltip_volume_description_year
+import com.grippo.design.resources.provider.tooltip_volume_title_day
+import com.grippo.design.resources.provider.tooltip_volume_title_month
+import com.grippo.design.resources.provider.tooltip_volume_title_training
+import com.grippo.design.resources.provider.tooltip_volume_title_year
 import com.grippo.state.datetime.PeriodState
 import com.grippo.state.exercise.examples.WeightTypeEnumState
+import com.grippo.state.formatters.UiText
 import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.TrainingState
 import kotlinx.datetime.DatePeriod
@@ -64,12 +99,15 @@ public class AnalyticsCalculator(
     /** How to reduce multiple session 1RMs within a bucket to one value. */
     public enum class OneRMAggregator { Max, P90, Median }
 
+    // For picking tooltip resources
+    private enum class Metric { VOLUME, PCT1RM, STIMULUS, E1RM }
+
     // -------------------------- Public API (only used methods) --------------------------
 
     /** 📦 Exercise Volume Chart — Σ(weight × reps) per exercise (ThisDay). */
     public suspend fun calculateExerciseVolumeChartFromExercises(
         exercises: List<ExerciseState>
-    ): DSBarData {
+    ): Pair<DSBarData, Instruction> {
         val colors = colorProvider.get()
         val palette = colors.palette.palette9Blue
 
@@ -81,7 +119,9 @@ public class AnalyticsCalculator(
                 color = palette[index % palette.size]
             )
         }
-        return DSBarData(items = items)
+        val data = DSBarData(items = items)
+        val tip = instructionFor(metric = Metric.VOLUME, scale = BucketScale.EXERCISE)
+        return Pair(data, tip)
     }
 
     /**
@@ -95,7 +135,7 @@ public class AnalyticsCalculator(
     public suspend fun calculateExerciseVolumeChartFromTrainings(
         trainings: List<TrainingState>,
         period: PeriodState
-    ): DSBarData {
+    ): Pair<DSBarData, Instruction> {
         val colors = colorProvider.get()
         val palette = colors.palette.palette9Blue
 
@@ -123,7 +163,9 @@ public class AnalyticsCalculator(
                         color = palette[idx % palette.size]
                     )
                 }
-                DSBarData(items)
+                val data = DSBarData(items)
+                val tip = instructionFor(metric = Metric.VOLUME, scale = scale)
+                Pair(data, tip)
             }
         }
     }
@@ -131,7 +173,7 @@ public class AnalyticsCalculator(
     /** 📈 %1RM by exercise order (ThisDay). */
     public fun calculateIntraProgressionPercent1RMFromExercises(
         exercises: List<ExerciseState>
-    ): DSAreaData {
+    ): Pair<DSAreaData, Instruction> {
         // 1) session 1RM per exercise (robust estimate, skip bodyweight)
         val session1RMs: Map<String, Float> = buildMap {
             exercises.forEach { ex ->
@@ -161,14 +203,16 @@ public class AnalyticsCalculator(
                 xLabel = ex.name
             )
         }
-        return DSAreaData(points = points)
+        val data = DSAreaData(points = points)
+        val tip = instructionFor(metric = Metric.PCT1RM, scale = BucketScale.EXERCISE)
+        return Pair(data, tip)
     }
 
     /** 📈 %1RM across trainings bucketed by PeriodState. */
     public fun calculateIntraProgressionPercent1RMFromTrainings(
         trainings: List<TrainingState>,
         period: PeriodState
-    ): DSAreaData {
+    ): Pair<DSAreaData, Instruction> {
         val inRange = trainings.filter { it.createdAt in period.range }
         val scale = deriveScale(period)
         val days = daysInclusive(period.range.from.date, period.range.to.date)
@@ -185,7 +229,7 @@ public class AnalyticsCalculator(
         val points = mutableListOf<DSAreaPoint>()
         var xIdx = 0
 
-        // rolling map per exercise key across buckets (EWMA inside buckets not required here)
+        // rolling map per exercise key across buckets (light smoothing)
         val rollingPrev = mutableMapOf<String, Float>()
 
         buckets.forEach { (start, ts) ->
@@ -198,7 +242,6 @@ public class AnalyticsCalculator(
                     ?.let { exerciseKey(ex) to it }
             }.toMap()
 
-            // simple smoothing to avoid jumpy %1RM between buckets
             val rolling = session.mapValues { (k, cur) ->
                 val prev = rollingPrev[k]
                 val smoothed = if (prev == null) cur else (prev * 0.8f + cur * 0.2f)
@@ -239,7 +282,10 @@ public class AnalyticsCalculator(
                 )
             }
         }
-        return DSAreaData(points = points)
+
+        val data = DSAreaData(points = points)
+        val tip = instructionFor(metric = Metric.PCT1RM, scale = scale)
+        return Pair(data, tip)
     }
 
     /**
@@ -249,7 +295,7 @@ public class AnalyticsCalculator(
      */
     public fun calculateIntraProgressionStimulusFromExercises(
         exercises: List<ExerciseState>
-    ): DSAreaData {
+    ): Pair<DSAreaData, Instruction> {
         // session 1RM, no prior smoothing
         val session1RMs =
             exercises.associate { exerciseKey(it) to (estimateSession1RM(it) ?: Float.NaN) }
@@ -265,7 +311,10 @@ public class AnalyticsCalculator(
             val stimulus = sumT * rel.pow(alpha)
             DSAreaPoint(x = index.toFloat(), y = stimulus, xLabel = ex.name)
         }
-        return DSAreaData(points = points)
+
+        val data = DSAreaData(points = points)
+        val tip = instructionFor(metric = Metric.STIMULUS, scale = BucketScale.EXERCISE)
+        return Pair(data, tip)
     }
 
     /**
@@ -275,7 +324,7 @@ public class AnalyticsCalculator(
     public fun calculateIntraProgressionStimulusFromTrainings(
         trainings: List<TrainingState>,
         period: PeriodState
-    ): DSAreaData {
+    ): Pair<DSAreaData, Instruction> {
         val inRange = trainings.filter { it.createdAt in period.range }
         val scale = deriveScale(period)
         val days = daysInclusive(period.range.from.date, period.range.to.date)
@@ -293,7 +342,7 @@ public class AnalyticsCalculator(
         val points = mutableListOf<DSAreaPoint>()
         var xIdx = 0
 
-        // rolling 1RM per exercise id across buckets (EWMA to stabilize)
+        // rolling 1RM per exercise across buckets (light smoothing)
         val rollingPrev = mutableMapOf<String, Float>()
 
         buckets.forEach { (start, ts) ->
@@ -329,7 +378,10 @@ public class AnalyticsCalculator(
                 xLabel = start.label(scale)
             )
         }
-        return DSAreaData(points = points)
+
+        val data = DSAreaData(points = points)
+        val tip = instructionFor(metric = Metric.STIMULUS, scale = scale)
+        return Pair(data, tip)
     }
 
     /**
@@ -340,7 +392,7 @@ public class AnalyticsCalculator(
      */
     public suspend fun calculateEstimated1RMFromExercises(
         exercises: List<ExerciseState>
-    ): DSBarData {
+    ): Pair<DSBarData, Instruction> {
         val colors = colorProvider.get()
         val palette = colors.palette.palette18Colorful
 
@@ -355,7 +407,9 @@ public class AnalyticsCalculator(
                 color = palette[index % palette.size]
             )
         }
-        return DSBarData(items = items)
+        val data = DSBarData(items = items)
+        val tip = instructionFor(metric = Metric.E1RM, scale = BucketScale.EXERCISE)
+        return Pair(data, tip)
     }
 
     /**
@@ -365,40 +419,42 @@ public class AnalyticsCalculator(
     public suspend fun calculateEstimated1RMFromTrainings(
         trainings: List<TrainingState>,
         period: PeriodState
-    ): DSBarData {
+    ): Pair<DSBarData, Instruction> {
         val colors = colorProvider.get()
         val palette = colors.palette.palette18Colorful
 
         val inRange = trainings.filter { it.createdAt in period.range }
         val scale = deriveScale(period)
 
-        if (scale == BucketScale.EXERCISE) {
+        return if (scale == BucketScale.EXERCISE) {
             val exs = inRange.flatMap { it.exercises }
-            return calculateEstimated1RMFromExercises(exs)
-        }
+            calculateEstimated1RMFromExercises(exs)
+        } else {
+            val buckets: List<Pair<LocalDate, List<TrainingState>>> =
+                groupTrainingsByBucket(inRange, scale).toList().sortedBy { (start, _) -> start }
 
-        val buckets: List<Pair<LocalDate, List<TrainingState>>> =
-            groupTrainingsByBucket(inRange, scale).toList().sortedBy { (start, _) -> start }
+            val items = buckets.mapIndexed { idx, (start, ts) ->
+                val e1s = ts
+                    .flatMap { it.exercises }
+                    .mapNotNull { estimateSession1RM(it) }
+                    .filter { it.isFinite() && it > 0f }
 
-        val items = buckets.mapIndexed { idx, (start, ts) ->
-            val e1s = ts
-                .flatMap { it.exercises }
-                .mapNotNull { estimateSession1RM(it) }
-                .filter { it.isFinite() && it > 0f }
+                val reduced = when (policy.oneRMReducer) {
+                    OneRMAggregator.Max -> e1s.maxOrNull() ?: 0f
+                    OneRMAggregator.P90 -> percentile(e1s, 0.90f)
+                    OneRMAggregator.Median -> percentile(e1s, 0.50f)
+                }
 
-            val reduced = when (policy.oneRMReducer) {
-                OneRMAggregator.Max -> e1s.maxOrNull() ?: 0f
-                OneRMAggregator.P90 -> percentile(e1s, 0.90f)
-                OneRMAggregator.Median -> percentile(e1s, 0.50f)
+                DSBarItem(
+                    label = start.label(scale),
+                    value = reduced.coerceAtLeast(0f),
+                    color = palette[idx % palette.size]
+                )
             }
-
-            DSBarItem(
-                label = start.label(scale),
-                value = reduced.coerceAtLeast(0f),
-                color = palette[idx % palette.size]
-            )
+            val data = DSBarData(items)
+            val tip = instructionFor(metric = Metric.E1RM, scale = scale)
+            Pair(data, tip)
         }
-        return DSBarData(items)
     }
 
     // -------------------------- Internals: relCap & alpha adaptation --------------------------
@@ -413,6 +469,116 @@ public class AnalyticsCalculator(
     private fun stimulusAlphaFor(scale: BucketScale, days: Int): Float {
         // Default hypertrophy-friendly curvature; slightly soften on very long spans
         return if (days >= 180) 0.70f else 0.75f
+    }
+
+    // -------------------------- Tooltip selector --------------------------
+
+    private fun instructionFor(metric: Metric, scale: BucketScale): Instruction {
+        return when (metric) {
+            Metric.VOLUME -> when (scale) {
+                BucketScale.EXERCISE ->
+                    Instruction(
+                        UiText.Res(Res.string.tooltip_volume_title_training),
+                        UiText.Res(Res.string.tooltip_volume_description_training)
+                    )
+
+                BucketScale.DAY ->
+                    Instruction(
+                        UiText.Res(Res.string.tooltip_volume_title_day),
+                        UiText.Res(Res.string.tooltip_volume_description_day)
+                    )
+
+                BucketScale.WEEK ->
+                    Instruction(
+                        UiText.Res(Res.string.tooltip_volume_title_month),
+                        UiText.Res(Res.string.tooltip_volume_description_month)
+                    )
+
+                BucketScale.MONTH ->
+                    Instruction(
+                        UiText.Res(Res.string.tooltip_volume_title_year),
+                        UiText.Res(Res.string.tooltip_volume_description_year)
+                    )
+            }
+
+            Metric.PCT1RM -> when (scale) {
+                BucketScale.EXERCISE ->
+                    Instruction(
+                        UiText.Res(Res.string.tooltip_percent1rm_title_training),
+                        UiText.Res(Res.string.tooltip_percent1rm_description_training)
+                    )
+
+                BucketScale.DAY ->
+                    Instruction(
+                        UiText.Res(Res.string.tooltip_percent1rm_title_day),
+                        UiText.Res(Res.string.tooltip_percent1rm_description_day)
+                    )
+
+                BucketScale.WEEK ->
+                    Instruction(
+                        UiText.Res(Res.string.tooltip_percent1rm_title_month),
+                        UiText.Res(Res.string.tooltip_percent1rm_description_month)
+                    )
+
+                BucketScale.MONTH ->
+                    Instruction(
+                        UiText.Res(Res.string.tooltip_percent1rm_title_year),
+                        UiText.Res(Res.string.tooltip_percent1rm_description_year)
+                    )
+            }
+
+            Metric.STIMULUS -> when (scale) {
+                BucketScale.EXERCISE ->
+                    Instruction(
+                        UiText.Res(Res.string.tooltip_stimulus_title_training),
+                        UiText.Res(Res.string.tooltip_stimulus_description_training)
+                    )
+
+                BucketScale.DAY ->
+                    Instruction(
+                        UiText.Res(Res.string.tooltip_stimulus_title_day),
+                        UiText.Res(Res.string.tooltip_stimulus_description_day)
+                    )
+
+                BucketScale.WEEK ->
+                    Instruction(
+                        UiText.Res(Res.string.tooltip_stimulus_title_month),
+                        UiText.Res(Res.string.tooltip_stimulus_description_month)
+                    )
+
+                BucketScale.MONTH ->
+                    Instruction(
+                        UiText.Res(Res.string.tooltip_stimulus_title_year),
+                        UiText.Res(Res.string.tooltip_stimulus_description_year)
+                    )
+            }
+
+            Metric.E1RM -> when (scale) {
+                BucketScale.EXERCISE ->
+                    Instruction(
+                        UiText.Res(Res.string.tooltip_estimated1rm_title_training),
+                        UiText.Res(Res.string.tooltip_estimated1rm_description_training)
+                    )
+
+                BucketScale.DAY ->
+                    Instruction(
+                        UiText.Res(Res.string.tooltip_estimated1rm_title_day),
+                        UiText.Res(Res.string.tooltip_estimated1rm_description_day)
+                    )
+
+                BucketScale.WEEK ->
+                    Instruction(
+                        UiText.Res(Res.string.tooltip_estimated1rm_title_month),
+                        UiText.Res(Res.string.tooltip_estimated1rm_description_month)
+                    )
+
+                BucketScale.MONTH ->
+                    Instruction(
+                        UiText.Res(Res.string.tooltip_estimated1rm_title_year),
+                        UiText.Res(Res.string.tooltip_estimated1rm_description_year)
+                    )
+            }
+        }
     }
 
     // -------------------------- Helpers: math, tonnage, keys --------------------------
@@ -544,16 +710,16 @@ public class AnalyticsCalculator(
      */
     private fun deriveCustomScale(range: DateRange): BucketScale {
         val from = range.from.date
-        val to = range.to.date
-        if (from == to) return BucketScale.EXERCISE
-
-        val days = daysInclusive(from, to)
-        val fullMonths = isWholeMonths(range)
-
-        return when {
-            days < 30 && (days % 7 != 0) -> BucketScale.DAY
-            days in 30..366 -> if (fullMonths) BucketScale.MONTH else BucketScale.WEEK
-            else -> BucketScale.MONTH
+        the@ run {
+            val to = range.to.date
+            if (from == to) return BucketScale.EXERCISE
+            val days = daysInclusive(from, to)
+            val fullMonths = isWholeMonths(range)
+            return when {
+                days < 30 && (days % 7 != 0) -> BucketScale.DAY
+                days in 30..366 -> if (fullMonths) BucketScale.MONTH else BucketScale.WEEK
+                else -> BucketScale.MONTH
+            }
         }
     }
 
@@ -732,3 +898,4 @@ public class AnalyticsCalculator(
         return (sorted[lo] * (1 - frac) + sorted[hi] * frac)
     }
 }
+

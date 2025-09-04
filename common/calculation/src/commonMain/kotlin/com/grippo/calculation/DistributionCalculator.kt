@@ -1,12 +1,31 @@
 package com.grippo.calculation
 
+import com.grippo.calculation.models.Instruction
 import com.grippo.design.components.chart.DSPieData
 import com.grippo.design.components.chart.DSPieSlice
+import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
+import com.grippo.design.resources.provider.tooltip_category_description_training
+import com.grippo.design.resources.provider.tooltip_category_description_trainings
+import com.grippo.design.resources.provider.tooltip_category_title_training
+import com.grippo.design.resources.provider.tooltip_category_title_trainings
+import com.grippo.design.resources.provider.tooltip_experience_description_training
+import com.grippo.design.resources.provider.tooltip_experience_description_trainings
+import com.grippo.design.resources.provider.tooltip_experience_title_training
+import com.grippo.design.resources.provider.tooltip_experience_title_trainings
+import com.grippo.design.resources.provider.tooltip_force_type_description_training
+import com.grippo.design.resources.provider.tooltip_force_type_description_trainings
+import com.grippo.design.resources.provider.tooltip_force_type_title_training
+import com.grippo.design.resources.provider.tooltip_force_type_title_trainings
+import com.grippo.design.resources.provider.tooltip_weight_type_description_training
+import com.grippo.design.resources.provider.tooltip_weight_type_description_trainings
+import com.grippo.design.resources.provider.tooltip_weight_type_title_training
+import com.grippo.design.resources.provider.tooltip_weight_type_title_trainings
 import com.grippo.state.exercise.examples.CategoryEnumState
 import com.grippo.state.exercise.examples.ForceTypeEnumState
 import com.grippo.state.exercise.examples.WeightTypeEnumState
+import com.grippo.state.formatters.UiText
 import com.grippo.state.profile.ExperienceEnumState
 import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.TrainingState
@@ -15,7 +34,9 @@ import com.grippo.state.trainings.TrainingState
  * 📊 **Training Distribution Calculator**
  *
  * Calculates workload distributions across exercises or trainings,
- * using different weighting strategies.
+ * using different weighting strategies. Each public API returns:
+ *   Pair<DSPieData, Instruction>
+ * where Instruction holds a localized tooltip (title + description).
  *
  * ---
  * 🔎 **Supported distributions**
@@ -40,6 +61,63 @@ public class DistributionCalculator(
     private val stringProvider: StringProvider,
     private val colorProvider: ColorProvider
 ) {
+
+    // ---------------- Tooltip plumbing ----------------
+
+    private enum class Scope { TRAINING, TRAININGS }
+    private enum class Metric { CATEGORY, WEIGHT_TYPE, FORCE_TYPE, EXPERIENCE }
+
+    private fun instructionFor(metric: Metric, scope: Scope): Instruction {
+        return when (metric) {
+            Metric.CATEGORY -> when (scope) {
+                Scope.TRAINING -> Instruction(
+                    title = UiText.Res(Res.string.tooltip_category_title_training),
+                    description = UiText.Res(Res.string.tooltip_category_description_training)
+                )
+
+                Scope.TRAININGS -> Instruction(
+                    title = UiText.Res(Res.string.tooltip_category_title_trainings),
+                    description = UiText.Res(Res.string.tooltip_category_description_trainings)
+                )
+            }
+
+            Metric.WEIGHT_TYPE -> when (scope) {
+                Scope.TRAINING -> Instruction(
+                    title = UiText.Res(Res.string.tooltip_weight_type_title_training),
+                    description = UiText.Res(Res.string.tooltip_weight_type_description_training)
+                )
+
+                Scope.TRAININGS -> Instruction(
+                    title = UiText.Res(Res.string.tooltip_weight_type_title_trainings),
+                    description = UiText.Res(Res.string.tooltip_weight_type_description_trainings)
+                )
+            }
+
+            Metric.FORCE_TYPE -> when (scope) {
+                Scope.TRAINING -> Instruction(
+                    title = UiText.Res(Res.string.tooltip_force_type_title_training),
+                    description = UiText.Res(Res.string.tooltip_force_type_description_training)
+                )
+
+                Scope.TRAININGS -> Instruction(
+                    title = UiText.Res(Res.string.tooltip_force_type_title_trainings),
+                    description = UiText.Res(Res.string.tooltip_force_type_description_trainings)
+                )
+            }
+
+            Metric.EXPERIENCE -> when (scope) {
+                Scope.TRAINING -> Instruction(
+                    title = UiText.Res(Res.string.tooltip_experience_title_training),
+                    description = UiText.Res(Res.string.tooltip_experience_description_training)
+                )
+
+                Scope.TRAININGS -> Instruction(
+                    title = UiText.Res(Res.string.tooltip_experience_title_trainings),
+                    description = UiText.Res(Res.string.tooltip_experience_description_trainings)
+                )
+            }
+        }
+    }
 
     // ---------------- Weighting strategy ----------------
 
@@ -76,10 +154,29 @@ public class DistributionCalculator(
 
     // ---------------- Category Distribution ----------------
 
-    /** 🏗 Category Distribution — Compound vs Isolation */
+    /** 🏗 Category Distribution — Compound vs Isolation (single session) */
     public suspend fun calculateCategoryDistributionFromExercises(
         exercises: List<ExerciseState>,
         weighting: Weighting = Weighting.Count
+    ): Pair<DSPieData, Instruction> {
+        val data = buildCategoryPie(exercises, weighting)
+        val tip = instructionFor(Metric.CATEGORY, Scope.TRAINING)
+        return Pair(data, tip)
+    }
+
+    /** 🏗 Category Distribution across multiple trainings (period) */
+    public suspend fun calculateCategoryDistributionFromTrainings(
+        trainings: List<TrainingState>,
+        weighting: Weighting = Weighting.Count
+    ): Pair<DSPieData, Instruction> {
+        val data = buildCategoryPie(trainings.flatMap { it.exercises }, weighting)
+        val tip = instructionFor(Metric.CATEGORY, Scope.TRAININGS)
+        return Pair(data, tip)
+    }
+
+    private suspend fun buildCategoryPie(
+        exercises: List<ExerciseState>,
+        weighting: Weighting
     ): DSPieData {
         val colors = colorProvider.get()
         val ordered = stableOrder<CategoryEnumState>()
@@ -97,23 +194,34 @@ public class DistributionCalculator(
                 }
             )
         }
-
         return DSPieData(slices)
     }
 
-    /** 🏗 Category Distribution across multiple trainings */
-    public suspend fun calculateCategoryDistributionFromTrainings(
-        trainings: List<TrainingState>,
-        weighting: Weighting = Weighting.Count
-    ): DSPieData =
-        calculateCategoryDistributionFromExercises(trainings.flatMap { it.exercises }, weighting)
-
     // ---------------- Weight Type Distribution ----------------
 
-    /** ⚖️ Weight Type Distribution — Free vs Fixed vs Bodyweight */
+    /** ⚖️ Weight Type Distribution — Free vs Fixed vs Bodyweight (single session) */
     public suspend fun calculateWeightTypeDistributionFromExercises(
         exercises: List<ExerciseState>,
         weighting: Weighting = Weighting.Count
+    ): Pair<DSPieData, Instruction> {
+        val data = buildWeightTypePie(exercises, weighting)
+        val tip = instructionFor(Metric.WEIGHT_TYPE, Scope.TRAINING)
+        return Pair(data, tip)
+    }
+
+    /** ⚖️ Weight Type Distribution across multiple trainings (period) */
+    public suspend fun calculateWeightTypeDistributionFromTrainings(
+        trainings: List<TrainingState>,
+        weighting: Weighting = Weighting.Count
+    ): Pair<DSPieData, Instruction> {
+        val data = buildWeightTypePie(trainings.flatMap { it.exercises }, weighting)
+        val tip = instructionFor(Metric.WEIGHT_TYPE, Scope.TRAININGS)
+        return Pair(data, tip)
+    }
+
+    private suspend fun buildWeightTypePie(
+        exercises: List<ExerciseState>,
+        weighting: Weighting
     ): DSPieData {
         val colors = colorProvider.get()
         val ordered = stableOrder<WeightTypeEnumState>()
@@ -132,23 +240,34 @@ public class DistributionCalculator(
                 }
             )
         }
-
         return DSPieData(slices)
     }
 
-    /** ⚖️ Weight Type Distribution across multiple trainings */
-    public suspend fun calculateWeightTypeDistributionFromTrainings(
-        trainings: List<TrainingState>,
-        weighting: Weighting = Weighting.Count
-    ): DSPieData =
-        calculateWeightTypeDistributionFromExercises(trainings.flatMap { it.exercises }, weighting)
-
     // ---------------- Force Type Distribution ----------------
 
-    /** 🔄 Force Type Distribution — Push / Pull / Hinge */
+    /** 🔄 Force Type Distribution — Push / Pull / Hinge (single session) */
     public suspend fun calculateForceTypeDistributionFromExercises(
         exercises: List<ExerciseState>,
         weighting: Weighting = Weighting.Count
+    ): Pair<DSPieData, Instruction> {
+        val data = buildForceTypePie(exercises, weighting)
+        val tip = instructionFor(Metric.FORCE_TYPE, Scope.TRAINING)
+        return Pair(data, tip)
+    }
+
+    /** 🔄 Force Type Distribution across multiple trainings (period) */
+    public suspend fun calculateForceTypeDistributionFromTrainings(
+        trainings: List<TrainingState>,
+        weighting: Weighting = Weighting.Count
+    ): Pair<DSPieData, Instruction> {
+        val data = buildForceTypePie(trainings.flatMap { it.exercises }, weighting)
+        val tip = instructionFor(Metric.FORCE_TYPE, Scope.TRAININGS)
+        return Pair(data, tip)
+    }
+
+    private suspend fun buildForceTypePie(
+        exercises: List<ExerciseState>,
+        weighting: Weighting
     ): DSPieData {
         val colors = colorProvider.get()
         val ordered = stableOrder<ForceTypeEnumState>()
@@ -167,23 +286,34 @@ public class DistributionCalculator(
                 }
             )
         }
-
         return DSPieData(slices)
     }
 
-    /** 🔄 Force Type Distribution across multiple trainings */
-    public suspend fun calculateForceTypeDistributionFromTrainings(
-        trainings: List<TrainingState>,
-        weighting: Weighting = Weighting.Count
-    ): DSPieData =
-        calculateForceTypeDistributionFromExercises(trainings.flatMap { it.exercises }, weighting)
-
     // ---------------- Experience Distribution ----------------
 
-    /** 🎯 Experience Level Distribution — Beginner / Intermediate / Advanced / Pro */
+    /** 🎯 Experience Level Distribution — Beginner / Intermediate / Advanced / Pro (single session) */
     public suspend fun calculateExperienceDistributionFromExercises(
         exercises: List<ExerciseState>,
         weighting: Weighting = Weighting.Count
+    ): Pair<DSPieData, Instruction> {
+        val data = buildExperiencePie(exercises, weighting)
+        val tip = instructionFor(Metric.EXPERIENCE, Scope.TRAINING)
+        return Pair(data, tip)
+    }
+
+    /** 🎯 Experience Level Distribution across multiple trainings (period) */
+    public suspend fun calculateExperienceDistributionFromTrainings(
+        trainings: List<TrainingState>,
+        weighting: Weighting = Weighting.Count
+    ): Pair<DSPieData, Instruction> {
+        val data = buildExperiencePie(trainings.flatMap { it.exercises }, weighting)
+        val tip = instructionFor(Metric.EXPERIENCE, Scope.TRAININGS)
+        return Pair(data, tip)
+    }
+
+    private suspend fun buildExperiencePie(
+        exercises: List<ExerciseState>,
+        weighting: Weighting
     ): DSPieData {
         val colors = colorProvider.get()
         val ordered = stableOrder<ExperienceEnumState>()
@@ -203,14 +333,7 @@ public class DistributionCalculator(
                 }
             )
         }
-
         return DSPieData(slices)
     }
-
-    /** 🎯 Experience Level Distribution across multiple trainings */
-    public suspend fun calculateExperienceDistributionFromTrainings(
-        trainings: List<TrainingState>,
-        weighting: Weighting = Weighting.Count
-    ): DSPieData =
-        calculateExperienceDistributionFromExercises(trainings.flatMap { it.exercises }, weighting)
 }
+
