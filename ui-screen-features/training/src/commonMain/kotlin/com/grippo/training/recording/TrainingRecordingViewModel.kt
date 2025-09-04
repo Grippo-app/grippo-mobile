@@ -180,7 +180,6 @@ internal class TrainingRecordingViewModel(
                     experienceDistributionData = DSPieData(slices = emptyList()) to null,
                     weightTypeDistributionData = DSPieData(slices = emptyList()) to null,
                     muscleLoadData = DSProgressData(items = emptyList()) to null,
-                    intraProgressionData = DSAreaData(points = emptyList()) to null,
                     percent1RMData = DSAreaData(points = emptyList()) to null,
                     stimulusData = DSAreaData(points = emptyList()) to null,
                     estimated1RMData = DSBarData(items = emptyList()) to null,
@@ -217,10 +216,6 @@ internal class TrainingRecordingViewModel(
             examples = examples,
             groups = muscles,
         )
-        val intraProgressionData =
-            analyticsCalculator.calculateIntraProgressionPercent1RMFromExercises(
-                exercises = exercises
-            )
         val percent1RMData =
             analyticsCalculator.calculateIntraProgressionPercent1RMFromExercises(
                 exercises = exercises
@@ -245,7 +240,6 @@ internal class TrainingRecordingViewModel(
                 forceTypeDistributionData = forceTypeDistributionData,
                 experienceDistributionData = experienceDistributionData,
                 muscleLoadData = muscleLoadData,
-                intraProgressionData = intraProgressionData,
                 percent1RMData = percent1RMData,
                 stimulusData = stimulusData,
                 estimated1RMData = estimated1RMData,

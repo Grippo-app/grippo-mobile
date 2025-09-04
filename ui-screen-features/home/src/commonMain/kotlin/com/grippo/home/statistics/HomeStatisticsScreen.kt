@@ -193,10 +193,10 @@ internal fun HomeStatisticsScreen(
             }
         }
 
-        if (state.intraProgressionData.first.points.isNotEmpty()) {
-            item(key = "intra_progression", span = { GridItemSpan(4) }) {
-                val toolTip = remember(state.intraProgressionData.second) {
-                    state.intraProgressionData.second?.let { instruction ->
+        if (state.percent1RMData.first.points.isNotEmpty()) {
+            item(key = "percent_1rm", span = { GridItemSpan(4) }) {
+                val toolTip = remember(state.percent1RMData.second) {
+                    state.percent1RMData.second?.let { instruction ->
                         TooltipData(
                             title = instruction.title,
                             description = instruction.description
@@ -212,7 +212,7 @@ internal fun HomeStatisticsScreen(
                     content = {
                         AreaChart(
                             modifier = Modifier.fillMaxWidth().weight(1f),
-                            data = state.intraProgressionData.first
+                            data = state.percent1RMData.first
                         )
                     }
                 )

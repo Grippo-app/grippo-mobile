@@ -29,20 +29,19 @@ internal data class HomeStatisticsState(
     val totalRepetitions: RepetitionsFormatState = RepetitionsFormatState.of(0),
     val averageIntensity: IntensityFormatState = IntensityFormatState.of(0f),
 
-    // === Exercise volume bar ===
+    // === Exercise volume (bar) ===
     val exerciseVolumeData: Pair<DSBarData, Instruction?> = DSBarData(items = emptyList()) to null,
 
-    // === Muscle analysis ===
+    // === Muscle analysis (progress/heatmap) ===
     val muscleLoadData: Pair<DSProgressData, Instruction?> = DSProgressData(items = emptyList()) to null,
 
-    // === Exercise example circles ===
+    // === Exercise example distributions (pie) ===
     val categoryDistributionData: Pair<DSPieData, Instruction?> = DSPieData(slices = emptyList()) to null,
     val weightTypeDistributionData: Pair<DSPieData, Instruction?> = DSPieData(slices = emptyList()) to null,
     val forceTypeDistributionData: Pair<DSPieData, Instruction?> = DSPieData(slices = emptyList()) to null,
     val experienceDistributionData: Pair<DSPieData, Instruction?> = DSPieData(slices = emptyList()) to null,
 
-    // === Exercise volume bar ===
-    val intraProgressionData: Pair<DSAreaData, Instruction?> = DSAreaData(points = emptyList()) to null,
+    // === Intensity & progression (area/bar) ===
     val percent1RMData: Pair<DSAreaData, Instruction?> = DSAreaData(points = emptyList()) to null,
     val stimulusData: Pair<DSAreaData, Instruction?> = DSAreaData(points = emptyList()) to null,
     val estimated1RMData: Pair<DSBarData, Instruction?> = DSBarData(items = emptyList()) to null,
