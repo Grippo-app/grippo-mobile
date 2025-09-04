@@ -12,14 +12,14 @@ import com.grippo.state.formatters.RepetitionsFormatState
 import com.grippo.state.formatters.VolumeFormatState
 import com.grippo.state.muscles.MuscleGroupState
 import com.grippo.state.muscles.MuscleRepresentationState
-import com.grippo.state.trainings.ExerciseState
+import com.grippo.state.trainings.TrainingState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 internal data class HomeStatisticsState(
     val period: PeriodState = PeriodState.ThisWeek,
-    val exercises: ImmutableList<ExerciseState> = persistentListOf(),
+    val trainings: ImmutableList<TrainingState> = persistentListOf(),
     val examples: ImmutableList<ExerciseExampleState> = persistentListOf(),
     val muscles: ImmutableList<MuscleGroupState<MuscleRepresentationState.Plain>> = persistentListOf(),
 

@@ -8,11 +8,13 @@ plugins {
 kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.common.state)
+        implementation(projects.common.dateUtils)
         implementation(projects.designSystem.components)
         implementation(projects.designSystem.resources.provider)
 
         implementation(compose.foundation)
 
         implementation(libs.immutable.collections)
+        implementation(libs.datetime)
     }
 }

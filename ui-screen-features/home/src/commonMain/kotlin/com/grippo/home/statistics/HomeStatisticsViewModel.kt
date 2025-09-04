@@ -28,7 +28,6 @@ import com.grippo.state.datetime.PeriodState
 import com.grippo.state.formatters.IntensityFormatState
 import com.grippo.state.formatters.RepetitionsFormatState
 import com.grippo.state.formatters.VolumeFormatState
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -59,7 +58,10 @@ internal class HomeStatisticsViewModel(
             .safeLaunch()
 
         state
-            .map { it.exercises.mapNotNull { m -> m.exerciseExample?.id }.toSet().toList() }
+            .map {
+                it.trainings.flatMap { it.exercises.mapNotNull { m -> m.exerciseExample?.id } }
+                    .toSet().toList()
+            }
             .distinctUntilChanged()
             .flatMapLatest { ids -> exerciseExampleFeature.observeExerciseExamples(ids) }
             .onEach(::provideExerciseExamples)
@@ -77,7 +79,7 @@ internal class HomeStatisticsViewModel(
             .safeLaunch()
 
         state
-            .map { Triple(it.exercises, it.examples, it.muscles) }
+            .map { Triple(it.trainings, it.examples, it.muscles) }
             .debounce(200)
             .distinctUntilChanged()
             .onEach { generateStatistics() }
@@ -85,8 +87,8 @@ internal class HomeStatisticsViewModel(
     }
 
     private fun provideTrainings(list: List<Training>) {
-        val exercises = list.toState().flatMap { it.exercises }.toPersistentList()
-        update { it.copy(exercises = exercises) }
+        val exercises = list.toState()
+        update { it.copy(trainings = exercises) }
     }
 
     private fun provideMuscles(value: List<MuscleGroup>) {
@@ -126,11 +128,12 @@ internal class HomeStatisticsViewModel(
     }
 
     private suspend fun generateStatistics() {
-        val exercises = state.value.exercises
+        val trainings = state.value.trainings
         val examples = state.value.examples
         val muscles = state.value.muscles
+        val period = state.value.period
 
-        if (exercises.isEmpty()) {
+        if (trainings.isEmpty()) {
             update {
                 it.copy(
                     totalVolume = VolumeFormatState.of(0f),
@@ -148,35 +151,37 @@ internal class HomeStatisticsViewModel(
             return
         }
 
-        val totalMetrics = metricsAggregator.calculateExercises(
-            exercises = exercises
+        val totalMetrics = metricsAggregator.calculateTrainings(
+            trainings = trainings
         )
         val categoryDistributionData =
-            distributionCalculator.calculateCategoryDistributionFromExercises(
-                exercises = exercises
+            distributionCalculator.calculateCategoryDistributionFromTrainings(
+                trainings = trainings
             )
         val weightTypeDistributionData =
-            distributionCalculator.calculateWeightTypeDistributionFromExercises(
-                exercises = exercises
+            distributionCalculator.calculateWeightTypeDistributionFromTrainings(
+                trainings = trainings
             )
         val forceTypeDistributionData =
-            distributionCalculator.calculateForceTypeDistributionFromExercises(
-                exercises = exercises
+            distributionCalculator.calculateForceTypeDistributionFromTrainings(
+                trainings = trainings
             )
         val experienceDistributionData =
-            distributionCalculator.calculateExperienceDistributionFromExercises(
-                exercises = exercises
+            distributionCalculator.calculateExperienceDistributionFromTrainings(
+                trainings = trainings
             )
         val exerciseVolumeData =
-            analyticsCalculator.calculateExerciseVolumeChartFromExercises(
-                exercises = exercises
+            analyticsCalculator.calculateExerciseVolumeChartFromTrainings(
+                trainings = trainings,
+                period = period
             )
         val intraProgressionData =
-            analyticsCalculator.calculateIntraProgressionPercent1RMFromExercises(
-                exercises = exercises
+            analyticsCalculator.calculateIntraProgressionPercent1RMFromTrainings(
+                trainings = trainings,
+                period = period
             ).data
-        val muscleLoadData = loadCalculator.calculateMuscleLoadDistributionFromExercises(
-            exercises = exercises,
+        val muscleLoadData = loadCalculator.calculateMuscleLoadDistributionFromTrainings(
+            trainings = trainings,
             examples = examples,
             groups = muscles,
             mode = LoadCalculator.Mode.RELATIVE,
