@@ -386,4 +386,31 @@
     <string name="tooltip_experience_title_trainings">Складність вправ за період</string>
     <string name="tooltip_experience_description_trainings">Мікс складності у вибраному періоді. Прогресуйте, повільно збільшуючи частку intermediate/advanced, лишаючи достатньо beginner для відпрацювання та відновлення. Типові діапазони: beginner+intermediate 60–85%, advanced 10–30%, pro 0–10%. Враховує обране зважування.</string>
 
+    <!-- ============= HEATMAP (TONNAGE) ============= -->
+    <string name="tooltip_heatmap_tonnage_title_day">Теплова карта тоннажу — Щодня</string>
+    <string name="tooltip_heatmap_tonnage_description_day">Календарне подання вашого щоденного навантаження (Σ (вага × повторення)). Темні клітинки позначають важчі дні; світлі — легкі або дні відпочинку. Стежте за сталим ритмом (напр., 2–4 важкі дні на тиждень) і плановими розвантаженнями.</string>
+
+    <string name="tooltip_heatmap_tonnage_title_month">Теплова карта тоннажу — Тижні в місяці</string>
+    <string name="tooltip_heatmap_tonnage_description_month">Щотижневе навантаження в межах кожного місяця. Мета — поступове нарощування протягом тижнів і легший розвантажувальний тиждень кожні 3–6 тижнів. Окремо дуже важкий тиждень може «стиснути» шкалу — порівнюйте подібні блоки.</string>
+
+    <string name="tooltip_heatmap_tonnage_title_year">Теплова карта тоннажу — Місяці року</string>
+    <string name="tooltip_heatmap_tonnage_description_year">Місячне навантаження протягом року. Очікуйте сезонні хвилі: фази побудови, піки та розвантаження. Тривалі бліді відрізки можуть свідчити про відновлення або неповний облік — звіряйте з планом.</string>
+
+    <string name="tooltip_heatmap_scale_title">Кольорова шкала (0–1)</string>
+    <string name="tooltip_heatmap_scale_description">Клітинки нормалізовано за максимальним тоннажем у вибраному періоді: 0 = немає роботи, 1 = «найгарячіша» клітинка. Це зберігає порівнюваність у межах поточного перегляду, але не між різними діапазонами дат.</string>
+
+    <string name="tooltip_heatmap_cells_title">Значення клітинок</string>
+    <string name="tooltip_heatmap_cells_description">Кожна клітинка підсумовує всі тренування, що потрапляють у її кошик (день, ISO-тиждень або місяць). Торкніться клітинки, щоб побачити точний підсумок і відкрити відповідні сесії.</string>
+
+    <string name="tooltip_heatmap_gaps_title">Відпочинок і пропуски</string>
+    <string name="tooltip_heatmap_gaps_description">Світлі або порожні клітинки зазвичай означають дні відпочинку, подорожі чи відсутні записи. Кластери світлих клітинок часто відображають планові розвантаження — використовуйте їх, щоб залишатися свіжими та прогресувати в довгостроковій перспективі.</string>
+
+    <string name="tooltip_heatmap_pattern_title">Зчитування закономірностей</string>
+    <string name="tooltip_heatmap_pattern_description">Шукайте стабільний тижневий ритм, поступові місячні нарощування та регулярні розвантаження. Довгі «гарячі» смуги без відновлення можуть свідчити про перевантаження; тривалі бліді — про недотренованість.</string>
+
+    <string name="tooltip_heatmap_compare_title">Поради щодо порівняння</string>
+    <string name="tooltip_heatmap_compare_description">Якщо одна-дві гігантські сесії домінують у кольорах, звузьте діапазон дат або порівнюйте подібні тренувальні блоки. Також переглядайте абсолютні значення в деталях клітинки для чесної оцінки прогресу.</string>
+
+    <string name="tooltip_heatmap_empty_title">Немає даних</string>
+    <string name="tooltip_heatmap_empty_description">У вибраному діапазоні не знайдено тренувань. Спробуйте інший період або приберіть фільтри.</string>
 </resources>

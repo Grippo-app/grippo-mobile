@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import com.grippo.calculation.models.Instruction
 import com.grippo.design.components.chart.DSAreaData
 import com.grippo.design.components.chart.DSBarData
+import com.grippo.design.components.chart.DSHeatmapData
 import com.grippo.design.components.chart.DSPieData
 import com.grippo.design.components.chart.DSProgressData
 import com.grippo.state.datetime.PeriodState
@@ -45,4 +46,11 @@ internal data class HomeStatisticsState(
     val percent1RMData: Pair<DSAreaData, Instruction?> = DSAreaData(points = emptyList()) to null,
     val stimulusData: Pair<DSAreaData, Instruction?> = DSAreaData(points = emptyList()) to null,
     val estimated1RMData: Pair<DSBarData, Instruction?> = DSBarData(items = emptyList()) to null,
+
+    // === Temporal heapmap ===
+    val temporalHeatmapData: Pair<DSHeatmapData, Instruction?> = DSHeatmapData(
+        rows = 0,
+        cols = 0,
+        values01 = emptyList()
+    ) to null
 )

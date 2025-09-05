@@ -4,6 +4,7 @@ import com.grippo.calculation.AnalyticsCalculator
 import com.grippo.calculation.DistributionCalculator
 import com.grippo.calculation.LoadCalculator
 import com.grippo.calculation.MetricsAggregator
+import com.grippo.calculation.TemporalHeatmapCalculator
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
@@ -14,6 +15,7 @@ import com.grippo.data.features.api.training.models.Training
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.components.chart.DSAreaData
 import com.grippo.design.components.chart.DSBarData
+import com.grippo.design.components.chart.DSHeatmapData
 import com.grippo.design.components.chart.DSPieData
 import com.grippo.design.components.chart.DSProgressData
 import com.grippo.design.resources.provider.providers.ColorProvider
@@ -48,6 +50,7 @@ internal class HomeStatisticsViewModel(
 ), HomeStatisticsContract {
 
     private val metricsAggregator = MetricsAggregator()
+    private val temporalHeatmapCalculator = TemporalHeatmapCalculator(stringProvider)
     private val analyticsCalculator = AnalyticsCalculator(colorProvider, stringProvider)
     private val distributionCalculator = DistributionCalculator(stringProvider, colorProvider)
     private val loadCalculator = LoadCalculator(stringProvider, colorProvider)
@@ -59,7 +62,8 @@ internal class HomeStatisticsViewModel(
 
         state
             .map {
-                it.trainings.flatMap { f -> f.exercises.mapNotNull { m -> m.exerciseExample?.id } }
+                it.trainings
+                    .flatMap { f -> f.exercises.mapNotNull { m -> m.exerciseExample?.id } }
                     .toSet().toList()
             }
             .distinctUntilChanged()
@@ -148,6 +152,11 @@ internal class HomeStatisticsViewModel(
                     percent1RMData = DSAreaData(points = emptyList()) to null,
                     stimulusData = DSAreaData(points = emptyList()) to null,
                     estimated1RMData = DSBarData(items = emptyList()) to null,
+                    temporalHeatmapData = DSHeatmapData(
+                        rows = 0,
+                        cols = 0,
+                        values01 = emptyList()
+                    ) to null
                 )
             }
             return
@@ -203,6 +212,14 @@ internal class HomeStatisticsViewModel(
                 period = period
             )
 
+        val temporalHeatmapData =
+            temporalHeatmapCalculator.calculateMuscleGroupHeatmapFromTrainings(
+                trainings = trainings,
+                period = period,
+                examples = examples,
+                groups = muscles
+            )
+
         update {
             it.copy(
                 totalVolume = totalMetrics.volume,
@@ -217,6 +234,7 @@ internal class HomeStatisticsViewModel(
                 percent1RMData = percent1RMData,
                 stimulusData = stimulusData,
                 estimated1RMData = estimated1RMData,
+                temporalHeatmapData = temporalHeatmapData,
             )
         }
     }

@@ -18,6 +18,7 @@ import com.grippo.core.ScreenBackground
 import com.grippo.date.utils.DateFormat
 import com.grippo.design.components.chart.AreaChart
 import com.grippo.design.components.chart.BarChart
+import com.grippo.design.components.chart.HeatmapChart
 import com.grippo.design.components.chart.PieChart
 import com.grippo.design.components.chart.ProgressChart
 import com.grippo.design.components.chip.IntensityChip
@@ -263,6 +264,32 @@ internal fun HomeStatisticsScreen(
                         BarChart(
                             modifier = Modifier.fillMaxWidth().weight(1f),
                             data = state.estimated1RMData.first,
+                        )
+                    }
+                )
+            }
+        }
+
+        if (state.temporalHeatmapData.first.values01.isNotEmpty()) {
+            item(key = "temporal_heatmap", span = { GridItemSpan(4) }) {
+                val toolTip = remember(state.temporalHeatmapData.second) {
+                    state.temporalHeatmapData.second?.let { instruction ->
+                        TooltipData(
+                            title = instruction.title,
+                            description = instruction.description
+                        )
+                    }
+                }
+                ChartCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1.4f),
+                    title = "Estimated 1RM",
+                    tooltip = toolTip,
+                    content = {
+                        HeatmapChart(
+                            modifier = Modifier.fillMaxWidth().weight(1f),
+                            data = state.temporalHeatmapData.first,
                         )
                     }
                 )

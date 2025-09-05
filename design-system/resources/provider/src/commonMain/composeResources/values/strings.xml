@@ -384,4 +384,32 @@
 
     <string name="tooltip_experience_title_trainings">Exercise Difficulty Over Time</string>
     <string name="tooltip_experience_description_trainings">Difficulty mix across the selected period. Progress by slowly nudging the intermediate/advanced share up while keeping enough beginner work for practice and recovery. Typical range over weeks: beginner+intermediate 60–85%, advanced 10–30%, pro 0–10%. Respects your chosen weighting.</string>
+
+    <!-- ============= HEATMAP (TONNAGE) ============= -->
+    <string name="tooltip_heatmap_tonnage_title_day">Tonnage Heatmap — Daily</string>
+    <string name="tooltip_heatmap_tonnage_description_day">Calendar view of your daily workload (Σ weight × reps). Darker cells mark heavier days; lighter cells are easier or rest days. Aim for a steady rhythm (e.g., 2–4 hard days/week) and planned deloads.</string>
+
+    <string name="tooltip_heatmap_tonnage_title_month">Tonnage Heatmap — Week-of-Month</string>
+    <string name="tooltip_heatmap_tonnage_description_month">Weekly workload within each month. Build gradually across weeks and include a lighter deload week every 3–6 weeks. A single very heavy week can compress the scale—compare similar blocks for fairness.</string>
+
+    <string name="tooltip_heatmap_tonnage_title_year">Tonnage Heatmap — Month-of-Year</string>
+    <string name="tooltip_heatmap_tonnage_description_year">Monthly workload across the year. Expect waves: build phases, peaks, and deloads. Long pale stretches may indicate recovery or missing logs—check against your plan.</string>
+
+    <string name="tooltip_heatmap_scale_title">Color Scale (0–1)</string>
+    <string name="tooltip_heatmap_scale_description">Cells are normalized to the maximum tonnage within the selected period: 0 = no work, 1 = hottest cell. This keeps colors comparable inside the current view but not across different date ranges.</string>
+
+    <string name="tooltip_heatmap_cells_title">Cell Values</string>
+    <string name="tooltip_heatmap_cells_description">Each cell sums all trainings that fall into its bucket (day, ISO week, or month). Tap a cell to see the exact total and open the underlying sessions.</string>
+
+    <string name="tooltip_heatmap_gaps_title">Rest &amp; Missing Days</string>
+    <string name="tooltip_heatmap_gaps_description">Light or empty cells usually mean rest days, travel, or missing entries. Clusters of light cells often reflect planned deloads—use them to stay fresh and progress long-term.</string>
+
+    <string name="tooltip_heatmap_pattern_title">Reading Patterns</string>
+    <string name="tooltip_heatmap_pattern_description">Look for consistent weekly rhythm, progressive monthly build-ups, and regular deloads. Long hot streaks without recovery can signal overreach; long pale streaks may hint at under-training.</string>
+
+    <string name="tooltip_heatmap_compare_title">Comparability Tips</string>
+    <string name="tooltip_heatmap_compare_description">If one or two huge sessions dominate the colors, narrow the date range or compare similar training blocks. Also review absolute values in the cell details for a fair judgment of progress.</string>
+
+    <string name="tooltip_heatmap_empty_title">No Data</string>
+    <string name="tooltip_heatmap_empty_description">No trainings found in the selected range. Try a different period or remove filters.</string>
 </resources>

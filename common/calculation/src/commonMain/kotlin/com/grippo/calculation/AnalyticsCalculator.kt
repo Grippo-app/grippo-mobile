@@ -83,9 +83,6 @@ import kotlin.math.pow
  * - `iteration.repetitions.value` stores **reps**.
  * - Exercises are ordered by execution (for ThisDay charts).
  * - 1RM is estimated only for non-bodyweight exercises by default.
- *
- * Notes:
- * - Comments are in English by user's preference.
  */
 public class AnalyticsCalculator(
     private val colorProvider: ColorProvider,
