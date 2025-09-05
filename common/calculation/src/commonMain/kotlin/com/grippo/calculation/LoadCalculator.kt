@@ -61,7 +61,7 @@ public class LoadCalculator(
         examples: List<ExerciseExampleState>,
         groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
     ): Pair<DSProgressData, Instruction> {
-        val workload = chooseWorkload(exercises)
+        val workload = Workload.Volume
         val data = calculateCore(
             exercises = exercises,
             examples = examples,
@@ -87,7 +87,7 @@ public class LoadCalculator(
         val inRange = trainings.filter { it.createdAt in period.range }
         val exercises = inRange.flatMap { it.exercises }
 
-        val workload = chooseWorkload(exercises)
+        val workload = Workload.Volume
 
         val data = calculateCore(
             exercises = exercises,
@@ -111,15 +111,6 @@ public class LoadCalculator(
         data object Volume : Workload        // Σ(weight × reps)
         data object Reps : Workload          // Σ(reps)
         data class TUT(val secPerRep: Float = 3f) : Workload // Σ(reps × secPerRep)
-    }
-
-    /** Simple rule: if there's any non-trivial weight entered across sets, use Volume; otherwise Reps. */
-    private fun chooseWorkload(exercises: List<ExerciseState>): Workload {
-        val strategy = InternalCalculationUtils.chooseWorkloadStrategy(exercises)
-        return when (strategy) {
-            InternalCalculationUtils.WorkloadStrategy.Volume -> Workload.Volume
-            InternalCalculationUtils.WorkloadStrategy.Reps -> Workload.Reps
-        }
     }
 
     private suspend fun calculateCore(

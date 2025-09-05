@@ -1,6 +1,6 @@
 package com.grippo.calculation
 
-import com.grippo.calculation.internal.InternalCalculationUtils
+import com.grippo.calculation.internal.InternalCalculationUtils.WEIGHT_EPS_KG
 import com.grippo.calculation.internal.buildDayBuckets
 import com.grippo.calculation.internal.buildMonthBuckets
 import com.grippo.calculation.internal.buildWeekBuckets
@@ -60,6 +60,7 @@ import com.grippo.design.resources.provider.w
 import com.grippo.state.datetime.PeriodState
 import com.grippo.state.formatters.UiText
 import com.grippo.state.trainings.ExerciseState
+import com.grippo.state.trainings.IterationState
 import com.grippo.state.trainings.TrainingState
 import kotlinx.datetime.LocalDateTime
 import kotlin.math.pow
@@ -569,33 +570,68 @@ public class AnalyticsCalculator(
 
     // -------------------------- Helpers: math, tonnage, keys, smoothing --------------------------
 
+    internal data class IterationMetrics(
+        val weight: Float,
+        val reps: Int,
+        val tonnage: Float,
+        val isValid: Boolean
+    )
+
     /** Returns (Σ(weight*reps), Σ(reps)). */
-    private fun sums(ex: ExerciseState): Pair<Float, Int> =
-        InternalCalculationUtils.sumIterationsMetrics(ex.iterations)
+    internal fun sums(ex: ExerciseState): Pair<Float, Int> {
+        var totalTonnage = 0f
+        var totalReps = 0
+        ex.iterations.forEach { iteration ->
+            val metrics = extractIterationMetrics(iteration)
+            if (metrics.isValid) {
+                totalTonnage += metrics.tonnage
+                totalReps += metrics.reps
+            }
+        }
+        return totalTonnage to totalReps
+    }
+
+    /**
+     * Extracts weight, reps, and tonnage from an iteration.
+     * Handles null values and validation.
+     */
+    internal fun extractIterationMetrics(iteration: IterationState): IterationMetrics {
+        val weight = iteration.volume.value ?: 0f
+        val reps = iteration.repetitions.value ?: 0
+        val tonnage = if (weight > 0f && reps > 0) weight * reps else 0f
+        val isValid = weight > 0f && reps > 0
+        return IterationMetrics(weight, reps, tonnage, isValid)
+    }
 
     /** Σ(weight*reps) for an exercise. */
     private fun tonnage(ex: ExerciseState): Float =
-        InternalCalculationUtils.calculateExerciseWorkload(
-            ex,
-            InternalCalculationUtils.WorkloadStrategy.Volume
-        )
+        ex.iterations.fold(0f) { acc, iteration ->
+            val weight = iteration.volume.value ?: 0f
+            val reps = iteration.repetitions.value ?: 0
+            val load = if (weight > WEIGHT_EPS_KG) weight else 0f
+            if (reps == 0 || load <= 0f) acc else acc + load * reps
+        }
 
     /** Total session tonnage across a training (Double to avoid float round-trip). */
     private fun TrainingState.tonnage(): Double {
         var t = 0.0
         this.exercises.forEach { ex ->
-            val exerciseTonnage = InternalCalculationUtils.calculateExerciseWorkload(
-                ex,
-                InternalCalculationUtils.WorkloadStrategy.Volume
-            )
+            val exerciseTonnage = ex.iterations.fold(0f) { acc, iteration ->
+                val weight = iteration.volume.value ?: 0f
+                val reps = iteration.repetitions.value ?: 0
+                val load = if (weight > WEIGHT_EPS_KG) weight else 0f
+                if (reps == 0 || load <= 0f) acc else acc + load * reps
+            }
             t += exerciseTonnage
         }
         return t
     }
 
     /** Weighted average weight per rep = Σ(w*r)/Σ(r). */
-    private fun avgWeightPerRep(ex: ExerciseState): Float =
-        InternalCalculationUtils.avgWeightPerRep(ex.iterations)
+    private fun avgWeightPerRep(ex: ExerciseState): Float {
+        val (sumT, sumR) = sums(ex)
+        return if (sumR > 0) sumT / sumR else 0f
+    }
 
     /** Key to identify an exercise when storing/smoothing rolling 1RM. */
     private fun exerciseKey(ex: ExerciseState): String =

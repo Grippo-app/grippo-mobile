@@ -1,6 +1,6 @@
 package com.grippo.calculation
 
-import com.grippo.calculation.internal.InternalCalculationUtils
+import com.grippo.calculation.internal.InternalCalculationUtils.WEIGHT_EPS_KG
 import com.grippo.calculation.internal.buildDayBuckets
 import com.grippo.calculation.internal.buildMonthBuckets
 import com.grippo.calculation.internal.buildWeekBuckets
@@ -32,7 +32,6 @@ import com.grippo.state.formatters.UiText
 import com.grippo.state.muscles.MuscleEnumState
 import com.grippo.state.muscles.MuscleGroupState
 import com.grippo.state.muscles.MuscleRepresentationState
-import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.TrainingState
 
 /**
@@ -115,10 +114,6 @@ public class TemporalHeatmapCalculator(
             return empty to tipEmpty
         }
 
-        // Auto workload choice using all exercises within range (stable across buckets)
-        val allExercises = inRange.flatMap { it.exercises }
-        val workload = chooseWorkload(allExercises)
-
         // Pre-index examples by id (consistent access)
         // NOTE: in your codebase ExerciseExampleState likely wraps real value with .value.id.
         // Delegate fields may expose .bundles directly; here we access .bundles directly to match your usage.
@@ -145,7 +140,7 @@ public class TemporalHeatmapCalculator(
         }
 
         // Accumulate raw matrix [rows × cols] (absolute values)
-        val raw = FloatArray(rows * cols) { 0f }
+        val raw = FloatArray(rows * cols)
         for (c in 0 until cols) {
             val ts = trainingsPerBucket[c]
             if (ts.isEmpty()) continue
@@ -154,7 +149,6 @@ public class TemporalHeatmapCalculator(
             val perMuscle = computeBucketMuscleWorkload(
                 trainings = ts,
                 examples = exampleMap,
-                workload = workload
             )
             if (perMuscle.isEmpty()) continue
 
@@ -189,10 +183,6 @@ public class TemporalHeatmapCalculator(
                 BucketScale.MONTH -> "Month"
                 BucketScale.EXERCISE -> "Day"
             },
-            valueUnit = when (workload) {
-                InternalCalculationUtils.WorkloadStrategy.Volume -> "kg·reps"
-                InternalCalculationUtils.WorkloadStrategy.Reps -> "reps"
-            }
         )
 
         val tip =
@@ -244,7 +234,6 @@ public class TemporalHeatmapCalculator(
     private fun computeBucketMuscleWorkload(
         trainings: List<TrainingState>,
         examples: Map<String, ExerciseExampleState>,
-        workload: InternalCalculationUtils.WorkloadStrategy
     ): Map<MuscleEnumState, Float> {
         val perMuscle = mutableMapOf<MuscleEnumState, Float>()
 
@@ -253,7 +242,12 @@ public class TemporalHeatmapCalculator(
                 val exampleId = ex.exerciseExample?.id ?: return@forEach
                 val example = examples[exampleId] ?: return@forEach
 
-                val exWorkload = InternalCalculationUtils.calculateExerciseWorkload(ex, workload)
+                val exWorkload = ex.iterations.fold(0f) { acc, iteration ->
+                    val weight = iteration.volume.value ?: 0f
+                    val reps = iteration.repetitions.value ?: 0
+                    val load = if (weight > WEIGHT_EPS_KG) weight else 0f
+                    if (reps == 0 || load <= 0f) acc else acc + load * reps
+                }
                     .coerceAtLeast(0f)
                 if (exWorkload <= 0f) return@forEach
 
@@ -278,12 +272,6 @@ public class TemporalHeatmapCalculator(
     }
 
     // -------------------------- Workload choice (delegated to your utils) --------------------------
-
-    private fun chooseWorkload(
-        exercises: List<ExerciseState>
-    ): InternalCalculationUtils.WorkloadStrategy {
-        return InternalCalculationUtils.chooseWorkloadStrategy(exercises)
-    }
 
     // -------------------------- Instructions --------------------------
 

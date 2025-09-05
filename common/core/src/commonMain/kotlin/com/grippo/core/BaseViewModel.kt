@@ -33,7 +33,7 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
 ) : InstanceKeeper.Instance, KoinComponent {
 
     private val coroutineScope: CoroutineScope = CoroutineScope(
-        context = SupervisorJob() + Dispatchers.Main.immediate
+        context = SupervisorJob() + Dispatchers.Default
     )
 
     private val operationManager by inject<OperationManager> {
