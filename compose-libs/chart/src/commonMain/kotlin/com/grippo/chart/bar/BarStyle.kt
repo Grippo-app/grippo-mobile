@@ -133,9 +133,14 @@ public data class BarStyle(
 
     @Immutable
     public sealed interface BarsSizing {
-        /** Compute equal bar/gap width to fill the chart. */
+        /** Compute equal bar/gap width to fill the chart (now adaptive under high density). */
         @Immutable
-        public data object AutoEqualBarsAndGaps : BarsSizing
+        public data class AutoEqualBarsAndGaps(
+            val midThresholdDp: Dp = 16.dp,    // if wEqual < this -> use midRatio
+            val denseThresholdDp: Dp = 10.dp,  // if wEqual < this -> use denseRatio
+            val midRatio: Float = 0.5f,       // gap = midRatio * bar
+            val denseRatio: Float = 0.3f      // gap = denseRatio * bar
+        ) : BarsSizing
 
         /** Fixed bar width; gaps auto-fit to available width. */
         @Immutable
@@ -144,6 +149,10 @@ public data class BarStyle(
         /** Explicit bar width and spacing. */
         @Immutable
         public data class Explicit(val width: Dp, val spacing: Dp) : BarsSizing
+
+        /** Gap = ratio * barWidth; barWidth is solved from chart width. */
+        @Immutable
+        public data class GapAsBarRatio(val ratio: Float) : BarsSizing
     }
 
     /** Left vertical axis line. */

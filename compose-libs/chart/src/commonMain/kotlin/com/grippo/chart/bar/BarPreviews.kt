@@ -108,7 +108,7 @@ private fun PreviewBarAdaptiveAboveAuto() {
                 textStyle = TextStyle(color = Color(0xFF222222)),
                 formatter = { v, _ -> v.toInt().toString() }
             ),
-            sizing = BarStyle.BarsSizing.AutoEqualBarsAndGaps
+            sizing = BarStyle.BarsSizing.AutoEqualBarsAndGaps()
         )
     )
 }
@@ -158,7 +158,7 @@ private fun PreviewBarShowAllNoneAuto() {
         style = barStyle(
             xAdaptive = false,
             valuesMode = BarStyle.Values.None,
-            sizing = BarStyle.BarsSizing.AutoEqualBarsAndGaps
+            sizing = BarStyle.BarsSizing.AutoEqualBarsAndGaps()
         )
     )
 }
@@ -192,7 +192,7 @@ private fun PreviewBarManyAdaptiveAboveAuto() {
                 textStyle = TextStyle(color = Color(0xFF222222)),
                 formatter = { v, _ -> v.toInt().toString() }
             ),
-            sizing = BarStyle.BarsSizing.AutoEqualBarsAndGaps
+            sizing = BarStyle.BarsSizing.AutoEqualBarsAndGaps()
         )
     )
 }
@@ -245,7 +245,7 @@ private fun PreviewBarFewShowAllInsideAuto() {
                 minInnerPadding = 6.dp,
                 insideColor = null
             ),
-            sizing = BarStyle.BarsSizing.AutoEqualBarsAndGaps
+            sizing = BarStyle.BarsSizing.AutoEqualBarsAndGaps()
         )
     )
 }
@@ -262,7 +262,7 @@ private fun PreviewBarTenShowAllOutsideAuto() {
                 textStyle = TextStyle(color = Color(0xFF222222)),
                 formatter = { v, _ -> v.toInt().toString() }
             ),
-            sizing = BarStyle.BarsSizing.AutoEqualBarsAndGaps
+            sizing = BarStyle.BarsSizing.AutoEqualBarsAndGaps()
         )
     )
 }
@@ -293,7 +293,7 @@ private fun PreviewBarNoYAxisAdaptiveAboveAuto() {
             textStyle = TextStyle(color = Color(0xFF222222)),
             formatter = { v, _ -> v.toInt().toString() }
         ),
-        sizing = BarStyle.BarsSizing.AutoEqualBarsAndGaps
+        sizing = BarStyle.BarsSizing.AutoEqualBarsAndGaps()
     )
     BarChart(
         modifier = Modifier.fillMaxWidth().height(220.dp),
@@ -311,7 +311,7 @@ private fun PreviewBarNoGridShowAllAboveAuto() {
             textStyle = TextStyle(color = Color(0xFF222222)),
             formatter = { v, _ -> v.toInt().toString() }
         ),
-        sizing = BarStyle.BarsSizing.AutoEqualBarsAndGaps
+        sizing = BarStyle.BarsSizing.AutoEqualBarsAndGaps()
     )
     BarChart(
         modifier = Modifier.fillMaxWidth().height(220.dp),

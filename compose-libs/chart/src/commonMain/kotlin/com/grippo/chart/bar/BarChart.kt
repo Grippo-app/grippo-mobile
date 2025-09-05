@@ -247,17 +247,31 @@ public fun BarChart(
         // ----- Bars sizing -----
         val nBars = data.items.size
         val sizing = style.bars.sizing
+
         val (bw, sp, startX) = when (sizing) {
             is BarStyle.BarsSizing.AutoEqualBarsAndGaps -> {
                 if (nBars == 1) {
-                    // Special case: single bar = 1/3 of chart width, centered
                     val w = chartW / 3f
                     val sx = chart.left + (chartW - w) / 2f
                     Triple(w, 0f, sx)
                 } else {
-                    // Default case: equal bars and gaps
-                    val w = chartW / (2f * nBars - 1f)
-                    Triple(w, w, chart.left)
+                    val wEqual = chartW / (2f * nBars - 1f)
+                    val midPx = sizing.midThresholdDp.toPx()
+                    val densePx = sizing.denseThresholdDp.toPx()
+
+                    val ratio = when {
+                        wEqual < densePx -> sizing.denseRatio
+                        wEqual < midPx -> sizing.midRatio
+                        else -> 1f
+                    }.coerceIn(0f, 1f)
+
+                    if (ratio == 1f) {
+                        Triple(wEqual, wEqual, chart.left)
+                    } else {
+                        val w = chartW / (nBars + (nBars - 1) * ratio)
+                        val gap = ratio * w
+                        Triple(w, gap, chart.left)
+                    }
                 }
             }
 
@@ -275,7 +289,16 @@ public fun BarChart(
                 val sx = chart.left + (chartW - totalW).coerceAtLeast(0f) / 2f
                 Triple(bw0, sp0, sx)
             }
+
+            is BarStyle.BarsSizing.GapAsBarRatio -> {
+                // Gap = ratio * barWidth; solve bar width from chart width
+                val r = sizing.ratio.coerceAtLeast(0f)
+                val w = if (nBars == 0) 0f else chartW / (nBars + (nBars - 1) * r)
+                val g = r * w
+                Triple(w, g, chart.left)
+            }
         }
+
         val rx = style.bars.corner.toPx()
         val strokeW = style.bars.strokeWidth.toPx()
         val baseY = mapY(0f)

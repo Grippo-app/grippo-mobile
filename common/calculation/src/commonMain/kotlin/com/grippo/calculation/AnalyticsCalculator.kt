@@ -815,12 +815,7 @@ public class AnalyticsCalculator(
             }
 
             BucketScale.WEEK -> { b ->
-                "$w${isoWeekNumber(b.start)}-${
-                    DateTimeUtils.format(
-                        b.start,
-                        DateFormat.MONTH_SHORT
-                    )
-                }\""
+                "$w${isoWeekNumber(b.start)}-${DateTimeUtils.format(b.start, DateFormat.MONTH_SHORT)}\""
             }
 
             BucketScale.MONTH -> { b ->

@@ -84,7 +84,7 @@ public fun BarChart(
             },
             strokeWidth = 0.dp,
             strokeColor = AppTokens.colors.divider.default,
-            sizing = BarStyle.BarsSizing.AutoEqualBarsAndGaps
+            sizing = BarStyle.BarsSizing.AutoEqualBarsAndGaps()
         ),
         values = BarStyle.Values.Above(
             textStyle = AppTokens.typography.b10Bold().copy(color = AppTokens.colors.text.primary),
