@@ -821,7 +821,10 @@ public class AnalyticsCalculator(
         val w = stringProvider.get(Res.string.w)
         return when (scale) {
             BucketScale.DAY -> { b ->
-                DateTimeUtils.format(b.start, DateFormat.WEEKDAY_SHORT)
+                DateTimeUtils.format(
+                    b.start,
+                    DateFormat.WEEKDAY_SHORT
+                )
             }
 
             BucketScale.WEEK -> { b ->
@@ -834,7 +837,10 @@ public class AnalyticsCalculator(
             }
 
             BucketScale.MONTH -> { b ->
-                DateTimeUtils.format(b.start, DateFormat.MONTH_SHORT)
+                DateTimeUtils.format(
+                    b.start,
+                    DateFormat.MONTH_SHORT
+                )
             }
 
             BucketScale.EXERCISE -> { _ -> "" }
@@ -850,11 +856,19 @@ public class AnalyticsCalculator(
             }
 
             BucketScale.WEEK -> {
-                "$w${isoWeekNumber(this)}-${DateTimeUtils.format(this, DateFormat.MONTH_SHORT)}"
+                "$w${isoWeekNumber(this)}-${
+                    DateTimeUtils.format(
+                        this,
+                        DateFormat.MONTH_SHORT
+                    )
+                }"
             }
 
             BucketScale.MONTH -> {
-                DateTimeUtils.format(this, DateFormat.MONTH_SHORT)
+                DateTimeUtils.format(
+                    this,
+                    DateFormat.MONTH_SHORT
+                )
             }
 
             BucketScale.EXERCISE -> {
