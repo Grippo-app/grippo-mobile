@@ -2,7 +2,8 @@ package com.grippo.calculation
 
 import androidx.compose.ui.graphics.Color
 import com.grippo.calculation.models.Instruction
-import com.grippo.date.utils.DateRange
+import com.grippo.calculation.models.isWholeMonths
+import com.grippo.date.utils.contains
 import com.grippo.design.components.chart.DSProgressData
 import com.grippo.design.components.chart.DSProgressItem
 import com.grippo.design.resources.provider.Res
@@ -27,7 +28,6 @@ import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.TrainingState
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.plus
 
 /**
@@ -329,19 +329,5 @@ public class LoadCalculator(
             cur = cur.plus(DatePeriod(days = 1))
         }
         return cnt
-    }
-
-    /** Whole months = from is the 1st day, to is the last day of its month, and from <= to. */
-    private fun isWholeMonths(range: DateRange): Boolean {
-        val from = range.from.date
-        val to = range.to.date
-        if (from.dayOfMonth != 1) return false
-        val toIsLast = to.plus(DatePeriod(days = 1)).dayOfMonth == 1
-        return toIsLast && from <= to
-    }
-
-    /** Allow: it.createdAt in period.range */
-    private operator fun DateRange.contains(ts: LocalDateTime): Boolean {
-        return (ts >= from) && (ts <= to)
     }
 }

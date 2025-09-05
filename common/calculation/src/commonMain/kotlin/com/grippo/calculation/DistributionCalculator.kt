@@ -1,6 +1,10 @@
 package com.grippo.calculation
 
+import com.grippo.calculation.models.BucketScale
 import com.grippo.calculation.models.Instruction
+import com.grippo.calculation.models.daysInclusive
+import com.grippo.calculation.models.deriveScale
+import com.grippo.date.utils.contains
 import com.grippo.design.components.chart.DSPieData
 import com.grippo.design.components.chart.DSPieSlice
 import com.grippo.design.resources.provider.Res
@@ -22,6 +26,7 @@ import com.grippo.design.resources.provider.tooltip_weight_type_description_trai
 import com.grippo.design.resources.provider.tooltip_weight_type_description_trainings
 import com.grippo.design.resources.provider.tooltip_weight_type_title_training
 import com.grippo.design.resources.provider.tooltip_weight_type_title_trainings
+import com.grippo.state.datetime.PeriodState
 import com.grippo.state.exercise.examples.CategoryEnumState
 import com.grippo.state.exercise.examples.ForceTypeEnumState
 import com.grippo.state.exercise.examples.WeightTypeEnumState
@@ -62,60 +67,67 @@ public class DistributionCalculator(
     private val colorProvider: ColorProvider
 ) {
 
-    // ---------------- Tooltip plumbing ----------------
+    // -------------- Tooltip plumbing (scale-aware, like AnalyticsCalculator) --------------
 
-    private enum class Scope { TRAINING, TRAININGS }
     private enum class Metric { CATEGORY, WEIGHT_TYPE, FORCE_TYPE, EXPERIENCE }
 
-    private fun instructionFor(metric: Metric, scope: Scope): Instruction {
+    @Suppress("UNUSED_PARAMETER")
+    private fun instructionFor(metric: Metric, scale: BucketScale, days: Int): Instruction {
+        // For distributions we only distinguish: single session vs aggregated period
+        val isTraining = (scale == BucketScale.EXERCISE)
+
         return when (metric) {
-            Metric.CATEGORY -> when (scope) {
-                Scope.TRAINING -> Instruction(
-                    title = UiText.Res(Res.string.tooltip_category_title_training),
-                    description = UiText.Res(Res.string.tooltip_category_description_training)
-                )
+            Metric.CATEGORY ->
+                if (isTraining) {
+                    Instruction(
+                        title = UiText.Res(Res.string.tooltip_category_title_training),
+                        description = UiText.Res(Res.string.tooltip_category_description_training)
+                    )
+                } else {
+                    Instruction(
+                        title = UiText.Res(Res.string.tooltip_category_title_trainings),
+                        description = UiText.Res(Res.string.tooltip_category_description_trainings)
+                    )
+                }
 
-                Scope.TRAININGS -> Instruction(
-                    title = UiText.Res(Res.string.tooltip_category_title_trainings),
-                    description = UiText.Res(Res.string.tooltip_category_description_trainings)
-                )
-            }
+            Metric.WEIGHT_TYPE ->
+                if (isTraining) {
+                    Instruction(
+                        title = UiText.Res(Res.string.tooltip_weight_type_title_training),
+                        description = UiText.Res(Res.string.tooltip_weight_type_description_training)
+                    )
+                } else {
+                    Instruction(
+                        title = UiText.Res(Res.string.tooltip_weight_type_title_trainings),
+                        description = UiText.Res(Res.string.tooltip_weight_type_description_trainings)
+                    )
+                }
 
-            Metric.WEIGHT_TYPE -> when (scope) {
-                Scope.TRAINING -> Instruction(
-                    title = UiText.Res(Res.string.tooltip_weight_type_title_training),
-                    description = UiText.Res(Res.string.tooltip_weight_type_description_training)
-                )
+            Metric.FORCE_TYPE ->
+                if (isTraining) {
+                    Instruction(
+                        title = UiText.Res(Res.string.tooltip_force_type_title_training),
+                        description = UiText.Res(Res.string.tooltip_force_type_description_training)
+                    )
+                } else {
+                    Instruction(
+                        title = UiText.Res(Res.string.tooltip_force_type_title_trainings),
+                        description = UiText.Res(Res.string.tooltip_force_type_description_trainings)
+                    )
+                }
 
-                Scope.TRAININGS -> Instruction(
-                    title = UiText.Res(Res.string.tooltip_weight_type_title_trainings),
-                    description = UiText.Res(Res.string.tooltip_weight_type_description_trainings)
-                )
-            }
-
-            Metric.FORCE_TYPE -> when (scope) {
-                Scope.TRAINING -> Instruction(
-                    title = UiText.Res(Res.string.tooltip_force_type_title_training),
-                    description = UiText.Res(Res.string.tooltip_force_type_description_training)
-                )
-
-                Scope.TRAININGS -> Instruction(
-                    title = UiText.Res(Res.string.tooltip_force_type_title_trainings),
-                    description = UiText.Res(Res.string.tooltip_force_type_description_trainings)
-                )
-            }
-
-            Metric.EXPERIENCE -> when (scope) {
-                Scope.TRAINING -> Instruction(
-                    title = UiText.Res(Res.string.tooltip_experience_title_training),
-                    description = UiText.Res(Res.string.tooltip_experience_description_training)
-                )
-
-                Scope.TRAININGS -> Instruction(
-                    title = UiText.Res(Res.string.tooltip_experience_title_trainings),
-                    description = UiText.Res(Res.string.tooltip_experience_description_trainings)
-                )
-            }
+            Metric.EXPERIENCE ->
+                if (isTraining) {
+                    Instruction(
+                        title = UiText.Res(Res.string.tooltip_experience_title_training),
+                        description = UiText.Res(Res.string.tooltip_experience_description_training)
+                    )
+                } else {
+                    Instruction(
+                        title = UiText.Res(Res.string.tooltip_experience_title_trainings),
+                        description = UiText.Res(Res.string.tooltip_experience_description_trainings)
+                    )
+                }
         }
     }
 
@@ -128,13 +140,20 @@ public class DistributionCalculator(
         public data object Volume : Weighting
     }
 
-    // FIXED: Volume = Σ(weight × reps), not just Σ(weight)
+    // FIXED: Volume = Σ(weight × reps), not Σ(weight)
     private fun weightOfExercise(ex: ExerciseState, w: Weighting): Float = when (w) {
         Weighting.Count -> 1f
-        Weighting.Sets -> ex.iterations.size.toFloat()
-        Weighting.Reps -> ex.iterations.sumOf { it.repetitions.value ?: 0 }.toFloat()
+        Weighting.Sets -> ex.iterations.count { (it.repetitions.value ?: 0) > 0 }.toFloat()
+        Weighting.Reps -> ex.iterations.sumOf { kotlin.math.max(0, it.repetitions.value ?: 0) }
+            .toFloat()
+
         Weighting.Volume -> ex.iterations
-            .sumOf { ((it.volume.value ?: 0f) * (it.repetitions.value ?: 0)).toDouble() }
+            .sumOf {
+                ((it.volume.value ?: 0f) * (kotlin.math.max(
+                    0,
+                    it.repetitions.value ?: 0
+                ))).toDouble()
+            }
             .toFloat()
     }.coerceAtLeast(0f)
 
@@ -157,23 +176,43 @@ public class DistributionCalculator(
 
     // ---------------- Category Distribution ----------------
 
-    /** 🏗 Category Distribution — Compound vs Isolation (single session) */
+    /** Single session */
     public suspend fun calculateCategoryDistributionFromExercises(
         exercises: List<ExerciseState>,
         weighting: Weighting = Weighting.Count
     ): Pair<DSPieData, Instruction> {
         val data = buildCategoryPie(exercises, weighting)
-        val tip = instructionFor(Metric.CATEGORY, Scope.TRAINING)
+        val tip = Instruction(
+            title = UiText.Res(Res.string.tooltip_category_title_training),
+            description = UiText.Res(Res.string.tooltip_category_description_training)
+        )
         return Pair(data, tip)
     }
 
-    /** 🏗 Category Distribution across multiple trainings (period) */
+    /** Multi-session (legacy, without Period) */
     public suspend fun calculateCategoryDistributionFromTrainings(
         trainings: List<TrainingState>,
         weighting: Weighting = Weighting.Count
     ): Pair<DSPieData, Instruction> {
         val data = buildCategoryPie(trainings.flatMap { it.exercises }, weighting)
-        val tip = instructionFor(Metric.CATEGORY, Scope.TRAININGS)
+        val tip = Instruction(
+            title = UiText.Res(Res.string.tooltip_category_title_trainings),
+            description = UiText.Res(Res.string.tooltip_category_description_trainings)
+        )
+        return Pair(data, tip)
+    }
+
+    /** Multi-session with PeriodState (bucket-aware tooltips) */
+    public suspend fun calculateCategoryDistributionFromTrainings(
+        trainings: List<TrainingState>,
+        period: PeriodState,
+        weighting: Weighting = Weighting.Count
+    ): Pair<DSPieData, Instruction> {
+        val inRange = trainings.filter { it.createdAt in period.range }
+        val scale = deriveScale(period)
+        val days = daysInclusive(period.range.from.date, period.range.to.date)
+        val data = buildCategoryPie(inRange.flatMap { it.exercises }, weighting)
+        val tip = instructionFor(Metric.CATEGORY, scale, days)
         return Pair(data, tip)
     }
 
@@ -202,23 +241,43 @@ public class DistributionCalculator(
 
     // ---------------- Weight Type Distribution ----------------
 
-    /** ⚖️ Weight Type Distribution — Free vs Fixed vs Bodyweight (single session) */
+    /** Single session */
     public suspend fun calculateWeightTypeDistributionFromExercises(
         exercises: List<ExerciseState>,
         weighting: Weighting = Weighting.Count
     ): Pair<DSPieData, Instruction> {
         val data = buildWeightTypePie(exercises, weighting)
-        val tip = instructionFor(Metric.WEIGHT_TYPE, Scope.TRAINING)
+        val tip = Instruction(
+            title = UiText.Res(Res.string.tooltip_weight_type_title_training),
+            description = UiText.Res(Res.string.tooltip_weight_type_description_training)
+        )
         return Pair(data, tip)
     }
 
-    /** ⚖️ Weight Type Distribution across multiple trainings (period) */
+    /** Multi-session (legacy) */
     public suspend fun calculateWeightTypeDistributionFromTrainings(
         trainings: List<TrainingState>,
         weighting: Weighting = Weighting.Count
     ): Pair<DSPieData, Instruction> {
         val data = buildWeightTypePie(trainings.flatMap { it.exercises }, weighting)
-        val tip = instructionFor(Metric.WEIGHT_TYPE, Scope.TRAININGS)
+        val tip = Instruction(
+            title = UiText.Res(Res.string.tooltip_weight_type_title_trainings),
+            description = UiText.Res(Res.string.tooltip_weight_type_description_trainings)
+        )
+        return Pair(data, tip)
+    }
+
+    /** Multi-session with PeriodState */
+    public suspend fun calculateWeightTypeDistributionFromTrainings(
+        trainings: List<TrainingState>,
+        period: PeriodState,
+        weighting: Weighting = Weighting.Count
+    ): Pair<DSPieData, Instruction> {
+        val inRange = trainings.filter { it.createdAt in period.range }
+        val scale = deriveScale(period)
+        val days = daysInclusive(period.range.from.date, period.range.to.date)
+        val data = buildWeightTypePie(inRange.flatMap { it.exercises }, weighting)
+        val tip = instructionFor(Metric.WEIGHT_TYPE, scale, days)
         return Pair(data, tip)
     }
 
@@ -248,23 +307,43 @@ public class DistributionCalculator(
 
     // ---------------- Force Type Distribution ----------------
 
-    /** 🔄 Force Type Distribution — Push / Pull / Hinge (single session) */
+    /** Single session */
     public suspend fun calculateForceTypeDistributionFromExercises(
         exercises: List<ExerciseState>,
         weighting: Weighting = Weighting.Count
     ): Pair<DSPieData, Instruction> {
         val data = buildForceTypePie(exercises, weighting)
-        val tip = instructionFor(Metric.FORCE_TYPE, Scope.TRAINING)
+        val tip = Instruction(
+            title = UiText.Res(Res.string.tooltip_force_type_title_training),
+            description = UiText.Res(Res.string.tooltip_force_type_description_training)
+        )
         return Pair(data, tip)
     }
 
-    /** 🔄 Force Type Distribution across multiple trainings (period) */
+    /** Multi-session (legacy) */
     public suspend fun calculateForceTypeDistributionFromTrainings(
         trainings: List<TrainingState>,
         weighting: Weighting = Weighting.Count
     ): Pair<DSPieData, Instruction> {
         val data = buildForceTypePie(trainings.flatMap { it.exercises }, weighting)
-        val tip = instructionFor(Metric.FORCE_TYPE, Scope.TRAININGS)
+        val tip = Instruction(
+            title = UiText.Res(Res.string.tooltip_force_type_title_trainings),
+            description = UiText.Res(Res.string.tooltip_force_type_description_trainings)
+        )
+        return Pair(data, tip)
+    }
+
+    /** Multi-session with PeriodState */
+    public suspend fun calculateForceTypeDistributionFromTrainings(
+        trainings: List<TrainingState>,
+        period: PeriodState,
+        weighting: Weighting = Weighting.Count
+    ): Pair<DSPieData, Instruction> {
+        val inRange = trainings.filter { it.createdAt in period.range }
+        val scale = deriveScale(period)
+        val days = daysInclusive(period.range.from.date, period.range.to.date)
+        val data = buildForceTypePie(inRange.flatMap { it.exercises }, weighting)
+        val tip = instructionFor(Metric.FORCE_TYPE, scale, days)
         return Pair(data, tip)
     }
 
@@ -294,23 +373,43 @@ public class DistributionCalculator(
 
     // ---------------- Experience Distribution ----------------
 
-    /** 🎯 Experience Level Distribution — Beginner / Intermediate / Advanced / Pro (single session) */
+    /** Single session */
     public suspend fun calculateExperienceDistributionFromExercises(
         exercises: List<ExerciseState>,
         weighting: Weighting = Weighting.Count
     ): Pair<DSPieData, Instruction> {
         val data = buildExperiencePie(exercises, weighting)
-        val tip = instructionFor(Metric.EXPERIENCE, Scope.TRAINING)
+        val tip = Instruction(
+            title = UiText.Res(Res.string.tooltip_experience_title_training),
+            description = UiText.Res(Res.string.tooltip_experience_description_training)
+        )
         return Pair(data, tip)
     }
 
-    /** 🎯 Experience Level Distribution across multiple trainings (period) */
+    /** Multi-session (legacy) */
     public suspend fun calculateExperienceDistributionFromTrainings(
         trainings: List<TrainingState>,
         weighting: Weighting = Weighting.Count
     ): Pair<DSPieData, Instruction> {
         val data = buildExperiencePie(trainings.flatMap { it.exercises }, weighting)
-        val tip = instructionFor(Metric.EXPERIENCE, Scope.TRAININGS)
+        val tip = Instruction(
+            title = UiText.Res(Res.string.tooltip_experience_title_trainings),
+            description = UiText.Res(Res.string.tooltip_experience_description_trainings)
+        )
+        return Pair(data, tip)
+    }
+
+    /** Multi-session with PeriodState */
+    public suspend fun calculateExperienceDistributionFromTrainings(
+        trainings: List<TrainingState>,
+        period: PeriodState,
+        weighting: Weighting = Weighting.Count
+    ): Pair<DSPieData, Instruction> {
+        val inRange = trainings.filter { it.createdAt in period.range }
+        val scale = deriveScale(period)
+        val days = daysInclusive(period.range.from.date, period.range.to.date)
+        val data = buildExperiencePie(inRange.flatMap { it.exercises }, weighting)
+        val tip = instructionFor(Metric.EXPERIENCE, scale, days)
         return Pair(data, tip)
     }
 

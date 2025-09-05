@@ -1,9 +1,14 @@
 package com.grippo.calculation
 
+import com.grippo.calculation.models.Bucket
+import com.grippo.calculation.models.BucketScale
 import com.grippo.calculation.models.Instruction
+import com.grippo.calculation.models.daysInclusive
+import com.grippo.calculation.models.deriveScale
 import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateRange
 import com.grippo.date.utils.DateTimeUtils
+import com.grippo.date.utils.contains
 import com.grippo.design.components.chart.DSAreaData
 import com.grippo.design.components.chart.DSAreaPoint
 import com.grippo.design.components.chart.DSBarData
@@ -704,18 +709,6 @@ public class AnalyticsCalculator(
 
     // -------------------------- Period → Buckets logic --------------------------
 
-    private enum class BucketScale { EXERCISE, DAY, WEEK, MONTH }
-
-    /** Inclusive date span bucket (closed range [start .. end]). */
-    private data class Bucket(val start: LocalDateTime, val end: LocalDateTime)
-
-    private fun deriveScale(period: PeriodState): BucketScale = when (period) {
-        is PeriodState.ThisDay -> BucketScale.EXERCISE
-        is PeriodState.ThisWeek -> BucketScale.DAY
-        is PeriodState.ThisMonth -> BucketScale.WEEK
-        is PeriodState.CUSTOM -> deriveCustomScale(period.range)
-    }
-
     /**
      * CUSTOM rules:
      * 1) If it's a day → EXERCISE
@@ -724,21 +717,7 @@ public class AnalyticsCalculator(
      * 4) If up to a year (> month) → if whole-month aligned → MONTH, else → WEEK
      * 5) Otherwise → MONTH
      */
-    private fun deriveCustomScale(range: DateRange): BucketScale {
-        val from = range.from.date
-        val to = range.to.date
-        if (from == to) return BucketScale.EXERCISE
 
-        val days = daysInclusive(from, to)
-        val fullMonths = isWholeMonths(range)
-
-        return when {
-            days < 30 && (days % 7 != 0) -> BucketScale.DAY
-            days < 30 && (days % 7 == 0) -> BucketScale.WEEK
-            days in 30..366 -> if (fullMonths) BucketScale.MONTH else BucketScale.WEEK
-            else -> BucketScale.MONTH
-        }
-    }
 
     private fun buildBuckets(range: DateRange, scale: BucketScale): List<Bucket> = when (scale) {
         BucketScale.EXERCISE -> emptyList() // handled by per-exercise path
@@ -849,25 +828,6 @@ public class AnalyticsCalculator(
         return next.minus(DatePeriod(days = 1))
     }
 
-    private fun daysInclusive(from: LocalDate, to: LocalDate): Int {
-        var cnt = 0
-        var cur = from
-        while (cur <= to) {
-            cnt++
-            cur = cur.plus(DatePeriod(days = 1))
-        }
-        return cnt
-    }
-
-    /** Check if the DateRange covers whole months exactly (from 1st day to last day). */
-    private fun isWholeMonths(range: DateRange): Boolean {
-        val from = range.from.date
-        val to = range.to.date
-        if (from.dayOfMonth != 1) return false
-        val toIsLast = to.plus(DatePeriod(days = 1)).dayOfMonth == 1
-        return toIsLast && from <= to
-    }
-
     /** Simple ISO-like week number for labeling (approx.). */
     private fun isoWeekNumber(weekStartMonday: LocalDateTime): Int =
         isoWeekNumber(weekStartMonday.date)
@@ -900,11 +860,6 @@ public class AnalyticsCalculator(
     private fun minLocalDate(a: LocalDate, b: LocalDate): LocalDate = if (a <= b) a else b
 
     // -------------------------- Misc helpers --------------------------
-
-    private operator fun DateRange.contains(ts: LocalDateTime): Boolean {
-        // Inclusive range: [from .. to]
-        return (ts >= from) && (ts <= to)
-    }
 
     /** Percentile (0..1) over Float list; returns 0f for empty. */
     private fun percentile(values: List<Float>, p: Float): Float {
