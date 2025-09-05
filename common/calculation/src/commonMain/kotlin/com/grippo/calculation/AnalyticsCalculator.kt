@@ -868,8 +868,6 @@ public class AnalyticsCalculator(
         return ts >= bucket.start && ts <= bucket.end
     }
 
-    // ---- Date utils (kotlinx.datetime + DateTimeUtils for starts/ends) ----
-
     /** Monday 00:00 of the week containing 'd'. */
     private fun startOfWeek(d: LocalDateTime): LocalDateTime {
         val shift = d.date.dayOfWeek.isoDayNumber - 1 // 0..6, MON=1..SUN=7 -> 0..6
@@ -877,26 +875,9 @@ public class AnalyticsCalculator(
         return LocalDateTime(mondayDate, LocalTime(0, 0))
     }
 
-    /** Sunday 23:59:59.999 of the ISO week starting at 'sow' (Monday 00:00). */
-    private fun endOfWeek(sow: LocalDateTime): LocalDateTime {
-        val sunday = sow.date.plus(DatePeriod(days = 6))
-        return LocalDateTime(sunday, LocalTime(23, 59, 59, 999_000_000))
-    }
-
     /** First day of month 00:00 for the month of 'd'. */
     private fun startOfMonth(d: LocalDateTime): LocalDateTime =
         LocalDateTime(LocalDate(d.year, d.monthNumber, 1), LocalTime(0, 0))
-
-    /** Last day of month 23:59:59.999 for the month of 'som'. */
-    private fun endOfMonth(som: LocalDateTime): LocalDateTime {
-        val firstOfNextMonth = LocalDate(som.date.year, som.date.monthNumber, 1)
-            .plus(DatePeriod(months = 1))
-        val lastDay = firstOfNextMonth.minus(DatePeriod(days = 1))
-        return LocalDateTime(
-            lastDay,
-            LocalTime(hour = 23, minute = 59, second = 59, nanosecond = 999_000_000)
-        )
-    }
 
     /** Simple ISO-like week number, computed from LocalDateTime. */
     private fun isoWeekNumber(weekStartMonday: LocalDateTime): Int {
@@ -905,10 +886,6 @@ public class AnalyticsCalculator(
         val doy = (date.toEpochDays() - firstJan.toEpochDays()).toInt() + 1
         return ((doy - 1) / 7) + 1
     }
-
-    // Start/end-of-day helpers (delegates to your DateTimeUtils)
-    private fun LocalDateTime.atStartOfDay(): LocalDateTime = DateTimeUtils.startOfDay(this)
-    private fun LocalDateTime.atEndOfDay(): LocalDateTime = DateTimeUtils.endOfDay(this)
 
     // Min/Max for LocalDateTime
     private fun minDT(a: LocalDateTime, b: LocalDateTime): LocalDateTime = if (a <= b) a else b
