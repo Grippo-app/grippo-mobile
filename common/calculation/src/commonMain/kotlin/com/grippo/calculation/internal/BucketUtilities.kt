@@ -4,6 +4,7 @@ import com.grippo.calculation.models.Bucket
 import com.grippo.calculation.models.BucketScale
 import com.grippo.date.utils.DateRange
 import com.grippo.state.datetime.PeriodState
+import com.grippo.state.trainings.TrainingState
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -12,6 +13,20 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 
 private const val TARGET_BUCKETS: Int = 24
+
+internal fun groupTrainingsByBucket(
+    trainings: List<TrainingState>,
+    scale: BucketScale
+): Map<LocalDateTime, List<TrainingState>> {
+    return trainings.groupBy { t ->
+        when (scale) {
+            BucketScale.EXERCISE -> t.createdAt // not used
+            BucketScale.DAY -> com.grippo.date.utils.DateTimeUtils.startOfDay(t.createdAt)
+            BucketScale.WEEK -> startOfWeek(t.createdAt)
+            BucketScale.MONTH -> startOfMonth(t.createdAt)
+        }
+    }
+}
 
 internal fun deriveScale(period: PeriodState): BucketScale = when (period) {
     is PeriodState.ThisDay -> BucketScale.EXERCISE
@@ -38,6 +53,13 @@ internal fun deriveCustomScale(range: DateRange): BucketScale {
         weeks <= TARGET_BUCKETS -> BucketScale.WEEK
         else -> BucketScale.MONTH
     }
+}
+
+internal fun buildBuckets(range: DateRange, scale: BucketScale): List<Bucket> = when (scale) {
+    BucketScale.EXERCISE -> emptyList() // handled by per-exercise path
+    BucketScale.DAY -> buildDayBuckets(range)
+    BucketScale.WEEK -> buildWeekBuckets(range)
+    BucketScale.MONTH -> buildMonthBuckets(range)
 }
 
 internal fun buildDayBuckets(range: DateRange): List<Bucket> {

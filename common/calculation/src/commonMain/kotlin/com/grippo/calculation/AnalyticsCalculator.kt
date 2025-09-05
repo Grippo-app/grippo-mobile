@@ -1,19 +1,17 @@
 package com.grippo.calculation
 
-import com.grippo.calculation.internal.buildDayBuckets
-import com.grippo.calculation.internal.buildMonthBuckets
-import com.grippo.calculation.internal.buildWeekBuckets
+import com.grippo.calculation.internal.buildBuckets
 import com.grippo.calculation.internal.daysInclusive
+import com.grippo.calculation.internal.defaultLabeler
 import com.grippo.calculation.internal.deriveScale
-import com.grippo.calculation.internal.isoWeekNumber
-import com.grippo.calculation.internal.startOfMonth
-import com.grippo.calculation.internal.startOfWeek
-import com.grippo.calculation.models.Bucket
+import com.grippo.calculation.internal.groupTrainingsByBucket
+import com.grippo.calculation.internal.instructionForEstimated1RM
+import com.grippo.calculation.internal.instructionForPercent1RM
+import com.grippo.calculation.internal.instructionForStimulus
+import com.grippo.calculation.internal.instructionForVolume
+import com.grippo.calculation.internal.label
 import com.grippo.calculation.models.BucketScale
 import com.grippo.calculation.models.Instruction
-import com.grippo.date.utils.DateFormat
-import com.grippo.date.utils.DateRange
-import com.grippo.date.utils.DateTimeUtils
 import com.grippo.date.utils.contains
 import com.grippo.design.components.chart.DSAreaData
 import com.grippo.design.components.chart.DSAreaPoint
@@ -23,41 +21,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.ex
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
-import com.grippo.design.resources.provider.tooltip_estimated1rm_description_day
-import com.grippo.design.resources.provider.tooltip_estimated1rm_description_month
-import com.grippo.design.resources.provider.tooltip_estimated1rm_description_training
-import com.grippo.design.resources.provider.tooltip_estimated1rm_description_year
-import com.grippo.design.resources.provider.tooltip_estimated1rm_title_day
-import com.grippo.design.resources.provider.tooltip_estimated1rm_title_month
-import com.grippo.design.resources.provider.tooltip_estimated1rm_title_training
-import com.grippo.design.resources.provider.tooltip_estimated1rm_title_year
-import com.grippo.design.resources.provider.tooltip_percent1rm_description_day
-import com.grippo.design.resources.provider.tooltip_percent1rm_description_month
-import com.grippo.design.resources.provider.tooltip_percent1rm_description_training
-import com.grippo.design.resources.provider.tooltip_percent1rm_description_year
-import com.grippo.design.resources.provider.tooltip_percent1rm_title_day
-import com.grippo.design.resources.provider.tooltip_percent1rm_title_month
-import com.grippo.design.resources.provider.tooltip_percent1rm_title_training
-import com.grippo.design.resources.provider.tooltip_percent1rm_title_year
-import com.grippo.design.resources.provider.tooltip_stimulus_description_day
-import com.grippo.design.resources.provider.tooltip_stimulus_description_month
-import com.grippo.design.resources.provider.tooltip_stimulus_description_training
-import com.grippo.design.resources.provider.tooltip_stimulus_description_year
-import com.grippo.design.resources.provider.tooltip_stimulus_title_day
-import com.grippo.design.resources.provider.tooltip_stimulus_title_month
-import com.grippo.design.resources.provider.tooltip_stimulus_title_training
-import com.grippo.design.resources.provider.tooltip_stimulus_title_year
-import com.grippo.design.resources.provider.tooltip_volume_description_day
-import com.grippo.design.resources.provider.tooltip_volume_description_month
-import com.grippo.design.resources.provider.tooltip_volume_description_training
-import com.grippo.design.resources.provider.tooltip_volume_description_year
-import com.grippo.design.resources.provider.tooltip_volume_title_day
-import com.grippo.design.resources.provider.tooltip_volume_title_month
-import com.grippo.design.resources.provider.tooltip_volume_title_training
-import com.grippo.design.resources.provider.tooltip_volume_title_year
-import com.grippo.design.resources.provider.w
 import com.grippo.state.datetime.PeriodState
-import com.grippo.state.formatters.UiText
 import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.IterationState
 import com.grippo.state.trainings.TrainingState
@@ -110,7 +74,7 @@ public class AnalyticsCalculator(
             )
         }
         val data = DSBarData(items = items)
-        val tip = instructionFor(metric = Metric.VOLUME, scale = BucketScale.EXERCISE)
+        val tip = instructionForVolume(BucketScale.EXERCISE)
         return data to tip
     }
 
@@ -140,7 +104,7 @@ public class AnalyticsCalculator(
 
             else -> {
                 val buckets = buildBuckets(period.range, scale)
-                val labeler = defaultLabeler(scale)
+                val labeler = defaultLabeler(scale, stringProvider)
 
                 // Group once by bucket start to avoid O(B*N) scanning
                 val grouped: Map<LocalDateTime, List<TrainingState>> =
@@ -157,7 +121,7 @@ public class AnalyticsCalculator(
                     )
                 }
                 val data = DSBarData(items)
-                val tip = instructionFor(metric = Metric.VOLUME, scale = scale)
+                val tip = instructionForVolume(scale)
                 data to tip
             }
         }
@@ -196,7 +160,7 @@ public class AnalyticsCalculator(
             )
         }
         val data = DSAreaData(points = points)
-        val tip = instructionFor(metric = Metric.PCT1RM, scale = BucketScale.EXERCISE)
+        val tip = instructionForPercent1RM(BucketScale.EXERCISE)
         return data to tip
     }
 
@@ -259,13 +223,13 @@ public class AnalyticsCalculator(
                 points += DSAreaPoint(
                     x = xIdx++.toFloat(),
                     y = relPct,
-                    xLabel = start.label(scale)
+                    xLabel = start.label(scale, stringProvider)
                 )
             }
         }
 
         val data = DSAreaData(points = points)
-        val tip = instructionFor(metric = Metric.PCT1RM, scale = scale)
+        val tip = instructionForPercent1RM(scale)
         return data to tip
     }
 
@@ -300,7 +264,7 @@ public class AnalyticsCalculator(
         }
 
         val data = DSAreaData(points = points)
-        val tip = instructionFor(metric = Metric.STIMULUS, scale = BucketScale.EXERCISE)
+        val tip = instructionForStimulus(BucketScale.EXERCISE)
         return data to tip
     }
 
@@ -362,12 +326,12 @@ public class AnalyticsCalculator(
             points += DSAreaPoint(
                 x = xIdx++.toFloat(),
                 y = sumStimulus.coerceAtLeast(0f),
-                xLabel = start.label(scale)
+                xLabel = start.label(scale, stringProvider)
             )
         }
 
         val data = DSAreaData(points = points)
-        val tip = instructionFor(metric = Metric.STIMULUS, scale = scale)
+        val tip = instructionForStimulus(scale)
         return data to tip
     }
 
@@ -394,7 +358,7 @@ public class AnalyticsCalculator(
             )
         }
         val data = DSBarData(items)
-        val tip = instructionFor(metric = Metric.E1RM, scale = BucketScale.EXERCISE)
+        val tip = instructionForEstimated1RM(BucketScale.EXERCISE)
         return data to tip
     }
 
@@ -430,13 +394,13 @@ public class AnalyticsCalculator(
                 val reduced = percentile(e1s, 0.90f) // P90 by default
 
                 DSBarItem(
-                    label = start.label(scale),
+                    label = start.label(scale, stringProvider),
                     value = reduced.coerceAtLeast(0f),
                     color = palette[idx % palette.size]
                 )
             }
             val data = DSBarData(items)
-            val tip = instructionFor(metric = Metric.E1RM, scale = scale)
+            val tip = instructionForEstimated1RM(scale)
             data to tip
         }
     }
@@ -455,117 +419,6 @@ public class AnalyticsCalculator(
         return if (days >= 180) 0.70f else 0.75f
     }
 
-    // -------------------------- Tooltip selector --------------------------
-
-    private enum class Metric { VOLUME, PCT1RM, STIMULUS, E1RM }
-
-    private fun instructionFor(metric: Metric, scale: BucketScale): Instruction {
-        return when (metric) {
-            Metric.VOLUME -> when (scale) {
-                BucketScale.EXERCISE ->
-                    Instruction(
-                        UiText.Res(Res.string.tooltip_volume_title_training),
-                        UiText.Res(Res.string.tooltip_volume_description_training)
-                    )
-
-                BucketScale.DAY ->
-                    Instruction(
-                        UiText.Res(Res.string.tooltip_volume_title_day),
-                        UiText.Res(Res.string.tooltip_volume_description_day)
-                    )
-
-                BucketScale.WEEK ->
-                    Instruction(
-                        UiText.Res(Res.string.tooltip_volume_title_month),
-                        UiText.Res(Res.string.tooltip_volume_description_month)
-                    )
-
-                BucketScale.MONTH ->
-                    Instruction(
-                        UiText.Res(Res.string.tooltip_volume_title_year),
-                        UiText.Res(Res.string.tooltip_volume_description_year)
-                    )
-            }
-
-            Metric.PCT1RM -> when (scale) {
-                BucketScale.EXERCISE ->
-                    Instruction(
-                        UiText.Res(Res.string.tooltip_percent1rm_title_training),
-                        UiText.Res(Res.string.tooltip_percent1rm_description_training)
-                    )
-
-                BucketScale.DAY ->
-                    Instruction(
-                        UiText.Res(Res.string.tooltip_percent1rm_title_day),
-                        UiText.Res(Res.string.tooltip_percent1rm_description_day)
-                    )
-
-                BucketScale.WEEK ->
-                    Instruction(
-                        UiText.Res(Res.string.tooltip_percent1rm_title_month),
-                        UiText.Res(Res.string.tooltip_percent1rm_description_month)
-                    )
-
-                BucketScale.MONTH ->
-                    Instruction(
-                        UiText.Res(Res.string.tooltip_percent1rm_title_year),
-                        UiText.Res(Res.string.tooltip_percent1rm_description_year)
-                    )
-            }
-
-            Metric.STIMULUS -> when (scale) {
-                BucketScale.EXERCISE ->
-                    Instruction(
-                        UiText.Res(Res.string.tooltip_stimulus_title_training),
-                        UiText.Res(Res.string.tooltip_stimulus_description_training)
-                    )
-
-                BucketScale.DAY ->
-                    Instruction(
-                        UiText.Res(Res.string.tooltip_stimulus_title_day),
-                        UiText.Res(Res.string.tooltip_stimulus_description_day)
-                    )
-
-                BucketScale.WEEK ->
-                    Instruction(
-                        UiText.Res(Res.string.tooltip_stimulus_title_month),
-                        UiText.Res(Res.string.tooltip_stimulus_description_month)
-                    )
-
-                BucketScale.MONTH ->
-                    Instruction(
-                        UiText.Res(Res.string.tooltip_stimulus_title_year),
-                        UiText.Res(Res.string.tooltip_stimulus_description_year)
-                    )
-            }
-
-            Metric.E1RM -> when (scale) {
-                BucketScale.EXERCISE ->
-                    Instruction(
-                        UiText.Res(Res.string.tooltip_estimated1rm_title_training),
-                        UiText.Res(Res.string.tooltip_estimated1rm_description_training)
-                    )
-
-                BucketScale.DAY ->
-                    Instruction(
-                        UiText.Res(Res.string.tooltip_estimated1rm_title_day),
-                        UiText.Res(Res.string.tooltip_estimated1rm_description_day)
-                    )
-
-                BucketScale.WEEK ->
-                    Instruction(
-                        UiText.Res(Res.string.tooltip_estimated1rm_title_month),
-                        UiText.Res(Res.string.tooltip_estimated1rm_description_month)
-                    )
-
-                BucketScale.MONTH ->
-                    Instruction(
-                        UiText.Res(Res.string.tooltip_estimated1rm_title_year),
-                        UiText.Res(Res.string.tooltip_estimated1rm_description_year)
-                    )
-            }
-        }
-    }
 
     // -------------------------- Helpers: math, tonnage, keys, smoothing --------------------------
 
@@ -705,80 +558,6 @@ public class AnalyticsCalculator(
         if (pairs.isEmpty()) return null
         val wm = weightedMedian(pairs)
         return wm.takeIf { it.isFinite() && it > 0f }
-    }
-
-    // -------------------------- Period → Buckets logic --------------------------
-
-    /**
-     * CUSTOM rules:
-     * 1) If it's a day → EXERCISE
-     * 2) If < 1 month AND days not divisible by 7 → DAY
-     * 3) If < 1 month AND days divisible by 7 → WEEK
-     * 4) If up to a year (> month) → if whole-month aligned → MONTH, else → WEEK
-     * 5) Otherwise → MONTH
-     */
-
-    private fun buildBuckets(range: DateRange, scale: BucketScale): List<Bucket> = when (scale) {
-        BucketScale.EXERCISE -> emptyList() // handled by per-exercise path
-        BucketScale.DAY -> buildDayBuckets(range)
-        BucketScale.WEEK -> buildWeekBuckets(range)
-        BucketScale.MONTH -> buildMonthBuckets(range)
-    }
-
-    // ---- Grouping and labeling ----
-
-    private fun groupTrainingsByBucket(
-        trainings: List<TrainingState>,
-        scale: BucketScale
-    ): Map<LocalDateTime, List<TrainingState>> {
-        return trainings.groupBy { t ->
-            when (scale) {
-                BucketScale.EXERCISE -> t.createdAt // not used
-                BucketScale.DAY -> DateTimeUtils.startOfDay(t.createdAt)
-                BucketScale.WEEK -> startOfWeek(t.createdAt)
-                BucketScale.MONTH -> startOfMonth(t.createdAt)
-            }
-        }
-    }
-
-    private suspend fun defaultLabeler(scale: BucketScale): (Bucket) -> String {
-        val w = stringProvider.get(Res.string.w)
-        return when (scale) {
-            BucketScale.DAY -> { b ->
-                DateTimeUtils.format(b.start, DateFormat.WEEKDAY_SHORT)
-            }
-
-            BucketScale.WEEK -> { b ->
-                "$w${isoWeekNumber(b.start)}-${
-                    DateTimeUtils.format(b.start, DateFormat.MONTH_SHORT)
-                }"
-            }
-
-            BucketScale.MONTH -> { b ->
-                DateTimeUtils.format(b.start, DateFormat.MONTH_SHORT)
-            }
-
-            BucketScale.EXERCISE -> { _ -> "" }
-        }
-    }
-
-    private suspend fun LocalDateTime.label(scale: BucketScale): String {
-        val w = stringProvider.get(Res.string.w)
-        return when (scale) {
-            BucketScale.DAY, BucketScale.EXERCISE -> {
-                DateTimeUtils.format(this, DateFormat.DATE_DD_MMM) // e.g., "02 Sep"
-            }
-
-            BucketScale.WEEK -> {
-                "$w${isoWeekNumber(this)}-${
-                    DateTimeUtils.format(this, DateFormat.MONTH_SHORT)
-                }"
-            }
-
-            BucketScale.MONTH -> {
-                DateTimeUtils.format(this, DateFormat.MONTH_SHORT)
-            }
-        }
     }
 
     // -------------------------- Misc helpers --------------------------

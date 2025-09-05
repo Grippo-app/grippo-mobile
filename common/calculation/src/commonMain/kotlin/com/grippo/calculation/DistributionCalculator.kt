@@ -1,8 +1,8 @@
 package com.grippo.calculation
 
-import com.grippo.calculation.internal.daysInclusive
+import com.grippo.calculation.internal.DistributionMetric
 import com.grippo.calculation.internal.deriveScale
-import com.grippo.calculation.models.BucketScale
+import com.grippo.calculation.internal.instructionForDistribution
 import com.grippo.calculation.models.Instruction
 import com.grippo.date.utils.contains
 import com.grippo.design.components.chart.DSPieData
@@ -11,21 +11,13 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.design.resources.provider.tooltip_category_description_training
-import com.grippo.design.resources.provider.tooltip_category_description_trainings
 import com.grippo.design.resources.provider.tooltip_category_title_training
-import com.grippo.design.resources.provider.tooltip_category_title_trainings
 import com.grippo.design.resources.provider.tooltip_experience_description_training
-import com.grippo.design.resources.provider.tooltip_experience_description_trainings
 import com.grippo.design.resources.provider.tooltip_experience_title_training
-import com.grippo.design.resources.provider.tooltip_experience_title_trainings
 import com.grippo.design.resources.provider.tooltip_force_type_description_training
-import com.grippo.design.resources.provider.tooltip_force_type_description_trainings
 import com.grippo.design.resources.provider.tooltip_force_type_title_training
-import com.grippo.design.resources.provider.tooltip_force_type_title_trainings
 import com.grippo.design.resources.provider.tooltip_weight_type_description_training
-import com.grippo.design.resources.provider.tooltip_weight_type_description_trainings
 import com.grippo.design.resources.provider.tooltip_weight_type_title_training
-import com.grippo.design.resources.provider.tooltip_weight_type_title_trainings
 import com.grippo.state.datetime.PeriodState
 import com.grippo.state.exercise.examples.CategoryEnumState
 import com.grippo.state.exercise.examples.ForceTypeEnumState
@@ -67,69 +59,6 @@ public class DistributionCalculator(
     private val colorProvider: ColorProvider
 ) {
 
-    // -------------- Tooltip plumbing (scale-aware, like AnalyticsCalculator) --------------
-
-    private enum class Metric { CATEGORY, WEIGHT_TYPE, FORCE_TYPE, EXPERIENCE }
-
-    @Suppress("UNUSED_PARAMETER")
-    private fun instructionFor(metric: Metric, scale: BucketScale, days: Int): Instruction {
-        // For distributions we only distinguish: single session vs aggregated period
-        val isTraining = (scale == BucketScale.EXERCISE)
-
-        return when (metric) {
-            Metric.CATEGORY ->
-                if (isTraining) {
-                    Instruction(
-                        title = UiText.Res(Res.string.tooltip_category_title_training),
-                        description = UiText.Res(Res.string.tooltip_category_description_training)
-                    )
-                } else {
-                    Instruction(
-                        title = UiText.Res(Res.string.tooltip_category_title_trainings),
-                        description = UiText.Res(Res.string.tooltip_category_description_trainings)
-                    )
-                }
-
-            Metric.WEIGHT_TYPE ->
-                if (isTraining) {
-                    Instruction(
-                        title = UiText.Res(Res.string.tooltip_weight_type_title_training),
-                        description = UiText.Res(Res.string.tooltip_weight_type_description_training)
-                    )
-                } else {
-                    Instruction(
-                        title = UiText.Res(Res.string.tooltip_weight_type_title_trainings),
-                        description = UiText.Res(Res.string.tooltip_weight_type_description_trainings)
-                    )
-                }
-
-            Metric.FORCE_TYPE ->
-                if (isTraining) {
-                    Instruction(
-                        title = UiText.Res(Res.string.tooltip_force_type_title_training),
-                        description = UiText.Res(Res.string.tooltip_force_type_description_training)
-                    )
-                } else {
-                    Instruction(
-                        title = UiText.Res(Res.string.tooltip_force_type_title_trainings),
-                        description = UiText.Res(Res.string.tooltip_force_type_description_trainings)
-                    )
-                }
-
-            Metric.EXPERIENCE ->
-                if (isTraining) {
-                    Instruction(
-                        title = UiText.Res(Res.string.tooltip_experience_title_training),
-                        description = UiText.Res(Res.string.tooltip_experience_description_training)
-                    )
-                } else {
-                    Instruction(
-                        title = UiText.Res(Res.string.tooltip_experience_title_trainings),
-                        description = UiText.Res(Res.string.tooltip_experience_description_trainings)
-                    )
-                }
-        }
-    }
 
     // ---------------- Weighting strategy ----------------
 
@@ -201,9 +130,8 @@ public class DistributionCalculator(
     ): Pair<DSPieData, Instruction> {
         val inRange = trainings.filter { it.createdAt in period.range }
         val scale = deriveScale(period)
-        val days = daysInclusive(period.range.from.date, period.range.to.date)
         val data = buildCategoryPie(inRange.flatMap { it.exercises }, weighting)
-        val tip = instructionFor(Metric.CATEGORY, scale, days)
+        val tip = instructionForDistribution(DistributionMetric.CATEGORY, scale)
         return Pair(data, tip)
     }
 
@@ -253,9 +181,8 @@ public class DistributionCalculator(
     ): Pair<DSPieData, Instruction> {
         val inRange = trainings.filter { it.createdAt in period.range }
         val scale = deriveScale(period)
-        val days = daysInclusive(period.range.from.date, period.range.to.date)
         val data = buildWeightTypePie(inRange.flatMap { it.exercises }, weighting)
-        val tip = instructionFor(Metric.WEIGHT_TYPE, scale, days)
+        val tip = instructionForDistribution(DistributionMetric.WEIGHT_TYPE, scale)
         return Pair(data, tip)
     }
 
@@ -306,9 +233,8 @@ public class DistributionCalculator(
     ): Pair<DSPieData, Instruction> {
         val inRange = trainings.filter { it.createdAt in period.range }
         val scale = deriveScale(period)
-        val days = daysInclusive(period.range.from.date, period.range.to.date)
         val data = buildForceTypePie(inRange.flatMap { it.exercises }, weighting)
-        val tip = instructionFor(Metric.FORCE_TYPE, scale, days)
+        val tip = instructionForDistribution(DistributionMetric.FORCE_TYPE, scale)
         return Pair(data, tip)
     }
 
@@ -359,9 +285,8 @@ public class DistributionCalculator(
     ): Pair<DSPieData, Instruction> {
         val inRange = trainings.filter { it.createdAt in period.range }
         val scale = deriveScale(period)
-        val days = daysInclusive(period.range.from.date, period.range.to.date)
         val data = buildExperiencePie(inRange.flatMap { it.exercises }, weighting)
-        val tip = instructionFor(Metric.EXPERIENCE, scale, days)
+        val tip = instructionForDistribution(DistributionMetric.EXPERIENCE, scale)
         return Pair(data, tip)
     }
 

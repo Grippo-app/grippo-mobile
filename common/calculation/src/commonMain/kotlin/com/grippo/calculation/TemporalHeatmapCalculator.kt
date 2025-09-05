@@ -1,33 +1,15 @@
 package com.grippo.calculation
 
-import com.grippo.calculation.internal.buildDayBuckets
-import com.grippo.calculation.internal.buildMonthBuckets
-import com.grippo.calculation.internal.buildWeekBuckets
-import com.grippo.calculation.internal.daysInclusive
+import com.grippo.calculation.internal.buildBuckets
+import com.grippo.calculation.internal.defaultTimeLabels
 import com.grippo.calculation.internal.deriveScale
-import com.grippo.calculation.internal.isoWeekNumber
-import com.grippo.calculation.models.Bucket
-import com.grippo.calculation.models.BucketScale
+import com.grippo.calculation.internal.instructionForMuscleLoad
 import com.grippo.calculation.models.Instruction
-import com.grippo.date.utils.DateFormat
-import com.grippo.date.utils.DateRange
-import com.grippo.date.utils.DateTimeUtils
 import com.grippo.date.utils.contains
 import com.grippo.design.components.chart.DSHeatmapData
-import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.providers.StringProvider
-import com.grippo.design.resources.provider.tooltip_muscle_load_description_day
-import com.grippo.design.resources.provider.tooltip_muscle_load_description_month
-import com.grippo.design.resources.provider.tooltip_muscle_load_description_training
-import com.grippo.design.resources.provider.tooltip_muscle_load_description_year
-import com.grippo.design.resources.provider.tooltip_muscle_load_title_day
-import com.grippo.design.resources.provider.tooltip_muscle_load_title_month
-import com.grippo.design.resources.provider.tooltip_muscle_load_title_training
-import com.grippo.design.resources.provider.tooltip_muscle_load_title_year
-import com.grippo.design.resources.provider.w
 import com.grippo.state.datetime.PeriodState
 import com.grippo.state.exercise.examples.ExerciseExampleState
-import com.grippo.state.formatters.UiText
 import com.grippo.state.muscles.MuscleEnumState
 import com.grippo.state.muscles.MuscleGroupState
 import com.grippo.state.muscles.MuscleRepresentationState
@@ -90,7 +72,7 @@ public class TemporalHeatmapCalculator(
 
         // Build time buckets (X axis) and labels
         val buckets = buildBuckets(period.range, scale).sortedBy { it.start }
-        val colLabels = defaultTimeLabels(buckets, scale)
+        val colLabels = defaultTimeLabels(buckets, scale, stringProvider)
         val cols = buckets.size
 
         // Row dimension (Y axis): provided groups or individual muscles from examples
@@ -99,7 +81,7 @@ public class TemporalHeatmapCalculator(
 
         // Early exit (empty grid)
         if (rows == 0 || cols == 0) {
-            val tipEmpty = instructionForMuscleHeatmap(period)
+            val tipEmpty = instructionForMuscleLoad(period)
             val empty = DSHeatmapData(
                 rows = 0,
                 cols = 0,
@@ -175,17 +157,10 @@ public class TemporalHeatmapCalculator(
             values01 = values01,
             rowLabels = rowSpec.labels,
             colLabels = colLabels,
-            rowDim = if (rowSpec.usesGroups) "MuscleGroup" else "Muscle",
-            colDim = when (scale) {
-                BucketScale.DAY -> "Day"
-                BucketScale.WEEK -> "Week"
-                BucketScale.MONTH -> "Month"
-                BucketScale.EXERCISE -> "Day"
-            },
         )
 
         val tip =
-            instructionForMuscleHeatmap(period) // reuse your muscle-load instructions per scale
+            instructionForMuscleLoad(period) // reuse your muscle-load instructions per scale
         return data to tip
     }
 
@@ -274,67 +249,9 @@ public class TemporalHeatmapCalculator(
 
     // -------------------------- Instructions --------------------------
 
-    /** Reuse your muscle-load copy per scale (titles/descriptions already exist in your strings). */
-    private fun instructionForMuscleHeatmap(period: PeriodState): Instruction {
-        val scale = deriveScale(period)
-        val (titleRes, descRes) = when (scale) {
-            BucketScale.EXERCISE ->
-                Res.string.tooltip_muscle_load_title_training to
-                        Res.string.tooltip_muscle_load_description_training
-
-            BucketScale.DAY ->
-                Res.string.tooltip_muscle_load_title_day to
-                        Res.string.tooltip_muscle_load_description_day
-
-            BucketScale.WEEK ->
-                Res.string.tooltip_muscle_load_title_month to
-                        Res.string.tooltip_muscle_load_description_month
-
-            BucketScale.MONTH -> {
-                val days = daysInclusive(period.range.from.date, period.range.to.date)
-                if (days >= 365)
-                    Res.string.tooltip_muscle_load_title_year to
-                            Res.string.tooltip_muscle_load_description_year
-                else
-                    Res.string.tooltip_muscle_load_title_month to
-                            Res.string.tooltip_muscle_load_description_month
-            }
-        }
-
-        return Instruction(title = UiText.Res(titleRes), description = UiText.Res(descRes))
-    }
 
     // -------------------------- Time bucketing --------------------------
 
-    private fun buildBuckets(range: DateRange, scale: BucketScale): List<Bucket> = when (scale) {
-        BucketScale.DAY -> buildDayBuckets(range)
-        BucketScale.WEEK -> buildWeekBuckets(range)
-        BucketScale.MONTH -> buildMonthBuckets(range)
-        BucketScale.EXERCISE -> buildDayBuckets(range) // single-day → 1 column
-    }
-
-    private suspend fun defaultTimeLabels(buckets: List<Bucket>, scale: BucketScale): List<String> {
-        val w = stringProvider.get(Res.string.w)
-        return when (scale) {
-            BucketScale.DAY -> buckets.map {
-                DateTimeUtils.format(it.start, DateFormat.DATE_DD_MMM) // e.g., "02 Sep"
-            }
-
-            BucketScale.WEEK -> buckets.map {
-                "$w${isoWeekNumber(it.start)}-${
-                    DateTimeUtils.format(it.start, DateFormat.MONTH_SHORT)
-                }" // e.g., "W36-Sep"
-            }
-
-            BucketScale.MONTH -> buckets.map {
-                DateTimeUtils.format(it.start, DateFormat.MONTH_SHORT) // e.g., "Sep"
-            }
-
-            BucketScale.EXERCISE -> buckets.map {
-                DateTimeUtils.format(it.start, DateFormat.DATE_DD_MMM)
-            }
-        }
-    }
 
     // -------------------------- Normalization helpers --------------------------
 
