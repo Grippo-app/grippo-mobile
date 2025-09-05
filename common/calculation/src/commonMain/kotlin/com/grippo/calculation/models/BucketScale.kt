@@ -22,27 +22,37 @@ internal fun deriveScale(period: PeriodState): BucketScale = when (period) {
 private fun deriveCustomScale(range: DateRange): BucketScale {
     val from = range.from.date
     val to = range.to.date
+
+    // Guard invalid ranges
+    if (from > to) return BucketScale.DAY
     if (from == to) return BucketScale.EXERCISE
 
     val days = daysInclusive(from, to)
     val fullMonths = isWholeMonths(range)
 
     return when {
+        // < 30 days → DAY or WEEK by divisibility
         days < 30 && (days % 7 != 0) -> BucketScale.DAY
         days < 30 && (days % 7 == 0) -> BucketScale.WEEK
-        days in 30..366 -> if (fullMonths) BucketScale.MONTH else BucketScale.WEEK
+
+        // 30..366 days:
+        // - whole-month aligned → MONTH
+        // - long span (≈5+ months) even if not aligned → MONTH (readability)
+        // - otherwise → WEEK
+        days in 30..366 -> when {
+            fullMonths -> BucketScale.MONTH
+            days >= 150 -> BucketScale.MONTH
+            else -> BucketScale.WEEK
+        }
+
+        // > 1 year → MONTH
         else -> BucketScale.MONTH
     }
 }
 
 internal fun daysInclusive(from: LocalDate, to: LocalDate): Int {
-    var cnt = 0
-    var cur = from
-    while (cur <= to) {
-        cnt++
-        cur = cur.plus(DatePeriod(days = 1))
-    }
-    return cnt
+    // O(1): difference in epoch days + 1 (inclusive)
+    return (to.toEpochDays() - from.toEpochDays() + 1)
 }
 
 /** Check if the DateRange covers whole months exactly (from 1st day to last day). */

@@ -140,19 +140,23 @@ public class DistributionCalculator(
         public data object Volume : Weighting
     }
 
-    // FIXED: Volume = Σ(weight × reps), not Σ(weight)
     private fun weightOfExercise(ex: ExerciseState, w: Weighting): Float = when (w) {
         Weighting.Count -> 1f
+
+        // Count only valid sets (positive reps)
         Weighting.Sets -> ex.iterations.count { (it.repetitions.value ?: 0) > 0 }.toFloat()
-        Weighting.Reps -> ex.iterations.sumOf { kotlin.math.max(0, it.repetitions.value ?: 0) }
+
+        // Sum only positive reps
+        Weighting.Reps -> ex.iterations
+            .sumOf { kotlin.math.max(0, it.repetitions.value ?: 0) }
             .toFloat()
 
+        // Volume = Σ(weight × reps) with positive reps only
         Weighting.Volume -> ex.iterations
             .sumOf {
-                ((it.volume.value ?: 0f) * (kotlin.math.max(
-                    0,
-                    it.repetitions.value ?: 0
-                ))).toDouble()
+                val w = it.volume.value ?: 0f
+                val r = kotlin.math.max(0, it.repetitions.value ?: 0)
+                (w * r).toDouble()
             }
             .toFloat()
     }.coerceAtLeast(0f)
@@ -185,19 +189,6 @@ public class DistributionCalculator(
         val tip = Instruction(
             title = UiText.Res(Res.string.tooltip_category_title_training),
             description = UiText.Res(Res.string.tooltip_category_description_training)
-        )
-        return Pair(data, tip)
-    }
-
-    /** Multi-session (legacy, without Period) */
-    public suspend fun calculateCategoryDistributionFromTrainings(
-        trainings: List<TrainingState>,
-        weighting: Weighting = Weighting.Count
-    ): Pair<DSPieData, Instruction> {
-        val data = buildCategoryPie(trainings.flatMap { it.exercises }, weighting)
-        val tip = Instruction(
-            title = UiText.Res(Res.string.tooltip_category_title_trainings),
-            description = UiText.Res(Res.string.tooltip_category_description_trainings)
         )
         return Pair(data, tip)
     }
@@ -250,19 +241,6 @@ public class DistributionCalculator(
         val tip = Instruction(
             title = UiText.Res(Res.string.tooltip_weight_type_title_training),
             description = UiText.Res(Res.string.tooltip_weight_type_description_training)
-        )
-        return Pair(data, tip)
-    }
-
-    /** Multi-session (legacy) */
-    public suspend fun calculateWeightTypeDistributionFromTrainings(
-        trainings: List<TrainingState>,
-        weighting: Weighting = Weighting.Count
-    ): Pair<DSPieData, Instruction> {
-        val data = buildWeightTypePie(trainings.flatMap { it.exercises }, weighting)
-        val tip = Instruction(
-            title = UiText.Res(Res.string.tooltip_weight_type_title_trainings),
-            description = UiText.Res(Res.string.tooltip_weight_type_description_trainings)
         )
         return Pair(data, tip)
     }
@@ -320,19 +298,6 @@ public class DistributionCalculator(
         return Pair(data, tip)
     }
 
-    /** Multi-session (legacy) */
-    public suspend fun calculateForceTypeDistributionFromTrainings(
-        trainings: List<TrainingState>,
-        weighting: Weighting = Weighting.Count
-    ): Pair<DSPieData, Instruction> {
-        val data = buildForceTypePie(trainings.flatMap { it.exercises }, weighting)
-        val tip = Instruction(
-            title = UiText.Res(Res.string.tooltip_force_type_title_trainings),
-            description = UiText.Res(Res.string.tooltip_force_type_description_trainings)
-        )
-        return Pair(data, tip)
-    }
-
     /** Multi-session with PeriodState */
     public suspend fun calculateForceTypeDistributionFromTrainings(
         trainings: List<TrainingState>,
@@ -382,19 +347,6 @@ public class DistributionCalculator(
         val tip = Instruction(
             title = UiText.Res(Res.string.tooltip_experience_title_training),
             description = UiText.Res(Res.string.tooltip_experience_description_training)
-        )
-        return Pair(data, tip)
-    }
-
-    /** Multi-session (legacy) */
-    public suspend fun calculateExperienceDistributionFromTrainings(
-        trainings: List<TrainingState>,
-        weighting: Weighting = Weighting.Count
-    ): Pair<DSPieData, Instruction> {
-        val data = buildExperiencePie(trainings.flatMap { it.exercises }, weighting)
-        val tip = Instruction(
-            title = UiText.Res(Res.string.tooltip_experience_title_trainings),
-            description = UiText.Res(Res.string.tooltip_experience_description_trainings)
         )
         return Pair(data, tip)
     }

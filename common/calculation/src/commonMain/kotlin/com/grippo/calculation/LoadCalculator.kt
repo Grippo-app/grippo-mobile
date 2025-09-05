@@ -1,8 +1,10 @@
 package com.grippo.calculation
 
 import androidx.compose.ui.graphics.Color
+import com.grippo.calculation.models.BucketScale
 import com.grippo.calculation.models.Instruction
-import com.grippo.calculation.models.isWholeMonths
+import com.grippo.calculation.models.daysInclusive
+import com.grippo.calculation.models.deriveScale
 import com.grippo.date.utils.contains
 import com.grippo.design.components.chart.DSProgressData
 import com.grippo.design.components.chart.DSProgressItem
@@ -19,54 +21,57 @@ import com.grippo.design.resources.provider.tooltip_muscle_load_title_training
 import com.grippo.design.resources.provider.tooltip_muscle_load_title_year
 import com.grippo.state.datetime.PeriodState
 import com.grippo.state.exercise.examples.ExerciseExampleState
-import com.grippo.state.exercise.examples.WeightTypeEnumState
 import com.grippo.state.formatters.UiText
 import com.grippo.state.muscles.MuscleEnumState
 import com.grippo.state.muscles.MuscleGroupState
 import com.grippo.state.muscles.MuscleRepresentationState
 import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.TrainingState
-import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.plus
 
 /**
- * 💪 Muscle Load Calculator — SIMPLE API (auto modes)
+ * 💪 Muscle Load Calculator — SIMPLE API (no bodyweight special-casing)
  *
  * Public API:
- *  - calculateMuscleLoadDistributionFromExercises(...) -> Pair<DSProgressData, Instruction>
- *  - calculateMuscleLoadDistributionFromTrainings(...) -> Pair<DSProgressData, Instruction>
+ *  - calculateMuscleLoadDistributionFromExercises(exercises, examples, groups)
+ *  - calculateMuscleLoadDistributionFromTrainings(trainings, period, examples, groups)
  *
- * Internally auto-selects:
- *  - Workload: Volume (weight×reps) or Reps when bodyweight dominates
- *  - Mode:     ABSOLUTE for single session (ThisDay), RELATIVE for periods
- *  - Relative: SUM for periods (share of total); MAX only if RELATIVE is ever used for session
+ * Behavior:
+ *  - Exercises (ThisDay): ABSOLUTE values
+ *  - Trainings (any period): RELATIVE (SUM %) for predictable aggregates
  *
- * Returns data + localized tooltip Instruction (title + description) matched to period.
+ * Workload auto-selection (simple & robust):
+ *  - Volume (weight × reps) if there exists non-trivial entered weight across sets
+ *  - Reps (sum of reps) otherwise
+ *
+ * Notes:
+ *  - No user bodyweight parameter. We trust the entered set weight as-is.
+ *  - Negative weights are ignored (treated as 0). Tiny noise weights are ignored via EPS.
  */
 public class LoadCalculator(
     private val stringProvider: StringProvider,
     private val colorProvider: ColorProvider,
 ) {
 
+    // Tiny threshold to ignore weight noise (e.g., 0.2..0.4 kg rounding)
+    private companion object {
+        private const val WEIGHT_EPS_KG: Float = 0.5f
+    }
+
     // ======== PUBLIC SIMPLE API ========
 
-    /** 📊 Muscle / Muscle-Group load for a single session (auto modes). */
+    /** Single session (ABSOLUTE; auto workload). */
     public suspend fun calculateMuscleLoadDistributionFromExercises(
         exercises: List<ExerciseState>,
         examples: List<ExerciseExampleState>,
         groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
     ): Pair<DSProgressData, Instruction> {
-        val (workload, mode, relMode) = resolveAutoModes(
-            period = PeriodState.ThisDay,
-            exercises = exercises
-        )
+        val workload = chooseWorkload(exercises)
         val data = calculateCore(
             exercises = exercises,
             examples = examples,
             groups = groups,
-            mode = mode,
-            relativeMode = relMode,
+            mode = Mode.RELATIVE,
+            relativeMode = RelativeMode.SUM, // unused in ABSOLUTE
             workload = workload
         )
         val instruction = Instruction(
@@ -76,7 +81,7 @@ public class LoadCalculator(
         return data to instruction
     }
 
-    /** 📊 Muscle / Muscle-Group load for a period (auto modes + period-based tooltip). */
+    /** Period aggregation (RELATIVE SUM %; auto workload). */
     public suspend fun calculateMuscleLoadDistributionFromTrainings(
         trainings: List<TrainingState>,
         period: PeriodState,
@@ -86,17 +91,14 @@ public class LoadCalculator(
         val inRange = trainings.filter { it.createdAt in period.range }
         val exercises = inRange.flatMap { it.exercises }
 
-        val (workload, mode, relMode) = resolveAutoModes(
-            period = period,
-            exercises = exercises
-        )
+        val workload = chooseWorkload(exercises)
 
         val data = calculateCore(
             exercises = exercises,
             examples = examples,
             groups = groups,
-            mode = mode,
-            relativeMode = relMode,
+            mode = Mode.RELATIVE,            // forced for aggregates
+            relativeMode = RelativeMode.SUM, // share of total (%)
             workload = workload
         )
 
@@ -104,63 +106,31 @@ public class LoadCalculator(
         return data to instruction
     }
 
-    // ======== INTERNAL (HIDDEN) ========
+    // ======== INTERNAL ========
 
-    // Hidden display modes
     private enum class Mode { ABSOLUTE, RELATIVE }
     private enum class RelativeMode { MAX, SUM }
 
-    // Hidden workload models
     private sealed interface Workload {
         data object Volume : Workload        // Σ(weight × reps)
         data object Reps : Workload          // Σ(reps)
         data class TUT(val secPerRep: Float = 3f) : Workload // Σ(reps × secPerRep)
     }
 
-    /**
-     * Heuristics for selecting modes based on period and exercise mix:
-     * - ThisDay → ABSOLUTE; Volume if bodyweight share is low, otherwise Reps
-     * - Periods → RELATIVE + SUM; Volume vs Reps by the same heuristic
-     */
-    private fun resolveAutoModes(
-        period: PeriodState,
-        exercises: List<ExerciseState>
-    ): Triple<Workload, Mode, RelativeMode> {
-        val bwShare = bodyweightRepsShare(exercises)
-        val workload: Workload = if (bwShare >= 0.60f) Workload.Reps else Workload.Volume
-
-        return when (period) {
-            is PeriodState.ThisDay -> {
-                val mode = Mode.ABSOLUTE
-                val rel = RelativeMode.SUM // not used in ABSOLUTE, kept for uniform signature
-                Triple(workload, mode, rel)
-            }
-
-            is PeriodState.ThisWeek,
-            is PeriodState.ThisMonth,
-            is PeriodState.CUSTOM -> {
-                val mode = Mode.RELATIVE
-                val rel = RelativeMode.SUM
-                Triple(workload, mode, rel)
-            }
-        }
-    }
-
-    /** Returns share of reps performed as bodyweight across provided exercises. */
-    private fun bodyweightRepsShare(exercises: List<ExerciseState>): Float {
-        var bwReps = 0
-        var allReps = 0
+    /** Simple rule: if there's any non-trivial weight entered across sets, use Volume; otherwise Reps. */
+    private fun chooseWorkload(exercises: List<ExerciseState>): Workload {
+        var tonnageLike = 0.0
         exercises.forEach { ex ->
-            val reps = ex.iterations.sumOf { (it.repetitions.value ?: 0).coerceAtLeast(0) }
-            allReps += reps
-            val isBW = ex.exerciseExample?.weightType == WeightTypeEnumState.BODY_WEIGHT
-            if (isBW) bwReps += reps
+            ex.iterations.forEach { itn ->
+                val w = (itn.volume.value ?: 0f)
+                val r = (itn.repetitions.value ?: 0).coerceAtLeast(0)
+                val load = if (w > WEIGHT_EPS_KG) w else 0f
+                if (r > 0 && load > 0f) tonnageLike += (load * r)
+            }
         }
-        if (allReps <= 0) return 0f
-        return (bwReps.toFloat() / allReps.toFloat()).coerceIn(0f, 1f)
+        return if (tonnageLike > 0.0) Workload.Volume else Workload.Reps
     }
 
-    // ---- Core computation (hidden) ----
     private suspend fun calculateCore(
         exercises: List<ExerciseState>,
         examples: List<ExerciseExampleState>,
@@ -175,16 +145,17 @@ public class LoadCalculator(
         val exampleMap = examples.associateBy { it.value.id }
         val muscleLoad = mutableMapOf<MuscleEnumState, Float>()
 
-        // 1) Compute per-exercise workload using the selected model
+        // 1) Per-exercise workload with simplified semantics (no bodyweight augmentation)
         exercises.forEach { ex ->
             val exampleId = ex.exerciseExample?.id ?: return@forEach
             val example = exampleMap[exampleId] ?: return@forEach
 
             val exWorkload = when (workload) {
                 Workload.Volume -> ex.iterations.fold(0f) { acc, itn ->
-                    val w = (itn.volume.value ?: 0f).coerceAtLeast(0f)
+                    val w = (itn.volume.value ?: 0f)
                     val r = (itn.repetitions.value ?: 0).coerceAtLeast(0)
-                    acc + (w * r)
+                    val load = if (w > WEIGHT_EPS_KG) w else 0f // ignore tiny/negative
+                    if (r == 0 || load <= 0f) acc else acc + load * r
                 }
 
                 Workload.Reps -> ex.iterations.fold(0) { acc, itn ->
@@ -219,26 +190,28 @@ public class LoadCalculator(
 
         if (muscleLoad.isEmpty()) return DSProgressData(items = emptyList())
 
-        // 3) Aggregate by groups (if provided) or keep by muscle
-        val labelValueMap: Map<String, Float> = if (groups.isNotEmpty()) {
-            groups.map { group ->
-                val sum =
-                    group.muscles.fold(0f) { acc, m -> acc + (muscleLoad[m.value.type] ?: 0f) }
-                group.type.title().text(stringProvider) to sum
-            }.filter { it.second > 0f }.toMap()
-        } else {
-            muscleLoad.mapKeys { (muscle, _) -> muscle.title().text(stringProvider) }
-        }
+        // 3) Aggregate by groups (or keep by muscle) — list avoids label collisions
+        val labelValues: List<Pair<String, Float>> =
+            if (groups.isNotEmpty()) {
+                groups.map { group ->
+                    val sum =
+                        group.muscles.fold(0f) { acc, m -> acc + (muscleLoad[m.value.type] ?: 0f) }
+                    group.type.title().text(stringProvider) to sum
+                }.filter { it.second > 0f }
+            } else {
+                muscleLoad.map { (muscle, v) -> muscle.title().text(stringProvider) to v }
+                    .filter { it.second > 0f }
+            }
 
-        if (labelValueMap.isEmpty()) return DSProgressData(items = emptyList())
+        if (labelValues.isEmpty()) return DSProgressData(items = emptyList())
 
         // 4) Normalize / format values and colorize as a heatmap
-        val values = labelValueMap.values
+        val values = labelValues.map { it.second }
         val maxVal = values.maxOrNull() ?: 1f
         val sumVal = values.sum().takeIf { it > 0f } ?: 1f
 
-        val items = labelValueMap.entries
-            .sortedByDescending { it.value }
+        val items = labelValues
+            .sortedByDescending { it.second }
             .map { (label, raw) ->
                 val display = when (mode) {
                     Mode.ABSOLUTE -> raw
@@ -255,43 +228,33 @@ public class LoadCalculator(
         return DSProgressData(items = items)
     }
 
-    // ---- Tooltip selection by period ----
+    // ---- Tooltip selection by period (unified with bucketing scale) ----
     private fun instructionForPeriod(period: PeriodState): Instruction {
-        val days = daysInclusive(period.range.from.date, period.range.to.date)
-        val wholeMonths = isWholeMonths(period.range)
+        val scale = deriveScale(period)
+        val (titleRes, descRes) = when (scale) {
+            BucketScale.EXERCISE ->
+                Res.string.tooltip_muscle_load_title_training to
+                        Res.string.tooltip_muscle_load_description_training
 
-        val (titleRes, descRes) = when (period) {
-            is PeriodState.ThisDay ->
+            BucketScale.DAY ->
                 Res.string.tooltip_muscle_load_title_day to
                         Res.string.tooltip_muscle_load_description_day
-
-            is PeriodState.ThisWeek ->
-                Res.string.tooltip_muscle_load_title_day to
-                        Res.string.tooltip_muscle_load_description_day
-
-            is PeriodState.ThisMonth ->
+            // No dedicated "week" strings; reuse month-view copy for weekly aggregation
+            BucketScale.WEEK ->
                 Res.string.tooltip_muscle_load_title_month to
                         Res.string.tooltip_muscle_load_description_month
 
-            is PeriodState.CUSTOM -> when {
-                days >= 365 ->
+            BucketScale.MONTH -> {
+                val days = daysInclusive(period.range.from.date, period.range.to.date)
+                if (days >= 365)
                     Res.string.tooltip_muscle_load_title_year to
                             Res.string.tooltip_muscle_load_description_year
-
-                days >= 30 && wholeMonths ->
+                else
                     Res.string.tooltip_muscle_load_title_month to
                             Res.string.tooltip_muscle_load_description_month
-
-                else ->
-                    Res.string.tooltip_muscle_load_title_day to
-                            Res.string.tooltip_muscle_load_description_day
             }
         }
-
-        return Instruction(
-            title = UiText.Res(titleRes),
-            description = UiText.Res(descRes)
-        )
+        return Instruction(title = UiText.Res(titleRes), description = UiText.Res(descRes))
     }
 
     // ---- Palette / color helpers ----
@@ -318,16 +281,4 @@ public class LoadCalculator(
             blue = (c1.blue + (c2.blue - c1.blue) * t),
             alpha = (c1.alpha + (c2.alpha - c1.alpha) * t),
         )
-
-    // ---- Date / period helpers ----
-
-    private fun daysInclusive(from: LocalDate, to: LocalDate): Int {
-        var cnt = 0
-        var cur = from
-        while (cur <= to) {
-            cnt++
-            cur = cur.plus(DatePeriod(days = 1))
-        }
-        return cnt
-    }
 }

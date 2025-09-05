@@ -157,19 +157,23 @@ internal class HomeStatisticsViewModel(
         )
         val categoryDistributionData =
             distributionCalculator.calculateCategoryDistributionFromTrainings(
-                trainings = trainings
+                trainings = trainings,
+                period = period
             )
         val weightTypeDistributionData =
             distributionCalculator.calculateWeightTypeDistributionFromTrainings(
-                trainings = trainings
+                trainings = trainings,
+                period = period
             )
         val forceTypeDistributionData =
             distributionCalculator.calculateForceTypeDistributionFromTrainings(
-                trainings = trainings
+                trainings = trainings,
+                period = period
             )
         val experienceDistributionData =
             distributionCalculator.calculateExperienceDistributionFromTrainings(
-                trainings = trainings
+                trainings = trainings,
+                period = period
             )
         val exerciseVolumeData =
             analyticsCalculator.calculateExerciseVolumeChartFromTrainings(
