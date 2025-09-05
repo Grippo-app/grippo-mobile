@@ -5,6 +5,8 @@ import com.grippo.calculation.models.BucketScale
 import com.grippo.calculation.models.Instruction
 import com.grippo.calculation.models.daysInclusive
 import com.grippo.calculation.models.deriveScale
+import com.grippo.calculation.models.maxDT
+import com.grippo.calculation.models.minDT
 import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateRange
 import com.grippo.date.utils.DateTimeUtils
@@ -897,10 +899,6 @@ public class AnalyticsCalculator(
         val doy = (date.toEpochDays() - firstJan.toEpochDays()).toInt() + 1
         return ((doy - 1) / 7) + 1
     }
-
-    // Min/Max for LocalDateTime
-    private fun minDT(a: LocalDateTime, b: LocalDateTime): LocalDateTime = if (a <= b) a else b
-    private fun maxDT(a: LocalDateTime, b: LocalDateTime): LocalDateTime = if (a >= b) a else b
 
     // -------------------------- Misc helpers --------------------------
 

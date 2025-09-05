@@ -67,3 +67,6 @@ internal fun isWholeMonths(range: DateRange): Boolean {
     val toIsLast = to.plus(DatePeriod(days = 1)).dayOfMonth == 1
     return toIsLast && from <= to
 }
+
+internal fun minDT(a: LocalDateTime, b: LocalDateTime): LocalDateTime = if (a <= b) a else b
+internal fun maxDT(a: LocalDateTime, b: LocalDateTime): LocalDateTime = if (a >= b) a else b

@@ -3,9 +3,14 @@ package com.grippo.calculation
 import com.grippo.calculation.models.Bucket
 import com.grippo.calculation.models.BucketScale
 import com.grippo.calculation.models.Instruction
+import com.grippo.calculation.models.daysInclusive
+import com.grippo.calculation.models.deriveScale
+import com.grippo.calculation.models.maxDT
+import com.grippo.calculation.models.minDT
 import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateRange
 import com.grippo.date.utils.DateTimeUtils
+import com.grippo.date.utils.contains
 import com.grippo.design.components.chart.DSHeatmapData
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.providers.StringProvider
@@ -384,52 +389,10 @@ public class TemporalHeatmapCalculator(
     private fun TrainingState.belongsTo(bucket: Bucket): Boolean =
         createdAt >= bucket.start && createdAt <= bucket.end
 
-    private fun minDT(a: LocalDateTime, b: LocalDateTime): LocalDateTime = if (a <= b) a else b
-    private fun maxDT(a: LocalDateTime, b: LocalDateTime): LocalDateTime = if (a >= b) a else b
 
     // -------------------------- Config --------------------------
 
     private companion object {
         private const val WEIGHT_EPS_KG: Float = 0.5f
     }
-
-    // -------------------------- Scale derivation (same policy you used) --------------------------
-
-    private fun deriveScale(period: PeriodState): BucketScale = when (period) {
-        is PeriodState.ThisDay -> BucketScale.DAY
-        is PeriodState.ThisWeek -> BucketScale.DAY
-        is PeriodState.ThisMonth -> BucketScale.WEEK
-        is PeriodState.CUSTOM -> deriveCustomScale(period.range)
-    }
-
-    private fun deriveCustomScale(range: DateRange): BucketScale {
-        val from = range.from.date
-        val to = range.to.date
-        if (from >= to) return BucketScale.DAY
-        val days = daysInclusive(from, to)
-        val wholeMonths = isWholeMonths(range)
-        return when {
-            days <= 31 && !wholeMonths -> if (days % 7 == 0) BucketScale.WEEK else BucketScale.DAY
-            days <= 365 && wholeMonths -> BucketScale.MONTH
-            days <= 180 -> BucketScale.WEEK
-            else -> BucketScale.MONTH
-        }
-    }
-
-    // Placeholders if not already in your codebase:
-    private fun daysInclusive(from: LocalDate, to: LocalDate): Int =
-        (to.toEpochDays() - from.toEpochDays()) + 1
-
-    private fun isWholeMonths(range: DateRange): Boolean {
-        val from = range.from
-        val to = range.to
-        val fromIsFirst = from.date.dayOfMonth == 1 && from.time == LocalTime(0, 0)
-        val lastOfToMonth = LocalDate(to.year, to.monthNumber, 1).plus(DatePeriod(months = 1))
-            .minus(DatePeriod(days = 1))
-        val toIsLast = to.date == lastOfToMonth && to.time >= LocalTime(23, 59, 59)
-        return fromIsFirst && toIsLast
-    }
-
-    private operator fun DateRange.contains(ts: LocalDateTime): Boolean =
-        (ts >= from) && (ts <= to)
 }
