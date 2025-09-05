@@ -15,7 +15,6 @@ import com.grippo.design.components.chart.AreaChart
 import com.grippo.design.components.chart.BarChart
 import com.grippo.design.components.chart.PieChart
 import com.grippo.design.components.chart.ProgressChart
-import com.grippo.design.components.chart.XAxisLabelStyle
 import com.grippo.design.components.chip.IntensityChip
 import com.grippo.design.components.chip.IntensityChipStyle
 import com.grippo.design.components.chip.RepetitionsChip
@@ -90,7 +89,6 @@ internal fun StatisticsPage(
                         BarChart(
                             modifier = Modifier.fillMaxWidth().weight(1f),
                             data = state.exerciseVolumeData.first,
-                            xAxisLabelStyle = XAxisLabelStyle.SHOW_ALL
                         )
                     }
                 )
@@ -229,7 +227,6 @@ internal fun StatisticsPage(
                         BarChart(
                             modifier = Modifier.fillMaxWidth().weight(1f),
                             data = state.estimated1RMData.first,
-                            xAxisLabelStyle = XAxisLabelStyle.SHOW_ALL
                         )
                     }
                 )

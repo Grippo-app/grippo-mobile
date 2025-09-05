@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="w">Н</string>
+    <string name="ex">Впр.</string>
     <string name="kg">кг</string>
     <string name="reps">повт.</string>
     <string name="filters">Фільтри</string>

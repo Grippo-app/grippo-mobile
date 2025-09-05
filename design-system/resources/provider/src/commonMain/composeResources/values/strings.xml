@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="w">W</string>
+    <string name="ex">Ex</string>
     <string name="kg">kg</string>
     <string name="reps">reps</string>
     <string name="filters">Filters</string>

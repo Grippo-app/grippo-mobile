@@ -63,16 +63,16 @@ public fun HeatmapChart(
             labelPadding = 4.dp
         ),
         rowLabels = HeatmapStyle.AxisLabels.ShowAll(
-            textStyle = AppTokens.typography.b11Reg().copy(color = AppTokens.colors.text.primary)
+            textStyle = AppTokens.typography.b10Reg().copy(color = AppTokens.colors.text.primary)
         ),
         colLabels = HeatmapStyle.AxisLabels.Adaptive(
-            textStyle = AppTokens.typography.b11Reg().copy(color = AppTokens.colors.text.primary),
+            textStyle = AppTokens.typography.b10Reg().copy(color = AppTokens.colors.text.primary),
             minGapDp = 1.dp
         ),
         legend = HeatmapStyle.Legend.Visible(
             height = 8.dp,
             stops = palette.scaleStopsOrangeRed,
-            labelStyle = AppTokens.typography.b11Reg()
+            labelStyle = AppTokens.typography.b10Reg()
                 .copy(color = AppTokens.colors.text.secondary),
             minText = { "0%" },
             maxText = { "100%" }

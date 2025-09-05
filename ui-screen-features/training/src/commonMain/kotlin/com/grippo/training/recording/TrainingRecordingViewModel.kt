@@ -43,13 +43,13 @@ internal class TrainingRecordingViewModel(
     private val exerciseExampleFeature: ExerciseExampleFeature,
     private val dialogController: DialogController,
     private val stringProvider: StringProvider,
-    private val colorProvider: ColorProvider,
+    colorProvider: ColorProvider,
 ) : BaseViewModel<TrainingRecordingState, TrainingRecordingDirection, TrainingRecordingLoader>(
     TrainingRecordingState()
 ), TrainingRecordingContract {
 
     private val metricsAggregator = MetricsAggregator()
-    private val analyticsCalculator = AnalyticsCalculator(colorProvider)
+    private val analyticsCalculator = AnalyticsCalculator(colorProvider, stringProvider)
     private val distributionCalculator = DistributionCalculator(stringProvider, colorProvider)
     private val loadCalculator = LoadCalculator(stringProvider, colorProvider)
 

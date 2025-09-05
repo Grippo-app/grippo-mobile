@@ -42,7 +42,6 @@ public enum class XAxisLabelStyle {
 public fun BarChart(
     modifier: Modifier = Modifier,
     data: DSBarData,
-    xAxisLabelStyle: XAxisLabelStyle
 ) {
     val style = BarStyle(
         layout = BarStyle.Layout(
@@ -55,7 +54,7 @@ public fun BarChart(
         ),
         yAxis = BarStyle.YAxis.Labels(
             ticks = 5,
-            textStyle = AppTokens.typography.b11Reg().copy(color = AppTokens.colors.text.primary),
+            textStyle = AppTokens.typography.b10Reg().copy(color = AppTokens.colors.text.primary),
             formatter = { v, _ -> v.roundToInt().toString() },
             tickMarkColor = AppTokens.colors.divider.default,
             tickMarkWidth = 1.dp
@@ -64,18 +63,11 @@ public fun BarChart(
             color = AppTokens.colors.divider.default,
             width = 1.dp
         ),
-        xAxis = when (xAxisLabelStyle) {
-            XAxisLabelStyle.ADAPTIVE -> BarStyle.XAxis.LabelsAdaptive(
-                textStyle = AppTokens.typography.b11Reg()
-                    .copy(color = AppTokens.colors.text.secondary),
-                minGapDp = 1.dp
-            )
-
-            XAxisLabelStyle.SHOW_ALL -> BarStyle.XAxis.LabelsShowAll(
-                textStyle = AppTokens.typography.b11Reg()
-                    .copy(color = AppTokens.colors.text.secondary),
-            )
-        },
+        xAxis = BarStyle.XAxis.LabelsAdaptive(
+            textStyle = AppTokens.typography.b10Reg()
+                .copy(color = AppTokens.colors.text.secondary),
+            minGapDp = 1.dp
+        ),
         xBaseline = BarStyle.Baseline(
             color = AppTokens.colors.divider.default,
             width = 3.dp
@@ -95,7 +87,7 @@ public fun BarChart(
             sizing = BarStyle.BarsSizing.AutoEqualBarsAndGaps
         ),
         values = BarStyle.Values.Above(
-            textStyle = AppTokens.typography.b11Bold().copy(color = AppTokens.colors.text.primary),
+            textStyle = AppTokens.typography.b10Bold().copy(color = AppTokens.colors.text.primary),
             formatter = { v, _ -> v.roundToInt().toString() },
         ),
         target = null
@@ -142,7 +134,6 @@ private fun BarChartPreview() {
         BarChart(
             modifier = Modifier.size(300.dp),
             data = ds,
-            xAxisLabelStyle = XAxisLabelStyle.ADAPTIVE
         )
     }
 }

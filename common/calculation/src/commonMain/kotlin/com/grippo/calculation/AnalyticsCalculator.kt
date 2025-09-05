@@ -8,13 +8,14 @@ import com.grippo.calculation.models.deriveScale
 import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateRange
 import com.grippo.date.utils.DateTimeUtils
-import com.grippo.date.utils.contains
 import com.grippo.design.components.chart.DSAreaData
 import com.grippo.design.components.chart.DSAreaPoint
 import com.grippo.design.components.chart.DSBarData
 import com.grippo.design.components.chart.DSBarItem
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.ex
 import com.grippo.design.resources.provider.providers.ColorProvider
+import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.design.resources.provider.tooltip_estimated1rm_description_day
 import com.grippo.design.resources.provider.tooltip_estimated1rm_description_month
 import com.grippo.design.resources.provider.tooltip_estimated1rm_description_training
@@ -47,6 +48,7 @@ import com.grippo.design.resources.provider.tooltip_volume_title_day
 import com.grippo.design.resources.provider.tooltip_volume_title_month
 import com.grippo.design.resources.provider.tooltip_volume_title_training
 import com.grippo.design.resources.provider.tooltip_volume_title_year
+import com.grippo.design.resources.provider.w
 import com.grippo.state.datetime.PeriodState
 import com.grippo.state.exercise.examples.WeightTypeEnumState
 import com.grippo.state.formatters.UiText
@@ -56,6 +58,7 @@ import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
+import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlin.math.pow
@@ -86,6 +89,7 @@ import kotlin.math.pow
  */
 public class AnalyticsCalculator(
     private val colorProvider: ColorProvider,
+    private val stringProvider: StringProvider,
     private val policy: Policy = Policy()
 ) {
 
@@ -214,7 +218,7 @@ public class AnalyticsCalculator(
     }
 
     /** 📈 %1RM across trainings bucketed by PeriodState. */
-    public fun calculateIntraProgressionPercent1RMFromTrainings(
+    public suspend fun calculateIntraProgressionPercent1RMFromTrainings(
         trainings: List<TrainingState>,
         period: PeriodState
     ): Pair<DSAreaData, Instruction> {
@@ -228,7 +232,7 @@ public class AnalyticsCalculator(
             return calculateIntraProgressionPercent1RMFromExercises(exs)
         }
 
-        val buckets: List<Pair<LocalDate, List<TrainingState>>> =
+        val buckets: List<Pair<LocalDateTime, List<TrainingState>>> =
             groupTrainingsByBucket(inRange, scale).toList().sortedBy { (start, _) -> start }
 
         val points = mutableListOf<DSAreaPoint>()
@@ -325,7 +329,7 @@ public class AnalyticsCalculator(
      * 📈 Stimulus across trainings bucketed by PeriodState:
      * stimulus = Σ(tonnage × (rel^alpha)), alpha internally adapted by span.
      */
-    public fun calculateIntraProgressionStimulusFromTrainings(
+    public suspend fun calculateIntraProgressionStimulusFromTrainings(
         trainings: List<TrainingState>,
         period: PeriodState
     ): Pair<DSAreaData, Instruction> {
@@ -340,7 +344,7 @@ public class AnalyticsCalculator(
             return calculateIntraProgressionStimulusFromExercises(exs)
         }
 
-        val buckets: List<Pair<LocalDate, List<TrainingState>>> =
+        val buckets: List<Pair<LocalDateTime, List<TrainingState>>> =
             groupTrainingsByBucket(inRange, scale).toList().sortedBy { (start, _) -> start }
 
         val points = mutableListOf<DSAreaPoint>()
@@ -400,13 +404,16 @@ public class AnalyticsCalculator(
         val colors = colorProvider.get()
         val palette = colors.palette.palette18Colorful
 
+        val exTxt = stringProvider.get(Res.string.ex)
+
         val items = exercises.mapIndexedNotNull { index, ex ->
             val isBodyweight = ex.exerciseExample?.weightType == WeightTypeEnumState.BODY_WEIGHT
             if (isBodyweight) return@mapIndexedNotNull null
 
             val e1 = estimateSession1RM(ex) ?: return@mapIndexedNotNull null
+
             DSBarItem(
-                label = ex.name,
+                label = "$exTxt$index",
                 value = e1.coerceAtLeast(0f),
                 color = palette[index % palette.size]
             )
@@ -418,7 +425,7 @@ public class AnalyticsCalculator(
 
     /**
      * 🏋 Robust 1RM across trainings with PeriodState.
-     * Reduces multiple session 1RMs per bucket via policy.oneRMReducer (Max|P90|Median).
+     * Reduces multiple session 1RMs within a bucket via policy.oneRMReducer (Max|P90|Median).
      */
     public suspend fun calculateEstimated1RMFromTrainings(
         trainings: List<TrainingState>,
@@ -434,7 +441,7 @@ public class AnalyticsCalculator(
             val exs = inRange.flatMap { it.exercises }
             calculateEstimated1RMFromExercises(exs)
         } else {
-            val buckets: List<Pair<LocalDate, List<TrainingState>>> =
+            val buckets: List<Pair<LocalDateTime, List<TrainingState>>> =
                 groupTrainingsByBucket(inRange, scale).toList().sortedBy { (start, _) -> start }
 
             val items = buckets.mapIndexedNotNull { idx, (start, ts) ->
@@ -713,11 +720,10 @@ public class AnalyticsCalculator(
      * CUSTOM rules:
      * 1) If it's a day → EXERCISE
      * 2) If < 1 month AND days not divisible by 7 → DAY
-     * 3) If < 1 month AND days divisible by 7 → WEEK   ← (fixed)
+     * 3) If < 1 month AND days divisible by 7 → WEEK
      * 4) If up to a year (> month) → if whole-month aligned → MONTH, else → WEEK
      * 5) Otherwise → MONTH
      */
-
 
     private fun buildBuckets(range: DateRange, scale: BucketScale): List<Bucket> = when (scale) {
         BucketScale.EXERCISE -> emptyList() // handled by per-exercise path
@@ -726,45 +732,61 @@ public class AnalyticsCalculator(
         BucketScale.MONTH -> months(range.from, range.to)
     }
 
-    // ---- Bucket builders (LocalDateTime-friendly via LocalDate iteration) ----
+    // ---- Bucket builders (LocalDateTime-safe) ----
 
     private fun days(from: LocalDateTime, to: LocalDateTime): List<Bucket> {
         val out = mutableListOf<Bucket>()
         var d = from.date
         val endDate = to.date
         while (d <= endDate) {
-            val start = maxDT(d.atStartOfDay(), from)
-            val end = minDT(d.atEndOfDay(), to)
+            val dayStart = LocalDateTime(d, LocalTime(0, 0))
+            val dayEnd = LocalDateTime(d, LocalTime(23, 59, 59, 999_000_000))
+            val start = maxDT(dayStart, from)
+            val end = minDT(dayEnd, to)
             out += Bucket(start, end)
             d = d.plus(DatePeriod(days = 1))
         }
         return out
     }
 
+    // ---- Week buckets (no LocalDateTime.plus) ----
     private fun weeks(from: LocalDateTime, to: LocalDateTime): List<Bucket> {
         val out = mutableListOf<Bucket>()
-        var weekStart = startOfWeek(from.date) // Monday-based
-        val endDate = to.date
-        while (weekStart <= endDate) {
-            val weekEndDate = minLocalDate(endOfWeek(weekStart), endDate)
-            val start = maxDT(weekStart.atStartOfDay(), from)
-            val end = minDT(weekEndDate.atEndOfDay(), to)
+        var weekStart = startOfWeek(from) // Monday 00:00
+        while (weekStart <= to) {
+            // End of week = Sunday 23:59:59.999
+            val weekEndDate = weekStart.date.plus(DatePeriod(days = 6))
+            val weekEnd = LocalDateTime(weekEndDate, LocalTime(23, 59, 59, 999_000_000))
+
+            val start = maxDT(weekStart, from)
+            val end = minDT(weekEnd, to)
             out += Bucket(start, end)
-            weekStart = weekStart.plus(DatePeriod(days = 7))
+
+            // Next week = current Monday + 7 days @ 00:00
+            val nextWeekDate = weekStart.date.plus(DatePeriod(days = 7))
+            weekStart = LocalDateTime(nextWeekDate, LocalTime(0, 0))
         }
         return out
     }
 
+    // ---- Month buckets (no LocalDateTime.plus) ----
     private fun months(from: LocalDateTime, to: LocalDateTime): List<Bucket> {
         val out = mutableListOf<Bucket>()
-        var monthStart = startOfMonth(from.date)
-        val endDate = to.date
-        while (monthStart <= endDate) {
-            val monthEndDate = minLocalDate(endOfMonth(monthStart), endDate)
-            val start = maxDT(monthStart.atStartOfDay(), from)
-            val end = minDT(monthEndDate.atEndOfDay(), to)
+        var monthStart = startOfMonth(from) // 1st day 00:00
+        while (monthStart <= to) {
+            // Last day of current month @ 23:59:59.999
+            val firstOfNext = LocalDate(monthStart.year, monthStart.monthNumber, 1)
+                .plus(DatePeriod(months = 1))
+            val lastDay = firstOfNext.minus(DatePeriod(days = 1))
+            val monthEnd = LocalDateTime(lastDay, LocalTime(23, 59, 59, 999_000_000))
+
+            val start = maxDT(monthStart, from)
+            val end = minDT(monthEnd, to)
             out += Bucket(start, end)
-            monthStart = monthStart.plus(DatePeriod(months = 1))
+
+            // Next month start = current date + 1 month @ 00:00
+            val nextMonthDate = monthStart.date.plus(DatePeriod(months = 1))
+            monthStart = LocalDateTime(nextMonthDate, LocalTime(0, 0))
         }
         return out
     }
@@ -774,36 +796,61 @@ public class AnalyticsCalculator(
     private fun groupTrainingsByBucket(
         trainings: List<TrainingState>,
         scale: BucketScale
-    ): Map<LocalDate, List<TrainingState>> {
+    ): Map<LocalDateTime, List<TrainingState>> {
         return trainings.groupBy { t ->
-            val d = t.createdAt.date
             when (scale) {
-                BucketScale.EXERCISE -> d // not used
-                BucketScale.DAY -> d
-                BucketScale.WEEK -> startOfWeek(d)
-                BucketScale.MONTH -> startOfMonth(d)
+                BucketScale.EXERCISE -> t.createdAt // not used
+                BucketScale.DAY -> DateTimeUtils.startOfDay(t.createdAt)
+                BucketScale.WEEK -> startOfWeek(t.createdAt)
+                BucketScale.MONTH -> startOfMonth(t.createdAt)
             }
         }
     }
 
-    private fun defaultLabeler(scale: BucketScale): (Bucket) -> String = when (scale) {
-        BucketScale.DAY -> { b -> DateTimeUtils.format(b.start, DateFormat.WEEKDAY_SHORT) }
-        BucketScale.WEEK -> { b ->
-            "W${isoWeekNumber(b.start)} ${DateTimeUtils.format(b.start, DateFormat.MONTH_SHORT)}"
-        }
+    private suspend fun defaultLabeler(scale: BucketScale): (Bucket) -> String {
+        val w = stringProvider.get(Res.string.w)
+        return when (scale) {
+            BucketScale.DAY -> { b ->
+                DateTimeUtils.format(b.start, DateFormat.WEEKDAY_SHORT)
+            }
 
-        BucketScale.MONTH -> { b ->
-            "${b.start.year}-${b.start.monthNumber.toString().padStart(2, '0')}"
-        }
+            BucketScale.WEEK -> { b ->
+                "$w${isoWeekNumber(b.start)}-${
+                    DateTimeUtils.format(
+                        b.start,
+                        DateFormat.MONTH_SHORT
+                    )
+                }\""
+            }
 
-        BucketScale.EXERCISE -> { _ -> "" }
+            BucketScale.MONTH -> { b ->
+                DateTimeUtils.format(b.start, DateFormat.MONTH_SHORT)
+            }
+
+            BucketScale.EXERCISE -> { _ -> "" }
+        }
     }
 
-    private fun LocalDate.label(scale: BucketScale): String = when (scale) {
-        BucketScale.DAY -> this.toString()
-        BucketScale.WEEK -> "W${isoWeekNumber(this)} $this"
-        BucketScale.MONTH -> "${this.year}-${this.monthNumber.toString().padStart(2, '0')}"
-        BucketScale.EXERCISE -> this.toString()
+    private suspend fun LocalDateTime.label(scale: BucketScale): String {
+        val w = stringProvider.get(Res.string.w)
+
+        return when (scale) {
+            BucketScale.DAY -> {
+                this.toString()
+            }
+
+            BucketScale.WEEK -> {
+                "$w${isoWeekNumber(this)}-${DateTimeUtils.format(this, DateFormat.MONTH_SHORT)}\""
+            }
+
+            BucketScale.MONTH -> {
+                DateTimeUtils.format(this, DateFormat.MONTH_SHORT)
+            }
+
+            BucketScale.EXERCISE -> {
+                this.toString()
+            }
+        }
     }
 
     private fun TrainingState.belongsTo(bucket: Bucket): Boolean {
@@ -813,51 +860,49 @@ public class AnalyticsCalculator(
 
     // ---- Date utils (kotlinx.datetime + DateTimeUtils for starts/ends) ----
 
-    private fun startOfWeek(d: LocalDate): LocalDate {
-        // Monday-based, consistent with DateTimeUtils.thisWeek()
-        val shift = d.dayOfWeek.ordinal // 0..6
-        return d.minus(DatePeriod(days = shift))
+    /** Monday 00:00 of the week containing 'd'. */
+    private fun startOfWeek(d: LocalDateTime): LocalDateTime {
+        val shift = d.date.dayOfWeek.isoDayNumber - 1 // 0..6, MON=1..SUN=7 -> 0..6
+        val mondayDate = d.date.minus(DatePeriod(days = shift))
+        return LocalDateTime(mondayDate, LocalTime(0, 0))
     }
 
-    private fun endOfWeek(sow: LocalDate): LocalDate = sow.plus(DatePeriod(days = 6))
-
-    private fun startOfMonth(d: LocalDate): LocalDate = LocalDate(d.year, d.monthNumber, 1)
-
-    private fun endOfMonth(som: LocalDate): LocalDate {
-        val next = som.plus(DatePeriod(months = 1))
-        return next.minus(DatePeriod(days = 1))
+    /** Sunday 23:59:59.999 of the ISO week starting at 'sow' (Monday 00:00). */
+    private fun endOfWeek(sow: LocalDateTime): LocalDateTime {
+        val sunday = sow.date.plus(DatePeriod(days = 6))
+        return LocalDateTime(sunday, LocalTime(23, 59, 59, 999_000_000))
     }
 
-    /** Simple ISO-like week number for labeling (approx.). */
-    private fun isoWeekNumber(weekStartMonday: LocalDateTime): Int =
-        isoWeekNumber(weekStartMonday.date)
+    /** First day of month 00:00 for the month of 'd'. */
+    private fun startOfMonth(d: LocalDateTime): LocalDateTime =
+        LocalDateTime(LocalDate(d.year, d.monthNumber, 1), LocalTime(0, 0))
 
-    private fun isoWeekNumber(weekStartMonday: LocalDate): Int {
-        val doy = dayOfYear(weekStartMonday)
+    /** Last day of month 23:59:59.999 for the month of 'som'. */
+    private fun endOfMonth(som: LocalDateTime): LocalDateTime {
+        val firstOfNextMonth = LocalDate(som.date.year, som.date.monthNumber, 1)
+            .plus(DatePeriod(months = 1))
+        val lastDay = firstOfNextMonth.minus(DatePeriod(days = 1))
+        return LocalDateTime(
+            lastDay,
+            LocalTime(hour = 23, minute = 59, second = 59, nanosecond = 999_000_000)
+        )
+    }
+
+    /** Simple ISO-like week number, computed from LocalDateTime. */
+    private fun isoWeekNumber(weekStartMonday: LocalDateTime): Int {
+        val date = weekStartMonday.date
+        val firstJan = LocalDate(date.year, 1, 1)
+        val doy = (date.toEpochDays() - firstJan.toEpochDays()).toInt() + 1
         return ((doy - 1) / 7) + 1
     }
 
-    private fun dayOfYear(d: LocalDate): Int {
-        var count = 0
-        var cur = LocalDate(d.year, 1, 1)
-        while (cur < d) {
-            count++
-            cur = cur.plus(DatePeriod(days = 1))
-        }
-        return count + 1
-    }
+    // Start/end-of-day helpers (delegates to your DateTimeUtils)
+    private fun LocalDateTime.atStartOfDay(): LocalDateTime = DateTimeUtils.startOfDay(this)
+    private fun LocalDateTime.atEndOfDay(): LocalDateTime = DateTimeUtils.endOfDay(this)
 
-    // ---- LocalDateTime helpers using DateTimeUtils ----
-
-    private fun LocalDate.atStartOfDay(): LocalDateTime =
-        DateTimeUtils.startOfDay(LocalDateTime(this, LocalTime(0, 0)))
-
-    private fun LocalDate.atEndOfDay(): LocalDateTime =
-        DateTimeUtils.endOfDay(LocalDateTime(this, LocalTime(0, 0)))
-
+    // Min/Max for LocalDateTime
     private fun minDT(a: LocalDateTime, b: LocalDateTime): LocalDateTime = if (a <= b) a else b
     private fun maxDT(a: LocalDateTime, b: LocalDateTime): LocalDateTime = if (a >= b) a else b
-    private fun minLocalDate(a: LocalDate, b: LocalDate): LocalDate = if (a <= b) a else b
 
     // -------------------------- Misc helpers --------------------------
 
@@ -872,5 +917,10 @@ public class AnalyticsCalculator(
         val frac = (idx - lo).toFloat()
         return (sorted[lo] * (1 - frac) + sorted[hi] * frac)
     }
-}
 
+    // Allow `it.createdAt in period.range`
+    private operator fun DateRange.contains(ts: LocalDateTime): Boolean {
+        // Inclusive [from .. to]
+        return (ts >= from) && (ts <= to)
+    }
+}

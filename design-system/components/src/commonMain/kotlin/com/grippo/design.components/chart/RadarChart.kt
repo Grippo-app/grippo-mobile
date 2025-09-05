@@ -63,7 +63,7 @@ public fun RadarChart(
             strokeWidth = 1.dp,
         ),
         labels = RadarStyle.Labels.Visible(
-            textStyle = AppTokens.typography.b11Reg().copy(color = AppTokens.colors.text.primary)
+            textStyle = AppTokens.typography.b10Reg().copy(color = AppTokens.colors.text.primary)
         ),
         polygon = RadarStyle.Polygon(
             strokeWidth = 2.dp,

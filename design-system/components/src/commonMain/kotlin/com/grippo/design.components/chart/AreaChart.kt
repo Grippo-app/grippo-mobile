@@ -43,7 +43,7 @@ public fun AreaChart(
         ),
         yAxis = AreaStyle.YAxis.Labels(
             targetTicks = 5,
-            textStyle = AppTokens.typography.b11Reg().copy(color = AppTokens.colors.text.primary),
+            textStyle = AppTokens.typography.b10Reg().copy(color = AppTokens.colors.text.primary),
             formatter = { v, _ -> v.roundToInt().toString() },
             tickMarkColor = AppTokens.colors.divider.default,
             tickMarkWidth = 1.dp
@@ -53,7 +53,7 @@ public fun AreaChart(
             width = 1.dp
         ),
         xAxis = AreaStyle.XAxis.LabelsAdaptive(
-            textStyle = AppTokens.typography.b11Reg().copy(color = AppTokens.colors.text.secondary),
+            textStyle = AppTokens.typography.b10Reg().copy(color = AppTokens.colors.text.secondary),
             minGapDp = 1.dp
         ),
         line = AreaStyle.Line(
@@ -81,7 +81,7 @@ public fun AreaChart(
         },
         dots = AreaStyle.Dots.Visible(radius = 2.dp, color = charts.area.dot),
         extrema = AreaStyle.Extrema.Visible(
-            textStyle = AppTokens.typography.b11Bold().copy(color = AppTokens.colors.text.primary),
+            textStyle = AppTokens.typography.b10Bold().copy(color = AppTokens.colors.text.primary),
             markerColor = null,
             markerRadius = 3.dp
         )

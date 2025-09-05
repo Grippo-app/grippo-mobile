@@ -47,7 +47,7 @@ internal class HomeStatisticsViewModel(
 ), HomeStatisticsContract {
 
     private val metricsAggregator = MetricsAggregator()
-    private val analyticsCalculator = AnalyticsCalculator(colorProvider)
+    private val analyticsCalculator = AnalyticsCalculator(colorProvider, stringProvider)
     private val distributionCalculator = DistributionCalculator(stringProvider, colorProvider)
     private val loadCalculator = LoadCalculator(stringProvider, colorProvider)
 
