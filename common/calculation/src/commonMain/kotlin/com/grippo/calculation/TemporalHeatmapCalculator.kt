@@ -1,12 +1,15 @@
 package com.grippo.calculation
 
 import com.grippo.calculation.internal.InternalCalculationUtils
+import com.grippo.calculation.internal.buildDayBuckets
+import com.grippo.calculation.internal.buildMonthBuckets
+import com.grippo.calculation.internal.buildWeekBuckets
+import com.grippo.calculation.internal.daysInclusive
+import com.grippo.calculation.internal.deriveScale
 import com.grippo.calculation.internal.isoWeekNumber
 import com.grippo.calculation.models.Bucket
 import com.grippo.calculation.models.BucketScale
 import com.grippo.calculation.models.Instruction
-import com.grippo.calculation.models.daysInclusive
-import com.grippo.calculation.models.deriveScale
 import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateRange
 import com.grippo.date.utils.DateTimeUtils
@@ -310,16 +313,17 @@ public class TemporalHeatmapCalculator(
                             Res.string.tooltip_muscle_load_description_month
             }
         }
+
         return Instruction(title = UiText.Res(titleRes), description = UiText.Res(descRes))
     }
 
     // -------------------------- Time bucketing --------------------------
 
     private fun buildBuckets(range: DateRange, scale: BucketScale): List<Bucket> = when (scale) {
-        BucketScale.DAY -> InternalCalculationUtils.buildDayBuckets(range)
-        BucketScale.WEEK -> InternalCalculationUtils.buildWeekBuckets(range)
-        BucketScale.MONTH -> InternalCalculationUtils.buildMonthBuckets(range)
-        BucketScale.EXERCISE -> InternalCalculationUtils.buildDayBuckets(range) // single-day → 1 column
+        BucketScale.DAY -> buildDayBuckets(range)
+        BucketScale.WEEK -> buildWeekBuckets(range)
+        BucketScale.MONTH -> buildMonthBuckets(range)
+        BucketScale.EXERCISE -> buildDayBuckets(range) // single-day → 1 column
     }
 
     private suspend fun defaultTimeLabels(buckets: List<Bucket>, scale: BucketScale): List<String> {

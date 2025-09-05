@@ -1,14 +1,17 @@
 package com.grippo.calculation
 
 import com.grippo.calculation.internal.InternalCalculationUtils
-import com.grippo.calculation.internal.InternalCalculationUtils.startOfMonth
-import com.grippo.calculation.internal.InternalCalculationUtils.startOfWeek
+import com.grippo.calculation.internal.buildDayBuckets
+import com.grippo.calculation.internal.buildMonthBuckets
+import com.grippo.calculation.internal.buildWeekBuckets
+import com.grippo.calculation.internal.daysInclusive
+import com.grippo.calculation.internal.deriveScale
 import com.grippo.calculation.internal.isoWeekNumber
+import com.grippo.calculation.internal.startOfMonth
+import com.grippo.calculation.internal.startOfWeek
 import com.grippo.calculation.models.Bucket
 import com.grippo.calculation.models.BucketScale
 import com.grippo.calculation.models.Instruction
-import com.grippo.calculation.models.daysInclusive
-import com.grippo.calculation.models.deriveScale
 import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateRange
 import com.grippo.date.utils.DateTimeUtils
@@ -682,21 +685,10 @@ public class AnalyticsCalculator(
 
     private fun buildBuckets(range: DateRange, scale: BucketScale): List<Bucket> = when (scale) {
         BucketScale.EXERCISE -> emptyList() // handled by per-exercise path
-        BucketScale.DAY -> days(range.from, range.to)
-        BucketScale.WEEK -> weeks(range.from, range.to)
-        BucketScale.MONTH -> months(range.from, range.to)
+        BucketScale.DAY -> buildDayBuckets(range)
+        BucketScale.WEEK -> buildWeekBuckets(range)
+        BucketScale.MONTH -> buildMonthBuckets(range)
     }
-
-    // ---- Bucket builders (LocalDateTime-safe) ----
-
-    private fun days(from: LocalDateTime, to: LocalDateTime): List<Bucket> =
-        InternalCalculationUtils.buildDayBuckets(DateRange(from, to))
-
-    private fun weeks(from: LocalDateTime, to: LocalDateTime): List<Bucket> =
-        InternalCalculationUtils.buildWeekBuckets(DateRange(from, to))
-
-    private fun months(from: LocalDateTime, to: LocalDateTime): List<Bucket> =
-        InternalCalculationUtils.buildMonthBuckets(DateRange(from, to))
 
     // ---- Grouping and labeling ----
 

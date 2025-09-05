@@ -1,21 +1,9 @@
 package com.grippo.calculation.internal
 
-import com.grippo.calculation.models.Bucket
-import com.grippo.calculation.models.BucketScale
-import com.grippo.calculation.models.minDT
-import com.grippo.calculation.models.maxDT
-import com.grippo.date.utils.DateRange
 import com.grippo.state.exercise.examples.ExerciseExampleState
 import com.grippo.state.muscles.MuscleEnumState
 import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.IterationState
-import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.LocalTime
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.isoDayNumber
-import kotlinx.datetime.minus
-import kotlinx.datetime.plus
 import kotlin.math.max
 
 /**
@@ -155,7 +143,8 @@ internal object InternalCalculationUtils {
         if (workload <= 0f || !workload.isFinite()) return emptyList()
         if (example.bundles.isEmpty()) return emptyList()
 
-        val totalPercentage = example.bundles.sumOf { (it.percentage.value ?: 0).toDouble() }.toFloat()
+        val totalPercentage =
+            example.bundles.sumOf { (it.percentage.value ?: 0).toDouble() }.toFloat()
         if (totalPercentage <= 0f) return emptyList()
 
         return example.bundles.mapNotNull { bundle ->
@@ -179,118 +168,5 @@ internal object InternalCalculationUtils {
             result[workload.muscle] = (result[workload.muscle] ?: 0f) + workload.load
         }
         return result
-    }
-
-    // ============ Time Bucketing ============
-
-    /**
-     * Builds day buckets for the given range.
-     */
-    internal fun buildDayBuckets(range: DateRange): List<Bucket> {
-        val buckets = mutableListOf<Bucket>()
-        var currentDate = range.from.date
-
-        while (currentDate <= range.to.date) {
-            val dayStart = LocalDateTime(currentDate, LocalTime(0, 0))
-            val dayEnd = LocalDateTime(currentDate, LocalTime(23, 59, 59, 999_000_000))
-
-            val start = maxDT(dayStart, range.from)
-            val end = minDT(dayEnd, range.to)
-
-            buckets += Bucket(start, end)
-            currentDate = currentDate.plus(DatePeriod(days = 1))
-        }
-
-        return buckets
-    }
-
-    /**
-     * Builds week buckets for the given range (Monday to Sunday).
-     */
-    internal fun buildWeekBuckets(range: DateRange): List<Bucket> {
-        val buckets = mutableListOf<Bucket>()
-        var weekStart = startOfWeek(range.from)
-
-        while (weekStart <= range.to) {
-            val weekEndDate = weekStart.date.plus(DatePeriod(days = 6))
-            val weekEnd = LocalDateTime(weekEndDate, LocalTime(23, 59, 59, 999_000_000))
-
-            val start = maxDT(weekStart, range.from)
-            val end = minDT(weekEnd, range.to)
-
-            buckets += Bucket(start, end)
-            weekStart = LocalDateTime(weekStart.date.plus(DatePeriod(days = 7)), LocalTime(0, 0))
-        }
-
-        return buckets
-    }
-
-    /**
-     * Builds month buckets for the given range.
-     */
-    internal fun buildMonthBuckets(range: DateRange): List<Bucket> {
-        val buckets = mutableListOf<Bucket>()
-        var monthStart = startOfMonth(range.from)
-
-        while (monthStart <= range.to) {
-            val firstOfNext = LocalDate(monthStart.year, monthStart.monthNumber, 1)
-                .plus(DatePeriod(months = 1))
-            val lastDay = firstOfNext.minus(DatePeriod(days = 1))
-            val monthEnd = LocalDateTime(lastDay, LocalTime(23, 59, 59, 999_000_000))
-
-            val start = maxDT(monthStart, range.from)
-            val end = minDT(monthEnd, range.to)
-
-            buckets += Bucket(start, end)
-            monthStart = LocalDateTime(monthStart.date.plus(DatePeriod(months = 1)), LocalTime(0, 0))
-        }
-
-        return buckets
-    }
-
-    /**
-     * Gets the start of week (Monday 00:00) for the given date.
-     */
-    internal fun startOfWeek(dateTime: LocalDateTime): LocalDateTime {
-        val shift = dateTime.date.dayOfWeek.isoDayNumber - 1
-        val monday = dateTime.date.minus(DatePeriod(days = shift))
-        return LocalDateTime(monday, LocalTime(0, 0))
-    }
-
-    /**
-     * Gets the start of month (1st day 00:00) for the given date.
-     */
-    internal fun startOfMonth(dateTime: LocalDateTime): LocalDateTime {
-        return LocalDateTime(LocalDate(dateTime.year, dateTime.monthNumber, 1), LocalTime(0, 0))
-    }
-
-    // ============ Validation & Normalization ============
-
-    /**
-     * Normalizes a value to [0, 1] range.
-     */
-    internal fun normalizeToUnit(value: Float, maxValue: Float): Float {
-        return if (maxValue <= 0f) 0f else (value / maxValue).coerceIn(0f, 1f)
-    }
-
-    /**
-     * Safely calculates percentile from a list of floats.
-     */
-    internal fun calculatePercentile(values: List<Float>, percentile: Float): Float {
-        if (values.isEmpty()) return 0f
-        val sorted = values.sorted()
-        val clampedPercentile = percentile.coerceIn(0f, 1f)
-        val index = ((sorted.size - 1) * clampedPercentile).toDouble()
-        val lowerIndex = index.toInt()
-        val upperIndex = minOf(lowerIndex + 1, sorted.lastIndex)
-        val fraction = (index - lowerIndex).toFloat()
-        return sorted[lowerIndex] * (1 - fraction) + sorted[upperIndex] * fraction
-    }
-
-    /**
-     * Checks if a training belongs to a bucket (inclusive range).
-     */
-    internal fun LocalDateTime.belongsTo(bucket: Bucket): Boolean {
-        return this >= bucket.start && this <= bucket.end
     }
 }

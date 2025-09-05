@@ -2,10 +2,10 @@ package com.grippo.calculation
 
 import androidx.compose.ui.graphics.Color
 import com.grippo.calculation.internal.InternalCalculationUtils
+import com.grippo.calculation.internal.daysInclusive
+import com.grippo.calculation.internal.deriveScale
 import com.grippo.calculation.models.BucketScale
 import com.grippo.calculation.models.Instruction
-import com.grippo.calculation.models.daysInclusive
-import com.grippo.calculation.models.deriveScale
 import com.grippo.date.utils.contains
 import com.grippo.design.components.chart.DSProgressData
 import com.grippo.design.components.chart.DSProgressItem
@@ -52,7 +52,6 @@ public class LoadCalculator(
     private val stringProvider: StringProvider,
     private val colorProvider: ColorProvider,
 ) {
-
 
     // ======== PUBLIC SIMPLE API ========
 
@@ -146,7 +145,8 @@ public class LoadCalculator(
                 Workload.Volume -> ex.iterations.fold(0f) { acc, itn ->
                     val w = (itn.volume.value ?: 0f)
                     val r = (itn.repetitions.value ?: 0).coerceAtLeast(0)
-                    val load = if (w > InternalCalculationUtils.WEIGHT_EPS_KG) w else 0f // ignore tiny/negative
+                    val load =
+                        if (w > InternalCalculationUtils.WEIGHT_EPS_KG) w else 0f // ignore tiny/negative
                     if (r == 0 || load <= 0f) acc else acc + load * r
                 }
 

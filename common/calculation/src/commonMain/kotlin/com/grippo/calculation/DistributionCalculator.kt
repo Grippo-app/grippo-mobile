@@ -1,9 +1,9 @@
 package com.grippo.calculation
 
+import com.grippo.calculation.internal.daysInclusive
+import com.grippo.calculation.internal.deriveScale
 import com.grippo.calculation.models.BucketScale
 import com.grippo.calculation.models.Instruction
-import com.grippo.calculation.models.daysInclusive
-import com.grippo.calculation.models.deriveScale
 import com.grippo.date.utils.contains
 import com.grippo.design.components.chart.DSPieData
 import com.grippo.design.components.chart.DSPieSlice
