@@ -1,6 +1,5 @@
 package com.grippo.calculation
 
-import com.grippo.calculation.internal.InternalCalculationUtils.WEIGHT_EPS_KG
 import com.grippo.calculation.internal.buildDayBuckets
 import com.grippo.calculation.internal.buildMonthBuckets
 import com.grippo.calculation.internal.buildWeekBuckets
@@ -245,7 +244,7 @@ public class TemporalHeatmapCalculator(
                 val exWorkload = ex.iterations.fold(0f) { acc, iteration ->
                     val weight = iteration.volume.value ?: 0f
                     val reps = iteration.repetitions.value ?: 0
-                    val load = if (weight > WEIGHT_EPS_KG) weight else 0f
+                    val load = weight
                     if (reps == 0 || load <= 0f) acc else acc + load * reps
                 }
                     .coerceAtLeast(0f)

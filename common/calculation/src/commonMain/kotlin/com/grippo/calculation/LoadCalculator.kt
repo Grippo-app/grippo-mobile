@@ -1,7 +1,6 @@
 package com.grippo.calculation
 
 import androidx.compose.ui.graphics.Color
-import com.grippo.calculation.internal.InternalCalculationUtils
 import com.grippo.calculation.internal.daysInclusive
 import com.grippo.calculation.internal.deriveScale
 import com.grippo.calculation.models.BucketScale
@@ -136,8 +135,7 @@ public class LoadCalculator(
                 Workload.Volume -> ex.iterations.fold(0f) { acc, itn ->
                     val w = (itn.volume.value ?: 0f)
                     val r = (itn.repetitions.value ?: 0).coerceAtLeast(0)
-                    val load =
-                        if (w > InternalCalculationUtils.WEIGHT_EPS_KG) w else 0f // ignore tiny/negative
+                    val load = w
                     if (r == 0 || load <= 0f) acc else acc + load * r
                 }
 
