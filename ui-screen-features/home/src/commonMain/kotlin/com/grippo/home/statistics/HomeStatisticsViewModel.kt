@@ -150,8 +150,6 @@ internal class HomeStatisticsViewModel(
                     weightTypeDistributionData = DSPieData(slices = emptyList()) to null,
                     muscleLoadData = DSProgressData(items = emptyList()) to null,
                     percent1RMData = DSAreaData(points = emptyList()) to null,
-                    stimulusData = DSAreaData(points = emptyList()) to null,
-                    estimated1RMData = DSBarData(items = emptyList()) to null,
                     temporalHeatmapData = DSHeatmapData(
                         rows = 0,
                         cols = 0,
@@ -201,17 +199,6 @@ internal class HomeStatisticsViewModel(
                 trainings = trainings,
                 period = period
             )
-        val stimulusData =
-            analyticsCalculator.calculateIntraProgressionStimulusFromTrainings(
-                trainings = trainings,
-                period = period
-            )
-        val estimated1RMData =
-            analyticsCalculator.calculateEstimated1RMFromTrainings(
-                trainings = trainings,
-                period = period
-            )
-
         val temporalHeatmapData =
             temporalHeatmapCalculator.calculateMuscleGroupHeatmapFromTrainings(
                 trainings = trainings,
@@ -232,8 +219,6 @@ internal class HomeStatisticsViewModel(
                 experienceDistributionData = experienceDistributionData,
                 muscleLoadData = muscleLoadData,
                 percent1RMData = percent1RMData,
-                stimulusData = stimulusData,
-                estimated1RMData = estimated1RMData,
                 temporalHeatmapData = temporalHeatmapData,
             )
         }

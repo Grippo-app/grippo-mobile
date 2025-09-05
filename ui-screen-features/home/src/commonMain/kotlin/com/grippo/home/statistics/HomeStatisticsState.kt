@@ -44,8 +44,6 @@ internal data class HomeStatisticsState(
 
     // === Intensity & progression (area/bar) ===
     val percent1RMData: Pair<DSAreaData, Instruction?> = DSAreaData(points = emptyList()) to null,
-    val stimulusData: Pair<DSAreaData, Instruction?> = DSAreaData(points = emptyList()) to null,
-    val estimated1RMData: Pair<DSBarData, Instruction?> = DSBarData(items = emptyList()) to null,
 
     // === Temporal heapmap ===
     val temporalHeatmapData: Pair<DSHeatmapData, Instruction?> = DSHeatmapData(

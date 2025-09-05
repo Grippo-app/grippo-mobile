@@ -1,12 +1,11 @@
 package com.grippo.calculation
 
+import com.grippo.calculation.internal.InternalCalculationUtils
 import com.grippo.calculation.models.Bucket
 import com.grippo.calculation.models.BucketScale
 import com.grippo.calculation.models.Instruction
 import com.grippo.calculation.models.daysInclusive
 import com.grippo.calculation.models.deriveScale
-import com.grippo.calculation.models.maxDT
-import com.grippo.calculation.models.minDT
 import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateRange
 import com.grippo.date.utils.DateTimeUtils
@@ -31,13 +30,8 @@ import com.grippo.state.muscles.MuscleGroupState
 import com.grippo.state.muscles.MuscleRepresentationState
 import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.TrainingState
-import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.LocalTime
-import kotlinx.datetime.isoDayNumber
-import kotlinx.datetime.minus
-import kotlinx.datetime.plus
 
 /**
  * 🔥 Temporal Heatmap (Muscle × Time)
