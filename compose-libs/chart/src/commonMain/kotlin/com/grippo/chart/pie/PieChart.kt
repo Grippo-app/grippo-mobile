@@ -7,7 +7,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.DrawStyle
@@ -21,6 +20,8 @@ import kotlin.math.asin
 import kotlin.math.cos
 import kotlin.math.min
 import kotlin.math.sin
+import androidx.compose.foundation.Canvas
+import androidx.compose.ui.text.TextLayoutResult
 
 @Composable
 public fun PieChart(
@@ -61,7 +62,7 @@ public fun PieChart(
         }
     }
 
-    androidx.compose.foundation.Canvas(modifier = modifier) {
+    Canvas(modifier = modifier) {
         if (sweeps.isEmpty()) return@Canvas
 
         // Layout rect and radii
@@ -73,10 +74,10 @@ public fun PieChart(
         val cornerRadiusPx = style.arc.cornerRadius.toPx()
         val connectorWidthPx = style.leaders.lineWidth.toPx()
         val labelRadiusExtra = style.leaders.offset.toPx()
-        val (labelPaddingH, _) = when (val labels = style.labels) {
-            is PieStyle.Labels.Adaptive -> labels.labelPadding.toPx() to labels.outsideMinAngleDeg
-            is PieStyle.Labels.Inside -> labels.labelPadding.toPx() to 0f
-            is PieStyle.Labels.Outside -> labels.labelPadding.toPx() to 0f
+        val labelPaddingH = when (val labels = style.labels) {
+            is PieStyle.Labels.Adaptive -> labels.labelPadding.toPx()
+            is PieStyle.Labels.Inside -> labels.labelPadding.toPx()
+            is PieStyle.Labels.Outside -> labels.labelPadding.toPx()
         }
         val epsDeg = 0.1f
 
@@ -85,9 +86,7 @@ public fun PieChart(
         val innerRadius = outerRadius - widthPx
         val centerRadius = (outerRadius + innerRadius) / 2f
 
-        var acc = style.layout.startAngleDeg
-
-        // Collect candidates for outside labels to resolve overlaps per hemisphere
+        // Collect outside-label candidates; inside labels will be drawn last on top
         data class OutsideLabel(
             val index: Int,
             val angleDeg: Float, // mid-angle (deg)
@@ -96,10 +95,11 @@ public fun PieChart(
             val height: Int,
             val rightSide: Boolean
         )
-
         val outside = mutableListOf<OutsideLabel>()
+        val insideLabels = mutableListOf<Pair<TextLayoutResult, Offset>>() // top-left positions
 
-        // First pass: draw arcs and prepare label positions
+        // First pass: draw arcs and collect label positions (do not draw text yet)
+        var acc = style.layout.startAngleDeg
         sweeps.forEachIndexed { i, baseSweep ->
             // Local padding limited by slice size to avoid eating tiny slices
             val localPad = style.arc.paddingAngleDeg
@@ -123,19 +123,16 @@ public fun PieChart(
                 )
             }
 
-            // Labels: inside for big slices, outside for smaller ones
+            // Prepare label placement only (defer drawing until after arcs)
             when (val labels = style.labels) {
                 is PieStyle.Labels.Inside -> {
                     val layout = labelLayouts[i]
                     val midRad = mid * PI.toFloat() / 180f
                     val x = center.x + centerRadius * cos(midRad)
                     val y = center.y + centerRadius * sin(midRad)
-                    drawText(
-                        layout,
-                        topLeft = Offset(
-                            x - layout.size.width / 2f,
-                            y - layout.size.height / 2f
-                        )
+                    insideLabels += layout to Offset(
+                        x - layout.size.width / 2f,
+                        y - layout.size.height / 2f
                     )
                 }
 
@@ -160,12 +157,9 @@ public fun PieChart(
                         val midRad = mid * PI.toFloat() / 180f
                         val x = center.x + centerRadius * cos(midRad)
                         val y = center.y + centerRadius * sin(midRad)
-                        drawText(
-                            layout,
-                            topLeft = Offset(
-                                x - layout.size.width / 2f,
-                                y - layout.size.height / 2f
-                            )
+                        insideLabels += layout to Offset(
+                            x - layout.size.width / 2f,
+                            y - layout.size.height / 2f
                         )
                     } else if (baseSweep >= labels.outsideMinAngleDeg && style.leaders.show) {
                         val layout = labelLayouts[i]
@@ -187,73 +181,80 @@ public fun PieChart(
             acc += baseSweep
         }
 
-        // Second pass: resolve outside label overlaps per hemisphere and draw leaders + text
-        if (outside.isNotEmpty() && style.leaders.show) {
-            fun layoutSide(rightSide: Boolean) {
-                val side = outside.filter { it.rightSide == rightSide }
-                    .sortedBy { it.y }
-                    .toMutableList()
-                if (side.isEmpty()) return
+        // Helper to layout a side of outside labels and draw leaders + text
+        fun layoutAndDrawOutsideSide(rightSide: Boolean) {
+            val side = outside.filter { it.rightSide == rightSide }
+                .sortedBy { it.y }
+                .toMutableList()
+            if (side.isEmpty()) return
 
-                // Greedy vertical spacing (ladder)
-                val minGap = 4.dp.toPx()
-                for (k in 1 until side.size) {
-                    val prev = side[k - 1]
-                    val cur = side[k]
-                    val prevBottom = prev.y + prev.height / 2f
-                    val curTop = cur.y - cur.height / 2f
-                    if (curTop - prevBottom < minGap) {
-                        val shift = (minGap - (curTop - prevBottom))
-                        side[k] = cur.copy(y = cur.y + shift)
-                    }
-                }
-
-                // Draw leaders and labels
-                side.forEach { item ->
-                    val i = item.index
-                    val layout = labelLayouts[i]
-
-                    // Geometry points: arc point → elbow → label baseline
-                    val midRad = (item.angleDeg * PI.toFloat() / 180f)
-                    val arcPt = Offset(
-                        x = center.x + outerRadius * cos(midRad),
-                        y = center.y + outerRadius * sin(midRad)
-                    )
-                    val elbow = Offset(
-                        x = center.x + (outerRadius + labelRadiusExtra) * cos(midRad),
-                        y = center.y + (outerRadius + labelRadiusExtra) * sin(midRad)
-                    )
-
-                    val labelX = if (item.rightSide) {
-                        elbow.x + labelPaddingH
-                    } else {
-                        elbow.x - labelPaddingH - layout.size.width
-                    }
-                    val labelYTop = item.y - layout.size.height / 2f
-
-                    // Leader lines in slice color
-                    drawLine(
-                        color = slices[i].color,
-                        start = arcPt,
-                        end = elbow,
-                        strokeWidth = connectorWidthPx
-                    )
-                    drawLine(
-                        color = slices[i].color,
-                        start = elbow,
-                        end = Offset(
-                            x = if (item.rightSide) labelX else labelX + layout.size.width,
-                            y = item.y
-                        ),
-                        strokeWidth = connectorWidthPx
-                    )
-
-                    // Text
-                    drawText(layout, topLeft = Offset(labelX, labelYTop))
+            // Greedy vertical spacing (ladder)
+            val minGap = 4.dp.toPx()
+            for (k in 1 until side.size) {
+                val prev = side[k - 1]
+                val cur = side[k]
+                val prevBottom = prev.y + prev.height / 2f
+                val curTop = cur.y - cur.height / 2f
+                if (curTop - prevBottom < minGap) {
+                    val shift = (minGap - (curTop - prevBottom))
+                    side[k] = cur.copy(y = cur.y + shift)
                 }
             }
-            layoutSide(rightSide = true)
-            layoutSide(rightSide = false)
+
+            // Draw leaders and labels (text last so it is above the lines)
+            side.forEach { item ->
+                val i = item.index
+                val layout = labelLayouts[i]
+
+                // Geometry points: arc point → elbow → label baseline
+                val midRad = (item.angleDeg * PI.toFloat() / 180f)
+                val arcPt = Offset(
+                    x = center.x + outerRadius * cos(midRad),
+                    y = center.y + outerRadius * sin(midRad)
+                )
+                val elbow = Offset(
+                    x = center.x + (outerRadius + labelRadiusExtra) * cos(midRad),
+                    y = center.y + (outerRadius + labelRadiusExtra) * sin(midRad)
+                )
+
+                val labelX = if (item.rightSide) {
+                    elbow.x + labelPaddingH
+                } else {
+                    elbow.x - labelPaddingH - layout.size.width
+                }
+                val labelYTop = item.y - layout.size.height / 2f
+
+                // Leader lines in slice color
+                drawLine(
+                    color = slices[i].color,
+                    start = arcPt,
+                    end = elbow,
+                    strokeWidth = connectorWidthPx
+                )
+                drawLine(
+                    color = slices[i].color,
+                    start = elbow,
+                    end = Offset(
+                        x = if (item.rightSide) labelX else labelX + layout.size.width,
+                        y = item.y
+                    ),
+                    strokeWidth = connectorWidthPx
+                )
+
+                // Text above the leader line
+                drawText(layout, topLeft = Offset(labelX, labelYTop))
+            }
+        }
+
+        // Second pass: resolve outside overlaps and draw leaders + outside labels
+        if (outside.isNotEmpty() && style.leaders.show) {
+            layoutAndDrawOutsideSide(rightSide = true)
+            layoutAndDrawOutsideSide(rightSide = false)
+        }
+
+        // Final pass: draw inside/adaptive-inside labels on top of EVERYTHING
+        insideLabels.forEach { (layout, topLeft) ->
+            drawText(layout, topLeft = topLeft)
         }
     }
 }
@@ -272,7 +273,7 @@ private fun DrawScope.drawRoundedArc(
     style: DrawStyle = Fill,
     center: Offset = this.center,
     outerRadius: Float = size.minDimension / 2f,
-    colorFilter: ColorFilter? = null,
+    colorFilter: androidx.compose.ui.graphics.ColorFilter? = null,
     blendMode: BlendMode = DrawScope.DefaultBlendMode,
     cornerRadius: Float,
 ) {
@@ -320,21 +321,39 @@ private fun DrawScope.drawRoundedArc(
 
         moveTo(topLeftStart.x, topLeftStart.y)
         quadraticTo(topLeft.x, topLeft.y, topLeftEnd.x, topLeftEnd.y)
+
+        // Outer arc
+        val outerRect = Rect(
+            center.x - outerRadius,
+            center.y - outerRadius,
+            center.x + outerRadius,
+            center.y + outerRadius
+        )
         arcTo(
-            rect = Rect(center = center, radius = outerRadius),
+            rect = outerRect,
             startAngleDegrees = startAngle + cornerOuterSweep,
             sweepAngleDegrees = sweepAngle - 2 * cornerOuterSweep,
             forceMoveTo = false
         )
+
         quadraticTo(topRight.x, topRight.y, topRightEnd.x, topRightEnd.y)
         lineTo(bottomRightStart.x, bottomRightStart.y)
         quadraticTo(bottomRight.x, bottomRight.y, bottomRightEnd.x, bottomRightEnd.y)
+
+        // Inner arc (reverse)
+        val innerRect = Rect(
+            center.x - innerRadius,
+            center.y - innerRadius,
+            center.x + innerRadius,
+            center.y + innerRadius
+        )
         arcTo(
-            rect = Rect(center = center, radius = innerRadius),
+            rect = innerRect,
             startAngleDegrees = endAngle - cornerInnerSweep,
             sweepAngleDegrees = -(sweepAngle - 2 * cornerInnerSweep),
             forceMoveTo = false
         )
+
         quadraticTo(bottomLeft.x, bottomLeft.y, bottomLeftEnd.x, bottomLeftEnd.y)
         lineTo(topLeftStart.x, topLeftStart.y)
         close()

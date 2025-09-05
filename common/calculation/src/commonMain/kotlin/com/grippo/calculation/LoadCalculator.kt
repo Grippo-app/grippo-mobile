@@ -220,8 +220,16 @@ public class LoadCalculator(
                         RelativeMode.SUM -> (raw / sumVal) * 100f
                     }
                 }
-                val ratio = if (maxVal == 0f) 0f else (raw / maxVal).coerceIn(0f, 1f)
-                val color = interpolateColor(ratio, scaleStops)
+
+                // Color: relative -> equal 100/N bands; absolute -> smooth by ratio
+                val color = when (mode) {
+                    Mode.RELATIVE -> bandColorByPercent(display, scaleStops)
+                    Mode.ABSOLUTE -> {
+                        val ratio = if (maxVal == 0f) 0f else (raw / maxVal).coerceIn(0f, 1f)
+                        interpolateColor(ratio, scaleStops)
+                    }
+                }
+
                 DSProgressItem(label = label, value = display, color = color)
             }
 
@@ -281,4 +289,24 @@ public class LoadCalculator(
             blue = (c1.blue + (c2.blue - c1.blue) * t),
             alpha = (c1.alpha + (c2.alpha - c1.alpha) * t),
         )
+
+    /**
+     * Banded color selection for percentage values.
+     * Splits [0..100] into N equal bands (N == stops.size), picks color by band index.
+     * Uses only the order of colors in `stops`, ignores their position values.
+     */
+    private fun bandColorByPercent(
+        percent: Float,
+        stops: List<Pair<Float, Color>>
+    ): Color {
+        if (stops.isEmpty()) return Color.Black
+        val colors = stops.map { it.second } // keep order
+        val n = colors.size
+        if (n == 1) return colors.first()
+
+        val p = percent.coerceIn(0f, 100f)
+        val bandWidth = 100f / n
+        val idx = if (p >= 100f) n - 1 else (p / bandWidth).toInt().coerceIn(0, n - 1)
+        return colors[idx]
+    }
 }
