@@ -1,9 +1,9 @@
 package com.grippo.calculation
 
 import com.grippo.calculation.internal.InternalCalculationUtils
-import com.grippo.calculation.internal.InternalCalculationUtils.belongsTo
 import com.grippo.calculation.internal.InternalCalculationUtils.startOfMonth
 import com.grippo.calculation.internal.InternalCalculationUtils.startOfWeek
+import com.grippo.calculation.internal.isoWeekNumber
 import com.grippo.calculation.models.Bucket
 import com.grippo.calculation.models.BucketScale
 import com.grippo.calculation.models.Instruction
@@ -12,6 +12,7 @@ import com.grippo.calculation.models.deriveScale
 import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateRange
 import com.grippo.date.utils.DateTimeUtils
+import com.grippo.date.utils.contains
 import com.grippo.design.components.chart.DSAreaData
 import com.grippo.design.components.chart.DSAreaPoint
 import com.grippo.design.components.chart.DSBarData
@@ -54,17 +55,10 @@ import com.grippo.design.resources.provider.tooltip_volume_title_training
 import com.grippo.design.resources.provider.tooltip_volume_title_year
 import com.grippo.design.resources.provider.w
 import com.grippo.state.datetime.PeriodState
-import com.grippo.state.exercise.examples.WeightTypeEnumState
 import com.grippo.state.formatters.UiText
 import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.TrainingState
-import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.LocalTime
-import kotlinx.datetime.isoDayNumber
-import kotlinx.datetime.minus
-import kotlinx.datetime.plus
 import kotlin.math.pow
 
 /**
@@ -86,31 +80,12 @@ import kotlin.math.pow
  * - `iteration.volume.value` stores **weight (kg)**, NOT tonnage.
  * - `iteration.repetitions.value` stores **reps**.
  * - Exercises are ordered by execution (for ThisDay charts).
- * - 1RM is estimated only for non-bodyweight exercises by default.
+ * - No special-casing by weight type here; all exercises are treated uniformly.
  */
 public class AnalyticsCalculator(
     private val colorProvider: ColorProvider,
-    private val stringProvider: StringProvider,
-    private val policy: Policy = Policy()
+    private val stringProvider: StringProvider
 ) {
-
-    // -------------------------- Policy knobs (public config) --------------------------
-
-    /** Aggregation policies for period buckets. */
-    public data class Policy(
-        val intensityAggregator: IntensityAggregator = IntensityAggregator.RepsWeighted,
-        // alpha & relCap are internally adapted by period; external tuning is not exposed.
-        val oneRMReducer: OneRMAggregator = OneRMAggregator.P90
-    )
-
-    /** How to average relative intensity across sets/exercises within a bucket. */
-    public enum class IntensityAggregator { RepsWeighted, TonnageWeighted }
-
-    /** How to reduce multiple session 1RMs within a bucket to one value. */
-    public enum class OneRMAggregator { Max, P90, Median }
-
-    // For picking tooltip resources
-    private enum class Metric { VOLUME, PCT1RM, STIMULUS, E1RM }
 
     // -------------------------- Public API (only used methods) --------------------------
 
@@ -133,7 +108,7 @@ public class AnalyticsCalculator(
         }
         val data = DSBarData(items = items)
         val tip = instructionFor(metric = Metric.VOLUME, scale = BucketScale.EXERCISE)
-        return Pair(data, tip)
+        return data to tip
     }
 
     /**
@@ -163,10 +138,13 @@ public class AnalyticsCalculator(
             else -> {
                 val buckets = buildBuckets(period.range, scale)
                 val labeler = defaultLabeler(scale)
+
+                // Group once by bucket start to avoid O(B*N) scanning
+                val grouped: Map<LocalDateTime, List<TrainingState>> =
+                    groupTrainingsByBucket(inRange, scale)
+
                 val items = buckets.mapIndexed { idx, b ->
-                    val total = inRange
-                        .asSequence()
-                        .filter { it.belongsTo(b) }
+                    val total = (grouped[b.start] ?: emptyList())
                         .sumOf { it.tonnage() }
                         .toFloat()
                     DSBarItem(
@@ -177,7 +155,7 @@ public class AnalyticsCalculator(
                 }
                 val data = DSBarData(items)
                 val tip = instructionFor(metric = Metric.VOLUME, scale = scale)
-                Pair(data, tip)
+                data to tip
             }
         }
     }
@@ -186,15 +164,12 @@ public class AnalyticsCalculator(
     public suspend fun calculateIntraProgressionPercent1RMFromExercises(
         exercises: List<ExerciseState>
     ): Pair<DSAreaData, Instruction> {
-        // 1) session 1RM per exercise (robust estimate, skip bodyweight)
+        // 1) session 1RM per exercise (robust estimate)
         val session1RMs: Map<String, Float> = buildMap {
             exercises.forEach { ex ->
-                val isBW = ex.exerciseExample?.weightType == WeightTypeEnumState.BODY_WEIGHT
-                if (!isBW) {
-                    val e1 = estimateSession1RM(ex)
-                    if (e1 != null && e1.isFinite() && e1 > 0f) {
-                        put(exerciseKey(ex), e1)
-                    }
+                val e1 = estimateSession1RM(ex)
+                if (e1 != null && e1.isFinite() && e1 > 0f) {
+                    put(exerciseKey(ex), e1)
                 }
             }
         }
@@ -219,7 +194,7 @@ public class AnalyticsCalculator(
         }
         val data = DSAreaData(points = points)
         val tip = instructionFor(metric = Metric.PCT1RM, scale = BucketScale.EXERCISE)
-        return Pair(data, tip)
+        return data to tip
     }
 
     /** 📈 %1RM across trainings bucketed by PeriodState. */
@@ -250,9 +225,7 @@ public class AnalyticsCalculator(
             val exs = ts.flatMap { it.exercises }
 
             val session = exs.mapNotNull { ex ->
-                val isBW = ex.exerciseExample?.weightType == WeightTypeEnumState.BODY_WEIGHT
-                if (isBW) null
-                else estimateSession1RM(ex)?.takeIf { it.isFinite() && it > 0f }
+                estimateSession1RM(ex)?.takeIf { it.isFinite() && it > 0f }
                     ?.let { exerciseKey(ex) to it }
             }.toMap()
 
@@ -274,17 +247,9 @@ public class AnalyticsCalculator(
                     .coerceAtLeast(0f)
                     .coerceAtMost(relCap)
 
-                when (policy.intensityAggregator) {
-                    IntensityAggregator.RepsWeighted -> {
-                        num += rel * sumR
-                        den += sumR
-                    }
-
-                    IntensityAggregator.TonnageWeighted -> {
-                        num += rel * sumT
-                        den += sumT
-                    }
-                }
+                // Default aggregator = RepsWeighted (keep API minimal)
+                num += rel * sumR
+                den += sumR
             }
             if (den > 0f) {
                 val relPct = (num / den) * 100f
@@ -298,7 +263,7 @@ public class AnalyticsCalculator(
 
         val data = DSAreaData(points = points)
         val tip = instructionFor(metric = Metric.PCT1RM, scale = scale)
-        return Pair(data, tip)
+        return data to tip
     }
 
     /**
@@ -333,7 +298,7 @@ public class AnalyticsCalculator(
 
         val data = DSAreaData(points = points)
         val tip = instructionFor(metric = Metric.STIMULUS, scale = BucketScale.EXERCISE)
-        return Pair(data, tip)
+        return data to tip
     }
 
     /**
@@ -368,8 +333,8 @@ public class AnalyticsCalculator(
             val exs = ts.flatMap { it.exercises }
 
             val session = exs.mapNotNull { ex ->
-                val e1 = estimateSession1RM(ex)
-                if (e1 != null && e1.isFinite() && e1 > 0f) exerciseKey(ex) to e1 else null
+                estimateSession1RM(ex)?.takeIf { it.isFinite() && it > 0f }
+                    ?.let { exerciseKey(ex) to it }
             }.toMap()
 
             val rolling = session.mapValues { (k, cur) ->
@@ -400,7 +365,7 @@ public class AnalyticsCalculator(
 
         val data = DSAreaData(points = points)
         val tip = instructionFor(metric = Metric.STIMULUS, scale = scale)
-        return Pair(data, tip)
+        return data to tip
     }
 
     /**
@@ -418,11 +383,7 @@ public class AnalyticsCalculator(
         val exTxt = stringProvider.get(Res.string.ex)
 
         val items = exercises.mapIndexedNotNull { index, ex ->
-            val isBodyweight = ex.exerciseExample?.weightType == WeightTypeEnumState.BODY_WEIGHT
-            if (isBodyweight) return@mapIndexedNotNull null
-
             val e1 = estimateSession1RM(ex) ?: return@mapIndexedNotNull null
-
             DSBarItem(
                 label = "$exTxt${index + 1}",
                 value = e1.coerceAtLeast(0f),
@@ -431,12 +392,12 @@ public class AnalyticsCalculator(
         }
         val data = DSBarData(items)
         val tip = instructionFor(metric = Metric.E1RM, scale = BucketScale.EXERCISE)
-        return Pair(data, tip)
+        return data to tip
     }
 
     /**
      * 🏋 Robust 1RM across trainings with PeriodState.
-     * Reduces multiple session 1RMs within a bucket via policy.oneRMReducer (Max|P90|Median).
+     * Reduces multiple session 1RMs within a bucket via P90 percentile (no public policy surface).
      */
     public suspend fun calculateEstimated1RMFromTrainings(
         trainings: List<TrainingState>,
@@ -463,11 +424,7 @@ public class AnalyticsCalculator(
 
                 if (e1s.isEmpty()) return@mapIndexedNotNull null
 
-                val reduced = when (policy.oneRMReducer) {
-                    OneRMAggregator.Max -> e1s.maxOrNull()!!
-                    OneRMAggregator.P90 -> percentile(e1s, 0.90f)
-                    OneRMAggregator.Median -> percentile(e1s, 0.50f)
-                }
+                val reduced = percentile(e1s, 0.90f) // P90 by default
 
                 DSBarItem(
                     label = start.label(scale),
@@ -477,7 +434,7 @@ public class AnalyticsCalculator(
             }
             val data = DSBarData(items)
             val tip = instructionFor(metric = Metric.E1RM, scale = scale)
-            Pair(data, tip)
+            data to tip
         }
     }
 
@@ -496,6 +453,8 @@ public class AnalyticsCalculator(
     }
 
     // -------------------------- Tooltip selector --------------------------
+
+    private enum class Metric { VOLUME, PCT1RM, STIMULUS, E1RM }
 
     private fun instructionFor(metric: Metric, scale: BucketScale): Instruction {
         return when (metric) {
@@ -613,13 +572,19 @@ public class AnalyticsCalculator(
 
     /** Σ(weight*reps) for an exercise. */
     private fun tonnage(ex: ExerciseState): Float =
-        InternalCalculationUtils.calculateExerciseWorkload(ex, InternalCalculationUtils.WorkloadStrategy.Volume)
+        InternalCalculationUtils.calculateExerciseWorkload(
+            ex,
+            InternalCalculationUtils.WorkloadStrategy.Volume
+        )
 
     /** Total session tonnage across a training (Double to avoid float round-trip). */
     private fun TrainingState.tonnage(): Double {
         var t = 0.0
         this.exercises.forEach { ex ->
-            val exerciseTonnage = InternalCalculationUtils.calculateExerciseWorkload(ex, InternalCalculationUtils.WorkloadStrategy.Volume)
+            val exerciseTonnage = InternalCalculationUtils.calculateExerciseWorkload(
+                ex,
+                InternalCalculationUtils.WorkloadStrategy.Volume
+            )
             t += exerciseTonnage
         }
         return t
@@ -630,24 +595,23 @@ public class AnalyticsCalculator(
         InternalCalculationUtils.avgWeightPerRep(ex.iterations)
 
     /** Key to identify an exercise when storing/smoothing rolling 1RM. */
-    private fun exerciseKey(ex: ExerciseState): String {
-        return ex.exerciseExample?.id ?: ex.name
-    }
+    private fun exerciseKey(ex: ExerciseState): String =
+        ex.exerciseExample?.id ?: ex.name
 
-    /** EWMA smoothing with change clamp (±maxChangePct). */
+    /** EWMA smoothing with change clamp (±maxChangePct); warm start without clamp. */
     private fun smooth(
         prev: Float?,
         cur: Float,
         alpha: Float = 0.20f,
         clamp: Float = 0.05f
     ): Float {
-        if (prev == null) return cur.takeIf { it.isFinite() } ?: 0f
-        if (!prev.isFinite() || !cur.isFinite()) return cur.takeIf { it.isFinite() } ?: prev.takeIf { it.isFinite() } ?: 0f
-
+        if (!cur.isFinite()) return prev ?: 0f
+        if (prev == null || !prev.isFinite()) return cur // warm start
         val raw = prev * (1 - alpha) + cur * alpha
         val minAllowed = prev * (1 - clamp)
         val maxAllowed = prev * (1 + clamp)
-        return raw.coerceIn(minAllowed, maxAllowed).takeIf { it.isFinite() } ?: cur
+        val clamped = raw.coerceIn(minAllowed, maxAllowed)
+        return if (clamped.isFinite()) clamped else prev
     }
 
     // -------------------------- 1RM estimation core --------------------------
@@ -701,7 +665,8 @@ public class AnalyticsCalculator(
             }
         }
         if (pairs.isEmpty()) return null
-        return weightedMedian(pairs)?.takeIf { it.isFinite() && it > 0f }
+        val wm = weightedMedian(pairs)
+        return wm.takeIf { it.isFinite() && it > 0f }
     }
 
     // -------------------------- Period → Buckets logic --------------------------
@@ -727,11 +692,9 @@ public class AnalyticsCalculator(
     private fun days(from: LocalDateTime, to: LocalDateTime): List<Bucket> =
         InternalCalculationUtils.buildDayBuckets(DateRange(from, to))
 
-    // ---- Week buckets (no LocalDateTime.plus) ----
     private fun weeks(from: LocalDateTime, to: LocalDateTime): List<Bucket> =
         InternalCalculationUtils.buildWeekBuckets(DateRange(from, to))
 
-    // ---- Month buckets (no LocalDateTime.plus) ----
     private fun months(from: LocalDateTime, to: LocalDateTime): List<Bucket> =
         InternalCalculationUtils.buildMonthBuckets(DateRange(from, to))
 
@@ -755,26 +718,17 @@ public class AnalyticsCalculator(
         val w = stringProvider.get(Res.string.w)
         return when (scale) {
             BucketScale.DAY -> { b ->
-                DateTimeUtils.format(
-                    b.start,
-                    DateFormat.WEEKDAY_SHORT
-                )
+                DateTimeUtils.format(b.start, DateFormat.WEEKDAY_SHORT)
             }
 
             BucketScale.WEEK -> { b ->
                 "$w${isoWeekNumber(b.start)}-${
-                    DateTimeUtils.format(
-                        b.start,
-                        DateFormat.MONTH_SHORT
-                    )
+                    DateTimeUtils.format(b.start, DateFormat.MONTH_SHORT)
                 }"
             }
 
             BucketScale.MONTH -> { b ->
-                DateTimeUtils.format(
-                    b.start,
-                    DateFormat.MONTH_SHORT
-                )
+                DateTimeUtils.format(b.start, DateFormat.MONTH_SHORT)
             }
 
             BucketScale.EXERCISE -> { _ -> "" }
@@ -783,44 +737,21 @@ public class AnalyticsCalculator(
 
     private suspend fun LocalDateTime.label(scale: BucketScale): String {
         val w = stringProvider.get(Res.string.w)
-
         return when (scale) {
-            BucketScale.DAY -> {
-                this.toString()
+            BucketScale.DAY, BucketScale.EXERCISE -> {
+                DateTimeUtils.format(this, DateFormat.DATE_DD_MMM) // e.g., "02 Sep"
             }
 
             BucketScale.WEEK -> {
                 "$w${isoWeekNumber(this)}-${
-                    DateTimeUtils.format(
-                        this,
-                        DateFormat.MONTH_SHORT
-                    )
+                    DateTimeUtils.format(this, DateFormat.MONTH_SHORT)
                 }"
             }
 
             BucketScale.MONTH -> {
-                DateTimeUtils.format(
-                    this,
-                    DateFormat.MONTH_SHORT
-                )
-            }
-
-            BucketScale.EXERCISE -> {
-                this.toString()
+                DateTimeUtils.format(this, DateFormat.MONTH_SHORT)
             }
         }
-    }
-
-    private fun TrainingState.belongsTo(bucket: Bucket): Boolean =
-        createdAt.belongsTo(bucket)
-
-
-    /** Simple ISO-like week number, computed from LocalDateTime. */
-    private fun isoWeekNumber(weekStartMonday: LocalDateTime): Int {
-        val date = weekStartMonday.date
-        val firstJan = LocalDate(date.year, 1, 1)
-        val doy = (date.toEpochDays() - firstJan.toEpochDays()).toInt() + 1
-        return ((doy - 1) / 7) + 1
     }
 
     // -------------------------- Misc helpers --------------------------
@@ -838,11 +769,5 @@ public class AnalyticsCalculator(
         val hi = minOf(lo + 1, sorted.lastIndex)
         val frac = (idx - lo).toFloat()
         return (sorted[lo] * (1 - frac) + sorted[hi] * frac).takeIf { it.isFinite() } ?: 0f
-    }
-
-    // Allow `it.createdAt in period.range`
-    private operator fun DateRange.contains(ts: LocalDateTime): Boolean {
-        // Inclusive [from .. to]
-        return (ts >= from) && (ts <= to)
     }
 }

@@ -1,6 +1,7 @@
 package com.grippo.calculation
 
 import com.grippo.calculation.internal.InternalCalculationUtils
+import com.grippo.calculation.internal.isoWeekNumber
 import com.grippo.calculation.models.Bucket
 import com.grippo.calculation.models.BucketScale
 import com.grippo.calculation.models.Instruction
@@ -30,8 +31,6 @@ import com.grippo.state.muscles.MuscleGroupState
 import com.grippo.state.muscles.MuscleRepresentationState
 import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.TrainingState
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
 
 /**
  * 🔥 Temporal Heatmap (Muscle × Time)
@@ -344,14 +343,6 @@ public class TemporalHeatmapCalculator(
                 DateTimeUtils.format(it.start, DateFormat.DATE_DD_MMM)
             }
         }
-    }
-
-    /** Simple ISO-like week number for the Monday within bucket start. */
-    private fun isoWeekNumber(weekStartMonday: LocalDateTime): Int {
-        val date = weekStartMonday.date
-        val firstJan = LocalDate(date.year, 1, 1)
-        val doy = (date.toEpochDays() - firstJan.toEpochDays()).toInt() + 1
-        return ((doy - 1) / 7) + 1
     }
 
     // -------------------------- Normalization helpers --------------------------
