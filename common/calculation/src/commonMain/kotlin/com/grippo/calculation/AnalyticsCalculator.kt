@@ -1,12 +1,14 @@
 package com.grippo.calculation
 
+import com.grippo.calculation.internal.InternalCalculationUtils
+import com.grippo.calculation.internal.InternalCalculationUtils.belongsTo
+import com.grippo.calculation.internal.InternalCalculationUtils.startOfMonth
+import com.grippo.calculation.internal.InternalCalculationUtils.startOfWeek
 import com.grippo.calculation.models.Bucket
 import com.grippo.calculation.models.BucketScale
 import com.grippo.calculation.models.Instruction
 import com.grippo.calculation.models.daysInclusive
 import com.grippo.calculation.models.deriveScale
-import com.grippo.calculation.models.maxDT
-import com.grippo.calculation.models.minDT
 import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateRange
 import com.grippo.date.utils.DateTimeUtils
@@ -606,49 +608,26 @@ public class AnalyticsCalculator(
     // -------------------------- Helpers: math, tonnage, keys, smoothing --------------------------
 
     /** Returns (Σ(weight*reps), Σ(reps)). */
-    private fun sums(ex: ExerciseState): Pair<Float, Int> {
-        var sumT = 0f
-        var sumR = 0
-        ex.iterations.forEach { itn ->
-            val w = itn.volume.value
-            val r = itn.repetitions.value
-            if (w != null && r != null && r > 0) {
-                sumT += w * r
-                sumR += r
-            }
-        }
-        return sumT to sumR
-    }
+    private fun sums(ex: ExerciseState): Pair<Float, Int> =
+        InternalCalculationUtils.sumIterationsMetrics(ex.iterations)
 
     /** Σ(weight*reps) for an exercise. */
-    private fun tonnage(ex: ExerciseState): Float {
-        var t = 0f
-        ex.iterations.forEach { itn ->
-            val w = itn.volume.value
-            val r = itn.repetitions.value
-            if (w != null && r != null && r > 0) t += w * r
-        }
-        return t
-    }
+    private fun tonnage(ex: ExerciseState): Float =
+        InternalCalculationUtils.calculateExerciseWorkload(ex, InternalCalculationUtils.WorkloadStrategy.Volume)
 
     /** Total session tonnage across a training (Double to avoid float round-trip). */
     private fun TrainingState.tonnage(): Double {
         var t = 0.0
         this.exercises.forEach { ex ->
-            ex.iterations.forEach { itn ->
-                val w = itn.volume.value
-                val r = itn.repetitions.value
-                if (w != null && r != null && r > 0) t += (w * r)
-            }
+            val exerciseTonnage = InternalCalculationUtils.calculateExerciseWorkload(ex, InternalCalculationUtils.WorkloadStrategy.Volume)
+            t += exerciseTonnage
         }
         return t
     }
 
     /** Weighted average weight per rep = Σ(w*r)/Σ(r). */
-    private fun avgWeightPerRep(ex: ExerciseState): Float {
-        val (sumT, sumR) = sums(ex)
-        return if (sumR > 0) sumT / sumR else 0f
-    }
+    private fun avgWeightPerRep(ex: ExerciseState): Float =
+        InternalCalculationUtils.avgWeightPerRep(ex.iterations)
 
     /** Key to identify an exercise when storing/smoothing rolling 1RM. */
     private fun exerciseKey(ex: ExerciseState): String {
@@ -662,11 +641,13 @@ public class AnalyticsCalculator(
         alpha: Float = 0.20f,
         clamp: Float = 0.05f
     ): Float {
-        if (prev == null) return cur
+        if (prev == null) return cur.takeIf { it.isFinite() } ?: 0f
+        if (!prev.isFinite() || !cur.isFinite()) return cur.takeIf { it.isFinite() } ?: prev.takeIf { it.isFinite() } ?: 0f
+
         val raw = prev * (1 - alpha) + cur * alpha
         val minAllowed = prev * (1 - clamp)
         val maxAllowed = prev * (1 + clamp)
-        return raw.coerceIn(minAllowed, maxAllowed)
+        return raw.coerceIn(minAllowed, maxAllowed).takeIf { it.isFinite() } ?: cur
     }
 
     // -------------------------- 1RM estimation core --------------------------
@@ -713,14 +694,14 @@ public class AnalyticsCalculator(
             val r = rInt.toFloat()
             val b = brzycki(w, r)
             val e = epley(w, r)
-            val avg = listOfNotNull(b, e).let { if (it.isEmpty()) null else it.sum() / it.size }
-            if (avg != null) {
+            val avg = listOfNotNull(b, e).let { if (it.isEmpty()) null else it.average().toFloat() }
+            if (avg != null && avg.isFinite() && avg > 0f) {
                 val q = qualityWeight(r)
                 pairs += avg to q
             }
         }
         if (pairs.isEmpty()) return null
-        return weightedMedian(pairs)
+        return weightedMedian(pairs)?.takeIf { it.isFinite() && it > 0f }
     }
 
     // -------------------------- Period → Buckets logic --------------------------
@@ -743,62 +724,16 @@ public class AnalyticsCalculator(
 
     // ---- Bucket builders (LocalDateTime-safe) ----
 
-    private fun days(from: LocalDateTime, to: LocalDateTime): List<Bucket> {
-        val out = mutableListOf<Bucket>()
-        var d = from.date
-        val endDate = to.date
-        while (d <= endDate) {
-            val dayStart = LocalDateTime(d, LocalTime(0, 0))
-            val dayEnd = LocalDateTime(d, LocalTime(23, 59, 59, 999_000_000))
-            val start = maxDT(dayStart, from)
-            val end = minDT(dayEnd, to)
-            out += Bucket(start, end)
-            d = d.plus(DatePeriod(days = 1))
-        }
-        return out
-    }
+    private fun days(from: LocalDateTime, to: LocalDateTime): List<Bucket> =
+        InternalCalculationUtils.buildDayBuckets(DateRange(from, to))
 
     // ---- Week buckets (no LocalDateTime.plus) ----
-    private fun weeks(from: LocalDateTime, to: LocalDateTime): List<Bucket> {
-        val out = mutableListOf<Bucket>()
-        var weekStart = startOfWeek(from) // Monday 00:00
-        while (weekStart <= to) {
-            // End of week = Sunday 23:59:59.999
-            val weekEndDate = weekStart.date.plus(DatePeriod(days = 6))
-            val weekEnd = LocalDateTime(weekEndDate, LocalTime(23, 59, 59, 999_000_000))
-
-            val start = maxDT(weekStart, from)
-            val end = minDT(weekEnd, to)
-            out += Bucket(start, end)
-
-            // Next week = current Monday + 7 days @ 00:00
-            val nextWeekDate = weekStart.date.plus(DatePeriod(days = 7))
-            weekStart = LocalDateTime(nextWeekDate, LocalTime(0, 0))
-        }
-        return out
-    }
+    private fun weeks(from: LocalDateTime, to: LocalDateTime): List<Bucket> =
+        InternalCalculationUtils.buildWeekBuckets(DateRange(from, to))
 
     // ---- Month buckets (no LocalDateTime.plus) ----
-    private fun months(from: LocalDateTime, to: LocalDateTime): List<Bucket> {
-        val out = mutableListOf<Bucket>()
-        var monthStart = startOfMonth(from) // 1st day 00:00
-        while (monthStart <= to) {
-            // Last day of current month @ 23:59:59.999
-            val firstOfNext = LocalDate(monthStart.year, monthStart.monthNumber, 1)
-                .plus(DatePeriod(months = 1))
-            val lastDay = firstOfNext.minus(DatePeriod(days = 1))
-            val monthEnd = LocalDateTime(lastDay, LocalTime(23, 59, 59, 999_000_000))
-
-            val start = maxDT(monthStart, from)
-            val end = minDT(monthEnd, to)
-            out += Bucket(start, end)
-
-            // Next month start = current date + 1 month @ 00:00
-            val nextMonthDate = monthStart.date.plus(DatePeriod(months = 1))
-            monthStart = LocalDateTime(nextMonthDate, LocalTime(0, 0))
-        }
-        return out
-    }
+    private fun months(from: LocalDateTime, to: LocalDateTime): List<Bucket> =
+        InternalCalculationUtils.buildMonthBuckets(DateRange(from, to))
 
     // ---- Grouping and labeling ----
 
@@ -876,21 +811,9 @@ public class AnalyticsCalculator(
         }
     }
 
-    private fun TrainingState.belongsTo(bucket: Bucket): Boolean {
-        val ts = createdAt
-        return ts >= bucket.start && ts <= bucket.end
-    }
+    private fun TrainingState.belongsTo(bucket: Bucket): Boolean =
+        createdAt.belongsTo(bucket)
 
-    /** Monday 00:00 of the week containing 'd'. */
-    private fun startOfWeek(d: LocalDateTime): LocalDateTime {
-        val shift = d.date.dayOfWeek.isoDayNumber - 1 // 0..6, MON=1..SUN=7 -> 0..6
-        val mondayDate = d.date.minus(DatePeriod(days = shift))
-        return LocalDateTime(mondayDate, LocalTime(0, 0))
-    }
-
-    /** First day of month 00:00 for the month of 'd'. */
-    private fun startOfMonth(d: LocalDateTime): LocalDateTime =
-        LocalDateTime(LocalDate(d.year, d.monthNumber, 1), LocalTime(0, 0))
 
     /** Simple ISO-like week number, computed from LocalDateTime. */
     private fun isoWeekNumber(weekStartMonday: LocalDateTime): Int {
@@ -902,16 +825,19 @@ public class AnalyticsCalculator(
 
     // -------------------------- Misc helpers --------------------------
 
-    /** Percentile (0..1) over Float list; returns 0f for empty. */
+    /** Percentile (0..1) over Float list; returns 0f for empty or invalid input. */
     private fun percentile(values: List<Float>, p: Float): Float {
         if (values.isEmpty()) return 0f
-        val sorted = values.sorted()
+        val validValues = values.filter { it.isFinite() }
+        if (validValues.isEmpty()) return 0f
+
+        val sorted = validValues.sorted()
         val clamped = p.coerceIn(0f, 1f)
         val idx = ((sorted.size - 1) * clamped).toDouble()
         val lo = idx.toInt()
         val hi = minOf(lo + 1, sorted.lastIndex)
         val frac = (idx - lo).toFloat()
-        return (sorted[lo] * (1 - frac) + sorted[hi] * frac)
+        return (sorted[lo] * (1 - frac) + sorted[hi] * frac).takeIf { it.isFinite() } ?: 0f
     }
 
     // Allow `it.createdAt in period.range`

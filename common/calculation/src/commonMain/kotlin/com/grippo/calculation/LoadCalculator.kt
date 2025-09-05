@@ -1,6 +1,7 @@
 package com.grippo.calculation
 
 import androidx.compose.ui.graphics.Color
+import com.grippo.calculation.internal.InternalCalculationUtils
 import com.grippo.calculation.models.BucketScale
 import com.grippo.calculation.models.Instruction
 import com.grippo.calculation.models.daysInclusive
@@ -52,10 +53,6 @@ public class LoadCalculator(
     private val colorProvider: ColorProvider,
 ) {
 
-    // Tiny threshold to ignore weight noise (e.g., 0.2..0.4 kg rounding)
-    private companion object {
-        private const val WEIGHT_EPS_KG: Float = 0.5f
-    }
 
     // ======== PUBLIC SIMPLE API ========
 
@@ -119,16 +116,11 @@ public class LoadCalculator(
 
     /** Simple rule: if there's any non-trivial weight entered across sets, use Volume; otherwise Reps. */
     private fun chooseWorkload(exercises: List<ExerciseState>): Workload {
-        var tonnageLike = 0.0
-        exercises.forEach { ex ->
-            ex.iterations.forEach { itn ->
-                val w = (itn.volume.value ?: 0f)
-                val r = (itn.repetitions.value ?: 0).coerceAtLeast(0)
-                val load = if (w > WEIGHT_EPS_KG) w else 0f
-                if (r > 0 && load > 0f) tonnageLike += (load * r)
-            }
+        val strategy = InternalCalculationUtils.chooseWorkloadStrategy(exercises)
+        return when (strategy) {
+            InternalCalculationUtils.WorkloadStrategy.Volume -> Workload.Volume
+            InternalCalculationUtils.WorkloadStrategy.Reps -> Workload.Reps
         }
-        return if (tonnageLike > 0.0) Workload.Volume else Workload.Reps
     }
 
     private suspend fun calculateCore(
@@ -154,7 +146,7 @@ public class LoadCalculator(
                 Workload.Volume -> ex.iterations.fold(0f) { acc, itn ->
                     val w = (itn.volume.value ?: 0f)
                     val r = (itn.repetitions.value ?: 0).coerceAtLeast(0)
-                    val load = if (w > WEIGHT_EPS_KG) w else 0f // ignore tiny/negative
+                    val load = if (w > InternalCalculationUtils.WEIGHT_EPS_KG) w else 0f // ignore tiny/negative
                     if (r == 0 || load <= 0f) acc else acc + load * r
                 }
 
@@ -207,8 +199,11 @@ public class LoadCalculator(
 
         // 4) Normalize / format values and colorize as a heatmap
         val values = labelValues.map { it.second }
-        val maxVal = values.maxOrNull() ?: 1f
-        val sumVal = values.sum().takeIf { it > 0f } ?: 1f
+        val validValues = values.filter { it.isFinite() }
+        if (validValues.isEmpty()) return DSProgressData(items = emptyList())
+
+        val maxVal = validValues.maxOrNull() ?: 1f
+        val sumVal = validValues.sum().takeIf { it > 0f } ?: 1f
 
         val items = labelValues
             .sortedByDescending { it.second }
