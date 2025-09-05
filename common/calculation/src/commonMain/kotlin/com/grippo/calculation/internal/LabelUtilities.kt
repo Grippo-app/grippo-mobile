@@ -304,6 +304,26 @@ internal fun instructionForMuscleLoad(period: PeriodState): Instruction {
 
 internal enum class DistributionMetric { CATEGORY, WEIGHT_TYPE, FORCE_TYPE, EXPERIENCE }
 
+internal fun instructionForCategoryTraining(): Instruction = Instruction(
+    title = UiText.Res(Res.string.tooltip_category_title_training),
+    description = UiText.Res(Res.string.tooltip_category_description_training)
+)
+
+internal fun instructionForWeightTypeTraining(): Instruction = Instruction(
+    title = UiText.Res(Res.string.tooltip_weight_type_title_training),
+    description = UiText.Res(Res.string.tooltip_weight_type_description_training)
+)
+
+internal fun instructionForForceTypeTraining(): Instruction = Instruction(
+    title = UiText.Res(Res.string.tooltip_force_type_title_training),
+    description = UiText.Res(Res.string.tooltip_force_type_description_training)
+)
+
+internal fun instructionForExperienceTraining(): Instruction = Instruction(
+    title = UiText.Res(Res.string.tooltip_experience_title_training),
+    description = UiText.Res(Res.string.tooltip_experience_description_training)
+)
+
 internal fun instructionForDistribution(
     metric: DistributionMetric,
     scale: BucketScale,

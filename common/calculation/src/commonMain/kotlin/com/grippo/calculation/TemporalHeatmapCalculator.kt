@@ -33,8 +33,8 @@ import com.grippo.state.trainings.TrainingState
  */
 public class TemporalHeatmapCalculator(
     private val stringProvider: StringProvider,
-    private val policy: Policy = Policy()
 ) {
+    private val policy: Policy = Policy()
 
     // -------------------------- Policy (tunable knobs) --------------------------
 
@@ -54,7 +54,7 @@ public class TemporalHeatmapCalculator(
     }
 
     /** Public policy that can be supplied by caller. Backwards-compatible defaults. */
-    public data class Policy(
+    private data class Policy(
         val normalization: Normalization = Normalization.ViewMax
     )
 
@@ -244,14 +244,6 @@ public class TemporalHeatmapCalculator(
         }
         return perMuscle
     }
-
-    // -------------------------- Workload choice (delegated to your utils) --------------------------
-
-    // -------------------------- Instructions --------------------------
-
-
-    // -------------------------- Time bucketing --------------------------
-
 
     // -------------------------- Normalization helpers --------------------------
 

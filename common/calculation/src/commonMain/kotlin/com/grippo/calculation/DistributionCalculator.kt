@@ -2,27 +2,21 @@ package com.grippo.calculation
 
 import com.grippo.calculation.internal.DistributionMetric
 import com.grippo.calculation.internal.deriveScale
+import com.grippo.calculation.internal.instructionForCategoryTraining
 import com.grippo.calculation.internal.instructionForDistribution
+import com.grippo.calculation.internal.instructionForExperienceTraining
+import com.grippo.calculation.internal.instructionForForceTypeTraining
+import com.grippo.calculation.internal.instructionForWeightTypeTraining
 import com.grippo.calculation.models.Instruction
 import com.grippo.date.utils.contains
 import com.grippo.design.components.chart.DSPieData
 import com.grippo.design.components.chart.DSPieSlice
-import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
-import com.grippo.design.resources.provider.tooltip_category_description_training
-import com.grippo.design.resources.provider.tooltip_category_title_training
-import com.grippo.design.resources.provider.tooltip_experience_description_training
-import com.grippo.design.resources.provider.tooltip_experience_title_training
-import com.grippo.design.resources.provider.tooltip_force_type_description_training
-import com.grippo.design.resources.provider.tooltip_force_type_title_training
-import com.grippo.design.resources.provider.tooltip_weight_type_description_training
-import com.grippo.design.resources.provider.tooltip_weight_type_title_training
 import com.grippo.state.datetime.PeriodState
 import com.grippo.state.exercise.examples.CategoryEnumState
 import com.grippo.state.exercise.examples.ForceTypeEnumState
 import com.grippo.state.exercise.examples.WeightTypeEnumState
-import com.grippo.state.formatters.UiText
 import com.grippo.state.profile.ExperienceEnumState
 import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.TrainingState
@@ -58,8 +52,6 @@ public class DistributionCalculator(
     private val stringProvider: StringProvider,
     private val colorProvider: ColorProvider
 ) {
-
-
     // ---------------- Weighting strategy ----------------
 
     public sealed interface Weighting {
@@ -115,10 +107,7 @@ public class DistributionCalculator(
         weighting: Weighting = Weighting.Count
     ): Pair<DSPieData, Instruction> {
         val data = buildCategoryPie(exercises, weighting)
-        val tip = Instruction(
-            title = UiText.Res(Res.string.tooltip_category_title_training),
-            description = UiText.Res(Res.string.tooltip_category_description_training)
-        )
+        val tip = instructionForCategoryTraining()
         return Pair(data, tip)
     }
 
@@ -166,10 +155,7 @@ public class DistributionCalculator(
         weighting: Weighting = Weighting.Count
     ): Pair<DSPieData, Instruction> {
         val data = buildWeightTypePie(exercises, weighting)
-        val tip = Instruction(
-            title = UiText.Res(Res.string.tooltip_weight_type_title_training),
-            description = UiText.Res(Res.string.tooltip_weight_type_description_training)
-        )
+        val tip = instructionForWeightTypeTraining()
         return Pair(data, tip)
     }
 
@@ -218,10 +204,7 @@ public class DistributionCalculator(
         weighting: Weighting = Weighting.Count
     ): Pair<DSPieData, Instruction> {
         val data = buildForceTypePie(exercises, weighting)
-        val tip = Instruction(
-            title = UiText.Res(Res.string.tooltip_force_type_title_training),
-            description = UiText.Res(Res.string.tooltip_force_type_description_training)
-        )
+        val tip = instructionForForceTypeTraining()
         return Pair(data, tip)
     }
 
@@ -270,10 +253,7 @@ public class DistributionCalculator(
         weighting: Weighting = Weighting.Count
     ): Pair<DSPieData, Instruction> {
         val data = buildExperiencePie(exercises, weighting)
-        val tip = Instruction(
-            title = UiText.Res(Res.string.tooltip_experience_title_training),
-            description = UiText.Res(Res.string.tooltip_experience_description_training)
-        )
+        val tip = instructionForExperienceTraining()
         return Pair(data, tip)
     }
 

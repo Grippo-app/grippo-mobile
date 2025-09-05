@@ -43,7 +43,6 @@ public class LoadCalculator(
     private val stringProvider: StringProvider,
     private val colorProvider: ColorProvider,
 ) {
-
     // ======== PUBLIC SIMPLE API ========
 
     /** Single session (ABSOLUTE; auto workload). */
