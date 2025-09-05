@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 
 @OptIn(FlowPreview::class)
@@ -58,7 +59,7 @@ internal class HomeStatisticsViewModel(
 
         state
             .map {
-                it.trainings.flatMap { it.exercises.mapNotNull { m -> m.exerciseExample?.id } }
+                it.trainings.flatMap { f -> f.exercises.mapNotNull { m -> m.exerciseExample?.id } }
                     .toSet().toList()
             }
             .distinctUntilChanged()
@@ -78,10 +79,10 @@ internal class HomeStatisticsViewModel(
             .safeLaunch()
 
         state
-            .map { Triple(it.trainings, it.examples, it.muscles) }
+            .map { s -> listOf(s.trainings, s.examples, s.muscles, s.period) }
             .debounce(200)
             .distinctUntilChanged()
-            .onEach { generateStatistics() }
+            .mapLatest { generateStatistics() }
             .safeLaunch()
     }
 

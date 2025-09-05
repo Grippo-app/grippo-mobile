@@ -120,10 +120,12 @@ public class AnalyticsCalculator(
         val colors = colorProvider.get()
         val palette = colors.palette.palette9Blue
 
+        val exTxt = stringProvider.get(Res.string.ex)
+
         val items = exercises.mapIndexed { index, ex ->
             val tonnage = tonnage(ex).coerceAtLeast(0f)
             DSBarItem(
-                label = ex.name,
+                label = "$exTxt${index + 1}",
                 value = tonnage,
                 color = palette[index % palette.size]
             )
@@ -180,7 +182,7 @@ public class AnalyticsCalculator(
     }
 
     /** 📈 %1RM by exercise order (ThisDay). */
-    public fun calculateIntraProgressionPercent1RMFromExercises(
+    public suspend fun calculateIntraProgressionPercent1RMFromExercises(
         exercises: List<ExerciseState>
     ): Pair<DSAreaData, Instruction> {
         // 1) session 1RM per exercise (robust estimate, skip bodyweight)
@@ -199,6 +201,8 @@ public class AnalyticsCalculator(
         // 2) rolling 1RM smoothing (no prior map in ThisDay)
         val rolling1RM: Map<String, Float> = session1RMs.mapValues { (_, current) -> current }
 
+        val exTxt = stringProvider.get(Res.string.ex)
+
         // 3) %1RM per exercise index
         val points = exercises.mapIndexedNotNull { index, ex ->
             val key = exerciseKey(ex)
@@ -209,7 +213,7 @@ public class AnalyticsCalculator(
             DSAreaPoint(
                 x = index.toFloat(),
                 y = rel * 100f,
-                xLabel = ex.name
+                xLabel = "$exTxt${index + 1}"
             )
         }
         val data = DSAreaData(points = points)
@@ -301,13 +305,15 @@ public class AnalyticsCalculator(
      * stimulus = tonnage × (rel_intensity^alpha)
      * where rel_intensity = avgWeightPerRep / rolling1RM.
      */
-    public fun calculateIntraProgressionStimulusFromExercises(
+    public suspend fun calculateIntraProgressionStimulusFromExercises(
         exercises: List<ExerciseState>
     ): Pair<DSAreaData, Instruction> {
         // session 1RM, no prior smoothing
         val session1RMs =
             exercises.associate { exerciseKey(it) to (estimateSession1RM(it) ?: Float.NaN) }
                 .filterValues { it.isFinite() && it > 0f }
+
+        val exTxt = stringProvider.get(Res.string.ex)
 
         val points = exercises.mapIndexedNotNull { index, ex ->
             val r1rm = session1RMs[exerciseKey(ex)] ?: return@mapIndexedNotNull null
@@ -317,7 +323,11 @@ public class AnalyticsCalculator(
             val rel = (avg / r1rm).coerceAtLeast(0f)
             val alpha = 0.75f // fixed for session view
             val stimulus = sumT * rel.pow(alpha)
-            DSAreaPoint(x = index.toFloat(), y = stimulus, xLabel = ex.name)
+            DSAreaPoint(
+                x = index.toFloat(),
+                y = stimulus,
+                xLabel = "$exTxt${index + 1}"
+            )
         }
 
         val data = DSAreaData(points = points)
@@ -413,7 +423,7 @@ public class AnalyticsCalculator(
             val e1 = estimateSession1RM(ex) ?: return@mapIndexedNotNull null
 
             DSBarItem(
-                label = "$exTxt$index",
+                label = "$exTxt${index + 1}",
                 value = e1.coerceAtLeast(0f),
                 color = palette[index % palette.size]
             )
@@ -815,7 +825,12 @@ public class AnalyticsCalculator(
             }
 
             BucketScale.WEEK -> { b ->
-                "$w${isoWeekNumber(b.start)}-${DateTimeUtils.format(b.start, DateFormat.MONTH_SHORT)}\""
+                "$w${isoWeekNumber(b.start)}-${
+                    DateTimeUtils.format(
+                        b.start,
+                        DateFormat.MONTH_SHORT
+                    )
+                }"
             }
 
             BucketScale.MONTH -> { b ->
@@ -835,7 +850,7 @@ public class AnalyticsCalculator(
             }
 
             BucketScale.WEEK -> {
-                "$w${isoWeekNumber(this)}-${DateTimeUtils.format(this, DateFormat.MONTH_SHORT)}\""
+                "$w${isoWeekNumber(this)}-${DateTimeUtils.format(this, DateFormat.MONTH_SHORT)}"
             }
 
             BucketScale.MONTH -> {
