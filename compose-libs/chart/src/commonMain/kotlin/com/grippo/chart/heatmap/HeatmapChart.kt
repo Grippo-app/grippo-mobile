@@ -69,7 +69,7 @@ private fun buildPlan(
     measurer: TextMeasurer,
     density: Density
 ): HeatmapPlan = with(density) {
-    // Domain min/max (even if matrix is already [0..1], keep robust)
+    // Domain min/max
     val vals = data.matrix.values
     var minVal = 0f
     var maxVal = 1f
@@ -79,7 +79,7 @@ private fun buildPlan(
         if (maxVal == minVal) maxVal += 1f
     }
 
-    // Measure row/col labels once
+    // Measure labels once
     val rowLabelLayouts = when (val rLbl = style.rowLabels) {
         is HeatmapStyle.AxisLabels.ShowAll -> (0 until data.matrix.rows).map { r ->
             measurer.measure(AnnotatedString(data.rowLabels.getOrNull(r) ?: ""), rLbl.textStyle)
@@ -103,40 +103,32 @@ private fun buildPlan(
         is HeatmapStyle.AxisLabels.None -> emptyList()
     }
 
-    // Gutters
+    // Metrics
     val widthPx = widthDp.toPx()
     val labelPadPx = style.layout.labelPadding.toPx()
     val legendLabelSpacingPx = 2.dp.toPx()
     val gapPx = style.layout.gap.toPx()
     val rx = style.layout.corner.toPx()
 
+    val hasRowLabels = rowLabelLayouts.isNotEmpty()
+    val hasColLabels = colLabelLayouts.isNotEmpty()
+
+    // Left gutter: row labels + labelPadding (only if labels exist)
     var leftGutter = 0f
-    when (style.rowLabels) {
-        is HeatmapStyle.AxisLabels.ShowAll,
-        is HeatmapStyle.AxisLabels.Adaptive -> if (rowLabelLayouts.isNotEmpty()) {
-            val maxW = rowLabelLayouts.maxOf { it.size.width }
-            leftGutter += maxW + labelPadPx
-        }
-
-        is HeatmapStyle.AxisLabels.None -> Unit
+    if (hasRowLabels) {
+        val maxW = rowLabelLayouts.maxOf { it.size.width }
+        leftGutter = maxW + labelPadPx
     }
 
-    var bottomGutter = 0f
-    var colLabelsMaxH = 0f
-    when (style.colLabels) {
-        is HeatmapStyle.AxisLabels.ShowAll,
-        is HeatmapStyle.AxisLabels.Adaptive -> if (colLabelLayouts.isNotEmpty()) {
-            val maxH = colLabelLayouts.maxOf { it.size.height }
-            colLabelsMaxH = maxH.toFloat()
-            bottomGutter += colLabelsMaxH + labelPadPx
-        }
+    // Bottom blocks are split:
+    // 1) xAxis block: labelPadding (between grid and labels) + labels' height.
+    val colLabelsMaxH = if (hasColLabels) colLabelLayouts.maxOf { it.size.height }.toFloat() else 0f
+    val bottomForColLabels = if (hasColLabels) labelPadPx + colLabelsMaxH else 0f
 
-        is HeatmapStyle.AxisLabels.None -> Unit
-    }
-
+    // 2) legend block: OPTIONAL labelPadding between xAxis and legend + legend elements.
     var minLegendLayout: TextLayoutResult? = null
     var maxLegendLayout: TextLayoutResult? = null
-    when (val lg = style.legend) {
+    val bottomForLegend = when (val lg = style.legend) {
         is HeatmapStyle.Legend.Visible -> {
             val minText = (lg.minText?.let { it(minVal) }) ?: "0%"
             val maxText = (lg.maxText?.let { it(maxVal) }) ?: "100%"
@@ -144,31 +136,32 @@ private fun buildPlan(
             maxLegendLayout = measurer.measure(AnnotatedString(maxText), lg.labelStyle)
             val legendTextMaxH =
                 max(minLegendLayout.size.height, maxLegendLayout.size.height).toFloat()
-            bottomGutter += lg.height.toPx() + legendLabelSpacingPx + legendTextMaxH + labelPadPx
+            // add labelPadding ONLY between xAxis and legend if xAxis exists
+            val gapBetweenXAxisAndLegend = if (hasColLabels) labelPadPx else 0f
+            gapBetweenXAxisAndLegend + lg.height.toPx() + legendLabelSpacingPx + legendTextMaxH
         }
 
-        is HeatmapStyle.Legend.None -> Unit
+        is HeatmapStyle.Legend.None -> 0f
     }
 
-    // Chart rect (height is unknown until cell side is known)
+    val widthForGrid = (widthPx - leftGutter).coerceAtLeast(0f)
+    val rows = data.matrix.rows
+    val cols = data.matrix.cols
+
+    // Square sizing
+    val fitToWidth = if (cols > 0) (widthForGrid - gapPx * (cols - 1)) / cols else 0f
+    val maxCellPx = style.layout.maxCellSize?.toPx()
+    val cell = if (maxCellPx != null) min(fitToWidth, maxCellPx) else fitToWidth
+    val cw = cell
+    val ch = cell
+
+    val gridH = rows * ch + gapPx * (rows - 1)
+    val totalHeightPx = gridH + bottomForColLabels + bottomForLegend
+
     val chartLeft = leftGutter
     val chartTop = 0f
     val chartRight = widthPx
-    val chartW = (chartRight - chartLeft).coerceAtLeast(0f)
-
-    // Square sizing (no placeholders)
-    val rows = data.matrix.rows
-    val cols = data.matrix.cols
-    val fitToWidth = if (cols > 0) (chartW - gapPx * (cols - 1)) / cols else 0f
-    val maxCellPx = style.layout.maxCellSize?.toPx()
-    val cell = if (maxCellPx != null) min(fitToWidth, maxCellPx) else fitToWidth
-
-    val cw = cell
-    val ch = cell // always square
-
-    val gridH = rows * ch + gapPx * (rows - 1)
-    val totalHeightPx = gridH + bottomGutter
-    val chart = Rect(chartLeft, chartTop, chartRight, totalHeightPx - bottomGutter)
+    val chart = Rect(chartLeft, chartTop, chartRight, chartTop + gridH)
 
     HeatmapPlan(
         totalHeightPx = totalHeightPx,
@@ -193,7 +186,9 @@ private fun buildPlan(
     )
 }
 
-// =================== DRAW ===================
+// =================== DRAW (updated Y positions; no extra bottom pad) ===================
+
+// =================== DRAW (yAxis↔grid and xAxis↔legend gaps via labelPadding) ===================
 
 private fun DrawScope.drawHeatmap(
     plan: HeatmapPlan,
@@ -213,7 +208,7 @@ private fun DrawScope.drawHeatmap(
     val gap = plan.gapPx
     val rx = plan.rx
 
-    // Background for cells (optional)
+    // Cells background
     style.palette.missingCellColor?.let { bg ->
         for (r in 0 until plan.rows) {
             for (c in 0 until plan.cols) {
@@ -229,7 +224,7 @@ private fun DrawScope.drawHeatmap(
         }
     }
 
-    // Data cells
+    // Cells
     for (r in 0 until plan.rows) {
         for (c in 0 until plan.cols) {
             val x = plan.gridLeft + (cw + gap) * c
@@ -272,7 +267,7 @@ private fun DrawScope.drawHeatmap(
         }
     }
 
-    // Row labels (left)
+    // Row labels (yAxis) — labelPadding already accounted on the left in buildPlan
     when (val rLbl = style.rowLabels) {
         is HeatmapStyle.AxisLabels.ShowAll -> if (data.rowLabels.isNotEmpty()) {
             for (r in 0 until plan.rows) {
@@ -287,7 +282,6 @@ private fun DrawScope.drawHeatmap(
             val minGapPx = rLbl.minGapDp.toPx()
             val layouts = plan.rowLabelLayouts
             var step = 1
-            // Choose step so label boxes don't overlap vertically
             while (true) {
                 var ok = true
                 var prevBottom = Float.NEGATIVE_INFINITY
@@ -295,11 +289,10 @@ private fun DrawScope.drawHeatmap(
                 while (r < plan.rows) {
                     val l = layouts[r]
                     val y = plan.gridTop + r * (ch + gap) + (ch - l.size.height) / 2f
-                    val top = y
-                    if (top < prevBottom + minGapPx) {
+                    if (y < prevBottom + minGapPx) {
                         ok = false; break
                     }
-                    prevBottom = top + l.size.height
+                    prevBottom = y + l.size.height
                     r += step
                 }
                 if (ok) break
@@ -319,13 +312,13 @@ private fun DrawScope.drawHeatmap(
         is HeatmapStyle.AxisLabels.None -> Unit
     }
 
-    // Column labels (bottom)
+    // Column labels (xAxis): sit at chart.bottom + labelPadding
     when (val cLbl = style.colLabels) {
         is HeatmapStyle.AxisLabels.ShowAll -> if (data.colLabels.isNotEmpty()) {
+            val y = chart.bottom + plan.labelPadPx
             for (c in 0 until plan.cols) {
                 val layout = plan.colLabelLayouts[c]
                 val x = plan.gridLeft + c * (cw + gap) + (cw - layout.size.width) / 2f
-                val y = chart.bottom + plan.labelPadPx / 2f
                 drawText(layout, topLeft = Offset(x, y))
             }
         }
@@ -352,7 +345,7 @@ private fun DrawScope.drawHeatmap(
                     lastRight = b.right
                 }
             }
-            // Try to keep the last label if possible
+            // ensure last visible if possible
             if (selected.isNotEmpty() && selected.last() != boxes.lastIndex) {
                 val lastB = boxes.last()
                 while (selected.isNotEmpty()) {
@@ -363,7 +356,7 @@ private fun DrawScope.drawHeatmap(
                 selected.add(boxes.lastIndex)
             }
 
-            val y = chart.bottom + plan.labelPadPx / 2f
+            val y = chart.bottom + plan.labelPadPx
             for (i in selected) {
                 val b = boxes[i]
                 drawText(b.layout, topLeft = Offset(b.left, y))
@@ -373,13 +366,18 @@ private fun DrawScope.drawHeatmap(
         is HeatmapStyle.AxisLabels.None -> Unit
     }
 
-    // Legend
+    // Legend: placed after xAxis; add labelPadding between xAxis and legend (only if xAxis exists)
     when (val lg = style.legend) {
         is HeatmapStyle.Legend.None -> Unit
         is HeatmapStyle.Legend.Visible -> {
-            val legendTop =
-                chart.bottom + (if (plan.colLabelsMaxHPx > 0f) plan.colLabelsMaxHPx + plan.labelPadPx else plan.labelPadPx)
-            val legendRect = Rect(chart.left, legendTop, chart.right, legendTop + lg.height.toPx())
+            val hasColLabels = plan.colLabelsMaxHPx > 0f
+            val yAfterXAxis = if (hasColLabels) (plan.labelPadPx + plan.colLabelsMaxHPx) else 0f
+            val legendTop = chart.bottom + yAfterXAxis + if (hasColLabels) plan.labelPadPx else 0f
+
+            val legendRect = Rect(
+                chart.left, legendTop,
+                chart.right, legendTop + lg.height.toPx()
+            )
             val brush = legendBrush(lg.stops)
             drawRect(
                 brush = brush,

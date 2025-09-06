@@ -36,43 +36,44 @@ public fun HeatmapChart(
     val charts = AppTokens.colors.charts
     val palette = AppTokens.colors.palette
 
-    fun scaleColorOf(stops: List<Pair<Float, Color>>): (Float) -> Color = { tIn ->
-        val t = tIn.coerceIn(0f, 1f)
-        if (stops.isEmpty()) Color.Unspecified
-        else {
-            val sorted = stops.sortedBy { it.first }
-            val idx = sorted.indexOfLast { it.first <= t }.coerceAtLeast(0)
-            val a = sorted[idx]
-            val b = sorted.getOrNull(idx + 1) ?: a
-            if (a.first == b.first) a.second
-            else {
-                val k = (t - a.first) / (b.first - a.first)
-                Color(
-                    red = a.second.red + (b.second.red - a.second.red) * k,
-                    green = a.second.green + (b.second.green - a.second.green) * k,
-                    blue = a.second.blue + (b.second.blue - a.second.blue) * k,
-                    alpha = a.second.alpha + (b.second.alpha - a.second.alpha) * k,
-                )
-            }
+    // Discrete color scale: picks exact color from the palette, no interpolation.
+    fun colorScaleDiscreteOf(colors: List<Color>): (Float) -> Color = { tIn ->
+        if (colors.isEmpty()) Color.Unspecified else {
+            val t = tIn.coerceIn(0f, 1f)
+            val idx = kotlin.math.min((t * colors.size).toInt(), colors.size - 1)
+            colors[idx]
         }
     }
 
-    // === here we generate stops dynamically ===
-    val scaleStopsGrayOrangeRed: List<Pair<Float, Color>> =
-        remember(background.screen, palette.palette5OrangeRedGrowth) {
-            val colors = palette.palette5OrangeRedGrowth
-            val last = (colors.size - 1).coerceAtLeast(1)
-            colors.mapIndexed { index, color ->
-                index.toFloat() / last.toFloat() to color
-            }
+    // Build discrete color list once: bg + palette colors (no gradient math)
+    val paletteColors: List<Color> = remember(background.screen, palette.palette5OrangeRedGrowth) {
+        listOf(background.dialog) + palette.palette5OrangeRedGrowth
+    }
+
+    // Legend stops as hard steps: duplicate boundaries to get crisp segments.
+    fun discreteStopsFrom(colors: List<Color>): List<Pair<Float, Color>> {
+        if (colors.isEmpty()) return emptyList()
+        if (colors.size == 1) return listOf(0f to colors.first(), 1f to colors.first())
+        val n = colors.size
+        val out = ArrayList<Pair<Float, Color>>(n * 2)
+        for (i in 0 until n) {
+            val left = i.toFloat() / n
+            val right = ((i + 1).toFloat() / n).coerceAtMost(1f)
+            out += left to colors[i]
+            out += right to colors[i]
         }
+        return out
+    }
+
+    val discreteLegendStops = remember(paletteColors) { discreteStopsFrom(paletteColors) }
+    val discreteScale = remember(paletteColors) { colorScaleDiscreteOf(paletteColors) }
 
     val style = HeatmapStyle(
         layout = HeatmapStyle.Layout(
-            gap = 1.dp,
-            corner = 3.dp,
-            labelPadding = 4.dp,
-            maxCellSize = 20.dp
+            gap = 6.dp,
+            corner = 6.dp,
+            labelPadding = 6.dp,
+            maxCellSize = null
         ),
         rowLabels = HeatmapStyle.AxisLabels.ShowAll(
             textStyle = AppTokens.typography.b10Reg().copy(color = AppTokens.colors.text.primary)
@@ -83,15 +84,15 @@ public fun HeatmapChart(
         ),
         legend = HeatmapStyle.Legend.Visible(
             height = 8.dp,
-            stops = scaleStopsGrayOrangeRed,
+            stops = discreteLegendStops, // step-like legend (no smooth gradient)
             labelStyle = AppTokens.typography.b10Reg()
                 .copy(color = AppTokens.colors.text.secondary),
             minText = { "0%" },
             maxText = { "100%" }
         ),
         palette = HeatmapStyle.Palette(
-            colorScale = scaleColorOf(scaleStopsGrayOrangeRed),
-            autoNormalize = false,
+            colorScale = discreteScale,     // <- exact palette colors only
+            autoNormalize = false,          // values01 already normalized upstream
             missingCellColor = charts.heatmap.missingCell
         ),
         borders = HeatmapStyle.Borders.None,
@@ -133,7 +134,7 @@ private fun HeatmapChartPreview() {
                 val r = idx / cols
                 val c = idx % cols
                 val base = (r + 1) * (c + 1)
-                ((base % 10) / 10f)
+                ((base % 6) / 5f) // spreads values across discrete bins
             },
             rowLabels = labelsRow,
             colLabels = labelsCol,
