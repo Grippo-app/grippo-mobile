@@ -33,7 +33,6 @@ public fun HeatmapChart(
     data: DSHeatmapData
 ) {
     val background = AppTokens.colors.background
-    val charts = AppTokens.colors.charts
     val palette = AppTokens.colors.palette
 
     // Discrete color scale: picks exact color from the palette, no interpolation.
