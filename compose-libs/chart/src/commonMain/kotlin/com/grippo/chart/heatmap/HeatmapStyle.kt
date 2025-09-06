@@ -53,7 +53,6 @@ public data class HeatmapStyle(
         @Immutable
         public data class Visible(
             val height: Dp,
-            val stops: List<Pair<Float, Color>>? = null,
             val labelStyle: TextStyle,
             val minText: ((Float) -> String)? = null,
             val maxText: ((Float) -> String)? = null,
@@ -62,9 +61,9 @@ public data class HeatmapStyle(
 
     @Immutable
     public data class Palette(
-        val colorScale: (Float) -> Color = ::defaultCoolWarm,
-        val autoNormalize: Boolean = true,
-        val missingCellColor: Color? = Color(0x11000000),
+        val colorScale: (Float) -> Color,
+        val autoNormalize: Boolean,
+        val missingCellColor: Color?,
     )
 
     @Immutable

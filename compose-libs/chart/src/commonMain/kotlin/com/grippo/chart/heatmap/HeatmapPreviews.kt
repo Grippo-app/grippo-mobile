@@ -62,7 +62,6 @@ private fun hmStyle(adaptiveCols: Boolean): HeatmapStyle = HeatmapStyle(
     ),
     legend = HeatmapStyle.Legend.Visible(
         height = 8.dp,
-        stops = scaleStops(),
         labelStyle = TextStyle(color = Color(0xFF808080)),
         minText = { "0%" }, maxText = { "100%" }
     ),

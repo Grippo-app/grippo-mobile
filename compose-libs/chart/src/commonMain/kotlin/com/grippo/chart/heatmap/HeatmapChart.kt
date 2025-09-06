@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
@@ -26,6 +26,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlin.math.max
 import kotlin.math.min
+
+// =================================== PUBLIC API ===================================
 
 @Composable
 public fun HeatmapChart(
@@ -60,7 +62,30 @@ public fun HeatmapChart(
     }
 }
 
-// =================== PLAN BUILDER ===================
+// =================================== PLAN ===================================
+
+@Immutable
+private data class HeatmapPlan(
+    val totalHeightPx: Float,
+    val chart: Rect,
+    val gridLeft: Float,
+    val gridTop: Float,
+    val cw: Float,
+    val ch: Float,
+    val gapPx: Float,
+    val rx: Float,
+    val rows: Int,
+    val cols: Int,
+    val rowLabelLayouts: List<TextLayoutResult>,
+    val colLabelLayouts: List<TextLayoutResult>,
+    val colLabelsMaxHPx: Float,
+    val labelPadPx: Float,
+    val legendLabelSpacingPx: Float,
+    val minLegendTextLayout: TextLayoutResult?,
+    val maxLegendTextLayout: TextLayoutResult?,
+    val minVal: Float,
+    val maxVal: Float,
+)
 
 private fun buildPlan(
     widthDp: Dp,
@@ -69,7 +94,7 @@ private fun buildPlan(
     measurer: TextMeasurer,
     density: Density
 ): HeatmapPlan = with(density) {
-    // Domain min/max
+    // Domain min/max (robust even if values01 already in [0..1])
     val vals = data.matrix.values
     var minVal = 0f
     var maxVal = 1f
@@ -120,12 +145,12 @@ private fun buildPlan(
         leftGutter = maxW + labelPadPx
     }
 
-    // Bottom blocks are split:
-    // 1) xAxis block: labelPadding (between grid and labels) + labels' height.
+    // Bottom is split:
+    // 1) xAxis block: labelPadding (between grid and labels) + labels' height
     val colLabelsMaxH = if (hasColLabels) colLabelLayouts.maxOf { it.size.height }.toFloat() else 0f
     val bottomForColLabels = if (hasColLabels) labelPadPx + colLabelsMaxH else 0f
 
-    // 2) legend block: OPTIONAL labelPadding between xAxis and legend + legend elements.
+    // 2) legend block: labelPadding (between xAxis and legend, only if xAxis exists) + legend block
     var minLegendLayout: TextLayoutResult? = null
     var maxLegendLayout: TextLayoutResult? = null
     val bottomForLegend = when (val lg = style.legend) {
@@ -136,7 +161,6 @@ private fun buildPlan(
             maxLegendLayout = measurer.measure(AnnotatedString(maxText), lg.labelStyle)
             val legendTextMaxH =
                 max(minLegendLayout.size.height, maxLegendLayout.size.height).toFloat()
-            // add labelPadding ONLY between xAxis and legend if xAxis exists
             val gapBetweenXAxisAndLegend = if (hasColLabels) labelPadPx else 0f
             gapBetweenXAxisAndLegend + lg.height.toPx() + legendLabelSpacingPx + legendTextMaxH
         }
@@ -144,11 +168,10 @@ private fun buildPlan(
         is HeatmapStyle.Legend.None -> 0f
     }
 
+    // Grid sizing (always squares, optional cap)
     val widthForGrid = (widthPx - leftGutter).coerceAtLeast(0f)
     val rows = data.matrix.rows
     val cols = data.matrix.cols
-
-    // Square sizing
     val fitToWidth = if (cols > 0) (widthForGrid - gapPx * (cols - 1)) / cols else 0f
     val maxCellPx = style.layout.maxCellSize?.toPx()
     val cell = if (maxCellPx != null) min(fitToWidth, maxCellPx) else fitToWidth
@@ -163,7 +186,7 @@ private fun buildPlan(
     val chartRight = widthPx
     val chart = Rect(chartLeft, chartTop, chartRight, chartTop + gridH)
 
-    HeatmapPlan(
+    return HeatmapPlan(
         totalHeightPx = totalHeightPx,
         chart = chart,
         gridLeft = chart.left,
@@ -186,9 +209,7 @@ private fun buildPlan(
     )
 }
 
-// =================== DRAW (updated Y positions; no extra bottom pad) ===================
-
-// =================== DRAW (yAxis↔grid and xAxis↔legend gaps via labelPadding) ===================
+// =================================== DRAW ===================================
 
 private fun DrawScope.drawHeatmap(
     plan: HeatmapPlan,
@@ -208,7 +229,7 @@ private fun DrawScope.drawHeatmap(
     val gap = plan.gapPx
     val rx = plan.rx
 
-    // Cells background
+    // Optional background (missing cells)
     style.palette.missingCellColor?.let { bg ->
         for (r in 0 until plan.rows) {
             for (c in 0 until plan.cols) {
@@ -218,25 +239,24 @@ private fun DrawScope.drawHeatmap(
                     color = bg,
                     topLeft = Offset(x, y),
                     size = Size(cw, ch),
-                    cornerRadius = CornerRadius(rx, rx)
+                    cornerRadius = androidx.compose.ui.geometry.CornerRadius(rx, rx)
                 )
             }
         }
     }
 
-    // Cells
+    // Data cells
     for (r in 0 until plan.rows) {
         for (c in 0 until plan.cols) {
             val x = plan.gridLeft + (cw + gap) * c
             val y = plan.gridTop + (ch + gap) * r
             val t = norm(data.matrix[r, c])
             val color = style.palette.colorScale(t)
-
             drawRoundRect(
                 color = color,
                 topLeft = Offset(x, y),
                 size = Size(cw, ch),
-                cornerRadius = CornerRadius(rx, rx)
+                cornerRadius = androidx.compose.ui.geometry.CornerRadius(rx, rx)
             )
 
             when (val b = style.borders) {
@@ -245,7 +265,7 @@ private fun DrawScope.drawHeatmap(
                         color = b.borderColor,
                         topLeft = Offset(x, y),
                         size = Size(cw, ch),
-                        cornerRadius = CornerRadius(rx, rx),
+                        cornerRadius = androidx.compose.ui.geometry.CornerRadius(rx, rx),
                         style = Stroke(width = b.borderWidth.toPx())
                     )
                 }
@@ -267,7 +287,7 @@ private fun DrawScope.drawHeatmap(
         }
     }
 
-    // Row labels (yAxis) — labelPadding already accounted on the left in buildPlan
+    // Y axis labels (left)
     when (val rLbl = style.rowLabels) {
         is HeatmapStyle.AxisLabels.ShowAll -> if (data.rowLabels.isNotEmpty()) {
             for (r in 0 until plan.rows) {
@@ -282,6 +302,7 @@ private fun DrawScope.drawHeatmap(
             val minGapPx = rLbl.minGapDp.toPx()
             val layouts = plan.rowLabelLayouts
             var step = 1
+            // Increase step until vertical boxes do not collide.
             while (true) {
                 var ok = true
                 var prevBottom = Float.NEGATIVE_INFINITY
@@ -312,7 +333,7 @@ private fun DrawScope.drawHeatmap(
         is HeatmapStyle.AxisLabels.None -> Unit
     }
 
-    // Column labels (xAxis): sit at chart.bottom + labelPadding
+    // X axis labels (bottom)
     when (val cLbl = style.colLabels) {
         is HeatmapStyle.AxisLabels.ShowAll -> if (data.colLabels.isNotEmpty()) {
             val y = chart.bottom + plan.labelPadPx
@@ -341,11 +362,10 @@ private fun DrawScope.drawHeatmap(
             for (i in boxes.indices) {
                 val b = boxes[i]
                 if (b.left >= lastRight + minGapPx) {
-                    selected.add(i)
-                    lastRight = b.right
+                    selected.add(i); lastRight = b.right
                 }
             }
-            // ensure last visible if possible
+            // Keep the last label if possible
             if (selected.isNotEmpty() && selected.last() != boxes.lastIndex) {
                 val lastB = boxes.last()
                 while (selected.isNotEmpty()) {
@@ -366,24 +386,43 @@ private fun DrawScope.drawHeatmap(
         is HeatmapStyle.AxisLabels.None -> Unit
     }
 
-    // Legend: placed after xAxis; add labelPadding between xAxis and legend (only if xAxis exists)
+    // Legend: no color map passed; build discrete bands from actual data via palette.colorScale.
     when (val lg = style.legend) {
         is HeatmapStyle.Legend.None -> Unit
         is HeatmapStyle.Legend.Visible -> {
             val hasColLabels = plan.colLabelsMaxHPx > 0f
             val yAfterXAxis = if (hasColLabels) (plan.labelPadPx + plan.colLabelsMaxHPx) else 0f
+            // Add labelPadding between xAxis and legend if xAxis exists
             val legendTop = chart.bottom + yAfterXAxis + if (hasColLabels) plan.labelPadPx else 0f
 
             val legendRect = Rect(
                 chart.left, legendTop,
                 chart.right, legendTop + lg.height.toPx()
             )
-            val brush = legendBrush(lg.stops)
-            drawRect(
-                brush = brush,
-                topLeft = Offset(legendRect.left, legendRect.top),
-                size = Size(legendRect.width, legendRect.height)
+
+            // Build legend colors from data using current palette and normalization window.
+            val legendColors = deriveLegendColorsFromData(
+                data = data,
+                style = style,
+                minVal = plan.minVal,
+                maxVal = plan.maxVal
             )
+
+            if (legendColors.isNotEmpty()) {
+                drawDiscreteLegend(legendRect, legendColors)
+            } else {
+                // Fallback (rare): draw neutral gradient if data empty.
+                val brush = Brush.horizontalGradient(
+                    0f to Color(0xFFE0E0E0),
+                    1f to Color(0xFFBDBDBD)
+                )
+                drawRect(
+                    brush = brush,
+                    topLeft = Offset(legendRect.left, legendRect.top),
+                    size = Size(legendRect.width, legendRect.height)
+                )
+            }
+
             plan.minLegendTextLayout?.let {
                 drawText(
                     it,
@@ -403,32 +442,56 @@ private fun DrawScope.drawHeatmap(
     }
 }
 
-// =================== COLOR / UTILS ===================
+// =================================== HELPERS ===================================
 
-private fun legendBrush(stops: List<Pair<Float, Color>>?): Brush {
-    val s = stops ?: listOf(
-        0f to Color(0xFF3A86FF),
-        0.5f to Color(0xFFB049F8),
-        1f to Color(0xFFFF7A33)
-    )
-    return Brush.horizontalGradient(colorStops = s.toTypedArray())
+/**
+ * Derives a discrete set of legend colors from the actual data values using palette.colorScale.
+ * Colors are taken in ascending normalized t order; duplicates are collapsed. Size is capped to avoid overdraw.
+ */
+private fun deriveLegendColorsFromData(
+    data: HeatmapData,
+    style: HeatmapStyle,
+    minVal: Float,
+    maxVal: Float,
+    maxColors: Int = 12
+): List<Color> {
+    val values = data.matrix.values
+    if (values.isEmpty()) return emptyList()
+
+    val norm: (Float) -> Float =
+        if (style.palette.autoNormalize && maxVal != minVal) {
+            { v -> ((v - minVal) / (maxVal - minVal)).coerceIn(0f, 1f) }
+        } else {
+            { v -> v.coerceIn(0f, 1f) }
+        }
+
+    // Sort by t, then collect unique colors in that order.
+    val uniq = LinkedHashSet<Color>()
+    values.asSequence()
+        .map { v -> norm(v) }
+        .sorted()
+        .forEach { t ->
+            uniq += style.palette.colorScale(t)
+            if (uniq.size >= maxColors) return@forEach
+        }
+
+    // In case all values map to same color, return single band.
+    return uniq.toList()
 }
 
-/** Default cool→magenta→warm palette. Input is clamped to [0..1]. */
-public fun defaultCoolWarm(vIn: Float): Color {
-    val v = vIn.coerceIn(0f, 1f)
-    val c1 = Color(0xFF3A86FF)
-    val c2 = Color(0xFFB049F8)
-    val c3 = Color(0xFFFF7A33)
-    return if (v < 0.5f) lerpColor(c1, c2, v * 2f) else lerpColor(c2, c3, (v - 0.5f) * 2f)
-}
-
-private fun lerpColor(a: Color, b: Color, t: Float): Color {
-    val k = t.coerceIn(0f, 1f)
-    return Color(
-        red = (a.red + (b.red - a.red) * k),
-        green = (a.green + (b.green - a.green) * k),
-        blue = (a.blue + (b.blue - a.blue) * k),
-        alpha = (a.alpha + (b.alpha - a.alpha) * k)
-    )
+/** Paints N equal-width color bands for a discrete legend (first color is always visible). */
+private fun DrawScope.drawDiscreteLegend(rect: Rect, colors: List<Color>) {
+    if (colors.isEmpty()) return
+    val n = colors.size
+    val w = rect.width
+    val h = rect.height
+    for (i in 0 until n) {
+        val left = rect.left + w * i / n
+        val right = if (i == n - 1) rect.right else rect.left + w * (i + 1) / n
+        drawRect(
+            color = colors[i],
+            topLeft = Offset(left, rect.top),
+            size = Size(right - left, h)
+        )
+    }
 }

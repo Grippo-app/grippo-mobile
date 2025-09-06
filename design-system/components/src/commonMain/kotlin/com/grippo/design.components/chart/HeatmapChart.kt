@@ -50,22 +50,6 @@ public fun HeatmapChart(
         listOf(background.dialog) + palette.palette5OrangeRedGrowth
     }
 
-    // Legend stops as hard steps: duplicate boundaries to get crisp segments.
-    fun discreteStopsFrom(colors: List<Color>): List<Pair<Float, Color>> {
-        if (colors.isEmpty()) return emptyList()
-        if (colors.size == 1) return listOf(0f to colors.first(), 1f to colors.first())
-        val n = colors.size
-        val out = ArrayList<Pair<Float, Color>>(n * 2)
-        for (i in 0 until n) {
-            val left = i.toFloat() / n
-            val right = ((i + 1).toFloat() / n).coerceAtMost(1f)
-            out += left to colors[i]
-            out += right to colors[i]
-        }
-        return out
-    }
-
-    val discreteLegendStops = remember(paletteColors) { discreteStopsFrom(paletteColors) }
     val discreteScale = remember(paletteColors) { colorScaleDiscreteOf(paletteColors) }
 
     val style = HeatmapStyle(
@@ -84,11 +68,10 @@ public fun HeatmapChart(
         ),
         legend = HeatmapStyle.Legend.Visible(
             height = 8.dp,
-            stops = discreteLegendStops, // step-like legend (no smooth gradient)
             labelStyle = AppTokens.typography.b10Reg()
                 .copy(color = AppTokens.colors.text.secondary),
-            minText = { "0%" },
-            maxText = { "100%" }
+            minText = null,
+            maxText = null
         ),
         palette = HeatmapStyle.Palette(
             colorScale = discreteScale,     // <- exact palette colors only

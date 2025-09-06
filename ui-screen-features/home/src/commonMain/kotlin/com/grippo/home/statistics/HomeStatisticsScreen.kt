@@ -192,6 +192,30 @@ internal fun HomeStatisticsScreen(
             }
         }
 
+        if (state.temporalHeatmapData.first.values01.isNotEmpty()) {
+            item(key = "temporal_heatmap", span = { GridItemSpan(4) }) {
+                val toolTip = remember(state.temporalHeatmapData.second) {
+                    state.temporalHeatmapData.second?.let { instruction ->
+                        TooltipData(
+                            title = instruction.title,
+                            description = instruction.description
+                        )
+                    }
+                }
+                ChartCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    title = "Estimated 1RM",
+                    tooltip = toolTip,
+                    content = {
+                        HeatmapChart(
+                            modifier = Modifier.fillMaxWidth(),
+                            data = state.temporalHeatmapData.first,
+                        )
+                    }
+                )
+            }
+        }
+
         if (state.percent1RMData.first.points.isNotEmpty()) {
             item(key = "percent_1rm", span = { GridItemSpan(4) }) {
                 val toolTip = remember(state.percent1RMData.second) {
@@ -212,30 +236,6 @@ internal fun HomeStatisticsScreen(
                         AreaChart(
                             modifier = Modifier.fillMaxWidth().weight(1f),
                             data = state.percent1RMData.first
-                        )
-                    }
-                )
-            }
-        }
-
-        if (state.temporalHeatmapData.first.values01.isNotEmpty()) {
-            item(key = "temporal_heatmap", span = { GridItemSpan(4) }) {
-                val toolTip = remember(state.temporalHeatmapData.second) {
-                    state.temporalHeatmapData.second?.let { instruction ->
-                        TooltipData(
-                            title = instruction.title,
-                            description = instruction.description
-                        )
-                    }
-                }
-                ChartCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    title = "Estimated 1RM",
-                    tooltip = toolTip,
-                    content = {
-                        HeatmapChart(
-                            modifier = Modifier.fillMaxWidth(),
-                            data = state.temporalHeatmapData.first,
                         )
                     }
                 )
