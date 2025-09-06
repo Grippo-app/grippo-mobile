@@ -21,8 +21,8 @@ import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
 import com.grippo.design.components.cards.selectable.SelectableCard
-import com.grippo.design.components.cards.selectable.SelectableCardStyle
 import com.grippo.design.components.datetime.DateRangeSelector
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -76,7 +76,7 @@ internal fun PeriodPickerScreen(
                     modifier = Modifier.fillMaxWidth(),
                     isSelected = isSelected,
                     onSelect = clickProvider,
-                    style = SelectableCardStyle.Large(
+                    style = CheckSelectableCardStyle.Large(
                         title = item.text(),
                         description = item.range(DateFormat.DATE_MMM_DD_COMMA),
                         icon = item.icon(),

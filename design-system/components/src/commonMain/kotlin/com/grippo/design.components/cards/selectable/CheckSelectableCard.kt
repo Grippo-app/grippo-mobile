@@ -12,20 +12,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.grippo.design.components.cards.selectable.internal.SelectableCardLarge
-import com.grippo.design.components.cards.selectable.internal.SelectableCardSmall
+import com.grippo.design.components.cards.selectable.internal.CheckSelectableCardLarge
+import com.grippo.design.components.cards.selectable.internal.CheckSelectableCardSmall
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
 
 @Immutable
-public sealed class SelectableCardStyle(
+public sealed class CheckSelectableCardStyle(
     public open val title: String
 ) {
     @Immutable
     public data class Small(
         override val title: String,
-    ) : SelectableCardStyle(title)
+    ) : CheckSelectableCardStyle(title)
 
     @Immutable
     public data class Large(
@@ -33,25 +33,25 @@ public sealed class SelectableCardStyle(
         val description: String,
         val icon: ImageVector,
         val subContent: (@Composable ColumnScope.() -> Unit)?,
-    ) : SelectableCardStyle(title)
+    ) : CheckSelectableCardStyle(title)
 }
 
 @Composable
 public fun SelectableCard(
     modifier: Modifier = Modifier,
-    style: SelectableCardStyle,
+    style: CheckSelectableCardStyle,
     isSelected: Boolean,
     onSelect: () -> Unit
 ) {
     when (style) {
-        is SelectableCardStyle.Large -> SelectableCardLarge(
+        is CheckSelectableCardStyle.Large -> CheckSelectableCardLarge(
             modifier = modifier,
             style = style,
             isSelected = isSelected,
             onClick = onSelect
         )
 
-        is SelectableCardStyle.Small -> SelectableCardSmall(
+        is CheckSelectableCardStyle.Small -> CheckSelectableCardSmall(
             modifier = modifier,
             style = style,
             isSelected = isSelected,
@@ -62,10 +62,10 @@ public fun SelectableCard(
 
 @AppPreview
 @Composable
-private fun SelectableCardLargePreview() {
+private fun CheckSelectableCardLargePreview() {
     PreviewContainer {
-        SelectableCardVariants(
-            SelectableCardStyle.Large(
+        CheckSelectableCardVariants(
+            CheckSelectableCardStyle.Large(
                 title = "Test Title",
                 description = "Test Description",
                 icon = Icons.Filled.Done,
@@ -75,8 +75,8 @@ private fun SelectableCardLargePreview() {
             )
         )
 
-        SelectableCardVariants(
-            SelectableCardStyle.Large(
+        CheckSelectableCardVariants(
+            CheckSelectableCardStyle.Large(
                 title = "Test Title",
                 description = "Test Description",
                 icon = Icons.Filled.Done,
@@ -88,10 +88,10 @@ private fun SelectableCardLargePreview() {
 
 @AppPreview
 @Composable
-private fun SelectableCardSmallPreview() {
+private fun CheckSelectableCardSmallPreview() {
     PreviewContainer {
-        SelectableCardVariants(
-            SelectableCardStyle.Small(
+        CheckSelectableCardVariants(
+            CheckSelectableCardStyle.Small(
                 title = "Test Title",
             )
         )
@@ -99,7 +99,7 @@ private fun SelectableCardSmallPreview() {
 }
 
 @Composable
-internal fun SelectableCardVariants(style: SelectableCardStyle) {
+internal fun CheckSelectableCardVariants(style: CheckSelectableCardStyle) {
     SelectableCard(
         style = style,
         isSelected = true,

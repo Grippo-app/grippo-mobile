@@ -1,24 +1,19 @@
 package com.grippo.design.components.cards.selectable.internal
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.grippo.design.components.cards.selectable.MultiSelectableCardStyle
-import com.grippo.design.components.cards.selectable.MultiSelectableCardVariants
+import com.grippo.design.components.cards.selectable.ToggleSelectableCardStyle
+import com.grippo.design.components.cards.selectable.ToggleSelectableCardVariants
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.selectors.Toggle
 import com.grippo.design.core.AppTokens
@@ -26,36 +21,23 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
 @Composable
-internal fun MultiSelectableCardMedium(
+internal fun ToggleSelectableCardSmall(
     modifier: Modifier,
-    style: MultiSelectableCardStyle.Medium,
+    style: ToggleSelectableCardStyle.Small,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val shape = RoundedCornerShape(AppTokens.dp.multiSelectableCard.medium.radius)
+    val shape = RoundedCornerShape(AppTokens.dp.toggleSelectableCard.small.radius)
 
     Row(
         modifier = modifier
             .scalableClick(onClick = onClick)
             .background(AppTokens.colors.background.card, shape)
-            .padding(
-                horizontal = AppTokens.dp.multiSelectableCard.medium.horizontalPadding,
-                vertical = AppTokens.dp.multiSelectableCard.medium.verticalPadding,
-            )
-            .height(AppTokens.dp.multiSelectableCard.medium.height),
+            .padding(horizontal = AppTokens.dp.toggleSelectableCard.small.horizontalPadding)
+            .height(AppTokens.dp.toggleSelectableCard.small.height),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Image(
-            imageVector = style.icon,
-            contentDescription = null,
-            modifier = Modifier.size(AppTokens.dp.multiSelectableCard.medium.icon),
-            colorFilter = when (isSelected) {
-                true -> null
-                false -> ColorFilter.tint(color = AppTokens.colors.icon.disabled)
-            },
-        )
-
         Text(
             modifier = Modifier.weight(1f),
             text = style.title,
@@ -74,12 +56,11 @@ internal fun MultiSelectableCardMedium(
 
 @AppPreview
 @Composable
-private fun MultiSelectableCardMediumPreview() {
+private fun ToggleSelectableCardSmallPreview() {
     PreviewContainer {
-        MultiSelectableCardVariants(
-            MultiSelectableCardStyle.Medium(
-                title = "Test Title",
-                icon = Icons.Filled.Done
+        ToggleSelectableCardVariants(
+            ToggleSelectableCardStyle.Small(
+                title = "Test Title"
             )
         )
     }

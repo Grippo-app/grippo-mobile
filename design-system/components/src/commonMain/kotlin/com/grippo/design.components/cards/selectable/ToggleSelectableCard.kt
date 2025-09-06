@@ -6,43 +6,43 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.grippo.design.components.cards.selectable.internal.MultiSelectableCardMedium
-import com.grippo.design.components.cards.selectable.internal.MultiSelectableCardSmall
+import com.grippo.design.components.cards.selectable.internal.ToggleSelectableCardMedium
+import com.grippo.design.components.cards.selectable.internal.ToggleSelectableCardSmall
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
 @Immutable
-public sealed class MultiSelectableCardStyle(
+public sealed class ToggleSelectableCardStyle(
     public open val title: String
 ) {
     @Immutable
     public data class Small(
         override val title: String
-    ) : MultiSelectableCardStyle(title)
+    ) : ToggleSelectableCardStyle(title)
 
     @Immutable
     public data class Medium(
         override val title: String,
         val icon: ImageVector,
-    ) : MultiSelectableCardStyle(title)
+    ) : ToggleSelectableCardStyle(title)
 }
 
 @Composable
-public fun MultiSelectableCard(
+public fun ToggleSelectableCard(
     modifier: Modifier = Modifier,
-    style: MultiSelectableCardStyle,
+    style: ToggleSelectableCardStyle,
     isSelected: Boolean,
     onSelect: () -> Unit
 ) {
     when (style) {
-        is MultiSelectableCardStyle.Small -> MultiSelectableCardSmall(
+        is ToggleSelectableCardStyle.Small -> ToggleSelectableCardSmall(
             modifier = modifier,
             style = style,
             isSelected = isSelected,
             onClick = onSelect
         )
 
-        is MultiSelectableCardStyle.Medium -> MultiSelectableCardMedium(
+        is ToggleSelectableCardStyle.Medium -> ToggleSelectableCardMedium(
             modifier = modifier,
             style = style,
             isSelected = isSelected,
@@ -53,10 +53,10 @@ public fun MultiSelectableCard(
 
 @AppPreview
 @Composable
-private fun MultiSelectableCardMediumPreview() {
+private fun ToggleSelectableCardMediumPreview() {
     PreviewContainer {
-        MultiSelectableCardVariants(
-            MultiSelectableCardStyle.Medium(
+        ToggleSelectableCardVariants(
+            ToggleSelectableCardStyle.Medium(
                 title = "Test Title",
                 icon = Icons.Filled.Done
             )
@@ -66,10 +66,10 @@ private fun MultiSelectableCardMediumPreview() {
 
 @AppPreview
 @Composable
-private fun MultiSelectableCardSmallPreview() {
+private fun ToggleSelectableCardSmallPreview() {
     PreviewContainer {
-        MultiSelectableCardVariants(
-            MultiSelectableCardStyle.Small(
+        ToggleSelectableCardVariants(
+            ToggleSelectableCardStyle.Small(
                 title = "Test Title"
             )
         )
@@ -77,13 +77,13 @@ private fun MultiSelectableCardSmallPreview() {
 }
 
 @Composable
-internal fun MultiSelectableCardVariants(style: MultiSelectableCardStyle) {
-    MultiSelectableCard(
+internal fun ToggleSelectableCardVariants(style: ToggleSelectableCardStyle) {
+    ToggleSelectableCard(
         style = style,
         isSelected = true,
         onSelect = {}
     )
-    MultiSelectableCard(
+    ToggleSelectableCard(
         style = style,
         isSelected = false,
         onSelect = {}

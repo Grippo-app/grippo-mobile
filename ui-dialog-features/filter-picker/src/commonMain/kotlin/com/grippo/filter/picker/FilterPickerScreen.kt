@@ -24,8 +24,8 @@ import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
 import com.grippo.design.components.cards.selectable.SelectableCard
-import com.grippo.design.components.cards.selectable.SelectableCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -100,7 +100,7 @@ internal fun FilterPickerScreen(
                                     }
 
                                     SelectableCard(
-                                        style = SelectableCardStyle.Small(
+                                        style = CheckSelectableCardStyle.Small(
                                             title = value.title().text()
                                         ),
                                         isSelected = value == content.value,
@@ -126,7 +126,7 @@ internal fun FilterPickerScreen(
                                     }
 
                                     SelectableCard(
-                                        style = SelectableCardStyle.Small(
+                                        style = CheckSelectableCardStyle.Small(
                                             title = value.title().text()
                                         ),
                                         isSelected = value == content.value,
@@ -152,7 +152,7 @@ internal fun FilterPickerScreen(
                                     }
 
                                     SelectableCard(
-                                        style = SelectableCardStyle.Small(
+                                        style = CheckSelectableCardStyle.Small(
                                             title = value.title().text()
                                         ),
                                         isSelected = value == content.value,
@@ -178,7 +178,7 @@ internal fun FilterPickerScreen(
                                     }
 
                                     SelectableCard(
-                                        style = SelectableCardStyle.Small(
+                                        style = CheckSelectableCardStyle.Small(
                                             title = value.title().text()
                                         ),
                                         isSelected = value == content.value,

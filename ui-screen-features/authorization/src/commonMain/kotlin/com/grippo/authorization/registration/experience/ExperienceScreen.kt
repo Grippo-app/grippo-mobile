@@ -22,8 +22,8 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
 import com.grippo.design.components.cards.selectable.SelectableCard
-import com.grippo.design.components.cards.selectable.SelectableCardStyle
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
@@ -100,7 +100,7 @@ internal fun ExperienceScreen(
                     modifier = Modifier.fillMaxWidth(),
                     onSelect = selectProvider,
                     isSelected = isSelected,
-                    style = SelectableCardStyle.Large(
+                    style = CheckSelectableCardStyle.Large(
                         title = item.title().text(),
                         description = item.description().text(),
                         icon = item.icon(),

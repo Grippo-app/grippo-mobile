@@ -54,8 +54,8 @@ public data object AppDp {
     val segment: Segment = Segment
     val tab: Tab = Tab
     val menu: Menu = Menu
-    val selectableCard: SelectableCard = SelectableCard
-    val multiSelectableCard: MultiSelectableCard = MultiSelectableCard
+    val checkSelectableCard: CheckSelectableCard = CheckSelectableCard
+    val toggleSelectableCard: ToggleSelectableCard = ToggleSelectableCard
     val informationCard: InformationCard = InformationCard
     val wheelPicker: WheelPicker = WheelPicker
     val chart: Chart = Chart
@@ -263,7 +263,7 @@ public data object AppDp {
 
     public data object ExerciseExampleBundlesCard
 
-    public data object MultiSelectableCard {
+    public data object ToggleSelectableCard {
         val medium: Medium = Medium
         val small: Small = Small
 
@@ -282,7 +282,7 @@ public data object AppDp {
         }
     }
 
-    public data object SelectableCard {
+    public data object CheckSelectableCard {
         val large: Large = Large
         val small: Small = Small
 
