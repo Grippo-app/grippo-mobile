@@ -50,10 +50,6 @@ public class TemporalHeatmapCalculator(
         data object PerColMax : Normalization
     }
 
-    private data class Policy(
-        val normalization: Normalization = Normalization.ViewMax
-    )
-
     // -------------------------- Public API --------------------------
 
     public suspend fun calculateMuscleGroupHeatmapFromTrainings(
