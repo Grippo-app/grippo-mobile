@@ -61,7 +61,7 @@ public class AnalyticsCalculator(
         exercises: List<ExerciseState>
     ): Pair<DSBarData, Instruction> {
         val colors = colorProvider.get()
-        val palette = colors.palette.palette9Blue
+        val palette = colors.palette.palette12BlueWave
 
         val exTxt = stringProvider.get(Res.string.ex)
 
@@ -91,7 +91,7 @@ public class AnalyticsCalculator(
         period: PeriodState
     ): Pair<DSBarData, Instruction> {
         val colors = colorProvider.get()
-        val palette = colors.palette.palette9Blue
+        val palette = colors.palette.palette12BlueWave
 
         val inRange = trainings.filter { it.createdAt in period.range }
         val scale = deriveScale(period)
@@ -345,7 +345,7 @@ public class AnalyticsCalculator(
         exercises: List<ExerciseState>
     ): Pair<DSBarData, Instruction> {
         val colors = colorProvider.get()
-        val palette = colors.palette.palette18Colorful
+        val palette = colors.palette.palette18ColorfulRandom
 
         val exTxt = stringProvider.get(Res.string.ex)
 
@@ -371,7 +371,7 @@ public class AnalyticsCalculator(
         period: PeriodState
     ): Pair<DSBarData, Instruction> {
         val colors = colorProvider.get()
-        val palette = colors.palette.palette18Colorful
+        val palette = colors.palette.palette18ColorfulRandom
 
         val inRange = trainings.filter { it.createdAt in period.range }
         val scale = deriveScale(period)

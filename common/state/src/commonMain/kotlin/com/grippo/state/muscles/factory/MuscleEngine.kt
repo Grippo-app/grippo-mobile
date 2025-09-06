@@ -63,7 +63,7 @@ public object MuscleEngine {
     private fun generateByScaleStops(
         bundles: ImmutableList<ExerciseExampleBundleState>
     ): MuscleColorPreset {
-        val colors = AppTokens.colors.palette.palette5OrangeRed
+        val colors = AppTokens.colors.palette.palette5OrangeRedGrowth
         val ranked = fromStopsRanked(bundles, colors)
         val colorMap = ranked.associate { it.first.muscle.type to it.second }
         return buildPreset(colorMap)
@@ -83,7 +83,7 @@ public object MuscleEngine {
         bundles: ImmutableList<ExerciseExampleBundleState>
     ): MuscleColorPreset {
         val defaultColor = AppTokens.colors.muscle.inactive
-        val palette = AppTokens.colors.palette.palette9Blue
+        val palette = AppTokens.colors.palette.palette12BlueWave
 
         val muscleTypes = remember(bundles) {
             bundles.map { it.muscle.type }.distinct()

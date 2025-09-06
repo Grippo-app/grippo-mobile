@@ -88,7 +88,7 @@ internal object AppPalette {
     }
 
     object Gradient {
-        val Palette9Blue: List<Color> = listOf(
+        val Palette12BlueWave: List<Color> = listOf(
             Primary.P300,
             Primary.P400,
             Primary.P500,
@@ -96,11 +96,24 @@ internal object AppPalette {
             Primary.P700,
             Primary.P800,
             Primary.P900,
-            Primary.P250,
-            Primary.P100
+            Primary.P800,
+            Primary.P700,
+            Primary.P600,
+            Primary.P500,
+            Primary.P400,
         )
 
-        val Palette18Colorful: List<Color> = listOf(
+        val Palette7BlueGrowth: List<Color> = listOf(
+            Primary.P300,
+            Primary.P400,
+            Primary.P500,
+            Primary.P600,
+            Primary.P700,
+            Primary.P800,
+            Primary.P900,
+        )
+
+        val Palette18ColorfulRandom: List<Color> = listOf(
             Unique.Red,
             Unique.Orange,
             Unique.Coral,
@@ -121,7 +134,7 @@ internal object AppPalette {
             Common.Accent,
         )
 
-        val PaletteOrangeRed: List<Color> = listOf(
+        val Palette5OrangeRedGrowth: List<Color> = listOf(
             Color(0xFFFFE08A),
             Color(0xFFFFB24D),
             Color(0xFFFF7A33),

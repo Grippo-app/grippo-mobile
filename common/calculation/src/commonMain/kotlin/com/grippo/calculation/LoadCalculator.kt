@@ -114,7 +114,7 @@ public class LoadCalculator(
         val colors = colorProvider.get()
 
         val scaleStops: List<Pair<Float, Color>> = run {
-            val palette = colors.palette.palette5OrangeRed
+            val palette = colors.palette.palette5OrangeRedGrowth
             val last = (palette.size - 1).coerceAtLeast(1)
             palette.mapIndexed { idx, color ->
                 idx.toFloat() / last.toFloat() to color

@@ -229,8 +229,13 @@ public object DarkColor : AppColor {
     }
 
     override val palette: AppColor.PaletteColors = object : AppColor.PaletteColors {
-        override val palette9Blue: List<Color> = AppPalette.Gradient.Palette9Blue
-        override val palette18Colorful: List<Color> = AppPalette.Gradient.Palette18Colorful
-        override val palette5OrangeRed: List<Color> = AppPalette.Gradient.PaletteOrangeRed
+        override val palette12BlueWave: List<Color> =
+            AppPalette.Gradient.Palette12BlueWave
+        override val palette7BlueGrowth: List<Color> =
+            AppPalette.Gradient.Palette7BlueGrowth
+        override val palette18ColorfulRandom: List<Color> =
+            AppPalette.Gradient.Palette18ColorfulRandom
+        override val palette5OrangeRedGrowth: List<Color> =
+            AppPalette.Gradient.Palette5OrangeRedGrowth
     }
 }
