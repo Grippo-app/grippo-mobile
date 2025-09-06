@@ -13,7 +13,6 @@ import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.date.utils.DateTimeUtils
-import com.grippo.design.components.chart.DSAreaData
 import com.grippo.design.components.chart.DSBarData
 import com.grippo.design.components.chart.DSHeatmapData
 import com.grippo.design.components.chart.DSPieData
@@ -149,7 +148,6 @@ internal class HomeStatisticsViewModel(
                     experienceDistributionData = DSPieData(slices = emptyList()) to null,
                     weightTypeDistributionData = DSPieData(slices = emptyList()) to null,
                     muscleLoadData = DSProgressData(items = emptyList()) to null,
-                    percent1RMData = DSAreaData(points = emptyList()) to null,
                     temporalHeatmapData = DSHeatmapData(
                         rows = 0,
                         cols = 0,
@@ -194,11 +192,6 @@ internal class HomeStatisticsViewModel(
             groups = muscles,
             period = period
         )
-        val percent1RMData =
-            analyticsCalculator.calculateIntraProgressionPercent1RMFromTrainings(
-                trainings = trainings,
-                period = period
-            )
         val temporalHeatmapData =
             temporalHeatmapCalculator.calculateMuscleGroupHeatmapFromTrainings(
                 trainings = trainings,
@@ -218,7 +211,6 @@ internal class HomeStatisticsViewModel(
                 forceTypeDistributionData = forceTypeDistributionData,
                 experienceDistributionData = experienceDistributionData,
                 muscleLoadData = muscleLoadData,
-                percent1RMData = percent1RMData,
                 temporalHeatmapData = temporalHeatmapData,
             )
         }

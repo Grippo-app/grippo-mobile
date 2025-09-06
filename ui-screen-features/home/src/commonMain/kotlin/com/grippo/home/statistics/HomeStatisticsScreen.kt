@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.date.utils.DateFormat
-import com.grippo.design.components.chart.AreaChart
 import com.grippo.design.components.chart.BarChart
 import com.grippo.design.components.chart.HeatmapChart
 import com.grippo.design.components.chart.PieChart
@@ -210,32 +209,6 @@ internal fun HomeStatisticsScreen(
                         HeatmapChart(
                             modifier = Modifier.fillMaxWidth(),
                             data = state.temporalHeatmapData.first,
-                        )
-                    }
-                )
-            }
-        }
-
-        if (state.percent1RMData.first.points.isNotEmpty()) {
-            item(key = "percent_1rm", span = { GridItemSpan(4) }) {
-                val toolTip = remember(state.percent1RMData.second) {
-                    state.percent1RMData.second?.let { instruction ->
-                        TooltipData(
-                            title = instruction.title,
-                            description = instruction.description
-                        )
-                    }
-                }
-                ChartCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1.4f),
-                    title = "Intra progression",
-                    tooltip = toolTip,
-                    content = {
-                        AreaChart(
-                            modifier = Modifier.fillMaxWidth().weight(1f),
-                            data = state.percent1RMData.first
                         )
                     }
                 )

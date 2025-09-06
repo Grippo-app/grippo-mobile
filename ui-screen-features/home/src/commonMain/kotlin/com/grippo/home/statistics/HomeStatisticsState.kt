@@ -2,7 +2,6 @@ package com.grippo.home.statistics
 
 import androidx.compose.runtime.Immutable
 import com.grippo.calculation.models.Instruction
-import com.grippo.design.components.chart.DSAreaData
 import com.grippo.design.components.chart.DSBarData
 import com.grippo.design.components.chart.DSHeatmapData
 import com.grippo.design.components.chart.DSPieData
@@ -41,9 +40,6 @@ internal data class HomeStatisticsState(
     val weightTypeDistributionData: Pair<DSPieData, Instruction?> = DSPieData(slices = emptyList()) to null,
     val forceTypeDistributionData: Pair<DSPieData, Instruction?> = DSPieData(slices = emptyList()) to null,
     val experienceDistributionData: Pair<DSPieData, Instruction?> = DSPieData(slices = emptyList()) to null,
-
-    // === Intensity & progression (area/bar) ===
-    val percent1RMData: Pair<DSAreaData, Instruction?> = DSAreaData(points = emptyList()) to null,
 
     // === Temporal heapmap ===
     val temporalHeatmapData: Pair<DSHeatmapData, Instruction?> = DSHeatmapData(
