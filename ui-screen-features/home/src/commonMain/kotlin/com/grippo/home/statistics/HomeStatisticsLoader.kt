@@ -4,4 +4,7 @@ import androidx.compose.runtime.Immutable
 import com.grippo.core.models.BaseLoader
 
 @Immutable
-internal sealed interface HomeStatisticsLoader : BaseLoader
+internal sealed interface HomeStatisticsLoader : BaseLoader {
+    @Immutable
+    data object Charts : HomeStatisticsLoader
+}

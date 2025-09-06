@@ -86,7 +86,7 @@ internal class HomeStatisticsViewModel(
             .debounce(200)
             .distinctUntilChanged()
             .mapLatest { generateStatistics() }
-            .safeLaunch()
+            .safeLaunch(loader = HomeStatisticsLoader.Charts)
     }
 
     private fun provideTrainings(list: List<Training>) {
@@ -160,8 +160,8 @@ internal class HomeStatisticsViewModel(
 
         val totalMetrics =
             metricsAggregator.calculateTrainings(
-            trainings = trainings
-        )
+                trainings = trainings
+            )
         val categoryDistributionData =
             distributionCalculator.calculateCategoryDistributionFromTrainings(
                 trainings = trainings,
@@ -189,11 +189,11 @@ internal class HomeStatisticsViewModel(
             )
         val muscleLoadData =
             loadCalculator.calculateMuscleLoadDistributionFromTrainings(
-            trainings = trainings,
-            examples = examples,
-            groups = muscles,
-            period = period
-        )
+                trainings = trainings,
+                examples = examples,
+                groups = muscles,
+                period = period
+            )
         val temporalHeatmapData =
             temporalHeatmapCalculator.calculateMuscleGroupHeatmapFromTrainings(
                 trainings = trainings,

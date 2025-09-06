@@ -27,6 +27,7 @@ import com.grippo.design.components.chip.RepetitionsChipStyle
 import com.grippo.design.components.chip.VolumeChip
 import com.grippo.design.components.chip.VolumeChipStyle
 import com.grippo.design.components.datetime.PeriodPicker
+import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.statistics.ChartCard
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.tooltip.TooltipData
@@ -68,6 +69,11 @@ internal fun HomeStatisticsScreen(
             }
         }
     )
+
+    if (loaders.contains(HomeStatisticsLoader.Charts)) {
+        Loader(modifier = Modifier.fillMaxWidth().weight(1f))
+        return@BaseComposeScreen
+    }
 
     LazyVerticalGrid(
         modifier = Modifier
