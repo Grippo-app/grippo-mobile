@@ -28,7 +28,7 @@ import kotlin.math.max
  *
  * - X axis = time buckets (DAY/WEEK/MONTH/EXERCISE)
  * - Y axis = muscle groups (or individual muscles)
- * - Cell value = Σ workload for that muscle.
+ * - Cell value = Σ workload for that muscle (metric-configurable: TONNAGE or REPS).
  *
  * Ensures there are at least 2× more columns than rows by appending zero-valued
  * columns on the right. Labels are produced via your existing helpers.
@@ -41,12 +41,20 @@ import kotlin.math.max
 public class TemporalHeatmapCalculator(
     private val stringProvider: StringProvider,
 ) {
+    // -------------------------- Metric (new) --------------------------
+
+    /** What we aggregate per muscle. */
+    public sealed interface Metric {
+        /** Sum of (weight * reps). */
+        public data object TONNAGE : Metric
+        /** Sum of repetitions (ignores weight). */
+        public data object REPS : Metric
+    }
+
     // -------------------------- Policy --------------------------
 
     private sealed interface Normalization {
-        data object ViewMax : Normalization
         data class Percentile(val p: Float = 0.95f) : Normalization
-        data object PerRowMax : Normalization
         data object PerColMax : Normalization
     }
 
@@ -57,20 +65,27 @@ public class TemporalHeatmapCalculator(
         period: PeriodState,
         examples: List<ExerciseExampleState>,
         groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
+        metric: Metric,
     ): Pair<DSHeatmapData, Instruction> {
         val inRange = trainings.filter { it.createdAt in period.range }
         val scale = deriveScale(period)
 
         // Base buckets and labels (X axis)
-        val buckets = buildBuckets(period.range, scale).sortedBy { it.start }
-        var colLabels = defaultTimeLabels(buckets, scale, stringProvider)
-        var cols = buckets.size
+        val builtBuckets = buildBuckets(period.range, scale).sortedBy { it.start }
+        var bucketsAreReal = builtBuckets.isNotEmpty()
+        var cols = if (bucketsAreReal) builtBuckets.size else 1 // fail-safe: at least one column
+        var colLabels: List<String> = if (bucketsAreReal) {
+            defaultTimeLabels(builtBuckets, scale, stringProvider)
+        } else {
+            // Single-day (or ultra-narrow) fail-safe label
+            listOf(period.range.from.label(scale, stringProvider))
+        }
 
         // Rows (Y axis)
         val rowSpec = buildRowSpec(groups, examples)
         val rows = rowSpec.labels.size
 
-        // Preserve original short-circuit
+        // Early exit if no rows or no columns (extremely rare now)
         if (rows == 0 || cols == 0) {
             val tipEmpty = instructionForMuscleLoad(period)
             val empty = DSHeatmapData(
@@ -89,31 +104,36 @@ public class TemporalHeatmapCalculator(
         // Index examples by id
         val exampleMap: Map<String, ExerciseExampleState> = examples.associateBy { it.value.id }
 
-        // Trainings per bucket
+        // Group trainings by bucket
         val trainingsPerBucket: Array<MutableList<TrainingState>> = Array(cols) { mutableListOf() }
         if (inRange.isNotEmpty()) {
-            val sorted = inRange.sortedBy { it.createdAt }
-            var tIdx = 0
-            for (bIdx in buckets.indices) {
-                val b = buckets[bIdx]
-                while (tIdx < sorted.size && sorted[tIdx].createdAt < b.start) tIdx++
-                var j = tIdx
-                while (j < sorted.size && sorted[j].createdAt <= b.end) {
-                    trainingsPerBucket[bIdx] += sorted[j]
-                    j++
+            if (bucketsAreReal) {
+                val sorted = inRange.sortedBy { it.createdAt }
+                var tIdx = 0
+                for (bIdx in builtBuckets.indices) {
+                    val b = builtBuckets[bIdx]
+                    while (tIdx < sorted.size && sorted[tIdx].createdAt < b.start) tIdx++
+                    var j = tIdx
+                    while (j < sorted.size && sorted[j].createdAt <= b.end) {
+                        trainingsPerBucket[bIdx] += sorted[j]
+                        j++
+                    }
+                    tIdx = j
+                    if (tIdx >= sorted.size) break
                 }
-                tIdx = j
-                if (tIdx >= sorted.size) break
+            } else {
+                // Fail-safe: one synthetic bucket that just holds all in-range trainings
+                trainingsPerBucket[0].addAll(inRange)
             }
         }
 
-        // Raw matrix [rows × cols] (absolute)
+        // Raw matrix [rows × cols] (absolute values)
         var raw = FloatArray(rows * cols)
         for (c in 0 until cols) {
             val ts = trainingsPerBucket[c]
             if (ts.isEmpty()) continue
 
-            val perMuscle = computeBucketMuscleWorkload(ts, exampleMap)
+            val perMuscle = computeBucketMuscleMeasure(ts, exampleMap, metric)
             if (perMuscle.isEmpty()) continue
 
             rowSpec.rows.forEachIndexed { r, row ->
@@ -129,30 +149,34 @@ public class TemporalHeatmapCalculator(
         val targetCols = max(cols, rows * 2)
         val padNeeded = targetCols - cols
         if (padNeeded > 0) {
+            // Use last bucket start if exists; otherwise fallback to period.range.from
+            val lastBucketStart: LocalDateTime =
+                if (bucketsAreReal) builtBuckets.last().start else period.range.from
+
             val extraLabels: List<String> = when (scale) {
-                // For calendar-based scales, extend by calendar stride and rebuild buckets.
                 BucketScale.DAY, BucketScale.WEEK, BucketScale.MONTH -> {
-                    val extendedTo: LocalDateTime =
-                        extendToByScale(period.range.to, scale, padNeeded)
+                    val extendedTo = extendToByScale(period.range.to, scale, padNeeded)
                     val extendedRange = DateRange(from = period.range.from, to = extendedTo)
                     val allBuckets = buildBuckets(extendedRange, scale).sortedBy { it.start }
-                    val tail = allBuckets.drop(cols).take(padNeeded)
+                    val tail = if (bucketsAreReal) allBuckets.drop(cols).take(padNeeded) else {
+                        // If original buckets were empty, simply take the first `padNeeded` buckets
+                        allBuckets.take(padNeeded)
+                    }
                     if (tail.isNotEmpty()) defaultTimeLabels(
                         tail,
                         scale,
                         stringProvider
                     ) else emptyList()
                 }
-                // For EXERCISE, pad by count-of-trainings: synthesize labels from the last bucket start.
+
                 BucketScale.EXERCISE -> {
-                    val base: LocalDateTime = buckets.last().start
-                    // Build next dates purely for labeling, keeping the same time-of-day as 'base'.
+                    // Label padding by count (index-like), stepping +1 day from the last "known" start
+                    val base = lastBucketStart
                     val list = ArrayList<String>(padNeeded)
                     var curDate = base.date
                     repeat(padNeeded) {
                         curDate = curDate.plus(DatePeriod(days = 1))
                         val dt = LocalDateTime(curDate, base.time)
-                        // use your suspend label helper
                         list += dt.label(BucketScale.EXERCISE, stringProvider)
                     }
                     list
@@ -183,14 +207,11 @@ public class TemporalHeatmapCalculator(
             }
         }
 
+        // Pick normalization by scale and apply
         val normMode = chooseNormalizationFor(scale)
-
-        // Normalize to [0..1] using mode chosen by BucketScale
         val values01 = when (normMode) {
-            is Normalization.ViewMax    -> normalizeViewMax(raw)
             is Normalization.Percentile -> normalizeByPercentile(raw, normMode.p)
-            is Normalization.PerRowMax  -> normalizePerRowMax(raw, rows, cols)
-            is Normalization.PerColMax  -> normalizePerColMax(raw, rows, cols)
+            is Normalization.PerColMax -> normalizePerColMax(raw, rows, cols)
         }.toList()
 
         val data = DSHeatmapData(
@@ -241,25 +262,36 @@ public class TemporalHeatmapCalculator(
         }
     }
 
-    // -------------------------- Aggregation --------------------------
+    // -------------------------- Aggregation (metric-aware) --------------------------
 
-    private fun computeBucketMuscleWorkload(
+    /** Aggregates per-muscle values for a single bucket using the requested metric. */
+    private fun computeBucketMuscleMeasure(
         trainings: List<TrainingState>,
         examples: Map<String, ExerciseExampleState>,
+        metric: Metric
     ): Map<MuscleEnumState, Float> {
         val perMuscle = mutableMapOf<MuscleEnumState, Float>()
+
         trainings.forEach { t ->
             t.exercises.forEach { ex ->
                 val exampleId = ex.exerciseExample?.id ?: return@forEach
                 val example = examples[exampleId] ?: return@forEach
 
-                val exWorkload = ex.iterations.fold(0f) { acc, it ->
-                    val weight = it.volume.value ?: 0f
-                    val reps = it.repetitions.value ?: 0
-                    val load = weight
-                    if (reps == 0 || load <= 0f) acc else acc + load * reps
+                val exMeasure = ex.iterations.fold(0f) { acc, it ->
+                    val reps = (it.repetitions.value ?: 0).coerceAtLeast(0)
+                    when (metric) {
+                        Metric.TONNAGE -> {
+                            val weight = (it.volume.value ?: 0f)
+                            val ton = if (reps == 0 || weight <= 0f) 0f else weight * reps
+                            acc + ton
+                        }
+                        Metric.REPS -> {
+                            // Count repetitions regardless of weight (good for bodyweight/smaller muscles)
+                            if (reps == 0) acc else acc + reps.toFloat()
+                        }
+                    }
                 }.coerceAtLeast(0f)
-                if (exWorkload <= 0f) return@forEach
+                if (exMeasure <= 0f) return@forEach
 
                 val bundles = example.bundles
                 val denom = bundles.fold(0f) { a, b ->
@@ -272,7 +304,7 @@ public class TemporalHeatmapCalculator(
                     if (p == 0) return@forEach
                     val share = p / denom
                     val muscle = b.muscle.type
-                    perMuscle[muscle] = (perMuscle[muscle] ?: 0f) + exWorkload * share
+                    perMuscle[muscle] = (perMuscle[muscle] ?: 0f) + exMeasure * share
                 }
             }
         }
@@ -281,30 +313,11 @@ public class TemporalHeatmapCalculator(
 
     // -------------------------- Normalization --------------------------
 
-    private fun normalizeViewMax(values: FloatArray): FloatArray {
-        val mx = values.maxOrNull() ?: 0f
-        if (mx <= 0f || !mx.isFinite()) return values
-        for (i in values.indices) values[i] = safe01(values[i] / mx)
-        return values
-    }
-
     private fun normalizeByPercentile(values: FloatArray, p: Float): FloatArray {
         val cap = percentile(values, p).takeIf { it > 0f && it.isFinite() }
             ?: (values.maxOrNull() ?: 0f)
         if (cap <= 0f) return values
         for (i in values.indices) values[i] = safe01(values[i] / cap)
-        return values
-    }
-
-    private fun normalizePerRowMax(values: FloatArray, rows: Int, cols: Int): FloatArray {
-        for (r in 0 until rows) {
-            var rowMax = 0f
-            val base = r * cols
-            for (c in 0 until cols) rowMax = maxOf(rowMax, values[base + c])
-            if (rowMax > 0f && rowMax.isFinite()) {
-                for (c in 0 until cols) values[base + c] = safe01(values[base + c] / rowMax)
-            }
-        }
         return values
     }
 
@@ -337,10 +350,10 @@ public class TemporalHeatmapCalculator(
     // Pick normalization mode by scale.
     private fun chooseNormalizationFor(scale: BucketScale): Normalization =
         when (scale) {
-            BucketScale.DAY      -> Normalization.PerColMax
-            BucketScale.WEEK     -> Normalization.PerRowMax
-            BucketScale.MONTH    -> Normalization.Percentile(0.95f)
-            BucketScale.EXERCISE -> Normalization.PerRowMax
+            BucketScale.DAY -> Normalization.PerColMax
+            BucketScale.WEEK -> Normalization.PerColMax
+            BucketScale.MONTH -> Normalization.Percentile(0.95f)
+            BucketScale.EXERCISE -> Normalization.PerColMax
         }
 
     /** Extends a LocalDateTime by calendar steps according to scale (DAY/WEEK/MONTH), preserving time-of-day. */

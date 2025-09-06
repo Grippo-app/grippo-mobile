@@ -158,7 +158,8 @@ internal class HomeStatisticsViewModel(
             return
         }
 
-        val totalMetrics = metricsAggregator.calculateTrainings(
+        val totalMetrics =
+            metricsAggregator.calculateTrainings(
             trainings = trainings
         )
         val categoryDistributionData =
@@ -186,7 +187,8 @@ internal class HomeStatisticsViewModel(
                 trainings = trainings,
                 period = period
             )
-        val muscleLoadData = loadCalculator.calculateMuscleLoadDistributionFromTrainings(
+        val muscleLoadData =
+            loadCalculator.calculateMuscleLoadDistributionFromTrainings(
             trainings = trainings,
             examples = examples,
             groups = muscles,
@@ -197,7 +199,8 @@ internal class HomeStatisticsViewModel(
                 trainings = trainings,
                 period = period,
                 examples = examples,
-                groups = muscles
+                groups = muscles,
+                metric = TemporalHeatmapCalculator.Metric.REPS
             )
 
         update {
