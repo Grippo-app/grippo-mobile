@@ -26,7 +26,6 @@ public data class HeatmapStyle(
         val gap: Dp,
         val corner: Dp,
         val labelPadding: Dp,
-        /** Optional cap for the square side. If null, squares stretch to fit width. */
         val maxCellSize: Dp?,
     )
 
@@ -36,7 +35,9 @@ public data class HeatmapStyle(
         public data object None : AxisLabels
 
         @Immutable
-        public data class ShowAll(val textStyle: TextStyle) : AxisLabels
+        public data class ShowAll(
+            val textStyle: TextStyle
+        ) : AxisLabels
 
         @Immutable
         public data class Adaptive(
@@ -86,7 +87,6 @@ public data class HeatmapStyle(
         @Immutable
         public data class Visible(
             val textStyle: TextStyle,
-            /** Receives normalized value [0..1] and the original data. */
             val formatter: (Float, HeatmapData) -> String = { t, _ ->
                 "${(t * 100f).toInt()}%"
             },

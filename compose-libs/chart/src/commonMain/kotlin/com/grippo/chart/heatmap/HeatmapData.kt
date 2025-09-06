@@ -2,7 +2,51 @@ package com.grippo.chart.heatmap
 
 import androidx.compose.runtime.Immutable
 
-// =================== DATA ===================
+@Immutable
+public data class HeatmapData(
+    val matrix: Matrix01,
+    val rowLabels: List<String> = emptyList(),
+    val colLabels: List<String> = emptyList(),
+    val rowDim: String? = null,
+    val colDim: String? = null,
+    val valueUnit: String? = null,
+) {
+    init {
+        require(rowLabels.isEmpty() || rowLabels.size == matrix.rows) {
+            "rowLabels must be empty or have size equal to matrix.rows"
+        }
+        require(colLabels.isEmpty() || colLabels.size == matrix.cols) {
+            "colLabels must be empty or have size equal to matrix.cols"
+        }
+    }
+
+    public companion object {
+        public fun fromRows(
+            values01: List<List<Float>>,
+            rowLabels: List<String> = emptyList(),
+            colLabels: List<String> = emptyList(),
+            rowDim: String? = null,
+            colDim: String? = null,
+            valueUnit: String? = null,
+        ): HeatmapData {
+            val m = Matrix01.fromRows(values01)
+            require(rowLabels.isEmpty() || rowLabels.size == m.rows) {
+                "rowLabels must be empty or have size ${m.rows}"
+            }
+            require(colLabels.isEmpty() || colLabels.size == m.cols) {
+                "colLabels must be empty or have size ${m.cols}"
+            }
+            return HeatmapData(
+                matrix = m,
+                rowLabels = rowLabels,
+                colLabels = colLabels,
+                rowDim = rowDim,
+                colDim = colDim,
+                valueUnit = valueUnit,
+            )
+        }
+    }
+}
 
 @Immutable
 public data class Matrix01 private constructor(
@@ -35,51 +79,5 @@ public data class Matrix01 private constructor(
 
         public fun fromFlat(rows: Int, cols: Int, values01: List<Float>): Matrix01 =
             Matrix01(rows, cols, values01.toList())
-    }
-}
-
-@Immutable
-public data class HeatmapData(
-    val matrix: Matrix01,
-    val rowLabels: List<String> = emptyList(),
-    val colLabels: List<String> = emptyList(),
-    val rowDim: String? = null,
-    val colDim: String? = null,
-    val valueUnit: String? = null,
-) {
-    init {
-        require(rowLabels.isEmpty() || rowLabels.size == matrix.rows) {
-            "rowLabels must be empty or have size equal to matrix.rows"
-        }
-        require(colLabels.isEmpty() || colLabels.size == matrix.cols) {
-            "colLabels must be empty or have size equal to matrix.cols"
-        }
-    }
-
-    public companion object {
-        public fun fromRows(
-            values01: List<List<Float>>,
-            rowLabels: List<String> = emptyList(),
-            colLabels: List<String> = emptyList(),
-            rowDim: String? = null,
-            colDim: String? = null,
-            valueUnit: String? = null,
-        ): HeatmapData {
-            val m = Matrix01.fromRows(values01)
-            require(rowLabels.isEmpty() || rowLabels.size == m.rows) {
-                "rowLabels must be empty or have size ${'$'}{m.rows}"
-            }
-            require(colLabels.isEmpty() || colLabels.size == m.cols) {
-                "colLabels must be empty or have size ${'$'}{m.cols}"
-            }
-            return HeatmapData(
-                matrix = m,
-                rowLabels = rowLabels,
-                colLabels = colLabels,
-                rowDim = rowDim,
-                colDim = colDim,
-                valueUnit = valueUnit,
-            )
-        }
     }
 }
