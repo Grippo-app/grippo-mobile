@@ -87,27 +87,7 @@ internal object AppPalette {
         val Indigo = Color(0xFF3F51B5)
     }
 
-    object Ramps {
-        val BlueOrangeRed: List<Pair<Float, Color>> = listOf(
-            0.00f to Primary.P400,
-            0.16f to Primary.P300,
-            0.36f to Color(0xFFFFE08A),
-            0.56f to Color(0xFFFFB24D),
-            0.76f to Color(0xFFFF7A33),
-            0.90f to Color(0xFFFF5A2A),
-            1.00f to Unique.Red
-        )
-
-        val OrangeRed: List<Pair<Float, Color>> = listOf(
-            0.00f to Color(0xFFFFE08A),
-            0.30f to Color(0xFFFFB24D),
-            0.60f to Color(0xFFFF7A33),
-            0.85f to Color(0xFFFF5A2A),
-            1.00f to Unique.Red
-        )
-    }
-
-    object Qualitative {
+    object Gradient {
         val Palette9Blue: List<Color> = listOf(
             Primary.P300,
             Primary.P400,
@@ -139,6 +119,14 @@ internal object AppPalette {
             Unique.Cyan,
             Unique.Indigo,
             Common.Accent,
+        )
+
+        val PaletteOrangeRed: List<Color> = listOf(
+            Color(0xFFFFE08A),
+            Color(0xFFFFB24D),
+            Color(0xFFFF7A33),
+            Color(0xFFFF5A2A),
+            Unique.Red
         )
     }
 }

@@ -112,7 +112,14 @@ public class LoadCalculator(
         workload: Workload,
     ): DSProgressData {
         val colors = colorProvider.get()
-        val scaleStops = colors.palette.scaleStopsOrangeRed.sortedBy { it.first }
+
+        val scaleStops: List<Pair<Float, Color>> = run {
+            val palette = colors.palette.palette5OrangeRed
+            val last = (palette.size - 1).coerceAtLeast(1)
+            palette.mapIndexed { idx, color ->
+                idx.toFloat() / last.toFloat() to color
+            }
+        }
 
         val exampleMap = examples.associateBy { it.value.id }
         val muscleLoad = mutableMapOf<MuscleEnumState, Float>()

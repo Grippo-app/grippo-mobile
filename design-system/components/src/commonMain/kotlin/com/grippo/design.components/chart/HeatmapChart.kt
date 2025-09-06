@@ -32,6 +32,7 @@ public fun HeatmapChart(
     modifier: Modifier = Modifier,
     data: DSHeatmapData
 ) {
+    val background = AppTokens.colors.background
     val charts = AppTokens.colors.charts
     val palette = AppTokens.colors.palette
 
@@ -56,6 +57,16 @@ public fun HeatmapChart(
         }
     }
 
+    // === here we generate stops dynamically ===
+    val scaleStopsGrayOrangeRed: List<Pair<Float, Color>> =
+        remember(background.screen, palette.palette5OrangeRed) {
+            val colors = palette.palette5OrangeRed
+            val last = (colors.size - 1).coerceAtLeast(1)
+            colors.mapIndexed { index, color ->
+                index.toFloat() / last.toFloat() to color
+            }
+        }
+
     val style = HeatmapStyle(
         layout = HeatmapStyle.Layout(
             gap = 1.dp,
@@ -71,14 +82,14 @@ public fun HeatmapChart(
         ),
         legend = HeatmapStyle.Legend.Visible(
             height = 8.dp,
-            stops = palette.scaleStopsOrangeRed,
+            stops = scaleStopsGrayOrangeRed,
             labelStyle = AppTokens.typography.b10Reg()
                 .copy(color = AppTokens.colors.text.secondary),
             minText = { "0%" },
             maxText = { "100%" }
         ),
         palette = HeatmapStyle.Palette(
-            colorScale = scaleColorOf(palette.scaleStopsOrangeRed),
+            colorScale = scaleColorOf(scaleStopsGrayOrangeRed),
             autoNormalize = false,
             missingCellColor = charts.heatmap.missingCell
         ),

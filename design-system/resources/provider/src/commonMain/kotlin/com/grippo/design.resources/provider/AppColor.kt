@@ -260,7 +260,7 @@ public interface AppColor {
     }
 
     public interface PaletteColors {
-        public val scaleStopsOrangeRed: List<Pair<Float, Color>>
+        public val palette5OrangeRed: List<Color>
         public val palette9Blue: List<Color>
         public val palette18Colorful: List<Color>
     }

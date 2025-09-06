@@ -229,8 +229,8 @@ public object LightColor : AppColor {
     }
 
     override val palette: AppColor.PaletteColors = object : AppColor.PaletteColors {
-        override val scaleStopsOrangeRed: List<Pair<Float, Color>> = AppPalette.Ramps.OrangeRed
-        override val palette9Blue: List<Color> = AppPalette.Qualitative.Palette9Blue
-        override val palette18Colorful: List<Color> = AppPalette.Qualitative.Palette18Colorful
+        override val palette5OrangeRed: List<Color> = AppPalette.Gradient.PaletteOrangeRed
+        override val palette9Blue: List<Color> = AppPalette.Gradient.Palette9Blue
+        override val palette18Colorful: List<Color> = AppPalette.Gradient.Palette18Colorful
     }
 }

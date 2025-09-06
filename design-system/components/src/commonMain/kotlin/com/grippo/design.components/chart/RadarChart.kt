@@ -45,6 +45,15 @@ public fun RadarChart(
     val charts = AppTokens.colors.charts
     val palette = AppTokens.colors.palette
 
+    // --- convert colors -> (fraction, color) stops ---
+    val scaleStopsOrangeRed: List<Pair<Float, Color>> = remember(palette.palette5OrangeRed) {
+        val colors = palette.palette5OrangeRed
+        val last = (colors.size - 1).coerceAtLeast(1)
+        colors.mapIndexed { index, color ->
+            index.toFloat() / last.toFloat() to color
+        }
+    }
+
     val style = RadarStyle(
         layout = RadarStyle.Layout(
             labelPadding = 12.dp,
@@ -79,7 +88,7 @@ public fun RadarChart(
             requireCompleteSeries = true,
             missingAsZero = true,
         ),
-        colorStops = palette.scaleStopsOrangeRed,
+        colorStops = scaleStopsOrangeRed, // now real stops
     )
 
     RadarChart(
