@@ -97,15 +97,9 @@ private fun buildPlan(
     measurer: TextMeasurer,
     density: Density
 ): HeatmapPlan = with(density) {
-    // Диапазон значений (если autoNormalize = true — вычислим из данных)
-    val vals = data.matrix.values
-    var minVal = 0f
-    var maxVal = 1f
-    if (style.palette.autoNormalize && vals.isNotEmpty()) {
-        minVal = vals.minOrNull() ?: 0f
-        maxVal = vals.maxOrNull() ?: 1f
-        if (maxVal == minVal) maxVal += 1f
-    }
+    // Диапазон значений фиксированный (данные уже нормализованы)
+    val minVal = 0f
+    val maxVal = 1f
 
     // Измеряем лейблы
     val rowLabelLayouts = when (val rLbl = style.rowLabels) {
@@ -253,9 +247,7 @@ private fun DrawScope.drawHeatmap(
 ) {
     if (plan.rows <= 0 || plan.cols <= 0) return
 
-    fun norm(v: Float): Float =
-        if (!style.palette.autoNormalize) v
-        else ((v - plan.minVal) / (plan.maxVal - plan.minVal)).coerceIn(0f, 1f)
+    fun norm(v: Float): Float = v.coerceIn(0f, 1f)
 
     // Центры колонок учитывают +1px в ранних промежутках
     fun colStart(c: Int): Float {
@@ -270,28 +262,6 @@ private fun DrawScope.drawHeatmap(
     val ch = plan.ch
     val gap = plan.gapPx
 
-    // Фон для ячеек (optional, «нет данных»)
-    style.palette.missingCellColor?.let { bg ->
-        for (r in 0 until plan.rows) {
-            var x = plan.gridLeft
-            for (c in 0 until plan.cols) {
-                val y = plan.gridTop + (ch + gap) * r
-                val w = if (c == plan.cols - 1) (chart.right - x) else cw
-                val h = if (r == plan.rows - 1) (chart.bottom - y) else ch
-                val rxCell = min(plan.rx, min(w, h) * 0.5f)
-                drawRoundRect(
-                    color = bg,
-                    topLeft = Offset(x, y),
-                    size = Size(w, h),
-                    cornerRadius = CornerRadius(rxCell, rxCell)
-                )
-                if (c < plan.cols - 1) {
-                    val bump = if (c < plan.gapPlusOneCount) 1f else 0f
-                    x += w + gap + bump
-                }
-            }
-        }
-    }
 
     // Данные
     for (r in 0 until plan.rows) {
@@ -311,31 +281,7 @@ private fun DrawScope.drawHeatmap(
                 cornerRadius = CornerRadius(rxCell, rxCell)
             )
 
-            when (val b = style.borders) {
-                is HeatmapStyle.Borders.Visible -> if (b.borderWidth.value > 0f) {
-                    drawRoundRect(
-                        color = b.borderColor,
-                        topLeft = Offset(x, y),
-                        size = Size(w, h),
-                        cornerRadius = CornerRadius(rxCell, rxCell),
-                        style = Stroke(width = b.borderWidth.toPx())
-                    )
-                }
 
-                is HeatmapStyle.Borders.None -> Unit
-            }
-
-            when (val v = style.values) {
-                is HeatmapStyle.Values.Visible -> {
-                    val txt = v.formatter(t, data)
-                    val layout = measurer.measure(AnnotatedString(txt), v.textStyle)
-                    val cx = x + (w - layout.size.width) / 2f
-                    val cy = y + (h - layout.size.height) / 2f
-                    drawText(layout, topLeft = Offset(cx, cy))
-                }
-
-                is HeatmapStyle.Values.None -> Unit
-            }
 
             if (c < plan.cols - 1) {
                 val bump = if (c < plan.gapPlusOneCount) 1f else 0f
@@ -459,8 +405,8 @@ private fun DrawScope.drawHeatmap(
             val legendColors = deriveLegendColorsFromDataQuantized(
                 data = data,
                 style = style,
-                minVal = plan.minVal,
-                maxVal = plan.maxVal,
+                minVal = 0f,
+                maxVal = 1f,
                 bins = 6
             )
 
@@ -514,12 +460,7 @@ private fun deriveLegendColorsFromDataQuantized(
     val values = data.matrix.values
     if (values.isEmpty()) return emptyList()
 
-    val norm: (Float) -> Float =
-        if (style.palette.autoNormalize && maxVal != minVal) {
-            { v -> ((v - minVal) / (maxVal - minVal)).coerceIn(0f, 1f) }
-        } else {
-            { v -> v.coerceIn(0f, 1f) }
-        }
+    val norm: (Float) -> Float = { v -> v.coerceIn(0f, 1f) }
 
     var tMin = 1f
     var tMax = 0f

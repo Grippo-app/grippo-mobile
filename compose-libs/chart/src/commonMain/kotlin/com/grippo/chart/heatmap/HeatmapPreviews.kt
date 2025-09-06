@@ -66,12 +66,8 @@ private fun hmStyle(adaptiveCols: Boolean): HeatmapStyle = HeatmapStyle(
         minText = { "0%" }, maxText = { "100%" }
     ),
     palette = HeatmapStyle.Palette(
-        colorScale = colorScaleOf(scaleStops()),
-        autoNormalize = false,
-        missingCellColor = Color(0x11000000)
-    ),
-    borders = HeatmapStyle.Borders.None,
-    values = HeatmapStyle.Values.None
+        colorScale = colorScaleOf(scaleStops())
+    )
 )
 
 @Preview

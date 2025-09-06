@@ -74,12 +74,8 @@ public fun HeatmapChart(
             maxText = null
         ),
         palette = HeatmapStyle.Palette(
-            colorScale = discreteScale,     // <- exact palette colors only
-            autoNormalize = false,          // values01 already normalized upstream
-            missingCellColor = charts.heatmap.missingCell
-        ),
-        borders = HeatmapStyle.Borders.None,
-        values = HeatmapStyle.Values.None
+            colorScale = discreteScale     // <- exact palette colors only
+        )
     )
 
     HeatmapChart(

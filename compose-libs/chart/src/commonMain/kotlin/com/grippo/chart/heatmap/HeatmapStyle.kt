@@ -18,8 +18,6 @@ public data class HeatmapStyle(
     val colLabels: AxisLabels,
     val legend: Legend,
     val palette: Palette,
-    val borders: Borders,
-    val values: Values,
 ) {
     @Immutable
     public data class Layout(
@@ -63,33 +61,5 @@ public data class HeatmapStyle(
     @Immutable
     public data class Palette(
         val colorScale: (Float) -> Color,
-        val autoNormalize: Boolean,
-        val missingCellColor: Color?,
     )
-
-    @Immutable
-    public sealed interface Borders {
-        @Immutable
-        public data object None : Borders
-
-        @Immutable
-        public data class Visible(
-            val borderColor: Color,
-            val borderWidth: Dp,
-        ) : Borders
-    }
-
-    @Immutable
-    public sealed interface Values {
-        @Immutable
-        public data object None : Values
-
-        @Immutable
-        public data class Visible(
-            val textStyle: TextStyle,
-            val formatter: (Float, HeatmapData) -> String = { t, _ ->
-                "${(t * 100f).toInt()}%"
-            },
-        ) : Values
-    }
 }
