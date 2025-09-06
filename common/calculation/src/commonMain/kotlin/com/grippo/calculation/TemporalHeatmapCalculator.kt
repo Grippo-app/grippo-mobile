@@ -41,15 +41,13 @@ import kotlin.math.max
 public class TemporalHeatmapCalculator(
     private val stringProvider: StringProvider,
 ) {
-    private val policy: Policy = Policy()
-
     // -------------------------- Policy --------------------------
 
-    public sealed interface Normalization {
-        public data object ViewMax : Normalization
-        public data class Percentile(val p: Float = 0.95f) : Normalization
-        public data object PerRowMax : Normalization
-        public data object PerColMax : Normalization
+    private sealed interface Normalization {
+        data object ViewMax : Normalization
+        data class Percentile(val p: Float = 0.95f) : Normalization
+        data object PerRowMax : Normalization
+        data object PerColMax : Normalization
     }
 
     private data class Policy(
@@ -189,12 +187,14 @@ public class TemporalHeatmapCalculator(
             }
         }
 
-        // Normalize to [0..1]
-        val values01 = when (policy.normalization) {
-            is Normalization.ViewMax -> normalizeViewMax(raw)
-            is Normalization.Percentile -> normalizeByPercentile(raw, policy.normalization.p)
-            is Normalization.PerRowMax -> normalizePerRowMax(raw, rows, cols)
-            is Normalization.PerColMax -> normalizePerColMax(raw, rows, cols)
+        val normMode = chooseNormalizationFor(scale)
+
+        // Normalize to [0..1] using mode chosen by BucketScale
+        val values01 = when (normMode) {
+            is Normalization.ViewMax    -> normalizeViewMax(raw)
+            is Normalization.Percentile -> normalizeByPercentile(raw, normMode.p)
+            is Normalization.PerRowMax  -> normalizePerRowMax(raw, rows, cols)
+            is Normalization.PerColMax  -> normalizePerColMax(raw, rows, cols)
         }.toList()
 
         val data = DSHeatmapData(
@@ -337,6 +337,15 @@ public class TemporalHeatmapCalculator(
     }
 
     // -------------------------- Helpers --------------------------
+
+    // Pick normalization mode by scale.
+    private fun chooseNormalizationFor(scale: BucketScale): Normalization =
+        when (scale) {
+            BucketScale.DAY      -> Normalization.PerColMax
+            BucketScale.WEEK     -> Normalization.PerRowMax
+            BucketScale.MONTH    -> Normalization.Percentile(0.95f)
+            BucketScale.EXERCISE -> Normalization.PerRowMax
+        }
 
     /** Extends a LocalDateTime by calendar steps according to scale (DAY/WEEK/MONTH), preserving time-of-day. */
     private fun extendToByScale(to: LocalDateTime, scale: BucketScale, steps: Int): LocalDateTime {
