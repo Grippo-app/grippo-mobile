@@ -114,42 +114,6 @@ private fun PreviewBarAdaptiveAboveAuto() {
 
 @Preview
 @Composable
-private fun PreviewBarShowAllOutsideFixed() {
-    BarChart(
-        modifier = Modifier.fillMaxWidth().height(220.dp),
-        data = weeklyData(),
-        style = barStyle(
-            xAdaptive = false,
-            valuesMode = BarStyle.Values.Outside(
-                textStyle = TextStyle(color = Color(0xFF222222)),
-                formatter = { v, _ -> v.toInt().toString() }
-            ),
-            sizing = BarStyle.BarsSizing.FixedBarWidth(18.dp)
-        )
-    )
-}
-
-@Preview
-@Composable
-private fun PreviewBarAdaptiveInsideExplicit() {
-    BarChart(
-        modifier = Modifier.fillMaxWidth().height(220.dp),
-        data = weeklyData(),
-        style = barStyle(
-            xAdaptive = true,
-            valuesMode = BarStyle.Values.Inside(
-                textStyle = TextStyle(color = Color(0xFF222222)),
-                formatter = { v, _ -> v.toInt().toString() },
-                minInnerPadding = 6.dp,
-                insideColor = null
-            ),
-            sizing = BarStyle.BarsSizing.Explicit(width = 18.dp, spacing = 10.dp)
-        )
-    )
-}
-
-@Preview
-@Composable
 private fun PreviewBarShowAllNoneAuto() {
     BarChart(
         modifier = Modifier.fillMaxWidth().height(220.dp),
@@ -198,23 +162,6 @@ private fun PreviewBarManyAdaptiveAboveAuto() {
 
 @Preview
 @Composable
-private fun PreviewBarManyAdaptiveOutsideFixed() {
-    BarChart(
-        modifier = Modifier.fillMaxWidth().height(240.dp),
-        data = manyData(24),
-        style = barStyle(
-            xAdaptive = true,
-            valuesMode = BarStyle.Values.Outside(
-                textStyle = TextStyle(color = Color(0xFF222222)),
-                formatter = { v, _ -> v.toInt().toString() }
-            ),
-            sizing = BarStyle.BarsSizing.FixedBarWidth(14.dp)
-        )
-    )
-}
-
-@Preview
-@Composable
 private fun PreviewBarFewShowAllAboveExplicit() {
     BarChart(
         modifier = Modifier.fillMaxWidth().height(200.dp),
@@ -226,42 +173,6 @@ private fun PreviewBarFewShowAllAboveExplicit() {
                 formatter = { v, _ -> v.toInt().toString() }
             ),
             sizing = BarStyle.BarsSizing.Explicit(22.dp, 12.dp)
-        )
-    )
-}
-
-@Preview
-@Composable
-private fun PreviewBarFewShowAllInsideAuto() {
-    BarChart(
-        modifier = Modifier.fillMaxWidth().height(200.dp),
-        data = fewData(),
-        style = barStyle(
-            xAdaptive = false,
-            valuesMode = BarStyle.Values.Inside(
-                textStyle = TextStyle(color = Color(0xFF222222)),
-                formatter = { v, _ -> v.toInt().toString() },
-                minInnerPadding = 6.dp,
-                insideColor = null
-            ),
-            sizing = BarStyle.BarsSizing.AutoEqualBarsAndGaps()
-        )
-    )
-}
-
-@Preview
-@Composable
-private fun PreviewBarTenShowAllOutsideAuto() {
-    BarChart(
-        modifier = Modifier.fillMaxWidth().height(220.dp),
-        data = manyData(10),
-        style = barStyle(
-            xAdaptive = false,
-            valuesMode = BarStyle.Values.Outside(
-                textStyle = TextStyle(color = Color(0xFF222222)),
-                formatter = { v, _ -> v.toInt().toString() }
-            ),
-            sizing = BarStyle.BarsSizing.AutoEqualBarsAndGaps()
         )
     )
 }
@@ -334,43 +245,6 @@ private fun PreviewBarNoBaselineAdaptiveAboveFixed() {
         modifier = Modifier.fillMaxWidth().height(220.dp),
         data = weeklyData(),
         style = base.copy(xBaseline = null)
-    )
-}
-
-@Preview
-@Composable
-private fun PreviewBarNoYAxisLineAdaptiveInsideExplicit() {
-    val base = barStyle(
-        xAdaptive = true,
-        valuesMode = BarStyle.Values.Inside(
-            textStyle = TextStyle(color = Color(0xFF222222)),
-            formatter = { v, _ -> v.toInt().toString() },
-            minInnerPadding = 6.dp,
-            insideColor = null
-        ),
-        sizing = BarStyle.BarsSizing.Explicit(16.dp, 8.dp)
-    )
-    BarChart(
-        modifier = Modifier.fillMaxWidth().height(220.dp),
-        data = weeklyData(),
-        style = base.copy(yAxisLine = null)
-    )
-}
-
-@Preview
-@Composable
-private fun PreviewBarDenseManyShowAllOutsideFixed() {
-    BarChart(
-        modifier = Modifier.fillMaxWidth().height(260.dp),
-        data = manyData(30),
-        style = barStyle(
-            xAdaptive = false,
-            valuesMode = BarStyle.Values.Outside(
-                textStyle = TextStyle(color = Color(0xFF222222)),
-                formatter = { v, _ -> v.toInt().toString() }
-            ),
-            sizing = BarStyle.BarsSizing.FixedBarWidth(10.dp)
-        )
     )
 }
 

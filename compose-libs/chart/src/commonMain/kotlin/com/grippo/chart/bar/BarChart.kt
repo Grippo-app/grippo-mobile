@@ -152,17 +152,7 @@ public fun BarChart(
         }
 
         val topGutter = 0f // chart area goes to the very top; values clamp to y>=0
-        val rightGutter = when (val vCfg = style.values) {
-            is BarStyle.Values.Outside -> {
-                val samples = data.items.map { e -> vCfg.formatter(e.value, data) }
-                val maxW = samples.maxOfOrNull { t ->
-                    measurer.measure(AnnotatedString(t), vCfg.textStyle).size.width
-                } ?: 0
-                (maxW + labelPad)
-            }
-
-            else -> 0f
-        }
+        val rightGutter = 0f
 
         val chart =
             Rect(leftGutter, topGutter, size.width - rightGutter, size.height - bottomGutter)
@@ -342,46 +332,6 @@ public fun BarChart(
                         .coerceAtLeast(0f)
                     val x = left + (bw - layout.size.width) / 2f
                     deferredValueLabels += ValueLabel(layout, x, y)
-                }
-
-                is BarStyle.Values.Outside -> {
-                    val txt = vCfg.formatter(e.value, data)
-                    val layout = measurer.measure(AnnotatedString(txt), vCfg.textStyle)
-                    val unclampedX = barRect.right + style.layout.labelPadding.toPx()
-                    val x = unclampedX.coerceIn(
-                        chart.left,
-                        size.width - layout.size.width.toFloat()
-                    )
-                    val centerY = (top + bottom) / 2f
-                    val y = centerY - layout.size.height / 2f
-                    deferredValueLabels += ValueLabel(layout, x, y)
-                }
-
-                is BarStyle.Values.Inside -> {
-                    val txt = vCfg.formatter(e.value, data)
-                    val baseLayout = measurer.measure(AnnotatedString(txt), vCfg.textStyle)
-                    val innerPad = vCfg.minInnerPadding.toPx()
-                    val fits = (bw - 2f * innerPad) >= baseLayout.size.width
-                    if (fits) {
-                        val x = left + bw - innerPad - baseLayout.size.width
-                        val centerY = (top + bottom) / 2f
-                        val y = centerY - baseLayout.size.height / 2f
-                        val insideColor = vCfg.insideColor ?: e.color
-                        val insideLayout = measurer.measure(
-                            AnnotatedString(txt),
-                            vCfg.textStyle.copy(color = insideColor)
-                        )
-                        deferredValueLabels += ValueLabel(insideLayout, x, y)
-                    } else {
-                        val unclampedX = barRect.right + style.layout.labelPadding.toPx()
-                        val x = unclampedX.coerceIn(
-                            chart.left,
-                            size.width - baseLayout.size.width.toFloat()
-                        )
-                        val centerY = (top + bottom) / 2f
-                        val y = centerY - baseLayout.size.height / 2f
-                        deferredValueLabels += ValueLabel(baseLayout, x, y)
-                    }
                 }
             }
 

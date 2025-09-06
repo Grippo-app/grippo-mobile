@@ -104,22 +104,6 @@ public data class BarStyle(
             val textStyle: TextStyle,
             val formatter: (Float, BarData) -> String,
         ) : Values
-
-        /** Draw value labels outside (right side). */
-        @Immutable
-        public data class Outside(
-            val textStyle: TextStyle,
-            val formatter: (Float, BarData) -> String,
-        ) : Values
-
-        /** Draw value labels inside bars (auto-contrast or custom color). */
-        @Immutable
-        public data class Inside(
-            val textStyle: TextStyle,
-            val formatter: (Float, BarData) -> String,
-            val minInnerPadding: Dp,
-            val insideColor: Color?,
-        ) : Values
     }
 
     @Immutable
