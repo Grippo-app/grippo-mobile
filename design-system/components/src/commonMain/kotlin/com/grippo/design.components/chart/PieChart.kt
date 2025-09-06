@@ -24,7 +24,6 @@ public data class DSPieSlice(
 @Immutable
 public data class DSPieData(
     val slices: List<DSPieSlice>,
-    val valueUnit: String? = null,
 )
 
 @Composable
@@ -72,7 +71,6 @@ private fun DSPieSlice.toChart(): PieSlice = PieSlice(
 
 private fun DSPieData.toChart(): PieData = PieData(
     slices = slices.map { it.toChart() },
-    valueUnit = valueUnit,
 )
 
 @AppPreview

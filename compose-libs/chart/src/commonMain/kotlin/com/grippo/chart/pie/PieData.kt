@@ -14,5 +14,4 @@ public data class PieSlice(
 @Immutable
 public data class PieData(
     val slices: List<PieSlice>,
-    val valueUnit: String? = null,
 )
