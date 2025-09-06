@@ -1,5 +1,6 @@
 package com.grippo.calculation
 
+import androidx.compose.ui.graphics.Color
 import com.grippo.calculation.internal.buildBuckets
 import com.grippo.calculation.internal.daysInclusive
 import com.grippo.calculation.internal.defaultLabeler
@@ -54,25 +55,52 @@ public class AnalyticsCalculator(
     private val stringProvider: StringProvider
 ) {
 
-    // -------------------------- Public API (only used methods) --------------------------
-
     /** 📦 Exercise Volume Chart — Σ(weight × reps) per exercise (ThisDay). */
     public suspend fun calculateExerciseVolumeChartFromExercises(
         exercises: List<ExerciseState>
     ): Pair<DSBarData, Instruction> {
         val colors = colorProvider.get()
-        val palette = colors.palette.palette12BlueWave
-
+        val palette = colors.palette.palette7BlueGrowth // ordered light -> dark
         val exTxt = stringProvider.get(Res.string.ex)
 
-        val items = exercises.mapIndexed { index, ex ->
-            val tonnage = tonnage(ex).coerceAtLeast(0f)
+        // 1) Compute values once
+        val values: List<Float> = exercises.map { tonnage(it).coerceAtLeast(0f) }
+        val n = values.size
+        val paletteCount = palette.size
+
+        // 2) Detect trivial case (all values equal → same light color)
+        val minValue = values.minOrNull() ?: 0f
+        val maxValue = values.maxOrNull() ?: minValue
+        val allEqual = (maxValue == minValue)
+
+        // 3) Prepare color mapping: rank-based (lightest=min, darkest=max), uses all colors when possible
+        val colorsPerIndex: MutableList<Color> = MutableList(n) { Color.Unspecified }
+        if (n > 0) {
+            if (paletteCount == 0) {
+                // No palette available; leave Unspecified
+            } else if (allEqual) {
+                for (i in 0 until n) colorsPerIndex[i] = palette.first()
+            } else {
+                val orderAsc: List<Int> = values.indices.sortedBy { values[it] } // indices sorted by value asc
+                for (rank in 0 until n) {
+                    val idx = orderAsc[rank]
+                    val paletteIdx =
+                        if (n <= paletteCount) rank
+                        else ((rank.toFloat() * (paletteCount - 1)) / (n - 1)).toInt()
+                    colorsPerIndex[idx] = palette[paletteIdx.coerceIn(0, paletteCount - 1)]
+                }
+            }
+        }
+
+        // 4) Build items
+        val items: List<DSBarItem> = values.mapIndexed { index, v ->
             DSBarItem(
                 label = "$exTxt${index + 1}",
-                value = tonnage,
-                color = palette[index % palette.size]
+                value = v,
+                color = colorsPerIndex.getOrNull(index) ?: Color.Unspecified
             )
         }
+
         val data = DSBarData(items = items)
         val tip = instructionForVolume(BucketScale.EXERCISE)
         return data to tip
@@ -91,7 +119,7 @@ public class AnalyticsCalculator(
         period: PeriodState
     ): Pair<DSBarData, Instruction> {
         val colors = colorProvider.get()
-        val palette = colors.palette.palette12BlueWave
+        val palette = colors.palette.palette7BlueGrowth // ordered light -> dark
 
         val inRange = trainings.filter { it.createdAt in period.range }
         val scale = deriveScale(period)
@@ -101,7 +129,6 @@ public class AnalyticsCalculator(
                 val exercises = inRange.flatMap { it.exercises }
                 calculateExerciseVolumeChartFromExercises(exercises)
             }
-
             else -> {
                 val buckets = buildBuckets(period.range, scale)
                 val labeler = defaultLabeler(scale, stringProvider)
@@ -110,16 +137,47 @@ public class AnalyticsCalculator(
                 val grouped: Map<LocalDateTime, List<TrainingState>> =
                     groupTrainingsByBucket(inRange, scale)
 
-                val items = buckets.mapIndexed { idx, b ->
-                    val total = (grouped[b.start] ?: emptyList())
-                        .sumOf { it.tonnage() }
-                        .toFloat()
+                // 1) Compute totals aligned with buckets order
+                val totals: List<Float> = buckets.map { b ->
+                    (grouped[b.start] ?: emptyList()).sumOf { it.tonnage() }.toFloat()
+                        .coerceAtLeast(0f)
+                }
+                val n = totals.size
+                val paletteCount = palette.size
+
+                // 2) Detect trivial case (all values equal)
+                val minValue = totals.minOrNull() ?: 0f
+                val maxValue = totals.maxOrNull() ?: minValue
+                val allEqual = (maxValue == minValue)
+
+                // 3) Rank-based color mapping over bucket indices
+                val colorsPerIndex: MutableList<Color> = MutableList(n) { Color.Unspecified }
+                if (n > 0) {
+                    if (paletteCount == 0) {
+                        // No palette available; leave Unspecified
+                    } else if (allEqual) {
+                        for (i in 0 until n) colorsPerIndex[i] = palette.first()
+                    } else {
+                        val orderAsc: List<Int> = totals.indices.sortedBy { totals[it] }
+                        for (rank in 0 until n) {
+                            val idx = orderAsc[rank]
+                            val paletteIdx =
+                                if (n <= paletteCount) rank
+                                else ((rank.toFloat() * (paletteCount - 1)) / (n - 1)).toInt()
+                            colorsPerIndex[idx] = palette[paletteIdx.coerceIn(0, paletteCount - 1)]
+                        }
+                    }
+                }
+
+                // 4) Build items with mapped colors
+                val items: List<DSBarItem> = buckets.mapIndexed { idx, b ->
                     DSBarItem(
                         label = labeler(b),
-                        value = total.coerceAtLeast(0f),
-                        color = palette[idx % palette.size]
+                        value = totals[idx],
+                        color = colorsPerIndex.getOrNull(idx) ?: Color.Unspecified
                     )
                 }
+
                 val data = DSBarData(items)
                 val tip = instructionForVolume(scale)
                 data to tip
