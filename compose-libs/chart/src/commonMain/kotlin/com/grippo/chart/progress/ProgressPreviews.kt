@@ -18,7 +18,6 @@ private fun progressData(): ProgressData = ProgressData(
         ProgressChartData("Overhead", 58f, Color(0xFFB049F8)),
         ProgressChartData("Row", 64f, Color(0xFFFFC53D)),
     ),
-    valueUnit = "%",
 )
 
 private fun progressFew(): ProgressData = ProgressData(
@@ -26,7 +25,6 @@ private fun progressFew(): ProgressData = ProgressData(
         ProgressChartData("A", 25f, Color(0xFF6AA9FF)),
         ProgressChartData("B", 75f, Color(0xFF00E6A7)),
     ),
-    valueUnit = "%",
 )
 
 private fun progressStyle(values: ProgressStyle.Values): ProgressStyle = ProgressStyle(
@@ -63,7 +61,7 @@ private fun PreviewProgressInside() {
         style = progressStyle(
             ProgressStyle.Values.Inside(
                 textStyle = TextStyle(color = Color(0xFF222222)),
-                formatter = { v, d -> (v.toInt().toString() + (d.valueUnit ?: "")) },
+                formatter = { v, d -> (v.toInt().toString()) },
                 minInnerPadding = 6.dp,
                 insideColor = null,
                 preferNormalizedLabels = true
@@ -81,7 +79,7 @@ private fun PreviewProgressOutside() {
         style = progressStyle(
             ProgressStyle.Values.Outside(
                 textStyle = TextStyle(color = Color(0xFF222222)),
-                formatter = { v, d -> (v.toInt().toString() + (d.valueUnit ?: "")) },
+                formatter = { v, d -> (v.toInt().toString()) },
                 preferNormalizedLabels = false
             )
         )
@@ -97,7 +95,7 @@ private fun PreviewProgressFewInside() {
         style = progressStyle(
             ProgressStyle.Values.Inside(
                 textStyle = TextStyle(color = Color(0xFF222222)),
-                formatter = { v, d -> (v.toInt().toString() + (d.valueUnit ?: "")) },
+                formatter = { v, d -> (v.toInt().toString()) },
                 minInnerPadding = 6.dp,
                 insideColor = null,
                 preferNormalizedLabels = true

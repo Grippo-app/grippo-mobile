@@ -13,6 +13,4 @@ public data class ProgressChartData(
 @Immutable
 public data class ProgressData(
     val items: List<ProgressChartData>,
-    val valueUnit: String? = null,
-    val title: String? = null,
 )

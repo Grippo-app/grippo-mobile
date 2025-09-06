@@ -27,8 +27,6 @@ public data class DSProgressItem(
 @Immutable
 public data class DSProgressData(
     val items: List<DSProgressItem>,
-    val valueUnit: String? = null,
-    val title: String? = null,
 )
 
 @Composable
@@ -90,8 +88,6 @@ private fun DSProgressItem.toChart(): ProgressChartData = ProgressChartData(
 
 private fun DSProgressData.toChart(): ProgressData = ProgressData(
     items = items.map { it.toChart() },
-    valueUnit = valueUnit,
-    title = title
 )
 
 @AppPreview
@@ -106,8 +102,6 @@ private fun ProgressChartPreview() {
                 DSProgressItem("Overhead Press", 58f, Color(0xFFB049F8)),
                 DSProgressItem("Row", 64f, Color(0xFFFFC53D)),
             ),
-            valueUnit = "%",
-            title = "Strength Progress",
         )
 
         ProgressChart(
