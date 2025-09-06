@@ -87,6 +87,14 @@ public object DarkColor : AppColor {
         override val scrim = Color(0xB3000000)
     }
 
+    override val static: AppColor.Static = object : AppColor.Static {
+        override val white: Color = AppPalette.Common.White
+        override val black: Color = AppPalette.Common.Black
+        override val neutralDarkN150: Color = AppPalette.NeutralDark.N150
+        override val neutralDarkN800: Color = AppPalette.NeutralDark.N800
+        override val neutralLightN800: Color = AppPalette.NeutralLight.N800
+    }
+
     override val text: AppColor.TextColors = object : AppColor.TextColors {
         override val primary = AppPalette.NeutralDark.N800
         override val secondary = AppPalette.NeutralDark.N700
@@ -116,15 +124,6 @@ public object DarkColor : AppColor {
         override val active = AppPalette.NeutralDark.N800
         override val inactive = AppPalette.NeutralDark.N500
         override val selector = AppPalette.Common.Accent
-    }
-
-    override val theme: AppColor.ThemeColors = object : AppColor.ThemeColors {
-        override val lightText = AppPalette.NeutralLight.N800
-        override val lightBackground1 = AppPalette.Common.White
-        override val lightBackground2 = AppPalette.Common.White
-        override val darkText = AppPalette.NeutralDark.N800
-        override val darkBackground1 = AppPalette.NeutralDark.N150
-        override val darkBackground2 = AppPalette.NeutralDark.N150
     }
 
     override val konfetti: AppColor.Konfetti = object : AppColor.Konfetti {

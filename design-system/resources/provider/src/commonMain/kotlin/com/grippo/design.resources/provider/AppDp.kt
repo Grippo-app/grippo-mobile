@@ -297,6 +297,7 @@ public data object AppDp {
             val verticalPadding: Dp = padding.small
             val horizontalPadding: Dp = padding.small
             val radius: Dp = AppDp.radius.large
+            val icon: Dp = AppDp.icon.small
         }
     }
 

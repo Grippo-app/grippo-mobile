@@ -34,19 +34,19 @@ public fun ThemeCard(
 
     val background = when (style) {
         ThemeState.LIGHT -> persistentListOf(
-            AppTokens.colors.theme.lightBackground1,
-            AppTokens.colors.theme.lightBackground2
+            AppTokens.colors.static.white,
+            AppTokens.colors.static.white
         )
 
         ThemeState.DARK -> persistentListOf(
-            AppTokens.colors.theme.darkBackground1,
-            AppTokens.colors.theme.darkBackground2
+            AppTokens.colors.static.neutralDarkN150,
+            AppTokens.colors.static.neutralDarkN150
         )
     }
 
     val textColor = when (style) {
-        ThemeState.LIGHT -> AppTokens.colors.theme.lightText
-        ThemeState.DARK -> AppTokens.colors.theme.darkText
+        ThemeState.LIGHT -> AppTokens.colors.static.neutralLightN800
+        ThemeState.DARK -> AppTokens.colors.static.neutralDarkN800
     }
 
     val borderColor by animateColorAsState(

@@ -19,15 +19,23 @@ public interface AppColor {
     public val segment: SegmentColors
     public val konfetti: Konfetti
     public val chip: ChipColors
-    public val theme: ThemeColors
     public val radio: RadioColors
     public val charts: Charts
     public val example: ExampleColors
     public val profile: ProfileColors
     public val palette: PaletteColors
+    public val static: Static
 
     public interface DividerColors {
         public val default: Color
+    }
+
+    public interface Static {
+        public val black: Color
+        public val white: Color
+        public val neutralDarkN800: Color
+        public val neutralDarkN150: Color
+        public val neutralLightN800: Color
     }
 
     public interface ButtonColors {
@@ -211,15 +219,6 @@ public interface AppColor {
             public val endColor: Color
             public val contentColor: Color
         }
-    }
-
-    public interface ThemeColors {
-        public val lightText: Color
-        public val lightBackground1: Color
-        public val lightBackground2: Color
-        public val darkText: Color
-        public val darkBackground1: Color
-        public val darkBackground2: Color
     }
 
     public interface Charts {
