@@ -30,7 +30,6 @@ public data class BarStyle(
     val xBaseline: Baseline?,
     val bars: Bars,
     val values: Values,
-    val target: Target?,
 ) {
     /** Global paddings for labels. */
     @Immutable
@@ -122,14 +121,6 @@ public data class BarStyle(
             val insideColor: Color?,
         ) : Values
     }
-
-    /** Horizontal reference line at specified value. */
-    @Immutable
-    public data class Target(
-        val value: Float,
-        val color: Color,
-        val width: Dp,
-    )
 
     @Immutable
     public sealed interface BarsSizing {

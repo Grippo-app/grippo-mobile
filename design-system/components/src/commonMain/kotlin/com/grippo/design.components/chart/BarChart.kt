@@ -29,7 +29,6 @@ public data class DSBarData(
     val items: List<DSBarItem>,
     val xName: String? = null,
     val yName: String? = null,
-    val yUnit: String? = null,
 )
 
 @Immutable
@@ -90,7 +89,6 @@ public fun BarChart(
             textStyle = AppTokens.typography.b10Bold().copy(color = AppTokens.colors.text.primary),
             formatter = { v, _ -> v.roundToInt().toString() },
         ),
-        target = null
     )
 
     BarChart(
@@ -110,7 +108,6 @@ private fun DSBarData.toChart(): BarData = BarData(
     items = items.map { it.toChart() },
     xName = xName,
     yName = yName,
-    yUnit = yUnit
 )
 
 @AppPreview

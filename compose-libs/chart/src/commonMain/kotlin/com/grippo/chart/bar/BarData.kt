@@ -15,5 +15,4 @@ public data class BarData(
     val items: List<BarEntry>,
     val xName: String? = null,
     val yName: String? = null,
-    val yUnit: String? = null, // e.g., "kg", "reps"
 )

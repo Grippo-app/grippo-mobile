@@ -56,7 +56,7 @@ public fun HeatmapChart(
                 .fillMaxWidth()
                 .requiredHeight(with(density) { plan.totalHeightPx.toDp() })
         ) {
-            drawHeatmap(plan, data, style, measurer)
+            drawHeatmap(plan, data, style)
         }
     }
 }
@@ -242,7 +242,6 @@ private fun DrawScope.drawHeatmap(
     plan: HeatmapPlan,
     data: HeatmapData,
     style: HeatmapStyle,
-    measurer: TextMeasurer
 ) {
     if (plan.rows <= 0 || plan.cols <= 0) return
 
@@ -404,8 +403,6 @@ private fun DrawScope.drawHeatmap(
             val legendColors = deriveLegendColorsFromDataQuantized(
                 data = data,
                 style = style,
-                minVal = 0f,
-                maxVal = 1f,
                 bins = 6
             )
 
@@ -452,8 +449,6 @@ private fun DrawScope.drawHeatmap(
 private fun deriveLegendColorsFromDataQuantized(
     data: HeatmapData,
     style: HeatmapStyle,
-    minVal: Float,
-    maxVal: Float,
     bins: Int = 6
 ): List<Color> {
     val values = data.matrix.values

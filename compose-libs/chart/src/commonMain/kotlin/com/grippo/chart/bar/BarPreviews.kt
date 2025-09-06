@@ -93,7 +93,6 @@ private fun barStyle(
         sizing = sizing
     ),
     values = valuesMode,
-    target = BarStyle.Target(value = 11f, color = Color(0x33000000), width = 1.dp),
 )
 
 @Preview

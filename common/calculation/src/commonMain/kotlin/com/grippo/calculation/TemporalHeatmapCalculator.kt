@@ -47,6 +47,7 @@ public class TemporalHeatmapCalculator(
     public sealed interface Metric {
         /** Sum of (weight * reps). */
         public data object TONNAGE : Metric
+
         /** Sum of repetitions (ignores weight). */
         public data object REPS : Metric
     }
@@ -72,7 +73,7 @@ public class TemporalHeatmapCalculator(
 
         // Base buckets and labels (X axis)
         val builtBuckets = buildBuckets(period.range, scale).sortedBy { it.start }
-        var bucketsAreReal = builtBuckets.isNotEmpty()
+        val bucketsAreReal = builtBuckets.isNotEmpty()
         var cols = if (bucketsAreReal) builtBuckets.size else 1 // fail-safe: at least one column
         var colLabels: List<String> = if (bucketsAreReal) {
             defaultTimeLabels(builtBuckets, scale, stringProvider)
@@ -96,7 +97,6 @@ public class TemporalHeatmapCalculator(
                 colLabels = emptyList(),
                 rowDim = null,
                 colDim = null,
-                valueUnit = null
             )
             return empty to tipEmpty
         }
@@ -285,6 +285,7 @@ public class TemporalHeatmapCalculator(
                             val ton = if (reps == 0 || weight <= 0f) 0f else weight * reps
                             acc + ton
                         }
+
                         Metric.REPS -> {
                             // Count repetitions regardless of weight (good for bodyweight/smaller muscles)
                             if (reps == 0) acc else acc + reps.toFloat()

@@ -233,17 +233,6 @@ public fun BarChart(
             )
         }
 
-        // Optional target line (horizontal at some Y value)
-        style.target?.let { t ->
-            val y = mapY(t.value)
-            drawLine(
-                color = t.color,
-                start = Offset(chart.left, y),
-                end = Offset(chart.right, y),
-                strokeWidth = t.width.toPx()
-            )
-        }
-
         // ----- Bars sizing -----
         val nBars = data.items.size
         val sizing = style.bars.sizing

@@ -24,7 +24,6 @@ public data class DSHeatmapData(
     val colLabels: List<String> = emptyList(),
     val rowDim: String? = null,
     val colDim: String? = null,
-    val valueUnit: String? = null,
 )
 
 @Composable
@@ -92,7 +91,6 @@ private fun DSHeatmapData.toChart(): HeatmapData {
         colLabels = colLabels,
         rowDim = rowDim,
         colDim = colDim,
-        valueUnit = valueUnit,
     )
 }
 
