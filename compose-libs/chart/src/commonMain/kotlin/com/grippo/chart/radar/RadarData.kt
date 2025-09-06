@@ -17,7 +17,6 @@ public data class RadarSeries(
 public data class RadarData(
     val axes: List<RadarAxis>,
     val series: List<RadarSeries>,
-    val valueUnit: String? = null,
 )
 
 @Immutable

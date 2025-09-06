@@ -34,7 +34,6 @@ public data class DSRadarSeries(
 public data class DSRadarData(
     val axes: List<DSRadarAxis>,
     val series: List<DSRadarSeries>,
-    val valueUnit: String? = null,
 )
 
 @Composable
@@ -112,7 +111,6 @@ private fun DSRadarSeries.toChart(): RadarSeries = RadarSeries(
 private fun DSRadarData.toChart(): RadarData = RadarData(
     axes = axes.map { it.toChart() },
     series = series.map { it.toChart() },
-    valueUnit = valueUnit,
 )
 
 @AppPreview

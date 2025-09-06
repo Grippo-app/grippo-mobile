@@ -11,6 +11,4 @@ public data class SparklinePoint(
 @Immutable
 public data class SparklineData(
     val points: List<SparklinePoint>,
-    val xUnit: String? = null,
-    val yUnit: String? = null,
 )
