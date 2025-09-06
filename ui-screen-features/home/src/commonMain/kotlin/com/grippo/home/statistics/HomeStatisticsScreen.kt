@@ -229,14 +229,12 @@ internal fun HomeStatisticsScreen(
                     }
                 }
                 ChartCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1.4f),
+                    modifier = Modifier.fillMaxWidth(),
                     title = "Estimated 1RM",
                     tooltip = toolTip,
                     content = {
                         HeatmapChart(
-                            modifier = Modifier.fillMaxWidth().weight(1f),
+                            modifier = Modifier.fillMaxWidth(),
                             data = state.temporalHeatmapData.first,
                         )
                     }

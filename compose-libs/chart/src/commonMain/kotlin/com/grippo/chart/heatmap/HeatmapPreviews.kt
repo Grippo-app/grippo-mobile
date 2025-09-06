@@ -46,7 +46,12 @@ private fun hmFew(): HeatmapData = HeatmapData.fromRows(
 )
 
 private fun hmStyle(adaptiveCols: Boolean): HeatmapStyle = HeatmapStyle(
-    layout = HeatmapStyle.Layout(gap = 1.dp, corner = 3.dp, labelPadding = 4.dp),
+    layout = HeatmapStyle.Layout(
+        gap = 1.dp,
+        corner = 3.dp,
+        labelPadding = 4.dp,
+        maxCellSize = 20.dp
+    ),
     rowLabels = HeatmapStyle.AxisLabels.ShowAll(
         textStyle = TextStyle(color = Color(0xFF333333))
     ),

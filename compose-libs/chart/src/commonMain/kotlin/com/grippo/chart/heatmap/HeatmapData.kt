@@ -1,6 +1,9 @@
 package com.grippo.chart.heatmap
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.geometry.Rect
+
+// =================== DATA ===================
 
 @Immutable
 public data class Matrix01 private constructor(
@@ -81,3 +84,27 @@ public data class HeatmapData(
         }
     }
 }
+
+// =================== INTERNAL PLAN ===================
+
+internal data class HeatmapPlan(
+    val totalHeightPx: Float,
+    val chart: Rect,
+    val gridLeft: Float,
+    val gridTop: Float,
+    val cw: Float,
+    val ch: Float,
+    val gapPx: Float,
+    val rx: Float,
+    val rows: Int,
+    val cols: Int,
+    val rowLabelLayouts: List<androidx.compose.ui.text.TextLayoutResult>,
+    val colLabelLayouts: List<androidx.compose.ui.text.TextLayoutResult>,
+    val colLabelsMaxHPx: Float,
+    val labelPadPx: Float,
+    val legendLabelSpacingPx: Float,
+    val minLegendTextLayout: androidx.compose.ui.text.TextLayoutResult?,
+    val maxLegendTextLayout: androidx.compose.ui.text.TextLayoutResult?,
+    val minVal: Float,
+    val maxVal: Float
+)

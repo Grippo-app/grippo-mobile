@@ -71,7 +71,8 @@ public fun HeatmapChart(
         layout = HeatmapStyle.Layout(
             gap = 1.dp,
             corner = 3.dp,
-            labelPadding = 4.dp
+            labelPadding = 4.dp,
+            maxCellSize = 20.dp
         ),
         rowLabels = HeatmapStyle.AxisLabels.ShowAll(
             textStyle = AppTokens.typography.b10Reg().copy(color = AppTokens.colors.text.primary)

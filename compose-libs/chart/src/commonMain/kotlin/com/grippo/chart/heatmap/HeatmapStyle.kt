@@ -6,15 +6,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 
 /**
- * Visual configuration for a Heatmap chart (matrix of colored cells).
- *
- * Layout overview:
- * - Layout: cell gap, corner radius, label padding
- * - Row/Column labels: show all or adaptively thin to avoid overlap
- * - Legend: gradient bar with min/max labels
- * - Palette: color scale function and normalization mode
- * - Borders: optional cell borders
- * - Values: draw value labels inside cells
+ * Visual configuration for a Heatmap chart.
+ * Minimal sizing API:
+ *  - If [layout.maxCellSize] is null -> cells stretch to fit width (still squares).
+ *  - If [layout.maxCellSize] is non-null -> cell side = min(fitToWidth, maxCellSize).
  */
 @Immutable
 public data class HeatmapStyle(
@@ -26,27 +21,23 @@ public data class HeatmapStyle(
     val borders: Borders,
     val values: Values,
 ) {
-    /** Cell geometry and label paddings. */
     @Immutable
     public data class Layout(
         val gap: Dp,
         val corner: Dp,
         val labelPadding: Dp,
+        /** Optional cap for the square side. If null, squares stretch to fit width. */
+        val maxCellSize: Dp?,
     )
 
     @Immutable
     public sealed interface AxisLabels {
-        /** Hide axis labels. */
         @Immutable
         public data object None : AxisLabels
 
-        /** Show all labels (may overlap). */
         @Immutable
-        public data class ShowAll(
-            val textStyle: TextStyle,
-        ) : AxisLabels
+        public data class ShowAll(val textStyle: TextStyle) : AxisLabels
 
-        /** Adaptively thin labels to enforce a minimum gap. */
         @Immutable
         public data class Adaptive(
             val textStyle: TextStyle,
@@ -56,36 +47,31 @@ public data class HeatmapStyle(
 
     @Immutable
     public sealed interface Legend {
-        /** Hide legend. */
         @Immutable
         public data object None : Legend
 
-        /** Gradient legend with optional min/max labels. */
         @Immutable
         public data class Visible(
             val height: Dp,
-            val stops: List<Pair<Float, Color>>?,
+            val stops: List<Pair<Float, Color>>? = null,
             val labelStyle: TextStyle,
-            val minText: ((Float) -> String)?,
-            val maxText: ((Float) -> String)?,
+            val minText: ((Float) -> String)? = null,
+            val maxText: ((Float) -> String)? = null,
         ) : Legend
     }
 
-    /** Color scale and normalization options. */
     @Immutable
     public data class Palette(
-        val colorScale: (Float) -> Color,
-        val autoNormalize: Boolean,
-        val missingCellColor: Color?,
+        val colorScale: (Float) -> Color = ::defaultCoolWarm,
+        val autoNormalize: Boolean = true,
+        val missingCellColor: Color? = Color(0x11000000),
     )
 
     @Immutable
     public sealed interface Borders {
-        /** No borders. */
         @Immutable
         public data object None : Borders
 
-        /** Draw borders around each cell. */
         @Immutable
         public data class Visible(
             val borderColor: Color,
@@ -95,15 +81,16 @@ public data class HeatmapStyle(
 
     @Immutable
     public sealed interface Values {
-        /** Hide cell values. */
         @Immutable
         public data object None : Values
 
-        /** Draw normalized values inside cells using [textStyle]. */
         @Immutable
         public data class Visible(
             val textStyle: TextStyle,
-            val formatter: (Float, HeatmapData) -> String,
+            /** Receives normalized value [0..1] and the original data. */
+            val formatter: (Float, HeatmapData) -> String = { t, _ ->
+                "${(t * 100f).toInt()}%"
+            },
         ) : Values
     }
 }
