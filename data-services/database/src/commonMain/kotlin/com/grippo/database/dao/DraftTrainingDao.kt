@@ -16,7 +16,7 @@ public interface DraftTrainingDao {
 
     @Transaction
     @Query("""SELECT * FROM draft_training """)
-    public fun get(): Flow<DraftTrainingPack>
+    public fun get(): Flow<DraftTrainingPack?>
 
     // ────────────── INSERT ──────────────
 

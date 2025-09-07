@@ -1,4 +1,4 @@
-package com.grippo.domain.database.settings
+package com.grippo.domain.database.settings.settings
 
 import com.grippo.data.features.api.settings.models.Theme
 import com.grippo.database.entity.Theme as ThemeEntity

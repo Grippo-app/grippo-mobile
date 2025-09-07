@@ -28,6 +28,4 @@ public data class DraftExerciseEntity(
     val volume: Float,
     val repetitions: Int,
     val intensity: Float,
-    val createdAt: String,
-    val updatedAt: String,
 )

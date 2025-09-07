@@ -6,15 +6,18 @@ import com.grippo.data.features.api.training.models.Training
 import com.grippo.data.features.trainings.domain.TrainingRepository
 import com.grippo.database.dao.DraftTrainingDao
 import com.grippo.database.dao.TrainingDao
+import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.domain.training.toDomain
 import com.grippo.database.domain.training.toSetDomain
 import com.grippo.date.utils.DateTimeUtils
+import com.grippo.domain.database.settings.training.toEntity
 import com.grippo.domain.network.user.training.toBody
 import com.grippo.network.Api
 import com.grippo.network.database.training.toEntities
 import com.grippo.network.database.training.toEntityOrNull
 import com.grippo.network.dto.training.TrainingResponse
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDateTime
 import org.koin.core.annotation.Single
@@ -24,6 +27,7 @@ internal class TrainingRepositoryImpl(
     private val api: Api,
     private val trainingDao: TrainingDao,
     private val draftTrainingDao: DraftTrainingDao,
+    private val userActiveDao: UserActiveDao,
 ) : TrainingRepository {
 
     override fun observeTraining(id: String): Flow<Training?> {
@@ -103,13 +107,16 @@ internal class TrainingRepositoryImpl(
         trainingDao.insertOrReplace(training, exercises, iterations)
     }
 
-    override suspend fun getDraftTraining(): Flow<SetTraining> {
+    override suspend fun getDraftTraining(): Flow<SetTraining?> {
         return draftTrainingDao.get()
-            .map { it.toSetDomain() }
+            .map { it?.toSetDomain() }
     }
 
     override suspend fun setDraftTraining(training: SetTraining): Result<Unit> {
-        TODO()
+        val activeId = userActiveDao.get().firstOrNull() ?: return Result.success(Unit)
+        training.toEntity(activeId)
+
+        return Result.success(Unit)
     }
 
     override suspend fun deleteDraftTraining(): Result<Unit> {

@@ -24,6 +24,4 @@ public data class DraftIterationEntity(
     val exerciseId: String,
     val volume: Float,
     val repetitions: Int,
-    val createdAt: String,
-    val updatedAt: String,
 )
