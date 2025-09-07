@@ -9,6 +9,9 @@ import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
+import com.grippo.data.features.api.training.TrainingFeature
+import com.grippo.data.features.api.training.models.SetTraining
+import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.components.chart.DSAreaData
 import com.grippo.design.components.chart.DSBarData
 import com.grippo.design.components.chart.DSPieData
@@ -22,6 +25,7 @@ import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.muscles.toState
+import com.grippo.state.domain.training.toDomain
 import com.grippo.state.formatters.IntensityFormatState
 import com.grippo.state.formatters.RepetitionsFormatState
 import com.grippo.state.formatters.VolumeFormatState
@@ -41,6 +45,7 @@ import kotlin.uuid.Uuid
 internal class TrainingRecordingViewModel(
     muscleFeature: MuscleFeature,
     private val exerciseExampleFeature: ExerciseExampleFeature,
+    private val trainingFeature: TrainingFeature,
     private val dialogController: DialogController,
     private val stringProvider: StringProvider,
     colorProvider: ColorProvider,
@@ -123,6 +128,8 @@ internal class TrainingRecordingViewModel(
 
             it.copy(exercises = updatedExercises.toPersistentList())
         }
+
+        saveDraftTraining()
     }
 
     override fun onSelectTab(tab: RecordingTab) {
@@ -160,6 +167,25 @@ internal class TrainingRecordingViewModel(
             )
 
             dialogController.show(dialog)
+        }
+    }
+
+    private fun saveDraftTraining() {
+        safeLaunch {
+            val exercises = state.value.exercises
+            val duration = DateTimeUtils.ago(state.value.startAt)
+
+            val totals = metricsAggregator.calculateExercises(exercises)
+
+            val training = SetTraining(
+                exercises = exercises.toDomain(),
+                duration = duration.inWholeMinutes,
+                volume = totals.volume.value ?: 0f,
+                intensity = totals.intensity.value ?: 0f,
+                repetitions = totals.repetitions.value ?: 0
+            )
+
+            trainingFeature.setDraftTraining(training).getOrThrow()
         }
     }
 

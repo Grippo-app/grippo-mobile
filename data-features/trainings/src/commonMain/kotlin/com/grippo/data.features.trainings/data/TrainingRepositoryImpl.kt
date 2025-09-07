@@ -107,13 +107,14 @@ internal class TrainingRepositoryImpl(
         trainingDao.insertOrReplace(training, exercises, iterations)
     }
 
-    override suspend fun getDraftTraining(): Flow<SetTraining?> {
+    override fun getDraftTraining(): Flow<SetTraining?> {
         return draftTrainingDao.get()
             .map { it?.toSetDomain() }
     }
 
     override suspend fun setDraftTraining(training: SetTraining): Result<Unit> {
         val activeId = userActiveDao.get().firstOrNull() ?: return Result.success(Unit)
+
         training.toEntity(activeId)
 
         return Result.success(Unit)

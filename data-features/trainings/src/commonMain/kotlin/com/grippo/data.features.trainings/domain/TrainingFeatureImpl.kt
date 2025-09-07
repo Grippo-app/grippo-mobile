@@ -36,4 +36,16 @@ internal class TrainingFeatureImpl(
     override suspend fun deleteTraining(id: String): Result<Unit> {
         return repository.deleteTraining(id)
     }
+
+    override suspend fun setDraftTraining(training: SetTraining): Result<Unit> {
+        return repository.setDraftTraining(training)
+    }
+
+    override suspend fun deleteDraftTraining(): Result<Unit> {
+        return repository.deleteDraftTraining()
+    }
+
+    override fun getDraftTraining(): Flow<SetTraining?> {
+        return repository.getDraftTraining()
+    }
 }

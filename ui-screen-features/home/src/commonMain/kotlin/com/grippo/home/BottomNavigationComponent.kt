@@ -31,7 +31,9 @@ public class BottomNavigationComponent(
 
     override val viewModel: BottomNavigationViewModel = componentContext.retainedInstance {
         BottomNavigationViewModel(
-            initial = initial
+            initial = initial,
+            trainingFeature = getKoin().get(),
+            dialogController = getKoin().get(),
         )
     }
 

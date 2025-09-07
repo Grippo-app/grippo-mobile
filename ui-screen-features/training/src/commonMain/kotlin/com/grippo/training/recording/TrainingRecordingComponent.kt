@@ -29,6 +29,7 @@ internal class TrainingRecordingComponent(
         TrainingRecordingViewModel(
             exerciseExampleFeature = getKoin().get(),
             muscleFeature = getKoin().get(),
+            trainingFeature = getKoin().get(),
             dialogController = getKoin().get(),
             stringProvider = getKoin().get(),
             colorProvider = getKoin().get(),
