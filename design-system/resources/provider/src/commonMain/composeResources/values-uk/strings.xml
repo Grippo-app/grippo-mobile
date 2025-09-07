@@ -295,6 +295,8 @@
     <string name="chart_title_weight_type">Тип ваги</string>
     <string name="chart_title_experience">Досвід</string>
     <string name="chart_title_force_type">Тип сили</string>
+    <string name="chart_title_muscle_load">Навантаження м'язів (%)</string>
+    <string name="chart_title_muscle_heap">Теплова мапа навантаження</string>
 
     <!-- ============= VOLUME ============= -->
     <string name="tooltip_volume_title_training">Обсяг роботи у вправах</string>

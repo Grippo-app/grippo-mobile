@@ -265,6 +265,7 @@
     <string name="muscle_biceps">Biceps</string>
     <string name="muscle_triceps">Triceps</string>
     <string name="muscle_forearm">Forearm</string>
+    <string name="not_found">Not found</string>
 
     <!-- MuscleGroupEnumState -->
     <string name="muscle_group_chest_muscles">Chest Muscles</string>
@@ -293,7 +294,8 @@
     <string name="chart_title_weight_type">Weight type</string>
     <string name="chart_title_experience">Experience</string>
     <string name="chart_title_force_type">Force type</string>
-    <string name="not_found">Not found</string>
+    <string name="chart_title_muscle_load">Muscle Load (%)</string>
+    <string name="chart_title_muscle_heap">Warm map of Load</string>
 
     <!-- ============= VOLUME ============= -->
     <string name="tooltip_volume_title_training">Exercise Volume</string>

@@ -36,6 +36,8 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.chart_title_exercise_volume
+import com.grippo.design.resources.provider.chart_title_muscle_heap
+import com.grippo.design.resources.provider.chart_title_muscle_load
 import com.grippo.design.resources.provider.statistics
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -185,7 +187,7 @@ internal fun HomeStatisticsScreen(
                 }
                 ChartCard(
                     modifier = Modifier.fillMaxWidth(),
-                    title = "Muscle Load Distribution",
+                    title = AppTokens.strings.res(Res.string.chart_title_muscle_load),
                     tooltip = toolTip,
                     content = {
                         ProgressChart(
@@ -209,7 +211,7 @@ internal fun HomeStatisticsScreen(
                 }
                 ChartCard(
                     modifier = Modifier.fillMaxWidth(),
-                    title = "Estimated 1RM",
+                    title = AppTokens.strings.res(Res.string.chart_title_muscle_heap),
                     tooltip = toolTip,
                     content = {
                         HeatmapChart(
