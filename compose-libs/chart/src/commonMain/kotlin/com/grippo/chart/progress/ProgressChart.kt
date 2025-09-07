@@ -98,10 +98,10 @@ public fun ProgressChart(
             }
         }
 
-        // 1. Базовые ширины
+        // 1. Base widths
         val baseWidths = data.items.map { e -> scaledWidth(e.value) }
 
-        // 2. Гарантия для текста (Inside)
+        // 2. Guarantee for text (Inside)
         val finalWidths = when (val vCfg = style.values) {
             is ProgressStyle.Values.Inside -> {
                 data.items.mapIndexed { i, e ->

@@ -85,8 +85,8 @@ private data class HeatmapPlan(
     val minVal: Float,
     val maxVal: Float,
     // JUSTIFY:
-    val gapPlusOneCount: Int,   // сколько первых промежутков получат +1px
-    val gridLeftOffsetPx: Float // симметричный отступ после раздачи +1px
+    val gapPlusOneCount: Int,   // how many first gaps get +1px
+    val gridLeftOffsetPx: Float // symmetric offset after distributing +1px
 )
 
 private fun buildPlan(
@@ -96,11 +96,11 @@ private fun buildPlan(
     measurer: TextMeasurer,
     density: Density
 ): HeatmapPlan = with(density) {
-    // Диапазон значений фиксированный (данные уже нормализованы)
+    // Value range is fixed (data is already normalized)
     val minVal = 0f
     val maxVal = 1f
 
-    // Измеряем лейблы
+    // Measure labels
     val rowLabelLayouts = when (val rLbl = style.rowLabels) {
         is HeatmapStyle.AxisLabels.ShowAll -> (0 until data.matrix.rows).map { r ->
             measurer.measure(AnnotatedString(data.rowLabels.getOrNull(r) ?: ""), rLbl.textStyle)
@@ -124,7 +124,7 @@ private fun buildPlan(
         is HeatmapStyle.AxisLabels.None -> emptyList()
     }
 
-    // Метрики
+    // Metrics
     val widthPx = widthDp.toPx()
     val labelPadPx = style.layout.labelPadding.toPx()
     val legendLabelSpacingPx = 2.dp.toPx()
@@ -134,14 +134,14 @@ private fun buildPlan(
     val hasRowLabels = rowLabelLayouts.isNotEmpty()
     val hasColLabels = colLabelLayouts.isNotEmpty()
 
-    // Левый отступ: ширина самых длинных y-лейблов + labelPadding
+    // Left gutter: width of longest y-labels + labelPadding
     var leftGutter = 0f
     if (hasRowLabels) {
         val maxW = rowLabelLayouts.maxOf { it.size.width }
         leftGutter = maxW + labelPadPx
     }
 
-    // Низ: X-ось + (опционально) легенда
+    // Bottom: X-axis + (optionally) legend
     val colLabelsMaxH = if (hasColLabels) colLabelLayouts.maxOf { it.size.height }.toFloat() else 0f
     val bottomForColLabels = if (hasColLabels) labelPadPx + colLabelsMaxH else 0f
 
@@ -149,7 +149,7 @@ private fun buildPlan(
     var maxLegendLayout: TextLayoutResult? = null
     val bottomForLegend = when (val lg = style.legend) {
         is HeatmapStyle.Legend.Visible -> {
-            // Текст под легендой рисуем и резервируем место только если задан min/max
+            // Draw and reserve space for text under legend only if min/max is specified
             val wantMin = lg.minText != null
             val wantMax = lg.maxText != null
             minLegendLayout = if (wantMin) {
@@ -173,7 +173,7 @@ private fun buildPlan(
         is HeatmapStyle.Legend.None -> 0f
     }
 
-    // Размер сетки (всегда квадраты), снапим до целых пикселей
+    // Grid size (always squares), snap to whole pixels
     val rows = data.matrix.rows
     val cols = data.matrix.cols
     val widthForGridRaw = (widthPx - leftGutter).coerceAtLeast(0f)
@@ -185,18 +185,18 @@ private fun buildPlan(
     val maxCellPx = style.layout.maxCellSize?.toPx()
     var cell = if (maxCellPx != null) min(fitToWidth, maxCellPx) else fitToWidth
 
-    // Снапим cell и gap до целых пикселей (чтобы не было «волосков»)
+    // Snap cell and gap to whole pixels (to avoid 'hairs')
     cell = floor(cell).coerceAtLeast(0f)
     val snappedGap = floor(safeGapPx).coerceAtLeast(0f)
 
     val cw = cell
     val ch = cell
 
-    // Базовая ширина/высота без «бампов»
+    // Base width/height without 'bumps'
     val gridW = cw * cols + snappedGap * (cols - 1)
     val gridH = ch * rows + snappedGap * (rows - 1)
 
-    // JUSTIFY: раздаём extraPx — по +1px в первые gap’ы, остаток — симметрично по краям
+    // JUSTIFY: distribute extraPx — +1px to first gaps, remainder — symmetrically at edges
     val extraPx = (widthForGrid - gridW).toInt().coerceAtLeast(0)
     val gaps = max(0, cols - 1)
     val gapPlusOneCount = if (gaps > 0) min(extraPx, gaps) else 0
@@ -205,7 +205,7 @@ private fun buildPlan(
 
     val chartLeft = leftGutter + gridLeftOffsetPx
     val chartTop = 0f
-    // ВАЖНО: chartRight учитывает суммарные +1px (иначе последний столбец сожмётся)
+    // IMPORTANT: chartRight accounts for total +1px (otherwise last column will shrink)
     val chartRight = chartLeft + gridW + gapPlusOneCount
     val chart = Rect(chartLeft, chartTop, chartRight, chartTop + gridH)
 
@@ -247,7 +247,7 @@ private fun DrawScope.drawHeatmap(
 
     fun norm(v: Float): Float = v.coerceIn(0f, 1f)
 
-    // Центры колонок учитывают +1px в ранних промежутках
+    // Column centers account for +1px in early gaps
     fun colStart(c: Int): Float {
         val bump = if (plan.gapPlusOneCount > 0) min(c, plan.gapPlusOneCount).toFloat() else 0f
         return plan.gridLeft + c * (plan.cw + plan.gapPx) + bump
@@ -261,7 +261,7 @@ private fun DrawScope.drawHeatmap(
     val gap = plan.gapPx
 
 
-    // Данные
+    // Data
     for (r in 0 until plan.rows) {
         var x = plan.gridLeft
         for (c in 0 until plan.cols) {
@@ -288,7 +288,7 @@ private fun DrawScope.drawHeatmap(
         }
     }
 
-    // Подписи Y
+    // Y labels
     when (val rLbl = style.rowLabels) {
         is HeatmapStyle.AxisLabels.ShowAll -> if (data.rowLabels.isNotEmpty()) {
             for (r in 0 until plan.rows) {
@@ -333,7 +333,7 @@ private fun DrawScope.drawHeatmap(
         is HeatmapStyle.AxisLabels.None -> Unit
     }
 
-    // Подписи X — по центрам колонок (учитывают justify)
+    // X labels — at column centers (account for justify)
     when (val cLbl = style.colLabels) {
         is HeatmapStyle.AxisLabels.ShowAll -> if (data.colLabels.isNotEmpty()) {
             val y = chart.bottom + plan.labelPadPx
@@ -366,7 +366,7 @@ private fun DrawScope.drawHeatmap(
                     selected.add(i); lastRight = b.right
                 }
             }
-            // Пытаемся сохранить последний лейбл
+            // Try to preserve the last label
             if (selected.isNotEmpty() && selected.last() != boxes.lastIndex) {
                 val lastB = boxes.last()
                 while (selected.isNotEmpty()) {
@@ -387,7 +387,7 @@ private fun DrawScope.drawHeatmap(
         is HeatmapStyle.AxisLabels.None -> Unit
     }
 
-    // Легенда (дискретные полосы из текущей палитры)
+    // Legend (discrete strips from current palette)
     when (val lg = style.legend) {
         is HeatmapStyle.Legend.None -> Unit
         is HeatmapStyle.Legend.Visible -> {
@@ -420,7 +420,7 @@ private fun DrawScope.drawHeatmap(
                 )
             }
 
-            // Текст под легендой — только если передан
+            // Text under legend — only if provided
             plan.minLegendTextLayout?.let {
                 drawText(
                     it,
@@ -443,8 +443,8 @@ private fun DrawScope.drawHeatmap(
 // ============================== HELPERS ==============================
 
 /**
- * Генерируем дискретные цвета легенды по реальному диапазону нормализованных значений.
- * Если диапазон схлопнулся — одна полоса.
+ * Generate discrete legend colors based on actual range of normalized values.
+ * If range collapsed — one strip.
  */
 private fun deriveLegendColorsFromDataQuantized(
     data: HeatmapData,
@@ -473,7 +473,7 @@ private fun deriveLegendColorsFromDataQuantized(
         tmp += style.palette.colorScale(center)
     }
 
-    // Схлопываем соседние одинаковые цвета
+    // Collapse adjacent identical colors
     val out = ArrayList<Color>(tmp.size)
     var prev: Color? = null
     for (c in tmp) {
@@ -483,7 +483,7 @@ private fun deriveLegendColorsFromDataQuantized(
     return out
 }
 
-/** Рисуем N равных по ширине полос легенды. */
+/** Draw N equal-width legend strips. */
 private fun DrawScope.drawDiscreteLegend(rect: Rect, colors: List<Color>) {
     if (colors.isEmpty()) return
     val n = colors.size
