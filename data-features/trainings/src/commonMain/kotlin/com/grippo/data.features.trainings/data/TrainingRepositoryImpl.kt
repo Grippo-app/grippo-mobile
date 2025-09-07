@@ -4,8 +4,10 @@ import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.data.features.trainings.domain.TrainingRepository
+import com.grippo.database.dao.DraftTrainingDao
 import com.grippo.database.dao.TrainingDao
 import com.grippo.database.domain.training.toDomain
+import com.grippo.database.domain.training.toSetDomain
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.domain.network.user.training.toBody
 import com.grippo.network.Api
@@ -21,6 +23,7 @@ import org.koin.core.annotation.Single
 internal class TrainingRepositoryImpl(
     private val api: Api,
     private val trainingDao: TrainingDao,
+    private val draftTrainingDao: DraftTrainingDao,
 ) : TrainingRepository {
 
     override fun observeTraining(id: String): Flow<Training?> {
@@ -98,5 +101,19 @@ internal class TrainingRepositoryImpl(
         val exercises = value.exercises.toEntities()
         val iterations = value.exercises.flatMap { f -> f.iterations }.toEntities()
         trainingDao.insertOrReplace(training, exercises, iterations)
+    }
+
+    override suspend fun getDraftTraining(): Flow<SetTraining> {
+        return draftTrainingDao.get()
+            .map { it.toSetDomain() }
+    }
+
+    override suspend fun setDraftTraining(training: SetTraining): Result<Unit> {
+        TODO()
+    }
+
+    override suspend fun deleteDraftTraining(): Result<Unit> {
+        draftTrainingDao.delete()
+        return Result.success(Unit)
     }
 }

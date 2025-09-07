@@ -1,5 +1,6 @@
 package com.grippo.database
 
+import com.grippo.database.dao.DraftTrainingDao
 import com.grippo.database.dao.EquipmentDao
 import com.grippo.database.dao.ExerciseExampleDao
 import com.grippo.database.dao.MuscleDao
@@ -51,4 +52,6 @@ public class DatabaseModule {
     @Single
     internal fun provideTrainingDao(db: Database): TrainingDao = db.trainingDao()
 
+    @Single
+    internal fun provideDraftTrainingDao(db: Database): DraftTrainingDao = db.draftTrainingDao()
 }
