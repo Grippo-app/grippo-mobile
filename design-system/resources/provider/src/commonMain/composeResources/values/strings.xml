@@ -266,6 +266,7 @@
     <string name="muscle_triceps">Triceps</string>
     <string name="muscle_forearm">Forearm</string>
     <string name="not_found">Not found</string>
+    <string name="reset">Reset</string>
 
     <!-- MuscleGroupEnumState -->
     <string name="muscle_group_chest_muscles">Chest Muscles</string>

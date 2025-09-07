@@ -1,6 +1,7 @@
 package com.grippo.exercise.example.picker
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -22,6 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
+import com.grippo.design.components.badge.Badge
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
@@ -76,13 +78,23 @@ internal fun ExerciseExamplePickerScreen(
                 onValueChange = contract::onQueryChange
             )
 
-            Button(
-                content = ButtonContent.Icon(
-                    icon = AppTokens.icons.Filter
-                ),
-                style = ButtonStyle.Tertiary,
-                onClick = contract::onFiltersClick
-            )
+            Box {
+                Button(
+                    content = ButtonContent.Icon(
+                        icon = AppTokens.icons.Filter
+                    ),
+                    style = ButtonStyle.Tertiary,
+                    onClick = contract::onFiltersClick
+                )
+
+                val count = remember(state.filters) {
+                    state.filters.count { it.isSelected() }
+                }
+                Badge(
+                    modifier = Modifier.align(Alignment.TopEnd),
+                    value = count
+                )
+            }
         }
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))

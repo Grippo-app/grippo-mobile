@@ -79,6 +79,7 @@ public data object AppDp {
     val radio: Radio = Radio
     val themeCard: ThemeCard = ThemeCard
     val tooltip: Tooltip = Tooltip
+    val badge: Badge = Badge
 
     public data object Screen {
         val toolbar: Toolbar = Toolbar
@@ -101,6 +102,10 @@ public data object AppDp {
         val content: Dp = padding.medium
         val subContent: Dp = padding.small
         val text: Dp = padding.extraSmall
+    }
+
+    public data object Badge {
+        val size: Dp = icon.medium
     }
 
     public data object Tooltip {

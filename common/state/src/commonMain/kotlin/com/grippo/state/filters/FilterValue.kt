@@ -20,6 +20,8 @@ import kotlinx.serialization.Serializable
 public sealed interface FilterValue {
     public val id: String
 
+    public fun isSelected(): Boolean
+
     public fun title(): UiText
 
     @Serializable
@@ -29,6 +31,10 @@ public sealed interface FilterValue {
         val value: WeightTypeEnumState?,
         val available: ImmutableList<WeightTypeEnumState> = WeightTypeEnumState.entries.toPersistentList()
     ) : FilterValue {
+
+        override fun isSelected(): Boolean {
+            return value != null
+        }
 
         public override fun title(): UiText {
             return UiText.Res(Res.string.filter_weight_type)
@@ -43,6 +49,10 @@ public sealed interface FilterValue {
         val available: ImmutableList<ForceTypeEnumState> = ForceTypeEnumState.entries.toPersistentList()
     ) : FilterValue {
 
+        override fun isSelected(): Boolean {
+            return value != null
+        }
+
         public override fun title(): UiText {
             return UiText.Res(Res.string.filter_force_type)
         }
@@ -56,6 +66,10 @@ public sealed interface FilterValue {
         val available: ImmutableList<ExperienceEnumState> = ExperienceEnumState.entries.toPersistentList()
     ) : FilterValue {
 
+        override fun isSelected(): Boolean {
+            return value != null
+        }
+
         public override fun title(): UiText {
             return UiText.Res(Res.string.filter_experience)
         }
@@ -68,6 +82,10 @@ public sealed interface FilterValue {
         val value: CategoryEnumState?,
         val available: ImmutableList<CategoryEnumState> = CategoryEnumState.entries.toPersistentList()
     ) : FilterValue {
+
+        override fun isSelected(): Boolean {
+            return value != null
+        }
 
         public override fun title(): UiText {
             return UiText.Res(Res.string.filter_category)

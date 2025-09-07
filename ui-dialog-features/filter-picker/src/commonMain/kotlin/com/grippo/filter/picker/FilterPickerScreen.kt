@@ -23,6 +23,7 @@ import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
 import com.grippo.design.components.cards.selectable.SelectableCard
@@ -31,6 +32,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.filters
+import com.grippo.design.resources.provider.reset
 import com.grippo.design.resources.provider.submit_btn
 import com.grippo.state.filters.FilterValue
 import kotlinx.collections.immutable.ImmutableSet
@@ -203,6 +205,27 @@ internal fun FilterPickerScreen(
             ),
             style = ButtonStyle.Primary,
             onClick = contract::onSubmitClick
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+        val resetEnabled = remember(state.list) {
+            when (state.list.any { it.isSelected() }) {
+                true -> ButtonState.Enabled
+                false -> ButtonState.Disabled
+            }
+        }
+
+        Button(
+            modifier = Modifier
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                .fillMaxWidth(),
+            content = ButtonContent.Text(
+                text = AppTokens.strings.res(Res.string.reset),
+            ),
+            state = resetEnabled,
+            style = ButtonStyle.Secondary,
+            onClick = contract::onReset
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))

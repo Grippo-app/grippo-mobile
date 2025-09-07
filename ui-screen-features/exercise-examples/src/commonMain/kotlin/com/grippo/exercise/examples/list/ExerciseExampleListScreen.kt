@@ -1,6 +1,7 @@
 package com.grippo.exercise.examples.list
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,9 +12,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
+import com.grippo.design.components.badge.Badge
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
@@ -60,13 +63,23 @@ internal fun ExerciseExampleListScreen(
                     onValueChange = contract::onQueryChange
                 )
 
-                Button(
-                    content = ButtonContent.Icon(
-                        icon = AppTokens.icons.Filter
-                    ),
-                    style = ButtonStyle.Tertiary,
-                    onClick = contract::onFiltersClick
-                )
+                Box {
+                    Button(
+                        content = ButtonContent.Icon(
+                            icon = AppTokens.icons.Filter
+                        ),
+                        style = ButtonStyle.Tertiary,
+                        onClick = contract::onFiltersClick
+                    )
+
+                    val count = remember(state.filters) {
+                        state.filters.count { it.isSelected() }
+                    }
+                    Badge(
+                        modifier = Modifier.align(Alignment.TopEnd),
+                        value = count
+                    )
+                }
             }
         }
     )

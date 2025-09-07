@@ -160,6 +160,7 @@
     <string name="unexpected_network_error">Неочікувана мережева помилка</string>
     <string name="select_exercise">Виберіть вправу</string>
     <string name="not_found">Не знайдено</string>
+    <string name="reset">Скинути</string>
 
     <!-- Filter strings -->
     <string name="filter_weight_type">Тип ваги</string>

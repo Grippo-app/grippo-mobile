@@ -27,6 +27,23 @@ public class FilterPickerViewModel(
         }
     }
 
+    override fun onReset() {
+        update { state ->
+            val list = state.list.map { item ->
+                when (item) {
+                    is FilterValue.WeightType -> item.copy(value = null)
+                    is FilterValue.ForceType -> item.copy(value = null)
+                    is FilterValue.Category -> item.copy(value = null)
+                    is FilterValue.Experience -> item.copy(value = null)
+                }
+            }
+
+            state.copy(list = list.toPersistentList())
+        }
+
+        navigateTo(FilterPickerDirection.BackWithResult(state.value.list))
+    }
+
     override fun onSubmitClick() {
         navigateTo(FilterPickerDirection.BackWithResult(state.value.list))
     }
