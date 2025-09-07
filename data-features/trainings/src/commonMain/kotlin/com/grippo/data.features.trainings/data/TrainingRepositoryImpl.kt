@@ -115,7 +115,13 @@ internal class TrainingRepositoryImpl(
     override suspend fun setDraftTraining(training: SetTraining): Result<Unit> {
         val activeId = userActiveDao.get().firstOrNull() ?: return Result.success(Unit)
 
-        training.toEntity(activeId)
+        val pack = training.toEntity(activeId)
+
+        val training = pack.training
+        val exercises = pack.exercises.map { it.exercise }
+        val iterations = pack.exercises.flatMap { it.iterations }
+
+        draftTrainingDao.insertOrReplace(training, exercises, iterations)
 
         return Result.success(Unit)
     }
