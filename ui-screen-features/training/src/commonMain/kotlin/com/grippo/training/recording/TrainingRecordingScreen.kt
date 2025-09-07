@@ -121,7 +121,7 @@ internal fun TrainingRecordingScreen(
         content = ButtonContent.Text(
             text = AppTokens.strings.res(Res.string.add_exercise_btn),
         ),
-        style = ButtonStyle.Secondary,
+        style = ButtonStyle.Primary,
         onClick = contract::onAddExercise
     )
 
