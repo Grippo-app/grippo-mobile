@@ -12,7 +12,7 @@ public fun SetTraining.toEntity(userId: String): DraftTrainingPack {
     val training = DraftTrainingEntity(
         id = id,
         userId = userId,
-        duration = duration,
+        duration = duration.inWholeMinutes,
         volume = volume,
         repetitions = repetitions,
         intensity = intensity,

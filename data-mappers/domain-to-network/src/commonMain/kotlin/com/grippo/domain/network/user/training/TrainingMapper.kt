@@ -6,7 +6,7 @@ import com.grippo.network.dto.training.TrainingBody
 public fun SetTraining.toBody(): TrainingBody {
     return TrainingBody(
         repetitions = repetitions,
-        duration = duration,
+        duration = duration.inWholeMinutes,
         intensity = intensity,
         volume = volume,
         exercises = exercises.toBody()

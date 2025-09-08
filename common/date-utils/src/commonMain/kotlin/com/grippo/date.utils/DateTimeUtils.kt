@@ -109,6 +109,16 @@ public object DateTimeUtils {
         return now - fromInstant
     }
 
+    public fun minus(value: LocalDateTime, minus: Duration): LocalDateTime {
+        val instant = value.toInstant(timeZone) - minus
+        return instant.toLocalDateTime(timeZone)
+    }
+
+    public fun plus(value: LocalDateTime, plus: Duration): LocalDateTime {
+        val instant = value.toInstant(timeZone) + plus
+        return instant.toLocalDateTime(timeZone)
+    }
+
     /* * * * * * * * * * *
      * Timeline
      * * * * * * * * * * */

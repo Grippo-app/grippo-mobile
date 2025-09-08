@@ -34,7 +34,7 @@ internal class TrainingCompletedViewModel(
 
             val training = SetTraining(
                 exercises = exercises.toDomain(),
-                duration = duration.inWholeMinutes,
+                duration = duration,
                 volume = totals.volume.value ?: 0f,
                 intensity = totals.intensity.value ?: 0f,
                 repetitions = totals.repetitions.value ?: 0
@@ -44,7 +44,10 @@ internal class TrainingCompletedViewModel(
                 .setTraining(training)
                 .getOrThrow() ?: return@safeLaunch
 
+            trainingFeature.deleteDraftTraining().getOrThrow()
+
             val domain = trainingFeature.observeTraining(id).firstOrNull()
+
             provideTraining(domain)
         }
     }

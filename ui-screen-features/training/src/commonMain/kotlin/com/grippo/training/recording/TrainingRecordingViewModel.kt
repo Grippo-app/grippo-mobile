@@ -25,6 +25,7 @@ import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.muscles.toState
+import com.grippo.domain.state.training.toState
 import com.grippo.state.domain.training.toDomain
 import com.grippo.state.formatters.IntensityFormatState
 import com.grippo.state.formatters.RepetitionsFormatState
@@ -36,6 +37,7 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -76,6 +78,27 @@ internal class TrainingRecordingViewModel(
             .distinctUntilChanged()
             .onEach { generateStatistics() }
             .safeLaunch()
+
+        safeLaunch {
+            val training = trainingFeature.getDraftTraining().firstOrNull()
+            provideDraftTraining(training)
+        }
+    }
+
+    private fun provideDraftTraining(value: SetTraining?) {
+        val exercises = value?.exercises?.toState() ?: return
+        val startAt = DateTimeUtils.minus(DateTimeUtils.now(), value.duration)
+        update { it.copy(exercises = exercises.toPersistentList(), startAt = startAt) }
+    }
+
+    private fun provideMuscles(value: List<MuscleGroup>) {
+        val muscles = value.toState()
+        update { it.copy(muscles = muscles) }
+    }
+
+    private fun provideExerciseExamples(value: List<ExerciseExample>) {
+        val examples = value.toState()
+        update { it.copy(examples = examples) }
     }
 
     override fun onAddExercise() {
@@ -97,16 +120,6 @@ internal class TrainingRecordingViewModel(
         )
 
         dialogController.show(dialog)
-    }
-
-    private fun provideMuscles(value: List<MuscleGroup>) {
-        val muscles = value.toState()
-        update { it.copy(muscles = muscles) }
-    }
-
-    private fun provideExerciseExamples(value: List<ExerciseExample>) {
-        val examples = value.toState()
-        update { it.copy(examples = examples) }
     }
 
     override fun onEditExercise(id: String) {
@@ -184,7 +197,7 @@ internal class TrainingRecordingViewModel(
 
             val training = SetTraining(
                 exercises = exercises.toDomain(),
-                duration = duration.inWholeMinutes,
+                duration = duration,
                 volume = totals.volume.value ?: 0f,
                 intensity = totals.intensity.value ?: 0f,
                 repetitions = totals.repetitions.value ?: 0

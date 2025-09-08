@@ -26,6 +26,8 @@ public interface DraftTrainingDao {
         exercises: List<DraftExerciseEntity>,
         iterations: List<DraftIterationEntity>
     ) {
+        delete()
+
         insertTraining(training)
 
         for (exercise in exercises) {
