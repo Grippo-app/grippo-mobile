@@ -302,16 +302,13 @@
 
     <!-- ============= VOLUME ============= -->
     <string name="tooltip_volume_title_training">Exercise Volume</string>
-    <string name="tooltip_volume_description_training">Total work per exercise (weight × reps). Shows which lifts drove today’s session. Aim to keep each main lift within about ±10–15% of your last similar day; avoid sudden jumps over 20% unless you’re peaking.</string>
-
+    <string name="tooltip_volume_description_training">Total work per exercise (weight × reps); shows which lifts contributed most today.\nTip: Volume rewards high-rep/light sets; check %1RM/Intensity to see how heavy it was.\nTargets: Advanced ~±10–15% vs last comparable session; Novice/Intermediate ±15–25%.\nAvoid spikes: &gt;20–30% unless you are peaking.\nAfter a break: resume ~10% lower and add ~10% per session for a week.</string>
     <string name="tooltip_volume_title_day">Daily Volume</string>
-    <string name="tooltip_volume_description_day">Total work each day. Keep day-to-day volume within about ±10–15% of your current weekly average. Avoid single-day spikes over 20–30%. After time off, increase more gently (around 10%).</string>
-
-    <string name="tooltip_volume_title_month">Weekly Volume (Month View)</string>
-    <string name="tooltip_volume_description_month">Total work per week inside this month. During build phases, let weekly volume grow roughly 5–10% week to week. Keep the month’s heaviest week under about 40–50% of the month’s total and plan a deload of 20–40% when fatigue builds.</string>
-
-    <string name="tooltip_volume_title_year">Volume Trend (Year)</string>
-    <string name="tooltip_volume_description_year">Zoomed-out workload over the year. Look for 3–5 progressive blocks with deloads. Aim for steady, sustainable growth; avoid month-to-month spikes over 30–40%. Year-over-year volume gains of roughly 10–30% can be realistic depending on training age.</string>
+    <string name="tooltip_volume_description_day">Total work per day; compare to your rolling 7-day average.\nTargets: Advanced ~±10–15%; Novice/Intermediate ±15–25% day-to-day.\nSpikes: avoid &gt;20–30% unless planned; light days (−20–40%) aid recovery.\nAfter time off: add ~10% per session in week 1.\nUse small waves (hard/medium/light) for sustainable progress.</string>
+    <string name="tooltip_volume_title_week">Weekly Volume (Month View)</string>
+    <string name="tooltip_volume_description_week">Total work per week inside this month.\nProgression: grow ~5–10% WoW for 2–4 weeks, then deload 20–40%.\nBalance: keep the heaviest week &lt;~40–50% of the month’s total to avoid overreaching.\nSignals: if volume climbs but performance stalls, deload or improve sleep/nutrition.\nPlan: place hard weeks when life stress is lower; deload before testing/new blocks.</string>
+    <string name="tooltip_volume_title_year">Yearly Volume Trend</string>
+    <string name="tooltip_volume_description_year">Zoomed-out monthly trend across the year.\nStructure: plan 3–5 progressive blocks with clear deloads.\nSafety: avoid month-to-month spikes &gt;~30–40%; prefer steady growth.\nExpectations: YoY gains of ~10–30% are realistic depending on training age.\nIf PRs lag while volume rises, shift work toward main lifts or increase intensity modestly.</string>
 
     <!-- ============= %1RM (INTENSITY) ============= -->
     <string name="tooltip_percent1rm_title_training">Session Intensity (%1RM)</string>

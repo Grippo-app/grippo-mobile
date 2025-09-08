@@ -15,12 +15,12 @@ import com.grippo.design.resources.provider.ex
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.design.resources.provider.tooltip_volume_description_day
-import com.grippo.design.resources.provider.tooltip_volume_description_month
 import com.grippo.design.resources.provider.tooltip_volume_description_training
+import com.grippo.design.resources.provider.tooltip_volume_description_week
 import com.grippo.design.resources.provider.tooltip_volume_description_year
 import com.grippo.design.resources.provider.tooltip_volume_title_day
-import com.grippo.design.resources.provider.tooltip_volume_title_month
 import com.grippo.design.resources.provider.tooltip_volume_title_training
+import com.grippo.design.resources.provider.tooltip_volume_title_week
 import com.grippo.design.resources.provider.tooltip_volume_title_year
 import com.grippo.state.datetime.PeriodState
 import com.grippo.state.formatters.UiText
@@ -31,6 +31,11 @@ public class VolumeAnalytics(
     private val colorProvider: ColorProvider,
     private val stringProvider: StringProvider
 ) {
+
+    private companion object {
+        private const val EPS: Float = 1e-3f
+    }
+
     /** Σ(weight × reps) for an exercise. */
     private fun tonnage(ex: ExerciseState): Float =
         ex.iterations.fold(0f) { acc, it ->
@@ -41,17 +46,18 @@ public class VolumeAnalytics(
 
     /** Total session tonnage across a training (Double for accumulation precision). */
     private fun TrainingState.sessionTonnage(): Double {
-        var t = 0.0
+        var total = 0.0
+        // Accumulate directly into Double to reduce intermediate rounding
         exercises.forEach { ex ->
-            var eT = 0f
             ex.iterations.forEach { itn ->
                 val w = itn.volume.value ?: 0f
                 val r = itn.repetitions.value ?: 0
-                if (w > 0f && r > 0) eT += w * r
+                if (w > 0f && r > 0) {
+                    total += (w * r).toDouble()
+                }
             }
-            t += eT
         }
-        return t
+        return total
     }
 
     public suspend fun calculateExerciseVolumeChartFromExercises(
@@ -61,36 +67,53 @@ public class VolumeAnalytics(
         val palette = colors.palette.palette7BlueGrowth
         val exTxt = stringProvider.get(Res.string.ex)
 
-        val values = exercises.map { tonnage(it).coerceAtLeast(0f) }
-        val n = values.size
+        val n = exercises.size
+        if (n == 0) {
+            return DSBarData(emptyList()) to instructionForVolume(BucketScale.EXERCISE)
+        }
+
+        // Build values and track min/max in one pass
+        val values = ArrayList<Float>(n)
+        var minV = Float.POSITIVE_INFINITY
+        var maxV = Float.NEGATIVE_INFINITY
+        exercises.forEach { ex ->
+            val v = tonnage(ex).coerceAtLeast(0f)
+            values += v
+            if (v < minV) minV = v
+            if (v > maxV) maxV = v
+        }
+        if (!minV.isFinite()) minV = 0f
+        if (!maxV.isFinite()) maxV = minV
+
+        val mappedColors = ArrayList<Color>(n)
         val pc = palette.size
+        val allEqual = (maxV - minV).let { it >= 0f && it <= EPS }
 
-        val minV = values.minOrNull() ?: 0f
-        val maxV = values.maxOrNull() ?: minV
-        val allEqual = (maxV == minV)
-
-        val mappedColors = MutableList(n) { Color.Unspecified }
-        if (n > 0 && pc > 0) {
+        // O(n) color mapping via linear normalization instead of rank-sorting
+        if (pc > 0) {
             if (allEqual) {
-                for (i in 0 until n) mappedColors[i] = palette.first()
+                repeat(n) { mappedColors += palette.first() }
             } else {
-                val order = values.indices.sortedBy { values[it] }
-                for (rank in 0 until n) {
-                    val idx = order[rank]
-                    val pIdx = if (n <= pc) rank
-                    else ((rank.toFloat() * (pc - 1)) / (n - 1)).toInt()
-                    mappedColors[idx] = palette[pIdx.coerceIn(0, pc - 1)]
+                val span = (maxV - minV).coerceAtLeast(EPS)
+                values.forEach { v ->
+                    val t = ((v - minV) / span).coerceIn(0f, 1f)
+                    val idx = (t * (pc - 1)).toInt().coerceIn(0, pc - 1)
+                    mappedColors += palette[idx]
                 }
             }
+        } else {
+            repeat(n) { mappedColors += Color.Unspecified }
         }
 
-        val items = values.mapIndexed { i, v ->
-            DSBarItem(
+        val items = ArrayList<DSBarItem>(n)
+        values.forEachIndexed { i, v ->
+            items += DSBarItem(
                 label = "$exTxt${i + 1}",
                 value = v,
-                color = mappedColors.getOrNull(i) ?: Color.Unspecified
+                color = mappedColors[i]
             )
         }
+
         val data = DSBarData(items)
         val tip = instructionForVolume(BucketScale.EXERCISE)
         return data to tip
@@ -111,49 +134,63 @@ public class VolumeAnalytics(
                 val exs = inRange.flatMap { it.exercises }
                 calculateExerciseVolumeChartFromExercises(exs)
             }
-
             else -> {
                 val buckets = buildBuckets(period.range, scale)
                 val labeler = defaultLabeler(scale, stringProvider)
                 val grouped = groupTrainingsByBucket(inRange, scale)
 
-                val totals = buckets.map { b ->
-                    (grouped[b.start] ?: emptyList()).sumOf { it.sessionTonnage() }
+                val n = buckets.size
+                if (n == 0) {
+                    return DSBarData(emptyList()) to instructionForVolume(scale)
+                }
+
+                // Build totals and track min/max in one pass
+                val totals = ArrayList<Float>(n)
+                var minV = Float.POSITIVE_INFINITY
+                var maxV = Float.NEGATIVE_INFINITY
+                buckets.forEach { b ->
+                    val v = (grouped[b.start] ?: emptyList())
+                        .sumOf { it.sessionTonnage() }
                         .toFloat()
                         .coerceAtLeast(0f)
+                    totals += v
+                    if (v < minV) minV = v
+                    if (v > maxV) maxV = v
                 }
-                val n = totals.size
+                if (!minV.isFinite()) minV = 0f
+                if (!maxV.isFinite()) maxV = minV
+
                 val pc = palette.size
+                val allEqual = (maxV - minV).let { it >= 0f && it <= EPS }
+                val mapped = ArrayList<Color>(n)
 
-                val minV = totals.minOrNull() ?: 0f
-                val maxV = totals.maxOrNull() ?: minV
-                val allEqual = (maxV == minV)
-
-                val mapped = MutableList(n) { Color.Unspecified }
-                if (n > 0 && pc > 0) {
+                if (pc > 0) {
                     if (allEqual) {
-                        for (i in 0 until n) mapped[i] = palette.first()
+                        repeat(n) { mapped += palette.first() }
                     } else {
-                        val order = totals.indices.sortedBy { totals[it] }
-                        for (rank in 0 until n) {
-                            val idx = order[rank]
-                            val pIdx = if (n <= pc) rank
-                            else ((rank.toFloat() * (pc - 1)) / (n - 1)).toInt()
-                            mapped[idx] = palette[pIdx.coerceIn(0, pc - 1)]
+                        val span = (maxV - minV).coerceAtLeast(EPS)
+                        totals.forEach { v ->
+                            val t = ((v - minV) / span).coerceIn(0f, 1f)
+                            val idx = (t * (pc - 1)).toInt().coerceIn(0, pc - 1)
+                            mapped += palette[idx]
                         }
                     }
+                } else {
+                    repeat(n) { mapped += Color.Unspecified }
                 }
 
-                val items = buckets.mapIndexed { idx, b ->
-                    DSBarItem(
+                val items = ArrayList<DSBarItem>(n)
+                buckets.forEachIndexed { idx, b ->
+                    items += DSBarItem(
                         label = labeler(b),
                         value = totals[idx],
-                        color = mapped.getOrNull(idx) ?: Color.Unspecified
+                        color = mapped[idx]
                     )
                 }
+
                 val data = DSBarData(items)
                 val tip = instructionForVolume(scale)
-                data to tip
+                return data to tip
             }
         }
     }
@@ -162,29 +199,22 @@ public class VolumeAnalytics(
         scale: BucketScale,
     ): Instruction {
         return when (scale) {
-            BucketScale.EXERCISE ->
-                Instruction(
-                    UiText.Res(Res.string.tooltip_volume_title_training),
-                    UiText.Res(Res.string.tooltip_volume_description_training)
-                )
-
-            BucketScale.DAY ->
-                Instruction(
-                    UiText.Res(Res.string.tooltip_volume_title_day),
-                    UiText.Res(Res.string.tooltip_volume_description_day)
-                )
-
-            BucketScale.WEEK ->
-                Instruction(
-                    UiText.Res(Res.string.tooltip_volume_title_month),
-                    UiText.Res(Res.string.tooltip_volume_description_month)
-                )
-
-            BucketScale.MONTH ->
-                Instruction(
-                    UiText.Res(Res.string.tooltip_volume_title_year),
-                    UiText.Res(Res.string.tooltip_volume_description_year)
-                )
+            BucketScale.EXERCISE -> Instruction(
+                title = UiText.Res(Res.string.tooltip_volume_title_training),
+                description = UiText.Res(Res.string.tooltip_volume_description_training)
+            )
+            BucketScale.DAY -> Instruction(
+                title = UiText.Res(Res.string.tooltip_volume_title_day),
+                description = UiText.Res(Res.string.tooltip_volume_description_day)
+            )
+            BucketScale.WEEK -> Instruction(
+                title = UiText.Res(Res.string.tooltip_volume_title_week),
+                description = UiText.Res(Res.string.tooltip_volume_description_week)
+            )
+            BucketScale.MONTH -> Instruction(
+                title = UiText.Res(Res.string.tooltip_volume_title_year),
+                description = UiText.Res(Res.string.tooltip_volume_description_year)
+            )
         }
     }
 }
