@@ -35,7 +35,7 @@ import com.grippo.shared.root.RootComponent.Child.ExerciseExamples
 import com.grippo.shared.root.RootComponent.Child.Home
 import com.grippo.shared.root.RootComponent.Child.Profile
 import com.grippo.shared.root.RootComponent.Child.Settings
-import com.grippo.shared.root.RootComponent.Child.Workout
+import com.grippo.shared.root.RootComponent.Child.Training
 import com.grippo.state.settings.ThemeState
 import com.grippo.training.TrainingComponent
 
@@ -92,8 +92,8 @@ public class RootComponent(
                 RootRouter.Settings(SettingsRouter.System)
             )
 
-            RootDirection.ToWorkout -> navigation.push(
-                RootRouter.Workout
+            RootDirection.ToTraining -> navigation.push(
+                RootRouter.Training
             )
 
             RootDirection.ToWeightHistory -> navigation.push(
@@ -140,7 +140,7 @@ public class RootComponent(
                     toMissingEquipment = viewModel::toMissingEquipment,
                     toExcludedMuscles = viewModel::toExcludedMuscles,
                     toDebug = viewModel::toDebug,
-                    toWorkout = viewModel::toWorkout,
+                    toTraining = viewModel::toTraining,
                     toSystemSettings = viewModel::toSystemSettings,
                     toExerciseExamples = viewModel::toExerciseExamples,
                     close = viewModel::onClose
@@ -162,7 +162,7 @@ public class RootComponent(
                 )
             )
 
-            is RootRouter.Workout -> Workout(
+            is RootRouter.Training -> Training(
                 TrainingComponent(
                     componentContext = context,
                     initial = TrainingRouter.Setup,
@@ -216,7 +216,7 @@ public class RootComponent(
         public data class Settings(override val component: SettingsComponent) :
             Child(component)
 
-        public data class Workout(override val component: TrainingComponent) :
+        public data class Training(override val component: TrainingComponent) :
             Child(component)
 
         public data class ExerciseExamples(override val component: ExerciseExamplesComponent) :

@@ -163,7 +163,12 @@ internal class TrainingRecordingViewModel(
             val dialog = DialogConfig.Confirmation(
                 title = stringProvider.get(Res.string.training_progress_lost_title),
                 description = stringProvider.get(Res.string.training_progress_lost_description),
-                onResult = { navigateTo(TrainingRecordingDirection.Back) }
+                onResult = {
+                    safeLaunch {
+                        trainingFeature.deleteDraftTraining()
+                        navigateTo(TrainingRecordingDirection.Back)
+                    }
+                }
             )
 
             dialogController.show(dialog)

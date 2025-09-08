@@ -66,8 +66,8 @@ public class RootViewModel(
         navigateTo(RootDirection.ToSettings)
     }
 
-    override fun toWorkout() {
-        navigateTo(RootDirection.ToWorkout)
+    override fun toTraining() {
+        navigateTo(RootDirection.ToTraining)
     }
 
     override fun toWeightHistory() {

@@ -24,7 +24,7 @@ public class BottomNavigationComponent(
     private val toWeightHistory: () -> Unit,
     private val toExerciseExamples: () -> Unit,
     private val toDebug: () -> Unit,
-    private val toWorkout: () -> Unit,
+    private val toTraining: () -> Unit,
     private val toSystemSettings: () -> Unit,
     private val close: () -> Unit,
 ) : BaseComponent<BottomNavigationDirection>(componentContext) {
@@ -34,6 +34,7 @@ public class BottomNavigationComponent(
             initial = initial,
             trainingFeature = getKoin().get(),
             dialogController = getKoin().get(),
+            stringProvider = getKoin().get()
         )
     }
 
@@ -54,7 +55,7 @@ public class BottomNavigationComponent(
             BottomNavigationDirection.ToWeightHistory -> toWeightHistory.invoke()
             BottomNavigationDirection.ToExerciseExamples -> toExerciseExamples.invoke()
             BottomNavigationDirection.ToDebug -> toDebug.invoke()
-            BottomNavigationDirection.ToWorkout -> toWorkout.invoke()
+            BottomNavigationDirection.ToTraining -> toTraining.invoke()
             BottomNavigationDirection.ToSystemSettings -> toSystemSettings.invoke()
         }
     }

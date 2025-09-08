@@ -3,37 +3,44 @@ package com.grippo.home
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.SetTraining
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.draft_training_alert_description
+import com.grippo.design.resources.provider.draft_training_alert_title
+import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.screen.api.BottomNavigationRouter
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.firstOrNull
 
 public class BottomNavigationViewModel(
     initial: BottomNavigationRouter,
     trainingFeature: TrainingFeature,
+    private val stringProvider: StringProvider,
     private val dialogController: DialogController,
 ) : BaseViewModel<BottomNavigationState, BottomNavigationDirection, BottomNavigationLoader>(
     BottomNavigationState(selected = BottomBarMenu.of(initial))
 ), BottomNavigationContract {
 
     init {
-        trainingFeature
-            .getDraftTraining()
-            .onEach(::provideDraftTraining)
-            .safeLaunch()
+        safeLaunch {
+            val training = trainingFeature.getDraftTraining().firstOrNull()
+            provideDraftTraining(training)
+        }
     }
 
     private fun provideDraftTraining(value: SetTraining?) {
         val hasDraftTraining = value != null
 
         if (hasDraftTraining) {
-            val config = DialogConfig.Confirmation(
-                title = "asd",
-                description = "asd",
-                onResult = {}
-            )
+            safeLaunch {
+                val config = DialogConfig.Confirmation(
+                    title = stringProvider.get(Res.string.draft_training_alert_title),
+                    description = stringProvider.get(Res.string.draft_training_alert_description),
+                    onResult = { navigateTo(BottomNavigationDirection.ToTraining) }
+                )
 
-            dialogController.show(config)
+                dialogController.show(config)
+            }
         }
     }
 
@@ -76,7 +83,7 @@ public class BottomNavigationViewModel(
     }
 
     override fun toWorkout() {
-        navigateTo(BottomNavigationDirection.ToWorkout)
+        navigateTo(BottomNavigationDirection.ToTraining)
     }
 
     override fun toSystemSettings() {

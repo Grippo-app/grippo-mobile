@@ -161,6 +161,8 @@
     <string name="select_exercise">Виберіть вправу</string>
     <string name="not_found">Не знайдено</string>
     <string name="reset">Скинути</string>
+    <string name="draft_training_alert_title">Незавершене тренування</string>
+    <string name="draft_training_alert_description">У вас є незавершене тренування. Продовжити з місця, де зупинилися?</string>
 
     <!-- Filter strings -->
     <string name="filter_weight_type">Тип ваги</string>

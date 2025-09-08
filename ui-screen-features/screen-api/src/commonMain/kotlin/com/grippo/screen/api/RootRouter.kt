@@ -22,7 +22,7 @@ public sealed class RootRouter : BaseRouter {
     public data class Settings(val value: SettingsRouter) : RootRouter()
 
     @Serializable
-    public data object Workout : RootRouter()
+    public data object Training : RootRouter()
 
     @Serializable
     public data class ExerciseExamples(val value: ExerciseExamplesRouter) : RootRouter()

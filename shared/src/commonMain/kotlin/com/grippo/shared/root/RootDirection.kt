@@ -9,7 +9,7 @@ public sealed interface RootDirection : BaseDirection {
     public data object ToProfile : RootDirection
     public data object ToDebug : RootDirection
     public data object ToSettings : RootDirection
-    public data object ToWorkout : RootDirection
+    public data object ToTraining : RootDirection
     public data object ToWeightHistory : RootDirection
     public data object ToMissingEquipment : RootDirection
     public data object ToExcludedMuscles : RootDirection
