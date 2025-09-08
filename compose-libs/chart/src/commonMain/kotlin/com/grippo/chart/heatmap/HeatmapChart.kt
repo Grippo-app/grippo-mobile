@@ -71,7 +71,8 @@ private data class HeatmapPlan(
     val gridTop: Float,
     val cw: Float,
     val ch: Float,
-    val gapPx: Float,
+    val gapXPx: Float,           // horizontal gap between columns
+    val gapYPx: Float,           // vertical gap between rows
     val rx: Float,
     val rows: Int,
     val cols: Int,
@@ -84,9 +85,9 @@ private data class HeatmapPlan(
     val maxLegendTextLayout: TextLayoutResult?,
     val minVal: Float,
     val maxVal: Float,
-    // JUSTIFY:
-    val gapPlusOneCount: Int,   // how many first gaps get +1px
-    val gridLeftOffsetPx: Float // symmetric offset after distributing +1px
+    // JUSTIFY (horizontal only):
+    val gapPlusOneCount: Int,    // how many first gaps get +1px
+    val gridLeftOffsetPx: Float  // symmetric offset after distributing +1px
 )
 
 private fun buildPlan(
@@ -149,7 +150,6 @@ private fun buildPlan(
     var maxLegendLayout: TextLayoutResult? = null
     val bottomForLegend = when (val lg = style.legend) {
         is HeatmapStyle.Legend.Visible -> {
-            // Draw and reserve space for text under legend only if min/max is specified
             val wantMin = lg.minText != null
             val wantMax = lg.maxText != null
             minLegendLayout = if (wantMin) {
@@ -173,17 +173,18 @@ private fun buildPlan(
         is HeatmapStyle.Legend.None -> 0f
     }
 
-    // Grid size: stretch horizontally, rectangular cells
+    // Grid size: stretch horizontally, rectangular cells (cw fills width; ch = maxCellSize)
     val rows = data.matrix.rows
     val cols = data.matrix.cols
     val widthForGridRaw = (widthPx - leftGutter).coerceAtLeast(0f)
     val widthForGrid = floor(widthForGridRaw).coerceAtLeast(0f)
 
-    // Gap cannot exceed per-column share
-    val safeGapPx = if (cols > 1) min(requestedGapPx, widthForGrid / cols) else 0f
+    // Horizontal gap: zeroed when there's only one column. Vertical gap: always requested.
+    val safeGapXPx = if (cols > 1) min(requestedGapPx, widthForGrid / cols) else 0f
+    val safeGapYPx = requestedGapPx
 
-    // Width per cell to fill the available width (no clamp by maxCellSize)
-    val fitCw = if (cols > 0) (widthForGrid - safeGapPx * (cols - 1)) / cols else 0f
+    // Width per cell to fill available width (no clamp by maxCellSize)
+    val fitCw = if (cols > 0) (widthForGrid - safeGapXPx * (cols - 1)) / cols else 0f
 
     // Height per cell fixed by maxCellSize (non-null)
     val maxCellPx = style.layout.maxCellSize.toPx()
@@ -194,13 +195,14 @@ private fun buildPlan(
     // Snap to whole pixels (avoid hairlines)
     cw = floor(cw).coerceAtLeast(0f)
     ch = floor(ch).coerceAtLeast(0f)
-    val snappedGap = floor(safeGapPx).coerceAtLeast(0f)
+    val snappedGapX = floor(safeGapXPx).coerceAtLeast(0f)
+    val snappedGapY = floor(safeGapYPx).coerceAtLeast(0f)
 
-    // Base width/height without 'bumps'
-    val gridW = cw * cols + snappedGap * (cols - 1)
-    val gridH = ch * rows + snappedGap * (rows - 1)
+    // Base grid size
+    val gridW = cw * cols + snappedGapX * (cols - 1)
+    val gridH = ch * rows + snappedGapY * (rows - 1)
 
-    // JUSTIFY: distribute extraPx — +1px to first gaps, remainder — symmetrically at edges
+    // JUSTIFY residual pixels horizontally
     val extraPx = (widthForGrid - gridW).toInt().coerceAtLeast(0)
     val gaps = max(0, cols - 1)
     val gapPlusOneCount = if (gaps > 0) min(extraPx, gaps) else 0
@@ -209,7 +211,7 @@ private fun buildPlan(
 
     val chartLeft = leftGutter + gridLeftOffsetPx
     val chartTop = 0f
-    // IMPORTANT: chartRight accounts for total +1px (otherwise last column will shrink)
+    // Include +1px bumps on early gaps in the right edge
     val chartRight = chartLeft + gridW + gapPlusOneCount
     val chart = Rect(chartLeft, chartTop, chartRight, chartTop + gridH)
 
@@ -222,7 +224,8 @@ private fun buildPlan(
         gridTop = chart.top,
         cw = cw,
         ch = ch,
-        gapPx = snappedGap,
+        gapXPx = snappedGapX,
+        gapYPx = snappedGapY,
         rx = rawRx,
         rows = rows,
         cols = cols,
@@ -249,46 +252,50 @@ private fun DrawScope.drawHeatmap(
 ) {
     if (plan.rows <= 0 || plan.cols <= 0) return
 
-    fun norm(v: Float): Float = v.coerceIn(0f, 1f)
-
-    // Column centers account for +1px in early gaps
+    // Column start with +1px bumps distributed into early gaps
     fun colStart(c: Int): Float {
         val bump = if (plan.gapPlusOneCount > 0) min(c, plan.gapPlusOneCount).toFloat() else 0f
-        return plan.gridLeft + c * (plan.cw + plan.gapPx) + bump
+        return plan.gridLeft + c * (plan.cw + plan.gapXPx) + bump
     }
 
-    fun colCenter(c: Int): Float = colStart(c) + plan.cw / 2f
+    // Column edges computed from starts (prevents accumulation errors)
+    fun colEdges(c: Int): Pair<Float, Float> {
+        val x0 = colStart(c)
+        val x1 = if (c == plan.cols - 1) {
+            plan.chart.right
+        } else {
+            colStart(c + 1) - plan.gapXPx
+        }
+        return x0 to x1
+    }
+
+    fun colCenter(c: Int): Float {
+        val (x0, x1) = colEdges(c)
+        return (x0 + x1) / 2f
+    }
 
     val chart = plan.chart
-    val cw = plan.cw
-    val ch = plan.ch
-    val gap = plan.gapPx
 
-
-    // Data
+    // Cells
     for (r in 0 until plan.rows) {
-        var x = plan.gridLeft
         for (c in 0 until plan.cols) {
-            val y = plan.gridTop + (ch + gap) * r
-            val w = if (c == plan.cols - 1) (chart.right - x) else cw
-            val h = if (r == plan.rows - 1) (chart.bottom - y) else ch
-            val t = norm(data.matrix[r, c])
+            val (x0, x1) = colEdges(c)
+            val w = max(0f, x1 - x0)
+
+            val y0 = plan.gridTop + (plan.ch + plan.gapYPx) * r
+            val y1 = if (r == plan.rows - 1) plan.chart.bottom else y0 + plan.ch
+            val h = max(0f, y1 - y0)
+
+            val t = data.matrix[r, c].coerceIn(0f, 1f)
             val color = style.palette.colorScale(t)
             val rxCell = min(plan.rx, min(w, h) * 0.5f)
 
             drawRoundRect(
                 color = color,
-                topLeft = Offset(x, y),
+                topLeft = Offset(x0, y0),
                 size = Size(w, h),
                 cornerRadius = CornerRadius(rxCell, rxCell)
             )
-
-
-
-            if (c < plan.cols - 1) {
-                val bump = if (c < plan.gapPlusOneCount) 1f else 0f
-                x += w + gap + bump
-            }
         }
     }
 
@@ -297,7 +304,8 @@ private fun DrawScope.drawHeatmap(
         is HeatmapStyle.AxisLabels.ShowAll -> if (data.rowLabels.isNotEmpty()) {
             for (r in 0 until plan.rows) {
                 val layout = plan.rowLabelLayouts[r]
-                val y = plan.gridTop + r * (ch + gap) + (ch - layout.size.height) / 2f
+                val y =
+                    plan.gridTop + r * (plan.ch + plan.gapYPx) + (plan.ch - layout.size.height) / 2f
                 val x = chart.left - plan.labelPadPx - layout.size.width
                 drawText(layout, topLeft = Offset(x, y))
             }
@@ -313,7 +321,8 @@ private fun DrawScope.drawHeatmap(
                 var r = 0
                 while (r < plan.rows) {
                     val l = layouts[r]
-                    val y = plan.gridTop + r * (ch + gap) + (ch - l.size.height) / 2f
+                    val y =
+                        plan.gridTop + r * (plan.ch + plan.gapYPx) + (plan.ch - l.size.height) / 2f
                     if (y < prevBottom + minGapPx) {
                         ok = false; break
                     }
@@ -327,7 +336,7 @@ private fun DrawScope.drawHeatmap(
             var r = 0
             while (r < plan.rows) {
                 val l = layouts[r]
-                val y = plan.gridTop + r * (ch + gap) + (ch - l.size.height) / 2f
+                val y = plan.gridTop + r * (plan.ch + plan.gapYPx) + (plan.ch - l.size.height) / 2f
                 val x = chart.left - plan.labelPadPx - l.size.width
                 drawText(l, topLeft = Offset(x, y))
                 r += step
@@ -337,7 +346,7 @@ private fun DrawScope.drawHeatmap(
         is HeatmapStyle.AxisLabels.None -> Unit
     }
 
-    // X labels — at column centers (account for justify)
+    // X labels at column centers
     when (val cLbl = style.colLabels) {
         is HeatmapStyle.AxisLabels.ShowAll -> if (data.colLabels.isNotEmpty()) {
             val y = chart.bottom + plan.labelPadPx

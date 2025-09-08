@@ -35,19 +35,21 @@ internal fun deriveScale(period: PeriodState): BucketScale = when (period) {
     is PeriodState.CUSTOM -> deriveCustomScale(period.range)
 }
 
-internal fun deriveCustomScale(range: DateRange): BucketScale {
-    val fromDT = range.from
-    val toDT = range.to
-    if (fromDT > toDT) return BucketScale.DAY
+private fun deriveCustomScale(range: DateRange): BucketScale {
+    // Guard invalid range
+    if (range.from > range.to) return BucketScale.DAY
 
-    val from = fromDT.date
-    val to = toDT.date
-    if (from == to) return BucketScale.EXERCISE
+    val from = range.from.date
+    val to = range.to.date
 
-    val days = daysInclusive(from, to)                 // ~ exact day buckets
-    val weeks = ((days + 6) / 7)                        // ceil(days/7)
-    monthsInclusive(from, to)               // inclusive month span
+    // Single-day custom range: select by mode
+    if (from == to) {
+        return BucketScale.EXERCISE
+    }
 
+    // Multi-day range: calendar bucketing only
+    val days = daysInclusive(from, to)
+    val weeks = (days + 6) / 7
     return when {
         days <= TARGET_BUCKETS -> BucketScale.DAY
         weeks <= TARGET_BUCKETS -> BucketScale.WEEK

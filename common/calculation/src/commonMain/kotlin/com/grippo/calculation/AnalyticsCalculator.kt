@@ -81,7 +81,8 @@ public class AnalyticsCalculator(
             } else if (allEqual) {
                 for (i in 0 until n) colorsPerIndex[i] = palette.first()
             } else {
-                val orderAsc: List<Int> = values.indices.sortedBy { values[it] } // indices sorted by value asc
+                val orderAsc: List<Int> =
+                    values.indices.sortedBy { values[it] } // indices sorted by value asc
                 for (rank in 0 until n) {
                     val idx = orderAsc[rank]
                     val paletteIdx =
@@ -129,6 +130,7 @@ public class AnalyticsCalculator(
                 val exercises = inRange.flatMap { it.exercises }
                 calculateExerciseVolumeChartFromExercises(exercises)
             }
+
             else -> {
                 val buckets = buildBuckets(period.range, scale)
                 val labeler = defaultLabeler(scale, stringProvider)
