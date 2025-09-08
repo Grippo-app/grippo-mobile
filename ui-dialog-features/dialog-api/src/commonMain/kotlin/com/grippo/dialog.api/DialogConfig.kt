@@ -99,6 +99,14 @@ public sealed class DialogConfig(
     )
 
     @Serializable
+    public data class DraftTraining(
+        @Transient val onResult: () -> Unit = {},
+    ) : DialogConfig(
+        onDismiss = null,
+        dismissBySwipe = true
+    )
+
+    @Serializable
     public data class FilterPicker(
         val initial: List<FilterValue>,
         @Transient val onResult: (List<FilterValue>) -> Unit = {},

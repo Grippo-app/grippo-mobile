@@ -1,5 +1,6 @@
-package com.grippo.confirmation
+package com.grippo.drart.training
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,28 +13,33 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonColorTokens
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.cancel_btn
-import com.grippo.design.resources.provider.confirm_btn
+import com.grippo.design.resources.provider.continue_btn
+import com.grippo.design.resources.provider.delete_btn
+import com.grippo.design.resources.provider.draft_training_alert_description
+import com.grippo.design.resources.provider.draft_training_alert_title
 import com.grippo.design.resources.provider.icons.QuestionMarkCircleOutline
+import com.grippo.state.trainings.stubExercises
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
-internal fun ConfirmationScreen(
-    state: ConfirmationState,
-    loaders: ImmutableSet<ConfirmationLoader>,
-    contract: ConfirmationContract
+internal fun DraftTrainingScreen(
+    state: DraftTrainingState,
+    loaders: ImmutableSet<DraftTrainingLoader>,
+    contract: DraftTrainingContract
 ) = BaseComposeScreen(background = ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
     Column(
@@ -56,50 +62,61 @@ internal fun ConfirmationScreen(
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = state.title,
+            text = AppTokens.strings.res(Res.string.draft_training_alert_title),
             style = AppTokens.typography.h2(),
             color = AppTokens.colors.text.primary,
             textAlign = TextAlign.Center
         )
 
-        if (state.description != null) {
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(max = 400.dp),
-                text = state.description,
-                style = AppTokens.typography.b14Med(),
-                color = AppTokens.colors.text.secondary,
-                textAlign = TextAlign.Center
-            )
-        }
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = 400.dp),
+            text = AppTokens.strings.res(Res.string.draft_training_alert_description),
+            style = AppTokens.typography.b14Med(),
+            color = AppTokens.colors.text.secondary,
+            textAlign = TextAlign.Center
+        )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(
+            horizontalArrangement = Arrangement.spacedBy(
                 AppTokens.dp.contentPadding.content
             )
         ) {
             Button(
                 modifier = Modifier.weight(1f),
                 content = ButtonContent.Text(
-                    text = AppTokens.strings.res(Res.string.cancel_btn),
+                    text = AppTokens.strings.res(Res.string.delete_btn),
                 ),
-                style = ButtonStyle.Secondary,
-                onClick = contract::onBack
+                style = ButtonStyle.Custom(
+                    enabled = ButtonColorTokens(
+                        background = AppTokens.colors.semantic.error,
+                        icon = AppTokens.colors.button.iconPrimary,
+                        content = AppTokens.colors.button.textPrimary,
+                        border = AppTokens.colors.semantic.error,
+                    ),
+                    disabled = ButtonColorTokens(
+                        background = AppTokens.colors.button.backgroundPrimaryDisabled,
+                        content = AppTokens.colors.button.contentPrimaryDisabled,
+                        border = Color.Transparent,
+                        icon = AppTokens.colors.button.contentPrimaryDisabled
+                    ),
+                ),
+                onClick = contract::onDelete
             )
 
             Button(
                 modifier = Modifier.weight(1f),
                 content = ButtonContent.Text(
-                    text = AppTokens.strings.res(Res.string.confirm_btn),
+                    text = AppTokens.strings.res(Res.string.continue_btn),
                 ),
                 style = ButtonStyle.Primary,
-                onClick = contract::onConfirm
+                onClick = contract::onContinue
             )
         }
 
@@ -111,12 +128,11 @@ internal fun ConfirmationScreen(
 @Composable
 private fun ScreenPreview() {
     PreviewContainer {
-        ConfirmationScreen(
-            state = ConfirmationState(
-                title = "Confirm Action",
-                description = "Are you sure you want to proceed with this action? This cannot be undone."
+        DraftTrainingScreen(
+            state = DraftTrainingState(
+                exercises = stubExercises()
             ),
-            contract = ConfirmationContract.Empty,
+            contract = DraftTrainingContract.Empty,
             loaders = persistentSetOf()
         )
     }

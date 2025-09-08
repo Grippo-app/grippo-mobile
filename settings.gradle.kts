@@ -70,6 +70,7 @@ include(":ui-screen-features:exercise-examples")
 
 include(":ui-dialog-features:dialog-api")
 include(":ui-dialog-features:exercise")
+include(":ui-dialog-features:draft-training")
 include(":ui-dialog-features:exercise-example")
 include(":ui-dialog-features:error-display")
 include(":ui-dialog-features:confirmation")

@@ -34,7 +34,6 @@ public class BottomNavigationComponent(
             initial = initial,
             trainingFeature = getKoin().get(),
             dialogController = getKoin().get(),
-            stringProvider = getKoin().get()
         )
     }
 

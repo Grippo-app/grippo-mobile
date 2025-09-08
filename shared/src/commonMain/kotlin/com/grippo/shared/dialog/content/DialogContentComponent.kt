@@ -13,6 +13,7 @@ import com.grippo.core.BaseComponent
 import com.grippo.core.platform.collectAsStateMultiplatform
 import com.grippo.date.picker.DatePickerComponent
 import com.grippo.dialog.api.DialogConfig
+import com.grippo.drart.training.DraftTrainingComponent
 import com.grippo.error.display.ErrorDisplayComponent
 import com.grippo.exercise.ExerciseComponent
 import com.grippo.exercise.example.exerciseexample.ExerciseExampleComponent
@@ -125,6 +126,14 @@ internal class DialogContentComponent(
                 )
             )
 
+            is DialogConfig.DraftTraining -> Child.DraftTraining(
+                DraftTrainingComponent(
+                    componentContext = context,
+                    onResult = { viewModel.onBack { router.onResult.invoke() } },
+                    back = { viewModel.onBack(null) }
+                )
+            )
+
             is DialogConfig.PeriodPicker -> Child.PeriodPicker(
                 PeriodPickerComponent(
                     componentContext = context,
@@ -200,6 +209,9 @@ internal class DialogContentComponent(
             Child(component)
 
         data class Confirmation(override val component: ConfirmationComponent) :
+            Child(component)
+
+        data class DraftTraining(override val component: DraftTrainingComponent) :
             Child(component)
 
         data class FilterPicker(override val component: FilterPickerComponent) :

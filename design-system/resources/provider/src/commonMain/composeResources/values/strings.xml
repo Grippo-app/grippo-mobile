@@ -23,6 +23,7 @@
     <string name="logout_btn">Logout</string>
     <string name="loading">Loading..</string>
     <string name="submit_btn">Submit</string>
+    <string name="delete_btn">Delete</string>
     <string name="get_started_btn">Get Started</string>
     <string name="continue_btn">Continue</string>
     <string name="skip_btn">Skip</string>

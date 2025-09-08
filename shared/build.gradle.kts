@@ -57,6 +57,7 @@ kotlin {
         implementation(projects.uiDialogFeatures.heightPicker)
         implementation(projects.uiDialogFeatures.datePicker)
         implementation(projects.uiDialogFeatures.periodPicker)
+        implementation(projects.uiDialogFeatures.draftTraining)
         implementation(projects.uiDialogFeatures.errorDisplay)
         implementation(projects.uiDialogFeatures.confirmation)
         implementation(projects.uiDialogFeatures.exerciseExample)

@@ -23,6 +23,7 @@
     <string name="logout_btn">Вийти</string>
     <string name="loading">Завантаження…</string>
     <string name="submit_btn">Надіслати</string>
+    <string name="delete_btn">Видалити</string>
     <string name="get_started_btn">Почати</string>
     <string name="continue_btn">Продовжити</string>
     <string name="skip_btn">Пропустити</string>
