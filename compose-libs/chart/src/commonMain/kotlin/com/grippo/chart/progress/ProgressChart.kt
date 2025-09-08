@@ -105,12 +105,17 @@ public fun ProgressChart(
         val finalWidths = when (val vCfg = style.values) {
             is ProgressStyle.Values.Inside -> {
                 data.items.mapIndexed { i, e ->
-                    val disp = if (isNormalized && vCfg.preferNormalizedLabels)
-                        e.value.coerceIn(0f, 1f) else e.value
-                    val txt = vCfg.formatter(disp, data)
-                    val textLayout = measurer.measure(AnnotatedString(txt), vCfg.textStyle)
-                    val needed = textLayout.size.width + 2 * vCfg.minInnerPadding.toPx()
-                    max(baseWidths[i], needed)
+                    val isZero = (e.value <= 0f) || (baseWidths[i] <= 0f)
+                    if (isZero) {
+                        0f
+                    } else {
+                        val disp = if (isNormalized && vCfg.preferNormalizedLabels)
+                            e.value.coerceIn(0f, 1f) else e.value
+                        val txt = vCfg.formatter(disp, data)
+                        val textLayout = measurer.measure(AnnotatedString(txt), vCfg.textStyle)
+                        val needed = textLayout.size.width + 2 * vCfg.minInnerPadding.toPx()
+                        max(baseWidths[i], needed)
+                    }
                 }
             }
 
@@ -134,8 +139,9 @@ public fun ProgressChart(
             val y = startY + i * (hEff + gapEff)
             val w = finalWidths[i].coerceIn(0f, chartW)
             val barRect = Rect(chart.left, y, chart.left + w, y + hEff)
+            val isZero = (e.value <= 0f) || (w <= 0f)
 
-            // track
+            // track (background) — keeps layout readable even with zero values
             style.bars.trackColor?.let { tc ->
                 drawRoundRect(
                     color = tc,
@@ -145,64 +151,68 @@ public fun ProgressChart(
                 )
             }
 
-            // foreground bar
-            val brush = style.bars.brushProvider?.invoke(e, size, barRect)
-            if (brush != null) {
-                drawRoundRect(
-                    brush = brush,
-                    topLeft = Offset(barRect.left, barRect.top),
-                    size = Size(barRect.width, barRect.height),
-                    cornerRadius = CornerRadius(rx, rx)
-                )
-            } else {
-                drawRoundRect(
-                    color = e.color,
-                    topLeft = Offset(barRect.left, barRect.top),
-                    size = Size(barRect.width, barRect.height),
-                    cornerRadius = CornerRadius(rx, rx)
-                )
+            // foreground bar — skip when zero
+            if (!isZero) {
+                val brush = style.bars.brushProvider?.invoke(e, size, barRect)
+                if (brush != null) {
+                    drawRoundRect(
+                        brush = brush,
+                        topLeft = Offset(barRect.left, barRect.top),
+                        size = Size(barRect.width, barRect.height),
+                        cornerRadius = CornerRadius(rx, rx)
+                    )
+                } else {
+                    drawRoundRect(
+                        color = e.color,
+                        topLeft = Offset(barRect.left, barRect.top),
+                        size = Size(barRect.width, barRect.height),
+                        cornerRadius = CornerRadius(rx, rx)
+                    )
+                }
+
+                if (strokeW > 0f) {
+                    drawRoundRect(
+                        color = style.bars.strokeColor,
+                        topLeft = Offset(barRect.left, barRect.top),
+                        size = Size(barRect.width, barRect.height),
+                        cornerRadius = CornerRadius(rx, rx),
+                        style = Stroke(width = strokeW)
+                    )
+                }
             }
 
-            if (strokeW > 0f && w > 0f) {
-                drawRoundRect(
-                    color = style.bars.strokeColor,
-                    topLeft = Offset(barRect.left, barRect.top),
-                    size = Size(barRect.width, barRect.height),
-                    cornerRadius = CornerRadius(rx, rx),
-                    style = Stroke(width = strokeW)
-                )
-            }
-
-            // left label
+            // left label (always visible)
             val labelLayout = measurer.measure(AnnotatedString(e.label), style.labels.textStyle)
             val labelX = chart.left - labelPad - labelLayout.size.width
             val labelY = y + (hEff - labelLayout.size.height) / 2f
             drawText(labelLayout, topLeft = Offset(labelX, labelY))
 
-            // value label
-            when (val vCfg = style.values) {
-                is ProgressStyle.Values.None -> Unit
-                is ProgressStyle.Values.Inside -> {
-                    val disp = if (isNormalized && vCfg.preferNormalizedLabels)
-                        e.value.coerceIn(0f, 1f) else e.value
-                    val txt = vCfg.formatter(disp, data)
-                    val textLayout = measurer.measure(
-                        AnnotatedString(txt),
-                        vCfg.textStyle.copy(color = vCfg.insideColor ?: vCfg.textStyle.color)
-                    )
-                    val vx = barRect.right - vCfg.minInnerPadding.toPx() - textLayout.size.width
-                    val vy = y + (hEff - textLayout.size.height) / 2f
-                    drawText(textLayout, topLeft = Offset(vx, vy))
-                }
+            // value label — skip when zero
+            if (!isZero) {
+                when (val vCfg = style.values) {
+                    is ProgressStyle.Values.None -> Unit
+                    is ProgressStyle.Values.Inside -> {
+                        val disp = if (isNormalized && vCfg.preferNormalizedLabels)
+                            e.value.coerceIn(0f, 1f) else e.value
+                        val txt = vCfg.formatter(disp, data)
+                        val textLayout = measurer.measure(
+                            AnnotatedString(txt),
+                            vCfg.textStyle.copy(color = vCfg.insideColor ?: vCfg.textStyle.color)
+                        )
+                        val vx = barRect.right - vCfg.minInnerPadding.toPx() - textLayout.size.width
+                        val vy = y + (hEff - textLayout.size.height) / 2f
+                        drawText(textLayout, topLeft = Offset(vx, vy))
+                    }
 
-                is ProgressStyle.Values.Outside -> {
-                    val disp = if (isNormalized && vCfg.preferNormalizedLabels)
-                        e.value.coerceIn(0f, 1f) else e.value
-                    val txt = vCfg.formatter(disp, data)
-                    val textLayout = measurer.measure(AnnotatedString(txt), vCfg.textStyle)
-                    val vx = barRect.right + labelPad
-                    val vy = y + (hEff - textLayout.size.height) / 2f
-                    drawText(textLayout, topLeft = Offset(vx, vy))
+                    is ProgressStyle.Values.Outside -> {
+                        val disp = if (isNormalized && vCfg.preferNormalizedLabels)
+                            e.value.coerceIn(0f, 1f) else e.value
+                        val txt = vCfg.formatter(disp, data)
+                        val textLayout = measurer.measure(AnnotatedString(txt), vCfg.textStyle)
+                        val vx = barRect.right + labelPad
+                        val vy = y + (hEff - textLayout.size.height) / 2f
+                        drawText(textLayout, topLeft = Offset(vx, vy))
+                    }
                 }
             }
         }

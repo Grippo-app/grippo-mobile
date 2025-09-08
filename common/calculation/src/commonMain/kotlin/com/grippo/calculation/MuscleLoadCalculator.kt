@@ -230,20 +230,26 @@ public class MuscleLoadCalculator(
             }
         }
 
-        if (muscleLoad.isEmpty()) return DSProgressData(items = emptyList())
-
-        // 3) Aggregate by groups (or keep by muscle) — list avoids label collisions
+        // 3) Aggregate by groups (or keep by muscle) — show all, even if zero
         val labelValues: List<Pair<String, Float>> = if (groups.isNotEmpty()) {
+            // Keep the input order of groups; include groups with zero load
             groups.map { group ->
                 val sum =
                     group.muscles.fold(0f) { acc, m -> acc + (muscleLoad[m.value.type] ?: 0f) }
                 group.type.title().text(stringProvider) to sum
-            }.filter { it.second > 0f }
+            }
         } else {
-            muscleLoad.map { (muscle, v) -> muscle.title().text(stringProvider) to v }
-                .filter { it.second > 0f }
+            // Build ordered set of muscles from examples; fallback to whatever appeared in muscleLoad
+            val musclesOrdered = LinkedHashSet<MuscleEnumState>().apply {
+                examples.forEach { ex -> ex.bundles.forEach { b -> add(b.muscle.type) } }
+                if (isEmpty()) addAll(muscleLoad.keys) // fallback if examples are empty
+            }
+            musclesOrdered.map { m ->
+                m.title().text(stringProvider) to (muscleLoad[m] ?: 0f)
+            }
         }
 
+        // If still no labels (no groups and no examples), return empty dataset
         if (labelValues.isEmpty()) return DSProgressData(items = emptyList())
 
         // 4) Normalize / format values and colorize as a heatmap
