@@ -218,10 +218,10 @@ internal class TrainingRecordingViewModel(
                     totalRepetitions = RepetitionsFormatState.of(0),
                     averageIntensity = IntensityFormatState.of(0f),
                     exerciseVolumeData = DSBarData(items = emptyList()) to null,
-                    categoryDistributionData = DSPieData(slices = emptyList()) to null,
-                    forceTypeDistributionData = DSPieData(slices = emptyList()) to null,
-                    experienceDistributionData = DSPieData(slices = emptyList()) to null,
-                    weightTypeDistributionData = DSPieData(slices = emptyList()) to null,
+                    categoryDistributionData = DSPieData(slices = emptyList()),
+                    forceTypeDistributionData = DSPieData(slices = emptyList()),
+                    experienceDistributionData = DSPieData(slices = emptyList()),
+                    weightTypeDistributionData = DSPieData(slices = emptyList()),
                     muscleLoadData = DSProgressData(items = emptyList()) to null,
                 )
             }

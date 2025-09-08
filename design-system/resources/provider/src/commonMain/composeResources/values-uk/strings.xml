@@ -372,32 +372,6 @@
     <string name="tooltip_ml_title_year_rel_tut">Навантаження на м’язи — Рік (% від сумарного, Час під навантаженням)</string>
     <string name="tooltip_ml_desc_year_rel_tut">Річна частка Σ(повторення×сек/повт) на м’яз.\nКорисно для фаз із контрольованим темпом; перевіряйте, що логування темпу стабільне протягом місяців.</string>
 
-    <!-- ============= %1RM (INTENSITY) ============= -->
-    <string name="tooltip_percent1rm_title_training">Інтенсивність сесії (%1RM)</string>
-    <string name="tooltip_percent1rm_description_training">Наскільки важкою була кожна вправа відносно вашого оціночного 1-повторного максимуму (100% ≈ разовий максимум). Тримайтеся цілей: Техніка 40–60%, Гіпертрофія 60–75%, Сила 75–90%. Легке зниження протягом сесії — нормально; різкий спад може свідчити про втому.</string>
-
-    <string name="tooltip_percent1rm_title_day">Денна інтенсивність (%1RM)</string>
-    <string name="tooltip_percent1rm_description_day">Середня відносна інтенсивність за день. Чередуйте легкі, помірні та важкі дні. Типове поєднання: Легкий 50–65%, Помірний 65–75%, Важкий 75–85%+. Обов’язково залишайте хоча б один легший день для відновлення.</string>
-
-    <string name="tooltip_percent1rm_title_month">Тижнева інтенсивність (%1RM)</string>
-    <string name="tooltip_percent1rm_description_month">Середня інтенсивність за тиждень. Більшість тижнів тримайте у діапазоні 60–75% для якісної роботи. Короткі піки — 75–85% перед перевіркою форми; делоуд — близько 50–65%, коли потрібно.</string>
-
-    <string name="tooltip_percent1rm_title_year">Річний тренд інтенсивності (%1RM)</string>
-    <string name="tooltip_percent1rm_description_year">Довгостроковий малюнок «наскільки важко» ви тренуєтеся. Переважно 60–75% впродовж року, короткі піки 80–90% перед тестами чи стартами. Намагайтеся не тримати 85–90% багато тижнів поспіль.</string>
-
-    <!-- ============= STIMULUS ============= -->
-    <string name="tooltip_stimulus_title_training">Тренувальний стимул</string>
-    <string name="tooltip_stimulus_description_training">Поєднання «дози» роботи та її важкості (обсяг × інтенсивність). Порівняйте вправи, щоб побачити, які блоки дали найбільший внесок. Для збалансованих сесій не давайте одній вправі забирати понад приблизно 40–50% усього стимулу, якщо тільки ви не спеціалізуєтеся.</string>
-
-    <string name="tooltip_stimulus_title_day">Денний стимул</string>
-    <string name="tooltip_stimulus_description_day">Загальна «доза» за день. Дивіться на плавне покрокове зростання протягом тижня. Ціль: близько +5–10% від попереднього схожого дня; уникайте разових стрибків понад 20–30%.</string>
-
-    <string name="tooltip_stimulus_title_month">Тижневий стимул (місяць)</string>
-    <string name="tooltip_stimulus_description_month">Сумарна «доза» за кожен тиждень цього місяця. Будуйте хвилі: підйом на 5–10% щотижня, потім за потреби делоуд 20–40%. Великі тижневі стрибки (понад 20–30%) підвищують втому й ризики.</string>
-
-    <string name="tooltip_stimulus_title_year">Річний тренд стимулу</string>
-    <string name="tooltip_stimulus_description_year">Загальна «доза» у великій перспективі. Очікуйте плавні підйоми в межах циклів і регулярні «провали» на делоудах. Часті різкі сплески з подальшими провалами — ознака поганого керування навантаженням: спробуйте вирівняти криву.</string>
-
     <!-- ============= ESTIMATED 1RM ============= -->
     <string name="tooltip_estimated1rm_title_training">Оціночний 1RM</string>
     <string name="tooltip_estimated1rm_description_training">Найкраща оцінка сили по кожній вправі сьогодні на основі ваших сетів і повторень — без потреби тестувати справжній максимум. Невеликі PR на рівні +0.5–2.5% — вже досягнення; «плато» або −2–5% типові під час високого обсягу.</string>
@@ -410,57 +384,4 @@
 
     <string name="tooltip_estimated1rm_title_year">Оціночний 1RM — річний тренд</string>
     <string name="tooltip_estimated1rm_description_year">Пікова чи близька до пікової сила за рік. Реалістична мета — +1–5% за рік залежно від рівня підготовки. Тривалі плато — не рідкість: будьте терплячі, чергуйте обсяг та інтенсивність, удосконалюйте техніку.</string>
-
-    <!-- ============= DISTRIBUTION ============= -->
-    <string name="tooltip_category_title_training">Базові vs ізолюючі</string>
-    <string name="tooltip_category_description_training">Частка багатосуглобових (базових) проти ізолюючих вправ сьогодні. Загальна ціль: базові 50–70% для сили та гіпертрофії, ізоляція 30–50% для «аксесуарів». У дні спеціалізації домінування однієї групи — ок. Враховує обране зважування (кількість/підходи/повторення/об’єм).</string>
-
-    <string name="tooltip_category_title_trainings">Базові/ізолюючі за період</string>
-    <string name="tooltip_category_description_trainings">Частка за день/тиждень/місяць у вибраному періоді. Зазвичай збалансований тиждень: базові 60–80%, ізоляція 20–40%. Якщо турбує суглоб — тимчасово змістіть акцент на ізоляцію. Враховує обране зважування.</string>
-
-    <string name="tooltip_weight_type_title_training">Тип обтяження (сесія)</string>
-    <string name="tooltip_weight_type_description_training">Скільки роботи виконано зі штангами/гантелями (free), у тренажерах (fixed) та з вагою тіла сьогодні. Для загального прогресу орієнтир: free 60–80%, тренажери 20–40%, власна вага — за потреби. Більше тренажерів — менше «втоми від навички». Враховує обране зважування.</string>
-
-    <string name="tooltip_weight_type_title_trainings">Тип обтяження за період</string>
-    <string name="tooltip_weight_type_description_trainings">Співвідношення free vs fixed vs bodyweight у вибраному періоді. Тримайте різноманіття, щоб не покладатися лише на один тип. Звичний орієнтир за тижні: free 60–80%, тренажери 20–40%. Власна вага — залежно від плану. Враховує обране зважування.</string>
-
-    <string name="tooltip_force_type_title_training">Push / Pull / Hinge (сесія)</string>
-    <string name="tooltip_force_type_description_training">Баланс шаблонів руху сьогодні. Протягом тижня намагайтеся тримати push ≈ pull і достатньо hinge для заднього ланцюга. Гарне правило: hinge щонайменше 20–30% за тиждень. Якщо pull часто значно нижчий за push, плечі можуть «бурчати». Враховує обране зважування.</string>
-
-    <string name="tooltip_force_type_title_trainings">Push / Pull / Hinge за період</string>
-    <string name="tooltip_force_type_description_trainings">Перевіряйте баланс щотижня: push і pull приблизно рівні (у межах ±10–20%), hinge 20–30% сумарно за тижні. Якщо один шаблон довго домінує — варто вирівняти для здоров’я. Враховує обране зважування.</string>
-
-    <string name="tooltip_experience_title_training">Складність вправ (сесія)</string>
-    <string name="tooltip_experience_description_training">Співвідношення вправ рівня beginner, intermediate, advanced і pro сьогодні. Більшість роботи — beginner/intermediate (приблизно 50–80%), трохи advanced (10–30%) і мінімум pro (0–10%), якщо техніка не «залізобетонна». Враховує обране зважування.</string>
-
-    <string name="tooltip_experience_title_trainings">Складність вправ за період</string>
-    <string name="tooltip_experience_description_trainings">Мікс складності у вибраному періоді. Прогресуйте, повільно збільшуючи частку intermediate/advanced, лишаючи достатньо beginner для відпрацювання та відновлення. Типові діапазони: beginner+intermediate 60–85%, advanced 10–30%, pro 0–10%. Враховує обране зважування.</string>
-
-    <!-- ============= HEATMAP (TONNAGE) ============= -->
-    <string name="tooltip_heatmap_tonnage_title_day">Теплова карта тоннажу — Щодня</string>
-    <string name="tooltip_heatmap_tonnage_description_day">Календарне подання вашого щоденного навантаження (Σ (вага × повторення)). Темні клітинки позначають важчі дні; світлі — легкі або дні відпочинку. Стежте за сталим ритмом (напр., 2–4 важкі дні на тиждень) і плановими розвантаженнями.</string>
-
-    <string name="tooltip_heatmap_tonnage_title_month">Теплова карта тоннажу — Тижні в місяці</string>
-    <string name="tooltip_heatmap_tonnage_description_month">Щотижневе навантаження в межах кожного місяця. Мета — поступове нарощування протягом тижнів і легший розвантажувальний тиждень кожні 3–6 тижнів. Окремо дуже важкий тиждень може «стиснути» шкалу — порівнюйте подібні блоки.</string>
-
-    <string name="tooltip_heatmap_tonnage_title_year">Теплова карта тоннажу — Місяці року</string>
-    <string name="tooltip_heatmap_tonnage_description_year">Місячне навантаження протягом року. Очікуйте сезонні хвилі: фази побудови, піки та розвантаження. Тривалі бліді відрізки можуть свідчити про відновлення або неповний облік — звіряйте з планом.</string>
-
-    <string name="tooltip_heatmap_scale_title">Кольорова шкала (0–1)</string>
-    <string name="tooltip_heatmap_scale_description">Клітинки нормалізовано за максимальним тоннажем у вибраному періоді: 0 = немає роботи, 1 = «найгарячіша» клітинка. Це зберігає порівнюваність у межах поточного перегляду, але не між різними діапазонами дат.</string>
-
-    <string name="tooltip_heatmap_cells_title">Значення клітинок</string>
-    <string name="tooltip_heatmap_cells_description">Кожна клітинка підсумовує всі тренування, що потрапляють у її кошик (день, ISO-тиждень або місяць). Торкніться клітинки, щоб побачити точний підсумок і відкрити відповідні сесії.</string>
-
-    <string name="tooltip_heatmap_gaps_title">Відпочинок і пропуски</string>
-    <string name="tooltip_heatmap_gaps_description">Світлі або порожні клітинки зазвичай означають дні відпочинку, подорожі чи відсутні записи. Кластери світлих клітинок часто відображають планові розвантаження — використовуйте їх, щоб залишатися свіжими та прогресувати в довгостроковій перспективі.</string>
-
-    <string name="tooltip_heatmap_pattern_title">Зчитування закономірностей</string>
-    <string name="tooltip_heatmap_pattern_description">Шукайте стабільний тижневий ритм, поступові місячні нарощування та регулярні розвантаження. Довгі «гарячі» смуги без відновлення можуть свідчити про перевантаження; тривалі бліді — про недотренованість.</string>
-
-    <string name="tooltip_heatmap_compare_title">Поради щодо порівняння</string>
-    <string name="tooltip_heatmap_compare_description">Якщо одна-дві гігантські сесії домінують у кольорах, звузьте діапазон дат або порівнюйте подібні тренувальні блоки. Також переглядайте абсолютні значення в деталях клітинки для чесної оцінки прогресу.</string>
-
-    <string name="tooltip_heatmap_empty_title">Немає даних</string>
-    <string name="tooltip_heatmap_empty_description">У вибраному діапазоні не знайдено тренувань. Спробуйте інший період або приберіть фільтри.</string>
 </resources>

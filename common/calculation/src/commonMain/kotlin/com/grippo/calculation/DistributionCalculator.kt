@@ -1,13 +1,5 @@
 package com.grippo.calculation
 
-import com.grippo.calculation.internal.DistributionMetric
-import com.grippo.calculation.internal.deriveScale
-import com.grippo.calculation.internal.instructionForCategoryTraining
-import com.grippo.calculation.internal.instructionForDistribution
-import com.grippo.calculation.internal.instructionForExperienceTraining
-import com.grippo.calculation.internal.instructionForForceTypeTraining
-import com.grippo.calculation.internal.instructionForWeightTypeTraining
-import com.grippo.calculation.models.Instruction
 import com.grippo.date.utils.contains
 import com.grippo.design.components.chart.DSPieData
 import com.grippo.design.components.chart.DSPieSlice
@@ -22,36 +14,35 @@ import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.TrainingState
 
 /**
- * 📊 **Training Distribution Calculator**
+ * 📊 Training Distribution Calculator (no instructions)
  *
- * Calculates workload distributions across exercises or trainings,
- * using different weighting strategies. Each public API returns:
- *   Pair<DSPieData, Instruction>
- * where Instruction holds a localized tooltip (title + description).
+ * Builds pie-chart distributions across exercises or trainings using a chosen weighting:
+ *  - Category         → Compound vs Isolation
+ *  - Weight Type      → Free vs Fixed vs Bodyweight
+ *  - Force Type       → Push vs Pull vs Hinge
+ *  - Experience Level → Beginner / Intermediate / Advanced / Pro
  *
- * ---
- * 🔎 **Supported distributions**
- * - 🏗 **Category** → Compound vs Isolation
- * - ⚖️ **Weight Type** → Free vs Fixed vs Bodyweight
- * - 🔄 **Force Type** → Push vs Pull vs Hinge
- * - 🎯 **Experience Level** → Beginner / Intermediate / Advanced / Pro
+ * Weighting strategies:
+ *  - Count  → each exercise = 1
+ *  - Sets   → number of valid sets (reps > 0)
+ *  - Reps   → Σ(reps) for valid sets
+ *  - Volume → Σ(weight × reps) for valid sets (filters tiny/negative weights)
  *
- * ---
- * ⚖️ **Weighting strategies**
- * - **Count** → each exercise = 1
- * - **Sets** → number of sets (iterations count)
- * - **Reps** → total repetitions
- * - **Volume** → Σ(weight × reps)
- *
- * ---
- * 🛠 **Usage**
- * - Pass a list of `ExerciseState` for single-session analysis
- * - Pass a list of `TrainingState` for multi-session analysis
+ * Notes:
+ *  - Uses double accumulation for volume to reduce rounding error.
+ *  - Filters tiny/negative weights with EPS to avoid noise.
+ *  - Exercises missing exerciseExample or the requested enum key are skipped.
  */
 public class DistributionCalculator(
     private val stringProvider: StringProvider,
     private val colorProvider: ColorProvider
 ) {
+
+    // --- Noise threshold for weight in kg (domain epsilon) ---
+    private companion object {
+        private const val EPS: Float = 1e-3f
+    }
+
     // ---------------- Weighting strategy ----------------
 
     public sealed interface Weighting {
@@ -61,40 +52,57 @@ public class DistributionCalculator(
         public data object Volume : Weighting
     }
 
-    private fun weightOfExercise(ex: ExerciseState, w: Weighting): Float = when (w) {
-        Weighting.Count -> 1f
+    // Fast, allocation-free accumulation per exercise
+    private fun weightOfExercise(ex: ExerciseState, w: Weighting): Float {
+        return when (w) {
+            Weighting.Count -> 1f
 
-        // Count only valid sets (positive reps)
-        Weighting.Sets -> ex.iterations.count { (it.repetitions.value ?: 0) > 0 }.toFloat()
-
-        // Sum only positive reps
-        Weighting.Reps -> ex.iterations
-            .sumOf { kotlin.math.max(0, it.repetitions.value ?: 0) }
-            .toFloat()
-
-        // Volume = Σ(weight × reps) with positive reps only
-        Weighting.Volume -> ex.iterations
-            .sumOf {
-                val w = it.volume.value ?: 0f
-                val r = kotlin.math.max(0, it.repetitions.value ?: 0)
-                (w * r).toDouble()
+            Weighting.Sets -> {
+                var sets = 0
+                for (itn in ex.iterations) {
+                    val r = itn.repetitions.value ?: 0
+                    if (r > 0) sets++
+                }
+                sets.toFloat()
             }
-            .toFloat()
-    }.coerceAtLeast(0f)
 
-    private inline fun <reified E : Enum<E>> stableOrder(): List<E> =
-        enumValues<E>().toList()
+            Weighting.Reps -> {
+                var reps = 0
+                for (itn in ex.iterations) {
+                    val r = itn.repetitions.value ?: 0
+                    if (r > 0) reps += r
+                }
+                reps.toFloat()
+            }
+
+            Weighting.Volume -> {
+                var tonnage = 0.0
+                for (itn in ex.iterations) {
+                    val r = itn.repetitions.value ?: 0
+                    if (r <= 0) continue
+                    val wRaw = itn.volume.value ?: 0f
+                    val wPos = if (wRaw > EPS) wRaw else 0f // ignore negatives/tiny noise
+                    if (wPos == 0f) continue
+                    tonnage += (wPos.toDouble() * r.toDouble())
+                }
+                tonnage.toFloat()
+            }
+        }.coerceAtLeast(0f)
+    }
+
+    private inline fun <reified E : Enum<E>> stableOrder(): List<E> = enumValues<E>().toList()
 
     private fun <E : Enum<E>> aggregateTotals(
         exercises: List<ExerciseState>,
         weighting: Weighting,
         keySelector: (ExerciseState) -> E?
     ): Map<E, Float> {
-        val totals = mutableMapOf<E, Float>()
+        val totals = HashMap<E, Float>(8)
         for (ex in exercises) {
             val key = keySelector(ex) ?: continue
-            val weight = weightOfExercise(ex, weighting)
-            totals[key] = (totals[key] ?: 0f) + weight
+            val w = weightOfExercise(ex, weighting)
+            if (w <= 0f) continue
+            totals[key] = (totals[key] ?: 0f) + w
         }
         return totals
     }
@@ -105,23 +113,18 @@ public class DistributionCalculator(
     public suspend fun calculateCategoryDistributionFromExercises(
         exercises: List<ExerciseState>,
         weighting: Weighting = Weighting.Count
-    ): Pair<DSPieData, Instruction> {
-        val data = buildCategoryPie(exercises, weighting)
-        val tip = instructionForCategoryTraining()
-        return Pair(data, tip)
+    ): DSPieData {
+        return buildCategoryPie(exercises, weighting)
     }
 
-    /** Multi-session with PeriodState (bucket-aware tooltips) */
+    /** Multi-session with PeriodState */
     public suspend fun calculateCategoryDistributionFromTrainings(
         trainings: List<TrainingState>,
         period: PeriodState,
         weighting: Weighting = Weighting.Count
-    ): Pair<DSPieData, Instruction> {
+    ): DSPieData {
         val inRange = trainings.filter { it.createdAt in period.range }
-        val scale = deriveScale(period)
-        val data = buildCategoryPie(inRange.flatMap { it.exercises }, weighting)
-        val tip = instructionForDistribution(DistributionMetric.CATEGORY, scale)
-        return Pair(data, tip)
+        return buildCategoryPie(inRange.flatMap { it.exercises }, weighting)
     }
 
     private suspend fun buildCategoryPie(
@@ -153,10 +156,8 @@ public class DistributionCalculator(
     public suspend fun calculateWeightTypeDistributionFromExercises(
         exercises: List<ExerciseState>,
         weighting: Weighting = Weighting.Count
-    ): Pair<DSPieData, Instruction> {
-        val data = buildWeightTypePie(exercises, weighting)
-        val tip = instructionForWeightTypeTraining()
-        return Pair(data, tip)
+    ): DSPieData {
+        return buildWeightTypePie(exercises, weighting)
     }
 
     /** Multi-session with PeriodState */
@@ -164,12 +165,9 @@ public class DistributionCalculator(
         trainings: List<TrainingState>,
         period: PeriodState,
         weighting: Weighting = Weighting.Count
-    ): Pair<DSPieData, Instruction> {
+    ): DSPieData {
         val inRange = trainings.filter { it.createdAt in period.range }
-        val scale = deriveScale(period)
-        val data = buildWeightTypePie(inRange.flatMap { it.exercises }, weighting)
-        val tip = instructionForDistribution(DistributionMetric.WEIGHT_TYPE, scale)
-        return Pair(data, tip)
+        return buildWeightTypePie(inRange.flatMap { it.exercises }, weighting)
     }
 
     private suspend fun buildWeightTypePie(
@@ -202,10 +200,8 @@ public class DistributionCalculator(
     public suspend fun calculateForceTypeDistributionFromExercises(
         exercises: List<ExerciseState>,
         weighting: Weighting = Weighting.Count
-    ): Pair<DSPieData, Instruction> {
-        val data = buildForceTypePie(exercises, weighting)
-        val tip = instructionForForceTypeTraining()
-        return Pair(data, tip)
+    ): DSPieData {
+        return buildForceTypePie(exercises, weighting)
     }
 
     /** Multi-session with PeriodState */
@@ -213,12 +209,9 @@ public class DistributionCalculator(
         trainings: List<TrainingState>,
         period: PeriodState,
         weighting: Weighting = Weighting.Count
-    ): Pair<DSPieData, Instruction> {
+    ): DSPieData {
         val inRange = trainings.filter { it.createdAt in period.range }
-        val scale = deriveScale(period)
-        val data = buildForceTypePie(inRange.flatMap { it.exercises }, weighting)
-        val tip = instructionForDistribution(DistributionMetric.FORCE_TYPE, scale)
-        return Pair(data, tip)
+        return buildForceTypePie(inRange.flatMap { it.exercises }, weighting)
     }
 
     private suspend fun buildForceTypePie(
@@ -251,10 +244,8 @@ public class DistributionCalculator(
     public suspend fun calculateExperienceDistributionFromExercises(
         exercises: List<ExerciseState>,
         weighting: Weighting = Weighting.Count
-    ): Pair<DSPieData, Instruction> {
-        val data = buildExperiencePie(exercises, weighting)
-        val tip = instructionForExperienceTraining()
-        return Pair(data, tip)
+    ): DSPieData {
+        return buildExperiencePie(exercises, weighting)
     }
 
     /** Multi-session with PeriodState */
@@ -262,12 +253,9 @@ public class DistributionCalculator(
         trainings: List<TrainingState>,
         period: PeriodState,
         weighting: Weighting = Weighting.Count
-    ): Pair<DSPieData, Instruction> {
+    ): DSPieData {
         val inRange = trainings.filter { it.createdAt in period.range }
-        val scale = deriveScale(period)
-        val data = buildExperiencePie(inRange.flatMap { it.exercises }, weighting)
-        val tip = instructionForDistribution(DistributionMetric.EXPERIENCE, scale)
-        return Pair(data, tip)
+        return buildExperiencePie(inRange.flatMap { it.exercises }, weighting)
     }
 
     private suspend fun buildExperiencePie(
@@ -295,5 +283,3 @@ public class DistributionCalculator(
         return DSPieData(slices)
     }
 }
-
-

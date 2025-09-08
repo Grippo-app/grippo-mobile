@@ -37,10 +37,10 @@ internal data class TrainingRecordingState(
     val muscleLoadData: Pair<DSProgressData, Instruction?> = DSProgressData(items = emptyList()) to null,
 
     // === Exercise example distributions (pie) ===
-    val categoryDistributionData: Pair<DSPieData, Instruction?> = DSPieData(slices = emptyList()) to null,
-    val weightTypeDistributionData: Pair<DSPieData, Instruction?> = DSPieData(slices = emptyList()) to null,
-    val forceTypeDistributionData: Pair<DSPieData, Instruction?> = DSPieData(slices = emptyList()) to null,
-    val experienceDistributionData: Pair<DSPieData, Instruction?> = DSPieData(slices = emptyList()) to null,
+    val categoryDistributionData: DSPieData = DSPieData(slices = emptyList()),
+    val weightTypeDistributionData: DSPieData = DSPieData(slices = emptyList()),
+    val forceTypeDistributionData: DSPieData = DSPieData(slices = emptyList()),
+    val experienceDistributionData: DSPieData = DSPieData(slices = emptyList()),
 )
 
 @Immutable

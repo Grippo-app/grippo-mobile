@@ -94,38 +94,38 @@ internal fun StatisticsPage(
             }
         }
 
-        if (state.categoryDistributionData.first.slices.isNotEmpty()) {
+        if (state.categoryDistributionData.slices.isNotEmpty()) {
             item(key = "category_distribution", span = { GridItemSpan(1) }) {
                 PieChart(
                     modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-                    data = state.categoryDistributionData.first
+                    data = state.categoryDistributionData
                 )
             }
         }
 
-        if (state.weightTypeDistributionData.first.slices.isNotEmpty()) {
+        if (state.weightTypeDistributionData.slices.isNotEmpty()) {
             item(key = "weight_type_distribution", span = { GridItemSpan(1) }) {
                 PieChart(
                     modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-                    data = state.weightTypeDistributionData.first
+                    data = state.weightTypeDistributionData
                 )
             }
         }
 
-        if (state.experienceDistributionData.first.slices.isNotEmpty()) {
+        if (state.experienceDistributionData.slices.isNotEmpty()) {
             item(key = "experience_distribution", span = { GridItemSpan(1) }) {
                 PieChart(
                     modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-                    data = state.experienceDistributionData.first
+                    data = state.experienceDistributionData
                 )
             }
         }
 
-        if (state.forceTypeDistributionData.first.slices.isNotEmpty()) {
+        if (state.forceTypeDistributionData.slices.isNotEmpty()) {
             item(key = "force_type_distribution", span = { GridItemSpan(1) }) {
                 PieChart(
                     modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-                    data = state.forceTypeDistributionData.first
+                    data = state.forceTypeDistributionData
                 )
             }
         }

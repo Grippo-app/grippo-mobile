@@ -370,32 +370,6 @@
     <string name="tooltip_ml_title_year_rel_tut">Muscle Load — Year (% of Total, TUT)</string>
     <string name="tooltip_ml_desc_year_rel_tut">Year-to-date share of Σ(reps×sec/rep) per muscle.\nHandy for tempo phases; confirm logging stays consistent over months.</string>
 
-    <!-- ============= %1RM (INTENSITY) ============= -->
-    <string name="tooltip_percent1rm_title_training">Session Intensity (%1RM)</string>
-    <string name="tooltip_percent1rm_description_training">How heavy each exercise was vs your estimated 1-rep max (100% ≈ a max single). Stay mostly in your goal zone: Technique 40–60%, Hypertrophy 60–75%, Strength 75–90%. A gentle drop across the session is normal; a steep fall may mean fatigue.</string>
-
-    <string name="tooltip_percent1rm_title_day">Daily Intensity (%1RM)</string>
-    <string name="tooltip_percent1rm_description_day">Average intensity for each day. Alternate light, moderate, and heavy days. Typical mix: Light 50–65%, Moderate 65–75%, Heavy 75–85%+. Keep at least one lighter day each week to help recovery.</string>
-
-    <string name="tooltip_percent1rm_title_month">Weekly Intensity (%1RM)</string>
-    <string name="tooltip_percent1rm_description_month">Average intensity per week. Most weeks should center around 60–75% for quality work. Use brief peak weeks around 75–85% and a deload week near 50–65% when needed.</string>
-
-    <string name="tooltip_percent1rm_title_year">Yearly Intensity Trend (%1RM)</string>
-    <string name="tooltip_percent1rm_description_year">Long-term pattern of how heavy you train. Spend most of the year in the 60–75% base zone, add short peaks at 80–90% before testing or competing, and avoid living at 85–90% for too many weeks in a row.</string>
-
-    <!-- ============= STIMULUS ============= -->
-    <string name="tooltip_stimulus_title_training">Training Stimulus</string>
-    <string name="tooltip_stimulus_description_training">Combined “dose” of work and heaviness (volume × intensity). Compare exercises to see which blocks mattered most. For balanced sessions, try not to let one exercise exceed about 40–50% of the session’s total stimulus unless you’re specializing.</string>
-
-    <string name="tooltip_stimulus_title_day">Daily Stimulus</string>
-    <string name="tooltip_stimulus_description_day">Total training dose per day. Look for steady, step-by-step growth across the week. Target around +5–10% vs the previous similar day; avoid single-day spikes over 20–30%.</string>
-
-    <string name="tooltip_stimulus_title_month">Weekly Stimulus (Month View)</string>
-    <string name="tooltip_stimulus_description_month">Training dose per week inside this month. Aim for smooth waves: build weeks up roughly 5–10%, then plan a deload of 20–40% when needed. Large weekly spikes (over 20–30%) can raise fatigue and injury risk.</string>
-
-    <string name="tooltip_stimulus_title_year">Stimulus Trend (Year)</string>
-    <string name="tooltip_stimulus_description_year">Big-picture dose across the year. Expect gentle rises across cycles with regular dips (deloads). Repeated huge spikes followed by crashes signal poor load management—try to smooth the curve.</string>
-
     <!-- ============= ESTIMATED 1RM ============= -->
     <string name="tooltip_estimated1rm_title_training">Estimated 1RM</string>
     <string name="tooltip_estimated1rm_description_training">Best strength estimate per exercise today from your sets and reps—no need to test a true max. Small PRs of about +0.5–2.5% are meaningful; a flat trend or −2–5% is common during high-volume phases.</string>
@@ -408,57 +382,4 @@
 
     <string name="tooltip_estimated1rm_title_year">Estimated 1RM — Yearly Trend</string>
     <string name="tooltip_estimated1rm_description_year">Peak or near-peak strength across the year. A realistic goal is +1–5% per year depending on training level. Long plateaus can happen—stay patient, cycle volume and intensity, and focus on technique.</string>
-
-    <!-- ============= DISTRIBUTION ============= -->
-    <string name="tooltip_category_title_training">Compound vs Isolation</string>
-    <string name="tooltip_category_description_training">Share of multi-joint (compound) vs single-joint (isolation) exercises today. General goal: compound 50–70% for strength and hypertrophy, isolation 30–50% for accessories. On specialization days it is fine if one side dominates. Respects your chosen weighting (count/sets/reps/volume).</string>
-
-    <string name="tooltip_category_title_trainings">Compound/Isolation Over Time</string>
-    <string name="tooltip_category_description_trainings">Share per day/week/month across the selected period. Balanced weeks usually land at compound 60–80% and isolation 20–40%. If a joint is irritated, bias isolation for a while. Respects your chosen weighting (count/sets/reps/volume).</string>
-
-    <string name="tooltip_weight_type_title_training">Weight Type Mix (Session)</string>
-    <string name="tooltip_weight_type_description_training">How much work came from free weights, machines, and bodyweight today. For general progress aim roughly: free weights 60–80%, machines 20–40%, bodyweight as needed. Use more machines when you want lower skill fatigue. Respects your chosen weighting.</string>
-
-    <string name="tooltip_weight_type_title_trainings">Weight Type Over Time</string>
-    <string name="tooltip_weight_type_description_trainings">Free vs fixed (machines) vs bodyweight across the selected period. Keep variety so you do not rely only on one type. Typical target over weeks: free weights 60–80%, machines 20–40%. Bodyweight varies by plan. Respects your chosen weighting.</string>
-
-    <string name="tooltip_force_type_title_training">Push / Pull / Hinge (Session)</string>
-    <string name="tooltip_force_type_description_training">Balance of movement patterns today. Over the week try to keep push ≈ pull and include enough hinge work for the posterior chain. Good rule of thumb: hinge at least 20–30% across a week. If pull is far below push often, shoulders may get cranky. Respects your chosen weighting.</string>
-
-    <string name="tooltip_force_type_title_trainings">Push / Pull / Hinge Over Time</string>
-    <string name="tooltip_force_type_description_trainings">Check weekly balance: push and pull roughly even (within about ±10–20%), and get 20–30% hinge work across weeks. If one pattern dominates for long, consider rebalancing to stay healthy. Respects your chosen weighting.</string>
-
-    <string name="tooltip_experience_title_training">Exercise Difficulty Mix (Session)</string>
-    <string name="tooltip_experience_description_training">How many beginner, intermediate, advanced, and pro-level exercises you used today. Most work should be beginner/intermediate (about 50–80%), with a smaller slice advanced (10–30%) and very little pro (0–10%) unless your technique is rock-solid. Respects your chosen weighting.</string>
-
-    <string name="tooltip_experience_title_trainings">Exercise Difficulty Over Time</string>
-    <string name="tooltip_experience_description_trainings">Difficulty mix across the selected period. Progress by slowly nudging the intermediate/advanced share up while keeping enough beginner work for practice and recovery. Typical range over weeks: beginner+intermediate 60–85%, advanced 10–30%, pro 0–10%. Respects your chosen weighting.</string>
-
-    <!-- ============= HEATMAP (TONNAGE) ============= -->
-    <string name="tooltip_heatmap_tonnage_title_day">Tonnage Heatmap — Daily</string>
-    <string name="tooltip_heatmap_tonnage_description_day">Calendar view of your daily workload (Σ weight × reps). Darker cells mark heavier days; lighter cells are easier or rest days. Aim for a steady rhythm (e.g., 2–4 hard days/week) and planned deloads.</string>
-
-    <string name="tooltip_heatmap_tonnage_title_month">Tonnage Heatmap — Week-of-Month</string>
-    <string name="tooltip_heatmap_tonnage_description_month">Weekly workload within each month. Build gradually across weeks and include a lighter deload week every 3–6 weeks. A single very heavy week can compress the scale—compare similar blocks for fairness.</string>
-
-    <string name="tooltip_heatmap_tonnage_title_year">Tonnage Heatmap — Month-of-Year</string>
-    <string name="tooltip_heatmap_tonnage_description_year">Monthly workload across the year. Expect waves: build phases, peaks, and deloads. Long pale stretches may indicate recovery or missing logs—check against your plan.</string>
-
-    <string name="tooltip_heatmap_scale_title">Color Scale (0–1)</string>
-    <string name="tooltip_heatmap_scale_description">Cells are normalized to the maximum tonnage within the selected period: 0 = no work, 1 = hottest cell. This keeps colors comparable inside the current view but not across different date ranges.</string>
-
-    <string name="tooltip_heatmap_cells_title">Cell Values</string>
-    <string name="tooltip_heatmap_cells_description">Each cell sums all trainings that fall into its bucket (day, ISO week, or month). Tap a cell to see the exact total and open the underlying sessions.</string>
-
-    <string name="tooltip_heatmap_gaps_title">Rest &amp; Missing Days</string>
-    <string name="tooltip_heatmap_gaps_description">Light or empty cells usually mean rest days, travel, or missing entries. Clusters of light cells often reflect planned deloads—use them to stay fresh and progress long-term.</string>
-
-    <string name="tooltip_heatmap_pattern_title">Reading Patterns</string>
-    <string name="tooltip_heatmap_pattern_description">Look for consistent weekly rhythm, progressive monthly build-ups, and regular deloads. Long hot streaks without recovery can signal overreach; long pale streaks may hint at under-training.</string>
-
-    <string name="tooltip_heatmap_compare_title">Comparability Tips</string>
-    <string name="tooltip_heatmap_compare_description">If one or two huge sessions dominate the colors, narrow the date range or compare similar training blocks. Also review absolute values in the cell details for a fair judgment of progress.</string>
-
-    <string name="tooltip_heatmap_empty_title">No Data</string>
-    <string name="tooltip_heatmap_empty_description">No trainings found in the selected range. Try a different period or remove filters.</string>
 </resources>
