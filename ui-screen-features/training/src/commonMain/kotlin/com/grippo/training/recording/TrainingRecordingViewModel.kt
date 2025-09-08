@@ -1,9 +1,9 @@
 package com.grippo.training.recording
 
-import com.grippo.calculation.AnalyticsCalculator
 import com.grippo.calculation.DistributionCalculator
 import com.grippo.calculation.LoadCalculator
 import com.grippo.calculation.MetricsAggregator
+import com.grippo.calculation.VolumeAnalytics
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
@@ -12,7 +12,6 @@ import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.date.utils.DateTimeUtils
-import com.grippo.design.components.chart.DSAreaData
 import com.grippo.design.components.chart.DSBarData
 import com.grippo.design.components.chart.DSPieData
 import com.grippo.design.components.chart.DSProgressData
@@ -56,7 +55,7 @@ internal class TrainingRecordingViewModel(
 ), TrainingRecordingContract {
 
     private val metricsAggregator = MetricsAggregator()
-    private val analyticsCalculator = AnalyticsCalculator(colorProvider, stringProvider)
+    private val volumeAnalytics = VolumeAnalytics(colorProvider, stringProvider)
     private val distributionCalculator = DistributionCalculator(stringProvider, colorProvider)
     private val loadCalculator = LoadCalculator(stringProvider, colorProvider)
 
@@ -224,9 +223,6 @@ internal class TrainingRecordingViewModel(
                     experienceDistributionData = DSPieData(slices = emptyList()) to null,
                     weightTypeDistributionData = DSPieData(slices = emptyList()) to null,
                     muscleLoadData = DSProgressData(items = emptyList()) to null,
-                    percent1RMData = DSAreaData(points = emptyList()) to null,
-                    stimulusData = DSAreaData(points = emptyList()) to null,
-                    estimated1RMData = DSBarData(items = emptyList()) to null,
                 )
             }
             return
@@ -252,7 +248,7 @@ internal class TrainingRecordingViewModel(
                 exercises = exercises
             )
         val exerciseVolumeData =
-            analyticsCalculator.calculateExerciseVolumeChartFromExercises(
+            volumeAnalytics.calculateExerciseVolumeChartFromExercises(
                 exercises = exercises
             )
         val muscleLoadData = loadCalculator.calculateMuscleLoadDistributionFromExercises(
@@ -260,18 +256,6 @@ internal class TrainingRecordingViewModel(
             examples = examples,
             groups = muscles,
         )
-        val percent1RMData =
-            analyticsCalculator.calculateIntraProgressionPercent1RMFromExercises(
-                exercises = exercises
-            )
-        val stimulusData =
-            analyticsCalculator.calculateIntraProgressionStimulusFromExercises(
-                exercises = exercises
-            )
-        val estimated1RMData =
-            analyticsCalculator.calculateEstimated1RMFromExercises(
-                exercises = exercises
-            )
 
         update {
             it.copy(
@@ -284,9 +268,6 @@ internal class TrainingRecordingViewModel(
                 forceTypeDistributionData = forceTypeDistributionData,
                 experienceDistributionData = experienceDistributionData,
                 muscleLoadData = muscleLoadData,
-                percent1RMData = percent1RMData,
-                stimulusData = stimulusData,
-                estimated1RMData = estimated1RMData,
             )
         }
     }

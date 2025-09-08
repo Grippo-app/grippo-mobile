@@ -3,7 +3,6 @@ package com.grippo.training.recording
 import androidx.compose.runtime.Immutable
 import com.grippo.calculation.models.Instruction
 import com.grippo.date.utils.DateTimeUtils
-import com.grippo.design.components.chart.DSAreaData
 import com.grippo.design.components.chart.DSBarData
 import com.grippo.design.components.chart.DSPieData
 import com.grippo.design.components.chart.DSProgressData
@@ -42,11 +41,6 @@ internal data class TrainingRecordingState(
     val weightTypeDistributionData: Pair<DSPieData, Instruction?> = DSPieData(slices = emptyList()) to null,
     val forceTypeDistributionData: Pair<DSPieData, Instruction?> = DSPieData(slices = emptyList()) to null,
     val experienceDistributionData: Pair<DSPieData, Instruction?> = DSPieData(slices = emptyList()) to null,
-
-    // === Intensity & progression (area/bar) ===
-    val percent1RMData: Pair<DSAreaData, Instruction?> = DSAreaData(points = emptyList()) to null,
-    val stimulusData: Pair<DSAreaData, Instruction?> = DSAreaData(points = emptyList()) to null,
-    val estimated1RMData: Pair<DSBarData, Instruction?> = DSBarData(items = emptyList()) to null,
 )
 
 @Immutable

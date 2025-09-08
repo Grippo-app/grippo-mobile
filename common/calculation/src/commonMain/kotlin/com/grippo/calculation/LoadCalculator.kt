@@ -1,7 +1,9 @@
 package com.grippo.calculation
 
 import androidx.compose.ui.graphics.Color
-import com.grippo.calculation.internal.instructionForMuscleLoad
+import com.grippo.calculation.internal.daysInclusive
+import com.grippo.calculation.internal.deriveScale
+import com.grippo.calculation.models.BucketScale
 import com.grippo.calculation.models.Instruction
 import com.grippo.date.utils.contains
 import com.grippo.design.components.chart.DSProgressData
@@ -9,8 +11,14 @@ import com.grippo.design.components.chart.DSProgressItem
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
+import com.grippo.design.resources.provider.tooltip_muscle_load_description_day
+import com.grippo.design.resources.provider.tooltip_muscle_load_description_month
 import com.grippo.design.resources.provider.tooltip_muscle_load_description_training
+import com.grippo.design.resources.provider.tooltip_muscle_load_description_year
+import com.grippo.design.resources.provider.tooltip_muscle_load_title_day
+import com.grippo.design.resources.provider.tooltip_muscle_load_title_month
 import com.grippo.design.resources.provider.tooltip_muscle_load_title_training
+import com.grippo.design.resources.provider.tooltip_muscle_load_title_year
 import com.grippo.state.datetime.PeriodState
 import com.grippo.state.exercise.examples.ExerciseExampleState
 import com.grippo.state.formatters.UiText
@@ -218,7 +226,6 @@ public class LoadCalculator(
         return DSProgressData(items = items)
     }
 
-
     // ---- Palette / color helpers ----
     private fun interpolateColor(ratio: Float, stops: List<Pair<Float, Color>>): Color {
         if (stops.isEmpty()) return Color(0f, 0f, 0f, 1f)
@@ -262,5 +269,33 @@ public class LoadCalculator(
         val bandWidth = 100f / n
         val idx = if (p >= 100f) n - 1 else (p / bandWidth).toInt().coerceIn(0, n - 1)
         return colors[idx]
+    }
+
+    private fun instructionForMuscleLoad(period: PeriodState): Instruction {
+        val scale = deriveScale(period)
+        val (titleRes, descRes) = when (scale) {
+            BucketScale.EXERCISE ->
+                Res.string.tooltip_muscle_load_title_training to
+                        Res.string.tooltip_muscle_load_description_training
+
+            BucketScale.DAY ->
+                Res.string.tooltip_muscle_load_title_day to
+                        Res.string.tooltip_muscle_load_description_day
+            // No dedicated "week" strings; reuse month-view copy for weekly aggregation
+            BucketScale.WEEK ->
+                Res.string.tooltip_muscle_load_title_month to
+                        Res.string.tooltip_muscle_load_description_month
+
+            BucketScale.MONTH -> {
+                val days = daysInclusive(period.range.from.date, period.range.to.date)
+                if (days >= 365)
+                    Res.string.tooltip_muscle_load_title_year to
+                            Res.string.tooltip_muscle_load_description_year
+                else
+                    Res.string.tooltip_muscle_load_title_month to
+                            Res.string.tooltip_muscle_load_description_month
+            }
+        }
+        return Instruction(title = UiText.Res(titleRes), description = UiText.Res(descRes))
     }
 }

@@ -11,14 +11,6 @@ import com.grippo.design.resources.provider.tooltip_category_description_trainin
 import com.grippo.design.resources.provider.tooltip_category_description_trainings
 import com.grippo.design.resources.provider.tooltip_category_title_training
 import com.grippo.design.resources.provider.tooltip_category_title_trainings
-import com.grippo.design.resources.provider.tooltip_estimated1rm_description_day
-import com.grippo.design.resources.provider.tooltip_estimated1rm_description_month
-import com.grippo.design.resources.provider.tooltip_estimated1rm_description_training
-import com.grippo.design.resources.provider.tooltip_estimated1rm_description_year
-import com.grippo.design.resources.provider.tooltip_estimated1rm_title_day
-import com.grippo.design.resources.provider.tooltip_estimated1rm_title_month
-import com.grippo.design.resources.provider.tooltip_estimated1rm_title_training
-import com.grippo.design.resources.provider.tooltip_estimated1rm_title_year
 import com.grippo.design.resources.provider.tooltip_experience_description_training
 import com.grippo.design.resources.provider.tooltip_experience_description_trainings
 import com.grippo.design.resources.provider.tooltip_experience_title_training
@@ -27,44 +19,11 @@ import com.grippo.design.resources.provider.tooltip_force_type_description_train
 import com.grippo.design.resources.provider.tooltip_force_type_description_trainings
 import com.grippo.design.resources.provider.tooltip_force_type_title_training
 import com.grippo.design.resources.provider.tooltip_force_type_title_trainings
-import com.grippo.design.resources.provider.tooltip_muscle_load_description_day
-import com.grippo.design.resources.provider.tooltip_muscle_load_description_month
-import com.grippo.design.resources.provider.tooltip_muscle_load_description_training
-import com.grippo.design.resources.provider.tooltip_muscle_load_description_year
-import com.grippo.design.resources.provider.tooltip_muscle_load_title_day
-import com.grippo.design.resources.provider.tooltip_muscle_load_title_month
-import com.grippo.design.resources.provider.tooltip_muscle_load_title_training
-import com.grippo.design.resources.provider.tooltip_muscle_load_title_year
-import com.grippo.design.resources.provider.tooltip_percent1rm_description_day
-import com.grippo.design.resources.provider.tooltip_percent1rm_description_month
-import com.grippo.design.resources.provider.tooltip_percent1rm_description_training
-import com.grippo.design.resources.provider.tooltip_percent1rm_description_year
-import com.grippo.design.resources.provider.tooltip_percent1rm_title_day
-import com.grippo.design.resources.provider.tooltip_percent1rm_title_month
-import com.grippo.design.resources.provider.tooltip_percent1rm_title_training
-import com.grippo.design.resources.provider.tooltip_percent1rm_title_year
-import com.grippo.design.resources.provider.tooltip_stimulus_description_day
-import com.grippo.design.resources.provider.tooltip_stimulus_description_month
-import com.grippo.design.resources.provider.tooltip_stimulus_description_training
-import com.grippo.design.resources.provider.tooltip_stimulus_description_year
-import com.grippo.design.resources.provider.tooltip_stimulus_title_day
-import com.grippo.design.resources.provider.tooltip_stimulus_title_month
-import com.grippo.design.resources.provider.tooltip_stimulus_title_training
-import com.grippo.design.resources.provider.tooltip_stimulus_title_year
-import com.grippo.design.resources.provider.tooltip_volume_description_day
-import com.grippo.design.resources.provider.tooltip_volume_description_month
-import com.grippo.design.resources.provider.tooltip_volume_description_training
-import com.grippo.design.resources.provider.tooltip_volume_description_year
-import com.grippo.design.resources.provider.tooltip_volume_title_day
-import com.grippo.design.resources.provider.tooltip_volume_title_month
-import com.grippo.design.resources.provider.tooltip_volume_title_training
-import com.grippo.design.resources.provider.tooltip_volume_title_year
 import com.grippo.design.resources.provider.tooltip_weight_type_description_training
 import com.grippo.design.resources.provider.tooltip_weight_type_description_trainings
 import com.grippo.design.resources.provider.tooltip_weight_type_title_training
 import com.grippo.design.resources.provider.tooltip_weight_type_title_trainings
 import com.grippo.design.resources.provider.w
-import com.grippo.state.datetime.PeriodState
 import com.grippo.state.formatters.UiText
 import kotlinx.datetime.LocalDateTime
 
@@ -148,156 +107,6 @@ internal suspend fun defaultTimeLabels(
             DateTimeUtils.format(it.start, DateFormat.DATE_DD_MMM)
         }
     }
-}
-
-// -------- Instruction generators --------
-
-internal fun instructionForVolume(
-    scale: BucketScale,
-): Instruction {
-    return when (scale) {
-        BucketScale.EXERCISE ->
-            Instruction(
-                UiText.Res(Res.string.tooltip_volume_title_training),
-                UiText.Res(Res.string.tooltip_volume_description_training)
-            )
-
-        BucketScale.DAY ->
-            Instruction(
-                UiText.Res(Res.string.tooltip_volume_title_day),
-                UiText.Res(Res.string.tooltip_volume_description_day)
-            )
-
-        BucketScale.WEEK ->
-            Instruction(
-                UiText.Res(Res.string.tooltip_volume_title_month),
-                UiText.Res(Res.string.tooltip_volume_description_month)
-            )
-
-        BucketScale.MONTH ->
-            Instruction(
-                UiText.Res(Res.string.tooltip_volume_title_year),
-                UiText.Res(Res.string.tooltip_volume_description_year)
-            )
-    }
-}
-
-internal fun instructionForPercent1RM(
-    scale: BucketScale,
-): Instruction {
-    return when (scale) {
-        BucketScale.EXERCISE ->
-            Instruction(
-                UiText.Res(Res.string.tooltip_percent1rm_title_training),
-                UiText.Res(Res.string.tooltip_percent1rm_description_training)
-            )
-
-        BucketScale.DAY ->
-            Instruction(
-                UiText.Res(Res.string.tooltip_percent1rm_title_day),
-                UiText.Res(Res.string.tooltip_percent1rm_description_day)
-            )
-
-        BucketScale.WEEK ->
-            Instruction(
-                UiText.Res(Res.string.tooltip_percent1rm_title_month),
-                UiText.Res(Res.string.tooltip_percent1rm_description_month)
-            )
-
-        BucketScale.MONTH ->
-            Instruction(
-                UiText.Res(Res.string.tooltip_percent1rm_title_year),
-                UiText.Res(Res.string.tooltip_percent1rm_description_year)
-            )
-    }
-}
-
-internal fun instructionForStimulus(
-    scale: BucketScale,
-): Instruction {
-    return when (scale) {
-        BucketScale.EXERCISE ->
-            Instruction(
-                UiText.Res(Res.string.tooltip_stimulus_title_training),
-                UiText.Res(Res.string.tooltip_stimulus_description_training)
-            )
-
-        BucketScale.DAY ->
-            Instruction(
-                UiText.Res(Res.string.tooltip_stimulus_title_day),
-                UiText.Res(Res.string.tooltip_stimulus_description_day)
-            )
-
-        BucketScale.WEEK ->
-            Instruction(
-                UiText.Res(Res.string.tooltip_stimulus_title_month),
-                UiText.Res(Res.string.tooltip_stimulus_description_month)
-            )
-
-        BucketScale.MONTH ->
-            Instruction(
-                UiText.Res(Res.string.tooltip_stimulus_title_year),
-                UiText.Res(Res.string.tooltip_stimulus_description_year)
-            )
-    }
-}
-
-internal fun instructionForEstimated1RM(
-    scale: BucketScale,
-): Instruction {
-    return when (scale) {
-        BucketScale.EXERCISE ->
-            Instruction(
-                UiText.Res(Res.string.tooltip_estimated1rm_title_training),
-                UiText.Res(Res.string.tooltip_estimated1rm_description_training)
-            )
-
-        BucketScale.DAY ->
-            Instruction(
-                UiText.Res(Res.string.tooltip_estimated1rm_title_day),
-                UiText.Res(Res.string.tooltip_estimated1rm_description_day)
-            )
-
-        BucketScale.WEEK ->
-            Instruction(
-                UiText.Res(Res.string.tooltip_estimated1rm_title_month),
-                UiText.Res(Res.string.tooltip_estimated1rm_description_month)
-            )
-
-        BucketScale.MONTH ->
-            Instruction(
-                UiText.Res(Res.string.tooltip_estimated1rm_title_year),
-                UiText.Res(Res.string.tooltip_estimated1rm_description_year)
-            )
-    }
-}
-
-internal fun instructionForMuscleLoad(period: PeriodState): Instruction {
-    val scale = deriveScale(period)
-    val (titleRes, descRes) = when (scale) {
-        BucketScale.EXERCISE ->
-            Res.string.tooltip_muscle_load_title_training to
-                    Res.string.tooltip_muscle_load_description_training
-
-        BucketScale.DAY ->
-            Res.string.tooltip_muscle_load_title_day to
-                    Res.string.tooltip_muscle_load_description_day
-        // No dedicated "week" strings; reuse month-view copy for weekly aggregation
-        BucketScale.WEEK ->
-            Res.string.tooltip_muscle_load_title_month to
-                    Res.string.tooltip_muscle_load_description_month
-
-        BucketScale.MONTH -> {
-            val days = daysInclusive(period.range.from.date, period.range.to.date)
-            if (days >= 365)
-                Res.string.tooltip_muscle_load_title_year to
-                        Res.string.tooltip_muscle_load_description_year
-            else
-                Res.string.tooltip_muscle_load_title_month to
-                        Res.string.tooltip_muscle_load_description_month
-        }
-    }
-    return Instruction(title = UiText.Res(titleRes), description = UiText.Res(descRes))
 }
 
 // -------- Distribution instructions --------

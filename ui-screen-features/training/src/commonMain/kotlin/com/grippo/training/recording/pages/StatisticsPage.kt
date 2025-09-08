@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.grippo.design.components.chart.AreaChart
 import com.grippo.design.components.chart.BarChart
 import com.grippo.design.components.chart.PieChart
 import com.grippo.design.components.chart.ProgressChart
@@ -149,84 +148,6 @@ internal fun StatisticsPage(
                         ProgressChart(
                             modifier = Modifier.fillMaxWidth(),
                             data = state.muscleLoadData.first
-                        )
-                    }
-                )
-            }
-        }
-
-        if (state.percent1RMData.first.points.isNotEmpty()) {
-            item(key = "percent_1rm", span = { GridItemSpan(4) }) {
-                val toolTip = remember(state.percent1RMData.second) {
-                    state.percent1RMData.second?.let { instruction ->
-                        TooltipData(
-                            title = instruction.title,
-                            description = instruction.description
-                        )
-                    }
-                }
-                ChartCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1.4f),
-                    title = "Intra progression",
-                    tooltip = toolTip,
-                    content = {
-                        AreaChart(
-                            modifier = Modifier.fillMaxWidth().weight(1f),
-                            data = state.percent1RMData.first
-                        )
-                    }
-                )
-            }
-        }
-
-        if (state.stimulusData.first.points.isNotEmpty()) {
-            item(key = "stimulus", span = { GridItemSpan(4) }) {
-                val toolTip = remember(state.stimulusData.second) {
-                    state.stimulusData.second?.let { instruction ->
-                        TooltipData(
-                            title = instruction.title,
-                            description = instruction.description
-                        )
-                    }
-                }
-                ChartCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1.4f),
-                    title = "Stimulus",
-                    tooltip = toolTip,
-                    content = {
-                        AreaChart(
-                            modifier = Modifier.fillMaxWidth().weight(1f),
-                            data = state.stimulusData.first
-                        )
-                    }
-                )
-            }
-        }
-
-        if (state.estimated1RMData.first.items.isNotEmpty()) {
-            item(key = "estimated_1rm", span = { GridItemSpan(4) }) {
-                val toolTip = remember(state.estimated1RMData.second) {
-                    state.estimated1RMData.second?.let { instruction ->
-                        TooltipData(
-                            title = instruction.title,
-                            description = instruction.description
-                        )
-                    }
-                }
-                ChartCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1.4f),
-                    title = "Estimated 1RM",
-                    tooltip = toolTip,
-                    content = {
-                        BarChart(
-                            modifier = Modifier.fillMaxWidth().weight(1f),
-                            data = state.estimated1RMData.first,
                         )
                     }
                 )
