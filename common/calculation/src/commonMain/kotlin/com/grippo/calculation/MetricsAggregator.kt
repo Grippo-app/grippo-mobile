@@ -9,63 +9,129 @@ import com.grippo.state.trainings.TrainingMetrics
 import com.grippo.state.trainings.TrainingState
 
 /**
- * 📊 **Metrics Aggregator**
+ * 📊 Metrics Aggregator
  *
- * Calculates training metrics (Volume, Repetitions, Intensity) on 3 levels:
+ * Calculates Volume, Repetitions, and Intensity at three levels:
+ * - Iterations → raw sets
+ * - Exercises  → aggregate over iterations
+ * - Trainings  → aggregate over exercises across sessions
  *
- * - 🟢 **Iterations** → raw sets
- * - 🔵 **Exercises** → aggregate over multiple iterations
- * - 🟣 **Trainings** → aggregate over multiple exercises across sessions
- *
- * ---
- * 🔎 **Definitions**
- * - **Volume (kg·rep)**: Σ(weight × reps)
- * - **Repetitions**: Σ(reps)
- * - **Intensity (kg/rep)**: Volume ÷ Repetitions
- *
- * ⚠️ Valid only if: `weight != null` AND `reps != null` AND `reps > 0`
+ * Definitions
+ * - Volume (kg·rep): Σ(weight × reps) using only sets with positive weight and reps > 0
+ * - Repetitions: Σ(reps) across all valid sets (weight may be missing/zero)
+ * - Intensity (kg/rep): Volume ÷ Repetitions (only where weight is valid) ⇒ reps-weighted average load
  */
 public class MetricsAggregator {
 
     /** Aggregate metrics from raw iterations. */
     public fun calculateIterations(iterations: List<IterationState>): TrainingMetrics {
-        return aggregateMetrics(iterations.asSequence())
+        var sumTonnage = 0.0
+        var repsAll: Long = 0
+        var repsWithWeight: Long = 0
+
+        for (itn in iterations) {
+            accumulate(
+                itn,
+                sumT = { sum -> sumTonnage += sum },
+                incAll = { d -> repsAll += d },
+                incWithW = { d -> repsWithWeight += d }
+            )
+        }
+        return buildMetrics(sumTonnage, repsAll, repsWithWeight)
     }
 
     /** Aggregate metrics from a list of exercises. */
     public fun calculateExercises(exercises: List<ExerciseState>): TrainingMetrics {
-        val allIterations = exercises.asSequence().flatMap { it.iterations.asSequence() }
-        return aggregateMetrics(allIterations)
+        var sumTonnage = 0.0
+        var repsAll: Long = 0
+        var repsWithWeight: Long = 0
+
+        for (ex in exercises) {
+            for (itn in ex.iterations) {
+                accumulate(
+                    itn,
+                    sumT = { sum -> sumTonnage += sum },
+                    incAll = { d -> repsAll += d },
+                    incWithW = { d -> repsWithWeight += d }
+                )
+            }
+        }
+        return buildMetrics(sumTonnage, repsAll, repsWithWeight)
     }
 
     /** Aggregate metrics from multiple training sessions. */
     public fun calculateTrainings(trainings: List<TrainingState>): TrainingMetrics {
-        val allExercises = trainings.asSequence().flatMap { it.exercises.asSequence() }
-        val allIterations = allExercises.flatMap { it.iterations.asSequence() }
-        return aggregateMetrics(allIterations)
-    }
-
-    // ---- Core aggregation logic ----
-    private fun aggregateMetrics(iterations: Sequence<IterationState>): TrainingMetrics {
         var sumTonnage = 0.0
-        var sumReps = 0
+        var repsAll: Long = 0
+        var repsWithWeight: Long = 0
 
-        for (itn in iterations) {
-            val weight = (itn.volume as? VolumeFormatState.Valid)?.value
-            val reps = (itn.repetitions as? RepetitionsFormatState.Valid)?.value
-            if (weight != null && reps != null && reps > 0) {
-                sumTonnage += weight.toDouble() * reps.toDouble()
-                sumReps += reps
+        for (tr in trainings) {
+            for (ex in tr.exercises) {
+                for (itn in ex.iterations) {
+                    accumulate(
+                        itn,
+                        sumT = { sum -> sumTonnage += sum },
+                        incAll = { d -> repsAll += d },
+                        incWithW = { d -> repsWithWeight += d }
+                    )
+                }
             }
         }
+        return buildMetrics(sumTonnage, repsAll, repsWithWeight)
+    }
 
-        val totalVolume = sumTonnage.toFloat().coerceAtLeast(0f)
-        val totalReps = sumReps.coerceAtLeast(0)
-        val avgIntensity = if (totalReps > 0) totalVolume / totalReps else 0f
+    // ---- Core helpers (English-only comments) ----
+
+    private inline fun accumulate(
+        itn: IterationState,
+        sumT: (Double) -> Unit,
+        incAll: (Long) -> Unit,
+        incWithW: (Long) -> Unit
+    ) {
+        val weight = (itn.volume as? VolumeFormatState.Valid)?.value
+        val reps = (itn.repetitions as? RepetitionsFormatState.Valid)?.value
+
+        // Guard invalid/negative reps
+        if (reps == null || reps <= 0) return
+
+        // Count all valid reps (even if weight is missing/zero)
+        incAll(reps.toLong())
+
+        // Only positive known weight contributes to Volume and Intensity
+        if (weight != null && weight > 0f) {
+            sumT(weight.toDouble() * reps.toDouble())
+            incWithW(reps.toLong())
+        }
+    }
+
+    private fun buildMetrics(
+        sumTonnage: Double,
+        repsAll: Long,
+        repsWithWeight: Long
+    ): TrainingMetrics {
+        val safeVolume = sumTonnage.coerceAtLeast(0.0).toFloat()
+
+        val safeRepsAll: Int = when {
+            repsAll < 0 -> 0
+            repsAll > Int.MAX_VALUE -> Int.MAX_VALUE
+            else -> repsAll.toInt()
+        }
+
+        val safeRepsWithW: Int = when {
+            repsWithWeight <= 0 -> 0
+            repsWithWeight > Int.MAX_VALUE -> Int.MAX_VALUE
+            else -> repsWithWeight.toInt()
+        }
+
+        val avgIntensity: Float = if (safeRepsWithW > 0) {
+            (sumTonnage / safeRepsWithW.toDouble()).toFloat()
+        } else {
+            0f
+        }
 
         return TrainingMetrics(
-            volume = VolumeFormatState.of(totalVolume),
-            repetitions = RepetitionsFormatState.of(totalReps),
+            volume = VolumeFormatState.of(safeVolume),
+            repetitions = RepetitionsFormatState.of(safeRepsAll),
             intensity = IntensityFormatState.of(avgIntensity)
         )
     }
