@@ -11,14 +11,42 @@ import com.grippo.design.components.chart.DSProgressItem
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
-import com.grippo.design.resources.provider.tooltip_muscle_load_description_day
-import com.grippo.design.resources.provider.tooltip_muscle_load_description_month
-import com.grippo.design.resources.provider.tooltip_muscle_load_description_training
-import com.grippo.design.resources.provider.tooltip_muscle_load_description_year
-import com.grippo.design.resources.provider.tooltip_muscle_load_title_day
-import com.grippo.design.resources.provider.tooltip_muscle_load_title_month
-import com.grippo.design.resources.provider.tooltip_muscle_load_title_training
-import com.grippo.design.resources.provider.tooltip_muscle_load_title_year
+import com.grippo.design.resources.provider.tooltip_ml_desc_day_rel_reps
+import com.grippo.design.resources.provider.tooltip_ml_desc_day_rel_tut
+import com.grippo.design.resources.provider.tooltip_ml_desc_day_rel_volume
+import com.grippo.design.resources.provider.tooltip_ml_desc_month_rel_reps
+import com.grippo.design.resources.provider.tooltip_ml_desc_month_rel_tut
+import com.grippo.design.resources.provider.tooltip_ml_desc_month_rel_volume
+import com.grippo.design.resources.provider.tooltip_ml_desc_training_abs_reps
+import com.grippo.design.resources.provider.tooltip_ml_desc_training_abs_tut
+import com.grippo.design.resources.provider.tooltip_ml_desc_training_abs_volume
+import com.grippo.design.resources.provider.tooltip_ml_desc_training_rel_reps
+import com.grippo.design.resources.provider.tooltip_ml_desc_training_rel_tut
+import com.grippo.design.resources.provider.tooltip_ml_desc_training_rel_volume
+import com.grippo.design.resources.provider.tooltip_ml_desc_week_rel_reps
+import com.grippo.design.resources.provider.tooltip_ml_desc_week_rel_tut
+import com.grippo.design.resources.provider.tooltip_ml_desc_week_rel_volume
+import com.grippo.design.resources.provider.tooltip_ml_desc_year_rel_reps
+import com.grippo.design.resources.provider.tooltip_ml_desc_year_rel_tut
+import com.grippo.design.resources.provider.tooltip_ml_desc_year_rel_volume
+import com.grippo.design.resources.provider.tooltip_ml_title_day_rel_reps
+import com.grippo.design.resources.provider.tooltip_ml_title_day_rel_tut
+import com.grippo.design.resources.provider.tooltip_ml_title_day_rel_volume
+import com.grippo.design.resources.provider.tooltip_ml_title_month_rel_reps
+import com.grippo.design.resources.provider.tooltip_ml_title_month_rel_tut
+import com.grippo.design.resources.provider.tooltip_ml_title_month_rel_volume
+import com.grippo.design.resources.provider.tooltip_ml_title_training_abs_reps
+import com.grippo.design.resources.provider.tooltip_ml_title_training_abs_tut
+import com.grippo.design.resources.provider.tooltip_ml_title_training_abs_volume
+import com.grippo.design.resources.provider.tooltip_ml_title_training_rel_reps
+import com.grippo.design.resources.provider.tooltip_ml_title_training_rel_tut
+import com.grippo.design.resources.provider.tooltip_ml_title_training_rel_volume
+import com.grippo.design.resources.provider.tooltip_ml_title_week_rel_reps
+import com.grippo.design.resources.provider.tooltip_ml_title_week_rel_tut
+import com.grippo.design.resources.provider.tooltip_ml_title_week_rel_volume
+import com.grippo.design.resources.provider.tooltip_ml_title_year_rel_reps
+import com.grippo.design.resources.provider.tooltip_ml_title_year_rel_tut
+import com.grippo.design.resources.provider.tooltip_ml_title_year_rel_volume
 import com.grippo.state.datetime.PeriodState
 import com.grippo.state.exercise.examples.ExerciseExampleState
 import com.grippo.state.formatters.UiText
@@ -51,6 +79,11 @@ public class MuscleLoadCalculator(
     private val stringProvider: StringProvider,
     private val colorProvider: ColorProvider,
 ) {
+
+    private companion object {
+        private const val EPS: Float = 1e-3f
+    }
+
     // ======== PUBLIC SIMPLE API ========
 
     /** Single session (ABSOLUTE; auto workload). */
@@ -59,18 +92,23 @@ public class MuscleLoadCalculator(
         examples: List<ExerciseExampleState>,
         groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
     ): Pair<DSProgressData, Instruction> {
-        val workload = Workload.Volume
+        // Auto-select workload: Volume if any positive weight exists, otherwise Reps
+        val workload = computeAutoWorkload(exercises)
+        val mode = Mode.ABSOLUTE
+
         val data = calculateCore(
             exercises = exercises,
             examples = examples,
             groups = groups,
-            mode = Mode.RELATIVE,
-            relativeMode = RelativeMode.SUM, // unused in ABSOLUTE
+            mode = mode,
+            relativeMode = RelativeMode.SUM, // ignored for ABSOLUTE
             workload = workload
         )
-        val instruction = Instruction(
-            title = UiText.Res(Res.string.tooltip_muscle_load_title_training),
-            description = UiText.Res(Res.string.tooltip_muscle_load_description_training),
+
+        val instruction = instructionForMuscleLoad(
+            scale = BucketScale.EXERCISE,
+            mode = mode,
+            workload = workload
         )
         return data to instruction
     }
@@ -85,18 +123,24 @@ public class MuscleLoadCalculator(
         val inRange = trainings.filter { it.createdAt in period.range }
         val exercises = inRange.flatMap { it.exercises }
 
-        val workload = Workload.Volume
+        val workload = computeAutoWorkload(exercises)
+        val mode = Mode.RELATIVE
 
         val data = calculateCore(
             exercises = exercises,
             examples = examples,
             groups = groups,
-            mode = Mode.RELATIVE,            // forced for aggregates
+            mode = mode,                     // forced for aggregates
             relativeMode = RelativeMode.SUM, // share of total (%)
             workload = workload
         )
 
-        val instruction = instructionForMuscleLoad(period)
+        val instruction = instructionForMuscleLoad(
+            scale = deriveScale(period),
+            mode = mode,
+            workload = workload,
+            isYear = daysInclusive(period.range.from.date, period.range.to.date) >= 365
+        )
         return data to instruction
     }
 
@@ -109,6 +153,17 @@ public class MuscleLoadCalculator(
         data object Volume : Workload        // Σ(weight × reps)
         data object Reps : Workload          // Σ(reps)
         data class TUT(val secPerRep: Float = 3f) : Workload // Σ(reps × secPerRep)
+    }
+
+    private fun computeAutoWorkload(exercises: List<ExerciseState>): Workload {
+        for (ex in exercises) {
+            for (itn in ex.iterations) {
+                val w = itn.volume.value ?: 0f
+                val r = (itn.repetitions.value ?: 0).coerceAtLeast(0)
+                if (w > EPS && r > 0) return Workload.Volume
+            }
+        }
+        return Workload.Reps
     }
 
     private suspend fun calculateCore(
@@ -200,25 +255,25 @@ public class MuscleLoadCalculator(
         val sumVal = validValues.sum().takeIf { it > 0f } ?: 1f
 
         val items = labelValues.sortedByDescending { it.second }.map { (label, raw) ->
-                val display = when (mode) {
-                    Mode.ABSOLUTE -> raw
-                    Mode.RELATIVE -> when (relativeMode) {
-                        RelativeMode.MAX -> (raw / maxVal) * 100f
-                        RelativeMode.SUM -> (raw / sumVal) * 100f
-                    }
+            val display = when (mode) {
+                Mode.ABSOLUTE -> raw
+                Mode.RELATIVE -> when (relativeMode) {
+                    RelativeMode.MAX -> (raw / maxVal) * 100f
+                    RelativeMode.SUM -> (raw / sumVal) * 100f
                 }
-
-                // Color: relative -> equal 100/N bands; absolute -> smooth by ratio
-                val color = when (mode) {
-                    Mode.RELATIVE -> bandColorByPercent(display, scaleStops)
-                    Mode.ABSOLUTE -> {
-                        val ratio = if (maxVal == 0f) 0f else (raw / maxVal).coerceIn(0f, 1f)
-                        interpolateColor(ratio, scaleStops)
-                    }
-                }
-
-                DSProgressItem(label = label, value = display, color = color)
             }
+
+            // Color: relative -> equal 100/N bands; absolute -> smooth by ratio
+            val color = when (mode) {
+                Mode.RELATIVE -> bandColorByPercent(display, scaleStops)
+                Mode.ABSOLUTE -> {
+                    val ratio = if (maxVal == 0f) 0f else (raw / maxVal).coerceIn(0f, 1f)
+                    interpolateColor(ratio, scaleStops)
+                }
+            }
+
+            DSProgressItem(label = label, value = display, color = color)
+        }
 
         return DSProgressData(items = items)
     }
@@ -266,21 +321,60 @@ public class MuscleLoadCalculator(
         return colors[idx]
     }
 
-    private fun instructionForMuscleLoad(period: PeriodState): Instruction {
-        val scale = deriveScale(period)
-        val (titleRes, descRes) = when (scale) {
-            BucketScale.EXERCISE -> Res.string.tooltip_muscle_load_title_training to Res.string.tooltip_muscle_load_description_training
+    private fun instructionForMuscleLoad(
+        scale: BucketScale,
+        mode: Mode,
+        workload: Workload,
+        isYear: Boolean = false
+    ): Instruction {
+        // Map resource ids by (scale × mode × workload).
+        val ids = when (scale) {
+            BucketScale.EXERCISE -> when (mode) {
+                Mode.ABSOLUTE -> when (workload) {
+                    is Workload.Volume -> Res.string.tooltip_ml_title_training_abs_volume to Res.string.tooltip_ml_desc_training_abs_volume
+                    is Workload.Reps -> Res.string.tooltip_ml_title_training_abs_reps to Res.string.tooltip_ml_desc_training_abs_reps
+                    is Workload.TUT -> Res.string.tooltip_ml_title_training_abs_tut to Res.string.tooltip_ml_desc_training_abs_tut
+                }
 
-            BucketScale.DAY -> Res.string.tooltip_muscle_load_title_day to Res.string.tooltip_muscle_load_description_day
-            // No dedicated "week" strings; reuse month-view copy for weekly aggregation
-            BucketScale.WEEK -> Res.string.tooltip_muscle_load_title_month to Res.string.tooltip_muscle_load_description_month
+                Mode.RELATIVE -> when (workload) {
+                    is Workload.Volume -> Res.string.tooltip_ml_title_training_rel_volume to Res.string.tooltip_ml_desc_training_rel_volume
+                    is Workload.Reps -> Res.string.tooltip_ml_title_training_rel_reps to Res.string.tooltip_ml_desc_training_rel_reps
+                    is Workload.TUT -> Res.string.tooltip_ml_title_training_rel_tut to Res.string.tooltip_ml_desc_training_rel_tut
+                }
+            }
+
+            BucketScale.DAY -> when (workload) {
+                is Workload.Volume -> Res.string.tooltip_ml_title_day_rel_volume to Res.string.tooltip_ml_desc_day_rel_volume
+                is Workload.Reps -> Res.string.tooltip_ml_title_day_rel_reps to Res.string.tooltip_ml_desc_day_rel_reps
+                is Workload.TUT -> Res.string.tooltip_ml_title_day_rel_tut to Res.string.tooltip_ml_desc_day_rel_tut
+            }
+
+            BucketScale.WEEK -> when (workload) {
+                is Workload.Volume -> Res.string.tooltip_ml_title_week_rel_volume to Res.string.tooltip_ml_desc_week_rel_volume
+                is Workload.Reps -> Res.string.tooltip_ml_title_week_rel_reps to Res.string.tooltip_ml_desc_week_rel_reps
+                is Workload.TUT -> Res.string.tooltip_ml_title_week_rel_tut to Res.string.tooltip_ml_desc_week_rel_tut
+            }
 
             BucketScale.MONTH -> {
-                val days = daysInclusive(period.range.from.date, period.range.to.date)
-                if (days >= 365) Res.string.tooltip_muscle_load_title_year to Res.string.tooltip_muscle_load_description_year
-                else Res.string.tooltip_muscle_load_title_month to Res.string.tooltip_muscle_load_description_month
+                if (isYear) {
+                    when (workload) {
+                        is Workload.Volume -> Res.string.tooltip_ml_title_year_rel_volume to Res.string.tooltip_ml_desc_year_rel_volume
+                        is Workload.Reps -> Res.string.tooltip_ml_title_year_rel_reps to Res.string.tooltip_ml_desc_year_rel_reps
+                        is Workload.TUT -> Res.string.tooltip_ml_title_year_rel_tut to Res.string.tooltip_ml_desc_year_rel_tut
+                    }
+                } else {
+                    when (workload) {
+                        is Workload.Volume -> Res.string.tooltip_ml_title_month_rel_volume to Res.string.tooltip_ml_desc_month_rel_volume
+                        is Workload.Reps -> Res.string.tooltip_ml_title_month_rel_reps to Res.string.tooltip_ml_desc_month_rel_reps
+                        is Workload.TUT -> Res.string.tooltip_ml_title_month_rel_tut to Res.string.tooltip_ml_desc_month_rel_tut
+                    }
+                }
             }
         }
-        return Instruction(title = UiText.Res(titleRes), description = UiText.Res(descRes))
+
+        return Instruction(
+            title = UiText.Res(ids.first),
+            description = UiText.Res(ids.second)
+        )
     }
 }

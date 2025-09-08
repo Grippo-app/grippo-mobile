@@ -333,17 +333,42 @@
     <string name="tooltip_heatmap_description_year_reps">Year-to-date Σ(reps) per muscle.\nNormalization: global cap at P95 (comparable across months).\nUseful to audit total practice volume per muscle group.\nIf reps are high but strength stagnant, blend in lower-rep, higher-load work.</string>
 
     <!-- ============= MUSCLE LOAD ============= -->
-    <string name="tooltip_muscle_load_title_training">Muscle Load (Session)</string>
-    <string name="tooltip_muscle_load_description_training">Which muscles received the most work today. Choose Volume, Reps, or Time-Under-Tension; use Absolute for real work, Relative for percentage share. For balance, avoid leaving muscles at near 0% week after week; for specialization, your focus muscle may take about 30–50% of the session’s load.</string>
-
-    <string name="tooltip_muscle_load_title_day">Muscle Load (Day Range)</string>
-    <string name="tooltip_muscle_load_description_day">Totals by muscle across the selected days. Check that big movers (quads, hamstrings, back, chest) get meaningful work. If a target muscle sits under 10–15% across the week, it may be under-trained for growth.</string>
-
-    <string name="tooltip_muscle_load_title_month">Muscle Load (Month)</string>
-    <string name="tooltip_muscle_load_description_month">Totals by muscle across this month. Look for balanced coverage unless you’re specializing. A target muscle staying under 10–15% for multiple weeks may need more direct work.</string>
-
-    <string name="tooltip_muscle_load_title_year">Muscle Load (Year)</string>
-    <string name="tooltip_muscle_load_description_year">Year-to-date workload by muscle. Over long periods, consistent imbalance (for example, push far outweighing pull) can lead to plateaus or aches—consider rebalancing while keeping your main goal in mind.</string>
+    <string name="tooltip_ml_title_training_abs_volume">Muscle Load — Session (Absolute, Volume)</string>
+    <string name="tooltip_ml_desc_training_abs_volume">Each bar shows total work Σ(weight×reps) per muscle or group.\nColor scale: smooth by share vs session max (darker = more work).\nTip: Volume rewards high-rep/light sets; pair with intensity charts for context.\nAuto mode: if no meaningful weights are entered today, the view will switch to Reps.</string>
+    <string name="tooltip_ml_title_training_abs_reps">Muscle Load — Session (Absolute, Reps)</string>
+    <string name="tooltip_ml_desc_training_abs_reps">Each bar shows total repetitions Σ(reps) credited to a muscle via exercise splits (weight ignored).\nColor scale: smooth by share vs session max.\nBest for bodyweight/isolation work and technique volume.\nIf heavy sets exist, consider switching to Volume for load context.</string>
+    <string name="tooltip_ml_title_training_abs_tut">Muscle Load — Session (Absolute, Time-Under-Tension)</string>
+    <string name="tooltip_ml_desc_training_abs_tut">Bars show Σ(reps×sec/rep) per muscle using a fixed tempo.\nColor scale: smooth by share vs session max.\nGood proxy when weights vary widely between exercises; verify tempo really matches your sets.</string>
+    <string name="tooltip_ml_title_training_rel_volume">Muscle Load — Session (% of Total, Volume)</string>
+    <string name="tooltip_ml_desc_training_rel_volume">Bars show each muscle’s share of Σ(weight×reps) within the session (100% total).\nColor scale: banded by percent.\nUse to compare balance across muscles today regardless of absolute workload.</string>
+    <string name="tooltip_ml_title_training_rel_reps">Muscle Load — Session (% of Total, Reps)</string>
+    <string name="tooltip_ml_desc_training_rel_reps">Bars show each muscle’s share of Σ(reps) within the session (100% total).\nColor scale: banded by percent.\nUseful when weights are missing or mostly bodyweight.</string>
+    <string name="tooltip_ml_title_training_rel_tut">Muscle Load — Session (% of Total, TUT)</string>
+    <string name="tooltip_ml_desc_training_rel_tut">Bars show share of Σ(reps×sec/rep) within the session (100% total).\nColor scale: banded by percent.\nUse when tempo is consistent across exercises.</string>
+    <string name="tooltip_ml_title_day_rel_volume">Muscle Load — Days (% of Total, Volume)</string>
+    <string name="tooltip_ml_desc_day_rel_volume">Share of Σ(weight×reps) per muscle across selected days (adds to 100%).\nColor scale: banded by percent; bars are comparable across items.\nGoal: big movers (quads, hamstrings, back, chest) should receive meaningful shares; avoid leaving target muscles &lt;10–15% week after week.</string>
+    <string name="tooltip_ml_title_day_rel_reps">Muscle Load — Days (% of Total, Reps)</string>
+    <string name="tooltip_ml_desc_day_rel_reps">Share of Σ(reps) per muscle across selected days (100% total).\nUseful when many sets lack weights or are bodyweight.\nIf shares look fine but strength stalls, add heavier work to main lifts.</string>
+    <string name="tooltip_ml_title_day_rel_tut">Muscle Load — Days (% of Total, TUT)</string>
+    <string name="tooltip_ml_desc_day_rel_tut">Share of Σ(reps×sec/rep) per muscle across days.\nGood for tempo-driven phases; ensure tempo is consistent to keep comparisons fair.</string>
+    <string name="tooltip_ml_title_week_rel_volume">Muscle Load — Weeks (% of Total, Volume)</string>
+    <string name="tooltip_ml_desc_week_rel_volume">Share of weekly Σ(weight×reps) by muscle (100% within the selected month).\nLook for clear emphasis weeks, followed by easier weeks.\nPersistent near-zero rows suggest undertrained muscles.</string>
+    <string name="tooltip_ml_title_week_rel_reps">Muscle Load — Weeks (% of Total, Reps)</string>
+    <string name="tooltip_ml_desc_week_rel_reps">Share of weekly Σ(reps) by muscle.\nUse for bodyweight blocks and technique phases; complement with intensity checks.</string>
+    <string name="tooltip_ml_title_week_rel_tut">Muscle Load — Weeks (% of Total, TUT)</string>
+    <string name="tooltip_ml_desc_week_rel_tut">Share of weekly Σ(reps×sec/rep) by muscle.\nHelps compare slow-tempo blocks; verify consistency of tempo in logging.</string>
+    <string name="tooltip_ml_title_month_rel_volume">Muscle Load — Months (% of Total, Volume)</string>
+    <string name="tooltip_ml_desc_month_rel_volume">Share of Σ(weight×reps) per muscle by month (adds to 100%).\nTrack specialization blocks: the target muscle should visibly gain share.\nIf volume share rises but PRs stall, shift work toward main lifts or raise intensity modestly.</string>
+    <string name="tooltip_ml_title_month_rel_reps">Muscle Load — Months (% of Total, Reps)</string>
+    <string name="tooltip_ml_desc_month_rel_reps">Share of Σ(reps) per muscle by month.\nGreat for long technique/hypertrophy phases.\nPlateaus with high rep share usually mean intensity is too low — add heavier work.</string>
+    <string name="tooltip_ml_title_month_rel_tut">Muscle Load — Months (% of Total, TUT)</string>
+    <string name="tooltip_ml_desc_month_rel_tut">Share of Σ(reps×sec/rep) per muscle by month.\nUseful when load tracking is noisy; keep tempo realistic for fair comparisons.</string>
+    <string name="tooltip_ml_title_year_rel_volume">Muscle Load — Year (% of Total, Volume)</string>
+    <string name="tooltip_ml_desc_year_rel_volume">Year-to-date share of Σ(weight×reps) per muscle (100% over the year).\nSeek 3–5 progressive blocks with deloads; avoid chronic push≫pull or quad≫posterior chain imbalances.</string>
+    <string name="tooltip_ml_title_year_rel_reps">Muscle Load — Year (% of Total, Reps)</string>
+    <string name="tooltip_ml_desc_year_rel_reps">Year-to-date share of Σ(reps) per muscle.\nGood to audit practice volume.\nIf rep share is high but strength lags, blend in lower-rep, higher-load work.</string>
+    <string name="tooltip_ml_title_year_rel_tut">Muscle Load — Year (% of Total, TUT)</string>
+    <string name="tooltip_ml_desc_year_rel_tut">Year-to-date share of Σ(reps×sec/rep) per muscle.\nHandy for tempo phases; confirm logging stays consistent over months.</string>
 
     <!-- ============= %1RM (INTENSITY) ============= -->
     <string name="tooltip_percent1rm_title_training">Session Intensity (%1RM)</string>
