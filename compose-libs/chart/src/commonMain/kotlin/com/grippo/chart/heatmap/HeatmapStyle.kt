@@ -24,7 +24,7 @@ public data class HeatmapStyle(
         val gap: Dp,
         val corner: Dp,
         val labelPadding: Dp,
-        val maxCellSize: Dp?,
+        val maxCellSize: Dp,
     )
 
     @Immutable

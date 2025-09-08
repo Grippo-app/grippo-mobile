@@ -173,24 +173,28 @@ private fun buildPlan(
         is HeatmapStyle.Legend.None -> 0f
     }
 
-    // Grid size (always squares), snap to whole pixels
+    // Grid size: stretch horizontally, rectangular cells
     val rows = data.matrix.rows
     val cols = data.matrix.cols
     val widthForGridRaw = (widthPx - leftGutter).coerceAtLeast(0f)
     val widthForGrid = floor(widthForGridRaw).coerceAtLeast(0f)
 
+    // Gap cannot exceed per-column share
     val safeGapPx = if (cols > 1) min(requestedGapPx, widthForGrid / cols) else 0f
-    val fitToWidth = if (cols > 0) (widthForGrid - safeGapPx * (cols - 1)) / cols else 0f
 
-    val maxCellPx = style.layout.maxCellSize?.toPx()
-    var cell = if (maxCellPx != null) min(fitToWidth, maxCellPx) else fitToWidth
+    // Width per cell to fill the available width (no clamp by maxCellSize)
+    val fitCw = if (cols > 0) (widthForGrid - safeGapPx * (cols - 1)) / cols else 0f
 
-    // Snap cell and gap to whole pixels (to avoid 'hairs')
-    cell = floor(cell).coerceAtLeast(0f)
+    // Height per cell fixed by maxCellSize (non-null)
+    val maxCellPx = style.layout.maxCellSize.toPx()
+
+    var cw = fitCw
+    var ch = maxCellPx
+
+    // Snap to whole pixels (avoid hairlines)
+    cw = floor(cw).coerceAtLeast(0f)
+    ch = floor(ch).coerceAtLeast(0f)
     val snappedGap = floor(safeGapPx).coerceAtLeast(0f)
-
-    val cw = cell
-    val ch = cell
 
     // Base width/height without 'bumps'
     val gridW = cw * cols + snappedGap * (cols - 1)
