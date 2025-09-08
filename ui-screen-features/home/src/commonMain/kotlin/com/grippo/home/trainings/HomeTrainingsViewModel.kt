@@ -11,7 +11,7 @@ import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState
-import com.grippo.domain.state.training.transformToTrainingListValue
+import com.grippo.domain.state.training.transformation.transformToTrainingListValue
 import com.grippo.state.formatters.DateFormatState
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest

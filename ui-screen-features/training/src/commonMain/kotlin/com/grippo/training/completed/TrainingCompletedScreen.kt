@@ -47,7 +47,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.complete
 import com.grippo.design.resources.provider.workout_saved
-import com.grippo.domain.state.training.toTrainingListValues
+import com.grippo.domain.state.training.transformation.toTrainingListValues
 import com.grippo.state.formatters.UiText
 import com.grippo.state.trainings.TrainingListValue
 import com.grippo.state.trainings.TrainingListValue.Companion.exercise
