@@ -9,9 +9,6 @@ import kotlinx.serialization.Serializable
 public sealed class TrainingRouter : BaseRouter {
 
     @Serializable
-    public data object Setup : TrainingRouter()
-
-    @Serializable
     public data object Recording : TrainingRouter()
 
     @Serializable

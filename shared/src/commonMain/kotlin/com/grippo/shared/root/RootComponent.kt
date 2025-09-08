@@ -165,7 +165,7 @@ public class RootComponent(
             is RootRouter.Training -> Training(
                 TrainingComponent(
                     componentContext = context,
-                    initial = TrainingRouter.Setup,
+                    initial = TrainingRouter.Recording,
                     close = viewModel::onBack
                 )
             )

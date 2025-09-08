@@ -17,7 +17,6 @@ import com.grippo.screen.api.TrainingRouter
 import com.grippo.training.completed.TrainingCompletedComponent
 import com.grippo.training.exercise.ExerciseComponent
 import com.grippo.training.recording.TrainingRecordingComponent
-import com.grippo.training.setup.TrainingSetupComponent
 
 public class TrainingComponent(
     componentContext: ComponentContext,
@@ -68,14 +67,6 @@ public class TrainingComponent(
 
     private fun createChild(router: TrainingRouter, context: ComponentContext): Child {
         return when (router) {
-            TrainingRouter.Setup -> Child.Setup(
-                TrainingSetupComponent(
-                    componentContext = context,
-                    toRecording = viewModel::toRecording,
-                    back = viewModel::onClose
-                ),
-            )
-
             TrainingRouter.Recording -> Child.Recording(
                 TrainingRecordingComponent(
                     componentContext = context,
@@ -112,9 +103,6 @@ public class TrainingComponent(
     }
 
     internal sealed class Child(open val component: BaseComponent<*>) {
-        data class Setup(override val component: TrainingSetupComponent) :
-            Child(component)
-
         data class Recording(override val component: TrainingRecordingComponent) :
             Child(component)
 
