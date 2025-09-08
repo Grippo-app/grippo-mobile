@@ -47,7 +47,7 @@ import com.grippo.state.trainings.TrainingState
  *  - No user bodyweight parameter. We trust the entered set weight as-is.
  *  - Negative weights are ignored (treated as 0). Tiny noise weights are ignored via EPS.
  */
-public class LoadCalculator(
+public class TotalLoadCalculator(
     private val stringProvider: StringProvider,
     private val colorProvider: ColorProvider,
 ) {

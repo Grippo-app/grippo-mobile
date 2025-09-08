@@ -1,8 +1,8 @@
 package com.grippo.training.recording
 
 import com.grippo.calculation.DistributionCalculator
-import com.grippo.calculation.LoadCalculator
 import com.grippo.calculation.MetricsAggregator
+import com.grippo.calculation.TotalLoadCalculator
 import com.grippo.calculation.VolumeAnalytics
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
@@ -57,7 +57,7 @@ internal class TrainingRecordingViewModel(
     private val metricsAggregator = MetricsAggregator()
     private val volumeAnalytics = VolumeAnalytics(colorProvider, stringProvider)
     private val distributionCalculator = DistributionCalculator(stringProvider, colorProvider)
-    private val loadCalculator = LoadCalculator(stringProvider, colorProvider)
+    private val totalLoadCalculator = TotalLoadCalculator(stringProvider, colorProvider)
 
     init {
         muscleFeature.observeMuscles()
@@ -251,7 +251,7 @@ internal class TrainingRecordingViewModel(
             volumeAnalytics.calculateExerciseVolumeChartFromExercises(
                 exercises = exercises
             )
-        val muscleLoadData = loadCalculator.calculateMuscleLoadDistributionFromExercises(
+        val muscleLoadData = totalLoadCalculator.calculateMuscleLoadDistributionFromExercises(
             exercises = exercises,
             examples = examples,
             groups = muscles,
