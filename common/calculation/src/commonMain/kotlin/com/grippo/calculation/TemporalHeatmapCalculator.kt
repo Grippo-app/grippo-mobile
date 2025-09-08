@@ -10,14 +10,26 @@ import com.grippo.date.utils.contains
 import com.grippo.design.components.chart.DSHeatmapData
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.providers.StringProvider
-import com.grippo.design.resources.provider.tooltip_muscle_load_description_day
-import com.grippo.design.resources.provider.tooltip_muscle_load_description_month
-import com.grippo.design.resources.provider.tooltip_muscle_load_description_training
-import com.grippo.design.resources.provider.tooltip_muscle_load_description_year
-import com.grippo.design.resources.provider.tooltip_muscle_load_title_day
-import com.grippo.design.resources.provider.tooltip_muscle_load_title_month
-import com.grippo.design.resources.provider.tooltip_muscle_load_title_training
-import com.grippo.design.resources.provider.tooltip_muscle_load_title_year
+import com.grippo.design.resources.provider.tooltip_heatmap_description_day_reps
+import com.grippo.design.resources.provider.tooltip_heatmap_description_day_tonnage
+import com.grippo.design.resources.provider.tooltip_heatmap_description_month_reps
+import com.grippo.design.resources.provider.tooltip_heatmap_description_month_tonnage
+import com.grippo.design.resources.provider.tooltip_heatmap_description_training_reps
+import com.grippo.design.resources.provider.tooltip_heatmap_description_training_tonnage
+import com.grippo.design.resources.provider.tooltip_heatmap_description_week_reps
+import com.grippo.design.resources.provider.tooltip_heatmap_description_week_tonnage
+import com.grippo.design.resources.provider.tooltip_heatmap_description_year_reps
+import com.grippo.design.resources.provider.tooltip_heatmap_description_year_tonnage
+import com.grippo.design.resources.provider.tooltip_heatmap_title_day_reps
+import com.grippo.design.resources.provider.tooltip_heatmap_title_day_tonnage
+import com.grippo.design.resources.provider.tooltip_heatmap_title_month_reps
+import com.grippo.design.resources.provider.tooltip_heatmap_title_month_tonnage
+import com.grippo.design.resources.provider.tooltip_heatmap_title_training_reps
+import com.grippo.design.resources.provider.tooltip_heatmap_title_training_tonnage
+import com.grippo.design.resources.provider.tooltip_heatmap_title_week_reps
+import com.grippo.design.resources.provider.tooltip_heatmap_title_week_tonnage
+import com.grippo.design.resources.provider.tooltip_heatmap_title_year_reps
+import com.grippo.design.resources.provider.tooltip_heatmap_title_year_tonnage
 import com.grippo.state.datetime.PeriodState
 import com.grippo.state.exercise.examples.ExerciseExampleState
 import com.grippo.state.formatters.UiText
@@ -78,7 +90,7 @@ public class TemporalHeatmapCalculator(
 
         if (cols == 0) {
             // No real buckets → return empty dataset
-            val tipEmpty = instructionForMuscleLoad(period)
+            val tipEmpty = instructionForMuscleLoad(period, metric)
             val empty = DSHeatmapData(
                 rows = 0,
                 cols = 0,
@@ -97,7 +109,7 @@ public class TemporalHeatmapCalculator(
 
         // Early exit if no rows or no columns (extremely rare now)
         if (rows == 0 || cols == 0) {
-            val tipEmpty = instructionForMuscleLoad(period)
+            val tipEmpty = instructionForMuscleLoad(period, metric)
             val empty = DSHeatmapData(
                 rows = 0,
                 cols = 0,
@@ -166,7 +178,7 @@ public class TemporalHeatmapCalculator(
             colLabels = colLabels,
         )
 
-        val tip = instructionForMuscleLoad(period)
+        val tip = instructionForMuscleLoad(period, metric)
         return data to tip
     }
 
@@ -329,31 +341,67 @@ public class TemporalHeatmapCalculator(
             BucketScale.EXERCISE -> Normalization.PerColMax
         }
 
-    private fun instructionForMuscleLoad(period: PeriodState): Instruction {
+    private fun instructionForMuscleLoad(period: PeriodState, metric: Metric): Instruction {
         val scale = deriveScale(period)
-        val (titleRes, descRes) = when (scale) {
-            BucketScale.EXERCISE ->
-                Res.string.tooltip_muscle_load_title_training to
-                        Res.string.tooltip_muscle_load_description_training
-
-            BucketScale.DAY ->
-                Res.string.tooltip_muscle_load_title_day to
-                        Res.string.tooltip_muscle_load_description_day
-            // No dedicated "week" strings; reuse month-view copy for weekly aggregation
-            BucketScale.WEEK ->
-                Res.string.tooltip_muscle_load_title_month to
-                        Res.string.tooltip_muscle_load_description_month
-
+        val isYear = when (scale) {
             BucketScale.MONTH -> {
                 val days = daysInclusive(period.range.from.date, period.range.to.date)
-                if (days >= 365)
-                    Res.string.tooltip_muscle_load_title_year to
-                            Res.string.tooltip_muscle_load_description_year
-                else
-                    Res.string.tooltip_muscle_load_title_month to
-                            Res.string.tooltip_muscle_load_description_month
+                days >= 365
+            }
+
+            else -> false
+        }
+
+        // Choose resource ids by (scale × metric). Normalization is implied by scale:
+        // DAY/WEEK -> Per-column max (colors are relative per column),
+        // MONTH/YEAR -> Global cap at P95 (colors comparable across columns),
+        // EXERCISE -> Per-column max (per session).
+        val (titleRes, descRes) = when (scale) {
+            BucketScale.EXERCISE -> when (metric) {
+                Metric.TONNAGE -> Res.string.tooltip_heatmap_title_training_tonnage to
+                        Res.string.tooltip_heatmap_description_training_tonnage
+
+                Metric.REPS -> Res.string.tooltip_heatmap_title_training_reps to
+                        Res.string.tooltip_heatmap_description_training_reps
+            }
+
+            BucketScale.DAY -> when (metric) {
+                Metric.TONNAGE -> Res.string.tooltip_heatmap_title_day_tonnage to
+                        Res.string.tooltip_heatmap_description_day_tonnage
+
+                Metric.REPS -> Res.string.tooltip_heatmap_title_day_reps to
+                        Res.string.tooltip_heatmap_description_day_reps
+            }
+
+            BucketScale.WEEK -> when (metric) {
+                Metric.TONNAGE -> Res.string.tooltip_heatmap_title_week_tonnage to
+                        Res.string.tooltip_heatmap_description_week_tonnage
+
+                Metric.REPS -> Res.string.tooltip_heatmap_title_week_reps to
+                        Res.string.tooltip_heatmap_description_week_reps
+            }
+
+            BucketScale.MONTH -> {
+                if (isYear) {
+                    when (metric) {
+                        Metric.TONNAGE -> Res.string.tooltip_heatmap_title_year_tonnage to
+                                Res.string.tooltip_heatmap_description_year_tonnage
+
+                        Metric.REPS -> Res.string.tooltip_heatmap_title_year_reps to
+                                Res.string.tooltip_heatmap_description_year_reps
+                    }
+                } else {
+                    when (metric) {
+                        Metric.TONNAGE -> Res.string.tooltip_heatmap_title_month_tonnage to
+                                Res.string.tooltip_heatmap_description_month_tonnage
+
+                        Metric.REPS -> Res.string.tooltip_heatmap_title_month_reps to
+                                Res.string.tooltip_heatmap_description_month_reps
+                    }
+                }
             }
         }
+
         return Instruction(title = UiText.Res(titleRes), description = UiText.Res(descRes))
     }
 }

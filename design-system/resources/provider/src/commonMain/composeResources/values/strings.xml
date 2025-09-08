@@ -310,6 +310,41 @@
     <string name="tooltip_volume_title_year">Yearly Volume Trend</string>
     <string name="tooltip_volume_description_year">Zoomed-out monthly trend across the year.\nStructure: plan 3–5 progressive blocks with clear deloads.\nSafety: avoid month-to-month spikes &gt;~30–40%; prefer steady growth.\nExpectations: YoY gains of ~10–30% are realistic depending on training age.\nIf PRs lag while volume rises, shift work toward main lifts or increase intensity modestly.</string>
 
+    <!-- ========== HEATMAP ========== -->
+    <string name="tooltip_heatmap_title_training_tonnage">Muscle Heatmap — Session (Tonnage)</string>
+    <string name="tooltip_heatmap_description_training_tonnage">Each cell shows Σ(weight×reps) credited to a muscle, allocated by exercise muscle splits.\nNormalization: per-column max (colors are relative within this session; columns are not comparable).\nUse when you care about total load distribution across muscles in this session.\nNotes: Tonnage favors high-rep/light sets; pair with intensity charts for context.\nGaps mean no work recorded for that muscle in that exercise bucket.</string>
+    <string name="tooltip_heatmap_title_training_reps">Muscle Heatmap — Session (Reps)</string>
+    <string name="tooltip_heatmap_description_training_reps">Each cell shows Σ(reps) credited to a muscle via exercise muscle splits (weight ignored).\nNormalization: per-column max (relative within this session only).\nBest for bodyweight/isolation work and technique volume.\nLimit: treats all reps equally; heavy triples and easy fifteens look similar.\nUse with %1RM/Intensity for a complete picture.</string>
+    <string name="tooltip_heatmap_title_day_tonnage">Muscle Heatmap — Day Range (Tonnage)</string>
+    <string name="tooltip_heatmap_description_day_tonnage">Cells show Σ(weight×reps) per muscle for each day in range.\nNormalization: per-column max (relative per day; do not compare colors across days).\nLook for balanced coverage of big movers (quads, hamstrings, back, chest).\nSpikes highlight days dominated by a few muscles; plan lighter coverage next day if recovery lags.</string>
+    <string name="tooltip_heatmap_title_day_reps">Muscle Heatmap — Day Range (Reps)</string>
+    <string name="tooltip_heatmap_description_day_reps">Cells show Σ(reps) per muscle for each day; weight ignored.\nNormalization: per-column max (relative per day).\nGreat for tracking bodyweight or accessory emphasis.\nIf a target muscle stays near zero across days, add direct work.</string>
+    <string name="tooltip_heatmap_title_week_tonnage">Muscle Heatmap — Weeks (Tonnage)</string>
+    <string name="tooltip_heatmap_description_week_tonnage">Σ(weight×reps) per muscle per week inside this month view.\nNormalization: per-column max (relative per week; colors across weeks are not directly comparable).\nUse to see which weeks emphasized which muscles; follow heavy weeks with easier ones.\nPersistent near-zero rows suggest undertrained muscles.</string>
+    <string name="tooltip_heatmap_title_week_reps">Muscle Heatmap — Weeks (Reps)</string>
+    <string name="tooltip_heatmap_description_week_reps">Σ(reps) per muscle per week; weight ignored.\nNormalization: per-column max (relative per week).\nGood for specialty blocks and bodyweight phases.\nAdd intensity checks if reps climb without strength progress.</string>
+    <string name="tooltip_heatmap_title_month_tonnage">Muscle Heatmap — Months (Tonnage)</string>
+    <string name="tooltip_heatmap_description_month_tonnage">Σ(weight×reps) per muscle per month.\nNormalization: global cap at P95 (extremes clipped; colors are comparable across months).\nRead trends across months: specialization blocks should visibly raise the target row.\nIf volume rises but PRs stall, shift work from accessories to main lifts or increase intensity modestly.</string>
+    <string name="tooltip_heatmap_title_month_reps">Muscle Heatmap — Months (Reps)</string>
+    <string name="tooltip_heatmap_description_month_reps">Σ(reps) per muscle per month; weight ignored.\nNormalization: global cap at P95 (comparable across months).\nGreat for long technique or hypertrophy phases.\nPlateaus with high reps often mean intensity is too low — add heavier work.</string>
+    <string name="tooltip_heatmap_title_year_tonnage">Muscle Heatmap — Year (Tonnage)</string>
+    <string name="tooltip_heatmap_description_year_tonnage">Year-to-date Σ(weight×reps) per muscle (monthly buckets).\nNormalization: global cap at P95 (comparable across months).\nLook for 3–5 progressive blocks and clear deloads; avoid persistent imbalance (e.g., push≫pull).\nLarge gaps suggest injury/time off or program drift — rebalance accordingly.</string>
+    <string name="tooltip_heatmap_title_year_reps">Muscle Heatmap — Year (Reps)</string>
+    <string name="tooltip_heatmap_description_year_reps">Year-to-date Σ(reps) per muscle.\nNormalization: global cap at P95 (comparable across months).\nUseful to audit total practice volume per muscle group.\nIf reps are high but strength stagnant, blend in lower-rep, higher-load work.</string>
+
+    <!-- ============= MUSCLE LOAD ============= -->
+    <string name="tooltip_muscle_load_title_training">Muscle Load (Session)</string>
+    <string name="tooltip_muscle_load_description_training">Which muscles received the most work today. Choose Volume, Reps, or Time-Under-Tension; use Absolute for real work, Relative for percentage share. For balance, avoid leaving muscles at near 0% week after week; for specialization, your focus muscle may take about 30–50% of the session’s load.</string>
+
+    <string name="tooltip_muscle_load_title_day">Muscle Load (Day Range)</string>
+    <string name="tooltip_muscle_load_description_day">Totals by muscle across the selected days. Check that big movers (quads, hamstrings, back, chest) get meaningful work. If a target muscle sits under 10–15% across the week, it may be under-trained for growth.</string>
+
+    <string name="tooltip_muscle_load_title_month">Muscle Load (Month)</string>
+    <string name="tooltip_muscle_load_description_month">Totals by muscle across this month. Look for balanced coverage unless you’re specializing. A target muscle staying under 10–15% for multiple weeks may need more direct work.</string>
+
+    <string name="tooltip_muscle_load_title_year">Muscle Load (Year)</string>
+    <string name="tooltip_muscle_load_description_year">Year-to-date workload by muscle. Over long periods, consistent imbalance (for example, push far outweighing pull) can lead to plateaus or aches—consider rebalancing while keeping your main goal in mind.</string>
+
     <!-- ============= %1RM (INTENSITY) ============= -->
     <string name="tooltip_percent1rm_title_training">Session Intensity (%1RM)</string>
     <string name="tooltip_percent1rm_description_training">How heavy each exercise was vs your estimated 1-rep max (100% ≈ a max single). Stay mostly in your goal zone: Technique 40–60%, Hypertrophy 60–75%, Strength 75–90%. A gentle drop across the session is normal; a steep fall may mean fatigue.</string>
@@ -348,19 +383,6 @@
 
     <string name="tooltip_estimated1rm_title_year">Estimated 1RM — Yearly Trend</string>
     <string name="tooltip_estimated1rm_description_year">Peak or near-peak strength across the year. A realistic goal is +1–5% per year depending on training level. Long plateaus can happen—stay patient, cycle volume and intensity, and focus on technique.</string>
-
-    <!-- ============= MUSCLE LOAD ============= -->
-    <string name="tooltip_muscle_load_title_training">Muscle Load (Session)</string>
-    <string name="tooltip_muscle_load_description_training">Which muscles received the most work today. Choose Volume, Reps, or Time-Under-Tension; use Absolute for real work, Relative for percentage share. For balance, avoid leaving muscles at near 0% week after week; for specialization, your focus muscle may take about 30–50% of the session’s load.</string>
-
-    <string name="tooltip_muscle_load_title_day">Muscle Load (Day Range)</string>
-    <string name="tooltip_muscle_load_description_day">Totals by muscle across the selected days. Check that big movers (quads, hamstrings, back, chest) get meaningful work. If a target muscle sits under 10–15% across the week, it may be under-trained for growth.</string>
-
-    <string name="tooltip_muscle_load_title_month">Muscle Load (Month)</string>
-    <string name="tooltip_muscle_load_description_month">Totals by muscle across this month. Look for balanced coverage unless you’re specializing. A target muscle staying under 10–15% for multiple weeks may need more direct work.</string>
-
-    <string name="tooltip_muscle_load_title_year">Muscle Load (Year)</string>
-    <string name="tooltip_muscle_load_description_year">Year-to-date workload by muscle. Over long periods, consistent imbalance (for example, push far outweighing pull) can lead to plateaus or aches—consider rebalancing while keeping your main goal in mind.</string>
 
     <!-- ============= DISTRIBUTION ============= -->
     <string name="tooltip_category_title_training">Compound vs Isolation</string>
