@@ -41,6 +41,10 @@ internal data class HomeStatisticsState(
     val forceTypeDistributionData: Pair<DSPieData, Instruction?> = DSPieData(slices = emptyList()) to null,
     val experienceDistributionData: Pair<DSPieData, Instruction?> = DSPieData(slices = emptyList()) to null,
 
-    // === Temporal heapmap ===
-    val temporalHeatmapData: Pair<DSHeatmapData, Instruction?> = DSHeatmapData(rows = 0, cols = 0, values01 = emptyList()) to null
+    // === Temporal heatmap ===
+    val temporalHeatmapData: Pair<DSHeatmapData, Instruction?> = DSHeatmapData(
+        rows = 0,
+        cols = 0,
+        values01 = emptyList()
+    ) to null
 )
