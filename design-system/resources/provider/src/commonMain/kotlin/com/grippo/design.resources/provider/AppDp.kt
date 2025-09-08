@@ -39,7 +39,7 @@ public data object AppDp {
         val small: Dp = 18.dp
         val medium: Dp = 22.dp
         val large: Dp = 32.dp
-        val huge: Dp = 48.dp
+        val huge: Dp = 64.dp
     }
 
     val bottomSheet: BottomSheet = BottomSheet
