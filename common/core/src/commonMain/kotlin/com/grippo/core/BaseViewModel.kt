@@ -20,83 +20,35 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.parameter.parametersOf
-import kotlin.coroutines.cancellation.CancellationException
 
 public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : BaseLoader>(
     state: STATE,
 ) : InstanceKeeper.Instance, KoinComponent {
 
-    private val coroutineScope: CoroutineScope = CoroutineScope(
-        context = SupervisorJob() + Dispatchers.Default
-    )
-
-    private val operationManager by inject<OperationManager> {
-        parametersOf(coroutineScope)
-    }
-
-    private val errorProvider by inject<ErrorProvider>()
+    // ------------ STATE API ------------
 
     private val _state: MutableStateFlow<STATE> = MutableStateFlow(state)
     public val state: StateFlow<STATE> = _state.asStateFlow()
-
-    private val _navigator = Channel<DIRECTION>(Channel.BUFFERED)
-    public val navigator: Flow<DIRECTION> = _navigator.receiveAsFlow()
-
-    private val _loaders = MutableStateFlow<ImmutableSet<LOADER>>(persistentSetOf())
-    public val loaders: StateFlow<ImmutableSet<LOADER>> = _loaders.asStateFlow()
 
     protected fun update(updateFunc: (STATE) -> STATE) {
         _state.update { currentState -> updateFunc.invoke(currentState) }
     }
 
-    protected fun navigateTo(destination: DIRECTION) {
-        _navigator.trySend(destination)
-    }
+    // ------------ LOADER API ------------
 
-    protected fun <T> Flow<T>.safeLaunch(
-        dispatcher: CoroutineDispatcher = Dispatchers.Default,
-        loader: LOADER? = null,
-        onError: (() -> Unit) = {},
-    ): Job = launchProvider(dispatcher, loader, onError) {
-        this@safeLaunch
-            .catch { e ->
-                if (e is CancellationException) throw e
-                sendError(e, onError)
-            }.onEach { removeLoader(loader) }
-            .collect {}
-    }
-
-    protected fun safeLaunch(
-        dispatcher: CoroutineDispatcher = Dispatchers.Default,
-        loader: LOADER? = null,
-        onError: (() -> Unit) = {},
-        block: suspend CoroutineScope.() -> Unit,
-    ): Job = launchProvider(dispatcher, loader, onError) { scope ->
-        scope.block()
-    }
-
-    private inline fun launchProvider(
-        dispatcher: CoroutineDispatcher = Dispatchers.Default,
-        loader: LOADER? = null,
-        noinline onError: (() -> Unit) = {},
-        crossinline body: suspend (CoroutineScope) -> Unit
-    ): Job {
-        addLoader(loader)
-        val job = operationManager.launch(
-            dispatcher = dispatcher,
-            onChildError = { t -> sendError(t, onError) },
-            block = { body(this) }
-        )
-        job.invokeOnCompletion { removeLoader(loader) }
-        return job
-    }
+    private val _loaders = MutableStateFlow<ImmutableSet<LOADER>>(persistentSetOf())
+    public val loaders: StateFlow<ImmutableSet<LOADER>> = _loaders.asStateFlow()
 
     private fun addLoader(loader: LOADER?) {
         loader ?: return
@@ -108,6 +60,88 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
         _loaders.update { (it - loader).toPersistentSet() }
     }
 
+    // ------------ NAVIGATION API ------------
+
+    private val _navigator = Channel<DIRECTION>(Channel.CONFLATED)
+    public val navigator: Flow<DIRECTION> = _navigator.receiveAsFlow()
+
+    protected fun navigateTo(destination: DIRECTION) {
+        _navigator.trySend(destination)
+    }
+
+    // ------------ COROUTINE API ------------
+
+    private val coroutineScope: CoroutineScope = CoroutineScope(
+        context = SupervisorJob() + Dispatchers.Default
+    )
+
+    private val operationManager by inject<OperationManager> {
+        parametersOf(coroutineScope)
+    }
+
+    protected fun <T> Flow<T>.safeLaunch(
+        dispatcher: CoroutineDispatcher = Dispatchers.Default,
+        loader: LOADER? = null,
+        onError: (() -> Unit) = {},
+    ): Job {
+        addLoader(loader)
+
+        val job = operationManager.launch(
+            dispatcher = dispatcher,
+            onError = { t -> sendError(t, onError) },
+            block = {
+                operationManager.whileActive(
+                    this@safeLaunch,
+                    activation
+                ).onEach {
+                    removeLoader(loader)
+                }.collect()
+            }
+        )
+
+        // final cleanup regardless of path (no-op if already removed)
+        job.invokeOnCompletion { removeLoader(loader) }
+        return job
+    }
+
+    protected fun safeLaunch(
+        dispatcher: CoroutineDispatcher = Dispatchers.Default,
+        loader: LOADER? = null,
+        onError: (() -> Unit) = {},
+        block: suspend CoroutineScope.() -> Unit,
+    ): Job {
+        addLoader(loader)
+
+        val job = operationManager.launch(
+            dispatcher = dispatcher,
+            onError = { t -> sendError(t, onError) }
+        ) {
+            block()
+        }
+
+        job.invokeOnCompletion { removeLoader(loader) }
+        return job
+    }
+
+    // ------------ ACTIVATION API ------------
+
+    private val _activation = MutableStateFlow(flowOf(false))
+    internal val activation: Flow<Boolean> = _activation.flatMapLatest { it }.distinctUntilChanged()
+
+    internal fun attachActivation(activationFlow: Flow<Boolean>) {
+        _activation.value = activationFlow
+            .distinctUntilChanged()
+            .onCompletion { emit(false) }
+    }
+
+    internal fun detachActivation() {
+        _activation.value = flowOf(false)
+    }
+
+    // ------------ ERROR API ------------
+
+    private val errorProvider by inject<ErrorProvider>()
+
     private suspend fun sendError(exception: Throwable, onError: (() -> Unit)) {
         AppLogger.General.error("┌───────── ViewModel error ─────────")
         AppLogger.General.error("│ message: ${exception.message}")
@@ -116,6 +150,8 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
         AppLogger.General.error("└───────────────────────────────────")
         errorProvider.provide(exception, callback = onError)
     }
+
+    // ------------ RELEASE API ------------
 
     override fun onDestroy() {
         _navigator.close()

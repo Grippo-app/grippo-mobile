@@ -2,16 +2,13 @@ package com.grippo.core
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.lifecycle.doOnCreate
 import com.arkivanov.essenty.lifecycle.doOnDestroy
-import com.arkivanov.essenty.lifecycle.doOnStart
-import com.arkivanov.essenty.lifecycle.doOnStop
-import com.grippo.core.internal.ComponentTreeLogger
 import com.grippo.core.internal.result.ResultManager
 import com.grippo.core.models.BaseDirection
 import com.grippo.core.models.BaseResult
 import com.grippo.core.models.ComponentIdentifier
-import com.grippo.core.models.ComponentLifeCycleEvent
 import com.grippo.core.models.NoneIdentifier
 import com.grippo.core.models.Result
 import com.grippo.core.models.ResultKey
@@ -19,6 +16,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.core.component.KoinComponent
@@ -32,35 +33,20 @@ public abstract class BaseComponent<DIRECTION : BaseDirection>(
 
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val resultManager by inject<ResultManager> { parametersOf(coroutineScope) }
-    private val componentIdentifier by inject<ComponentLifecycleEmitter>()
 
     protected abstract val viewModel: BaseViewModel<*, DIRECTION, *>
 
     init {
-        lifecycle.doOnStart {
-            componentIdentifier.invoke(identifier, ComponentLifeCycleEvent.OnStart)
-        }
-
-        lifecycle.doOnStop {
-            componentIdentifier.invoke(identifier, ComponentLifeCycleEvent.OnStop)
-        }
-
         lifecycle.doOnCreate {
-            ComponentTreeLogger.logLifecycleEvent(
-                ComponentLifeCycleEvent.OnCreate,
-                this::class.simpleName
-            )
-
             viewModel.navigator
                 .onEach(::eventListener)
                 .launchIn(coroutineScope)
+
+            viewModel.attachActivation(lifecycle.asActiveFlow())
         }
 
         lifecycle.doOnDestroy {
-            ComponentTreeLogger.logLifecycleEvent(
-                ComponentLifeCycleEvent.OnDestroy,
-                this::class.simpleName
-            )
+            viewModel.detachActivation()
             resultManager.clear()
             coroutineScope.cancel()
         }
@@ -81,4 +67,26 @@ public abstract class BaseComponent<DIRECTION : BaseDirection>(
 
     @Composable
     public abstract fun Render()
+
+
+    private fun Lifecycle.asActiveFlow(): Flow<Boolean> = callbackFlow {
+        trySend(state == Lifecycle.State.RESUMED)
+
+        val cb = object : Lifecycle.Callbacks {
+            override fun onResume() {
+                trySend(true).isSuccess
+            }
+
+            override fun onPause() {
+                trySend(false).isSuccess
+            }
+
+            override fun onDestroy() {
+                close()
+            }
+        }
+
+        subscribe(cb)
+        awaitClose { unsubscribe(cb) }
+    }.distinctUntilChanged()
 }
