@@ -2,8 +2,8 @@ package com.grippo.home.statistics
 
 import com.grippo.calculation.DistributionCalculator
 import com.grippo.calculation.MetricsAggregator
+import com.grippo.calculation.MuscleLoadCalculator
 import com.grippo.calculation.TemporalHeatmapCalculator
-import com.grippo.calculation.TotalLoadCalculator
 import com.grippo.calculation.VolumeAnalytics
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
@@ -52,7 +52,7 @@ internal class HomeStatisticsViewModel(
     private val temporalHeatmapCalculator = TemporalHeatmapCalculator(stringProvider)
     private val volumeAnalytics = VolumeAnalytics(colorProvider, stringProvider)
     private val distributionCalculator = DistributionCalculator(stringProvider, colorProvider)
-    private val totalLoadCalculator = TotalLoadCalculator(stringProvider, colorProvider)
+    private val muscleLoadCalculator = MuscleLoadCalculator(stringProvider, colorProvider)
 
     init {
         muscleFeature.observeMuscles()
@@ -188,7 +188,7 @@ internal class HomeStatisticsViewModel(
                 period = period
             )
         val muscleLoadData =
-            totalLoadCalculator.calculateMuscleLoadDistributionFromTrainings(
+            muscleLoadCalculator.calculateMuscleLoadDistributionFromTrainings(
                 trainings = trainings,
                 examples = examples,
                 groups = muscles,

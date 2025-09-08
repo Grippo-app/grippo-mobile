@@ -47,7 +47,7 @@ import com.grippo.state.trainings.TrainingState
  *  - No user bodyweight parameter. We trust the entered set weight as-is.
  *  - Negative weights are ignored (treated as 0). Tiny noise weights are ignored via EPS.
  */
-public class TotalLoadCalculator(
+public class MuscleLoadCalculator(
     private val stringProvider: StringProvider,
     private val colorProvider: ColorProvider,
 ) {
@@ -178,17 +178,16 @@ public class TotalLoadCalculator(
         if (muscleLoad.isEmpty()) return DSProgressData(items = emptyList())
 
         // 3) Aggregate by groups (or keep by muscle) — list avoids label collisions
-        val labelValues: List<Pair<String, Float>> =
-            if (groups.isNotEmpty()) {
-                groups.map { group ->
-                    val sum =
-                        group.muscles.fold(0f) { acc, m -> acc + (muscleLoad[m.value.type] ?: 0f) }
-                    group.type.title().text(stringProvider) to sum
-                }.filter { it.second > 0f }
-            } else {
-                muscleLoad.map { (muscle, v) -> muscle.title().text(stringProvider) to v }
-                    .filter { it.second > 0f }
-            }
+        val labelValues: List<Pair<String, Float>> = if (groups.isNotEmpty()) {
+            groups.map { group ->
+                val sum =
+                    group.muscles.fold(0f) { acc, m -> acc + (muscleLoad[m.value.type] ?: 0f) }
+                group.type.title().text(stringProvider) to sum
+            }.filter { it.second > 0f }
+        } else {
+            muscleLoad.map { (muscle, v) -> muscle.title().text(stringProvider) to v }
+                .filter { it.second > 0f }
+        }
 
         if (labelValues.isEmpty()) return DSProgressData(items = emptyList())
 
@@ -200,9 +199,7 @@ public class TotalLoadCalculator(
         val maxVal = validValues.maxOrNull() ?: 1f
         val sumVal = validValues.sum().takeIf { it > 0f } ?: 1f
 
-        val items = labelValues
-            .sortedByDescending { it.second }
-            .map { (label, raw) ->
+        val items = labelValues.sortedByDescending { it.second }.map { (label, raw) ->
                 val display = when (mode) {
                     Mode.ABSOLUTE -> raw
                     Mode.RELATIVE -> when (relativeMode) {
@@ -243,13 +240,12 @@ public class TotalLoadCalculator(
         return stops.last().second
     }
 
-    private fun lerpColor(c1: Color, c2: Color, t: Float): Color =
-        Color(
-            red = (c1.red + (c2.red - c1.red) * t),
-            green = (c1.green + (c2.green - c1.green) * t),
-            blue = (c1.blue + (c2.blue - c1.blue) * t),
-            alpha = (c1.alpha + (c2.alpha - c1.alpha) * t),
-        )
+    private fun lerpColor(c1: Color, c2: Color, t: Float): Color = Color(
+        red = (c1.red + (c2.red - c1.red) * t),
+        green = (c1.green + (c2.green - c1.green) * t),
+        blue = (c1.blue + (c2.blue - c1.blue) * t),
+        alpha = (c1.alpha + (c2.alpha - c1.alpha) * t),
+    )
 
     /**
      * Banded color selection for percentage values.
@@ -257,8 +253,7 @@ public class TotalLoadCalculator(
      * Uses only the order of colors in `stops`, ignores their position values.
      */
     private fun bandColorByPercent(
-        percent: Float,
-        stops: List<Pair<Float, Color>>
+        percent: Float, stops: List<Pair<Float, Color>>
     ): Color {
         if (stops.isEmpty()) return Color.Black
         val colors = stops.map { it.second } // keep order
@@ -274,26 +269,16 @@ public class TotalLoadCalculator(
     private fun instructionForMuscleLoad(period: PeriodState): Instruction {
         val scale = deriveScale(period)
         val (titleRes, descRes) = when (scale) {
-            BucketScale.EXERCISE ->
-                Res.string.tooltip_muscle_load_title_training to
-                        Res.string.tooltip_muscle_load_description_training
+            BucketScale.EXERCISE -> Res.string.tooltip_muscle_load_title_training to Res.string.tooltip_muscle_load_description_training
 
-            BucketScale.DAY ->
-                Res.string.tooltip_muscle_load_title_day to
-                        Res.string.tooltip_muscle_load_description_day
+            BucketScale.DAY -> Res.string.tooltip_muscle_load_title_day to Res.string.tooltip_muscle_load_description_day
             // No dedicated "week" strings; reuse month-view copy for weekly aggregation
-            BucketScale.WEEK ->
-                Res.string.tooltip_muscle_load_title_month to
-                        Res.string.tooltip_muscle_load_description_month
+            BucketScale.WEEK -> Res.string.tooltip_muscle_load_title_month to Res.string.tooltip_muscle_load_description_month
 
             BucketScale.MONTH -> {
                 val days = daysInclusive(period.range.from.date, period.range.to.date)
-                if (days >= 365)
-                    Res.string.tooltip_muscle_load_title_year to
-                            Res.string.tooltip_muscle_load_description_year
-                else
-                    Res.string.tooltip_muscle_load_title_month to
-                            Res.string.tooltip_muscle_load_description_month
+                if (days >= 365) Res.string.tooltip_muscle_load_title_year to Res.string.tooltip_muscle_load_description_year
+                else Res.string.tooltip_muscle_load_title_month to Res.string.tooltip_muscle_load_description_month
             }
         }
         return Instruction(title = UiText.Res(titleRes), description = UiText.Res(descRes))
