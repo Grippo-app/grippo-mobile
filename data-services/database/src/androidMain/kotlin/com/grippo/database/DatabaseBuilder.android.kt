@@ -11,6 +11,7 @@ internal actual fun NativeContext.getDatabaseBuilder(): Database {
         context = appContext,
         name = dbFile.absolutePath
     )
+        .fallbackToDestructiveMigration(dropAllTables = true)
         .setQueryCoroutineContext(Dispatchers.IO)
         .build()
         .also { it.openHelper.writableDatabase }

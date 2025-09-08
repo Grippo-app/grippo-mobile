@@ -15,6 +15,7 @@ internal actual fun NativeContext.getDatabaseBuilder(): Database {
     return Room.databaseBuilder<Database>(
         name = dbFilePath,
     )
+        .fallbackToDestructiveMigration(dropAllTables = true)
         .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(Dispatchers.IO)
         .build()
