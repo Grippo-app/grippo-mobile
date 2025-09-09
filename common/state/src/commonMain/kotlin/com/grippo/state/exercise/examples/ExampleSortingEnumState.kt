@@ -11,13 +11,13 @@ import com.grippo.state.formatters.UiText
 public enum class ExampleSortingEnumState {
     MostlyUsed,
     RecentlyUsed,
-    New;
+    NewAdded;
 
     public fun title(): UiText {
         val r = when (this) {
             MostlyUsed -> Res.string.mostly_used
             RecentlyUsed -> Res.string.recently_used
-            New -> Res.string.new_added
+            NewAdded -> Res.string.new_added
         }
         return UiText.Res(r)
     }

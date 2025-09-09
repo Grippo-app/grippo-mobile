@@ -29,11 +29,15 @@ public interface ExerciseExampleDao {
     SELECT DISTINCT ee.*
     FROM exercise_example ee
     WHERE (:name IS NULL OR LOWER(ee.name) LIKE '%' || LOWER(:name) || '%')
-    AND (:forceType IS NULL OR ee.forceType = :forceType)
-    AND (:weightType IS NULL OR ee.weightType = :weightType)
-    AND (:category IS NULL OR ee.category = :category)
-    AND (:experience IS NULL OR ee.experience = :experience)
-    ORDER BY ee.updatedAt DESC
+      AND (:forceType IS NULL OR ee.forceType = :forceType)
+      AND (:weightType IS NULL OR ee.weightType = :weightType)
+      AND (:category IS NULL OR ee.category = :category)
+      AND (:experience IS NULL OR ee.experience = :experience)
+    ORDER BY
+      CASE WHEN :sorting = 'NewAdded'     THEN ee.createdAt END DESC,
+      CASE WHEN :sorting = 'RecentlyUsed' THEN ee.lastUsed END DESC,
+      CASE WHEN :sorting = 'MostlyUsed'   THEN ee.usageCount END DESC,
+      ee.name ASC
     """
     )
     public fun getAll(
@@ -41,7 +45,8 @@ public interface ExerciseExampleDao {
         forceType: String? = null,
         weightType: String? = null,
         category: String? = null,
-        experience: String? = null
+        experience: String? = null,
+        sorting: String
     ): Flow<List<ExerciseExamplePack>>
 
     @Transaction

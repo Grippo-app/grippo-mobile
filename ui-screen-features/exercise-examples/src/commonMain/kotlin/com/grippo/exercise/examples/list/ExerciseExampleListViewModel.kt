@@ -2,12 +2,14 @@ package com.grippo.exercise.examples.list
 
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
+import com.grippo.data.features.api.exercise.example.models.ExampleQueries
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
 import com.grippo.state.domain.example.toDomain
 import com.grippo.state.domain.user.toDomain
+import com.grippo.state.exercise.examples.ExampleSortingEnumState
 import com.grippo.state.exercise.examples.ExerciseExampleDialogView
 import com.grippo.state.filters.FilterValue
 import kotlinx.collections.immutable.toPersistentList
@@ -24,26 +26,30 @@ internal class ExerciseExampleListViewModel(
 ), ExerciseExampleListContract {
 
     init {
-        state.map { it.query to it.filters }
+        state.map { Triple(it.query, it.filters, ExampleSortingEnumState.MostlyUsed) }
             .distinctUntilChanged()
-            .flatMapLatest {
-                val name = it.first
-                val weightType = it.second.filterIsInstance<FilterValue.WeightType>().firstOrNull()
+            .flatMapLatest { (query, filters, sortBy) ->
+                val name = query
+                val weightType = filters.filterIsInstance<FilterValue.WeightType>().firstOrNull()
                     ?.value?.toDomain()
-                val forceType = it.second.filterIsInstance<FilterValue.ForceType>().firstOrNull()
+                val forceType = filters.filterIsInstance<FilterValue.ForceType>().firstOrNull()
                     ?.value?.toDomain()
-                val category = it.second.filterIsInstance<FilterValue.Category>().firstOrNull()
+                val category = filters.filterIsInstance<FilterValue.Category>().firstOrNull()
                     ?.value?.toDomain()
-                val experience = it.second.filterIsInstance<FilterValue.Experience>().firstOrNull()
+                val experience = filters.filterIsInstance<FilterValue.Experience>().firstOrNull()
                     ?.value?.toDomain()
 
-                exerciseExampleFeature.observeExerciseExamples(
+                val queries = ExampleQueries(
                     name = name,
                     weightType = weightType,
                     forceType = forceType,
                     category = category,
                     experience = experience,
                 )
+
+                val sorting = sortBy.toDomain()
+
+                exerciseExampleFeature.observeExerciseExamples(queries, sorting = sorting)
             }
             .onEach(::provideExerciseExamples)
             .safeLaunch()

@@ -7,6 +7,6 @@ public fun ExampleSortingEnumState.toDomain(): ExampleSorting {
     return when (this) {
         ExampleSortingEnumState.MostlyUsed -> ExampleSorting.MostlyUsed
         ExampleSortingEnumState.RecentlyUsed -> ExampleSorting.RecentlyUsed
-        ExampleSortingEnumState.New -> ExampleSorting.New
+        ExampleSortingEnumState.NewAdded -> ExampleSorting.NewAdded
     }
 }

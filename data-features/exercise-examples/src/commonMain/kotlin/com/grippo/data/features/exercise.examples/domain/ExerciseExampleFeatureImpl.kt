@@ -1,11 +1,9 @@
 package com.grippo.data.features.exercise.examples.domain
 
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
-import com.grippo.data.features.api.exercise.example.models.CategoryEnum
+import com.grippo.data.features.api.exercise.example.models.ExampleQueries
+import com.grippo.data.features.api.exercise.example.models.ExampleSorting
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
-import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
-import com.grippo.data.features.api.exercise.example.models.ForceTypeEnum
-import com.grippo.data.features.api.exercise.example.models.WeightTypeEnum
 import kotlinx.coroutines.flow.Flow
 import org.koin.core.annotation.Single
 
@@ -15,13 +13,10 @@ internal class ExerciseExampleFeatureImpl(
 ) : ExerciseExampleFeature {
 
     override fun observeExerciseExamples(
-        name: String?,
-        forceType: ForceTypeEnum?,
-        weightType: WeightTypeEnum?,
-        experience: ExperienceEnum?,
-        category: CategoryEnum?
+        queries: ExampleQueries,
+        sorting: ExampleSorting
     ): Flow<List<ExerciseExample>> {
-        return repository.observeExerciseExamples(name, forceType, weightType, experience, category)
+        return repository.observeExerciseExamples(queries, sorting)
     }
 
     override fun observeExerciseExamples(ids: List<String>): Flow<List<ExerciseExample>> {
