@@ -134,7 +134,7 @@ internal fun TrainingCompletedScreen(
                         key = { it.id },
                         contentType = { it::class }
                     ) { value ->
-                        val radius = AppTokens.dp.exerciseCard.radius
+                        val radius = AppTokens.dp.menu.radius
                         val shape = remember(value) { value.shape(radius) }
                         val exercise = remember(value) { value.exercise() }
                         val index = remember(value) { value.index() }

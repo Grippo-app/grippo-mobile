@@ -86,7 +86,7 @@ internal fun HomeTrainingsScreen(
             key = { it.id },
             contentType = { it::class }
         ) { value ->
-            val radius = AppTokens.dp.exerciseCard.radius
+            val radius = AppTokens.dp.menu.radius
             val contentPadding = AppTokens.dp.contentPadding.content
             val style = remember(value) { value.timelineStyle() }
             val shape = remember(value) { value.shape(radius) }

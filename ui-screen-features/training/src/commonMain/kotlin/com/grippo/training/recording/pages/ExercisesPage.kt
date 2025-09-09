@@ -17,6 +17,7 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.swipe.SwipeToReveal
 import com.grippo.design.components.training.ExerciseCard
+import com.grippo.design.components.training.ExerciseCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.icons.Cancel
 import com.grippo.training.recording.TrainingRecordingContract
@@ -86,7 +87,9 @@ internal fun ExercisesPage(
                         .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
                         .fillMaxWidth(),
                     value = exercise,
-                    onClick = editExerciseProvider
+                    style = ExerciseCardStyle.Medium(
+                        onClick = editExerciseProvider
+                    ),
                 )
             }
         }

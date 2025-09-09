@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,6 +24,8 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonColorTokens
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.training.ExerciseCard
+import com.grippo.design.components.training.ExerciseCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -79,6 +83,22 @@ internal fun DraftTrainingScreen(
             color = AppTokens.colors.text.secondary,
             textAlign = TextAlign.Center
         )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+        if (state.exercises.isNotEmpty()) LazyColumn(
+            modifier = Modifier.fillMaxWidth()
+                .weight(1f, false),
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+        ) {
+            items(state.exercises, key = { it.id }) { item ->
+                ExerciseCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = item,
+                    style = ExerciseCardStyle.Small,
+                )
+            }
+        }
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
