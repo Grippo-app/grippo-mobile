@@ -82,10 +82,6 @@ public class RootViewModel(
         navigateTo(RootDirection.ToExcludedMuscles)
     }
 
-    override fun toExerciseExamples() {
-        navigateTo(RootDirection.ToExerciseExamples)
-    }
-
     override fun toSystemSettings() {
         navigateTo(RootDirection.ToSystemSettings)
     }

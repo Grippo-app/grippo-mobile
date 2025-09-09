@@ -10,7 +10,6 @@ public interface RootContract {
     public fun toWeightHistory()
     public fun toMissingEquipment()
     public fun toExcludedMuscles()
-    public fun toExerciseExamples()
     public fun toSystemSettings()
     public fun onBack()
 
@@ -20,7 +19,6 @@ public interface RootContract {
         override fun toProfile() {}
         override fun toDebug() {}
         override fun toSettings() {}
-        override fun toExerciseExamples() {}
         override fun toTraining() {}
         override fun toWeightHistory() {}
         override fun toMissingEquipment() {}

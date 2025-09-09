@@ -50,7 +50,6 @@ kotlin {
         implementation(projects.uiScreenFeatures.settings)
         implementation(projects.uiScreenFeatures.debug)
         implementation(projects.uiScreenFeatures.training)
-        implementation(projects.uiScreenFeatures.exerciseExamples)
 
         implementation(projects.uiDialogFeatures.dialogApi)
         implementation(projects.uiDialogFeatures.weightPicker)

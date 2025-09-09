@@ -10,7 +10,6 @@ public sealed interface BottomNavigationDirection : BaseDirection {
     public data object ToExcludedMuscles : BottomNavigationDirection
     public data object ToMissingEquipment : BottomNavigationDirection
     public data object ToWeightHistory : BottomNavigationDirection
-    public data object ToExerciseExamples : BottomNavigationDirection
     public data object ToDebug : BottomNavigationDirection
     public data object ToTraining : BottomNavigationDirection
     public data object ToSystemSettings : BottomNavigationDirection

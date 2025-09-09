@@ -17,12 +17,10 @@ import com.grippo.core.platform.collectAsStateMultiplatform
 import com.grippo.debug.DebugComponent
 import com.grippo.design.components.connection.snackbar.ConnectionSnackbar
 import com.grippo.design.core.AppTheme
-import com.grippo.exercise.examples.ExerciseExamplesComponent
 import com.grippo.home.BottomNavigationComponent
 import com.grippo.profile.ProfileComponent
 import com.grippo.screen.api.AuthRouter
 import com.grippo.screen.api.BottomNavigationRouter
-import com.grippo.screen.api.ExerciseExamplesRouter
 import com.grippo.screen.api.ProfileRouter
 import com.grippo.screen.api.RootRouter
 import com.grippo.screen.api.SettingsRouter
@@ -31,7 +29,6 @@ import com.grippo.settings.SettingsComponent
 import com.grippo.shared.dialog.DialogComponent
 import com.grippo.shared.root.RootComponent.Child.Authorization
 import com.grippo.shared.root.RootComponent.Child.Debug
-import com.grippo.shared.root.RootComponent.Child.ExerciseExamples
 import com.grippo.shared.root.RootComponent.Child.Home
 import com.grippo.shared.root.RootComponent.Child.Profile
 import com.grippo.shared.root.RootComponent.Child.Settings
@@ -108,10 +105,6 @@ public class RootComponent(
                 RootRouter.Profile(ProfileRouter.Muscles)
             )
 
-            RootDirection.ToExerciseExamples -> navigation.push(
-                RootRouter.ExerciseExamples(ExerciseExamplesRouter.List)
-            )
-
             RootDirection.ToSystemSettings -> navigation.push(
                 RootRouter.Settings(SettingsRouter.System)
             )
@@ -142,7 +135,6 @@ public class RootComponent(
                     toDebug = viewModel::toDebug,
                     toTraining = viewModel::toTraining,
                     toSystemSettings = viewModel::toSystemSettings,
-                    toExerciseExamples = viewModel::toExerciseExamples,
                     close = viewModel::onClose
                 )
             )
@@ -172,14 +164,6 @@ public class RootComponent(
 
             is RootRouter.Settings -> Settings(
                 SettingsComponent(
-                    componentContext = context,
-                    initial = router.value,
-                    close = viewModel::onBack,
-                )
-            )
-
-            is RootRouter.ExerciseExamples -> ExerciseExamples(
-                ExerciseExamplesComponent(
                     componentContext = context,
                     initial = router.value,
                     close = viewModel::onBack,
@@ -217,9 +201,6 @@ public class RootComponent(
             Child(component)
 
         public data class Training(override val component: TrainingComponent) :
-            Child(component)
-
-        public data class ExerciseExamples(override val component: ExerciseExamplesComponent) :
             Child(component)
     }
 }

@@ -66,7 +66,6 @@ include(":ui-screen-features:profile")
 include(":ui-screen-features:debug")
 include(":ui-screen-features:settings")
 include(":ui-screen-features:training")
-include(":ui-screen-features:exercise-examples")
 
 include(":ui-dialog-features:dialog-api")
 include(":ui-dialog-features:exercise")

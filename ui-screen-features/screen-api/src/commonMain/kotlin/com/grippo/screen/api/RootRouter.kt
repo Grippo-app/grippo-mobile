@@ -23,7 +23,4 @@ public sealed class RootRouter : BaseRouter {
 
     @Serializable
     public data object Training : RootRouter()
-
-    @Serializable
-    public data class ExerciseExamples(val value: ExerciseExamplesRouter) : RootRouter()
 }

@@ -67,10 +67,6 @@ public class BottomNavigationViewModel(
         navigateTo(BottomNavigationDirection.ToWeightHistory)
     }
 
-    override fun toExerciseExamples() {
-        navigateTo(BottomNavigationDirection.ToExerciseExamples)
-    }
-
     override fun toDebug() {
         navigateTo(BottomNavigationDirection.ToDebug)
     }

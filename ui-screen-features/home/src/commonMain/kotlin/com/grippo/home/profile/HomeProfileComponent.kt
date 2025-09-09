@@ -12,7 +12,6 @@ internal class HomeProfileComponent(
     private val toExcludedMuscles: () -> Unit,
     private val toMissingEquipment: () -> Unit,
     private val toWeightHistory: () -> Unit,
-    private val toExerciseExamples: () -> Unit,
     private val toDebug: () -> Unit,
     private val toWorkout: () -> Unit,
     private val toSystemSettings: () -> Unit,
@@ -35,7 +34,6 @@ internal class HomeProfileComponent(
     override suspend fun eventListener(direction: HomeProfileDirection) {
         when (direction) {
             HomeProfileDirection.ExcludedMuscles -> toExcludedMuscles.invoke()
-            HomeProfileDirection.ExerciseExamples -> toExerciseExamples.invoke()
             HomeProfileDirection.MissingEquipment -> toMissingEquipment.invoke()
             HomeProfileDirection.WeightHistory -> toWeightHistory.invoke()
             HomeProfileDirection.Back -> back.invoke()

@@ -22,7 +22,6 @@ public class BottomNavigationComponent(
     private val toExcludedMuscles: () -> Unit,
     private val toMissingEquipment: () -> Unit,
     private val toWeightHistory: () -> Unit,
-    private val toExerciseExamples: () -> Unit,
     private val toDebug: () -> Unit,
     private val toTraining: () -> Unit,
     private val toSystemSettings: () -> Unit,
@@ -52,7 +51,6 @@ public class BottomNavigationComponent(
             BottomNavigationDirection.ToExcludedMuscles -> toExcludedMuscles.invoke()
             BottomNavigationDirection.ToMissingEquipment -> toMissingEquipment.invoke()
             BottomNavigationDirection.ToWeightHistory -> toWeightHistory.invoke()
-            BottomNavigationDirection.ToExerciseExamples -> toExerciseExamples.invoke()
             BottomNavigationDirection.ToDebug -> toDebug.invoke()
             BottomNavigationDirection.ToTraining -> toTraining.invoke()
             BottomNavigationDirection.ToSystemSettings -> toSystemSettings.invoke()
@@ -90,7 +88,6 @@ public class BottomNavigationComponent(
                 HomeProfileComponent(
                     componentContext = context,
                     toExcludedMuscles = viewModel::toExcludedMuscles,
-                    toExerciseExamples = viewModel::toExerciseExamples,
                     toMissingEquipment = viewModel::toMissingEquipment,
                     toWeightHistory = viewModel::toWeightHistory,
                     toWorkout = viewModel::toWorkout,

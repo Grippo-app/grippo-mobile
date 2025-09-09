@@ -9,11 +9,9 @@ import com.grippo.design.resources.provider.activity
 import com.grippo.design.resources.provider.debug
 import com.grippo.design.resources.provider.icons.Flask
 import com.grippo.design.resources.provider.icons.Gym
-import com.grippo.design.resources.provider.icons.Repository
 import com.grippo.design.resources.provider.icons.Settings
 import com.grippo.design.resources.provider.icons.Waist
 import com.grippo.design.resources.provider.profile_menu_excluded_muscles
-import com.grippo.design.resources.provider.profile_menu_exercise_library
 import com.grippo.design.resources.provider.profile_menu_missing_equipment
 import com.grippo.design.resources.provider.settings
 import com.grippo.design.resources.provider.system
@@ -27,8 +25,7 @@ internal data class HomeProfileState(
 @Immutable
 internal enum class HomeProfileActivityMenu {
     ExcludedMuscles,
-    MissingEquipment,
-    ExerciseExamples;
+    MissingEquipment;
 
     companion object {
         @Composable
@@ -40,7 +37,6 @@ internal enum class HomeProfileActivityMenu {
     @Composable
     fun text(): String {
         return when (this) {
-            ExerciseExamples -> AppTokens.strings.res(Res.string.profile_menu_exercise_library)
             ExcludedMuscles -> AppTokens.strings.res(Res.string.profile_menu_excluded_muscles)
             MissingEquipment -> AppTokens.strings.res(Res.string.profile_menu_missing_equipment)
         }
@@ -49,7 +45,6 @@ internal enum class HomeProfileActivityMenu {
     @Composable
     fun icon(): ImageVector {
         return when (this) {
-            ExerciseExamples -> AppTokens.icons.Repository
             ExcludedMuscles -> AppTokens.icons.Waist
             MissingEquipment -> AppTokens.icons.Gym
         }
