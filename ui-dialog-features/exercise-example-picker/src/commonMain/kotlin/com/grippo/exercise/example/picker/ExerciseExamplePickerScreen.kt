@@ -145,9 +145,11 @@ internal fun ExerciseExamplePickerScreen(
                     }
 
                     ExerciseExampleCard(
-                        modifier = Modifier.width(220.dp),
+                        modifier = Modifier
+                            .width(320.dp)
+                            .height(220.dp),
                         value = item,
-                        style = ExerciseExampleCardStyle.Square(
+                        style = ExerciseExampleCardStyle.Medium(
                             onCardClick = selectClickProvider,
                             onDetailsClick = detailsClickProvider
                         ),

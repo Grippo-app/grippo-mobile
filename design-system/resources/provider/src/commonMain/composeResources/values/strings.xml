@@ -162,6 +162,7 @@
     <string name="select_exercise">Select exercise</string>
     <string name="draft_training_alert_title">Unfinished training</string>
     <string name="draft_training_alert_description">You have an unfinished training session. Continue where you left off?</string>
+    <string name="last_used_label">Last used:</string>
 
     <string name="filter_weight_type">Weight type</string>
     <string name="filter_force_type">Force type</string>

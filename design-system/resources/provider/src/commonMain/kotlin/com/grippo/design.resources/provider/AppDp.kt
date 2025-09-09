@@ -255,16 +255,16 @@ public data object AppDp {
     }
 
     public data object ExerciseExampleCard {
-        val square: Square = Square
-        val wide: Wide = Wide
+        val medium: Medium = Medium
+        val large: Large = Large
 
-        public data object Square {
+        public data object Medium {
             val radius: Dp = AppDp.radius.medium
             val horizontalPadding: Dp = padding.large
             val verticalPadding: Dp = padding.medium
         }
 
-        public data object Wide {
+        public data object Large {
             val radius: Dp = AppDp.radius.medium
             val horizontalPadding: Dp = padding.large
             val verticalPadding: Dp = padding.large

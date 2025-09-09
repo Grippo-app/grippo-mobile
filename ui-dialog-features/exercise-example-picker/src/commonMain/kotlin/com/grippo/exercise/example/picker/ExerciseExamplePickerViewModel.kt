@@ -53,6 +53,10 @@ public class ExerciseExamplePickerViewModel(
             }
             .onEach(::provideExerciseExamples)
             .safeLaunch()
+
+        safeLaunch {
+            exerciseExampleFeature.getExerciseExamples().getOrThrow()
+        }
     }
 
     private fun provideExerciseExamples(value: List<ExerciseExample>) {

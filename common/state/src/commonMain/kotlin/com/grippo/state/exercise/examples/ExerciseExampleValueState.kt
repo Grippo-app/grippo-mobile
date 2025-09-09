@@ -1,6 +1,7 @@
 package com.grippo.state.exercise.examples
 
 import androidx.compose.runtime.Immutable
+import com.grippo.date.utils.DateTimeUtils
 import com.grippo.state.filters.FilterValue
 import com.grippo.state.profile.ExperienceEnumState
 import kotlinx.collections.immutable.ImmutableList
@@ -44,6 +45,6 @@ public fun stubExerciseExampleValueState(): ExerciseExampleValueState {
         weightType = WeightTypeEnumState.BODY_WEIGHT,
         category = CategoryEnumState.COMPOUND,
         usageCount = 4,
-        lastUsed = null
+        lastUsed = DateTimeUtils.now()
     )
 }

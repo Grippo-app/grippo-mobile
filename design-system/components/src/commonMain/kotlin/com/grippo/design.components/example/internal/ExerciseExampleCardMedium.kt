@@ -4,19 +4,27 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import com.grippo.date.utils.DateFormat
+import com.grippo.date.utils.DateTimeUtils
+import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.chip.Chip
 import com.grippo.design.components.chip.ChipLabel
 import com.grippo.design.components.chip.ChipSize
@@ -28,38 +36,41 @@ import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.icons.NavArrowRight
+import com.grippo.design.resources.provider.last_used_label
+import com.grippo.design.resources.provider.overview
 import com.grippo.state.exercise.examples.ExerciseExampleState
 import com.grippo.state.exercise.examples.stubExerciseExample
-import com.grippo.state.muscles.factory.MuscleColorStrategy
-import com.grippo.state.muscles.factory.MuscleEngine
-import kotlinx.collections.immutable.toPersistentList
 
 @Composable
-internal fun ExerciseExampleCardWide(
+internal fun ExerciseExampleCardMedium(
     modifier: Modifier,
     value: ExerciseExampleState,
-    onCardClick: () -> Unit
+    onCardClick: () -> Unit,
+    onDetailsClick: () -> Unit
 ) {
-    val shape = RoundedCornerShape(AppTokens.dp.exerciseExampleCard.wide.radius)
+    val shape = RoundedCornerShape(AppTokens.dp.exerciseExampleCard.medium.radius)
 
     Column(
         modifier = modifier
             .scalableClick(onClick = onCardClick)
             .background(AppTokens.colors.background.card, shape)
             .padding(
-                horizontal = AppTokens.dp.exerciseExampleCard.wide.horizontalPadding,
-                vertical = AppTokens.dp.exerciseExampleCard.wide.verticalPadding
+                horizontal = AppTokens.dp.exerciseExampleCard.medium.horizontalPadding,
+                vertical = AppTokens.dp.exerciseExampleCard.medium.verticalPadding
             ),
     ) {
+
         Text(
             text = value.value.name,
-            style = AppTokens.typography.h2(),
+            style = AppTokens.typography.h1(),
             color = AppTokens.colors.text.primary,
-            maxLines = 2,
+            maxLines = 3,
             overflow = TextOverflow.Ellipsis
         )
 
-        Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
+        Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
 
         FlowRow(
             modifier = Modifier.fillMaxWidth(),
@@ -107,68 +118,57 @@ internal fun ExerciseExampleCardWide(
             )
         }
 
-        Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
+        Spacer(modifier = Modifier.weight(1f))
 
-        Text(
-            text = value.value.description,
-            style = AppTokens.typography.b13Semi(),
-            color = AppTokens.colors.text.secondary,
-            maxLines = 3,
-            overflow = TextOverflow.Ellipsis
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
 
-        val topBundles = remember(value.bundles) {
-            value.bundles
-                .sortedByDescending { it.percentage.value }
-                .take(2)
-                .toPersistentList()
-        }
-
-        if (topBundles.isNotEmpty()) {
-
-            Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
-
-            val preset = MuscleEngine.generatePreset(
-                MuscleColorStrategy.ByScaleStops(topBundles)
-            )
-
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
-            ) {
-                topBundles.forEach { item ->
-                    val color = remember(item.id) {
-                        item.muscle.type.color(preset)
-                    }
-
-                    key(item.muscle.id) {
-                        Chip(
-                            label = ChipLabel.Empty,
-                            value = item.muscle.type.title().text(),
-                            size = ChipSize.Medium,
-                            stype = ChipStype.Default,
-                            trailing = ChipTrailing.Empty,
-                            contentColor = AppTokens.colors.muscle.text,
-                            brush = Brush.horizontalGradient(
-                                colors = listOf(color.copy(alpha = 0.7f), color)
-                            )
-                        )
-                    }
+            val lastUsedDate = remember(value.value.lastUsed) {
+                value.value.lastUsed?.let { l ->
+                    DateTimeUtils.format(l, DateFormat.DATE_DD_MMM)
                 }
             }
+
+            lastUsedDate?.let {
+                Text(
+                    text = AppTokens.strings.res(Res.string.last_used_label),
+                    style = AppTokens.typography.b12Med(),
+                    color = AppTokens.colors.text.secondary
+                )
+
+                Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.text))
+
+                Text(
+                    text = lastUsedDate,
+                    style = AppTokens.typography.b12Semi(),
+                    color = AppTokens.colors.text.secondary
+                )
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Button(
+                onClick = onDetailsClick,
+                style = ButtonStyle.Transparent,
+                content = ButtonContent.Text(
+                    text = AppTokens.strings.res(Res.string.overview),
+                    endIcon = AppTokens.icons.NavArrowRight
+                ),
+            )
         }
     }
 }
 
 @AppPreview
 @Composable
-private fun ExerciseExampleCardWidePreview() {
+private fun ExerciseExampleCardMediumPreview() {
     PreviewContainer {
         ExerciseExampleCard(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.size(250.dp),
             value = stubExerciseExample(),
-            style = ExerciseExampleCardStyle.Wide({}),
+            style = ExerciseExampleCardStyle.Medium({}, {}),
         )
     }
 }

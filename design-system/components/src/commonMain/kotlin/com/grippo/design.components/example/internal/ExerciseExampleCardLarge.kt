@@ -5,20 +5,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
-import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonContent
-import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.chip.Chip
 import com.grippo.design.components.chip.ChipLabel
 import com.grippo.design.components.chip.ChipSize
@@ -30,39 +28,38 @@ import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.icons.NavArrowRight
-import com.grippo.design.resources.provider.overview
 import com.grippo.state.exercise.examples.ExerciseExampleState
 import com.grippo.state.exercise.examples.stubExerciseExample
+import com.grippo.state.muscles.factory.MuscleColorStrategy
+import com.grippo.state.muscles.factory.MuscleEngine
+import kotlinx.collections.immutable.toPersistentList
 
 @Composable
-internal fun ExerciseExampleCardSquare(
+internal fun ExerciseExampleCardLarge(
     modifier: Modifier,
     value: ExerciseExampleState,
-    onCardClick: () -> Unit,
-    onDetailsClick: () -> Unit
+    onCardClick: () -> Unit
 ) {
-    val shape = RoundedCornerShape(AppTokens.dp.exerciseExampleCard.square.radius)
+    val shape = RoundedCornerShape(AppTokens.dp.exerciseExampleCard.large.radius)
 
     Column(
         modifier = modifier
             .scalableClick(onClick = onCardClick)
             .background(AppTokens.colors.background.card, shape)
-            .aspectRatio(1f)
             .padding(
-                horizontal = AppTokens.dp.exerciseExampleCard.square.horizontalPadding,
-                vertical = AppTokens.dp.exerciseExampleCard.square.verticalPadding
+                horizontal = AppTokens.dp.exerciseExampleCard.large.horizontalPadding,
+                vertical = AppTokens.dp.exerciseExampleCard.large.verticalPadding
             ),
-        verticalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
             text = value.value.name,
-            style = AppTokens.typography.h1(),
+            style = AppTokens.typography.h2(),
             color = AppTokens.colors.text.primary,
-            maxLines = 3,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
+
+        Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
 
         FlowRow(
             modifier = Modifier.fillMaxWidth(),
@@ -108,29 +105,70 @@ internal fun ExerciseExampleCardSquare(
                 contentColor = AppTokens.colors.text.primary,
                 brush = SolidColor(AppTokens.colors.background.screen)
             )
+        }
 
-            Spacer(modifier = Modifier.weight(1f))
+        Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
 
-            Button(
-                onClick = onDetailsClick,
-                style = ButtonStyle.Transparent,
-                content = ButtonContent.Text(
-                    text = AppTokens.strings.res(Res.string.overview),
-                    endIcon = AppTokens.icons.NavArrowRight
-                ),
+        Text(
+            text = value.value.description,
+            style = AppTokens.typography.b13Semi(),
+            color = AppTokens.colors.text.secondary,
+            maxLines = 3,
+            overflow = TextOverflow.Ellipsis
+        )
+
+        val topBundles = remember(value.bundles) {
+            value.bundles
+                .sortedByDescending { it.percentage.value }
+                .take(2)
+                .toPersistentList()
+        }
+
+        if (topBundles.isNotEmpty()) {
+
+            Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+
+            val preset = MuscleEngine.generatePreset(
+                MuscleColorStrategy.ByScaleStops(topBundles)
             )
+
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
+            ) {
+                topBundles.forEach { item ->
+                    val color = remember(item.id) {
+                        item.muscle.type.color(preset)
+                    }
+
+                    key(item.muscle.id) {
+                        Chip(
+                            label = ChipLabel.Empty,
+                            value = item.muscle.type.title().text(),
+                            size = ChipSize.Medium,
+                            stype = ChipStype.Default,
+                            trailing = ChipTrailing.Empty,
+                            contentColor = AppTokens.colors.muscle.text,
+                            brush = Brush.horizontalGradient(
+                                colors = listOf(color.copy(alpha = 0.7f), color)
+                            )
+                        )
+                    }
+                }
+            }
         }
     }
 }
 
 @AppPreview
 @Composable
-private fun ExerciseExampleCardSquarePreview() {
+private fun ExerciseExampleCardLargePreview() {
     PreviewContainer {
         ExerciseExampleCard(
-            modifier = Modifier.size(250.dp),
+            modifier = Modifier.fillMaxWidth(),
             value = stubExerciseExample(),
-            style = ExerciseExampleCardStyle.Square({}, {}),
+            style = ExerciseExampleCardStyle.Large({}),
         )
     }
 }
