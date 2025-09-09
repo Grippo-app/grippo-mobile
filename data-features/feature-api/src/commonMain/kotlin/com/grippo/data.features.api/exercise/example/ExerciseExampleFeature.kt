@@ -14,7 +14,7 @@ public interface ExerciseExampleFeature {
         forceType: ForceTypeEnum?,
         weightType: WeightTypeEnum?,
         experience: ExperienceEnum?,
-        category: CategoryEnum?
+        category: CategoryEnum?,
     ): Flow<List<ExerciseExample>>
 
     public fun observeExerciseExamples(ids: List<String>): Flow<List<ExerciseExample>>

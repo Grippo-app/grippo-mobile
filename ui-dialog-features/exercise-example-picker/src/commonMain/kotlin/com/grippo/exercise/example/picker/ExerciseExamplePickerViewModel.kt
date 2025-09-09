@@ -8,6 +8,7 @@ import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
 import com.grippo.state.domain.example.toDomain
 import com.grippo.state.domain.user.toDomain
+import com.grippo.state.exercise.examples.ExampleSortingEnumState
 import com.grippo.state.exercise.examples.ExerciseExampleDialogView
 import com.grippo.state.filters.FilterValue
 import kotlinx.collections.immutable.toPersistentList
@@ -82,6 +83,10 @@ public class ExerciseExamplePickerViewModel(
     override fun onExerciseExampleSelectClick(id: String) {
         val example = state.value.exerciseExamples.find { f -> f.value.id == id } ?: return
         navigateTo(ExerciseExamplePickerDirection.BackWithResult(example))
+    }
+
+    override fun onSortByClick(value: ExampleSortingEnumState) {
+        update { it.copy(sortBy = value) }
     }
 
     override fun onDismiss() {

@@ -27,6 +27,8 @@ import com.grippo.design.components.badge.Badge
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
+import com.grippo.design.components.cards.selectable.SelectableCard
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.components.inputs.InputSearch
@@ -99,31 +101,58 @@ internal fun ExerciseExamplePickerScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-        if (state.exerciseExamples.isNotEmpty()) LazyRow(
+        LazyRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
             contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
         ) {
             items(
-                items = state.exerciseExamples,
-                key = { it.value.id },
+                items = state.sortingSuggestions,
+                key = { it.ordinal },
             ) { item ->
-                val detailsClickProvider = remember(item) {
-                    { contract.onExerciseExampleDetailsClick(item.value.id) }
+                val clickProvider = remember(item.ordinal) {
+                    { contract.onSortByClick(item) }
                 }
 
-                val selectClickProvider = remember(item) {
-                    { contract.onExerciseExampleSelectClick(item.value.id) }
-                }
-
-                ExerciseExampleCard(
-                    modifier = Modifier.width(220.dp),
-                    value = item,
-                    style = ExerciseExampleCardStyle.Square(
-                        onCardClick = selectClickProvider,
-                        onDetailsClick = detailsClickProvider
+                SelectableCard(
+                    style = CheckSelectableCardStyle.Small(
+                        title = item.title().text()
                     ),
+                    isSelected = state.sortBy == item,
+                    onSelect = clickProvider
                 )
+            }
+        }
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+        if (state.exerciseExamples.isNotEmpty()) {
+            LazyRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
+            ) {
+                items(
+                    items = state.exerciseExamples,
+                    key = { it.value.id },
+                ) { item ->
+                    val detailsClickProvider = remember(item) {
+                        { contract.onExerciseExampleDetailsClick(item.value.id) }
+                    }
+
+                    val selectClickProvider = remember(item) {
+                        { contract.onExerciseExampleSelectClick(item.value.id) }
+                    }
+
+                    ExerciseExampleCard(
+                        modifier = Modifier.width(220.dp),
+                        value = item,
+                        style = ExerciseExampleCardStyle.Square(
+                            onCardClick = selectClickProvider,
+                            onDetailsClick = detailsClickProvider
+                        ),
+                    )
+                }
             }
         } else {
             Text(

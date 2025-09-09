@@ -1,0 +1,24 @@
+package com.grippo.state.exercise.examples
+
+import androidx.compose.runtime.Immutable
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.mostly_used
+import com.grippo.design.resources.provider.new_added
+import com.grippo.design.resources.provider.recently_used
+import com.grippo.state.formatters.UiText
+
+@Immutable
+public enum class ExampleSortingEnumState {
+    MostlyUsed,
+    RecentlyUsed,
+    New;
+
+    public fun title(): UiText {
+        val r = when (this) {
+            MostlyUsed -> Res.string.mostly_used
+            RecentlyUsed -> Res.string.recently_used
+            New -> Res.string.new_added
+        }
+        return UiText.Res(r)
+    }
+}

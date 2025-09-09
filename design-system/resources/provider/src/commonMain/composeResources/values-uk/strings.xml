@@ -289,6 +289,10 @@
     <string name="iteration_focus_repetitions">Повторення</string>
     <string name="iteration_focus_unidentified">Невизначений</string>
 
+    <string name="mostly_used">Найчастіше використовувані</string>
+    <string name="recently_used">Нещодавно використані</string>
+    <string name="new_added">Нещодавно додані</string>
+
     <!-- ThemeState -->
     <string name="theme_light">Світла</string>
     <string name="theme_dark">Темна</string>

@@ -288,6 +288,10 @@
     <string name="iteration_focus_repetitions">Repetitions</string>
     <string name="iteration_focus_unidentified">Unidentified</string>
 
+    <string name="mostly_used">Mostly used</string>
+    <string name="recently_used">Recently used</string>
+    <string name="new_added">New added</string>
+
     <!-- ThemeState -->
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
