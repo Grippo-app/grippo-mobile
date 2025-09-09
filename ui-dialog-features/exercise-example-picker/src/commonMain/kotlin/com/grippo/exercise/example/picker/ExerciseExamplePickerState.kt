@@ -13,6 +13,6 @@ public data class ExerciseExamplePickerState(
     val exerciseExamples: ImmutableList<ExerciseExampleState> = persistentListOf(),
     val query: String = "",
     val sortingSuggestions: ImmutableList<ExampleSortingEnumState> = ExampleSortingEnumState.entries.toPersistentList(),
-    val sortBy: ExampleSortingEnumState = ExampleSortingEnumState.NewAdded,
+    val sortBy: ExampleSortingEnumState = ExampleSortingEnumState.MostlyUsed,
     val filters: ImmutableList<FilterValue> = ExerciseExampleState.filters
 )
