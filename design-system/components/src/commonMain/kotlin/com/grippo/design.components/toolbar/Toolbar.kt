@@ -18,6 +18,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.ShadowElevation
 import com.grippo.design.components.modifiers.models.Side
@@ -88,9 +89,11 @@ public fun Toolbar(
             title?.let {
                 Text(
                     modifier = Modifier
-                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                        .padding(horizontal = AppTokens.dp.screen.toolbar.height)
                         .align(Alignment.Center),
                     text = it,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     style = AppTokens.typography.h3(),
                     color = AppTokens.colors.text.primary,
                 )
@@ -106,13 +109,13 @@ public fun Toolbar(
 private fun ToolbarPreview() {
     PreviewContainer {
         Toolbar(
-            title = "Primary",
+            title = "Primary Primary Primary Primary Primary",
             onBack = {},
             style = ToolbarStyle.Default
         )
 
         Toolbar(
-            title = "Secondary",
+            title = "Secondary Secondary Secondary Secondary",
             onBack = {},
             style = ToolbarStyle.Transparent
         )

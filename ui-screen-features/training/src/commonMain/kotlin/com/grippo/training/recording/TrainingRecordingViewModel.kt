@@ -159,6 +159,15 @@ internal class TrainingRecordingViewModel(
 
             s.copy(exercises = exercises)
         }
+
+        safeLaunch {
+            trainingFeature.getDraftTraining().firstOrNull()
+            if (state.value.exercises.isEmpty()) {
+                trainingFeature.deleteDraftTraining().getOrThrow()
+            } else {
+                saveDraftTraining()
+            }
+        }
     }
 
     override fun onSave() {
@@ -171,19 +180,26 @@ internal class TrainingRecordingViewModel(
     }
 
     override fun onBack() {
-        safeLaunch {
-            val dialog = DialogConfig.Confirmation(
-                title = stringProvider.get(Res.string.training_progress_lost_title),
-                description = stringProvider.get(Res.string.training_progress_lost_description),
-                onResult = {
-                    safeLaunch {
-                        trainingFeature.deleteDraftTraining()
-                        navigateTo(TrainingRecordingDirection.Back)
+        if (state.value.exercises.isEmpty()) {
+            safeLaunch {
+                trainingFeature.deleteDraftTraining()
+                navigateTo(TrainingRecordingDirection.Back)
+            }
+        } else {
+            safeLaunch {
+                val dialog = DialogConfig.Confirmation(
+                    title = stringProvider.get(Res.string.training_progress_lost_title),
+                    description = stringProvider.get(Res.string.training_progress_lost_description),
+                    onResult = {
+                        safeLaunch {
+                            trainingFeature.deleteDraftTraining()
+                            navigateTo(TrainingRecordingDirection.Back)
+                        }
                     }
-                }
-            )
+                )
 
-            dialogController.show(dialog)
+                dialogController.show(dialog)
+            }
         }
     }
 
