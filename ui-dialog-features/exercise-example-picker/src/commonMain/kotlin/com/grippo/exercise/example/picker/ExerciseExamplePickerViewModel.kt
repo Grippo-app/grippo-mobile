@@ -55,7 +55,7 @@ public class ExerciseExamplePickerViewModel(
             .safeLaunch()
 
         safeLaunch {
-            exerciseExampleFeature.getExerciseExamples().getOrThrow()
+            exerciseExampleFeature.getExerciseExamples()
         }
     }
 
