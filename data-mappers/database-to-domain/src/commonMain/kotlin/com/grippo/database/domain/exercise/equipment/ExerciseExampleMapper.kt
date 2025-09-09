@@ -6,6 +6,7 @@ import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
 import com.grippo.data.features.api.exercise.example.models.ForceTypeEnum
 import com.grippo.data.features.api.exercise.example.models.WeightTypeEnum
 import com.grippo.database.entity.ExerciseExampleEntity
+import com.grippo.date.utils.DateTimeUtils
 import com.grippo.logger.AppLogger
 
 public fun ExerciseExampleEntity.toDomain(): ExerciseExampleValue? {
@@ -33,6 +34,8 @@ public fun ExerciseExampleEntity.toDomain(): ExerciseExampleValue? {
         experience = mappedExperience,
         forceType = mappedForceType,
         weightType = mappedWeightType,
-        category = mappedCategory
+        category = mappedCategory,
+        usageCount = usageCount,
+        lastUsed = lastUsed?.let { DateTimeUtils.toLocalDateTime(it) }
     )
 }

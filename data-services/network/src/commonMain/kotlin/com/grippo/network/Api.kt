@@ -9,6 +9,7 @@ import com.grippo.network.dto.auth.TokenResponse
 import com.grippo.network.dto.equipment.EquipmentGroupResponse
 import com.grippo.network.dto.equipment.EquipmentResponse
 import com.grippo.network.dto.exercise.example.ExerciseExampleResponse
+import com.grippo.network.dto.exercise.example.GetExerciseExampleResponse
 import com.grippo.network.dto.muscle.MuscleGroupResponse
 import com.grippo.network.dto.muscle.MuscleResponse
 import com.grippo.network.dto.training.TrainingBody
@@ -187,14 +188,14 @@ public class Api internal constructor(private val client: NetworkClient) {
      * Exercise examples
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun getExerciseExamples(): Result<List<ExerciseExampleResponse>> {
+    public suspend fun getExerciseExamples(): Result<List<GetExerciseExampleResponse>> {
         return request(
             method = HttpMethod.Get,
             path = "/exercise-examples",
         )
     }
 
-    public suspend fun getExerciseExample(id: String): Result<ExerciseExampleResponse> {
+    public suspend fun getExerciseExample(id: String): Result<GetExerciseExampleResponse> {
         return request(
             method = HttpMethod.Get,
             path = "/exercise-examples/$id"

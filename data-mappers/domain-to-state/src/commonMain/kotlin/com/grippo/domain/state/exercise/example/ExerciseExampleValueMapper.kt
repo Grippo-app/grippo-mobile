@@ -13,6 +13,8 @@ public fun ExerciseExampleValue.toState(): ExerciseExampleValueState {
         experience = experience.toState(),
         weightType = weightType.toState(),
         forceType = forceType.toState(),
-        category = category.toState()
+        category = category.toState(),
+        usageCount = usageCount,
+        lastUsed = lastUsed
     )
 }

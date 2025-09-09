@@ -18,6 +18,8 @@ public fun ExerciseExampleValueState.toDomain(): ExerciseExampleValue? {
         experience = experience.toDomain(),
         forceType = forceType.toDomain(),
         weightType = weightType.toDomain(),
-        category = category.toDomain()
+        category = category.toDomain(),
+        usageCount = usageCount,
+        lastUsed = lastUsed
     )
 }

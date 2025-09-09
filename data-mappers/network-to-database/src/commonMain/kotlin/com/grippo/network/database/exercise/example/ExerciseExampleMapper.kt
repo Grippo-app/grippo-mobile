@@ -2,47 +2,51 @@ package com.grippo.network.database.exercise.example
 
 import com.grippo.database.entity.ExerciseExampleEntity
 import com.grippo.logger.AppLogger
-import com.grippo.network.dto.exercise.example.ExerciseExampleResponse
+import com.grippo.network.dto.exercise.example.GetExerciseExampleResponse
 
-public fun List<ExerciseExampleResponse>.toEntities(): List<ExerciseExampleEntity> {
+public fun List<GetExerciseExampleResponse>.toEntities(): List<ExerciseExampleEntity> {
     return mapNotNull { it.toEntityOrNull() }
 }
 
-public fun ExerciseExampleResponse.toEntityOrNull(): ExerciseExampleEntity? {
-    val entityId = AppLogger.Mapping.log(id) {
+public fun GetExerciseExampleResponse.toEntityOrNull(): ExerciseExampleEntity? {
+    val entityId = AppLogger.Mapping.log(entity?.id) {
         "ExerciseExampleResponse.id is null"
     } ?: return null
 
-    val entityName = AppLogger.Mapping.log(name) {
+    val entityName = AppLogger.Mapping.log(entity?.name) {
         "ExerciseExampleResponse.name is null"
     } ?: return null
 
-    val entityDescription = AppLogger.Mapping.log(description) {
+    val entityDescription = AppLogger.Mapping.log(entity?.description) {
         "ExerciseExampleResponse.description is null"
     } ?: return null
 
-    val entityCreatedAt = AppLogger.Mapping.log(createdAt) {
+    val entityCreatedAt = AppLogger.Mapping.log(entity?.createdAt) {
         "ExerciseExampleResponse.createdAt is null"
     } ?: return null
 
-    val entityUpdatedAt = AppLogger.Mapping.log(updatedAt) {
+    val entityUpdatedAt = AppLogger.Mapping.log(entity?.updatedAt) {
         "ExerciseExampleResponse.updatedAt is null"
     } ?: return null
 
-    val entityForceType = AppLogger.Mapping.log(forceType) {
+    val entityForceType = AppLogger.Mapping.log(entity?.forceType) {
         "ExerciseExampleResponse.forceType is null"
     } ?: return null
 
-    val entityWeightType = AppLogger.Mapping.log(weightType) {
+    val entityWeightType = AppLogger.Mapping.log(entity?.weightType) {
         "ExerciseExampleResponse.weightType is null"
     } ?: return null
 
-    val entityCategory = AppLogger.Mapping.log(category) {
+    val entityCategory = AppLogger.Mapping.log(entity?.category) {
         "ExerciseExampleResponse.category is null"
     } ?: return null
 
-    val entityExperience = AppLogger.Mapping.log(experience) {
+    val entityExperience = AppLogger.Mapping.log(entity?.experience) {
         "ExerciseExampleResponse.experience is null"
+    } ?: return null
+
+    val usageCount = AppLogger.Mapping.log(usageCount) {
+        "ExerciseExampleResponse.usageCount is null"
     } ?: return null
 
     return ExerciseExampleEntity(
@@ -55,6 +59,8 @@ public fun ExerciseExampleResponse.toEntityOrNull(): ExerciseExampleEntity? {
         weightType = entityWeightType,
         category = entityCategory,
         experience = entityExperience,
-        imageUrl = imageUrl,
+        imageUrl = entity?.imageUrl,
+        usageCount = usageCount,
+        lastUsed = lastUsed
     )
 }

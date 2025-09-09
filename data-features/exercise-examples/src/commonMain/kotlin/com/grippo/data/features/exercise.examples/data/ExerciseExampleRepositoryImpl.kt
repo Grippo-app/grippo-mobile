@@ -54,10 +54,11 @@ internal class ExerciseExampleRepositoryImpl(
 
         response.onSuccess {
             it.forEach { r ->
+                val entity = r.entity ?: return@onSuccess
                 val example = r.toEntityOrNull() ?: return@onSuccess
-                val bundles = r.exerciseExampleBundles.toEntities()
-                val equipments = r.equipmentRefs.toEntities()
-                val tutorials = r.tutorials.toEntities()
+                val bundles = entity.exerciseExampleBundles.toEntities()
+                val equipments = entity.equipmentRefs.toEntities()
+                val tutorials = entity.tutorials.toEntities()
                 exerciseExampleDao.insertOrReplace(example, bundles, equipments, tutorials)
             }
         }
@@ -69,10 +70,11 @@ internal class ExerciseExampleRepositoryImpl(
         val response = api.getExerciseExample(id)
 
         response.onSuccess { r ->
+            val entity = r.entity ?: return@onSuccess
             val example = r.toEntityOrNull() ?: return@onSuccess
-            val bundles = r.exerciseExampleBundles.toEntities()
-            val equipments = r.equipmentRefs.toEntities()
-            val tutorials = r.tutorials.toEntities()
+            val bundles = entity.exerciseExampleBundles.toEntities()
+            val equipments = entity.equipmentRefs.toEntities()
+            val tutorials = entity.tutorials.toEntities()
             exerciseExampleDao.insertOrReplace(example, bundles, equipments, tutorials)
         }
 

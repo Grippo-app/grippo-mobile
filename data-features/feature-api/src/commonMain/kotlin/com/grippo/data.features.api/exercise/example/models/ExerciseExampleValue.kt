@@ -1,5 +1,7 @@
 package com.grippo.data.features.api.exercise.example.models
 
+import kotlinx.datetime.LocalDateTime
+
 public data class ExerciseExampleValue(
     val id: String,
     val name: String,
@@ -8,5 +10,7 @@ public data class ExerciseExampleValue(
     val experience: ExperienceEnum,
     val forceType: ForceTypeEnum,
     val weightType: WeightTypeEnum,
-    val category: CategoryEnum
+    val category: CategoryEnum,
+    val usageCount: Int,
+    val lastUsed: LocalDateTime?,
 )

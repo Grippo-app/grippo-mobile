@@ -5,6 +5,7 @@ import com.grippo.state.filters.FilterValue
 import com.grippo.state.profile.ExperienceEnumState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
@@ -19,6 +20,8 @@ public data class ExerciseExampleValueState(
     val forceType: ForceTypeEnumState,
     val weightType: WeightTypeEnumState,
     val category: CategoryEnumState,
+    val usageCount: Int,
+    val lastUsed: LocalDateTime?,
 ) {
     public companion object {
         public val filters: ImmutableList<FilterValue> = buildList {
@@ -39,6 +42,8 @@ public fun stubExerciseExampleValueState(): ExerciseExampleValueState {
         experience = ExperienceEnumState.INTERMEDIATE,
         forceType = ForceTypeEnumState.PUSH,
         weightType = WeightTypeEnumState.BODY_WEIGHT,
-        category = CategoryEnumState.COMPOUND
+        category = CategoryEnumState.COMPOUND,
+        usageCount = 4,
+        lastUsed = null
     )
 }

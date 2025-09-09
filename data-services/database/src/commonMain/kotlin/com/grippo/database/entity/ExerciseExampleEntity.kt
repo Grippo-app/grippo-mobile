@@ -15,4 +15,6 @@ public data class ExerciseExampleEntity(
     val category: String,
     val experience: String,
     val imageUrl: String?,
+    val lastUsed: String?,
+    val usageCount: Int
 )
