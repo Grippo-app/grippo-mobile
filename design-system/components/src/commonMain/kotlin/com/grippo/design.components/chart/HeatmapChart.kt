@@ -1,6 +1,5 @@
 package com.grippo.design.components.chart
 
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
@@ -119,7 +118,6 @@ private fun HeatmapChartPreview() {
         )
 
         HeatmapChart(
-            modifier = Modifier.size(300.dp),
             data = ds
         )
     }
