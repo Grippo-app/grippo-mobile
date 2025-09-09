@@ -31,7 +31,7 @@ public fun HeatmapChart(
     modifier: Modifier = Modifier,
     data: DSHeatmapData
 ) {
-    val background = AppTokens.colors.background
+    val missingCell = AppTokens.colors.charts.heatmap.missingCell
     val palette = AppTokens.colors.palette
 
     // Discrete color scale: picks exact color from the palette, no interpolation.
@@ -44,8 +44,8 @@ public fun HeatmapChart(
     }
 
     // Build discrete color list once: bg + palette colors (no gradient math)
-    val paletteColors: List<Color> = remember(background.screen, palette.palette5OrangeRedGrowth) {
-        listOf(background.dialog) + palette.palette5OrangeRedGrowth
+    val paletteColors: List<Color> = remember(missingCell, palette.palette5OrangeRedGrowth) {
+        listOf(missingCell) + palette.palette5OrangeRedGrowth
     }
 
     val discreteScale = remember(paletteColors) { colorScaleDiscreteOf(paletteColors) }

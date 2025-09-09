@@ -217,7 +217,7 @@ public object DarkColor : AppColor {
             override val dot = AppPalette.Unique.Green
         }
         override val heatmap = object : AppColor.Charts.HeatmapColors {
-            override val missingCell = AppPalette.Common.White.copy(alpha = 0.07f)
+            override val missingCell = AppPalette.Common.White.copy(alpha = 0.08f)
         }
         override val radar = object : AppColor.Charts.RadarColors {
             override val strokeFallback = AppPalette.Primary.P500
