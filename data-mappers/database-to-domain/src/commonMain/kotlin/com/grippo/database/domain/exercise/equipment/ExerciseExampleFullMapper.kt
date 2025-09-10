@@ -15,7 +15,6 @@ public fun ExerciseExamplePack.toDomain(): ExerciseExample? {
 
     return ExerciseExample(
         value = mappedValue,
-        tutorials = tutorials.toDomain(),
         bundles = bundles.toDomain(),
         equipments = equipments.toDomain(),
     )

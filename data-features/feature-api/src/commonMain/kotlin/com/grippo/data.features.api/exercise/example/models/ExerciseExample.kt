@@ -6,5 +6,4 @@ public data class ExerciseExample(
     val value: ExerciseExampleValue,
     val bundles: List<ExerciseExampleBundle>,
     val equipments: List<Equipment>,
-    val tutorials: List<Tutorial>,
 )

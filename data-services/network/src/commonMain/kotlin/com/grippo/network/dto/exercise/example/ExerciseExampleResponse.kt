@@ -11,8 +11,6 @@ public data class ExerciseExampleResponse(
     val id: String? = null,
     @SerialName("exerciseExampleBundles")
     val exerciseExampleBundles: List<ExerciseExampleBundleResponse> = emptyList(),
-    @SerialName("tutorials")
-    val tutorials: List<TutorialResponse> = emptyList(),
     @SerialName("name")
     val name: String? = null,
     @SerialName("forceType")

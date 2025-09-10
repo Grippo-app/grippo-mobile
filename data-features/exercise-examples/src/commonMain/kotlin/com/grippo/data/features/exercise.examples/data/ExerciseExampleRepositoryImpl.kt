@@ -54,8 +54,7 @@ internal class ExerciseExampleRepositoryImpl(
                 val example = r.toEntityOrNull() ?: return@onSuccess
                 val bundles = entity.exerciseExampleBundles.toEntities()
                 val equipments = entity.equipmentRefs.toEntities()
-                val tutorials = entity.tutorials.toEntities()
-                exerciseExampleDao.insertOrReplace(example, bundles, equipments, tutorials)
+                exerciseExampleDao.insertOrReplace(example, bundles, equipments)
             }
         }
 
@@ -70,8 +69,7 @@ internal class ExerciseExampleRepositoryImpl(
             val example = r.toEntityOrNull() ?: return@onSuccess
             val bundles = entity.exerciseExampleBundles.toEntities()
             val equipments = entity.equipmentRefs.toEntities()
-            val tutorials = entity.tutorials.toEntities()
-            exerciseExampleDao.insertOrReplace(example, bundles, equipments, tutorials)
+            exerciseExampleDao.insertOrReplace(example, bundles, equipments)
         }
 
         return response.map { }

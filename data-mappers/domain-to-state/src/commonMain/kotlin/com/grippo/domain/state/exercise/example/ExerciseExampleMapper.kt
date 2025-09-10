@@ -14,7 +14,6 @@ public fun ExerciseExample.toState(): ExerciseExampleState {
     return ExerciseExampleState(
         value = value.toState(),
         bundles = bundles.toState(),
-        tutorials = tutorials.toState(),
         equipments = equipments.toState(),
     )
 }

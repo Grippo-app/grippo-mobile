@@ -8,7 +8,6 @@ import androidx.room.Transaction
 import com.grippo.database.entity.ExerciseExampleBundleEntity
 import com.grippo.database.entity.ExerciseExampleEntity
 import com.grippo.database.entity.ExerciseExampleEquipmentEntity
-import com.grippo.database.entity.ExerciseExampleTutorialEntity
 import com.grippo.database.models.ExerciseExamplePack
 import kotlinx.coroutines.flow.Flow
 
@@ -60,12 +59,10 @@ public interface ExerciseExampleDao {
         example: ExerciseExampleEntity,
         bundles: List<ExerciseExampleBundleEntity>,
         equipments: List<ExerciseExampleEquipmentEntity>,
-        tutorials: List<ExerciseExampleTutorialEntity>
     ) {
         insertExerciseExample(example)
         insertBundles(bundles)
         insertEquipments(equipments)
-        insertTutorials(tutorials)
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -76,9 +73,6 @@ public interface ExerciseExampleDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public suspend fun insertEquipments(equipments: List<ExerciseExampleEquipmentEntity>)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public suspend fun insertTutorials(tutorials: List<ExerciseExampleTutorialEntity>)
 
     // ────────────── DELETE ──────────────
 
