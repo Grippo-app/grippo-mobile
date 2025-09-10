@@ -14,8 +14,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -104,7 +106,7 @@ internal fun ExerciseExamplePickerScreen(
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-            contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
+            contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
         ) {
             items(
                 items = state.sortingSuggestions,
@@ -126,11 +128,18 @@ internal fun ExerciseExamplePickerScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
+        val listState = rememberLazyListState()
+
+        LaunchedEffect(state.exerciseExamples){
+            listState.scrollToItem(0)
+        }
+
         if (state.exerciseExamples.isNotEmpty()) {
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-                contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                state = listState
             ) {
                 items(
                     items = state.exerciseExamples,
