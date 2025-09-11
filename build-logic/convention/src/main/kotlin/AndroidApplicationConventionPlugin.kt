@@ -13,12 +13,12 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
             pluginManager.applySafely("org.jetbrains.kotlin.android")
 
             extensions.configure<ApplicationExtension> {
-                compileSdk = 35
+                compileSdk = 36
                 namespace = "com.grippo"
 
                 defaultConfig {
                     minSdk = 26
-                    targetSdk = 35
+                    targetSdk = 36
                 }
 
                 compileOptions {

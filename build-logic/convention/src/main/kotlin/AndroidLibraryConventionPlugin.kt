@@ -12,7 +12,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
             pluginManager.applySafely("com.android.library")
 
             extensions.configure<LibraryExtension> {
-                compileSdk = 35
+                compileSdk = 36
                 namespace = "com.grippo"
 
                 defaultConfig {
