@@ -38,6 +38,7 @@ public fun BottomSheetToolbar(
         modifier = modifier
             .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
             .padding(top = AppTokens.dp.screen.verticalPadding)
+            .padding(bottom = AppTokens.dp.contentPadding.subContent)
             .height(AppTokens.dp.bottomSheet.toolbar.height),
         verticalAlignment = Alignment.CenterVertically,
     ) {

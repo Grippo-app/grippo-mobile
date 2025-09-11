@@ -35,8 +35,8 @@ import com.grippo.design.resources.provider.filters
 import com.grippo.design.resources.provider.reset
 import com.grippo.design.resources.provider.submit_btn
 import com.grippo.state.filters.FilterValue
+import com.grippo.state.filters.stubFilters
 import kotlinx.collections.immutable.ImmutableSet
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
@@ -84,7 +84,7 @@ internal fun FilterPickerScreen(
                     color = AppTokens.colors.text.primary,
                 )
 
-                Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+                Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
 
                 when (content) {
                     is FilterValue.Experience -> {
@@ -238,7 +238,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         FilterPickerScreen(
             state = FilterPickerState(
-                list = persistentListOf()
+                list = stubFilters()
             ),
             loaders = persistentSetOf(),
             contract = FilterPickerContract.Empty

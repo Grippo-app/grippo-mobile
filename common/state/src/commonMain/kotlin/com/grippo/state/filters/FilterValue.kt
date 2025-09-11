@@ -7,6 +7,7 @@ import com.grippo.design.resources.provider.filter_experience
 import com.grippo.design.resources.provider.filter_force_type
 import com.grippo.design.resources.provider.filter_weight_type
 import com.grippo.state.exercise.examples.CategoryEnumState
+import com.grippo.state.exercise.examples.ExerciseExampleState
 import com.grippo.state.exercise.examples.ForceTypeEnumState
 import com.grippo.state.exercise.examples.WeightTypeEnumState
 import com.grippo.state.formatters.UiText
@@ -92,3 +93,5 @@ public sealed interface FilterValue {
         }
     }
 }
+
+public fun stubFilters(): ImmutableList<FilterValue> = ExerciseExampleState.filters

@@ -49,6 +49,7 @@ internal fun ExerciseExampleScreen(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .weight(1f, fill = false)
             .verticalScroll(rememberScrollState()),
     ) {
 
@@ -148,20 +149,24 @@ internal fun ExerciseExampleScreen(
             contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
         )
 
-        if (state.view == ExerciseExampleDialogView.PICK) {
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-            Button(
-                modifier = Modifier
-                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                    .fillMaxWidth(),
-                content = ButtonContent.Text(
-                    text = AppTokens.strings.res(Res.string.select),
-                ),
-                style = ButtonStyle.Primary,
-                onClick = contract::onSelectClick
-            )
+        if (state.view != ExerciseExampleDialogView.PICK) {
+            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
         }
+    }
+
+    if (state.view == ExerciseExampleDialogView.PICK) {
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+        Button(
+            modifier = Modifier
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                .fillMaxWidth(),
+            content = ButtonContent.Text(
+                text = AppTokens.strings.res(Res.string.select),
+            ),
+            style = ButtonStyle.Primary,
+            onClick = contract::onSelectClick
+        )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
     }
