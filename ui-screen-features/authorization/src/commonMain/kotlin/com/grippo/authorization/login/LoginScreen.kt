@@ -20,6 +20,7 @@ import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.inputs.InputEmail
@@ -163,6 +164,7 @@ internal fun LoginScreen(
                 content = ButtonContent.Text(
                     text = AppTokens.strings.res(Res.string.login_button_registration),
                 ),
+                size = ButtonSize.Small,
                 style = ButtonStyle.Transparent,
                 onClick = contract::onRegisterClick
             )
