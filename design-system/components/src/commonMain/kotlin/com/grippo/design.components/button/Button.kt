@@ -64,6 +64,15 @@ public sealed interface ButtonContent {
 }
 
 @Immutable
+public sealed interface ButtonSize {
+    @Immutable
+    public data object Small : ButtonSize
+
+    @Immutable
+    public data object Medium : ButtonSize
+}
+
+@Immutable
 public sealed interface ButtonStyle {
     public data object Primary : ButtonStyle
     public data object Secondary : ButtonStyle
@@ -89,23 +98,30 @@ public fun Button(
     content: ButtonContent,
     style: ButtonStyle = ButtonStyle.Primary,
     state: ButtonState = ButtonState.Enabled,
+    size: ButtonSize = ButtonSize.Medium,
     onClick: () -> Unit,
     textStyle: TextStyle = AppTokens.typography.b14Bold(),
 ) {
     val colorTokens = resolveButtonColors(style = style, state = state)
-    val shape = RoundedCornerShape(AppTokens.dp.button.radius)
-    val iconSize = AppTokens.dp.button.icon
+    val shape = RoundedCornerShape(
+        when (size) {
+            ButtonSize.Medium -> AppTokens.dp.button.medium.radius
+            ButtonSize.Small -> AppTokens.dp.button.small.radius
+        }
+    )
+    val metrics = resolveButtonSize(size)
+    val iconSize = metrics.icon
     val isLoading = state == ButtonState.Loading
 
-    // Size & paddings for text layout (keeps Transparent behavior)
-    val textHeight = if (style == ButtonStyle.Transparent) null else AppTokens.dp.button.height
+    // Text layout metrics (Transparent keeps flexible height/paddings)
+    val textHeight = if (style == ButtonStyle.Transparent) null else metrics.height
     val horizontalPadding =
-        if (style == ButtonStyle.Transparent) null else AppTokens.dp.button.horizontalPadding
+        if (style == ButtonStyle.Transparent) null else metrics.horizontalPadding
     val iconPadding =
-        if (style == ButtonStyle.Transparent) AppTokens.dp.button.spaceTransparent else AppTokens.dp.button.space
+        if (style == ButtonStyle.Transparent) metrics.spaceTransparent else metrics.space
 
-    // Square side for icon-only layout (aligned with button height token)
-    val squareSide = AppTokens.dp.button.height
+    // Minimum side for square icon-only layout
+    val minSide = metrics.height
 
     val baseModifier = modifier
         .scalableClick(enabled = state == ButtonState.Enabled, onClick = onClick)
@@ -170,7 +186,7 @@ public fun Button(
         is ButtonContent.Icon -> {
             // Strict square icon-only button
             Box(
-                modifier = baseModifier.size(squareSide),
+                modifier = baseModifier.size(minSide),
                 contentAlignment = Alignment.Center
             ) {
                 AnimatedContent(
@@ -446,6 +462,118 @@ private fun ButtonIconTransparentPreview() {
             content = ButtonContent.Icon(icon = Icons.Default.Check),
             style = ButtonStyle.Transparent,
             state = ButtonState.Disabled,
+            onClick = {}
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ButtonTextSmallPreview() {
+    PreviewContainer {
+        Button(
+            content = ButtonContent.Text(text = "Enabled", startIcon = Icons.Default.Check),
+            style = ButtonStyle.Primary,
+            state = ButtonState.Enabled,
+            size = ButtonSize.Small,
+            onClick = {}
+        )
+        Button(
+            content = ButtonContent.Text(text = "Loading", startIcon = Icons.Default.Check),
+            style = ButtonStyle.Primary,
+            state = ButtonState.Loading,
+            size = ButtonSize.Small,
+            onClick = {}
+        )
+        Button(
+            content = ButtonContent.Text(text = "Disabled", startIcon = Icons.Default.Check),
+            style = ButtonStyle.Primary,
+            state = ButtonState.Disabled,
+            size = ButtonSize.Small,
+            onClick = {}
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ButtonIconSmallPreview() {
+    PreviewContainer {
+        Button(
+            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            style = ButtonStyle.Secondary,
+            state = ButtonState.Enabled,
+            size = ButtonSize.Small,
+            onClick = {}
+        )
+        Button(
+            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            style = ButtonStyle.Secondary,
+            state = ButtonState.Loading,
+            size = ButtonSize.Small,
+            onClick = {}
+        )
+        Button(
+            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            style = ButtonStyle.Secondary,
+            state = ButtonState.Disabled,
+            size = ButtonSize.Small,
+            onClick = {}
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ButtonTextTransparentSmallPreview() {
+    PreviewContainer {
+        Button(
+            content = ButtonContent.Text(text = "Enabled", startIcon = Icons.Default.Check),
+            style = ButtonStyle.Transparent,
+            state = ButtonState.Enabled,
+            size = ButtonSize.Small,
+            onClick = {}
+        )
+        Button(
+            content = ButtonContent.Text(text = "Loading", startIcon = Icons.Default.Check),
+            style = ButtonStyle.Transparent,
+            state = ButtonState.Loading,
+            size = ButtonSize.Small,
+            onClick = {}
+        )
+        Button(
+            content = ButtonContent.Text(text = "Disabled", startIcon = Icons.Default.Check),
+            style = ButtonStyle.Transparent,
+            state = ButtonState.Disabled,
+            size = ButtonSize.Small,
+            onClick = {}
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ButtonIconTransparentSmallPreview() {
+    PreviewContainer {
+        Button(
+            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            style = ButtonStyle.Transparent,
+            state = ButtonState.Enabled,
+            size = ButtonSize.Small,
+            onClick = {}
+        )
+        Button(
+            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            style = ButtonStyle.Transparent,
+            state = ButtonState.Loading,
+            size = ButtonSize.Small,
+            onClick = {}
+        )
+        Button(
+            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            style = ButtonStyle.Transparent,
+            state = ButtonState.Disabled,
+            size = ButtonSize.Small,
             onClick = {}
         )
     }

@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -18,12 +19,14 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.back
 import com.grippo.design.resources.provider.close
+import com.grippo.design.resources.provider.icons.Cancel
 import com.grippo.design.resources.provider.icons.NavArrowLeft
 
 @Immutable
 public data class BottomSheetToolbarActionButton(
     public val text: String,
     public val style: ButtonStyle,
+    public val size: ButtonSize,
     public val startIcon: ImageVector?,
     public val onClick: () -> Unit,
 )
@@ -49,6 +52,7 @@ public fun BottomSheetToolbar(
                     startIcon = btn.startIcon,
                 ),
                 style = btn.style,
+                size = btn.size,
                 onClick = btn.onClick
             )
         }
@@ -57,11 +61,11 @@ public fun BottomSheetToolbar(
 
         end?.let { btn ->
             Button(
-                content = ButtonContent.Text(
-                    text = btn.text,
-                    startIcon = btn.startIcon,
+                content = ButtonContent.Icon(
+                    icon = AppTokens.icons.Cancel
                 ),
                 style = btn.style,
+                size = btn.size,
                 onClick = btn.onClick
             )
         }
@@ -77,11 +81,13 @@ private fun BottomSheetToolbarPreview() {
                 text = AppTokens.strings.res(Res.string.back),
                 startIcon = AppTokens.icons.NavArrowLeft,
                 style = ButtonStyle.Transparent,
+                size = ButtonSize.Small,
                 onClick = {}
             ),
             end = BottomSheetToolbarActionButton(
                 text = AppTokens.strings.res(Res.string.close),
                 startIcon = null,
+                size = ButtonSize.Small,
                 style = ButtonStyle.Transparent,
                 onClick = {}
             ),
@@ -92,6 +98,7 @@ private fun BottomSheetToolbarPreview() {
                 text = AppTokens.strings.res(Res.string.back),
                 startIcon = AppTokens.icons.NavArrowLeft,
                 style = ButtonStyle.Transparent,
+                size = ButtonSize.Small,
                 onClick = {}
             ),
             end = null

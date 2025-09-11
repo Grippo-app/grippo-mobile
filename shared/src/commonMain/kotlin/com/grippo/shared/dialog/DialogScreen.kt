@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
+import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.toolbar.BottomSheetToolbar
 import com.grippo.design.components.toolbar.BottomSheetToolbarActionButton
@@ -111,12 +112,14 @@ private fun BottomSheet(
                 text = AppTokens.strings.res(Res.string.back),
                 startIcon = AppTokens.icons.NavArrowLeft,
                 style = ButtonStyle.Transparent,
+                size = ButtonSize.Small,
                 onClick = onBack
             ) else null,
             end = BottomSheetToolbarActionButton(
                 text = AppTokens.strings.res(Res.string.close),
                 startIcon = null,
                 style = ButtonStyle.Transparent,
+                size = ButtonSize.Small,
                 onClick = onClose
             ),
         )

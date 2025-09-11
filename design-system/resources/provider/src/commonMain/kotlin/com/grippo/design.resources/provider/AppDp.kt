@@ -92,7 +92,7 @@ public data object AppDp {
     }
 
     public data object Dialog {
-        val top: Dp = padding.medium
+        val top: Dp = padding.small
         val bottom: Dp = padding.extraLarge
         val horizontalPadding: Dp = padding.extraLarge
     }
@@ -120,7 +120,7 @@ public data object AppDp {
         val toolbar: Toolbar = Toolbar
 
         public data object Toolbar {
-            val height: Dp = size.tiny
+            val height: Dp = size.small
         }
     }
 
@@ -132,12 +132,26 @@ public data object AppDp {
     }
 
     public data object Button {
-        val height: Dp = size.medium
-        val horizontalPadding: Dp = padding.large
-        val radius: Dp = AppDp.radius.medium
-        val icon: Dp = AppDp.icon.medium
-        val space: Dp = padding.small
-        val spaceTransparent: Dp = padding.tiny
+        public val small: Small = Small
+        public val medium: Medium = Medium
+
+        public data object Medium {
+            val height: Dp = size.medium
+            val horizontalPadding: Dp = padding.large
+            val radius: Dp = AppDp.radius.medium
+            val icon: Dp = AppDp.icon.medium
+            val space: Dp = padding.small
+            val spaceTransparent: Dp = padding.tiny
+        }
+
+        public data object Small {
+            val height: Dp = size.small
+            val horizontalPadding: Dp = padding.medium
+            val radius: Dp = AppDp.radius.small
+            val icon: Dp = AppDp.icon.medium
+            val space: Dp = padding.small
+            val spaceTransparent: Dp = padding.tiny
+        }
     }
 
     public data object Menu {
