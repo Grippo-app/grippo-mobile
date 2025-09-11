@@ -8,7 +8,6 @@ import com.grippo.network.dto.auth.RegisterBody
 import com.grippo.network.dto.auth.TokenResponse
 import com.grippo.network.dto.equipment.EquipmentGroupResponse
 import com.grippo.network.dto.equipment.EquipmentResponse
-import com.grippo.network.dto.exercise.example.ExerciseExampleResponse
 import com.grippo.network.dto.exercise.example.GetExerciseExampleResponse
 import com.grippo.network.dto.muscle.MuscleGroupResponse
 import com.grippo.network.dto.muscle.MuscleResponse
@@ -203,28 +202,8 @@ public class Api internal constructor(private val client: NetworkClient) {
     }
 
     /* * * * * * * * * * * * * * * * *
-     * Only admin
+     * Utilities
      * * * * * * * * * * * * * * * * */
-
-    public suspend fun setExerciseExample(body: ExerciseExampleResponse): Result<IdResponse> {
-        return request(
-            method = HttpMethod.Post,
-            path = "/exercise-examples",
-            body = body
-        )
-    }
-
-    public suspend fun updateExerciseExample(
-        id: String,
-        body: ExerciseExampleResponse
-    ): Result<IdResponse> {
-        return request(
-            method = HttpMethod.Post,
-            path = "/exercise-examples",
-            body = body,
-            queryParams = mapOf("id" to id)
-        )
-    }
 
     private suspend inline fun <reified T> request(
         method: HttpMethod,
