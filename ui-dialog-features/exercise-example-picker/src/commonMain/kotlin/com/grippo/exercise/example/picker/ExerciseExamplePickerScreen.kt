@@ -14,10 +14,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +37,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.Filter
+import com.grippo.design.resources.provider.icons.Sort
 import com.grippo.design.resources.provider.not_found
 import com.grippo.design.resources.provider.select_exercise
 import com.grippo.state.exercise.examples.stubExerciseExample
@@ -99,6 +98,14 @@ internal fun ExerciseExamplePickerScreen(
                     value = count
                 )
             }
+
+            Button(
+                content = ButtonContent.Icon(
+                    icon = AppTokens.icons.Sort
+                ),
+                style = ButtonStyle.Tertiary,
+                onClick = contract::onSortClick
+            )
         }
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
@@ -109,18 +116,18 @@ internal fun ExerciseExamplePickerScreen(
             contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
         ) {
             items(
-                items = state.sortingSuggestions,
-                key = { it.ordinal },
+                items = state.muscleGroups,
+                key = { it.id },
             ) { item ->
-                val clickProvider = remember(item.ordinal) {
-                    { contract.onSortByClick(item) }
+                val clickProvider = remember(item.id) {
+                    { contract.onMuscleGroupClick(item.id) }
                 }
 
                 SelectableCard(
                     style = CheckSelectableCardStyle.Small(
-                        title = item.title().text()
+                        title = item.type.title().text()
                     ),
-                    isSelected = state.sortBy == item,
+                    isSelected = state.selectedMuscleGroupId == item.id,
                     onSelect = clickProvider
                 )
             }

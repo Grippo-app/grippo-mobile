@@ -1,21 +1,21 @@
 package com.grippo.exercise.example.picker
 
-import com.grippo.state.exercise.examples.ExampleSortingEnumState
-
 internal interface ExerciseExamplePickerContract {
     fun onExerciseExampleSelectClick(id: String)
-    fun onSortByClick(value: ExampleSortingEnumState)
+    fun onMuscleGroupClick(id: String)
     fun onExerciseExampleDetailsClick(id: String)
     fun onQueryChange(value: String)
     fun onFiltersClick()
+    fun onSortClick()
     fun onDismiss()
 
     companion object Empty : ExerciseExamplePickerContract {
         override fun onExerciseExampleSelectClick(id: String) {}
-        override fun onSortByClick(value: ExampleSortingEnumState) {}
+        override fun onMuscleGroupClick(id: String) {}
         override fun onExerciseExampleDetailsClick(id: String) {}
         override fun onQueryChange(value: String) {}
         override fun onFiltersClick() {}
+        override fun onSortClick() {}
         override fun onDismiss() {}
     }
 }

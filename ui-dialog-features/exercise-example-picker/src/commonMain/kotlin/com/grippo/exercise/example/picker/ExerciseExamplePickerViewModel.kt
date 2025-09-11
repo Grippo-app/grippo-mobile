@@ -4,12 +4,14 @@ import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExampleQueries
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
+import com.grippo.data.features.api.muscle.MuscleFeature
+import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
+import com.grippo.domain.state.muscles.toState
 import com.grippo.state.domain.example.toDomain
 import com.grippo.state.domain.user.toDomain
-import com.grippo.state.exercise.examples.ExampleSortingEnumState
 import com.grippo.state.exercise.examples.ExerciseExampleDialogView
 import com.grippo.state.filters.FilterValue
 import kotlinx.collections.immutable.toPersistentList
@@ -21,36 +23,51 @@ import kotlinx.coroutines.flow.onEach
 
 public class ExerciseExamplePickerViewModel(
     exerciseExampleFeature: ExerciseExampleFeature,
+    muscleFeature: MuscleFeature,
     private val dialogController: DialogController,
 ) : BaseViewModel<ExerciseExamplePickerState, ExerciseExamplePickerDirection, ExerciseExamplePickerLoader>(
     ExerciseExamplePickerState()
 ), ExerciseExamplePickerContract {
 
     init {
-        state.map { Triple(it.query, it.filters, it.sortBy) }
-            .distinctUntilChanged()
-            .flatMapLatest { (query, filters, sortBy) ->
-                val name = query
-                val weightType = filters.filterIsInstance<FilterValue.WeightType>().firstOrNull()
-                    ?.value?.toDomain()
-                val forceType = filters.filterIsInstance<FilterValue.ForceType>().firstOrNull()
-                    ?.value?.toDomain()
-                val category = filters.filterIsInstance<FilterValue.Category>().firstOrNull()
-                    ?.value?.toDomain()
-                val experience = filters.filterIsInstance<FilterValue.Experience>().firstOrNull()
-                    ?.value?.toDomain()
+        muscleFeature.observeMuscles()
+            .onEach(::provideMuscles)
+            .safeLaunch()
 
+        state.map { s ->
+            val weightType = s.filters.filterIsInstance<FilterValue.WeightType>().firstOrNull()
+                ?.value?.toDomain()
+            val forceType = s.filters.filterIsInstance<FilterValue.ForceType>().firstOrNull()
+                ?.value?.toDomain()
+            val category = s.filters.filterIsInstance<FilterValue.Category>().firstOrNull()
+                ?.value?.toDomain()
+            val experience = s.filters.filterIsInstance<FilterValue.Experience>().firstOrNull()
+                ?.value?.toDomain()
+            val sortBy = s.sortBy
+                .toDomain()
+
+            SearchKey(
+                query = s.query.trim(),
+                weightType = weightType,
+                forceType = forceType,
+                category = category,
+                experience = experience,
+                muscleGroupId = s.selectedMuscleGroupId,
+                sortBy = sortBy
+            )
+        }
+            .distinctUntilChanged()
+            .flatMapLatest { key ->
                 val queries = ExampleQueries(
-                    name = name,
-                    weightType = weightType,
-                    forceType = forceType,
-                    category = category,
-                    experience = experience,
+                    name = key.query,
+                    weightType = key.weightType,
+                    forceType = key.forceType,
+                    category = key.category,
+                    experience = key.experience,
+                    muscleGroupId = key.muscleGroupId
                 )
 
-                val sorting = sortBy.toDomain()
-
-                exerciseExampleFeature.observeExerciseExamples(queries, sorting = sorting)
+                exerciseExampleFeature.observeExerciseExamples(queries, key.sortBy)
             }
             .onEach(::provideExerciseExamples)
             .safeLaunch()
@@ -58,6 +75,11 @@ public class ExerciseExamplePickerViewModel(
         safeLaunch {
             exerciseExampleFeature.getExerciseExamples()
         }
+    }
+
+    private fun provideMuscles(list: List<MuscleGroup>) {
+        val suggestions = list.toState()
+        update { it.copy(muscleGroups = suggestions) }
     }
 
     private fun provideExerciseExamples(value: List<ExerciseExample>) {
@@ -98,8 +120,12 @@ public class ExerciseExamplePickerViewModel(
         navigateTo(ExerciseExamplePickerDirection.BackWithResult(example))
     }
 
-    override fun onSortByClick(value: ExampleSortingEnumState) {
-        update { it.copy(sortBy = value) }
+    override fun onMuscleGroupClick(id: String) {
+        update { it.copy(selectedMuscleGroupId = id) }
+    }
+
+    override fun onSortClick() {
+        TODO("Not yet implemented")
     }
 
     override fun onDismiss() {

@@ -2,7 +2,7 @@ package com.grippo.data.features.exercise.examples.domain
 
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExampleQueries
-import com.grippo.data.features.api.exercise.example.models.ExampleSorting
+import com.grippo.data.features.api.exercise.example.models.ExampleSortingEnum
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import kotlinx.coroutines.flow.Flow
 import org.koin.core.annotation.Single
@@ -14,7 +14,7 @@ internal class ExerciseExampleFeatureImpl(
 
     override fun observeExerciseExamples(
         queries: ExampleQueries,
-        sorting: ExampleSorting
+        sorting: ExampleSortingEnum
     ): Flow<List<ExerciseExample>> {
         return repository.observeExerciseExamples(queries, sorting)
     }
