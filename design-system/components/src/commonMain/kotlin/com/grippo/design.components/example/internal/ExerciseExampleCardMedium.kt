@@ -24,6 +24,7 @@ import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.chip.Chip
 import com.grippo.design.components.chip.ChipLabel
@@ -152,6 +153,7 @@ internal fun ExerciseExampleCardMedium(
             Button(
                 onClick = onDetailsClick,
                 style = ButtonStyle.Transparent,
+                size = ButtonSize.Small,
                 content = ButtonContent.Text(
                     text = AppTokens.strings.res(Res.string.overview),
                     endIcon = AppTokens.icons.NavArrowRight

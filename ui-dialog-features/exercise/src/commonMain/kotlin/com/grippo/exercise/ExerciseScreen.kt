@@ -19,6 +19,7 @@ import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.chip.IntensityChip
 import com.grippo.design.components.chip.IntensityChipStyle
@@ -125,6 +126,7 @@ internal fun ExerciseScreen(
                 Button(
                     onClick = onExampleDetailsClick,
                     style = ButtonStyle.Transparent,
+                    size = ButtonSize.Small,
                     content = ButtonContent.Text(
                         text = AppTokens.strings.res(Res.string.overview),
                         endIcon = AppTokens.icons.NavArrowRight
