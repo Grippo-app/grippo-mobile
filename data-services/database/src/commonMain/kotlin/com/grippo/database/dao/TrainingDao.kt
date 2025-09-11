@@ -20,7 +20,7 @@ public interface TrainingDao {
         """
         SELECT * FROM training
         WHERE createdAt BETWEEN :from AND :to
-        ORDER BY id DESC
+        ORDER BY createdAt DESC
         """
     )
     public fun get(from: String, to: String): Flow<List<TrainingPack>>
