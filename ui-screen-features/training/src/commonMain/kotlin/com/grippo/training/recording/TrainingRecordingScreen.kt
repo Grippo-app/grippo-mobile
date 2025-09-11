@@ -15,6 +15,7 @@ import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.segment.Segment
@@ -86,6 +87,7 @@ internal fun TrainingRecordingScreen(
                         text = AppTokens.strings.res(Res.string.save_btn),
                         endIcon = AppTokens.icons.NavArrowRight,
                     ),
+                    size = ButtonSize.Small,
                     style = ButtonStyle.Transparent,
                     state = buttonState,
                     onClick = contract::onSave

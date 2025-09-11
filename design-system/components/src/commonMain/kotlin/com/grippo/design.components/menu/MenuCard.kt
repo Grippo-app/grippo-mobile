@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
@@ -92,7 +93,6 @@ public fun MenuCard(
             is MenuTrailing.Text -> {
                 Text(
                     text = trailing.text.text(),
-                    style = AppTokens.typography.b15Bold(),
                     color = AppTokens.colors.text.primary
                 )
             }
@@ -101,6 +101,8 @@ public fun MenuCard(
         Text(
             modifier = Modifier.weight(1f),
             text = title,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             style = AppTokens.typography.b14Bold(),
             color = AppTokens.colors.text.primary
         )
