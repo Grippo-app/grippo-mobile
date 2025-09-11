@@ -6,7 +6,9 @@ import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.components.chart.DSBarData
 import com.grippo.design.components.chart.DSPieData
 import com.grippo.design.components.chart.DSProgressData
+import com.grippo.state.exercise.examples.ExampleSortingEnumState
 import com.grippo.state.exercise.examples.ExerciseExampleState
+import com.grippo.state.filters.FilterValue
 import com.grippo.state.formatters.IntensityFormatState
 import com.grippo.state.formatters.RepetitionsFormatState
 import com.grippo.state.formatters.VolumeFormatState
@@ -20,6 +22,8 @@ import kotlinx.datetime.LocalDateTime
 @Immutable
 internal data class TrainingRecordingState(
     val tab: RecordingTab = RecordingTab.Exercises,
+
+    // === Main data ===
     val exercises: ImmutableList<ExerciseState> = persistentListOf(),
     val examples: ImmutableList<ExerciseExampleState> = persistentListOf(),
     val muscles: ImmutableList<MuscleGroupState<MuscleRepresentationState.Plain>> = persistentListOf(),

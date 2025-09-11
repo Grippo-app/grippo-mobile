@@ -13,6 +13,7 @@ import com.grippo.state.exercise.examples.ExampleSortingEnumState
 import com.grippo.state.exercise.examples.ExerciseExampleDialogView
 import com.grippo.state.filters.FilterValue
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -69,7 +70,10 @@ public class ExerciseExamplePickerViewModel(
             id = id,
             view = ExerciseExampleDialogView.PICK,
             onResult = { example ->
-                navigateTo(ExerciseExamplePickerDirection.BackWithResult(example))
+                safeLaunch {
+                    delay(300)
+                    navigateTo(ExerciseExamplePickerDirection.BackWithResult(example))
+                }
             }
         )
 

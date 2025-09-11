@@ -128,18 +128,12 @@ internal fun ExerciseExamplePickerScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-        val listState = rememberLazyListState()
-
-        LaunchedEffect(state.exerciseExamples){
-            listState.scrollToItem(0)
-        }
 
         if (state.exerciseExamples.isNotEmpty()) {
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
                 contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                state = listState
             ) {
                 items(
                     items = state.exerciseExamples,
