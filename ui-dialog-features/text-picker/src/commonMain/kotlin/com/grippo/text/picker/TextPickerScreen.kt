@@ -1,0 +1,120 @@
+package com.grippo.text.picker
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import com.grippo.core.BaseComposeScreen
+import com.grippo.core.ScreenBackground
+import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
+import com.grippo.design.components.cards.selectable.SelectableCard
+import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.icons.Sort
+import com.grippo.design.resources.provider.submit_btn
+import com.grippo.design.resources.provider.text_picker_title
+import com.grippo.state.text.TextWithId
+import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
+
+@Composable
+internal fun TextPickerScreen(
+    state: TextPickerState,
+    loaders: ImmutableSet<TextPickerLoader>,
+    contract: TextPickerContract
+) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
+
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = AppTokens.strings.res(Res.string.text_picker_title),
+            style = AppTokens.typography.h3(),
+            color = AppTokens.colors.text.primary,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+        ) {
+            items(
+                items = state.list,
+                key = { it.hashCode() },
+            ) { item ->
+                val clickProvider = remember(item) { { contract.onSelectClick(item) } }
+                val isSelected = remember(state.value) { state.value == item }
+
+                SelectableCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    isSelected = isSelected,
+                    onSelect = clickProvider,
+                    style = CheckSelectableCardStyle.Large(
+                        title = item.text,
+                        description = "sad",
+                        icon = AppTokens.icons.Sort,
+                        subContent = null
+                    )
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            content = ButtonContent.Text(
+                text = AppTokens.strings.res(Res.string.submit_btn),
+            ),
+            style = ButtonStyle.Primary,
+            onClick = contract::onSubmitClick
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreview() {
+    PreviewContainer {
+        TextPickerScreen(
+            state = TextPickerState(
+                value = TextWithId("id2", "Text2"),
+                list = persistentListOf(
+                    TextWithId("id1", "Text1"),
+                    TextWithId("id2", "Text2"),
+                    TextWithId("id3", "Text3"),
+                    TextWithId("id4", "Text4"),
+                )
+            ),
+            loaders = persistentSetOf(),
+            contract = TextPickerContract.Empty
+        )
+    }
+}

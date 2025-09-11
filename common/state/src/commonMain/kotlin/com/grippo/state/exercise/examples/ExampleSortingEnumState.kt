@@ -6,8 +6,10 @@ import com.grippo.design.resources.provider.mostly_used
 import com.grippo.design.resources.provider.new_added
 import com.grippo.design.resources.provider.recently_used
 import com.grippo.state.formatters.UiText
+import kotlinx.serialization.Serializable
 
 @Immutable
+@Serializable
 public enum class ExampleSortingEnumState {
     MostlyUsed,
     RecentlyUsed,

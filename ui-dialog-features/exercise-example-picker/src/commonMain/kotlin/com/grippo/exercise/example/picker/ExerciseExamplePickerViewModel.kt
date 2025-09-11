@@ -6,14 +6,17 @@ import com.grippo.data.features.api.exercise.example.models.ExampleQueries
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
+import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.muscles.toState
 import com.grippo.state.domain.example.toDomain
 import com.grippo.state.domain.user.toDomain
+import com.grippo.state.exercise.examples.ExampleSortingEnumState
 import com.grippo.state.exercise.examples.ExerciseExampleDialogView
 import com.grippo.state.filters.FilterValue
+import com.grippo.state.text.TextWithId
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -25,6 +28,7 @@ public class ExerciseExamplePickerViewModel(
     exerciseExampleFeature: ExerciseExampleFeature,
     muscleFeature: MuscleFeature,
     private val dialogController: DialogController,
+    private val stringProvider: StringProvider
 ) : BaseViewModel<ExerciseExamplePickerState, ExerciseExamplePickerDirection, ExerciseExamplePickerLoader>(
     ExerciseExamplePickerState()
 ), ExerciseExamplePickerContract {
@@ -125,7 +129,33 @@ public class ExerciseExamplePickerViewModel(
     }
 
     override fun onSortClick() {
-        TODO("Not yet implemented")
+        safeLaunch {
+            val selected = TextWithId(
+                id = state.value.sortBy.ordinal.toString(),
+                text = state.value.sortBy.title().text(stringProvider)
+            )
+            val available = ExampleSortingEnumState.entries.map {
+                TextWithId(
+                    id = it.ordinal.toString(),
+                    text = it.title().text(stringProvider)
+                )
+            }
+
+            val dialog = DialogConfig.TextPicker(
+                initial = selected,
+                available = available,
+                onResult = { value ->
+                    val sortByOrigin = value.id
+                        .toIntOrNull() ?: return@TextPicker
+                    val sortBy = ExampleSortingEnumState.entries
+                        .getOrNull(sortByOrigin) ?: return@TextPicker
+
+                    update { it.copy(sortBy = sortBy) }
+                }
+            )
+
+            dialogController.show(dialog)
+        }
     }
 
     override fun onDismiss() {
