@@ -2,6 +2,7 @@ package com.grippo.exercise.example.picker
 
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
+import com.grippo.data.features.api.exercise.example.models.ExamplePage
 import com.grippo.data.features.api.exercise.example.models.ExampleQueries
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.muscle.MuscleFeature
@@ -71,8 +72,9 @@ public class ExerciseExamplePickerViewModel(
                     experience = key.experience,
                     muscleGroupId = key.muscleGroupId
                 )
+                val page = ExamplePage.First15
 
-                exerciseExampleFeature.observeExerciseExamples(queries, key.sortBy)
+                exerciseExampleFeature.observeExerciseExamples(queries, key.sortBy, page)
             }
             .onEach(::provideExerciseExamples)
             .safeLaunch()

@@ -1,6 +1,7 @@
 package com.grippo.data.features.exercise.examples.domain
 
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
+import com.grippo.data.features.api.exercise.example.models.ExamplePage
 import com.grippo.data.features.api.exercise.example.models.ExampleQueries
 import com.grippo.data.features.api.exercise.example.models.ExampleSortingEnum
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
@@ -14,9 +15,10 @@ internal class ExerciseExampleFeatureImpl(
 
     override fun observeExerciseExamples(
         queries: ExampleQueries,
-        sorting: ExampleSortingEnum
+        sorting: ExampleSortingEnum,
+        page: ExamplePage
     ): Flow<List<ExerciseExample>> {
-        return repository.observeExerciseExamples(queries, sorting)
+        return repository.observeExerciseExamples(queries, sorting, page)
     }
 
     override fun observeExerciseExamples(ids: List<String>): Flow<List<ExerciseExample>> {

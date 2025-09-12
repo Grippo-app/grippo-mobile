@@ -1,5 +1,6 @@
 package com.grippo.data.features.exercise.examples.data
 
+import com.grippo.data.features.api.exercise.example.models.ExamplePage
 import com.grippo.data.features.api.exercise.example.models.ExampleQueries
 import com.grippo.data.features.api.exercise.example.models.ExampleSortingEnum
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
@@ -21,7 +22,8 @@ internal class ExerciseExampleRepositoryImpl(
 
     override fun observeExerciseExamples(
         queries: ExampleQueries,
-        sorting: ExampleSortingEnum
+        sorting: ExampleSortingEnum,
+        page: ExamplePage
     ): Flow<List<ExerciseExample>> {
         return exerciseExampleDao.getAll(
             name = queries.name,
@@ -30,7 +32,9 @@ internal class ExerciseExampleRepositoryImpl(
             category = queries.category?.key,
             experience = queries.experience?.key,
             muscleGroupId = queries.muscleGroupId,
-            sorting = sorting.key
+            sorting = sorting.key,
+            limits = page.limits,
+            number = page.number
         ).map { it.toDomain() }
     }
 

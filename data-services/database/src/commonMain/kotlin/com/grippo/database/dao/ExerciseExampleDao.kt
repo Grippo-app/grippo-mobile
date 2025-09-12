@@ -51,6 +51,11 @@ public interface ExerciseExampleDao {
       CASE WHEN :sorting = 'RecentlyUsed' THEN ee.lastUsed END DESC,
       CASE WHEN :sorting = 'MostlyUsed'   THEN ee.usageCount END DESC,
       ee.name ASC
+    LIMIT CASE WHEN :limits IS NULL THEN -1 ELSE :limits END
+    OFFSET CASE
+        WHEN :limits IS NULL OR :number IS NULL OR :number <= 1 THEN 0
+        ELSE (:number - 1) * :limits
+    END
     """
     )
     public fun getAll(
@@ -60,7 +65,9 @@ public interface ExerciseExampleDao {
         category: String? = null,
         experience: String? = null,
         muscleGroupId: String? = null,
-        sorting: String
+        sorting: String,
+        limits: Int?,
+        number: Int?
     ): Flow<List<ExerciseExamplePack>>
 
     @Transaction
