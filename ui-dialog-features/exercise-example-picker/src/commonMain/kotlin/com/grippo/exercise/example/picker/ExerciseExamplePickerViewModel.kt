@@ -25,11 +25,14 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
 public class ExerciseExamplePickerViewModel(
+    targetMuscleGroupId: String?,
     exerciseExampleFeature: ExerciseExampleFeature,
     muscleFeature: MuscleFeature,
     private val dialogController: DialogController,
 ) : BaseViewModel<ExerciseExamplePickerState, ExerciseExamplePickerDirection, ExerciseExamplePickerLoader>(
-    ExerciseExamplePickerState()
+    ExerciseExamplePickerState(
+        selectedMuscleGroupId = targetMuscleGroupId
+    )
 ), ExerciseExamplePickerContract {
 
     init {
@@ -39,6 +42,9 @@ public class ExerciseExamplePickerViewModel(
 
         state
             .map { s ->
+                val muscleGroupId = s.selectedMuscleGroupId
+                val sortBy = SortingEnumState.RecentlyUsed.toDomain()
+
                 val weightType = s.filters.filterIsInstance<FilterValue.WeightType>().firstOrNull()
                     ?.value?.toDomain()
                 val forceType = s.filters.filterIsInstance<FilterValue.ForceType>().firstOrNull()
@@ -47,8 +53,6 @@ public class ExerciseExamplePickerViewModel(
                     ?.value?.toDomain()
                 val experience = s.filters.filterIsInstance<FilterValue.Experience>().firstOrNull()
                     ?.value?.toDomain()
-                val sortBy = SortingEnumState.RecentlyUsed
-                    .toDomain()
 
                 SearchKey(
                     query = s.query.trim(),
@@ -56,7 +60,7 @@ public class ExerciseExamplePickerViewModel(
                     forceType = forceType,
                     category = category,
                     experience = experience,
-                    muscleGroupId = s.selectedMuscleGroupId,
+                    muscleGroupId = muscleGroupId,
                     sortBy = sortBy
                 )
             }
@@ -70,9 +74,12 @@ public class ExerciseExamplePickerViewModel(
                     experience = key.experience,
                     muscleGroupId = key.muscleGroupId
                 )
-                val page = ExamplePage.First15
 
-                exerciseExampleFeature.observeExerciseExamples(queries, key.sortBy, page)
+                exerciseExampleFeature.observeExerciseExamples(
+                    queries = queries,
+                    sorting = key.sortBy,
+                    page = ExamplePage.First15
+                )
             }
             .onEach(::provideExerciseExamples)
             .safeLaunch()

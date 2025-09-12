@@ -23,9 +23,11 @@ internal data class TrainingRecordingState(
 
     // === Main data ===
     val exercises: ImmutableList<ExerciseState> = persistentListOf(),
+    val startAt: LocalDateTime = DateTimeUtils.now(),
+
+    // === Filters / Sorting ===
     val examples: ImmutableList<ExerciseExampleState> = persistentListOf(),
     val muscles: ImmutableList<MuscleGroupState<MuscleRepresentationState.Plain>> = persistentListOf(),
-    val startAt: LocalDateTime = DateTimeUtils.now(),
 
     // === Basic metrics chips ===
     val totalVolume: VolumeFormatState = VolumeFormatState.of(0f),

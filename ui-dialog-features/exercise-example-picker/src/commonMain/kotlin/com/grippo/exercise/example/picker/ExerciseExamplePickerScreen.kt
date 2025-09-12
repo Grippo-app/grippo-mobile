@@ -180,6 +180,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         ExerciseExamplePickerScreen(
             state = ExerciseExamplePickerState(
+                selectedMuscleGroupId = null,
                 exerciseExamples = persistentListOf(
                     stubExerciseExample(),
                     stubExerciseExample()
@@ -192,6 +193,7 @@ private fun ScreenPreview() {
         ExerciseExamplePickerScreen(
             state = ExerciseExamplePickerState(
                 exerciseExamples = persistentListOf(),
+                selectedMuscleGroupId = null
             ),
             loaders = persistentSetOf(),
             contract = ExerciseExamplePickerContract.Empty

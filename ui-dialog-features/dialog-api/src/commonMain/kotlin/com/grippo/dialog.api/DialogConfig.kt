@@ -117,6 +117,7 @@ public sealed class DialogConfig(
 
     @Serializable
     public data class ExerciseExamplePicker(
+        val targetMuscleGroupId: String?,
         @Transient val onResult: (ExerciseExampleState) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,

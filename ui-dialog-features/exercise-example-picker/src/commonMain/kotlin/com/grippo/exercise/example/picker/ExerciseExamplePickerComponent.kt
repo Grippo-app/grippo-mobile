@@ -10,12 +10,14 @@ import com.grippo.state.exercise.examples.ExerciseExampleState
 
 public class ExerciseExamplePickerComponent(
     componentContext: ComponentContext,
+    private val targetMuscleGroupId: String?,
     private val onResult: (value: ExerciseExampleState) -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<ExerciseExamplePickerDirection>(componentContext) {
 
     override val viewModel: ExerciseExamplePickerViewModel = componentContext.retainedInstance {
         ExerciseExamplePickerViewModel(
+            targetMuscleGroupId = targetMuscleGroupId,
             exerciseExampleFeature = getKoin().get(),
             muscleFeature = getKoin().get(),
             dialogController = getKoin().get(),

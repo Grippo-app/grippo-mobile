@@ -27,6 +27,7 @@ import com.grippo.domain.state.muscles.toState
 import com.grippo.domain.state.training.toState
 import com.grippo.state.domain.training.toDomain
 import com.grippo.state.formatters.IntensityFormatState
+import com.grippo.state.formatters.PercentageFormatState
 import com.grippo.state.formatters.RepetitionsFormatState
 import com.grippo.state.formatters.VolumeFormatState
 import com.grippo.state.trainings.ExerciseState
@@ -101,7 +102,26 @@ internal class TrainingRecordingViewModel(
     }
 
     override fun onAddExercise() {
+        val lastExampleId = state.value.exercises
+            .lastOrNull()
+            ?.exerciseExample
+            ?.id
+
+        val lastTargetMuscleId = state.value.examples
+            .firstOrNull { it.value.id == lastExampleId }
+            ?.bundles
+            ?.maxByOrNull {
+                (it.percentage as? PercentageFormatState.Valid)?.value ?: Int.MIN_VALUE
+            }
+            ?.muscle
+            ?.id
+
+        val lastTargetMuscleGroupId = state.value.muscles
+            .find { it.muscles.any { a -> a.value.id == lastTargetMuscleId } }
+            ?.id
+
         val dialog = DialogConfig.ExerciseExamplePicker(
+            targetMuscleGroupId = lastTargetMuscleGroupId,
             onResult = { example ->
                 val exercise = ExerciseState(
                     id = Uuid.random().toString(),
@@ -114,6 +134,7 @@ internal class TrainingRecordingViewModel(
                         intensity = IntensityFormatState.of(0f),
                     ),
                 )
+
                 navigateTo(TrainingRecordingDirection.ToExercise(exercise))
             }
         )

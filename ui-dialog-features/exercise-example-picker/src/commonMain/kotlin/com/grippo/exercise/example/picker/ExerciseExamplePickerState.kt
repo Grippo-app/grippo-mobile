@@ -18,7 +18,7 @@ public data class ExerciseExamplePickerState(
     val exerciseExamples: ImmutableList<ExerciseExampleState> = persistentListOf(),
     val query: String = "",
     val muscleGroups: ImmutableList<MuscleGroupState<MuscleRepresentationState.Plain>> = persistentListOf(),
-    val selectedMuscleGroupId: String? = null,
+    val selectedMuscleGroupId: String?,
     val filters: ImmutableList<FilterValue> = ExerciseExampleState.filters
 )
 

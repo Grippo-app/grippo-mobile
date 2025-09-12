@@ -147,6 +147,7 @@ internal class DialogContentComponent(
             is DialogConfig.ExerciseExamplePicker -> Child.ExerciseExamplePicker(
                 ExerciseExamplePickerComponent(
                     componentContext = context,
+                    targetMuscleGroupId = router.targetMuscleGroupId,
                     onResult = { example -> viewModel.onBack { router.onResult.invoke(example) } },
                     back = { viewModel.onBack(null) }
                 )
