@@ -47,6 +47,7 @@ import com.grippo.state.trainings.stubIteration
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 internal fun IterationPickerScreen(
@@ -62,7 +63,7 @@ internal fun IterationPickerScreen(
         // run after composition
         withFrameNanos { /* no-op, just await a frame */ }
 
-        delay(250)
+        delay(250.milliseconds)
 
         when (state.focus) {
             IterationFocus.VOLUME -> {

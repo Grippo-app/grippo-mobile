@@ -44,7 +44,6 @@ import com.grippo.design.resources.provider.registration_completed_title
 import com.grippo.state.profile.stubUser
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.coroutines.delay
 
 @Composable
 internal fun CompletedScreen(
@@ -60,9 +59,10 @@ internal fun CompletedScreen(
 
     val cardVisible = remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        delay(200)
-        cardVisible.value = true
+    LaunchedEffect(state.user, loaders) {
+        val hasLoader = loaders.contains(CompletedLoader.Registration)
+        val hasUser = state.user != null
+        cardVisible.value = hasUser && hasLoader.not()
     }
 
     val alpha by animateFloatAsState(
@@ -134,7 +134,7 @@ internal fun CompletedScreen(
             )
         }
 
-        if (state.user != null) {
+        if (state.user != null && cardVisible.value) {
             KonfettiParade()
         }
     }

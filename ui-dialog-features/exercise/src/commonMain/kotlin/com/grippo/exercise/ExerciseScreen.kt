@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
@@ -141,6 +142,8 @@ internal fun ExerciseScreen(
                     .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                     .fillMaxWidth(),
                 text = example.description,
+                maxLines = 4,
+                overflow = TextOverflow.Ellipsis,
                 style = AppTokens.typography.b14Reg(),
                 color = AppTokens.colors.text.primary,
             )

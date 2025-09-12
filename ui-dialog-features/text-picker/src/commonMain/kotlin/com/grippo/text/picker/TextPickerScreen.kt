@@ -16,9 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
-import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonContent
-import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
 import com.grippo.design.components.cards.selectable.SelectableCard
 import com.grippo.design.core.AppTokens
@@ -26,7 +23,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.Sort
-import com.grippo.design.resources.provider.submit_btn
 import com.grippo.design.resources.provider.text_picker_title
 import com.grippo.state.text.TextWithId
 import kotlinx.collections.immutable.ImmutableSet
@@ -60,7 +56,9 @@ internal fun TextPickerScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f, fill = false),
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
         ) {
             items(
@@ -83,17 +81,6 @@ internal fun TextPickerScreen(
                 )
             }
         }
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            content = ButtonContent.Text(
-                text = AppTokens.strings.res(Res.string.submit_btn),
-            ),
-            style = ButtonStyle.Primary,
-            onClick = contract::onSubmitClick
-        )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
     }

@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -69,8 +70,12 @@ internal fun TrainingCompletedScreen(
         return@BaseComposeScreen
     }
 
-    val cardVisible = remember(state.training) {
-        mutableStateOf(state.training.isNotEmpty())
+    val cardVisible = remember { mutableStateOf(false) }
+
+    LaunchedEffect(state.training, loaders) {
+        val hasLoader = loaders.contains(TrainingCompletedLoader.SaveTraining)
+        val hasTraining = state.training.isNotEmpty()
+        cardVisible.value = hasTraining && hasLoader.not()
     }
 
     val alpha by animateFloatAsState(
@@ -189,7 +194,7 @@ internal fun TrainingCompletedScreen(
             )
         }
 
-        if (cardVisible.value) {
+        if (cardVisible.value && cardVisible.value) {
             KonfettiParade()
         }
     }

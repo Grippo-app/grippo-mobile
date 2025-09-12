@@ -99,6 +99,7 @@ internal fun CredentialScreen(
                 state.email is EmailFormatState.Invalid -> ButtonState.Disabled
                 state.email is EmailFormatState.Empty -> ButtonState.Disabled
                 state.password is PasswordFormatState.Empty -> ButtonState.Disabled
+                state.password is PasswordFormatState.Invalid -> ButtonState.Disabled
                 else -> ButtonState.Enabled
             }
         }

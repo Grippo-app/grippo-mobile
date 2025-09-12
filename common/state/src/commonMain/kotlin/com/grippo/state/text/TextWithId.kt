@@ -7,5 +7,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 public data class TextWithId(
     val id: String,
-    val text: String
+    val text: String,
 )

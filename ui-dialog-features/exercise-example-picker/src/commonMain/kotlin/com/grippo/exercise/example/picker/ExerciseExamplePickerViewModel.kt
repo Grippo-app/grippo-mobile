@@ -7,6 +7,7 @@ import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.design.resources.provider.providers.StringProvider
+import com.grippo.dialog.api.DIALOG_EXIT_ANIMATION_DURATION
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
@@ -97,7 +98,7 @@ public class ExerciseExamplePickerViewModel(
             view = ExerciseExampleDialogView.PICK,
             onResult = { example ->
                 safeLaunch {
-                    delay(300)
+                    delay(DIALOG_EXIT_ANIMATION_DURATION)
                     navigateTo(ExerciseExamplePickerDirection.BackWithResult(example))
                 }
             }
