@@ -22,7 +22,6 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.icons.Sort
 import com.grippo.design.resources.provider.text_picker_title
 import com.grippo.state.text.TextWithId
 import kotlinx.collections.immutable.ImmutableSet
@@ -72,11 +71,9 @@ internal fun TextPickerScreen(
                     modifier = Modifier.fillMaxWidth(),
                     isSelected = isSelected,
                     onSelect = clickProvider,
-                    style = CheckSelectableCardStyle.Large(
+                    style = CheckSelectableCardStyle.Medium(
                         title = item.text,
-                        description = "sad",
-                        icon = AppTokens.icons.Sort,
-                        subContent = null
+                        description = null
                     )
                 )
             }

@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.cards.selectable.internal.CheckSelectableCardLarge
+import com.grippo.design.components.cards.selectable.internal.CheckSelectableCardMedium
 import com.grippo.design.components.cards.selectable.internal.CheckSelectableCardSmall
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -25,6 +26,12 @@ public sealed class CheckSelectableCardStyle(
     @Immutable
     public data class Small(
         override val title: String,
+    ) : CheckSelectableCardStyle(title)
+
+    @Immutable
+    public data class Medium(
+        override val title: String,
+        val description: String?,
     ) : CheckSelectableCardStyle(title)
 
     @Immutable
@@ -45,6 +52,13 @@ public fun SelectableCard(
 ) {
     when (style) {
         is CheckSelectableCardStyle.Large -> CheckSelectableCardLarge(
+            modifier = modifier,
+            style = style,
+            isSelected = isSelected,
+            onClick = onSelect
+        )
+
+        is CheckSelectableCardStyle.Medium -> CheckSelectableCardMedium(
             modifier = modifier,
             style = style,
             isSelected = isSelected,
@@ -81,6 +95,19 @@ private fun CheckSelectableCardLargePreview() {
                 description = "Test Description",
                 icon = Icons.Filled.Done,
                 subContent = null
+            )
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun CheckSelectableCardMediumPreview() {
+    PreviewContainer {
+        CheckSelectableCardVariants(
+            CheckSelectableCardStyle.Medium(
+                title = "Test Title",
+                description = "Test Description"
             )
         )
     }

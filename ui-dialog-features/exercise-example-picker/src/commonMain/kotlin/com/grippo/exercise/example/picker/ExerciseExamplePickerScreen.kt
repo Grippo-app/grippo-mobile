@@ -135,7 +135,6 @@ internal fun ExerciseExamplePickerScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-
         if (state.exerciseExamples.isNotEmpty()) {
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
@@ -156,6 +155,7 @@ internal fun ExerciseExamplePickerScreen(
 
                     ExerciseExampleCard(
                         modifier = Modifier
+                            .animateItem()
                             .width(320.dp)
                             .height(220.dp),
                         value = item,

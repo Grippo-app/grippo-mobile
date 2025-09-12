@@ -315,6 +315,7 @@ public data object AppDp {
 
     public data object CheckSelectableCard {
         val large: Large = Large
+        val medium: Medium = Medium
         val small: Small = Small
 
         public data object Large {
@@ -322,6 +323,13 @@ public data object AppDp {
             val verticalPadding: Dp = padding.large
             val radius: Dp = AppDp.radius.medium
             val icon: Dp = AppDp.icon.large
+        }
+
+        public data object Medium {
+            val horizontalPadding: Dp = padding.medium
+            val verticalPadding: Dp = padding.medium
+            val radius: Dp = AppDp.radius.medium
+            val icon: Dp = AppDp.icon.medium
         }
 
         public data object Small {
