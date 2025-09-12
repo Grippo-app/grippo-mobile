@@ -123,6 +123,7 @@
     <string name="no_internet_connection">No internet connection</string>
     <string name="this_day">This day</string>
     <string name="this_week">This week</string>
+    <string name="this_year">This year</string>
     <string name="this_month">This month</string>
     <string name="custom_range">Custom range</string>
     <string name="select_start_date">Select start date</string>

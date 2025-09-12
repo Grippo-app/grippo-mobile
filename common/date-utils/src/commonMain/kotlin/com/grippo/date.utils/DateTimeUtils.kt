@@ -58,6 +58,18 @@ public object DateTimeUtils {
         )
     }
 
+    public fun thisYear(): DateRange {
+        val today = Clock.System.now().toLocalDateTime(timeZone).date
+        // Start at Jan 1, end at Dec 31 (via +1 year -1 day to handle leap years safely)
+        val startOfYear = LocalDate(today.year, Month.JANUARY, 1)
+        val endOfYear = startOfYear.plus(DatePeriod(years = 1)).minus(DatePeriod(days = 1))
+
+        return DateRange(
+            from = startOfYear.atTime(DayTime.StartOfDay.localTime),
+            to = endOfYear.atTime(DayTime.EndOfDay.localTime)
+        )
+    }
+
     public fun trailingYear(): DateRange {
         val today = Clock.System.now().toLocalDateTime(timeZone).date
         val oneYearAgo = today.minus(DatePeriod(years = 1))

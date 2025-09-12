@@ -15,9 +15,11 @@ import com.grippo.design.resources.provider.icons.Calendar
 import com.grippo.design.resources.provider.icons.Day
 import com.grippo.design.resources.provider.icons.Settings
 import com.grippo.design.resources.provider.icons.Week
+import com.grippo.design.resources.provider.icons.Year
 import com.grippo.design.resources.provider.this_day
 import com.grippo.design.resources.provider.this_month
 import com.grippo.design.resources.provider.this_week
+import com.grippo.design.resources.provider.this_year
 import kotlinx.serialization.Serializable
 
 @Immutable
@@ -45,6 +47,12 @@ public sealed interface PeriodState {
 
     @Serializable
     @Immutable
+    public data object ThisYear : PeriodState {
+        override val range: DateRange = DateTimeUtils.thisYear()
+    }
+
+    @Serializable
+    @Immutable
     public data class CUSTOM(
         override val range: DateRange,
         val limitations: DateRange
@@ -56,6 +64,7 @@ public sealed interface PeriodState {
         is ThisDay -> AppTokens.strings.res(Res.string.this_day)
         is ThisWeek -> AppTokens.strings.res(Res.string.this_week)
         is ThisMonth -> AppTokens.strings.res(Res.string.this_month)
+        is ThisYear -> AppTokens.strings.res(Res.string.this_year)
     }
 
     @Composable
@@ -64,6 +73,7 @@ public sealed interface PeriodState {
         is ThisDay -> AppTokens.icons.Day
         is ThisWeek -> AppTokens.icons.Week
         is ThisMonth -> AppTokens.icons.Calendar
+        is ThisYear -> AppTokens.icons.Year
     }
 
     @Composable
@@ -92,6 +102,12 @@ public sealed interface PeriodState {
                 val from = DateCompose.rememberFormat(range.from, format)
                 if (sameDay) return from
 
+                val to = DateCompose.rememberFormat(range.to, format)
+                return "$from - $to"
+            }
+
+            ThisYear -> {
+                val from = DateCompose.rememberFormat(range.from, format)
                 val to = DateCompose.rememberFormat(range.to, format)
                 return "$from - $to"
             }

@@ -78,7 +78,7 @@ internal fun PeriodPickerScreen(
                     onSelect = clickProvider,
                     style = CheckSelectableCardStyle.Large(
                         title = item.text(),
-                        description = item.range(DateFormat.DATE_MMM_DD_COMMA),
+                        description = item.range(DateFormat.DATE_MMM_DD_YYYY),
                         icon = item.icon(),
                         subContent = if (item is PeriodState.CUSTOM) {
                             {
@@ -98,16 +98,23 @@ internal fun PeriodPickerScreen(
             }
         }
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+        val hasCustomPicker = remember(state.list) {
+            state.list.any { it is PeriodState.CUSTOM }
+        }
 
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            content = ButtonContent.Text(
-                text = AppTokens.strings.res(Res.string.submit_btn),
-            ),
-            style = ButtonStyle.Primary,
-            onClick = contract::onSubmitClick
-        )
+        if (hasCustomPicker) {
+
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                content = ButtonContent.Text(
+                    text = AppTokens.strings.res(Res.string.submit_btn),
+                ),
+                style = ButtonStyle.Primary,
+                onClick = contract::onSubmitClick
+            )
+        }
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
     }
@@ -128,7 +135,7 @@ private fun ScreenPreview() {
                         range = DateTimeUtils.thisWeek(),
                         limitations = DateTimeUtils.trailingYear()
                     ),
-                )
+                ),
             ),
             loaders = persistentSetOf(),
             contract = PeriodPickerContract.Empty

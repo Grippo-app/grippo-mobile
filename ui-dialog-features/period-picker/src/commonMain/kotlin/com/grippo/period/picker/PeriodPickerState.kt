@@ -8,5 +8,5 @@ import kotlinx.collections.immutable.persistentListOf
 @Immutable
 public data class PeriodPickerState(
     val list: ImmutableList<PeriodState> = persistentListOf(),
-    val value: PeriodState
+    val value: PeriodState,
 )

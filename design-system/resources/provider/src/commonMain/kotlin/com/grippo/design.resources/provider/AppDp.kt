@@ -327,7 +327,7 @@ public data object AppDp {
 
         public data object Medium {
             val horizontalPadding: Dp = padding.medium
-            val verticalPadding: Dp = padding.medium
+            val verticalPadding: Dp = padding.large
             val radius: Dp = AppDp.radius.medium
             val icon: Dp = AppDp.icon.medium
         }

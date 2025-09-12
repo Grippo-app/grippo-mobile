@@ -1,11 +1,10 @@
 package com.grippo.text.picker
 
 import com.grippo.core.BaseViewModel
+import com.grippo.dialog.api.SELECTION_FEEDBACK_DELAY
 import com.grippo.state.text.TextWithId
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.delay
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
 
 public class TextPickerViewModel(
     initial: TextWithId,
@@ -16,10 +15,6 @@ public class TextPickerViewModel(
         list = available.toPersistentList()
     )
 ), TextPickerContract {
-
-    private companion object {
-        private val SELECTION_FEEDBACK_DELAY: Duration = 150.milliseconds
-    }
 
     override fun onSelectClick(value: TextWithId) {
         update { it.copy(value = value) }
