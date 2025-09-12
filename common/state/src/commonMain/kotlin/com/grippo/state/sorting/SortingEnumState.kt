@@ -1,4 +1,4 @@
-package com.grippo.state.exercise.examples
+package com.grippo.state.sorting
 
 import androidx.compose.runtime.Immutable
 import com.grippo.design.resources.provider.Res
@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 
 @Immutable
 @Serializable
-public enum class ExampleSortingEnumState {
+public enum class SortingEnumState {
     MostlyUsed,
     RecentlyUsed,
     NewAdded;

@@ -9,7 +9,6 @@ import com.grippo.state.filters.FilterValue
 import com.grippo.state.formatters.DateFormatState
 import com.grippo.state.formatters.HeightFormatState
 import com.grippo.state.formatters.WeightFormatState
-import com.grippo.state.text.TextWithId
 import com.grippo.state.trainings.IterationFocus
 import com.grippo.state.trainings.IterationState
 import kotlinx.serialization.Serializable
@@ -100,16 +99,6 @@ public sealed class DialogConfig(
     )
 
     @Serializable
-    public data class TextPicker(
-        val initial: TextWithId,
-        val available: List<TextWithId>,
-        @Transient val onResult: (value: TextWithId) -> Unit = {},
-    ) : DialogConfig(
-        onDismiss = null,
-        dismissBySwipe = true
-    )
-
-    @Serializable
     public data class DraftTraining(
         @Transient val onResult: () -> Unit = {},
     ) : DialogConfig(
@@ -125,7 +114,6 @@ public sealed class DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
     )
-
 
     @Serializable
     public data class ExerciseExamplePicker(

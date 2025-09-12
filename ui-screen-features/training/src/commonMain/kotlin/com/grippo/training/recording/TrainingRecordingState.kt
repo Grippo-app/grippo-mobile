@@ -6,9 +6,7 @@ import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.components.chart.DSBarData
 import com.grippo.design.components.chart.DSPieData
 import com.grippo.design.components.chart.DSProgressData
-import com.grippo.state.exercise.examples.ExampleSortingEnumState
 import com.grippo.state.exercise.examples.ExerciseExampleState
-import com.grippo.state.filters.FilterValue
 import com.grippo.state.formatters.IntensityFormatState
 import com.grippo.state.formatters.RepetitionsFormatState
 import com.grippo.state.formatters.VolumeFormatState

@@ -22,7 +22,6 @@ import com.grippo.filter.picker.FilterPickerComponent
 import com.grippo.height.picker.HeightPickerComponent
 import com.grippo.iteration.picker.IterationPickerComponent
 import com.grippo.period.picker.PeriodPickerComponent
-import com.grippo.text.picker.TextPickerComponent
 import com.grippo.weight.picker.WeightPickerComponent
 
 internal class DialogContentComponent(
@@ -145,16 +144,6 @@ internal class DialogContentComponent(
                 )
             )
 
-            is DialogConfig.TextPicker -> Child.TextPicker(
-                TextPickerComponent(
-                    componentContext = context,
-                    initial = router.initial,
-                    available = router.available,
-                    onResult = { period -> viewModel.onBack { router.onResult.invoke(period) } },
-                    back = { viewModel.onBack(null) }
-                )
-            )
-
             is DialogConfig.ExerciseExamplePicker -> Child.ExerciseExamplePicker(
                 ExerciseExamplePickerComponent(
                     componentContext = context,
@@ -211,9 +200,6 @@ internal class DialogContentComponent(
             Child(component)
 
         data class PeriodPicker(override val component: PeriodPickerComponent) :
-            Child(component)
-
-        data class TextPicker(override val component: TextPickerComponent) :
             Child(component)
 
         data class ExerciseExamplePicker(override val component: ExerciseExamplePickerComponent) :

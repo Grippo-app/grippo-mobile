@@ -12,6 +12,7 @@ import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
+import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.components.chart.DSBarData
 import com.grippo.design.components.chart.DSHeatmapData
 import com.grippo.design.components.chart.DSPieData
@@ -104,16 +105,17 @@ internal class HomeStatisticsViewModel(
     }
 
     override fun onSelectPeriod() {
-//        val custom = (state.value.period as? PeriodState.CUSTOM) ?: PeriodState.CUSTOM(
-//            range = DateTimeUtils.thisWeek(),
-//            limitations = DateTimeUtils.trailingYear()
-//        )
+        val custom = (state.value.period as? PeriodState.CUSTOM) ?: PeriodState.CUSTOM(
+            range = DateTimeUtils.thisWeek(),
+            limitations = DateTimeUtils.trailingYear()
+        )
 
         val available = listOf(
             PeriodState.ThisDay,
             PeriodState.ThisWeek,
+            PeriodState.ThisMonth,
             PeriodState.ThisYear,
-//            custom
+            custom
         )
 
         val dialog = DialogConfig.PeriodPicker(

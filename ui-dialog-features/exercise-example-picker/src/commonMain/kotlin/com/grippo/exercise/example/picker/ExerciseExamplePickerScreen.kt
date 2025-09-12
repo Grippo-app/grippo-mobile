@@ -37,7 +37,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.Filter
-import com.grippo.design.resources.provider.icons.Sort
 import com.grippo.design.resources.provider.not_found
 import com.grippo.design.resources.provider.select_exercise
 import com.grippo.state.exercise.examples.stubExerciseExample
@@ -98,14 +97,6 @@ internal fun ExerciseExamplePickerScreen(
                     value = count
                 )
             }
-
-            Button(
-                content = ButtonContent.Icon(
-                    icon = AppTokens.icons.Sort
-                ),
-                style = ButtonStyle.Tertiary,
-                onClick = contract::onSortClick
-            )
         }
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))

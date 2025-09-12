@@ -196,37 +196,39 @@ internal fun FilterPickerScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        Button(
+        Row(
             modifier = Modifier
-                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                .fillMaxWidth(),
-            content = ButtonContent.Text(
-                text = AppTokens.strings.res(Res.string.submit_btn),
-            ),
-            style = ButtonStyle.Primary,
-            onClick = contract::onSubmitClick
-        )
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+        ) {
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
-        val resetEnabled = remember(state.list) {
-            when (state.list.any { it.isSelected() }) {
-                true -> ButtonState.Enabled
-                false -> ButtonState.Disabled
+            val resetEnabled = remember(state.list) {
+                when (state.list.any { it.isSelected() }) {
+                    true -> ButtonState.Enabled
+                    false -> ButtonState.Disabled
+                }
             }
-        }
 
-        Button(
-            modifier = Modifier
-                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                .fillMaxWidth(),
-            content = ButtonContent.Text(
-                text = AppTokens.strings.res(Res.string.reset),
-            ),
-            state = resetEnabled,
-            style = ButtonStyle.Secondary,
-            onClick = contract::onReset
-        )
+            Button(
+                modifier = Modifier.weight(1f),
+                content = ButtonContent.Text(
+                    text = AppTokens.strings.res(Res.string.reset),
+                ),
+                state = resetEnabled,
+                style = ButtonStyle.Secondary,
+                onClick = contract::onReset
+            )
+
+            Button(
+                modifier = Modifier.weight(1f),
+                content = ButtonContent.Text(
+                    text = AppTokens.strings.res(Res.string.submit_btn),
+                ),
+                style = ButtonStyle.Primary,
+                onClick = contract::onSubmitClick
+            )
+        }
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
     }

@@ -1,12 +1,12 @@
 package com.grippo.state.domain.example
 
 import com.grippo.data.features.api.exercise.example.models.ExampleSortingEnum
-import com.grippo.state.exercise.examples.ExampleSortingEnumState
+import com.grippo.state.sorting.SortingEnumState
 
-public fun ExampleSortingEnumState.toDomain(): ExampleSortingEnum {
+public fun SortingEnumState.toDomain(): ExampleSortingEnum {
     return when (this) {
-        ExampleSortingEnumState.MostlyUsed -> ExampleSortingEnum.MostlyUsed
-        ExampleSortingEnumState.RecentlyUsed -> ExampleSortingEnum.RecentlyUsed
-        ExampleSortingEnumState.NewAdded -> ExampleSortingEnum.NewAdded
+        SortingEnumState.MostlyUsed -> ExampleSortingEnum.MostlyUsed
+        SortingEnumState.RecentlyUsed -> ExampleSortingEnum.RecentlyUsed
+        SortingEnumState.NewAdded -> ExampleSortingEnum.NewAdded
     }
 }

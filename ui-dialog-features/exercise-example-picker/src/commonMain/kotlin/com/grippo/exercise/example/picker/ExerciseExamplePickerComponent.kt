@@ -19,7 +19,6 @@ public class ExerciseExamplePickerComponent(
             exerciseExampleFeature = getKoin().get(),
             muscleFeature = getKoin().get(),
             dialogController = getKoin().get(),
-            stringProvider = getKoin().get()
         )
     }
 

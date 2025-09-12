@@ -6,7 +6,6 @@ import com.grippo.data.features.api.exercise.example.models.ExampleSortingEnum
 import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
 import com.grippo.data.features.api.exercise.example.models.ForceTypeEnum
 import com.grippo.data.features.api.exercise.example.models.WeightTypeEnum
-import com.grippo.state.exercise.examples.ExampleSortingEnumState
 import com.grippo.state.exercise.examples.ExerciseExampleState
 import com.grippo.state.filters.FilterValue
 import com.grippo.state.muscles.MuscleGroupState
@@ -20,7 +19,6 @@ public data class ExerciseExamplePickerState(
     val query: String = "",
     val muscleGroups: ImmutableList<MuscleGroupState<MuscleRepresentationState.Plain>> = persistentListOf(),
     val selectedMuscleGroupId: String? = null,
-    val sortBy: ExampleSortingEnumState = ExampleSortingEnumState.MostlyUsed,
     val filters: ImmutableList<FilterValue> = ExerciseExampleState.filters
 )
 
