@@ -2,6 +2,7 @@ package com.grippo.exercise.example.picker
 
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
+import com.grippo.data.features.api.exercise.example.UserExerciseExamplesUseCase
 import com.grippo.data.features.api.exercise.example.models.ExamplePage
 import com.grippo.data.features.api.exercise.example.models.ExampleQueries
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
@@ -26,6 +27,7 @@ import kotlinx.coroutines.flow.onEach
 
 public class ExerciseExamplePickerViewModel(
     targetMuscleGroupId: String?,
+    userExerciseExamplesUseCase: UserExerciseExamplesUseCase,
     exerciseExampleFeature: ExerciseExampleFeature,
     muscleFeature: MuscleFeature,
     private val dialogController: DialogController,
@@ -75,7 +77,7 @@ public class ExerciseExamplePickerViewModel(
                     muscleGroupId = key.muscleGroupId
                 )
 
-                exerciseExampleFeature.observeExerciseExamples(
+                userExerciseExamplesUseCase.execute(
                     queries = queries,
                     sorting = key.sortBy,
                     page = ExamplePage.First15

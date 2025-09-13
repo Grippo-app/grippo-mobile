@@ -2,6 +2,7 @@ package com.grippo.data.features.api
 
 import com.grippo.data.features.api.authorization.LoginUseCase
 import com.grippo.data.features.api.authorization.RegisterUseCase
+import com.grippo.data.features.api.exercise.example.UserExerciseExamplesUseCase
 import org.koin.core.annotation.Module
 import org.koin.dsl.module
 import kotlin.jvm.JvmName
@@ -25,6 +26,13 @@ public class FeatureApiModule {
             RegisterUseCase(
                 authorizationFeature = get(),
                 userFeature = get(),
+                excludedMusclesFeature = get(),
+                excludedEquipmentsFeature = get(),
+                exerciseExampleFeature = get()
+            )
+        }
+        single {
+            UserExerciseExamplesUseCase(
                 excludedMusclesFeature = get(),
                 excludedEquipmentsFeature = get(),
                 exerciseExampleFeature = get()

@@ -32,6 +32,8 @@ public interface ExerciseExampleDao {
       AND (:weightType IS NULL OR ee.weightType = :weightType)
       AND (:category IS NULL OR ee.category = :category)
       AND (:experience IS NULL OR ee.experience = :experience)
+
+      -- Optional muscle group filter: applies only if the top-percentage muscle belongs to the group
       AND (
           :muscleGroupId IS NULL OR EXISTS (
               SELECT 1
@@ -46,6 +48,28 @@ public interface ExerciseExampleDao {
                 AND m.muscleGroupId = :muscleGroupId
           )
       )
+
+      -- EXCLUDE: any top-percentage muscle is in excludedMuscleIds
+      AND NOT EXISTS (
+          SELECT 1
+          FROM exercise_example_bundle ebx
+          WHERE ebx.exerciseExampleId = ee.id
+            AND ebx.percentage = (
+                SELECT MAX(eb2.percentage)
+                FROM exercise_example_bundle eb2
+                WHERE eb2.exerciseExampleId = ee.id
+            )
+            AND ebx.muscleId IN (:excludedMuscleIds)
+      )
+
+      -- EXCLUDE: any equipment is in excludedEquipmentIds
+      AND NOT EXISTS (
+          SELECT 1
+          FROM exercise_example_equipment eee
+          WHERE eee.exerciseExampleId = ee.id
+            AND eee.equipmentId IN (:excludedEquipmentIds)
+      )
+
     ORDER BY
       CASE WHEN :sorting = 'NewAdded'     THEN ee.createdAt END DESC,
       CASE WHEN :sorting = 'RecentlyUsed' THEN ee.lastUsed END DESC,
@@ -65,6 +89,8 @@ public interface ExerciseExampleDao {
         category: String? = null,
         experience: String? = null,
         muscleGroupId: String? = null,
+        excludedEquipmentIds: Set<String>,
+        excludedMuscleIds: Set<String>,
         sorting: String,
         limits: Int?,
         number: Int?
