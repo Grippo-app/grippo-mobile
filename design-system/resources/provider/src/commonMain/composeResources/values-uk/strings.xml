@@ -274,12 +274,12 @@
     <string name="muscle_forearm">Передпліччя</string>
 
     <!-- MuscleGroupEnumState -->
-    <string name="muscle_group_chest_muscles">Грудні м'язи</string>
-    <string name="muscle_group_back_muscles">М'язи спини</string>
-    <string name="muscle_group_abdominal_muscles">М'язи живота</string>
+    <string name="muscle_group_chest_muscles">Груди</string>
+    <string name="muscle_group_back_muscles">Спина</string>
+    <string name="muscle_group_abdominal_muscles">Прес</string>
     <string name="muscle_group_legs">Ноги</string>
     <string name="muscle_group_arms_and_forearms">Руки та передпліччя</string>
-    <string name="muscle_group_shoulder_muscles">М'язи плечей</string>
+    <string name="muscle_group_shoulder_muscles">Плечі</string>
 
     <!-- MuscleLoadEnumState -->
     <string name="muscle_load_high">Високий</string>

@@ -274,12 +274,12 @@
     <string name="reset">Reset</string>
 
     <!-- MuscleGroupEnumState -->
-    <string name="muscle_group_chest_muscles">Chest Muscles</string>
-    <string name="muscle_group_back_muscles">Back Muscles</string>
-    <string name="muscle_group_abdominal_muscles">Abdominal Muscles</string>
+    <string name="muscle_group_chest_muscles">Chest</string>
+    <string name="muscle_group_back_muscles">Back</string>
+    <string name="muscle_group_abdominal_muscles">Abs</string>
     <string name="muscle_group_legs">Legs</string>
     <string name="muscle_group_arms_and_forearms">Arms and Forearms</string>
-    <string name="muscle_group_shoulder_muscles">Shoulder Muscles</string>
+    <string name="muscle_group_shoulder_muscles">Shoulders</string>
 
     <!-- MuscleLoadEnumState -->
     <string name="muscle_load_high">High</string>
