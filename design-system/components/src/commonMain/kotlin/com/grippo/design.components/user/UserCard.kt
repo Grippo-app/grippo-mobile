@@ -24,11 +24,8 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.Calendar
 import com.grippo.design.resources.provider.icons.Gym
-import com.grippo.design.resources.provider.icons.Trophy
-import com.grippo.design.resources.provider.user_card_no_records_yet
 import com.grippo.design.resources.provider.user_card_no_workouts_yet
 import com.grippo.design.resources.provider.user_card_value_in_a_row
-import com.grippo.design.resources.provider.user_card_value_personal_records
 import com.grippo.design.resources.provider.user_card_value_workouts
 import com.grippo.state.profile.UserState
 import com.grippo.state.profile.stubUser
@@ -124,21 +121,6 @@ public fun UserCard(
                 ago
             ),
             icon = AppTokens.icons.Calendar
-        )
-
-        val recordsStr = if (value.records > 0) {
-            AppTokens.strings.res(
-                Res.string.user_card_value_personal_records,
-                value.records.toString()
-            )
-        } else {
-            AppTokens.strings.res(Res.string.user_card_no_records_yet)
-        }
-
-        OverviewCard(
-            modifier = Modifier.fillMaxWidth(),
-            title = recordsStr,
-            icon = AppTokens.icons.Trophy
         )
     }
 }
