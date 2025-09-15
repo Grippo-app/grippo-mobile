@@ -299,6 +299,10 @@
     <string name="theme_light">Світла</string>
     <string name="theme_dark">Темна</string>
 
+    <!-- LocaleState -->
+    <string name="english">Англійська</string>
+    <string name="ukrainian">Українська</string>
+
     <!-- Charts -->
     <string name="chart_title_exercise_volume">Обсяг вправ</string>
     <string name="chart_title_category">Категорія</string>

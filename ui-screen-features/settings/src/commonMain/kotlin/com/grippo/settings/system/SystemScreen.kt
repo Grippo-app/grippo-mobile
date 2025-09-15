@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
+import com.grippo.design.components.settings.LocaleCard
 import com.grippo.design.components.settings.ThemeCard
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
@@ -18,6 +19,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.system
+import com.grippo.state.settings.LocaleState
 import com.grippo.state.settings.ThemeState
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -74,6 +76,16 @@ internal fun SystemScreen(
                 )
             }
         }
+
+        state.locale?.let { locale ->
+            item(key = "locale") {
+                LocaleCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = locale,
+                    onClick = contract::onLocaleClick
+                )
+            }
+        }
     }
 }
 
@@ -83,7 +95,8 @@ private fun ScreenPreview() {
     PreviewContainer {
         SystemScreen(
             state = SystemState(
-                theme = ThemeState.LIGHT
+                theme = ThemeState.LIGHT,
+                locale = LocaleState.UA
             ),
             loaders = persistentSetOf(),
             contract = SystemContract.Empty

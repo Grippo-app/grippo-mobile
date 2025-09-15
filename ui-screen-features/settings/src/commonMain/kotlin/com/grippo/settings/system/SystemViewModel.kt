@@ -19,14 +19,19 @@ internal class SystemViewModel(
             .safeLaunch()
     }
 
+    private fun provideSettings(value: Settings?) {
+        value ?: return
+        val theme = value.theme.toState()
+        val locale = value.locale.toState()
+        update { it.copy(theme = theme, locale = locale) }
+    }
+
     override fun onThemeClick(theme: ThemeState) {
         update { it.copy(theme = theme) }
         safeLaunch { settingsFeature.setTheme(mode = theme.toDomain()).getOrThrow() }
     }
 
-    private fun provideSettings(value: Settings?) {
-        val theme = value?.theme?.toState() ?: ThemeState.LIGHT
-        update { it.copy(theme = theme) }
+    override fun onLocaleClick() {
     }
 
     override fun onBack() {

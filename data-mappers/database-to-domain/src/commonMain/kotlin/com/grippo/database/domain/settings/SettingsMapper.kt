@@ -5,6 +5,7 @@ import com.grippo.database.entity.SettingsEntity
 
 public fun SettingsEntity.toDomain(): Settings {
     return Settings(
-        theme = theme.toDomain()
+        theme = theme.toDomain(),
+        locale = locale.toDomain()
     )
 }
