@@ -97,10 +97,10 @@ public fun UserCard(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-        val workoutsStr = if (value.records > 0) {
+        val workoutsStr = if (value.trainingsCount > 0) {
             AppTokens.strings.res(
                 Res.string.user_card_value_workouts,
-                value.records.toString()
+                value.trainingsCount.toString()
             )
         } else {
             AppTokens.strings.res(Res.string.user_card_no_workouts_yet)
