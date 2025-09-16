@@ -28,7 +28,7 @@ public actual object LocalAppLocale {
             return Locale.getDefault().toLanguageTag()
         }
 
-    public actual fun system(): String = Locale.getDefault().toLanguageTag()
+    public actual fun current(): String = Locale.getDefault().toLanguageTag()
 }
 
 private fun normalizeTag(tag: String): String {

@@ -10,7 +10,7 @@ public actual object LocalAppTheme {
     public actual val current: Boolean
         @Composable get() = (LocalConfiguration.current.uiMode and UI_MODE_NIGHT_MASK) == UI_MODE_NIGHT_YES
 
-    public actual fun system(): Boolean {
+    public actual fun current(): Boolean {
         val uiMode = Resources.getSystem().configuration.uiMode
         return (uiMode and UI_MODE_NIGHT_MASK) == UI_MODE_NIGHT_YES
     }

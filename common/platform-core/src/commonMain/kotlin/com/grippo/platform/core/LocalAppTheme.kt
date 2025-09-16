@@ -6,5 +6,5 @@ public expect object LocalAppTheme {
     public val current: Boolean
         @Composable get
 
-    public fun system(): Boolean
+    public fun current(): Boolean
 }

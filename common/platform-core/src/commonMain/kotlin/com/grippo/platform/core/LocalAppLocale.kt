@@ -14,5 +14,5 @@ public expect object LocalAppLocale {
     /**
      * Pure system default locale tag (BCP-47).
      */
-    public fun system(): String
+    public fun current(): String
 }

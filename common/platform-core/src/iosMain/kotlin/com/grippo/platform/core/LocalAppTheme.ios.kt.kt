@@ -12,7 +12,7 @@ public actual object LocalAppTheme {
     public actual val current: Boolean
         @Composable get() = LocalSystemTheme.current == SystemTheme.Dark
 
-    public actual fun system(): Boolean {
+    public actual fun current(): Boolean {
         val style = UIScreen.mainScreen.traitCollection.userInterfaceStyle
         return style == UIUserInterfaceStyle.UIUserInterfaceStyleDark
     }

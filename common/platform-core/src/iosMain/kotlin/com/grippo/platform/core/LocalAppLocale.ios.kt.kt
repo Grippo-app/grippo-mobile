@@ -27,7 +27,7 @@ public actual object LocalAppLocale {
             return normalizeTag(systemTag)
         }
 
-    public actual fun system(): String = systemTagNow()
+    public actual fun current(): String = systemTagNow()
 }
 
 // ---------- helpers ----------
