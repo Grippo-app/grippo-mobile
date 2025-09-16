@@ -9,12 +9,10 @@ import com.grippo.design.resources.provider.activity
 import com.grippo.design.resources.provider.debug
 import com.grippo.design.resources.provider.icons.Flask
 import com.grippo.design.resources.provider.icons.Gym
-import com.grippo.design.resources.provider.icons.Settings
 import com.grippo.design.resources.provider.icons.Waist
 import com.grippo.design.resources.provider.profile_menu_excluded_muscles
 import com.grippo.design.resources.provider.profile_menu_missing_equipment
 import com.grippo.design.resources.provider.settings
-import com.grippo.design.resources.provider.system
 import com.grippo.state.profile.UserState
 
 @Immutable
@@ -53,7 +51,6 @@ internal enum class HomeProfileActivityMenu {
 
 @Immutable
 internal enum class HomeProfileSettingsMenu {
-    System,
     Debug;
 
     companion object {
@@ -66,7 +63,6 @@ internal enum class HomeProfileSettingsMenu {
     @Composable
     fun text(): String {
         return when (this) {
-            System -> AppTokens.strings.res(Res.string.system)
             Debug -> AppTokens.strings.res(Res.string.debug)
         }
     }
@@ -74,7 +70,6 @@ internal enum class HomeProfileSettingsMenu {
     @Composable
     fun icon(): ImageVector {
         return when (this) {
-            System -> AppTokens.icons.Settings
             Debug -> AppTokens.icons.Flask
         }
     }

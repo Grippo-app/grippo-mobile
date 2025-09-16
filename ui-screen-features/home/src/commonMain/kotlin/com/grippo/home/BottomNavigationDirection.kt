@@ -12,5 +12,4 @@ public sealed interface BottomNavigationDirection : BaseDirection {
     public data object ToWeightHistory : BottomNavigationDirection
     public data object ToDebug : BottomNavigationDirection
     public data object ToTraining : BottomNavigationDirection
-    public data object ToSystemSettings : BottomNavigationDirection
 }

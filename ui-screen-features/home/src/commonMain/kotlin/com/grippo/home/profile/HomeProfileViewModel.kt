@@ -37,7 +37,6 @@ internal class HomeProfileViewModel(
 
     override fun onSettingsMenuClick(menu: HomeProfileSettingsMenu) {
         val direction = when (menu) {
-            HomeProfileSettingsMenu.System -> HomeProfileDirection.SystemSettings
             HomeProfileSettingsMenu.Debug -> HomeProfileDirection.Debug
         }
 

@@ -301,8 +301,9 @@
     <string name="theme_system">System</string>
 
     <!-- LocaleState -->
-    <string name="english">English</string>
-    <string name="ukrainian">Ukrainian</string>
+    <string name="language_english">English</string>
+    <string name="language_ukrainian">Ukrainian</string>
+    <string name="language_system">System</string>
 
     <string name="chart_title_exercise_volume">Exercise volume</string>
     <string name="chart_title_category">Category</string>

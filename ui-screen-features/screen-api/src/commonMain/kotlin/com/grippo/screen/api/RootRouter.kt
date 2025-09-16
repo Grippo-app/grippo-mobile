@@ -19,8 +19,5 @@ public sealed class RootRouter : BaseRouter {
     public data object Debug : RootRouter()
 
     @Serializable
-    public data class Settings(val value: SettingsRouter) : RootRouter()
-
-    @Serializable
     public data object Training : RootRouter()
 }

@@ -32,7 +32,6 @@ kotlin {
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.dataFeatures.authorization)
         implementation(projects.dataFeatures.user)
-        implementation(projects.dataFeatures.settings)
         implementation(projects.dataFeatures.weightHistory)
         implementation(projects.dataFeatures.muscle)
         implementation(projects.dataFeatures.equipment)
@@ -47,7 +46,6 @@ kotlin {
         implementation(projects.uiScreenFeatures.authorization)
         implementation(projects.uiScreenFeatures.home)
         implementation(projects.uiScreenFeatures.profile)
-        implementation(projects.uiScreenFeatures.settings)
         implementation(projects.uiScreenFeatures.debug)
         implementation(projects.uiScreenFeatures.training)
 

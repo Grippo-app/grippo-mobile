@@ -25,17 +25,13 @@ import com.grippo.screen.api.AuthRouter
 import com.grippo.screen.api.BottomNavigationRouter
 import com.grippo.screen.api.ProfileRouter
 import com.grippo.screen.api.RootRouter
-import com.grippo.screen.api.SettingsRouter
 import com.grippo.screen.api.TrainingRouter
-import com.grippo.settings.SettingsComponent
 import com.grippo.shared.dialog.DialogComponent
 import com.grippo.shared.root.RootComponent.Child.Authorization
 import com.grippo.shared.root.RootComponent.Child.Debug
 import com.grippo.shared.root.RootComponent.Child.Home
 import com.grippo.shared.root.RootComponent.Child.Profile
-import com.grippo.shared.root.RootComponent.Child.Settings
 import com.grippo.shared.root.RootComponent.Child.Training
-import com.grippo.state.settings.ThemeState
 import com.grippo.training.TrainingComponent
 
 public class RootComponent(
@@ -48,7 +44,6 @@ public class RootComponent(
     override val viewModel: RootViewModel = componentContext.retainedInstance {
         RootViewModel(
             authorizationFeature = getKoin().get(),
-            settingsFeature = getKoin().get(),
             connectivity = getKoin().get()
         )
     }
@@ -87,10 +82,6 @@ public class RootComponent(
                 RootRouter.Debug
             )
 
-            RootDirection.ToSettings -> navigation.push(
-                RootRouter.Settings(SettingsRouter.System)
-            )
-
             RootDirection.ToTraining -> navigation.push(
                 RootRouter.Training
             )
@@ -105,10 +96,6 @@ public class RootComponent(
 
             RootDirection.ToExcludedMuscles -> navigation.push(
                 RootRouter.Profile(ProfileRouter.Muscles)
-            )
-
-            RootDirection.ToSystemSettings -> navigation.push(
-                RootRouter.Settings(SettingsRouter.System)
             )
 
             RootDirection.Back -> navigation.pop()
@@ -136,7 +123,6 @@ public class RootComponent(
                     toExcludedMuscles = viewModel::toExcludedMuscles,
                     toDebug = viewModel::toDebug,
                     toTraining = viewModel::toTraining,
-                    toSystemSettings = viewModel::toSystemSettings,
                     close = viewModel::onClose
                 )
             )
@@ -163,14 +149,6 @@ public class RootComponent(
                     close = viewModel::onBack
                 )
             )
-
-            is RootRouter.Settings -> Settings(
-                SettingsComponent(
-                    componentContext = context,
-                    initial = router.value,
-                    close = viewModel::onBack,
-                )
-            )
         }
     }
 
@@ -178,9 +156,6 @@ public class RootComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-
-        state.value.theme == ThemeState.DARK
-        state.value.locale?.tag ?: return
 
         val systemIsDark = LocalAppTheme.current
         val systemLocaleTag = LocalAppLocale.current
@@ -206,9 +181,6 @@ public class RootComponent(
             Child(component)
 
         public data class Debug(override val component: DebugComponent) :
-            Child(component)
-
-        public data class Settings(override val component: SettingsComponent) :
             Child(component)
 
         public data class Training(override val component: TrainingComponent) :

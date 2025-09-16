@@ -3,15 +3,11 @@ package com.grippo.shared.root
 import com.grippo.connectivity.Connectivity
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.authorization.AuthorizationFeature
-import com.grippo.data.features.api.settings.SettingsFeature
-import com.grippo.data.features.api.settings.models.Settings
 import com.grippo.design.components.connection.snackbar.ConnectionSnackbarState
-import com.grippo.domain.state.settings.toState
 import kotlinx.coroutines.flow.onEach
 
 public class RootViewModel(
     authorizationFeature: AuthorizationFeature,
-    settingsFeature: SettingsFeature,
     connectivity: Connectivity,
 ) : BaseViewModel<RootState, RootDirection, RootLoader>(RootState()), RootContract {
 
@@ -21,21 +17,10 @@ public class RootViewModel(
             .onEach { if (it == null) navigateTo(RootDirection.Login) }
             .safeLaunch()
 
-        settingsFeature
-            .observeSettings()
-            .onEach(::provideSettings)
-            .safeLaunch()
-
         connectivity
             .statusUpdates
             .onEach(::provideConnectionStatus)
             .safeLaunch()
-    }
-
-    private fun provideSettings(value: Settings) {
-        val theme = value.theme.toState()
-        val locale = value.locale.toState()
-        update { it.copy(theme = theme, locale = locale) }
     }
 
     private fun provideConnectionStatus(value: Connectivity.Status) {
@@ -62,10 +47,6 @@ public class RootViewModel(
         navigateTo(RootDirection.ToDebug)
     }
 
-    override fun toSettings() {
-        navigateTo(RootDirection.ToSettings)
-    }
-
     override fun toTraining() {
         navigateTo(RootDirection.ToTraining)
     }
@@ -80,10 +61,6 @@ public class RootViewModel(
 
     override fun toExcludedMuscles() {
         navigateTo(RootDirection.ToExcludedMuscles)
-    }
-
-    override fun toSystemSettings() {
-        navigateTo(RootDirection.ToSystemSettings)
     }
 
     override fun onBack() {

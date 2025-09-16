@@ -24,7 +24,6 @@ public class BottomNavigationComponent(
     private val toWeightHistory: () -> Unit,
     private val toDebug: () -> Unit,
     private val toTraining: () -> Unit,
-    private val toSystemSettings: () -> Unit,
     private val close: () -> Unit,
 ) : BaseComponent<BottomNavigationDirection>(componentContext) {
 
@@ -53,7 +52,6 @@ public class BottomNavigationComponent(
             BottomNavigationDirection.ToWeightHistory -> toWeightHistory.invoke()
             BottomNavigationDirection.ToDebug -> toDebug.invoke()
             BottomNavigationDirection.ToTraining -> toTraining.invoke()
-            BottomNavigationDirection.ToSystemSettings -> toSystemSettings.invoke()
         }
     }
 
@@ -92,7 +90,6 @@ public class BottomNavigationComponent(
                     toWeightHistory = viewModel::toWeightHistory,
                     toWorkout = viewModel::toWorkout,
                     toDebug = viewModel::toDebug,
-                    toSystemSettings = viewModel::toSystemSettings,
                     back = viewModel::onBack
                 ),
             )

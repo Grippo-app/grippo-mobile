@@ -4,7 +4,6 @@ import com.grippo.database.dao.DraftTrainingDao
 import com.grippo.database.dao.EquipmentDao
 import com.grippo.database.dao.ExerciseExampleDao
 import com.grippo.database.dao.MuscleDao
-import com.grippo.database.dao.SettingsDao
 import com.grippo.database.dao.TokenDao
 import com.grippo.database.dao.TrainingDao
 import com.grippo.database.dao.UserActiveDao
@@ -26,9 +25,6 @@ public class DatabaseModule {
 
     @Single
     internal fun provideTokenDao(db: Database): TokenDao = db.tokenDao()
-
-    @Single
-    internal fun provideSettingsDao(db: Database): SettingsDao = db.settingsDao()
 
     @Single
     internal fun provideUserDao(db: Database): UserDao = db.userDao()

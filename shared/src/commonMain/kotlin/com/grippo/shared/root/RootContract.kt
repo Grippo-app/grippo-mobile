@@ -5,12 +5,10 @@ public interface RootContract {
     public fun toHome()
     public fun toProfile()
     public fun toDebug()
-    public fun toSettings()
     public fun toTraining()
     public fun toWeightHistory()
     public fun toMissingEquipment()
     public fun toExcludedMuscles()
-    public fun toSystemSettings()
     public fun onBack()
 
     public companion object Empty : RootContract {
@@ -18,12 +16,10 @@ public interface RootContract {
         override fun toHome() {}
         override fun toProfile() {}
         override fun toDebug() {}
-        override fun toSettings() {}
         override fun toTraining() {}
         override fun toWeightHistory() {}
         override fun toMissingEquipment() {}
         override fun toExcludedMuscles() {}
-        override fun toSystemSettings() {}
         override fun onBack() {}
     }
 }

@@ -1,7 +1,6 @@
 package com.grippo.home
 
 internal interface BottomNavigationContract {
-
     fun selectTab(origin: Int)
     fun onBack()
     fun toExcludedMuscles()
@@ -9,7 +8,6 @@ internal interface BottomNavigationContract {
     fun toWeightHistory()
     fun toDebug()
     fun toWorkout()
-    fun toSystemSettings()
 
     companion object Empty : BottomNavigationContract {
         override fun selectTab(origin: Int) {}
@@ -19,6 +17,5 @@ internal interface BottomNavigationContract {
         override fun toWeightHistory() {}
         override fun toDebug() {}
         override fun toWorkout() {}
-        override fun toSystemSettings() {}
     }
 }

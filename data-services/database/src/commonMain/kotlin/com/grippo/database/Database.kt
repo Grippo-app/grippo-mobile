@@ -7,7 +7,6 @@ import com.grippo.database.dao.DraftTrainingDao
 import com.grippo.database.dao.EquipmentDao
 import com.grippo.database.dao.ExerciseExampleDao
 import com.grippo.database.dao.MuscleDao
-import com.grippo.database.dao.SettingsDao
 import com.grippo.database.dao.TokenDao
 import com.grippo.database.dao.TrainingDao
 import com.grippo.database.dao.UserActiveDao
@@ -25,7 +24,6 @@ import com.grippo.database.entity.ExerciseExampleEquipmentEntity
 import com.grippo.database.entity.IterationEntity
 import com.grippo.database.entity.MuscleEntity
 import com.grippo.database.entity.MuscleGroupEntity
-import com.grippo.database.entity.SettingsEntity
 import com.grippo.database.entity.TokenEntity
 import com.grippo.database.entity.TrainingEntity
 import com.grippo.database.entity.UserActiveEntity
@@ -61,8 +59,6 @@ import com.grippo.database.entity.WeightHistoryEntity
         UserExcludedMuscleEntity::class,
         UserExcludedEquipmentEntity::class,
         WeightHistoryEntity::class,
-
-        SettingsEntity::class
     ],
     version = 1,
     exportSchema = true
@@ -71,7 +67,6 @@ import com.grippo.database.entity.WeightHistoryEntity
 public abstract class Database : RoomDatabase() {
     public abstract fun userActiveDao(): UserActiveDao
     public abstract fun tokenDao(): TokenDao
-    public abstract fun settingsDao(): SettingsDao
     public abstract fun userDao(): UserDao
     public abstract fun weightHistoryDao(): WeightHistoryDao
     public abstract fun equipmentDao(): EquipmentDao

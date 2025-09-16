@@ -74,8 +74,4 @@ public class BottomNavigationViewModel(
     override fun toWorkout() {
         navigateTo(BottomNavigationDirection.ToTraining)
     }
-
-    override fun toSystemSettings() {
-        navigateTo(BottomNavigationDirection.ToSystemSettings)
-    }
 }

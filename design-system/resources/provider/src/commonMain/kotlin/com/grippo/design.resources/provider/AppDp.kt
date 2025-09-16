@@ -77,8 +77,6 @@ public data object AppDp {
     val connectionSnackbar: ConnectionSnackbar = ConnectionSnackbar
     val toggle: Toggle = Toggle
     val radio: Radio = Radio
-    val themeCard: ThemeCard = ThemeCard
-    val localeCard: LocaleCard = LocaleCard
     val tooltip: Tooltip = Tooltip
     val badge: Badge = Badge
 
@@ -375,19 +373,6 @@ public data object AppDp {
     public data object WheelPicker {
         val height: Dp = size.medium * 3
         val radius: Dp = AppDp.radius.medium
-    }
-
-    public data object ThemeCard {
-        val horizontalPadding: Dp = padding.large
-        val verticalPadding: Dp = padding.large
-        val radius: Dp = AppDp.radius.large
-    }
-
-    public data object LocaleCard {
-        val horizontalPadding: Dp = padding.large
-        val verticalPadding: Dp = padding.large
-        val radius: Dp = AppDp.radius.large
-        val icon: Dp = AppDp.icon.huge
     }
 
     public data object Chart {
