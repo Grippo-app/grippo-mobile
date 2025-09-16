@@ -18,7 +18,7 @@ internal class SettingsRepositoryImpl(
     private val settingsDao: SettingsDao
 ) : SettingsRepository {
 
-    override fun observeSettings(): Flow<Settings?> {
+    override fun observeSettings(): Flow<Settings> {
         return settingsDao.get()
             .map { it?.toDomain() ?: SettingsEntity().toDomain() }
     }

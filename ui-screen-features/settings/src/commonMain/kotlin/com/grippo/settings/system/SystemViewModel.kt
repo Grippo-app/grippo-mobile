@@ -19,8 +19,7 @@ internal class SystemViewModel(
             .safeLaunch()
     }
 
-    private fun provideSettings(value: Settings?) {
-        value ?: return
+    private fun provideSettings(value: Settings) {
         val theme = value.theme.toState()
         val locale = value.locale.toState()
         update { it.copy(theme = theme, locale = locale) }

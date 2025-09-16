@@ -177,7 +177,10 @@ public class RootComponent(
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
 
-        AppTheme(darkTheme = state.value.theme == ThemeState.DARK) {
+        val isDarkTheme = state.value.theme == ThemeState.DARK
+        val localeTag = state.value.locale?.tag ?: return
+
+        AppTheme(darkTheme = isDarkTheme, localeTag = localeTag) {
             RootScreen(this, state.value, loaders.value, viewModel)
             ConnectionSnackbar(state = state.value.connection)
             dialogComponent.Render()

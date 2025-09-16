@@ -5,11 +5,13 @@ import com.grippo.design.core.internal.ProvideResources
 
 @Composable
 public fun AppTheme(
-    darkTheme: Boolean = false,
+    darkTheme: Boolean,
+    localeTag: String,
     content: @Composable () -> Unit,
 ) {
     ProvideResources(
         darkTheme = darkTheme,
+        localeTag = localeTag,
         content = content,
     )
 }

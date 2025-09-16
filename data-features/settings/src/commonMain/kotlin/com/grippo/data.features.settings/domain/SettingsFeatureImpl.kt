@@ -12,7 +12,7 @@ internal class SettingsFeatureImpl(
     private val repository: SettingsRepository
 ) : SettingsFeature {
 
-    override fun observeSettings(): Flow<Settings?> {
+    override fun observeSettings(): Flow<Settings> {
         return repository.observeSettings()
     }
 

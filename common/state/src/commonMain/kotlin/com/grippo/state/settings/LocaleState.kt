@@ -12,9 +12,9 @@ import com.grippo.design.resources.provider.ukrainian
 import com.grippo.state.formatters.UiText
 
 @Immutable
-public enum class LocaleState {
-    EN,
-    UA;
+public enum class LocaleState(public val tag: String) {
+    EN("en"),
+    UA("ua");
 
     public fun title(): UiText {
         val r = when (this) {

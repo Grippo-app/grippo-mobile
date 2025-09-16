@@ -20,7 +20,7 @@ public fun PreviewContainer(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Column {
-        AppTheme(darkTheme = false) {
+        AppTheme(darkTheme = false, localeTag = "ua") {
             Column(
                 modifier = Modifier
                     .background(Color.White)
@@ -30,7 +30,7 @@ public fun PreviewContainer(
             )
         }
 
-        AppTheme(darkTheme = true) {
+        AppTheme(darkTheme = true, localeTag = "en") {
             Column(
                 modifier = Modifier
                     .background(Color.Black)

@@ -15,6 +15,7 @@ import com.grippo.design.resources.provider.colors.LightColor
 @Composable
 internal fun ProvideResources(
     darkTheme: Boolean,
+    localeTag: String,
     vararg values: ProvidedValue<*>,
     content: @Composable () -> Unit,
 ) {

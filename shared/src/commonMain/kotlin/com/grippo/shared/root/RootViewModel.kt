@@ -7,7 +7,6 @@ import com.grippo.data.features.api.settings.SettingsFeature
 import com.grippo.data.features.api.settings.models.Settings
 import com.grippo.design.components.connection.snackbar.ConnectionSnackbarState
 import com.grippo.domain.state.settings.toState
-import com.grippo.state.settings.ThemeState
 import kotlinx.coroutines.flow.onEach
 
 public class RootViewModel(
@@ -33,9 +32,10 @@ public class RootViewModel(
             .safeLaunch()
     }
 
-    private fun provideSettings(value: Settings?) {
-        val theme = value?.theme?.toState() ?: ThemeState.LIGHT
-        update { it.copy(theme = theme) }
+    private fun provideSettings(value: Settings) {
+        val theme = value.theme.toState()
+        val locale = value.locale.toState()
+        update { it.copy(theme = theme, locale = locale) }
     }
 
     private fun provideConnectionStatus(value: Connectivity.Status) {
