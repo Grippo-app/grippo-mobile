@@ -6,23 +6,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.staticCompositionLocalOf
 import platform.Foundation.NSLocale
 import platform.Foundation.NSNotificationCenter
 import platform.Foundation.preferredLanguages
 import platform.UIKit.UIApplicationDidBecomeActiveNotification
 import platform.UIKit.UIApplicationWillEnterForegroundNotification
 
-private val LocalLocaleOverride = staticCompositionLocalOf<String?> { null }
-
 public actual object LocalAppLocale {
 
     public actual val current: String
         @Composable get() {
-            // 1) If there is a Composition override, use it
-            LocalLocaleOverride.current?.let { return normalizeTag(it) }
-
-            // 2) Otherwise follow the system (and re-read on foreground/active)
+            // Otherwise follow the system (and re-read on foreground/active)
             val systemTag = rememberSystemTag()
             return normalizeTag(systemTag)
         }
