@@ -18,6 +18,8 @@ import com.grippo.debug.DebugComponent
 import com.grippo.design.components.connection.snackbar.ConnectionSnackbar
 import com.grippo.design.core.AppTheme
 import com.grippo.home.BottomNavigationComponent
+import com.grippo.platform.core.LocalAppLocale
+import com.grippo.platform.core.LocalAppTheme
 import com.grippo.profile.ProfileComponent
 import com.grippo.screen.api.AuthRouter
 import com.grippo.screen.api.BottomNavigationRouter
@@ -177,10 +179,16 @@ public class RootComponent(
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
 
-        val isDarkTheme = state.value.theme == ThemeState.DARK
-        val localeTag = state.value.locale?.tag ?: return
+        state.value.theme == ThemeState.DARK
+        state.value.locale?.tag ?: return
 
-        AppTheme(darkTheme = isDarkTheme, localeTag = localeTag) {
+        val systemIsDark = LocalAppTheme.current
+        val systemLocaleTag = LocalAppLocale.current
+
+        AppTheme(
+            darkTheme = systemIsDark,
+            localeTag = systemLocaleTag,
+        ) {
             RootScreen(this, state.value, loaders.value, viewModel)
             ConnectionSnackbar(state = state.value.connection)
             dialogComponent.Render()

@@ -302,6 +302,7 @@
     <!-- LocaleState -->
     <string name="english">Англійська</string>
     <string name="ukrainian">Українська</string>
+    <string name="theme_system">Системна</string>
 
     <!-- Charts -->
     <string name="chart_title_exercise_volume">Обсяг вправ</string>
