@@ -9,4 +9,7 @@ kotlin {
     sourceSets.commonMain.dependencies {
         implementation(compose.foundation)
     }
+    sourceSets.androidMain.dependencies {
+        implementation(libs.androidx.appcompat)
+    }
 }

@@ -1,6 +1,7 @@
 package com.grippo.shared.root
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
@@ -14,6 +15,7 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.authorization.AuthComponent
 import com.grippo.core.BaseComponent
 import com.grippo.core.platform.collectAsStateMultiplatform
+import com.grippo.date.utils.DateFormatting
 import com.grippo.debug.DebugComponent
 import com.grippo.design.components.connection.snackbar.ConnectionSnackbar
 import com.grippo.design.core.AppTheme
@@ -160,10 +162,11 @@ public class RootComponent(
         val systemIsDark = LocalAppTheme.current
         val systemLocaleTag = LocalAppLocale.current
 
-        AppTheme(
-            darkTheme = systemIsDark,
-            localeTag = systemLocaleTag,
-        ) {
+        LaunchedEffect(systemLocaleTag) {
+            DateFormatting.install(systemLocaleTag)
+        }
+
+        AppTheme(darkTheme = systemIsDark, localeTag = systemLocaleTag) {
             RootScreen(this, state.value, loaders.value, viewModel)
             ConnectionSnackbar(state = state.value.connection)
             dialogComponent.Render()

@@ -10,7 +10,7 @@ import org.koin.core.annotation.Single
 @Single(binds = [ColorProvider::class])
 internal class ColorProviderImpl() : ColorProvider {
     override suspend fun get(): AppColor {
-        return if (LocalAppTheme.isSystemDark()) {
+        return if (LocalAppTheme.system()) {
             DarkColor
         } else {
             LightColor
