@@ -32,6 +32,7 @@ dependencies {
     implementation(projects.shared)
     implementation(projects.common.core)
     implementation(projects.common.dateUtils)
+    implementation(projects.common.platformCore)
     implementation(projects.designSystem.core)
 
     implementation(compose.foundation)
