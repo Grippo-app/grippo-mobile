@@ -21,6 +21,8 @@ kotlin {
         implementation(compose.material3)
 
         implementation(libs.immutable.collections)
+        implementation(libs.coil.compose)
+        implementation(libs.coil.network.ktor)
         implementation(libs.datetime)
     }
 }

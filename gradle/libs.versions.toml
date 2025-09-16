@@ -16,6 +16,7 @@ ktor = "3.3.0"
 immutable-collections = "0.4.0"
 sqlite = "2.6.0"
 appcompat = "1.7.1"
+coil = "3.3.0"
 
 [libraries]
 datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
@@ -56,6 +57,10 @@ ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negoti
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
+
+#Coil
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 
 #Koin
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }

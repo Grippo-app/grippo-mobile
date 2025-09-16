@@ -14,9 +14,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
+import coil3.compose.rememberAsyncImagePainter
 import com.grippo.design.components.chip.Chip
 import com.grippo.design.components.chip.ChipLabel
 import com.grippo.design.components.chip.ChipSize
@@ -42,9 +46,13 @@ internal fun ExerciseExampleCardLarge(
 ) {
     val shape = RoundedCornerShape(AppTokens.dp.exerciseExampleCard.large.radius)
 
+    val painter = rememberAsyncImagePainter(value.value.imageUrl)
+
     Column(
         modifier = modifier
             .scalableClick(onClick = onCardClick)
+            .clip(shape)
+            .paint(painter = painter, contentScale = ContentScale.Crop)
             .background(AppTokens.colors.background.card, shape)
             .padding(
                 horizontal = AppTokens.dp.exerciseExampleCard.large.horizontalPadding,
