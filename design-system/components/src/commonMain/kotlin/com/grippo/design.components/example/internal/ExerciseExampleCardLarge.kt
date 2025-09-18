@@ -4,10 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,12 +17,11 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
-import coil3.compose.rememberAsyncImagePainter
+import coil3.compose.AsyncImage
 import com.grippo.design.components.chip.Chip
 import com.grippo.design.components.chip.ChipLabel
 import com.grippo.design.components.chip.ChipSize
@@ -46,26 +47,36 @@ internal fun ExerciseExampleCardLarge(
 ) {
     val shape = RoundedCornerShape(AppTokens.dp.exerciseExampleCard.large.radius)
 
-    val painter = rememberAsyncImagePainter(value.value.imageUrl)
-
     Column(
         modifier = modifier
             .scalableClick(onClick = onCardClick)
-            .clip(shape)
-            .paint(painter = painter, contentScale = ContentScale.Crop)
             .background(AppTokens.colors.background.card, shape)
             .padding(
                 horizontal = AppTokens.dp.exerciseExampleCard.large.horizontalPadding,
                 vertical = AppTokens.dp.exerciseExampleCard.large.verticalPadding
             ),
     ) {
-        Text(
-            text = value.value.name,
-            style = AppTokens.typography.h2(),
-            color = AppTokens.colors.text.primary,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+        ) {
+            AsyncImage(
+                modifier = Modifier
+                    .clip(shape)
+                    .size(AppTokens.dp.exerciseExampleCard.large.icon),
+                model = value.value.imageUrl,
+                contentScale = ContentScale.Crop,
+                contentDescription = null
+            )
+
+            Text(
+                text = value.value.name,
+                style = AppTokens.typography.h3(),
+                color = AppTokens.colors.text.primary,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
 
         Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
 

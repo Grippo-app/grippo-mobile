@@ -7,11 +7,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
@@ -20,7 +19,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.badge.Badge
@@ -127,9 +125,9 @@ internal fun ExerciseExamplePickerScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         if (state.exerciseExamples.isNotEmpty()) {
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth().weight(1f),
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
                 contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
             ) {
                 items(
@@ -147,8 +145,7 @@ internal fun ExerciseExamplePickerScreen(
                     ExerciseExampleCard(
                         modifier = Modifier
                             .animateItem()
-                            .width(320.dp)
-                            .height(220.dp),
+                            .fillMaxWidth(),
                         value = item,
                         style = ExerciseExampleCardStyle.Medium(
                             onCardClick = selectClickProvider,
@@ -161,7 +158,7 @@ internal fun ExerciseExamplePickerScreen(
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(220.dp)
+                    .weight(1f)
                     .wrapContentHeight(),
                 text = AppTokens.strings.res(Res.string.not_found),
                 textAlign = TextAlign.Center,

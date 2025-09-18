@@ -3,7 +3,6 @@ package com.grippo.design.components.example.internal
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,23 +17,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.paint
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil3.compose.rememberAsyncImagePainter
+import coil3.compose.AsyncImage
 import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.chip.Chip
-import com.grippo.design.components.chip.ChipLabel
-import com.grippo.design.components.chip.ChipSize
-import com.grippo.design.components.chip.ChipStype
-import com.grippo.design.components.chip.ChipTrailing
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.components.modifiers.scalableClick
@@ -57,77 +49,38 @@ internal fun ExerciseExampleCardMedium(
 ) {
     val shape = RoundedCornerShape(AppTokens.dp.exerciseExampleCard.medium.radius)
 
-    val painter = rememberAsyncImagePainter(value.value.imageUrl)
-
     Column(
         modifier = modifier
             .scalableClick(onClick = onCardClick)
-            .clip(shape)
             .background(AppTokens.colors.background.card, shape)
-            .paint(painter = painter, contentScale = ContentScale.Crop)
             .padding(
                 horizontal = AppTokens.dp.exerciseExampleCard.medium.horizontalPadding,
                 vertical = AppTokens.dp.exerciseExampleCard.medium.verticalPadding
             ),
     ) {
-
-        Text(
-            text = value.value.name,
-            style = AppTokens.typography.h2(),
-            color = AppTokens.colors.text.primary,
-            maxLines = 3,
-            overflow = TextOverflow.Ellipsis
-        )
-
-        Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
-
-        FlowRow(
+        Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
         ) {
-            Chip(
-                label = ChipLabel.Empty,
-                value = value.value.category.title().text(),
-                size = ChipSize.Small,
-                stype = ChipStype.Default,
-                trailing = ChipTrailing.Empty,
-                contentColor = AppTokens.colors.text.primary,
-                brush = SolidColor(AppTokens.colors.background.screen)
+            AsyncImage(
+                modifier = Modifier
+                    .clip(shape)
+                    .size(AppTokens.dp.exerciseExampleCard.medium.icon),
+                model = value.value.imageUrl,
+                contentScale = ContentScale.Crop,
+                contentDescription = null
             )
 
-            Chip(
-                label = ChipLabel.Empty,
-                value = value.value.forceType.title().text(),
-                size = ChipSize.Small,
-                stype = ChipStype.Default,
-                trailing = ChipTrailing.Empty,
-                contentColor = AppTokens.colors.text.primary,
-                brush = SolidColor(AppTokens.colors.background.screen)
-            )
-
-            Chip(
-                label = ChipLabel.Empty,
-                value = value.value.weightType.title().text(),
-                size = ChipSize.Small,
-                stype = ChipStype.Default,
-                trailing = ChipTrailing.Empty,
-                contentColor = AppTokens.colors.text.primary,
-                brush = SolidColor(AppTokens.colors.background.screen)
-            )
-
-            Chip(
-                label = ChipLabel.Empty,
-                value = value.value.experience.title().text(),
-                size = ChipSize.Small,
-                stype = ChipStype.Default,
-                trailing = ChipTrailing.Empty,
-                contentColor = AppTokens.colors.text.primary,
-                brush = SolidColor(AppTokens.colors.background.screen)
+            Text(
+                text = value.value.name,
+                style = AppTokens.typography.h3(),
+                color = AppTokens.colors.text.primary,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
         }
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
 
         Row(
             modifier = Modifier.fillMaxWidth(),

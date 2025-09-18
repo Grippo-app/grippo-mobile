@@ -7,7 +7,7 @@ public data class ExamplePage(
     public companion object {
         public val First15: ExamplePage = ExamplePage(
             number = 1,
-            limits = 15
+            limits = 20
         )
     }
 }
