@@ -2,27 +2,44 @@ package com.grippo.training.exercise
 
 import com.grippo.calculation.MetricsAggregator
 import com.grippo.core.BaseViewModel
+import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
+import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
+import com.grippo.domain.state.exercise.example.toState
 import com.grippo.state.formatters.RepetitionsFormatState
 import com.grippo.state.formatters.VolumeFormatState
 import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.IterationFocus
 import com.grippo.state.trainings.IterationState
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.onEach
 import kotlin.uuid.Uuid
 import com.grippo.training.exercise.ExerciseState as ScreenExerciseState
 
 internal class ExerciseViewModel(
     exercise: ExerciseState,
+    exerciseExampleFeature: ExerciseExampleFeature,
     private val dialogController: DialogController,
 ) : BaseViewModel<ScreenExerciseState, ExerciseDirection, ExerciseLoader>(
     ScreenExerciseState(
-        exercise = exercise
+        exercise = exercise,
     )
 ), ExerciseContract {
 
     private val metricsAggregator = MetricsAggregator()
+
+    init {
+        exerciseExampleFeature
+            .observeExerciseExample(exercise.exerciseExample.id)
+            .onEach(::provideExerciseExample)
+            .safeLaunch()
+    }
+
+    private fun provideExerciseExample(value: ExerciseExample?) {
+        val example = value?.toState() ?: return
+        update { it.copy(exerciseExample = example) }
+    }
 
     override fun onAddIteration() {
         val value = IterationState(

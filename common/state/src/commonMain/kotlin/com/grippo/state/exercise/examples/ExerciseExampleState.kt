@@ -6,8 +6,10 @@ import com.grippo.state.equipments.stubEquipments
 import com.grippo.state.filters.FilterValue
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.serialization.Serializable
 
 @Immutable
+@Serializable
 public data class ExerciseExampleState(
     val value: ExerciseExampleValueState,
     val bundles: ImmutableList<ExerciseExampleBundleState>,

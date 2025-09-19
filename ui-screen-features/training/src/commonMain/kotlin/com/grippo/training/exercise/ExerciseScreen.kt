@@ -1,6 +1,5 @@
 package com.grippo.training.exercise
 
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -25,12 +23,8 @@ import com.grippo.design.components.button.ButtonColorTokens
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.chip.IntensityChip
-import com.grippo.design.components.chip.IntensityChipStyle
-import com.grippo.design.components.chip.RepetitionsChip
-import com.grippo.design.components.chip.RepetitionsChipStyle
-import com.grippo.design.components.chip.VolumeChip
-import com.grippo.design.components.chip.VolumeChipStyle
+import com.grippo.design.components.example.ExerciseExampleCard
+import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.components.swipe.SwipeToReveal
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.training.IterationCard
@@ -40,9 +34,11 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.add_set_btn
+import com.grippo.design.resources.provider.exercise_record
 import com.grippo.design.resources.provider.icons.Cancel
 import com.grippo.design.resources.provider.save_btn
 import com.grippo.design.resources.provider.sets_value
+import com.grippo.state.exercise.examples.stubExerciseExample
 import com.grippo.state.trainings.stubExercise
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -56,30 +52,19 @@ internal fun ExerciseScreen(
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
-        title = state.exercise.name,
         onBack = contract::onBack,
+        title = AppTokens.strings.res(Res.string.exercise_record),
         content = {
-            Row(
-                modifier = Modifier
-                    .horizontalScroll(rememberScrollState())
-                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                    .padding(bottom = AppTokens.dp.contentPadding.content)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-            ) {
-                VolumeChip(
-                    value = state.exercise.metrics.volume,
-                    style = VolumeChipStyle.LONG
-                )
-
-                IntensityChip(
-                    value = state.exercise.metrics.intensity,
-                    style = IntensityChipStyle.LONG
-                )
-
-                RepetitionsChip(
-                    value = state.exercise.metrics.repetitions,
-                    style = RepetitionsChipStyle.LONG
+            state.exerciseExample?.let { example ->
+                ExerciseExampleCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                        .padding(bottom = AppTokens.dp.contentPadding.content),
+                    style = ExerciseExampleCardStyle.Small(
+                        onCardClick = {},
+                    ),
+                    value = example
                 )
             }
         }
@@ -215,7 +200,8 @@ private fun ExerciseScreenPreview() {
     PreviewContainer {
         ExerciseScreen(
             state = ExerciseState(
-                exercise = stubExercise()
+                exercise = stubExercise(),
+                exerciseExample = stubExerciseExample()
             ),
             loaders = persistentSetOf(),
             contract = ExerciseContract.Empty

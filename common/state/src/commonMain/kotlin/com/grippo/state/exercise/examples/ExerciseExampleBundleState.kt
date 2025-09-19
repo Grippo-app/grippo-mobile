@@ -6,10 +6,12 @@ import com.grippo.state.muscles.MuscleState
 import com.grippo.state.muscles.stubMuscles
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.serialization.Serializable
 import kotlin.random.Random
 import kotlin.uuid.Uuid
 
 @Immutable
+@Serializable
 public data class ExerciseExampleBundleState(
     val id: String,
     val muscle: MuscleState,

@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.example.internal.ExerciseExampleCardLarge
 import com.grippo.design.components.example.internal.ExerciseExampleCardMedium
+import com.grippo.design.components.example.internal.ExerciseExampleCardSmall
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.state.exercise.examples.ExerciseExampleState
@@ -15,6 +16,11 @@ import com.grippo.state.exercise.examples.stubExerciseExample
 
 @Immutable
 public sealed interface ExerciseExampleCardStyle {
+    @Immutable
+    public data class Small(
+        val onCardClick: () -> Unit,
+    ) : ExerciseExampleCardStyle
+
     @Immutable
     public data class Medium(
         val onCardClick: () -> Unit,
@@ -46,6 +52,12 @@ public fun ExerciseExampleCard(
             value = value,
             onCardClick = style.onCardClick
         )
+
+        is ExerciseExampleCardStyle.Small -> ExerciseExampleCardSmall(
+            modifier = modifier,
+            value = value,
+            onCardClick = style.onCardClick
+        )
     }
 }
 
@@ -69,6 +81,18 @@ private fun ExerciseExampleCardLargePreview() {
             modifier = Modifier.fillMaxWidth(),
             value = stubExerciseExample(),
             style = ExerciseExampleCardStyle.Large({}),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseExampleCardSmallPreview() {
+    PreviewContainer {
+        ExerciseExampleCard(
+            modifier = Modifier.fillMaxWidth(),
+            value = stubExerciseExample(),
+            style = ExerciseExampleCardStyle.Small({}),
         )
     }
 }

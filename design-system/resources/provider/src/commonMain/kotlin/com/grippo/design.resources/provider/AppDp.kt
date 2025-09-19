@@ -39,7 +39,7 @@ public data object AppDp {
         val small: Dp = 18.dp
         val medium: Dp = 22.dp
         val large: Dp = 32.dp
-        val huge: Dp = 64.dp
+        val huge: Dp = 68.dp
     }
 
     val bottomSheet: BottomSheet = BottomSheet
@@ -268,8 +268,16 @@ public data object AppDp {
     }
 
     public data object ExerciseExampleCard {
+        val small: Small = Small
         val medium: Medium = Medium
         val large: Large = Large
+
+        public data object Small {
+            val radius: Dp = AppDp.radius.medium
+            val horizontalPadding: Dp = padding.medium
+            val verticalPadding: Dp = padding.medium
+            val icon: Dp = AppDp.icon.huge
+        }
 
         public data object Medium {
             val radius: Dp = AppDp.radius.medium

@@ -48,8 +48,10 @@ import com.grippo.design.resources.provider.equipment.TrapBar
 import com.grippo.design.resources.provider.equipment.TricepsMachines
 import com.grippo.design.resources.provider.equipment.VBar
 import com.grippo.design.resources.provider.equipment.WideGripHandle
+import kotlinx.serialization.Serializable
 
 @Immutable
+@Serializable
 public data class EquipmentState(
     val id: String,
     val type: EquipmentEnumState,

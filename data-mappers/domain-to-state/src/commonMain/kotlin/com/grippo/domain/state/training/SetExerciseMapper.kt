@@ -20,7 +20,7 @@ public fun SetExercise.toState(): ExerciseState {
         id = Uuid.random().toString(),
         name = name,
         iterations = iterations.toState(),
-        exerciseExample = exerciseExample?.toState(),
+        exerciseExample = exerciseExample.toState(),
         metrics = TrainingMetrics(
             volume = VolumeFormatState.of(volume),
             repetitions = RepetitionsFormatState.of(repetitions),

@@ -17,7 +17,7 @@ public data class ExerciseState(
     val id: String,
     val name: String,
     val iterations: ImmutableList<IterationState>,
-    val exerciseExample: ExerciseExampleValueState?,
+    val exerciseExample: ExerciseExampleValueState,
     val metrics: TrainingMetrics
 )
 
