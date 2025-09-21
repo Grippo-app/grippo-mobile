@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.date.utils.DateFormat
+import com.grippo.design.components.chip.ChipSize
 import com.grippo.design.components.chip.VolumeChip
 import com.grippo.design.components.chip.VolumeChipStyle
 import com.grippo.design.components.datetime.DatePicker
@@ -107,7 +108,8 @@ internal fun HomeTrainingsScreen(
 
                         VolumeChip(
                             value = value.volume,
-                            style = VolumeChipStyle.SHORT
+                            style = VolumeChipStyle.SHORT,
+                            size = ChipSize.Medium
                         )
                     }
                 }

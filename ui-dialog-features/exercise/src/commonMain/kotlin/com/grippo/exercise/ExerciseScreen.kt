@@ -22,6 +22,7 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.chip.ChipSize
 import com.grippo.design.components.chip.IntensityChip
 import com.grippo.design.components.chip.IntensityChipStyle
 import com.grippo.design.components.chip.RepetitionsChip
@@ -87,17 +88,20 @@ internal fun ExerciseScreen(
             ) {
                 VolumeChip(
                     value = exercise.metrics.volume,
-                    style = VolumeChipStyle.LONG
+                    style = VolumeChipStyle.LONG,
+                    size = ChipSize.Medium
                 )
 
                 IntensityChip(
                     value = exercise.metrics.intensity,
-                    style = IntensityChipStyle.LONG
+                    style = IntensityChipStyle.LONG,
+                    size = ChipSize.Medium
                 )
 
                 RepetitionsChip(
                     value = exercise.metrics.repetitions,
-                    style = RepetitionsChipStyle.LONG
+                    style = RepetitionsChipStyle.LONG,
+                    size = ChipSize.Medium
                 )
             }
         }

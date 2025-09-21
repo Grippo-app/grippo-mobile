@@ -23,6 +23,7 @@ public enum class VolumeChipStyle {
 public fun VolumeChip(
     modifier: Modifier = Modifier,
     value: VolumeFormatState,
+    size: ChipSize,
     style: VolumeChipStyle
 ) {
     val colors = AppTokens.colors.chip.volume
@@ -42,7 +43,7 @@ public fun VolumeChip(
         label = text,
         value = value.short(),
         trailing = trailing,
-        size = ChipSize.Medium,
+        size = size,
         stype = ChipStype.Default,
         contentColor = colors.contentColor,
         brush = Brush.horizontalGradient(
@@ -57,12 +58,26 @@ private fun VolumeChipPreview() {
     PreviewContainer {
         VolumeChip(
             value = VolumeFormatState.of(1250.5f),
-            style = VolumeChipStyle.LONG
+            style = VolumeChipStyle.LONG,
+            size = ChipSize.Small
         )
 
         VolumeChip(
             value = VolumeFormatState.of(1250.5f),
-            style = VolumeChipStyle.SHORT
+            style = VolumeChipStyle.SHORT,
+            size = ChipSize.Small
+        )
+
+        VolumeChip(
+            value = VolumeFormatState.of(1250.5f),
+            style = VolumeChipStyle.LONG,
+            size = ChipSize.Medium
+        )
+
+        VolumeChip(
+            value = VolumeFormatState.of(1250.5f),
+            style = VolumeChipStyle.SHORT,
+            size = ChipSize.Medium
         )
     }
 }

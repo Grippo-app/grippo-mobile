@@ -20,6 +20,7 @@ import com.grippo.design.components.chart.BarChart
 import com.grippo.design.components.chart.HeatmapChart
 import com.grippo.design.components.chart.PieChart
 import com.grippo.design.components.chart.ProgressChart
+import com.grippo.design.components.chip.ChipSize
 import com.grippo.design.components.chip.IntensityChip
 import com.grippo.design.components.chip.IntensityChipStyle
 import com.grippo.design.components.chip.RepetitionsChip
@@ -95,19 +96,22 @@ internal fun HomeStatisticsScreen(
                 VolumeChip(
                     modifier = Modifier.weight(1f),
                     value = state.totalVolume,
-                    style = VolumeChipStyle.SHORT
+                    style = VolumeChipStyle.SHORT,
+                    size = ChipSize.Medium
                 )
 
                 RepetitionsChip(
                     modifier = Modifier.weight(1f),
                     value = state.totalRepetitions,
-                    style = RepetitionsChipStyle.SHORT
+                    style = RepetitionsChipStyle.SHORT,
+                    size = ChipSize.Medium
                 )
 
                 IntensityChip(
                     modifier = Modifier.weight(1f),
                     value = state.averageIntensity,
-                    style = IntensityChipStyle.SHORT
+                    style = IntensityChipStyle.SHORT,
+                    size = ChipSize.Medium
                 )
             }
         }

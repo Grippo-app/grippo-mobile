@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
+import com.grippo.design.components.chip.ChipSize
 import com.grippo.design.components.chip.IntensityChip
 import com.grippo.design.components.chip.IntensityChipStyle
 import com.grippo.design.components.chip.RepetitionsChip
@@ -62,40 +63,46 @@ internal fun ExerciseCardMedium(
                 style = ExerciseExampleImageStyle.MEDIUM
             )
 
-            Text(
-                text = value.name,
-                style = AppTokens.typography.h3(),
-                color = AppTokens.colors.text.primary,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
+            ) {
+                Text(
+                    text = value.name,
+                    style = AppTokens.typography.h3(),
+                    color = AppTokens.colors.text.primary,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
 
-        Spacer(modifier = Modifier.height(AppTokens.dp.exerciseCard.medium.spacing))
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
+                ) {
+                    VolumeChip(
+                        value = value.metrics.volume,
+                        style = VolumeChipStyle.SHORT,
+                        size = ChipSize.Small
+                    )
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.exerciseCard.medium.spacing)
-        ) {
-            VolumeChip(
-                value = value.metrics.volume,
-                style = VolumeChipStyle.SHORT,
-                modifier = Modifier.weight(1f)
-            )
+                    IntensityChip(
+                        value = value.metrics.intensity,
+                        style = IntensityChipStyle.SHORT,
+                        size = ChipSize.Small
+                    )
 
-            IntensityChip(
-                value = value.metrics.intensity,
-                style = IntensityChipStyle.SHORT,
-            )
-
-            RepetitionsChip(
-                value = value.metrics.repetitions,
-                style = RepetitionsChipStyle.SHORT,
-            )
+                    RepetitionsChip(
+                        value = value.metrics.repetitions,
+                        style = RepetitionsChipStyle.SHORT,
+                        size = ChipSize.Small
+                    )
+                }
+            }
         }
 
         if (value.iterations.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(AppTokens.dp.exerciseCard.medium.spacing))
+            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
 
             Text(
                 text = "${AppTokens.strings.res(Res.string.sets_label)} ${value.iterations.size}",
@@ -103,7 +110,7 @@ internal fun ExerciseCardMedium(
                 color = AppTokens.colors.text.secondary
             )
 
-            Spacer(modifier = Modifier.height(AppTokens.dp.exerciseCard.medium.spacing))
+            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.subContent))
 
             FlowRow(
                 modifier = Modifier.fillMaxWidth(),

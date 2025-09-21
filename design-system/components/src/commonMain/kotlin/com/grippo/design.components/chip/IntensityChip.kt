@@ -23,6 +23,7 @@ public enum class IntensityChipStyle {
 public fun IntensityChip(
     modifier: Modifier = Modifier,
     value: IntensityFormatState,
+    size: ChipSize,
     style: IntensityChipStyle
 ) {
     val colors = AppTokens.colors.chip.intensity
@@ -42,7 +43,7 @@ public fun IntensityChip(
         label = text,
         value = value.short(),
         trailing = trailing,
-        size = ChipSize.Medium,
+        size = size,
         stype = ChipStype.Default,
         contentColor = colors.contentColor,
         brush = Brush.horizontalGradient(
@@ -57,12 +58,26 @@ private fun IntensityChipPreview() {
     PreviewContainer {
         IntensityChip(
             value = IntensityFormatState.of(85f),
-            style = IntensityChipStyle.LONG
+            style = IntensityChipStyle.LONG,
+            size = ChipSize.Small
         )
 
         IntensityChip(
             value = IntensityFormatState.of(85f),
-            style = IntensityChipStyle.SHORT
+            style = IntensityChipStyle.SHORT,
+            size = ChipSize.Small
+        )
+
+        IntensityChip(
+            value = IntensityFormatState.of(85f),
+            style = IntensityChipStyle.LONG,
+            size = ChipSize.Medium
+        )
+
+        IntensityChip(
+            value = IntensityFormatState.of(85f),
+            style = IntensityChipStyle.SHORT,
+            size = ChipSize.Medium
         )
     }
 }

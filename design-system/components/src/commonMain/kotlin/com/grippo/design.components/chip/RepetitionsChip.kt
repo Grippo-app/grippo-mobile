@@ -23,6 +23,7 @@ public enum class RepetitionsChipStyle {
 public fun RepetitionsChip(
     modifier: Modifier = Modifier,
     value: RepetitionsFormatState,
+    size: ChipSize,
     style: RepetitionsChipStyle
 ) {
     val colors = AppTokens.colors.chip.repetitions
@@ -42,7 +43,7 @@ public fun RepetitionsChip(
         label = text,
         value = value.short(),
         trailing = trailing,
-        size = ChipSize.Medium,
+        size = size,
         stype = ChipStype.Default,
         contentColor = colors.contentColor,
         brush = Brush.horizontalGradient(
@@ -57,12 +58,26 @@ private fun RepetitionsChipPreview() {
     PreviewContainer {
         RepetitionsChip(
             value = RepetitionsFormatState.of(12),
-            style = RepetitionsChipStyle.LONG
+            style = RepetitionsChipStyle.LONG,
+            size = ChipSize.Small
         )
 
         RepetitionsChip(
             value = RepetitionsFormatState.of(12),
-            style = RepetitionsChipStyle.SHORT
+            style = RepetitionsChipStyle.SHORT,
+            size = ChipSize.Small
+        )
+
+        RepetitionsChip(
+            value = RepetitionsFormatState.of(12),
+            style = RepetitionsChipStyle.LONG,
+            size = ChipSize.Medium
+        )
+
+        RepetitionsChip(
+            value = RepetitionsFormatState.of(12),
+            style = RepetitionsChipStyle.SHORT,
+            size = ChipSize.Medium
         )
     }
 }

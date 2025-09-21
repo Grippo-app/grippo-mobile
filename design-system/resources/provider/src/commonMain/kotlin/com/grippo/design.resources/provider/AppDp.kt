@@ -256,7 +256,6 @@ public data object AppDp {
             val radius: Dp = AppDp.radius.medium
             val horizontalPadding: Dp = padding.large
             val verticalPadding: Dp = padding.medium
-            val spacing: Dp = padding.medium
         }
 
         public data object Small {
