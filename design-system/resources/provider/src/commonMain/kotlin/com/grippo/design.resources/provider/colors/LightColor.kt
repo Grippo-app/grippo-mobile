@@ -182,7 +182,7 @@ public object LightColor : AppColor {
 
     public override val profile: AppColor.ProfileColors = object : AppColor.ProfileColors {
 
-        override val experienceColors: AppColor.ProfileColors.ExperienceColors =
+        override val experience: AppColor.ProfileColors.ExperienceColors =
             object : AppColor.ProfileColors.ExperienceColors {
                 override val beginner: Color = AppPalette.Unique.Green
                 override val intermediate: Color = AppPalette.Unique.Orange

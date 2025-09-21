@@ -1,6 +1,9 @@
 package com.grippo.state.exercise.examples
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.graphics.Color
+import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.category_compound
 import com.grippo.design.resources.provider.category_isolation
@@ -19,5 +22,13 @@ public enum class CategoryEnumState {
             ISOLATION -> Res.string.category_isolation
         }
         return UiText.Res(r)
+    }
+
+    @Composable
+    public fun color(): Color {
+        return when (this) {
+            COMPOUND -> AppTokens.colors.example.category.compound
+            ISOLATION -> AppTokens.colors.example.category.isolation
+        }
     }
 }

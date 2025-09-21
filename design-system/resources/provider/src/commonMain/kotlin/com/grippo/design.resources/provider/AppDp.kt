@@ -64,13 +64,13 @@ public data object AppDp {
     val bodyDetails: BodyDetails = BodyDetails
     val overviewCard: OverviewCard = OverviewCard
     val equipmentCard: EquipmentCard = EquipmentCard
-    val exerciseExampleBundlesCard: ExerciseExampleBundlesCard = ExerciseExampleBundlesCard
     val timeline: Timeline = Timeline
     val timeLabel: TimeLabel = TimeLabel
     val datePicker: DatePicker = DatePicker
     val periodPicker: PeriodPicker = PeriodPicker
     val exerciseCard: ExerciseCard = ExerciseCard
     val exerciseExampleCard: ExerciseExampleCard = ExerciseExampleCard
+    val exerciseExampleImage: ExerciseExampleImage = ExerciseExampleImage
     val iterationCard: IterationCard = IterationCard
     val iterationsCard: IterationsCard = IterationsCard
     val chip: Chip = Chip
@@ -267,6 +267,11 @@ public data object AppDp {
         }
     }
 
+    public data object ExerciseExampleImage {
+        val size: Dp = icon.huge
+        val radius: Dp = AppDp.radius.medium
+    }
+
     public data object ExerciseExampleCard {
         val small: Small = Small
         val medium: Medium = Medium
@@ -276,21 +281,18 @@ public data object AppDp {
             val radius: Dp = AppDp.radius.medium
             val horizontalPadding: Dp = padding.medium
             val verticalPadding: Dp = padding.medium
-            val icon: Dp = AppDp.icon.huge
         }
 
         public data object Medium {
             val radius: Dp = AppDp.radius.medium
             val horizontalPadding: Dp = padding.large
             val verticalPadding: Dp = padding.medium
-            val icon: Dp = AppDp.icon.huge
         }
 
         public data object Large {
             val radius: Dp = AppDp.radius.medium
             val horizontalPadding: Dp = padding.large
             val verticalPadding: Dp = padding.large
-            val icon: Dp = AppDp.icon.huge
         }
     }
 
@@ -300,8 +302,6 @@ public data object AppDp {
         val verticalPadding: Dp = padding.medium
         val radius: Dp = AppDp.radius.medium
     }
-
-    public data object ExerciseExampleBundlesCard
 
     public data object ToggleSelectableCard {
         val medium: Medium = Medium

@@ -273,10 +273,10 @@ public class DistributionCalculator(
                 label = level.title().text(stringProvider),
                 value = value,
                 color = when (level) {
-                    ExperienceEnumState.BEGINNER -> colors.profile.experienceColors.beginner
-                    ExperienceEnumState.INTERMEDIATE -> colors.profile.experienceColors.intermediate
-                    ExperienceEnumState.ADVANCED -> colors.profile.experienceColors.advanced
-                    ExperienceEnumState.PRO -> colors.profile.experienceColors.pro
+                    ExperienceEnumState.BEGINNER -> colors.profile.experience.beginner
+                    ExperienceEnumState.INTERMEDIATE -> colors.profile.experience.intermediate
+                    ExperienceEnumState.ADVANCED -> colors.profile.experience.advanced
+                    ExperienceEnumState.PRO -> colors.profile.experience.pro
                 }
             )
         }

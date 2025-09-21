@@ -2,6 +2,7 @@ package com.grippo.state.profile
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
@@ -41,6 +42,16 @@ public enum class ExperienceEnumState {
             INTERMEDIATE -> UiText.Res(Res.string.experience_intermediate_description)
             ADVANCED -> UiText.Res(Res.string.experience_advanced_description)
             PRO -> UiText.Res(Res.string.experience_pro_description)
+        }
+    }
+
+    @Composable
+    public fun color(): Color {
+        return when (this) {
+            BEGINNER -> AppTokens.colors.profile.experience.beginner
+            INTERMEDIATE -> AppTokens.colors.profile.experience.intermediate
+            ADVANCED -> AppTokens.colors.profile.experience.advanced
+            PRO -> AppTokens.colors.profile.experience.pro
         }
     }
 

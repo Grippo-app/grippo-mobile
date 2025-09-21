@@ -147,7 +147,7 @@ public interface AppColor {
     }
 
     public interface ProfileColors {
-        public val experienceColors: ExperienceColors
+        public val experience: ExperienceColors
 
         public interface ExperienceColors {
             public val beginner: Color

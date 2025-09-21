@@ -62,7 +62,7 @@ internal fun ExerciseScreen(
                         .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
                         .padding(bottom = AppTokens.dp.contentPadding.content),
                     style = ExerciseExampleCardStyle.Small(
-                        onCardClick = {},
+                        onCardClick = contract::onExampleClick,
                     ),
                     value = example
                 )

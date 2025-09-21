@@ -7,6 +7,7 @@ import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
+import com.grippo.state.exercise.examples.ExerciseExampleDialogView
 import com.grippo.state.formatters.RepetitionsFormatState
 import com.grippo.state.formatters.VolumeFormatState
 import com.grippo.state.trainings.ExerciseState
@@ -192,6 +193,16 @@ internal class ExerciseViewModel(
             )
             s.copy(exercise = exercise)
         }
+    }
+
+    override fun onExampleClick() {
+        val dialog = DialogConfig.ExerciseExample(
+            id = state.value.exercise.exerciseExample.id,
+            view = ExerciseExampleDialogView.READ,
+            onResult = { example -> }
+        )
+
+        dialogController.show(dialog)
     }
 
     override fun onSave() {

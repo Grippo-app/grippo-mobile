@@ -17,12 +17,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.components.button.Button
@@ -36,6 +33,7 @@ import com.grippo.design.components.chip.ChipStype
 import com.grippo.design.components.chip.ChipTrailing
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
+import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -70,22 +68,17 @@ internal fun ExerciseExampleCardMedium(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
         ) {
-            AsyncImage(
-                modifier = Modifier
-                    .clip(shape)
-                    .size(AppTokens.dp.exerciseExampleCard.medium.icon),
-                model = value.value.imageUrl,
-                contentScale = ContentScale.Crop,
-                contentDescription = null
+            ExerciseExampleImage(
+                value = value.value.imageUrl
             )
 
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
             ) {
                 Text(
                     text = value.value.name,
-                    style = AppTokens.typography.b14Bold(),
+                    style = AppTokens.typography.h3(),
                     color = AppTokens.colors.text.primary,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
@@ -102,8 +95,8 @@ internal fun ExerciseExampleCardMedium(
                         size = ChipSize.Small,
                         stype = ChipStype.Default,
                         trailing = ChipTrailing.Empty,
-                        contentColor = AppTokens.colors.text.primary,
-                        brush = SolidColor(AppTokens.colors.background.screen)
+                        contentColor = AppTokens.colors.static.white,
+                        brush = SolidColor(value.value.category.color())
                     )
 
                     Chip(
@@ -112,8 +105,8 @@ internal fun ExerciseExampleCardMedium(
                         size = ChipSize.Small,
                         stype = ChipStype.Default,
                         trailing = ChipTrailing.Empty,
-                        contentColor = AppTokens.colors.text.primary,
-                        brush = SolidColor(AppTokens.colors.background.screen)
+                        contentColor = AppTokens.colors.static.white,
+                        brush = SolidColor(value.value.forceType.color())
                     )
 
                     Chip(
@@ -122,8 +115,8 @@ internal fun ExerciseExampleCardMedium(
                         size = ChipSize.Small,
                         stype = ChipStype.Default,
                         trailing = ChipTrailing.Empty,
-                        contentColor = AppTokens.colors.text.primary,
-                        brush = SolidColor(AppTokens.colors.background.screen)
+                        contentColor = AppTokens.colors.static.white,
+                        brush = SolidColor(value.value.weightType.color())
                     )
                 }
             }

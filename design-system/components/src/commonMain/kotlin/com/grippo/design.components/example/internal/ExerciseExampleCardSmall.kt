@@ -4,19 +4,18 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
-import coil3.compose.AsyncImage
 import com.grippo.design.components.chip.Chip
 import com.grippo.design.components.chip.ChipLabel
 import com.grippo.design.components.chip.ChipSize
@@ -24,6 +23,7 @@ import com.grippo.design.components.chip.ChipStype
 import com.grippo.design.components.chip.ChipTrailing
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
+import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -49,25 +49,24 @@ internal fun ExerciseExampleCardSmall(
             ),
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .height(intrinsicSize = IntrinsicSize.Min)
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
         ) {
-            AsyncImage(
-                modifier = Modifier
-                    .clip(shape)
-                    .size(AppTokens.dp.exerciseExampleCard.small.icon),
-                model = value.value.imageUrl,
-                contentScale = ContentScale.Crop,
-                contentDescription = null
+            ExerciseExampleImage(
+                value = value.value.imageUrl
             )
 
             Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
             ) {
                 Text(
                     text = value.value.name,
-                    style = AppTokens.typography.b14Bold(),
+                    style = AppTokens.typography.b15Bold(),
                     color = AppTokens.colors.text.primary,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
@@ -84,8 +83,8 @@ internal fun ExerciseExampleCardSmall(
                         size = ChipSize.Small,
                         stype = ChipStype.Default,
                         trailing = ChipTrailing.Empty,
-                        contentColor = AppTokens.colors.text.primary,
-                        brush = SolidColor(AppTokens.colors.background.screen)
+                        contentColor = AppTokens.colors.static.white,
+                        brush = SolidColor(value.value.category.color())
                     )
 
                     Chip(
@@ -94,8 +93,8 @@ internal fun ExerciseExampleCardSmall(
                         size = ChipSize.Small,
                         stype = ChipStype.Default,
                         trailing = ChipTrailing.Empty,
-                        contentColor = AppTokens.colors.text.primary,
-                        brush = SolidColor(AppTokens.colors.background.screen)
+                        contentColor = AppTokens.colors.static.white,
+                        brush = SolidColor(value.value.forceType.color())
                     )
 
                     Chip(
@@ -104,8 +103,8 @@ internal fun ExerciseExampleCardSmall(
                         size = ChipSize.Small,
                         stype = ChipStype.Default,
                         trailing = ChipTrailing.Empty,
-                        contentColor = AppTokens.colors.text.primary,
-                        brush = SolidColor(AppTokens.colors.background.screen)
+                        contentColor = AppTokens.colors.static.white,
+                        brush = SolidColor(value.value.weightType.color())
                     )
                 }
             }
