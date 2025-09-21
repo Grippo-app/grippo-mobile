@@ -14,7 +14,6 @@ import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.muscles.toState
 import com.grippo.state.domain.example.toDomain
-import com.grippo.state.domain.user.toDomain
 import com.grippo.state.exercise.examples.ExerciseExampleDialogView
 import com.grippo.state.filters.FilterValue
 import com.grippo.state.sorting.SortingEnumState
@@ -53,15 +52,12 @@ public class ExerciseExamplePickerViewModel(
                     ?.value?.toDomain()
                 val category = s.filters.filterIsInstance<FilterValue.Category>().firstOrNull()
                     ?.value?.toDomain()
-                val experience = s.filters.filterIsInstance<FilterValue.Experience>().firstOrNull()
-                    ?.value?.toDomain()
 
                 SearchKey(
                     query = s.query.trim(),
                     weightType = weightType,
                     forceType = forceType,
                     category = category,
-                    experience = experience,
                     muscleGroupId = muscleGroupId,
                     sortBy = sortBy
                 )
@@ -73,7 +69,6 @@ public class ExerciseExamplePickerViewModel(
                     weightType = key.weightType,
                     forceType = key.forceType,
                     category = key.category,
-                    experience = key.experience,
                     muscleGroupId = key.muscleGroupId
                 )
 

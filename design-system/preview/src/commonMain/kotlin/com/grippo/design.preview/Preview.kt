@@ -6,38 +6,51 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
+import coil3.ColorImage
+import coil3.annotation.ExperimentalCoilApi
+import coil3.compose.AsyncImagePreviewHandler
+import coil3.compose.LocalAsyncImagePreviewHandler
 import com.grippo.design.core.AppTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Preview()
 public annotation class AppPreview
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 public fun PreviewContainer(
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    Column {
-        AppTheme(darkTheme = false, localeTag = "ua") {
-            Column(
-                modifier = Modifier
-                    .background(Color.White)
-                    .padding(12.dp),
-                content = content,
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            )
-        }
+    val previewHandler = AsyncImagePreviewHandler {
+        ColorImage(Color.Black.copy(alpha = 0.2f).toArgb())
+    }
 
-        AppTheme(darkTheme = true, localeTag = "en") {
-            Column(
-                modifier = Modifier
-                    .background(Color.Black)
-                    .padding(12.dp),
-                content = content,
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            )
+    CompositionLocalProvider(LocalAsyncImagePreviewHandler provides previewHandler) {
+        Column {
+            AppTheme(darkTheme = false, localeTag = "ua") {
+                Column(
+                    modifier = Modifier
+                        .background(Color.White)
+                        .padding(12.dp),
+                    content = content,
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                )
+            }
+
+            AppTheme(darkTheme = true, localeTag = "en") {
+                Column(
+                    modifier = Modifier
+                        .background(Color.Black)
+                        .padding(12.dp),
+                    content = content,
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                )
+            }
         }
     }
 }

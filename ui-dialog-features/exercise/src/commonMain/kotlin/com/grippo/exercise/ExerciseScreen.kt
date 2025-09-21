@@ -104,50 +104,47 @@ internal fun ExerciseScreen(
 
         val example = exercise.exerciseExample
 
-        if (example != null) {
+        val onExampleDetailsClick = remember {
+            { contract.onExampleDetailsClick(example.id) }
+        }
 
-            val onExampleDetailsClick = remember {
-                { contract.onExampleDetailsClick(example.id) }
-            }
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = example.name,
-                    style = AppTokens.typography.b14Bold(),
-                    color = AppTokens.colors.text.primary,
-                )
-
-                Button(
-                    onClick = onExampleDetailsClick,
-                    style = ButtonStyle.Transparent,
-                    size = ButtonSize.Small,
-                    content = ButtonContent.Text(
-                        text = AppTokens.strings.res(Res.string.overview),
-                        endIcon = AppTokens.icons.NavArrowRight
-                    ),
-                )
-            }
-
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
+        Row(
+            modifier = Modifier
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(
-                modifier = Modifier
-                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                    .fillMaxWidth(),
-                text = example.description,
-                maxLines = 4,
-                overflow = TextOverflow.Ellipsis,
-                style = AppTokens.typography.b14Reg(),
+                modifier = Modifier.weight(1f),
+                text = example.name,
+                style = AppTokens.typography.b14Bold(),
                 color = AppTokens.colors.text.primary,
             )
+
+            Button(
+                onClick = onExampleDetailsClick,
+                style = ButtonStyle.Transparent,
+                size = ButtonSize.Small,
+                content = ButtonContent.Text(
+                    text = AppTokens.strings.res(Res.string.overview),
+                    endIcon = AppTokens.icons.NavArrowRight
+                ),
+            )
         }
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+
+        Text(
+            modifier = Modifier
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                .fillMaxWidth(),
+            text = example.description,
+            maxLines = 4,
+            overflow = TextOverflow.Ellipsis,
+            style = AppTokens.typography.b14Reg(),
+            color = AppTokens.colors.text.primary,
+        )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
     }

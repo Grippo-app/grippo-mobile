@@ -24,6 +24,7 @@ import com.grippo.design.components.chip.ChipTrailing
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.components.example.ExerciseExampleImage
+import com.grippo.design.components.example.ExerciseExampleImageStyle
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -55,7 +56,8 @@ internal fun ExerciseExampleCardSmall(
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
         ) {
             ExerciseExampleImage(
-                value = value.value.imageUrl
+                value = value.value.imageUrl,
+                style = ExerciseExampleImageStyle.MEDIUM
             )
 
             Column(

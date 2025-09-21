@@ -21,6 +21,8 @@ import com.grippo.design.components.chip.RepetitionsChip
 import com.grippo.design.components.chip.RepetitionsChipStyle
 import com.grippo.design.components.chip.VolumeChip
 import com.grippo.design.components.chip.VolumeChipStyle
+import com.grippo.design.components.example.ExerciseExampleImage
+import com.grippo.design.components.example.ExerciseExampleImageStyle
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.training.IterationCard
 import com.grippo.design.components.training.IterationCardStyle
@@ -50,13 +52,24 @@ internal fun ExerciseCardMedium(
                 vertical = AppTokens.dp.exerciseCard.medium.verticalPadding
             )
     ) {
-        Text(
-            text = value.name,
-            style = AppTokens.typography.h2(),
-            color = AppTokens.colors.text.primary,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
-        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+        ) {
+            ExerciseExampleImage(
+                value = value.exerciseExample.imageUrl,
+                style = ExerciseExampleImageStyle.MEDIUM
+            )
+
+            Text(
+                text = value.name,
+                style = AppTokens.typography.h3(),
+                color = AppTokens.colors.text.primary,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
 
         Spacer(modifier = Modifier.height(AppTokens.dp.exerciseCard.medium.spacing))
 

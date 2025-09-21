@@ -87,32 +87,6 @@ internal fun FilterPickerScreen(
                 Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
 
                 when (content) {
-                    is FilterValue.Experience -> {
-                        Row(
-                            modifier = Modifier
-                                .horizontalScroll(rememberScrollState())
-                                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-                        ) {
-                            content.available.onEach { value ->
-                                key(value.ordinal) {
-                                    val clickProvider = remember(value.ordinal) {
-                                        { contract.onItemClick(content.copy(value = value)) }
-                                    }
-
-                                    SelectableCard(
-                                        style = CheckSelectableCardStyle.Small(
-                                            title = value.title().text()
-                                        ),
-                                        isSelected = value == content.value,
-                                        onSelect = clickProvider
-                                    )
-                                }
-                            }
-                        }
-                    }
-
                     is FilterValue.Category -> {
                         Row(
                             modifier = Modifier

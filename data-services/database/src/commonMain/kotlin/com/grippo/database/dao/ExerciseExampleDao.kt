@@ -31,7 +31,28 @@ public interface ExerciseExampleDao {
       AND (:forceType IS NULL OR ee.forceType = :forceType)
       AND (:weightType IS NULL OR ee.weightType = :weightType)
       AND (:category IS NULL OR ee.category = :category)
-      AND (:experience IS NULL OR ee.experience = :experience)
+
+      -- Experience ladder filter
+      AND (
+          :experience IS NULL
+          OR (
+              CASE ee.experience
+                  WHEN 'beginner'     THEN 1
+                  WHEN 'intermediate' THEN 2
+                  WHEN 'advanced'     THEN 3
+                  WHEN 'pro'          THEN 4
+                  ELSE 0
+              END
+              <=
+              CASE :experience
+                  WHEN 'beginner'     THEN 1  -- beginner sees only beginner
+                  WHEN 'intermediate' THEN 2  -- beginner + intermediate
+                  WHEN 'advanced'     THEN 3  -- beginner + intermediate + advanced
+                  WHEN 'pro'          THEN 4  -- everything
+                  ELSE 4
+              END
+          )
+      )
 
       -- Optional muscle group filter: applies only if the top-percentage muscle belongs to the group
       AND (
@@ -93,7 +114,7 @@ public interface ExerciseExampleDao {
         excludedMuscleIds: Set<String>,
         sorting: String,
         limits: Int?,
-        number: Int?
+        number: Int?,
     ): Flow<List<ExerciseExamplePack>>
 
     @Transaction

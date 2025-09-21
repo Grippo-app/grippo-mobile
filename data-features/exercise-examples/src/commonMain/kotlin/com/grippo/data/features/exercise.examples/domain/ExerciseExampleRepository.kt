@@ -4,6 +4,7 @@ import com.grippo.data.features.api.exercise.example.models.ExamplePage
 import com.grippo.data.features.api.exercise.example.models.ExampleQueries
 import com.grippo.data.features.api.exercise.example.models.ExampleSortingEnum
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
+import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
 import com.grippo.data.features.api.exercise.example.models.UserExerciseExampleRules
 import kotlinx.coroutines.flow.Flow
 
@@ -12,7 +13,8 @@ internal interface ExerciseExampleRepository {
         queries: ExampleQueries,
         sorting: ExampleSortingEnum,
         rules: UserExerciseExampleRules,
-        page: ExamplePage
+        page: ExamplePage,
+        experience: ExperienceEnum
     ): Flow<List<ExerciseExample>>
 
     fun observeExerciseExamples(ids: List<String>): Flow<List<ExerciseExample>>

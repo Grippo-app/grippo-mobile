@@ -10,6 +10,7 @@ kotlin {
 
         implementation(compose.foundation)
         implementation(compose.components.uiToolingPreview)
+        implementation(libs.coil.compose)
     }
     sourceSets.androidMain.dependencies {
         implementation(compose.uiTooling)

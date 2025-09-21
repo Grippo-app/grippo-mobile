@@ -3,7 +3,6 @@ package com.grippo.exercise.example.picker
 import androidx.compose.runtime.Immutable
 import com.grippo.data.features.api.exercise.example.models.CategoryEnum
 import com.grippo.data.features.api.exercise.example.models.ExampleSortingEnum
-import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
 import com.grippo.data.features.api.exercise.example.models.ForceTypeEnum
 import com.grippo.data.features.api.exercise.example.models.WeightTypeEnum
 import com.grippo.state.exercise.examples.ExerciseExampleState
@@ -27,7 +26,6 @@ internal class SearchKey(
     val weightType: WeightTypeEnum?,
     val forceType: ForceTypeEnum?,
     val category: CategoryEnum?,
-    val experience: ExperienceEnum?,
     val muscleGroupId: String?,
     val sortBy: ExampleSortingEnum
 )

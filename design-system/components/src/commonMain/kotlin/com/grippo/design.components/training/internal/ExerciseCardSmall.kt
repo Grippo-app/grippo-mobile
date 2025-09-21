@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -12,8 +13,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
+import com.grippo.design.components.example.ExerciseExampleImage
+import com.grippo.design.components.example.ExerciseExampleImageStyle
 import com.grippo.design.components.training.IterationCard
 import com.grippo.design.components.training.IterationCardStyle
 import com.grippo.design.core.AppTokens
@@ -38,13 +42,25 @@ internal fun ExerciseCardSmall(
                 vertical = AppTokens.dp.exerciseCard.small.verticalPadding
             )
     ) {
-        Text(
-            text = value.name,
-            style = AppTokens.typography.b16Bold(),
-            color = AppTokens.colors.text.primary,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            ExerciseExampleImage(
+                value = value.exerciseExample.imageUrl,
+                style = ExerciseExampleImageStyle.SMALL
+            )
+
+            Text(
+                text = value.name,
+                style = AppTokens.typography.b16Bold(),
+                color = AppTokens.colors.text.primary,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
 
         if (value.iterations.isNotEmpty()) {
             Spacer(modifier = Modifier.height(AppTokens.dp.exerciseCard.small.spacing))

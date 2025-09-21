@@ -4,7 +4,6 @@ public data class ExampleQueries(
     val name: String?,
     val forceType: ForceTypeEnum?,
     val weightType: WeightTypeEnum?,
-    val experience: ExperienceEnum?,
     val category: CategoryEnum?,
     val muscleGroupId: String?,
 )

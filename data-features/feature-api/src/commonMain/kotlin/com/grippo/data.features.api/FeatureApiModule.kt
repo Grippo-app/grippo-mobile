@@ -31,11 +31,13 @@ public class FeatureApiModule {
                 exerciseExampleFeature = get()
             )
         }
+
         single {
             UserExerciseExamplesUseCase(
                 excludedMusclesFeature = get(),
                 excludedEquipmentsFeature = get(),
-                exerciseExampleFeature = get()
+                exerciseExampleFeature = get(),
+                userFeature = get()
             )
         }
     }

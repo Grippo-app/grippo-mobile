@@ -268,8 +268,18 @@ public data object AppDp {
     }
 
     public data object ExerciseExampleImage {
-        val size: Dp = icon.huge
-        val radius: Dp = AppDp.radius.medium
+        val small: Small = Small
+        val medium: Medium = Medium
+
+        public data object Small {
+            val size: Dp = icon.large
+            val radius: Dp = AppDp.radius.small
+        }
+
+        public data object Medium {
+            val size: Dp = icon.huge
+            val radius: Dp = AppDp.radius.medium
+        }
     }
 
     public data object ExerciseExampleCard {

@@ -19,7 +19,6 @@ public class FilterPickerViewModel(
                     is FilterValue.WeightType -> if (item is FilterValue.WeightType) value else item
                     is FilterValue.ForceType -> if (item is FilterValue.ForceType) value else item
                     is FilterValue.Category -> if (item is FilterValue.Category) value else item
-                    is FilterValue.Experience -> if (item is FilterValue.Experience) value else item
                 }
             }
 
@@ -34,7 +33,6 @@ public class FilterPickerViewModel(
                     is FilterValue.WeightType -> item.copy(value = null)
                     is FilterValue.ForceType -> item.copy(value = null)
                     is FilterValue.Category -> item.copy(value = null)
-                    is FilterValue.Experience -> item.copy(value = null)
                 }
             }
 

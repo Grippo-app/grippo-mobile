@@ -4,6 +4,7 @@ import com.grippo.data.features.api.exercise.example.models.ExamplePage
 import com.grippo.data.features.api.exercise.example.models.ExampleQueries
 import com.grippo.data.features.api.exercise.example.models.ExampleSortingEnum
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
+import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
 import com.grippo.data.features.api.exercise.example.models.UserExerciseExampleRules
 import com.grippo.data.features.exercise.examples.domain.ExerciseExampleRepository
 import com.grippo.database.dao.ExerciseExampleDao
@@ -25,14 +26,15 @@ internal class ExerciseExampleRepositoryImpl(
         queries: ExampleQueries,
         sorting: ExampleSortingEnum,
         rules: UserExerciseExampleRules,
-        page: ExamplePage
+        page: ExamplePage,
+        experience: ExperienceEnum
     ): Flow<List<ExerciseExample>> {
         return exerciseExampleDao.getAll(
             name = queries.name,
             forceType = queries.forceType?.key,
             weightType = queries.weightType?.key,
             category = queries.category?.key,
-            experience = queries.experience?.key,
+            experience = experience.key,
             muscleGroupId = queries.muscleGroupId,
             excludedEquipmentIds = rules.excludedEquipmentIds,
             excludedMuscleIds = rules.excludedMuscleIds,

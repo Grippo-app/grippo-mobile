@@ -29,7 +29,6 @@ public data class ExerciseExampleValueState(
             add(FilterValue.Category(value = null))
             add(FilterValue.WeightType(value = null))
             add(FilterValue.ForceType(value = null))
-            add(FilterValue.Experience(value = null))
         }.toPersistentList()
     }
 }
