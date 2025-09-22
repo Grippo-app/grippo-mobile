@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,19 +21,14 @@ internal fun IterationCardSmallView(
     value: IterationState,
 ) {
     Row(
-        modifier = modifier
-            .height(intrinsicSize = IntrinsicSize.Min)
-            .padding(
-                vertical = AppTokens.dp.iterationCard.smallView.verticalPadding,
-                horizontal = AppTokens.dp.iterationCard.smallView.horizontalPadding
-            ),
+        modifier = modifier.height(intrinsicSize = IntrinsicSize.Min),
         verticalAlignment = Alignment.CenterVertically,
     ) {
 
         Text(
             text = value.volume.short(),
             style = AppTokens.typography.b13Bold(),
-            color = AppTokens.colors.text.primary
+            color = AppTokens.colors.text.secondary
         )
 
         Spacer(Modifier.width(AppTokens.dp.contentPadding.text))

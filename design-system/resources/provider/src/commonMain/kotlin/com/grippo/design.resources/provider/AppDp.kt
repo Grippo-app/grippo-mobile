@@ -40,7 +40,7 @@ public data object AppDp {
         val medium: Dp = 22.dp
         val large: Dp = 32.dp
         val xLarge: Dp = 48.dp
-        val xxLarge: Dp = 72.dp
+        val xxLarge: Dp = 68.dp
     }
 
     val bottomSheet: BottomSheet = BottomSheet
@@ -215,13 +215,7 @@ public data object AppDp {
     }
 
     public data object IterationCard {
-        val smallView: SmallView = SmallView
         val editable: Editable = Editable
-
-        public data object SmallView {
-            val horizontalPadding: Dp = 4.dp
-            val verticalPadding: Dp = 5.dp
-        }
 
         public data object Editable {
             val horizontalPadding: Dp = padding.medium

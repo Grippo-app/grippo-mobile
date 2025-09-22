@@ -107,7 +107,7 @@ internal fun ExerciseCardMedium(
             Text(
                 text = "${AppTokens.strings.res(Res.string.sets_label)} ${value.iterations.size}",
                 style = AppTokens.typography.b14Med(),
-                color = AppTokens.colors.text.secondary
+                color = AppTokens.colors.text.tertiary
             )
 
             Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.subContent))
