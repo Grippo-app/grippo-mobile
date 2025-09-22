@@ -22,10 +22,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateTimeUtils
-import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonContent
-import com.grippo.design.components.button.ButtonSize
-import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.chip.Chip
 import com.grippo.design.components.chip.ChipLabel
 import com.grippo.design.components.chip.ChipSize
@@ -40,10 +36,8 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.icons.NavArrowRight
 import com.grippo.design.resources.provider.last_used_label
 import com.grippo.design.resources.provider.not_used_before
-import com.grippo.design.resources.provider.overview
 import com.grippo.state.exercise.examples.ExerciseExampleState
 import com.grippo.state.exercise.examples.stubExerciseExample
 
@@ -52,7 +46,6 @@ internal fun ExerciseExampleCardMedium(
     modifier: Modifier,
     value: ExerciseExampleState,
     onCardClick: () -> Unit,
-    onDetailsClick: () -> Unit
 ) {
     val shape = RoundedCornerShape(AppTokens.dp.exerciseExampleCard.medium.radius)
 
@@ -124,7 +117,7 @@ internal fun ExerciseExampleCardMedium(
             }
         }
 
-        Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
+        Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -156,18 +149,6 @@ internal fun ExerciseExampleCardMedium(
                 style = AppTokens.typography.b12Med(),
                 color = AppTokens.colors.text.tertiary
             )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Button(
-                onClick = onDetailsClick,
-                style = ButtonStyle.Transparent,
-                size = ButtonSize.Small,
-                content = ButtonContent.Text(
-                    text = AppTokens.strings.res(Res.string.overview),
-                    endIcon = AppTokens.icons.NavArrowRight
-                ),
-            )
         }
     }
 }
@@ -179,7 +160,7 @@ private fun ExerciseExampleCardMediumPreview() {
         ExerciseExampleCard(
             modifier = Modifier.size(250.dp),
             value = stubExerciseExample(),
-            style = ExerciseExampleCardStyle.Medium({}, {}),
+            style = ExerciseExampleCardStyle.Medium({}),
         )
     }
 }

@@ -68,7 +68,7 @@ internal fun ExerciseExampleCardSmall(
             ) {
                 Text(
                     text = value.value.name,
-                    style = AppTokens.typography.b15Bold(),
+                    style = AppTokens.typography.h4(),
                     color = AppTokens.colors.text.primary,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis

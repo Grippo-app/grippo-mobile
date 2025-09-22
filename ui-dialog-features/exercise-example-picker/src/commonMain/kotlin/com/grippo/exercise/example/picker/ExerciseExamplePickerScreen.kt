@@ -134,10 +134,6 @@ internal fun ExerciseExamplePickerScreen(
                     items = state.exerciseExamples,
                     key = { it.value.id },
                 ) { item ->
-                    val detailsClickProvider = remember(item) {
-                        { contract.onExerciseExampleDetailsClick(item.value.id) }
-                    }
-
                     val selectClickProvider = remember(item) {
                         { contract.onExerciseExampleSelectClick(item.value.id) }
                     }
@@ -149,7 +145,6 @@ internal fun ExerciseExamplePickerScreen(
                         value = item,
                         style = ExerciseExampleCardStyle.Medium(
                             onCardClick = selectClickProvider,
-                            onDetailsClick = detailsClickProvider
                         ),
                     )
                 }

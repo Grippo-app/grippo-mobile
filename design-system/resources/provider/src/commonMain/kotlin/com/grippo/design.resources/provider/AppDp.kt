@@ -39,7 +39,8 @@ public data object AppDp {
         val small: Dp = 18.dp
         val medium: Dp = 22.dp
         val large: Dp = 32.dp
-        val huge: Dp = 68.dp
+        val xLarge: Dp = 48.dp
+        val xxLarge: Dp = 72.dp
     }
 
     val bottomSheet: BottomSheet = BottomSheet
@@ -271,12 +272,12 @@ public data object AppDp {
         val medium: Medium = Medium
 
         public data object Small {
-            val size: Dp = icon.large
-            val radius: Dp = AppDp.radius.small
+            val size: Dp = icon.xLarge
+            val radius: Dp = AppDp.radius.medium
         }
 
         public data object Medium {
-            val size: Dp = icon.huge
+            val size: Dp = icon.xxLarge
             val radius: Dp = AppDp.radius.medium
         }
     }
@@ -284,7 +285,6 @@ public data object AppDp {
     public data object ExerciseExampleCard {
         val small: Small = Small
         val medium: Medium = Medium
-        val large: Large = Large
 
         public data object Small {
             val radius: Dp = AppDp.radius.medium
@@ -296,12 +296,6 @@ public data object AppDp {
             val radius: Dp = AppDp.radius.medium
             val horizontalPadding: Dp = padding.large
             val verticalPadding: Dp = padding.medium
-        }
-
-        public data object Large {
-            val radius: Dp = AppDp.radius.medium
-            val horizontalPadding: Dp = padding.large
-            val verticalPadding: Dp = padding.large
         }
     }
 
@@ -359,11 +353,11 @@ public data object AppDp {
     }
 
     public data object Error {
-        val icon: Dp = AppDp.icon.huge
+        val icon: Dp = AppDp.icon.xxLarge
     }
 
     public data object Confirmation {
-        val icon: Dp = AppDp.icon.huge
+        val icon: Dp = AppDp.icon.xxLarge
     }
 
     public data object Loader {

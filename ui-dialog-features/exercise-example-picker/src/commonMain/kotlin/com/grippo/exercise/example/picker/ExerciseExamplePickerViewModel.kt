@@ -8,17 +8,14 @@ import com.grippo.data.features.api.exercise.example.models.ExampleQueries
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
-import com.grippo.dialog.api.DIALOG_EXIT_ANIMATION_DURATION
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.muscles.toState
 import com.grippo.state.domain.example.toDomain
-import com.grippo.state.exercise.examples.ExerciseExampleDialogView
 import com.grippo.state.filters.FilterValue
 import com.grippo.state.sorting.SortingEnumState
 import kotlinx.collections.immutable.toPersistentList
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -94,21 +91,6 @@ public class ExerciseExamplePickerViewModel(
     private fun provideExerciseExamples(value: List<ExerciseExample>) {
         val list = value.toState()
         update { it.copy(exerciseExamples = list) }
-    }
-
-    override fun onExerciseExampleDetailsClick(id: String) {
-        val dialog = DialogConfig.ExerciseExample(
-            id = id,
-            view = ExerciseExampleDialogView.PICK,
-            onResult = { example ->
-                safeLaunch {
-                    delay(DIALOG_EXIT_ANIMATION_DURATION)
-                    navigateTo(ExerciseExamplePickerDirection.BackWithResult(example))
-                }
-            }
-        )
-
-        dialogController.show(dialog)
     }
 
     override fun onQueryChange(value: String) {

@@ -4,17 +4,13 @@ import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.domain.state.exercise.example.toState
-import com.grippo.state.exercise.examples.ExerciseExampleDialogView
 import kotlinx.coroutines.flow.onEach
 
 public class ExerciseExampleViewModel(
     id: String,
-    view: ExerciseExampleDialogView,
     private val exerciseExampleFeature: ExerciseExampleFeature
 ) : BaseViewModel<ExerciseExampleState, ExerciseExampleDirection, ExerciseExampleLoader>(
-    ExerciseExampleState(
-        view = view
-    )
+    ExerciseExampleState()
 ), ExerciseExampleContract {
 
     init {
@@ -29,11 +25,6 @@ public class ExerciseExampleViewModel(
 
     private fun provideExerciseExample(value: ExerciseExample?) {
         update { it.copy(example = value?.toState()) }
-    }
-
-    override fun onSelectClick() {
-        val example = state.value.example ?: return
-        navigateTo(ExerciseExampleDirection.BackWithResult(example))
     }
 
     override fun onDismiss() {

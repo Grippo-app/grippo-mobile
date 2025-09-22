@@ -16,9 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
-import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonContent
-import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.chip.Chip
 import com.grippo.design.components.chip.ChipLabel
 import com.grippo.design.components.chip.ChipSize
@@ -33,8 +30,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.required_equipment
-import com.grippo.design.resources.provider.select
-import com.grippo.state.exercise.examples.ExerciseExampleDialogView
 import com.grippo.state.exercise.examples.stubExerciseExample
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -159,25 +154,6 @@ internal fun ExerciseExampleScreen(
             contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
         )
 
-        if (state.view != ExerciseExampleDialogView.PICK) {
-            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-        }
-    }
-
-    if (state.view == ExerciseExampleDialogView.PICK) {
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-        Button(
-            modifier = Modifier
-                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                .fillMaxWidth(),
-            content = ButtonContent.Text(
-                text = AppTokens.strings.res(Res.string.select),
-            ),
-            style = ButtonStyle.Primary,
-            onClick = contract::onSelectClick
-        )
-
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
     }
 }
@@ -189,7 +165,6 @@ private fun ScreenPreview1() {
         ExerciseExampleScreen(
             state = ExerciseExampleState(
                 example = stubExerciseExample(),
-                view = ExerciseExampleDialogView.READ
             ),
             contract = ExerciseExampleContract.Empty,
             loaders = persistentSetOf()
@@ -204,7 +179,6 @@ private fun ScreenPreview2() {
         ExerciseExampleScreen(
             state = ExerciseExampleState(
                 example = stubExerciseExample(),
-                view = ExerciseExampleDialogView.PICK
             ),
             contract = ExerciseExampleContract.Empty,
             loaders = persistentSetOf()
