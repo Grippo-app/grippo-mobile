@@ -38,10 +38,11 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.konfetti.KonfettiParade
 import com.grippo.design.components.loading.Loader
-import com.grippo.design.components.menu.MenuCard
-import com.grippo.design.components.menu.MenuTrailing
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
+import com.grippo.design.components.training.ExerciseCard
+import com.grippo.design.components.training.ExerciseCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -49,10 +50,8 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.complete
 import com.grippo.design.resources.provider.workout_saved
 import com.grippo.domain.state.training.transformation.toTrainingListValues
-import com.grippo.state.formatters.UiText
 import com.grippo.state.trainings.TrainingListValue
 import com.grippo.state.trainings.TrainingListValue.Companion.exercise
-import com.grippo.state.trainings.TrainingListValue.Companion.index
 import com.grippo.state.trainings.TrainingListValue.Companion.shape
 import com.grippo.state.trainings.stubTraining
 import kotlinx.collections.immutable.ImmutableSet
@@ -142,24 +141,19 @@ internal fun TrainingCompletedScreen(
                         val radius = AppTokens.dp.menu.radius
                         val shape = remember(value) { value.shape(radius) }
                         val exercise = remember(value) { value.exercise() }
-                        val index = remember(value) { value.index() }
 
                         if (exercise != null) {
                             val clickProvider = remember {
                                 { contract.onExerciseClick(exercise.id) }
                             }
 
-                            val trailing = index?.let {
-                                MenuTrailing.Text(UiText.Str("$it."))
-                            } ?: MenuTrailing.Empty
-
-                            MenuCard(
+                            ExerciseCard(
                                 modifier = Modifier
+                                    .scalableClick(onClick = clickProvider)
                                     .background(AppTokens.colors.background.card, shape)
                                     .fillMaxWidth(),
-                                title = exercise.name,
-                                trailing = trailing,
-                                onClick = clickProvider
+                                value = exercise,
+                                style = ExerciseCardStyle.Small
                             )
                         }
 

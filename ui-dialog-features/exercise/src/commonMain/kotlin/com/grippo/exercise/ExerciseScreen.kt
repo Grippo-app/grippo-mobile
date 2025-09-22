@@ -29,6 +29,8 @@ import com.grippo.design.components.chip.RepetitionsChip
 import com.grippo.design.components.chip.RepetitionsChipStyle
 import com.grippo.design.components.chip.VolumeChip
 import com.grippo.design.components.chip.VolumeChipStyle
+import com.grippo.design.components.example.ExerciseExampleImage
+import com.grippo.design.components.example.ExerciseExampleImageStyle
 import com.grippo.design.components.training.IterationsCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -56,6 +58,14 @@ internal fun ExerciseScreen(
     ) {
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
+
+        ExerciseExampleImage(
+            modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+            value = exercise.exerciseExample.imageUrl,
+            style = ExerciseExampleImageStyle.MEDIUM
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
         Text(
             modifier = Modifier
@@ -117,11 +127,14 @@ internal fun ExerciseScreen(
         Row(
             modifier = Modifier
                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
         ) {
             Text(
                 modifier = Modifier.weight(1f),
                 text = example.name,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 style = AppTokens.typography.b14Bold(),
                 color = AppTokens.colors.text.primary,
             )
@@ -144,10 +157,10 @@ internal fun ExerciseScreen(
                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                 .fillMaxWidth(),
             text = example.description,
-            maxLines = 4,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             style = AppTokens.typography.b14Reg(),
-            color = AppTokens.colors.text.primary,
+            color = AppTokens.colors.text.secondary,
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
