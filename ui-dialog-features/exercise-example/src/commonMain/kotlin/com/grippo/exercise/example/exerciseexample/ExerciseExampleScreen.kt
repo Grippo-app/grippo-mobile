@@ -55,7 +55,7 @@ internal fun ExerciseExampleScreen(
         ExerciseExampleImage(
             modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
             value = example.value.imageUrl,
-            style = ExerciseExampleImageStyle.MEDIUM
+            style = ExerciseExampleImageStyle.LARGE
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
@@ -75,8 +75,8 @@ internal fun ExerciseExampleScreen(
             modifier = Modifier
                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                 .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
         ) {
             Chip(
                 label = ChipLabel.Empty,

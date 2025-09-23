@@ -73,7 +73,7 @@ internal fun ExerciseExampleCardMedium(
             ) {
                 Text(
                     text = value.value.name,
-                    style = AppTokens.typography.h3(),
+                    style = AppTokens.typography.h4(),
                     color = AppTokens.colors.text.primary,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
@@ -81,8 +81,8 @@ internal fun ExerciseExampleCardMedium(
 
                 FlowRow(
                     modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
                     horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
                 ) {
                     Chip(
                         label = ChipLabel.Empty,

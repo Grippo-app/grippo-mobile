@@ -28,7 +28,7 @@ public fun IterationsCard(
                 shape = RoundedCornerShape(AppTokens.dp.iterationsCard.radius)
             )
             .padding(AppTokens.dp.contentPadding.content),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
     ) {
         value.forEach { iteration ->

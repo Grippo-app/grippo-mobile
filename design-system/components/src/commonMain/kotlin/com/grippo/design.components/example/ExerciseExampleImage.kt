@@ -21,8 +21,8 @@ import kotlinx.coroutines.launch
 
 @Immutable
 public enum class ExerciseExampleImageStyle {
-    SMALL,
     MEDIUM,
+    LARGE,
 }
 
 @Composable
@@ -54,11 +54,11 @@ public fun ExerciseExampleImage(
         },
         content = {
             when (style) {
-                ExerciseExampleImageStyle.SMALL -> AsyncImage(
+                ExerciseExampleImageStyle.LARGE -> AsyncImage(
                     modifier = modifier
                         .scalableClick(onClick = { scope.launch { tooltipState.show() } })
-                        .clip(RoundedCornerShape(AppTokens.dp.exerciseExampleImage.small.radius))
-                        .size(AppTokens.dp.exerciseExampleImage.small.size),
+                        .clip(RoundedCornerShape(AppTokens.dp.exerciseExampleImage.large.radius))
+                        .size(AppTokens.dp.exerciseExampleImage.large.size),
                     model = value,
                     contentScale = ContentScale.Crop,
                     contentDescription = null
@@ -89,7 +89,7 @@ private fun ExerciseExampleImagePreview() {
 
         ExerciseExampleImage(
             value = "https://example.com/image.jpg",
-            style = ExerciseExampleImageStyle.SMALL
+            style = ExerciseExampleImageStyle.LARGE
         )
     }
 }

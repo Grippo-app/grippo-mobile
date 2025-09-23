@@ -62,7 +62,7 @@ internal fun ExerciseScreen(
         ExerciseExampleImage(
             modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
             value = exercise.exerciseExample.imageUrl,
-            style = ExerciseExampleImageStyle.MEDIUM
+            style = ExerciseExampleImageStyle.LARGE
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))

@@ -37,7 +37,7 @@ internal fun ExerciseCardSmall(
             .padding(
                 horizontal = AppTokens.dp.exerciseCard.small.horizontalPadding,
                 vertical = AppTokens.dp.exerciseCard.small.verticalPadding
-            )
+            ),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -46,7 +46,7 @@ internal fun ExerciseCardSmall(
 
             ExerciseExampleImage(
                 value = value.exerciseExample.imageUrl,
-                style = ExerciseExampleImageStyle.SMALL
+                style = ExerciseExampleImageStyle.MEDIUM
             )
 
             Column(
@@ -63,7 +63,7 @@ internal fun ExerciseCardSmall(
 
                 FlowRow(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
                     horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
                 ) {
                     value.iterations.forEach { iteration ->
