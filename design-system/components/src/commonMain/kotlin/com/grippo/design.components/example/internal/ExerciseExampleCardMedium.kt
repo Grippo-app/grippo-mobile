@@ -117,7 +117,7 @@ internal fun ExerciseExampleCardMedium(
             }
         }
 
-        Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.block))
+        Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
