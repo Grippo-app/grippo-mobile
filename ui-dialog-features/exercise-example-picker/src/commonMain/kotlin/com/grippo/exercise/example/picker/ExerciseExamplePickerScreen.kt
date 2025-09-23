@@ -158,7 +158,7 @@ internal fun ExerciseExamplePickerScreen(
                 text = AppTokens.strings.res(Res.string.not_found),
                 textAlign = TextAlign.Center,
                 style = AppTokens.typography.b14Med(),
-                color = AppTokens.colors.text.secondary
+                color = AppTokens.colors.text.tertiary
             )
         }
 

@@ -5,12 +5,15 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import com.grippo.design.components.chart.BarChart
 import com.grippo.design.components.chart.PieChart
 import com.grippo.design.components.chart.ProgressChart
@@ -26,6 +29,7 @@ import com.grippo.design.components.tooltip.TooltipData
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.chart_title_exercise_volume
+import com.grippo.design.resources.provider.no_data_yet
 import com.grippo.training.recording.TrainingRecordingContract
 import com.grippo.training.recording.TrainingRecordingState
 
@@ -35,7 +39,17 @@ internal fun StatisticsPage(
     state: TrainingRecordingState,
     contract: TrainingRecordingContract
 ) {
-    LazyVerticalGrid(
+
+    if (state.exercises.isEmpty()) {
+        Text(
+            modifier = modifier
+                .wrapContentHeight(),
+            text = AppTokens.strings.res(Res.string.no_data_yet),
+            textAlign = TextAlign.Center,
+            style = AppTokens.typography.b14Med(),
+            color = AppTokens.colors.text.tertiary
+        )
+    } else LazyVerticalGrid(
         modifier = modifier,
         columns = GridCells.Fixed(4),
         contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
