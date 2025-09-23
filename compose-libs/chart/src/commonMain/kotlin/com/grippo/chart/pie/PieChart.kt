@@ -1,5 +1,6 @@
 package com.grippo.chart.pie
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -12,6 +13,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.DrawStyle
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
@@ -20,8 +22,6 @@ import kotlin.math.asin
 import kotlin.math.cos
 import kotlin.math.min
 import kotlin.math.sin
-import androidx.compose.foundation.Canvas
-import androidx.compose.ui.text.TextLayoutResult
 
 @Composable
 public fun PieChart(
@@ -30,10 +30,10 @@ public fun PieChart(
     style: PieStyle,
 ) {
     val textMeasurer = rememberTextMeasurer()
-
     val slices = data.slices
-    // Precompute totals and base sweeps (true proportions, no distortion)
-    val (sweeps, percents) = remember(slices) {
+
+    // Base sweeps from raw data (no distortion) + percents for labels (from data)
+    val (baseSweeps, percents) = remember(slices) {
         val total = slices.sumOf { it.value.toDouble() }.toFloat()
         if (total <= 0f || slices.isEmpty()) {
             FloatArray(0) to IntArray(0)
@@ -48,8 +48,32 @@ public fun PieChart(
         }
     }
 
+    // Visual sweeps (may be distorted by minVisualPercent)
+    val sweeps = remember(baseSweeps, style.arc.minVisualPercent) {
+        if (baseSweeps.isEmpty()) {
+            FloatArray(0)
+        } else {
+            val n = baseSweeps.size
+            val minPercent = style.arc.minVisualPercent.coerceIn(0f, 1f)
+            if (minPercent <= 0f) {
+                baseSweeps
+            } else {
+                // Convert minimal percent to degrees; cap by theoretical max so sum can still reach 360°
+                val desiredMinDeg = 360f * minPercent
+                val maxFeasibleMin = 360f / n - 1e-3f // small epsilon to avoid zero space
+                val effectiveMinDeg = min(desiredMinDeg, maxFeasibleMin.coerceAtLeast(0f))
+
+                // Clamp and renormalize
+                val clamped = FloatArray(n) { i -> maxOf(baseSweeps[i], effectiveMinDeg) }
+                val sumClamped = clamped.sum()
+                val scale = if (sumClamped > 0f) 360f / sumClamped else 1f
+                FloatArray(n) { i -> clamped[i] * scale }
+            }
+        }
+    }
+
     // Build label layouts via formatter
-    val labelLayouts = remember(textMeasurer, style.labels, slices, percents) {
+    val labelLayouts = remember(textMeasurer, style.labels, slices, percents, sweeps) {
         if (sweeps.isEmpty()) emptyList()
         else slices.indices.map { i ->
             val (textStyle, formatter) = when (val labels = style.labels) {
@@ -79,14 +103,15 @@ public fun PieChart(
             is PieStyle.Labels.Inside -> labels.labelPadding.toPx()
             is PieStyle.Labels.Outside -> labels.labelPadding.toPx()
         }
-        val epsDeg = 0.1f
+
+        val minArcDeg: Float = 0.1f.coerceAtLeast(0f)
 
         val center = Offset(chart.left + chart.width / 2f, chart.top + chart.height / 2f)
         val outerRadius = min(chart.width, chart.height) / 2f
         val innerRadius = outerRadius - widthPx
         val centerRadius = (outerRadius + innerRadius) / 2f
 
-        // Collect outside-label candidates; inside labels will be drawn last on top
+        // Collect outside-label candidates; inside labels drawn last on top
         data class OutsideLabel(
             val index: Int,
             val angleDeg: Float, // mid-angle (deg)
@@ -95,23 +120,24 @@ public fun PieChart(
             val height: Int,
             val rightSide: Boolean
         )
+
         val outside = mutableListOf<OutsideLabel>()
         val insideLabels = mutableListOf<Pair<TextLayoutResult, Offset>>() // top-left positions
 
-        // First pass: draw arcs and collect label positions (do not draw text yet)
+        // First pass: draw arcs and collect label positions
         var acc = style.layout.startAngleDeg
-        sweeps.forEachIndexed { i, baseSweep ->
+        sweeps.forEachIndexed { i, visualSweep ->
             // Local padding limited by slice size to avoid eating tiny slices
             val localPad = style.arc.paddingAngleDeg
-                .coerceAtMost(baseSweep / 2f - epsDeg)
+                .coerceAtMost(visualSweep / 2f - minArcDeg)
                 .coerceAtLeast(0f)
 
             val start = acc + localPad
-            val drawSweep = (baseSweep - 2f * localPad).coerceAtLeast(0f)
+            val drawSweep = (visualSweep - 2f * localPad).coerceAtLeast(0f)
             val mid = start + drawSweep / 2f
 
             // Draw rounded arc if visible
-            if (drawSweep >= epsDeg) {
+            if (drawSweep >= minArcDeg) {
                 drawRoundedArc(
                     color = slices[i].color,
                     startAngle = start,
@@ -123,7 +149,7 @@ public fun PieChart(
                 )
             }
 
-            // Prepare label placement only (defer drawing until after arcs)
+            // Prepare label placement using visual sweep for geometry decisions
             when (val labels = style.labels) {
                 is PieStyle.Labels.Inside -> {
                     val layout = labelLayouts[i]
@@ -152,7 +178,8 @@ public fun PieChart(
                 }
 
                 is PieStyle.Labels.Adaptive -> {
-                    if (baseSweep >= labels.insideMinAngleDeg) {
+                    // Use visual sweep for thresholds so UI matches what the user sees
+                    if (visualSweep >= labels.insideMinAngleDeg) {
                         val layout = labelLayouts[i]
                         val midRad = mid * PI.toFloat() / 180f
                         val x = center.x + centerRadius * cos(midRad)
@@ -161,7 +188,7 @@ public fun PieChart(
                             x - layout.size.width / 2f,
                             y - layout.size.height / 2f
                         )
-                    } else if (baseSweep >= labels.outsideMinAngleDeg && style.leaders.show) {
+                    } else if (visualSweep >= labels.outsideMinAngleDeg && style.leaders.show) {
                         val layout = labelLayouts[i]
                         val midRad = mid * PI.toFloat() / 180f
                         val anchorY = center.y + (outerRadius + labelRadiusExtra) * sin(midRad)
@@ -178,17 +205,16 @@ public fun PieChart(
                 }
             }
 
-            acc += baseSweep
+            acc += visualSweep
         }
 
-        // Helper to layout a side of outside labels and draw leaders + text
+        // Helper: layout one side of outside labels and draw leaders + text
         fun layoutAndDrawOutsideSide(rightSide: Boolean) {
             val side = outside.filter { it.rightSide == rightSide }
                 .sortedBy { it.y }
                 .toMutableList()
             if (side.isEmpty()) return
 
-            // Greedy vertical spacing (ladder)
             val minGap = 4.dp.toPx()
             for (k in 1 until side.size) {
                 val prev = side[k - 1]
@@ -201,12 +227,11 @@ public fun PieChart(
                 }
             }
 
-            // Draw leaders and labels (text last so it is above the lines)
+            // Draw leaders and labels
             side.forEach { item ->
                 val i = item.index
                 val layout = labelLayouts[i]
 
-                // Geometry points: arc point → elbow → label baseline
                 val midRad = (item.angleDeg * PI.toFloat() / 180f)
                 val arcPt = Offset(
                     x = center.x + outerRadius * cos(midRad),
@@ -224,7 +249,6 @@ public fun PieChart(
                 }
                 val labelYTop = item.y - layout.size.height / 2f
 
-                // Leader lines in slice color
                 drawLine(
                     color = slices[i].color,
                     start = arcPt,
@@ -241,18 +265,16 @@ public fun PieChart(
                     strokeWidth = connectorWidthPx
                 )
 
-                // Text above the leader line
                 drawText(layout, topLeft = Offset(labelX, labelYTop))
             }
         }
 
-        // Second pass: resolve outside overlaps and draw leaders + outside labels
         if (outside.isNotEmpty() && style.leaders.show) {
             layoutAndDrawOutsideSide(rightSide = true)
             layoutAndDrawOutsideSide(rightSide = false)
         }
 
-        // Final pass: draw inside/adaptive-inside labels on top of EVERYTHING
+        // Draw inside labels on top
         insideLabels.forEach { (layout, topLeft) ->
             drawText(layout, topLeft = topLeft)
         }

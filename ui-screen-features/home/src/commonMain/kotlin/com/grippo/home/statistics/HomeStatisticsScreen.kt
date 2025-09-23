@@ -82,42 +82,39 @@ internal fun HomeStatisticsScreen(
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f),
-        columns = GridCells.Fixed(4),
+        columns = GridCells.Fixed(3),
         contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
 
-        item(key = "summary_chips", span = { GridItemSpan(4) }) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-            ) {
-                VolumeChip(
-                    modifier = Modifier.weight(1f),
-                    value = state.totalVolume,
-                    style = VolumeChipStyle.SHORT,
-                    size = ChipSize.Medium
-                )
-
-                RepetitionsChip(
-                    modifier = Modifier.weight(1f),
-                    value = state.totalRepetitions,
-                    style = RepetitionsChipStyle.SHORT,
-                    size = ChipSize.Medium
-                )
-
-                IntensityChip(
-                    modifier = Modifier.weight(1f),
-                    value = state.averageIntensity,
-                    style = IntensityChipStyle.SHORT,
-                    size = ChipSize.Medium
-                )
-            }
+        item(key = "summary_chips_volume", span = { GridItemSpan(1) }) {
+            VolumeChip(
+                modifier = Modifier.weight(1f),
+                value = state.totalVolume,
+                style = VolumeChipStyle.SHORT,
+                size = ChipSize.Medium
+            )
+        }
+        item(key = "summary_chips_repeat", span = { GridItemSpan(1) }) {
+            RepetitionsChip(
+                modifier = Modifier.weight(1f),
+                value = state.totalRepetitions,
+                style = RepetitionsChipStyle.SHORT,
+                size = ChipSize.Medium
+            )
+        }
+        item(key = "summary_chips_intensity", span = { GridItemSpan(1) }) {
+            IntensityChip(
+                modifier = Modifier.weight(1f),
+                value = state.averageIntensity,
+                style = IntensityChipStyle.SHORT,
+                size = ChipSize.Medium
+            )
         }
 
         if (state.exerciseVolumeData.first.items.isNotEmpty()) {
-            item(key = "exercise_volume", span = { GridItemSpan(4) }) {
+            item(key = "exercise_volume", span = { GridItemSpan(3) }) {
                 val toolTip = remember(state.exerciseVolumeData.second) {
                     state.exerciseVolumeData.second?.let { instruction ->
                         TooltipData(
@@ -161,15 +158,6 @@ internal fun HomeStatisticsScreen(
             }
         }
 
-        if (state.experienceDistributionData.slices.isNotEmpty()) {
-            item(key = "experience_distribution", span = { GridItemSpan(1) }) {
-                PieChart(
-                    modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-                    data = state.experienceDistributionData
-                )
-            }
-        }
-
         if (state.forceTypeDistributionData.slices.isNotEmpty()) {
             item(key = "force_type_distribution", span = { GridItemSpan(1) }) {
                 PieChart(
@@ -180,7 +168,7 @@ internal fun HomeStatisticsScreen(
         }
 
         if (state.muscleLoadData.first.items.isNotEmpty()) {
-            item(key = "muscle_load", span = { GridItemSpan(4) }) {
+            item(key = "muscle_load", span = { GridItemSpan(3) }) {
                 val toolTip = remember(state.muscleLoadData.second) {
                     state.muscleLoadData.second?.let { instruction ->
                         TooltipData(
@@ -204,7 +192,7 @@ internal fun HomeStatisticsScreen(
         }
 
         if (state.temporalHeatmapData.first.values01.isNotEmpty()) {
-            item(key = "temporal_heatmap", span = { GridItemSpan(4) }) {
+            item(key = "temporal_heatmap", span = { GridItemSpan(3) }) {
                 val toolTip = remember(state.temporalHeatmapData.second) {
                     state.temporalHeatmapData.second?.let { instruction ->
                         TooltipData(

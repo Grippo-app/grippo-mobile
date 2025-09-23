@@ -33,6 +33,12 @@ public data class PieStyle(
         val width: Dp,
         val paddingAngleDeg: Float,
         val cornerRadius: Dp,
+        /**
+         * Minimal visual percent per slice (0..1). If > 0, small slices are clamped up to this
+         * minimal fraction of the whole and the rest is renormalized to keep 360°.
+         * This intentionally distorts visual angles (not data percentages).
+         */
+        val minVisualPercent: Float = 0f,
     )
 
     /** Labels inside/outside with threshold angles. */

@@ -39,7 +39,6 @@ internal data class HomeStatisticsState(
     val categoryDistributionData: DSPieData = DSPieData(slices = emptyList()),
     val weightTypeDistributionData: DSPieData = DSPieData(slices = emptyList()),
     val forceTypeDistributionData: DSPieData = DSPieData(slices = emptyList()),
-    val experienceDistributionData: DSPieData = DSPieData(slices = emptyList()),
 
     // === Temporal heatmap ===
     val temporalHeatmapData: Pair<DSHeatmapData, Instruction?> = DSHeatmapData(

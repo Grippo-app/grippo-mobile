@@ -62,7 +62,7 @@ internal class HomeStatisticsViewModel(
         state
             .map {
                 it.trainings
-                    .flatMap { f -> f.exercises.mapNotNull { m -> m.exerciseExample?.id } }
+                    .flatMap { f -> f.exercises.map { m -> m.exerciseExample.id } }
                     .toSet().toList()
             }
             .distinctUntilChanged()
@@ -146,7 +146,6 @@ internal class HomeStatisticsViewModel(
                     exerciseVolumeData = DSBarData(items = emptyList()) to null,
                     categoryDistributionData = DSPieData(slices = emptyList()),
                     forceTypeDistributionData = DSPieData(slices = emptyList()),
-                    experienceDistributionData = DSPieData(slices = emptyList()),
                     weightTypeDistributionData = DSPieData(slices = emptyList()),
                     muscleLoadData = DSProgressData(items = emptyList()) to null,
                     temporalHeatmapData = DSHeatmapData(
@@ -175,11 +174,6 @@ internal class HomeStatisticsViewModel(
             )
         val forceTypeDistributionData =
             distributionCalculator.calculateForceTypeDistributionFromTrainings(
-                trainings = trainings,
-                period = period
-            )
-        val experienceDistributionData =
-            distributionCalculator.calculateExperienceDistributionFromTrainings(
                 trainings = trainings,
                 period = period
             )
@@ -213,7 +207,6 @@ internal class HomeStatisticsViewModel(
                 categoryDistributionData = categoryDistributionData,
                 weightTypeDistributionData = weightTypeDistributionData,
                 forceTypeDistributionData = forceTypeDistributionData,
-                experienceDistributionData = experienceDistributionData,
                 muscleLoadData = muscleLoadData,
                 temporalHeatmapData = temporalHeatmapData,
             )

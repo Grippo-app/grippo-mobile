@@ -37,9 +37,10 @@ public fun PieChart(
             startAngleDeg = -60f,
         ),
         arc = PieStyle.Arc(
-            width = 18.dp,
+            width = 24.dp,
             paddingAngleDeg = 2f,
             cornerRadius = 6.dp,
+            minVisualPercent = 0.15f,   // ← 15% minimum per slice (visual)
         ),
         labels = PieStyle.Labels.Adaptive(
             insideMinAngleDeg = 14f,
