@@ -24,7 +24,6 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.add_exercise_btn
 import com.grippo.design.resources.provider.exercises
 import com.grippo.design.resources.provider.icons.NavArrowRight
 import com.grippo.design.resources.provider.save_btn
@@ -113,19 +112,6 @@ internal fun TrainingRecordingScreen(
             contract = contract
         )
     }
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-    Button(
-        modifier = Modifier
-            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-            .fillMaxWidth(1f),
-        content = ButtonContent.Text(
-            text = AppTokens.strings.res(Res.string.add_exercise_btn),
-        ),
-        style = ButtonStyle.Primary,
-        onClick = contract::onAddExercise
-    )
 
     Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
 

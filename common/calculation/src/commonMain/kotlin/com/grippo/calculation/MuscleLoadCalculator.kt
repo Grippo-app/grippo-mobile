@@ -94,7 +94,7 @@ public class MuscleLoadCalculator(
     ): Pair<DSProgressData, Instruction> {
         // Auto-select workload: Volume if any positive weight exists, otherwise Reps
         val workload = computeAutoWorkload(exercises)
-        val mode = Mode.ABSOLUTE
+        val mode = Mode.RELATIVE
 
         val data = calculateCore(
             exercises = exercises,
