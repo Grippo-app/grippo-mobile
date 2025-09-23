@@ -27,11 +27,18 @@ import com.grippo.design.components.chip.VolumeChipStyle
 import com.grippo.design.components.statistics.ChartCard
 import com.grippo.design.components.tooltip.TooltipData
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.chart_title_exercise_volume
 import com.grippo.design.resources.provider.no_data_yet
+import com.grippo.state.trainings.stubTraining
+import com.grippo.training.recording.RecordingTab
 import com.grippo.training.recording.TrainingRecordingContract
+import com.grippo.training.recording.TrainingRecordingScreen
 import com.grippo.training.recording.TrainingRecordingState
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
 internal fun StatisticsPage(
@@ -41,13 +48,8 @@ internal fun StatisticsPage(
 ) {
 
     if (state.exercises.isEmpty()) {
-        Text(
+        Placeholder(
             modifier = modifier
-                .wrapContentHeight(),
-            text = AppTokens.strings.res(Res.string.no_data_yet),
-            textAlign = TextAlign.Center,
-            style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.tertiary
         )
     } else LazyVerticalGrid(
         modifier = modifier,
@@ -171,5 +173,47 @@ internal fun StatisticsPage(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun Placeholder(modifier: Modifier = Modifier) {
+    Text(
+        modifier = modifier
+            .wrapContentHeight(),
+        text = AppTokens.strings.res(Res.string.no_data_yet),
+        textAlign = TextAlign.Center,
+        style = AppTokens.typography.b14Med(),
+        color = AppTokens.colors.text.tertiary
+    )
+}
+
+@AppPreview
+@Composable
+private fun StatisticsPagePreview() {
+    PreviewContainer {
+        TrainingRecordingScreen(
+            state = TrainingRecordingState(
+                exercises = stubTraining().exercises,
+                tab = RecordingTab.Stats
+            ),
+            loaders = persistentSetOf(),
+            contract = TrainingRecordingContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun StatisticsPageEmptyPreview() {
+    PreviewContainer {
+        TrainingRecordingScreen(
+            state = TrainingRecordingState(
+                exercises = persistentListOf(),
+                tab = RecordingTab.Stats
+            ),
+            loaders = persistentSetOf(),
+            contract = TrainingRecordingContract.Empty
+        )
     }
 }

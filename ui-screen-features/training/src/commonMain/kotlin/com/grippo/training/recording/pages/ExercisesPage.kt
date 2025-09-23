@@ -21,11 +21,18 @@ import com.grippo.design.components.swipe.SwipeToReveal
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.Cancel
 import com.grippo.design.resources.provider.no_exercises_yet
+import com.grippo.state.trainings.stubTraining
+import com.grippo.training.recording.RecordingTab
 import com.grippo.training.recording.TrainingRecordingContract
+import com.grippo.training.recording.TrainingRecordingScreen
 import com.grippo.training.recording.TrainingRecordingState
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
 internal fun ExercisesPage(
@@ -36,13 +43,8 @@ internal fun ExercisesPage(
     val exercises = remember(state.exercises) { state.exercises }
 
     if (exercises.isEmpty()) {
-        Text(
+        Placeholder(
             modifier = modifier
-                .wrapContentHeight(),
-            text = AppTokens.strings.res(Res.string.no_exercises_yet),
-            textAlign = TextAlign.Center,
-            style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.tertiary
         )
     } else {
         LazyColumn(
@@ -100,5 +102,47 @@ internal fun ExercisesPage(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun Placeholder(modifier: Modifier = Modifier) {
+    Text(
+        modifier = modifier
+            .wrapContentHeight(),
+        text = AppTokens.strings.res(Res.string.no_exercises_yet),
+        textAlign = TextAlign.Center,
+        style = AppTokens.typography.b14Med(),
+        color = AppTokens.colors.text.tertiary
+    )
+}
+
+@AppPreview
+@Composable
+private fun ExercisesPagePreview() {
+    PreviewContainer {
+        TrainingRecordingScreen(
+            state = TrainingRecordingState(
+                exercises = stubTraining().exercises,
+                tab = RecordingTab.Exercises
+            ),
+            loaders = persistentSetOf(),
+            contract = TrainingRecordingContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExercisesPageEmptyPreview() {
+    PreviewContainer {
+        TrainingRecordingScreen(
+            state = TrainingRecordingState(
+                exercises = persistentListOf(),
+                tab = RecordingTab.Exercises
+            ),
+            loaders = persistentSetOf(),
+            contract = TrainingRecordingContract.Empty
+        )
     }
 }

@@ -30,7 +30,9 @@ import com.grippo.design.resources.provider.icons.NavArrowRight
 import com.grippo.design.resources.provider.save_btn
 import com.grippo.design.resources.provider.statistics
 import com.grippo.design.resources.provider.training
+import com.grippo.state.exercise.examples.stubExerciseExample
 import com.grippo.state.formatters.UiText
+import com.grippo.state.muscles.stubMuscles
 import com.grippo.state.trainings.stubTraining
 import com.grippo.training.recording.pages.ExercisesPage
 import com.grippo.training.recording.pages.StatisticsPage
@@ -154,6 +156,8 @@ private fun ScreenPreview2() {
         TrainingRecordingScreen(
             state = TrainingRecordingState(
                 exercises = stubTraining().exercises,
+                examples = persistentListOf(stubExerciseExample()),
+                muscles = stubMuscles(),
                 tab = RecordingTab.Stats
             ),
             loaders = persistentSetOf(),
