@@ -33,10 +33,7 @@ internal fun ExercisesPage(
     state: TrainingRecordingState,
     contract: TrainingRecordingContract
 ) {
-
-    val exercises = remember(state.exercises) {
-        state.exercises
-    }
+    val exercises = remember(state.exercises) { state.exercises }
 
     Column(modifier = modifier) {
         if (exercises.isEmpty()) {
