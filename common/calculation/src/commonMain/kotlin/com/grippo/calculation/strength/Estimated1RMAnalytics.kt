@@ -83,7 +83,7 @@ public class Estimated1RMAnalytics(
         return if (value.isFinite()) value else 0f
     }
 
-    public suspend fun calculateEstimated1RMFromExercises(
+    public suspend fun computeEstimated1RmFromExercises(
         exercises: List<ExerciseState>,
     ): MetricSeries {
         val colors = colorProvider.get()
@@ -102,7 +102,7 @@ public class Estimated1RMAnalytics(
         return data
     }
 
-    public suspend fun calculateEstimated1RMFromTrainings(
+    public suspend fun computeEstimated1RmFromTrainings(
         trainings: List<TrainingState>,
         period: PeriodState,
     ): MetricSeries {
@@ -114,7 +114,7 @@ public class Estimated1RMAnalytics(
 
         return if (scale == BucketScale.EXERCISE) {
             val exercises = inRange.flatMap { it.exercises }
-            calculateEstimated1RMFromExercises(exercises)
+            computeEstimated1RmFromExercises(exercises)
         } else {
             val buckets = groupTrainingsByBucket(inRange, scale).toList().sortedBy { it.first }
             val points = buckets.mapIndexedNotNull { index, (start, groupedTrainings) ->

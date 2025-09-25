@@ -1,6 +1,6 @@
 package com.grippo.home.statistics
 
-import com.grippo.calculation.distribution.DistributionCalculator
+import com.grippo.calculation.AnalyticsApi
 import com.grippo.calculation.models.DistributionBreakdown
 import com.grippo.calculation.models.DistributionSlice
 import com.grippo.calculation.models.MetricPoint
@@ -8,10 +8,7 @@ import com.grippo.calculation.models.MetricSeries
 import com.grippo.calculation.models.MuscleLoadBreakdown
 import com.grippo.calculation.models.MuscleLoadEntry
 import com.grippo.calculation.models.MuscleLoadMatrix
-import com.grippo.calculation.muscle.MuscleLoadCalculator
-import com.grippo.calculation.muscle.TemporalHeatmapCalculator
 import com.grippo.calculation.training.MetricsAggregator
-import com.grippo.calculation.training.VolumeAnalytics
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
@@ -59,10 +56,7 @@ internal class HomeStatisticsViewModel(
 ), HomeStatisticsContract {
 
     private val metricsAggregator = MetricsAggregator()
-    private val temporalHeatmapCalculator = TemporalHeatmapCalculator(stringProvider)
-    private val volumeAnalytics = VolumeAnalytics(colorProvider, stringProvider)
-    private val distributionCalculator = DistributionCalculator(stringProvider, colorProvider)
-    private val muscleLoadCalculator = MuscleLoadCalculator(stringProvider, colorProvider)
+    private val analytics = AnalyticsApi(stringProvider, colorProvider)
 
     init {
         muscleFeature.observeMuscles()
@@ -172,37 +166,39 @@ internal class HomeStatisticsViewModel(
         val totalMetrics = metricsAggregator
             .calculateTrainings(trainings = trainings)
 
-        val categoryDistributionData = distributionCalculator
-            .calculateCategoryDistributionFromTrainings(trainings = trainings, period = period)
-            .asChart()
+        val categoryDistributionData = analytics.categoryDistributionFromTrainings(
+            trainings = trainings,
+            period = period,
+        ).asChart()
 
-        val weightTypeDistributionData = distributionCalculator
-            .calculateWeightTypeDistributionFromTrainings(trainings = trainings, period = period)
-            .asChart()
+        val weightTypeDistributionData = analytics.weightTypeDistributionFromTrainings(
+            trainings = trainings,
+            period = period,
+        ).asChart()
 
-        val forceTypeDistributionData = distributionCalculator
-            .calculateForceTypeDistributionFromTrainings(trainings = trainings, period = period)
-            .asChart()
+        val forceTypeDistributionData = analytics.forceTypeDistributionFromTrainings(
+            trainings = trainings,
+            period = period,
+        ).asChart()
 
-        val exerciseVolumeSeries = volumeAnalytics
-            .calculateExerciseVolumeChartFromTrainings(trainings = trainings, period = period)
+        val exerciseVolumeSeries = analytics.volumeFromTrainings(
+            trainings = trainings,
+            period = period,
+        )
 
-        val muscleLoadVisualization = muscleLoadCalculator
-            .calculateMuscleLoadVisualizationFromTrainings(
-                trainings = trainings,
-                period = period,
-                examples = examples,
-                groups = muscles,
-            )
+        val muscleLoadVisualization = analytics.muscleLoadFromTrainings(
+            trainings = trainings,
+            period = period,
+            examples = examples,
+            groups = muscles,
+        )
 
-        val muscleLoadMatrix = temporalHeatmapCalculator
-            .calculateMuscleGroupHeatmapFromTrainings(
-                trainings = trainings,
-                period = period,
-                examples = examples,
-                groups = muscles,
-                metric = TemporalHeatmapCalculator.Metric.REPS
-            )
+        val muscleLoadMatrix = analytics.heatmapFromTrainings(
+            trainings = trainings,
+            period = period,
+            examples = examples,
+            groups = muscles,
+        )
 
         update {
             it.copy(

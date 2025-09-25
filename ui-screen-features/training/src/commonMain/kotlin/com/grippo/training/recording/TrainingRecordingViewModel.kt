@@ -1,15 +1,13 @@
 package com.grippo.training.recording
 
-import com.grippo.calculation.distribution.DistributionCalculator
+import com.grippo.calculation.AnalyticsApi
 import com.grippo.calculation.models.DistributionBreakdown
 import com.grippo.calculation.models.DistributionSlice
 import com.grippo.calculation.models.MetricPoint
 import com.grippo.calculation.models.MetricSeries
 import com.grippo.calculation.models.MuscleLoadBreakdown
 import com.grippo.calculation.models.MuscleLoadEntry
-import com.grippo.calculation.muscle.MuscleLoadCalculator
 import com.grippo.calculation.training.MetricsAggregator
-import com.grippo.calculation.training.VolumeAnalytics
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
@@ -65,9 +63,7 @@ internal class TrainingRecordingViewModel(
 ), TrainingRecordingContract {
 
     private val metricsAggregator = MetricsAggregator()
-    private val volumeAnalytics = VolumeAnalytics(colorProvider, stringProvider)
-    private val distributionCalculator = DistributionCalculator(stringProvider, colorProvider)
-    private val muscleLoadCalculator = MuscleLoadCalculator(stringProvider, colorProvider)
+    private val analytics = AnalyticsApi(stringProvider, colorProvider)
 
     init {
         muscleFeature.observeMuscles()
@@ -75,9 +71,7 @@ internal class TrainingRecordingViewModel(
             .safeLaunch()
 
         state
-            .map {
-                it.exercises.mapNotNull { exercise -> exercise.exerciseExample.id }.toSet().toList()
-            }
+            .map { it.exercises.map { exercise -> exercise.exerciseExample.id }.toSet().toList() }
             .distinctUntilChanged()
             .flatMapLatest { ids -> exerciseExampleFeature.observeExerciseExamples(ids) }
             .onEach(::provideExerciseExamples)
@@ -279,27 +273,22 @@ internal class TrainingRecordingViewModel(
         val totalMetrics = metricsAggregator
             .calculateExercises(exercises = exercises)
 
-        val categoryDistributionData = distributionCalculator
-            .calculateCategoryDistributionFromExercises(exercises = exercises)
-            .asChart()
+        val categoryDistributionData =
+            analytics.categoryDistributionFromExercises(exercises = exercises).asChart()
 
-        val weightTypeDistributionData = distributionCalculator
-            .calculateWeightTypeDistributionFromExercises(exercises = exercises)
-            .asChart()
+        val weightTypeDistributionData =
+            analytics.weightTypeDistributionFromExercises(exercises = exercises).asChart()
 
-        val forceTypeDistributionData = distributionCalculator
-            .calculateForceTypeDistributionFromExercises(exercises = exercises)
-            .asChart()
+        val forceTypeDistributionData =
+            analytics.forceTypeDistributionFromExercises(exercises = exercises).asChart()
 
-        val exerciseVolumeSeries = volumeAnalytics
-            .calculateExerciseVolumeChartFromExercises(exercises = exercises)
+        val exerciseVolumeSeries = analytics.volumeFromExercises(exercises = exercises)
 
-        val muscleLoadVisualization = muscleLoadCalculator
-            .calculateMuscleLoadVisualizationFromExercises(
-                exercises = exercises,
-                examples = examples,
-                groups = muscles,
-            )
+        val muscleLoadVisualization = analytics.muscleLoadFromExercises(
+            exercises = exercises,
+            examples = examples,
+            groups = muscles,
+        )
 
         update {
             it.copy(

@@ -27,7 +27,7 @@ public class MuscleLoadCalculator(
         private const val EPS: Float = 1e-3f
     }
 
-    public suspend fun calculateMuscleLoadVisualizationFromExercises(
+    public suspend fun computeMuscleLoadVisualizationFromExercises(
         exercises: List<ExerciseState>,
         examples: List<ExerciseExampleState>,
         groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
@@ -41,7 +41,7 @@ public class MuscleLoadCalculator(
         )
     }
 
-    public suspend fun calculateMuscleLoadVisualizationFromTrainings(
+    public suspend fun computeMuscleLoadVisualizationFromTrainings(
         trainings: List<TrainingState>,
         period: PeriodState,
         examples: List<ExerciseExampleState>,
@@ -59,7 +59,7 @@ public class MuscleLoadCalculator(
         )
     }
 
-    public suspend fun calculateMuscleLoadVisualizationFromExample(
+    public suspend fun computeMuscleLoadVisualizationFromExample(
         example: ExerciseExampleState,
     ): MuscleLoadVisualization {
         val muscleLoad = buildMap {

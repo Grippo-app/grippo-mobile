@@ -47,7 +47,7 @@ public class VolumeAnalytics(
         return total
     }
 
-    public suspend fun calculateExerciseVolumeChartFromExercises(
+    public suspend fun computeVolumeSeriesFromExercises(
         exercises: List<ExerciseState>,
     ): MetricSeries {
         val colors = colorProvider.get()
@@ -103,7 +103,7 @@ public class VolumeAnalytics(
         return series
     }
 
-    public suspend fun calculateExerciseVolumeChartFromTrainings(
+    public suspend fun computeVolumeSeriesFromTrainings(
         trainings: List<TrainingState>,
         period: PeriodState,
     ): MetricSeries {
@@ -116,7 +116,7 @@ public class VolumeAnalytics(
         return when (scale) {
             BucketScale.EXERCISE -> {
                 val exercises = inRange.flatMap { it.exercises }
-                calculateExerciseVolumeChartFromExercises(exercises)
+                computeVolumeSeriesFromExercises(exercises)
             }
 
             else -> {

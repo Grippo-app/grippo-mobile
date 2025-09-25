@@ -27,7 +27,7 @@ public class TemporalHeatmapCalculator(
         data object PerColMax : Normalization
     }
 
-    public suspend fun calculateMuscleGroupHeatmapFromTrainings(
+    public suspend fun computeMuscleGroupHeatmap(
         trainings: List<TrainingState>,
         period: PeriodState,
         examples: List<ExerciseExampleState>,

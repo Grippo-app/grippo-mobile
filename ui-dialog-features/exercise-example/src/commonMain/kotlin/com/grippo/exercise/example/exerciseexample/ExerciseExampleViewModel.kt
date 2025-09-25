@@ -1,7 +1,7 @@
 package com.grippo.exercise.example.exerciseexample
 
+import com.grippo.calculation.AnalyticsApi
 import com.grippo.calculation.models.MuscleLoadBreakdown
-import com.grippo.calculation.muscle.MuscleLoadCalculator
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
@@ -15,13 +15,13 @@ import kotlinx.coroutines.flow.onEach
 public class ExerciseExampleViewModel(
     id: String,
     private val exerciseExampleFeature: ExerciseExampleFeature,
-    private val stringProvider: StringProvider,
-    private val colorProvider: ColorProvider,
+    stringProvider: StringProvider,
+    colorProvider: ColorProvider,
 ) : BaseViewModel<ExerciseExampleState, ExerciseExampleDirection, ExerciseExampleLoader>(
     ExerciseExampleState()
 ), ExerciseExampleContract {
 
-    private val muscleLoadCalculator = MuscleLoadCalculator(stringProvider, colorProvider)
+    private val analytics = AnalyticsApi(stringProvider, colorProvider)
 
     init {
         exerciseExampleFeature.observeExerciseExample(id)
@@ -46,9 +46,7 @@ public class ExerciseExampleViewModel(
         exampleState ?: return
 
         safeLaunch {
-            val visualization = muscleLoadCalculator
-                .calculateMuscleLoadVisualizationFromExample(exampleState)
-
+            val visualization = analytics.muscleLoadFromExample(exampleState)
             val progress = visualization.perGroup.asChart()
 
             update { current ->

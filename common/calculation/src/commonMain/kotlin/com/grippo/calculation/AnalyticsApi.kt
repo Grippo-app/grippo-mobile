@@ -1,0 +1,176 @@
+package com.grippo.calculation
+
+import com.grippo.calculation.distribution.DistributionCalculator
+import com.grippo.calculation.distribution.DistributionCalculator.Weighting
+import com.grippo.calculation.models.DistributionBreakdown
+import com.grippo.calculation.models.MetricSeries
+import com.grippo.calculation.models.MuscleLoadMatrix
+import com.grippo.calculation.models.MuscleLoadVisualization
+import com.grippo.calculation.muscle.MuscleLoadCalculator
+import com.grippo.calculation.muscle.TemporalHeatmapCalculator
+import com.grippo.calculation.strength.Estimated1RMAnalytics
+import com.grippo.calculation.training.VolumeAnalytics
+import com.grippo.design.resources.provider.providers.ColorProvider
+import com.grippo.design.resources.provider.providers.StringProvider
+import com.grippo.state.datetime.PeriodState
+import com.grippo.state.exercise.examples.ExerciseExampleState
+import com.grippo.state.muscles.MuscleGroupState
+import com.grippo.state.muscles.MuscleRepresentationState
+import com.grippo.state.trainings.ExerciseState
+import com.grippo.state.trainings.TrainingState
+
+/**
+ * Facade that exposes the most common workout analytics in a single place.
+ * Every method intentionally mirrors how feature modules consume analytics today,
+ * so callers do not need to know about the individual calculators underneath.
+ */
+public class AnalyticsApi(
+    stringProvider: StringProvider,
+    colorProvider: ColorProvider,
+) {
+    private val volumeAnalytics = VolumeAnalytics(colorProvider, stringProvider)
+    private val muscleLoadCalculator = MuscleLoadCalculator(stringProvider, colorProvider)
+    private val heatmapCalculator = TemporalHeatmapCalculator(stringProvider)
+    private val distributionCalculator = DistributionCalculator(stringProvider, colorProvider)
+    private val estimated1RMAnalytics = Estimated1RMAnalytics(colorProvider, stringProvider)
+
+    /**
+     * Builds a volume series for a plain list of exercises.
+     * Each point represents the session tonnage contributed by a single exercise.
+     */
+    public suspend fun volumeFromExercises(
+        exercises: List<ExerciseState>
+    ): MetricSeries = volumeAnalytics
+        .computeVolumeSeriesFromExercises(exercises)
+
+    /**
+     * Builds a volume series for trainings filtered by [period].
+     * The underlying calculator automatically selects the optimal bucket scale.
+     */
+    public suspend fun volumeFromTrainings(
+        trainings: List<TrainingState>,
+        period: PeriodState,
+    ): MetricSeries = volumeAnalytics
+        .computeVolumeSeriesFromTrainings(trainings, period)
+
+    /**
+     * Aggregates muscle load for the provided [exercises].
+     * The response combines per-muscle coloring data (for the body preset) and group level progress values.
+     */
+    public suspend fun muscleLoadFromExercises(
+        exercises: List<ExerciseState>,
+        examples: List<ExerciseExampleState>,
+        groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
+    ): MuscleLoadVisualization = muscleLoadCalculator
+        .computeMuscleLoadVisualizationFromExercises(exercises, examples, groups)
+
+    /**
+     * Aggregates muscle load across [trainings] filtered by [period].
+     * This is the counterpart used for dashboards that operate on training history.
+     */
+    public suspend fun muscleLoadFromTrainings(
+        trainings: List<TrainingState>,
+        period: PeriodState,
+        examples: List<ExerciseExampleState>,
+        groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
+    ): MuscleLoadVisualization = muscleLoadCalculator
+        .computeMuscleLoadVisualizationFromTrainings(trainings, period, examples, groups)
+
+    /**
+     * Maps a single exercise example into the visual muscle load representation using bundle percentages.
+     * Handy for dialogs that visualise how an exercise targets the body without loading a training list.
+     */
+    public suspend fun muscleLoadFromExample(
+        example: ExerciseExampleState
+    ): MuscleLoadVisualization = muscleLoadCalculator
+        .computeMuscleLoadVisualizationFromExample(example)
+
+    /**
+     * Builds the temporal heatmap matrix for [trainings] using the provided filters.
+     *
+     * @param metric Bucket metric used for the heatmap normalization. Defaults to reps.
+     */
+    public suspend fun heatmapFromTrainings(
+        trainings: List<TrainingState>,
+        period: PeriodState,
+        examples: List<ExerciseExampleState>,
+        groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
+        metric: TemporalHeatmapCalculator.Metric = TemporalHeatmapCalculator.Metric.REPS,
+    ): MuscleLoadMatrix = heatmapCalculator
+        .computeMuscleGroupHeatmap(trainings, period, examples, groups, metric)
+
+    /**
+     * Produces an estimated 1RM series for the supplied [exercises].
+     * Entries are already colourised and ready for chart rendering.
+     */
+    public suspend fun estimated1RmFromExercises(
+        exercises: List<ExerciseState>
+    ): MetricSeries = estimated1RMAnalytics
+        .computeEstimated1RmFromExercises(exercises)
+
+    /**
+     * Produces an estimated 1RM series for [trainings] aggregated by the detected bucket scale.
+     */
+    public suspend fun estimated1RmFromTrainings(
+        trainings: List<TrainingState>,
+        period: PeriodState,
+    ): MetricSeries = estimated1RMAnalytics
+        .computeEstimated1RmFromTrainings(trainings, period)
+
+    /**
+     * Returns a distribution of exercise categories for the provided [exercises].
+     */
+    public suspend fun categoryDistributionFromExercises(
+        exercises: List<ExerciseState>,
+        weighting: Weighting = Weighting.Count,
+    ): DistributionBreakdown = distributionCalculator
+        .calculateCategoryDistributionFromExercises(exercises, weighting)
+
+    /**
+     * Returns a distribution of exercise categories drawn from [trainings] limited by [period].
+     */
+    public suspend fun categoryDistributionFromTrainings(
+        trainings: List<TrainingState>,
+        period: PeriodState,
+        weighting: Weighting = Weighting.Count,
+    ): DistributionBreakdown = distributionCalculator
+        .calculateCategoryDistributionFromTrainings(trainings, period, weighting)
+
+    /**
+     * Returns a distribution of weight types for the provided [exercises].
+     */
+    public suspend fun weightTypeDistributionFromExercises(
+        exercises: List<ExerciseState>,
+        weighting: Weighting = Weighting.Count,
+    ): DistributionBreakdown = distributionCalculator
+        .calculateWeightTypeDistributionFromExercises(exercises, weighting)
+
+    /**
+     * Returns a distribution of weight types collected from [trainings] within [period].
+     */
+    public suspend fun weightTypeDistributionFromTrainings(
+        trainings: List<TrainingState>,
+        period: PeriodState,
+        weighting: Weighting = Weighting.Count,
+    ): DistributionBreakdown = distributionCalculator
+        .calculateWeightTypeDistributionFromTrainings(trainings, period, weighting)
+
+    /**
+     * Returns a distribution of force types for the provided [exercises].
+     */
+    public suspend fun forceTypeDistributionFromExercises(
+        exercises: List<ExerciseState>,
+        weighting: Weighting = Weighting.Count,
+    ): DistributionBreakdown = distributionCalculator
+        .calculateForceTypeDistributionFromExercises(exercises, weighting)
+
+    /**
+     * Returns a distribution of force types gathered from [trainings] within [period].
+     */
+    public suspend fun forceTypeDistributionFromTrainings(
+        trainings: List<TrainingState>,
+        period: PeriodState,
+        weighting: Weighting = Weighting.Count,
+    ): DistributionBreakdown = distributionCalculator
+        .calculateForceTypeDistributionFromTrainings(trainings, period, weighting)
+}
