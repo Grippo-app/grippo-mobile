@@ -1,11 +1,9 @@
 package com.grippo.training.recording.pages
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,11 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.grippo.calculation.models.toColorSources
-import com.grippo.calculation.muscle.MuscleEngine
 import com.grippo.design.components.chart.BarChart
 import com.grippo.design.components.chart.PieChart
-import com.grippo.design.components.chart.ProgressChart
 import com.grippo.design.components.chip.ChipSize
 import com.grippo.design.components.chip.IntensityChip
 import com.grippo.design.components.chip.IntensityChipStyle
@@ -36,6 +31,7 @@ import com.grippo.design.components.chip.RepetitionsChipStyle
 import com.grippo.design.components.chip.VolumeChip
 import com.grippo.design.components.chip.VolumeChipStyle
 import com.grippo.design.components.statistics.ChartCard
+import com.grippo.design.components.statistics.MuscleLoad
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -143,43 +139,11 @@ internal fun StatisticsPage(
                     modifier = Modifier.fillMaxWidth(),
                     title = AppTokens.strings.res(Res.string.chart_title_muscle_load),
                     content = {
-                        Column(
+                        MuscleLoad(
                             modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-                        ) {
-                            val sources = state.muscleLoadBreakdown?.toColorSources()
-                            val preset = sources?.takeIf { it.isNotEmpty() }?.let {
-                                MuscleEngine.generatePreset(it)
-                            }
-                            val images = preset?.let { MuscleEngine.generateImages(it) }
-
-                            images?.let { (front, back) ->
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Image(
-                                        modifier = Modifier
-                                            .weight(1f),
-                                        imageVector = front,
-                                        contentDescription = null
-                                    )
-
-                                    Image(
-                                        modifier = Modifier
-                                            .weight(1f),
-                                        imageVector = back,
-                                        contentDescription = null
-                                    )
-                                }
-                            }
-
-                            ProgressChart(
-                                modifier = Modifier.fillMaxWidth(),
-                                data = state.muscleLoadData
-                            )
-                        }
+                            chartData = state.muscleLoadData,
+                            muscleBreakdown = state.muscleLoadMuscles,
+                        )
                     }
                 )
             }

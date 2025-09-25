@@ -3,11 +3,13 @@ package com.grippo.calculation.muscle
 import androidx.compose.ui.graphics.Color
 import com.grippo.calculation.models.MuscleLoadBreakdown
 import com.grippo.calculation.models.MuscleLoadEntry
+import com.grippo.calculation.models.MuscleLoadVisualization
 import com.grippo.date.utils.contains
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.state.datetime.PeriodState
 import com.grippo.state.exercise.examples.ExerciseExampleState
+import com.grippo.state.formatters.UiText
 import com.grippo.state.muscles.MuscleEnumState
 import com.grippo.state.muscles.MuscleGroupState
 import com.grippo.state.muscles.MuscleRepresentationState
@@ -23,46 +25,36 @@ public class MuscleLoadCalculator(
         private const val EPS: Float = 1e-3f
     }
 
-    public suspend fun calculateMuscleLoadDistributionFromExercises(
+    public suspend fun calculateMuscleLoadVisualizationFromExercises(
         exercises: List<ExerciseState>,
         examples: List<ExerciseExampleState>,
         groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
-    ): MuscleLoadBreakdown {
+    ): MuscleLoadVisualization {
         val workload = computeAutoWorkload(exercises)
-        val mode = Mode.RELATIVE
-
-        val data = calculateCore(
+        return calculateCore(
             exercises = exercises,
             examples = examples,
             groups = groups,
-            mode = mode,
-            relativeMode = RelativeMode.SUM,
             workload = workload,
         )
-        return data
     }
 
-    public suspend fun calculateMuscleLoadDistributionFromTrainings(
+    public suspend fun calculateMuscleLoadVisualizationFromTrainings(
         trainings: List<TrainingState>,
         period: PeriodState,
         examples: List<ExerciseExampleState>,
         groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
-    ): MuscleLoadBreakdown {
+    ): MuscleLoadVisualization {
         val inRange = trainings.filter { it.createdAt in period.range }
         val exercises = inRange.flatMap { it.exercises }
-
         val workload = computeAutoWorkload(exercises)
-        val mode = Mode.RELATIVE
 
-        val data = calculateCore(
+        return calculateCore(
             exercises = exercises,
             examples = examples,
             groups = groups,
-            mode = mode,
-            relativeMode = RelativeMode.SUM,
             workload = workload,
         )
-        return data
     }
 
     private enum class Mode { ABSOLUTE, RELATIVE }
@@ -89,19 +81,62 @@ public class MuscleLoadCalculator(
         exercises: List<ExerciseState>,
         examples: List<ExerciseExampleState>,
         groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
-        mode: Mode,
-        relativeMode: RelativeMode,
         workload: Workload,
-    ): MuscleLoadBreakdown {
-        val colors = colorProvider.get()
-
-        val scaleStops: List<Pair<Float, Color>> = run {
-            val palette = colors.palette.palette5OrangeRedGrowth
-            val last = (palette.size - 1).coerceAtLeast(1)
-            palette.mapIndexed { idx, color -> idx.toFloat() / last.toFloat() to color }
+    ): MuscleLoadVisualization {
+        if (exercises.isEmpty()) {
+            return MuscleLoadVisualization(
+                perMuscle = MuscleLoadBreakdown(emptyList()),
+                perGroup = MuscleLoadBreakdown(emptyList()),
+            )
         }
 
+        val colors = colorProvider.get()
+        val scaleStops: List<Pair<Float, Color>> = colors.palette.palette5OrangeRedGrowth
+            .let { palette ->
+                val last = (palette.size - 1).coerceAtLeast(1)
+                palette.mapIndexed { idx, color -> idx.toFloat() / last.toFloat() to color }
+            }
+
         val exampleMap = examples.associateBy { it.value.id }
+        val muscleLoad = computeMuscleLoad(exercises, exampleMap, workload)
+        if (muscleLoad.isEmpty()) {
+            return MuscleLoadVisualization(
+                perMuscle = MuscleLoadBreakdown(emptyList()),
+                perGroup = MuscleLoadBreakdown(emptyList()),
+            )
+        }
+
+        val perMuscleValues = buildPerMuscleValues(muscleLoad, examples)
+        val groupValues = if (groups.isNotEmpty()) {
+            buildGroupValues(groups, muscleLoad)
+        } else {
+            perMuscleValues
+        }
+
+        val perMuscleBreakdown = buildBreakdown(
+            labelValues = perMuscleValues,
+            mode = Mode.RELATIVE,
+            relativeMode = RelativeMode.MAX,
+            scaleStops = scaleStops,
+        )
+        val perGroupBreakdown = buildBreakdown(
+            labelValues = groupValues,
+            mode = Mode.RELATIVE,
+            relativeMode = RelativeMode.SUM,
+            scaleStops = scaleStops,
+        )
+
+        return MuscleLoadVisualization(
+            perMuscle = perMuscleBreakdown,
+            perGroup = perGroupBreakdown,
+        )
+    }
+
+    private fun computeMuscleLoad(
+        exercises: List<ExerciseState>,
+        exampleMap: Map<String, ExerciseExampleState>,
+        workload: Workload,
+    ): Map<MuscleEnumState, Float> {
         val muscleLoad = mutableMapOf<MuscleEnumState, Float>()
 
         exercises.forEach { ex ->
@@ -112,8 +147,7 @@ public class MuscleLoadCalculator(
                 Workload.Volume -> ex.iterations.fold(0f) { acc, itn ->
                     val w = itn.volume.value ?: 0f
                     val r = (itn.repetitions.value ?: 0).coerceAtLeast(0)
-                    val load = w
-                    if (r == 0 || load <= 0f) acc else acc + load * r
+                    if (r == 0 || w <= 0f) acc else acc + w * r
                 }
 
                 Workload.Reps -> ex.iterations.fold(0) { acc, itn ->
@@ -145,71 +179,97 @@ public class MuscleLoadCalculator(
             }
         }
 
-        data class LabelValue(
-            val label: String,
-            val value: Float,
-            val muscles: List<MuscleEnumState>,
-        )
+        return muscleLoad
+    }
 
-        val labelValues: List<LabelValue> = if (groups.isNotEmpty()) {
-            groups.map { group ->
-                val muscles = group.muscles.map { it.value.type }
-                val sum = muscles.fold(0f) { acc, muscle -> acc + (muscleLoad[muscle] ?: 0f) }
-                LabelValue(
-                    label = group.type.title().text(stringProvider),
-                    value = sum,
-                    muscles = muscles,
-                )
-            }
-        } else {
-            val musclesOrdered = LinkedHashSet<MuscleEnumState>().apply {
-                examples.forEach { example -> example.bundles.forEach { bundle -> add(bundle.muscle.type) } }
-                if (isEmpty()) addAll(muscleLoad.keys)
-            }
-            musclesOrdered.map { muscle ->
-                LabelValue(
-                    label = muscle.title().text(stringProvider),
-                    value = muscleLoad[muscle] ?: 0f,
-                    muscles = listOf(muscle),
-                )
+    private data class LabelValue(
+        val label: UiText,
+        val value: Float,
+        val muscles: List<MuscleEnumState>,
+    )
+
+    private fun buildPerMuscleValues(
+        muscleLoad: Map<MuscleEnumState, Float>,
+        examples: List<ExerciseExampleState>,
+    ): List<LabelValue> {
+        val ordering = linkedSetOf<MuscleEnumState>().apply {
+            examples.forEach { example ->
+                example.bundles.forEach { add(it.muscle.type) }
             }
         }
+        ordering.addAll(muscleLoad.keys)
 
-        if (labelValues.isEmpty()) return MuscleLoadBreakdown(entries = emptyList())
+        if (ordering.isEmpty()) return emptyList()
+
+        return ordering.map { muscle ->
+            LabelValue(
+                label = muscle.title(),
+                value = muscleLoad[muscle] ?: 0f,
+                muscles = listOf(muscle),
+            )
+        }
+    }
+
+    private fun buildGroupValues(
+        groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
+        muscleLoad: Map<MuscleEnumState, Float>,
+    ): List<LabelValue> {
+        if (groups.isEmpty()) return emptyList()
+        return groups.map { group ->
+            val muscles = group.muscles.map { it.value.type }
+            val sum = muscles.fold(0f) { acc, muscle -> acc + (muscleLoad[muscle] ?: 0f) }
+            LabelValue(
+                label = group.type.title(),
+                value = sum,
+                muscles = muscles,
+            )
+        }
+    }
+
+    private suspend fun buildBreakdown(
+        labelValues: List<LabelValue>,
+        mode: Mode,
+        relativeMode: RelativeMode,
+        scaleStops: List<Pair<Float, Color>>,
+    ): MuscleLoadBreakdown {
+        if (labelValues.isEmpty()) return MuscleLoadBreakdown(emptyList())
 
         val values = labelValues.map { it.value }
         val validValues = values.filter { it.isFinite() }
-        if (validValues.isEmpty()) return MuscleLoadBreakdown(entries = emptyList())
+        if (validValues.isEmpty()) return MuscleLoadBreakdown(emptyList())
 
         val maxVal = validValues.maxOrNull() ?: 1f
         val sumVal = validValues.sum().takeIf { it > 0f } ?: 1f
 
-        val entries = labelValues.sortedByDescending { it.value }.map { (label, raw, muscles) ->
-            val display = when (mode) {
-                Mode.ABSOLUTE -> raw
-                Mode.RELATIVE -> when (relativeMode) {
-                    RelativeMode.MAX -> (raw / maxVal) * 100f
-                    RelativeMode.SUM -> (raw / sumVal) * 100f
+        val entries = labelValues
+            .sortedByDescending { it.value }
+            .map { (label, raw, muscles) ->
+                val labelText = label.text(stringProvider)
+                val display = when (mode) {
+                    Mode.ABSOLUTE -> raw
+                    Mode.RELATIVE -> when (relativeMode) {
+                        RelativeMode.MAX -> if (maxVal == 0f) 0f else (raw / maxVal) * 100f
+                        RelativeMode.SUM -> if (sumVal == 0f) 0f else (raw / sumVal) * 100f
+                    }
                 }
+
+                val color = when (mode) {
+                    Mode.RELATIVE -> bandColorByPercent(display, scaleStops)
+                    Mode.ABSOLUTE -> {
+                        val ratio = if (maxVal == 0f) 0f else (raw / maxVal).coerceIn(0f, 1f)
+                        interpolateColor(ratio, scaleStops)
+                    }
+                }
+
+                MuscleLoadEntry(
+                    label = labelText,
+                    value = display,
+                    color = color,
+                    muscles = muscles,
+                )
             }
 
-            val color = when (mode) {
-                Mode.RELATIVE -> bandColorByPercent(display, scaleStops)
-                Mode.ABSOLUTE -> {
-                    val ratio = if (maxVal == 0f) 0f else (raw / maxVal).coerceIn(0f, 1f)
-                    interpolateColor(ratio, scaleStops)
-                }
-            }
-
-            MuscleLoadEntry(
-                label = label,
-                value = display,
-                color = color,
-                muscles = muscles,
-            )
-        }
-
-        return MuscleLoadBreakdown(entries = entries)
+        return MuscleLoadBreakdown(entries)
     }
 
     private fun interpolateColor(ratio: Float, stops: List<Pair<Float, Color>>): Color {
@@ -247,5 +307,4 @@ public class MuscleLoadCalculator(
             .coerceIn(0, size - 1)
         return colors[idx]
     }
-
 }

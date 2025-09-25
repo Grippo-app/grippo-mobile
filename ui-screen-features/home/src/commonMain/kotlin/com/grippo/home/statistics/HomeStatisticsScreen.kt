@@ -18,7 +18,6 @@ import com.grippo.date.utils.DateFormat
 import com.grippo.design.components.chart.BarChart
 import com.grippo.design.components.chart.HeatmapChart
 import com.grippo.design.components.chart.PieChart
-import com.grippo.design.components.chart.ProgressChart
 import com.grippo.design.components.chip.ChipSize
 import com.grippo.design.components.chip.IntensityChip
 import com.grippo.design.components.chip.IntensityChipStyle
@@ -29,6 +28,7 @@ import com.grippo.design.components.chip.VolumeChipStyle
 import com.grippo.design.components.datetime.PeriodPicker
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.statistics.ChartCard
+import com.grippo.design.components.statistics.MuscleLoad
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -158,9 +158,10 @@ internal fun HomeStatisticsScreen(
                     modifier = Modifier.fillMaxWidth(),
                     title = AppTokens.strings.res(Res.string.chart_title_muscle_load),
                     content = {
-                        ProgressChart(
+                        MuscleLoad(
                             modifier = Modifier.fillMaxWidth(),
-                            data = state.muscleLoadData
+                            chartData = state.muscleLoadData,
+                            muscleBreakdown = state.muscleLoadMuscles,
                         )
                     }
                 )

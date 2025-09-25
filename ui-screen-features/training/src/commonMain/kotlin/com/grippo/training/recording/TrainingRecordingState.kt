@@ -39,7 +39,7 @@ internal data class TrainingRecordingState(
 
     // === Muscle analysis (progress/heatmap) ===
     val muscleLoadData: DSProgressData = DSProgressData(items = emptyList()),
-    val muscleLoadBreakdown: MuscleLoadBreakdown? = null,
+    val muscleLoadMuscles: MuscleLoadBreakdown = MuscleLoadBreakdown(entries = emptyList()),
 
     // === Exercise example distributions (pie) ===
     val categoryDistributionData: DSPieData = DSPieData(slices = emptyList()),

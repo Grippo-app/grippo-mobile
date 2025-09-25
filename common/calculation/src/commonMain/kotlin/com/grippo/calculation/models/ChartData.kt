@@ -2,9 +2,9 @@ package com.grippo.calculation.models
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
-import com.grippo.state.muscles.MuscleEnumState
 import com.grippo.calculation.muscle.factory.MuscleColorSource
 import com.grippo.calculation.muscle.factory.MuscleColorStrategy
+import com.grippo.state.muscles.MuscleEnumState
 
 @Immutable
 public data class DistributionSlice(
@@ -30,6 +30,12 @@ public data class MuscleLoadEntry(
 @Immutable
 public data class MuscleLoadBreakdown(
     val entries: List<MuscleLoadEntry>,
+)
+
+@Immutable
+public data class MuscleLoadVisualization(
+    val perMuscle: MuscleLoadBreakdown,
+    val perGroup: MuscleLoadBreakdown,
 )
 
 public fun MuscleLoadBreakdown.toColorStrategy(): MuscleColorStrategy.BySources =
