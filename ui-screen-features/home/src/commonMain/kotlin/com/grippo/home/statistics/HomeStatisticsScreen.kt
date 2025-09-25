@@ -90,7 +90,6 @@ internal fun HomeStatisticsScreen(
 
         item(key = "summary_chips_volume", span = { GridItemSpan(1) }) {
             VolumeChip(
-                modifier = Modifier.weight(1f),
                 value = state.totalVolume,
                 style = VolumeChipStyle.SHORT,
                 size = ChipSize.Medium
@@ -98,7 +97,6 @@ internal fun HomeStatisticsScreen(
         }
         item(key = "summary_chips_repeat", span = { GridItemSpan(1) }) {
             RepetitionsChip(
-                modifier = Modifier.weight(1f),
                 value = state.totalRepetitions,
                 style = RepetitionsChipStyle.SHORT,
                 size = ChipSize.Medium
@@ -106,7 +104,6 @@ internal fun HomeStatisticsScreen(
         }
         item(key = "summary_chips_intensity", span = { GridItemSpan(1) }) {
             IntensityChip(
-                modifier = Modifier.weight(1f),
                 value = state.averageIntensity,
                 style = IntensityChipStyle.SHORT,
                 size = ChipSize.Medium

@@ -21,8 +21,6 @@ public data class DSHeatmapData(
     val values01: List<Float>,
     val rowLabels: List<String> = emptyList(),
     val colLabels: List<String> = emptyList(),
-    val rowDim: String? = null,
-    val colDim: String? = null,
 )
 
 @Composable
@@ -88,8 +86,6 @@ private fun DSHeatmapData.toChart(): HeatmapData {
         matrix = matrix,
         rowLabels = rowLabels,
         colLabels = colLabels,
-        rowDim = rowDim,
-        colDim = colDim,
     )
 }
 
@@ -113,8 +109,6 @@ private fun HeatmapChartPreview() {
             },
             rowLabels = labelsRow,
             colLabels = labelsCol,
-            rowDim = "Muscle Group",
-            colDim = "Day",
         )
 
         HeatmapChart(

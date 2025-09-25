@@ -11,4 +11,8 @@ internal enum class BucketScale {
     MONTH
 }
 
-internal data class Bucket(val start: LocalDateTime, val end: LocalDateTime)
+@Immutable
+internal data class Bucket(
+    val start: LocalDateTime,
+    val end: LocalDateTime
+)

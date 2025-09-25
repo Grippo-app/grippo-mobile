@@ -21,9 +21,12 @@ import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.components.chart.DSBarData
+import com.grippo.design.components.chart.DSBarItem
 import com.grippo.design.components.chart.DSHeatmapData
 import com.grippo.design.components.chart.DSPieData
+import com.grippo.design.components.chart.DSPieSlice
 import com.grippo.design.components.chart.DSProgressData
+import com.grippo.design.components.chart.DSProgressItem
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.dialog.api.DialogConfig
@@ -165,39 +168,34 @@ internal class HomeStatisticsViewModel(
             return
         }
 
-        val totalMetrics =
-            metricsAggregator.calculateTrainings(
-                trainings = trainings
-            )
-        val categoryDistributionData =
-            distributionCalculator.calculateCategoryDistributionFromTrainings(
-                trainings = trainings,
-                period = period
-            )
-        val weightTypeDistributionData =
-            distributionCalculator.calculateWeightTypeDistributionFromTrainings(
-                trainings = trainings,
-                period = period
-            )
-        val forceTypeDistributionData =
-            distributionCalculator.calculateForceTypeDistributionFromTrainings(
-                trainings = trainings,
-                period = period
-            )
-        val exerciseVolumeData =
-            volumeAnalytics.calculateExerciseVolumeChartFromTrainings(
-                trainings = trainings,
-                period = period
-            )
-        val muscleLoadData =
-            muscleLoadCalculator.calculateMuscleLoadDistributionFromTrainings(
+        val totalMetrics = metricsAggregator
+            .calculateTrainings(trainings = trainings)
+
+        val categoryDistributionData = distributionCalculator
+            .calculateCategoryDistributionFromTrainings(trainings = trainings, period = period)
+            .asChart()
+
+        val weightTypeDistributionData = distributionCalculator
+            .calculateWeightTypeDistributionFromTrainings(trainings = trainings, period = period)
+            .asChart()
+
+        val forceTypeDistributionData = distributionCalculator
+            .calculateForceTypeDistributionFromTrainings(trainings = trainings, period = period)
+            .asChart()
+
+        val (exerciseVolumeSeries, exerciseVolumeInstruction) = volumeAnalytics
+            .calculateExerciseVolumeChartFromTrainings(trainings = trainings, period = period)
+
+        val (muscleLoadBreakdown, muscleLoadInstruction) = muscleLoadCalculator
+            .calculateMuscleLoadDistributionFromTrainings(
                 trainings = trainings,
                 examples = examples,
                 groups = muscles,
                 period = period
             )
-        val temporalHeatmapData =
-            temporalHeatmapCalculator.calculateMuscleGroupHeatmapFromTrainings(
+
+        val (muscleLoadMatrix, temporalHeatmapInstruction) = temporalHeatmapCalculator
+            .calculateMuscleGroupHeatmapFromTrainings(
                 trainings = trainings,
                 period = period,
                 examples = examples,
@@ -210,13 +208,52 @@ internal class HomeStatisticsViewModel(
                 totalVolume = totalMetrics.volume,
                 totalRepetitions = totalMetrics.repetitions,
                 averageIntensity = totalMetrics.intensity,
-                exerciseVolumeData = exerciseVolumeData,
+                exerciseVolumeData = exerciseVolumeSeries.asChart() to exerciseVolumeInstruction,
                 categoryDistributionData = categoryDistributionData,
                 weightTypeDistributionData = weightTypeDistributionData,
                 forceTypeDistributionData = forceTypeDistributionData,
-                muscleLoadData = muscleLoadData,
-                temporalHeatmapData = temporalHeatmapData,
+                muscleLoadData = muscleLoadBreakdown.asChart() to muscleLoadInstruction,
+                temporalHeatmapData = muscleLoadMatrix.asChart() to temporalHeatmapInstruction,
             )
         }
     }
+
+    private fun DistributionBreakdown.asChart(): DSPieData = DSPieData(
+        slices = slices.map { it.asChart() }
+    )
+
+    private fun DistributionSlice.asChart(): DSPieSlice = DSPieSlice(
+        id = id,
+        label = label,
+        value = value,
+        color = color,
+    )
+
+    private fun MetricSeries.asChart(): DSBarData = DSBarData(
+        items = points.map { it.asChart() }
+    )
+
+    private fun MetricPoint.asChart(): DSBarItem = DSBarItem(
+        label = label,
+        value = value,
+        color = color,
+    )
+
+    private fun MuscleLoadBreakdown.asChart(): DSProgressData = DSProgressData(
+        items = entries.map { it.asChart() }
+    )
+
+    private fun MuscleLoadEntry.asChart(): DSProgressItem = DSProgressItem(
+        label = label,
+        value = value,
+        color = color,
+    )
+
+    private fun MuscleLoadMatrix.asChart(): DSHeatmapData = DSHeatmapData(
+        rows = rows,
+        cols = cols,
+        values01 = values01,
+        rowLabels = rowLabels,
+        colLabels = colLabels,
+    )
 }

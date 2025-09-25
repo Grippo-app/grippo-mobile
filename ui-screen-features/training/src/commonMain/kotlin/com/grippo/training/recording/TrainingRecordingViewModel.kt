@@ -1,9 +1,15 @@
 package com.grippo.training.recording
 
-import com.grippo.calculation.DistributionCalculator
-import com.grippo.calculation.MetricsAggregator
-import com.grippo.calculation.MuscleLoadCalculator
-import com.grippo.calculation.VolumeAnalytics
+import com.grippo.calculation.distribution.DistributionCalculator
+import com.grippo.calculation.muscle.MuscleLoadCalculator
+import com.grippo.calculation.training.MetricsAggregator
+import com.grippo.calculation.training.VolumeAnalytics
+import com.grippo.calculation.models.DistributionBreakdown
+import com.grippo.calculation.models.DistributionSlice
+import com.grippo.calculation.models.MetricPoint
+import com.grippo.calculation.models.MetricSeries
+import com.grippo.calculation.models.MuscleLoadBreakdown
+import com.grippo.calculation.models.MuscleLoadEntry
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
@@ -13,8 +19,11 @@ import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.components.chart.DSBarData
+import com.grippo.design.components.chart.DSBarItem
 import com.grippo.design.components.chart.DSPieData
+import com.grippo.design.components.chart.DSPieSlice
 import com.grippo.design.components.chart.DSProgressData
+import com.grippo.design.components.chart.DSProgressItem
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
@@ -304,4 +313,35 @@ internal class TrainingRecordingViewModel(
             )
         }
     }
+
+    private fun DistributionBreakdown.asChart(): DSPieData = DSPieData(
+        slices = slices.map { it.asChart() }
+    )
+
+    private fun DistributionSlice.asChart(): DSPieSlice = DSPieSlice(
+        id = id,
+        label = label,
+        value = value,
+        color = color,
+    )
+
+    private fun MetricSeries.asChart(): DSBarData = DSBarData(
+        items = points.map { it.asChart() }
+    )
+
+    private fun MetricPoint.asChart(): DSBarItem = DSBarItem(
+        label = label,
+        value = value,
+        color = color,
+    )
+
+    private fun MuscleLoadBreakdown.asChart(): DSProgressData = DSProgressData(
+        items = entries.map { it.asChart() }
+    )
+
+    private fun MuscleLoadEntry.asChart(): DSProgressItem = DSProgressItem(
+        label = label,
+        value = value,
+        color = color,
+    )
 }
