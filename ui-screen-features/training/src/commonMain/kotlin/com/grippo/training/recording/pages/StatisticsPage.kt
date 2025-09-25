@@ -74,6 +74,7 @@ internal fun StatisticsPage(
                 size = ChipSize.Medium
             )
         }
+
         item(key = "summary_chips_repeat", span = { GridItemSpan(1) }) {
             RepetitionsChip(
                 value = state.totalRepetitions,
@@ -81,6 +82,7 @@ internal fun StatisticsPage(
                 size = ChipSize.Medium
             )
         }
+
         item(key = "summary_chips_intensity", span = { GridItemSpan(1) }) {
             IntensityChip(
                 value = state.averageIntensity,
