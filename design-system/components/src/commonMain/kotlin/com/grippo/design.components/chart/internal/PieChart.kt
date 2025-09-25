@@ -1,4 +1,4 @@
-package com.grippo.design.components.chart
+package com.grippo.design.components.chart.internal
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.grippo.chart.pie.PieChart
 import com.grippo.chart.pie.PieData
 import com.grippo.chart.pie.PieSlice
 import com.grippo.chart.pie.PieStyle
@@ -56,7 +57,7 @@ public fun PieChart(
         )
     )
 
-    com.grippo.chart.pie.PieChart(
+    PieChart(
         modifier = modifier,
         data = remember(data) { data.toChart() },
         style = style

@@ -1,12 +1,9 @@
 package com.grippo.exercise.example.exerciseexample
 
 import com.grippo.calculation.AnalyticsApi
-import com.grippo.calculation.models.MuscleLoadBreakdown
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
-import com.grippo.design.components.chart.DSProgressData
-import com.grippo.design.components.chart.DSProgressItem
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.domain.state.exercise.example.toState
@@ -40,30 +37,11 @@ public class ExerciseExampleViewModel(
             example = exampleState
         )
 
-        val progressChart = muscleLoad.perGroup.asChart()
-        val progress = progressChart.takeIf { it.items.isNotEmpty() }
-        val summary = progress?.let { muscleLoad }
-
-        update { current ->
-            current.copy(
-                example = exampleState,
-                muscleLoadData = progress,
-                muscleLoadSummary = summary,
-            )
-        }
+        update { current -> current.copy(example = exampleState, muscleLoad = muscleLoad) }
     }
 
     override fun onDismiss() {
         navigateTo(ExerciseExampleDirection.Back)
     }
 
-    private fun MuscleLoadBreakdown.asChart(): DSProgressData = DSProgressData(
-        items = entries.map { entry ->
-            DSProgressItem(
-                label = entry.label,
-                value = entry.value,
-                color = entry.color,
-            )
-        }
-    )
 }

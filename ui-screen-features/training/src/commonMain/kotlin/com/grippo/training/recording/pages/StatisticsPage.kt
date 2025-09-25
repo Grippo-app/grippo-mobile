@@ -21,8 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.grippo.design.components.chart.BarChart
-import com.grippo.design.components.chart.PieChart
+import com.grippo.design.components.chart.ChartCard
+import com.grippo.design.components.chart.DistributionPieChart
+import com.grippo.design.components.chart.MetricBarChart
+import com.grippo.design.components.chart.MuscleLoadChart
 import com.grippo.design.components.chip.ChipSize
 import com.grippo.design.components.chip.IntensityChip
 import com.grippo.design.components.chip.IntensityChipStyle
@@ -30,8 +32,6 @@ import com.grippo.design.components.chip.RepetitionsChip
 import com.grippo.design.components.chip.RepetitionsChipStyle
 import com.grippo.design.components.chip.VolumeChip
 import com.grippo.design.components.chip.VolumeChipStyle
-import com.grippo.design.components.muscle.MuscleLoad
-import com.grippo.design.components.statistics.ChartCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -67,7 +67,8 @@ internal fun StatisticsPage(
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
 
-        state.totalVolume
+        state.totalMetrics
+            ?.volume
             ?.takeIf { it.value != null }
             ?.let { data ->
                 item(key = "summary_chips_volume", span = { GridItemSpan(1) }) {
@@ -79,7 +80,8 @@ internal fun StatisticsPage(
                 }
             }
 
-        state.totalRepetitions
+        state.totalMetrics
+            ?.repetitions
             ?.takeIf { it.value != null }
             ?.let { data ->
                 item(key = "summary_chips_repeat", span = { GridItemSpan(1) }) {
@@ -91,7 +93,8 @@ internal fun StatisticsPage(
                 }
             }
 
-        state.averageIntensity
+        state.totalMetrics
+            ?.intensity
             ?.takeIf { it.value != null }
             ?.let { data ->
                 item(key = "summary_chips_intensity", span = { GridItemSpan(1) }) {
@@ -104,7 +107,7 @@ internal fun StatisticsPage(
             }
 
         state.exerciseVolume
-            ?.takeIf { it.items.isNotEmpty() }
+            ?.takeIf { it.points.isNotEmpty() }
             ?.let { data ->
                 item(key = "exercise_volume", span = { GridItemSpan(3) }) {
                     ChartCard(
@@ -113,9 +116,9 @@ internal fun StatisticsPage(
                             .aspectRatio(1.4f),
                         title = AppTokens.strings.res(Res.string.chart_title_exercise_volume),
                         content = {
-                            BarChart(
+                            MetricBarChart(
                                 modifier = Modifier.fillMaxWidth().weight(1f),
-                                data = data,
+                                value = data,
                             )
                         }
                     )
@@ -126,9 +129,9 @@ internal fun StatisticsPage(
             ?.takeIf { it.slices.isNotEmpty() }
             ?.let { data ->
                 item(key = "category_distribution", span = { GridItemSpan(1) }) {
-                    PieChart(
+                    DistributionPieChart(
                         modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-                        data = data
+                        value = data
                     )
                 }
             }
@@ -137,9 +140,9 @@ internal fun StatisticsPage(
             ?.takeIf { it.slices.isNotEmpty() }
             ?.let { data ->
                 item(key = "weight_type_distribution", span = { GridItemSpan(1) }) {
-                    PieChart(
+                    DistributionPieChart(
                         modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-                        data = data
+                        value = data
                     )
                 }
             }
@@ -148,30 +151,29 @@ internal fun StatisticsPage(
             ?.takeIf { it.slices.isNotEmpty() }
             ?.let { data ->
                 item(key = "force_type_distribution", span = { GridItemSpan(1) }) {
-                    PieChart(
+                    DistributionPieChart(
                         modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-                        data = data
+                        value = data
                     )
                 }
             }
 
-        val progressData = state.muscleLoad
-        val summary = state.muscleLoadSummary
-        if (progressData != null && summary != null && progressData.items.isNotEmpty()) {
-            item(key = "muscle_load", span = { GridItemSpan(3) }) {
-                ChartCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    title = AppTokens.strings.res(Res.string.chart_title_muscle_load),
-                    content = {
-                        MuscleLoad(
-                            modifier = Modifier.fillMaxWidth(),
-                            chartData = progressData,
-                            valueSummary = summary,
-                        )
-                    }
-                )
+        state.muscleLoad
+            ?.takeIf { it.perGroup.entries.isNotEmpty() }
+            ?.let { summary ->
+                item(key = "muscle_load", span = { GridItemSpan(3) }) {
+                    ChartCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        title = AppTokens.strings.res(Res.string.chart_title_muscle_load),
+                        content = {
+                            MuscleLoadChart(
+                                modifier = Modifier.fillMaxWidth(),
+                                value = summary,
+                            )
+                        }
+                    )
+                }
             }
-        }
     }
 }
 

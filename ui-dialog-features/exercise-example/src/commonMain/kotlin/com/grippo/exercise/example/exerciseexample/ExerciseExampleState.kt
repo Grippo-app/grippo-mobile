@@ -2,12 +2,10 @@ package com.grippo.exercise.example.exerciseexample
 
 import androidx.compose.runtime.Immutable
 import com.grippo.calculation.models.MuscleLoadSummary
-import com.grippo.design.components.chart.DSProgressData
 import com.grippo.state.exercise.examples.ExerciseExampleState
 
 @Immutable
 public data class ExerciseExampleState(
     val example: ExerciseExampleState? = null,
-    val muscleLoadData: DSProgressData? = null,
-    val muscleLoadSummary: MuscleLoadSummary? = null,
+    val muscleLoad: MuscleLoadSummary? = null,
 )

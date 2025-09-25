@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
+import com.grippo.design.components.chart.MuscleLoadChart
 import com.grippo.design.components.chip.Chip
 import com.grippo.design.components.chip.ChipLabel
 import com.grippo.design.components.chip.ChipSize
@@ -24,7 +25,6 @@ import com.grippo.design.components.chip.ChipTrailing
 import com.grippo.design.components.equipment.EquipmentsCard
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
-import com.grippo.design.components.muscle.MuscleLoad
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -132,15 +132,12 @@ internal fun ExerciseExampleScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        val progressData = state.muscleLoadData
-        val summary = state.muscleLoadSummary
-        if (progressData != null && summary != null && progressData.items.isNotEmpty()) {
-            MuscleLoad(
+        state.muscleLoad?.let { summary ->
+            MuscleLoadChart(
                 modifier = Modifier
                     .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                     .fillMaxWidth(),
-                chartData = progressData,
-                valueSummary = summary,
+                value = summary,
             )
 
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))

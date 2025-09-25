@@ -1,4 +1,4 @@
-package com.grippo.design.components.chart
+package com.grippo.design.components.chart.internal
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable

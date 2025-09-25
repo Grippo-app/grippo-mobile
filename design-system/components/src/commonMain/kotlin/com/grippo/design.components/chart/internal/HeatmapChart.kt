@@ -1,4 +1,4 @@
-package com.grippo.design.components.chart
+package com.grippo.design.components.chart.internal
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -13,6 +13,7 @@ import com.grippo.chart.heatmap.Matrix01
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import kotlin.math.min
 
 @Immutable
 public data class DSHeatmapData(
@@ -35,7 +36,7 @@ public fun HeatmapChart(
     fun colorScaleDiscreteOf(colors: List<Color>): (Float) -> Color = { tIn ->
         if (colors.isEmpty()) Color.Unspecified else {
             val t = tIn.coerceIn(0f, 1f)
-            val idx = kotlin.math.min((t * colors.size).toInt(), colors.size - 1)
+            val idx = min((t * colors.size).toInt(), colors.size - 1)
             colors[idx]
         }
     }

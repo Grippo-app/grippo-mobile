@@ -1,13 +1,6 @@
 package com.grippo.home.statistics
 
 import com.grippo.calculation.AnalyticsApi
-import com.grippo.calculation.models.DistributionBreakdown
-import com.grippo.calculation.models.DistributionSlice
-import com.grippo.calculation.models.MetricPoint
-import com.grippo.calculation.models.MetricSeries
-import com.grippo.calculation.models.MuscleLoadBreakdown
-import com.grippo.calculation.models.MuscleLoadEntry
-import com.grippo.calculation.models.MuscleLoadMatrix
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
@@ -16,13 +9,6 @@ import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.date.utils.DateTimeUtils
-import com.grippo.design.components.chart.DSBarData
-import com.grippo.design.components.chart.DSBarItem
-import com.grippo.design.components.chart.DSHeatmapData
-import com.grippo.design.components.chart.DSPieData
-import com.grippo.design.components.chart.DSPieSlice
-import com.grippo.design.components.chart.DSProgressData
-import com.grippo.design.components.chart.DSProgressItem
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.dialog.api.DialogConfig
@@ -139,16 +125,13 @@ internal class HomeStatisticsViewModel(
         if (trainings.isEmpty()) {
             update {
                 it.copy(
-                    totalVolume = null,
-                    totalRepetitions = null,
-                    averageIntensity = null,
+                    totalMetrics = null,
                     exerciseVolume = null,
                     categoryDistribution = null,
                     forceTypeDistribution = null,
                     weightTypeDistribution = null,
                     muscleLoad = null,
                     temporalHeatmap = null,
-                    muscleLoadSummary = null,
                 )
             }
             return
@@ -158,25 +141,25 @@ internal class HomeStatisticsViewModel(
             trainings = trainings
         )
 
-        val categoryDistributionChart = analytics.categoryDistributionFromTrainings(
+        val categoryDistribution = analytics.categoryDistributionFromTrainings(
             trainings = trainings,
             period = period,
-        ).asChart()
+        )
 
-        val weightTypeDistributionChart = analytics.weightTypeDistributionFromTrainings(
+        val weightTypeDistribution = analytics.weightTypeDistributionFromTrainings(
             trainings = trainings,
             period = period,
-        ).asChart()
+        )
 
-        val forceTypeDistributionChart = analytics.forceTypeDistributionFromTrainings(
+        val forceTypeDistribution = analytics.forceTypeDistributionFromTrainings(
             trainings = trainings,
             period = period,
-        ).asChart()
+        )
 
-        val exerciseVolumeChart = analytics.volumeFromTrainings(
+        val exerciseVolume = analytics.volumeFromTrainings(
             trainings = trainings,
             period = period,
-        ).asChart()
+        )
 
         val muscleLoad = analytics.muscleLoadFromTrainings(
             trainings = trainings,
@@ -192,67 +175,16 @@ internal class HomeStatisticsViewModel(
             groups = muscles,
         )
 
-        val categoryData = categoryDistributionChart.takeIf { it.slices.isNotEmpty() }
-        val weightTypeData = weightTypeDistributionChart.takeIf { it.slices.isNotEmpty() }
-        val forceTypeData = forceTypeDistributionChart.takeIf { it.slices.isNotEmpty() }
-        val exerciseVolumeData = exerciseVolumeChart.takeIf { it.items.isNotEmpty() }
-        val muscleProgressChart = muscleLoad.perGroup.asChart()
-        val muscleProgressData = muscleProgressChart.takeIf { it.items.isNotEmpty() }
-        val muscleSummary = muscleProgressData?.let { muscleLoad }
-        val heatmapData = muscleLoadMatrix.asChart().takeIf { it.values01.isNotEmpty() }
-
         update {
             it.copy(
-                totalVolume = totalMetrics.volume,
-                totalRepetitions = totalMetrics.repetitions,
-                averageIntensity = totalMetrics.intensity,
-                exerciseVolume = exerciseVolumeData,
-                categoryDistribution = categoryData,
-                weightTypeDistribution = weightTypeData,
-                forceTypeDistribution = forceTypeData,
-                muscleLoad = muscleProgressData,
-                muscleLoadSummary = muscleSummary,
-                temporalHeatmap = heatmapData,
+                totalMetrics = totalMetrics,
+                exerciseVolume = exerciseVolume,
+                categoryDistribution = categoryDistribution,
+                weightTypeDistribution = weightTypeDistribution,
+                forceTypeDistribution = forceTypeDistribution,
+                muscleLoad = muscleLoad,
+                temporalHeatmap = muscleLoadMatrix,
             )
         }
     }
-
-    private fun DistributionBreakdown.asChart(): DSPieData = DSPieData(
-        slices = slices.map { it.asChart() }
-    )
-
-    private fun DistributionSlice.asChart(): DSPieSlice = DSPieSlice(
-        id = id,
-        label = label,
-        value = value,
-        color = color,
-    )
-
-    private fun MetricSeries.asChart(): DSBarData = DSBarData(
-        items = points.map { it.asChart() }
-    )
-
-    private fun MetricPoint.asChart(): DSBarItem = DSBarItem(
-        label = label,
-        value = value,
-        color = color,
-    )
-
-    private fun MuscleLoadBreakdown.asChart(): DSProgressData = DSProgressData(
-        items = entries.map { it.asChart() }
-    )
-
-    private fun MuscleLoadEntry.asChart(): DSProgressItem = DSProgressItem(
-        label = label,
-        value = value,
-        color = color,
-    )
-
-    private fun MuscleLoadMatrix.asChart(): DSHeatmapData = DSHeatmapData(
-        rows = rows,
-        cols = cols,
-        values01 = values01,
-        rowLabels = rowLabels,
-        colLabels = colLabels,
-    )
 }

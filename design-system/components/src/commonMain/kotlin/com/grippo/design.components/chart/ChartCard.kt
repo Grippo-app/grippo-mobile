@@ -1,4 +1,4 @@
-package com.grippo.design.components.statistics
+package com.grippo.design.components.chart
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
