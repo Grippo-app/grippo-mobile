@@ -74,7 +74,7 @@ internal fun Input(
     enabled: Boolean = true,
     error: InputError = InputError.Non,
     inputStyle: InputStyle,
-    textStyle: TextStyle = AppTokens.typography.b13Semi(),
+    textStyle: TextStyle = AppTokens.typography.b14Semi(),
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     leading: (@Composable (color: Color) -> Unit)? = null,

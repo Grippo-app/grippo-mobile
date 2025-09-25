@@ -157,7 +157,7 @@ internal fun LoginScreen(
         ) {
             Text(
                 text = AppTokens.strings.res(Res.string.login_button_registration_label),
-                style = AppTokens.typography.b14Reg(),
+                style = AppTokens.typography.b15Reg(),
                 color = AppTokens.colors.text.secondary,
             )
 

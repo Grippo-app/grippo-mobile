@@ -100,7 +100,7 @@ public fun Button(
     state: ButtonState = ButtonState.Enabled,
     size: ButtonSize = ButtonSize.Medium,
     onClick: () -> Unit,
-    textStyle: TextStyle = AppTokens.typography.b14Bold(),
+    textStyle: TextStyle = AppTokens.typography.b15Bold(),
 ) {
     val colorTokens = resolveButtonColors(style = style, state = state)
     val shape = RoundedCornerShape(

@@ -42,7 +42,7 @@ public fun InputWeight(
             Text(
                 modifier = Modifier.padding(end = 8.dp),
                 text = AppTokens.strings.res(Res.string.kg),
-                style = AppTokens.typography.b14Semi(),
+                style = AppTokens.typography.b15Semi(),
                 color = color
             )
         },

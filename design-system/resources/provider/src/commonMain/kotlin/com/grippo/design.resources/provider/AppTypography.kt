@@ -70,6 +70,22 @@ public data object AppTypography {
     )
 
     @Composable
+    public fun b15Semi(): TextStyle = TextStyle(
+        fontSize = 15.sp,
+        fontFamily = manrope(),
+        lineHeight = 22.sp, // ×1.47
+        fontWeight = FontWeight.SemiBold,
+    )
+
+    @Composable
+    public fun b15Reg(): TextStyle = TextStyle(
+        fontSize = 15.sp,
+        fontFamily = manrope(),
+        lineHeight = 22.sp, // ×1.47
+        fontWeight = FontWeight.Normal,
+    )
+
+    @Composable
     public fun b14Bold(): TextStyle = TextStyle(
         fontSize = 14.sp,
         fontFamily = manrope(),
