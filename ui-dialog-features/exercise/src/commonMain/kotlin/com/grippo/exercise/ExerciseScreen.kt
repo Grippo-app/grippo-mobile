@@ -155,7 +155,7 @@ internal fun ExerciseScreen(
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = exercise.exerciseExample.description,
-            maxLines = 2,
+            maxLines = 3,
             overflow = TextOverflow.Ellipsis,
             style = AppTokens.typography.b14Med(),
             color = AppTokens.colors.text.secondary,

@@ -80,7 +80,7 @@ internal fun ExerciseExampleScreen(
             Chip(
                 label = ChipLabel.Empty,
                 value = example.value.category.title().text(),
-                size = ChipSize.Medium,
+                size = ChipSize.Small,
                 stype = ChipStype.Default,
                 trailing = ChipTrailing.Empty,
                 contentColor = AppTokens.colors.static.white,
@@ -90,7 +90,7 @@ internal fun ExerciseExampleScreen(
             Chip(
                 label = ChipLabel.Empty,
                 value = example.value.forceType.title().text(),
-                size = ChipSize.Medium,
+                size = ChipSize.Small,
                 stype = ChipStype.Default,
                 trailing = ChipTrailing.Empty,
                 contentColor = AppTokens.colors.static.white,
@@ -100,25 +100,15 @@ internal fun ExerciseExampleScreen(
             Chip(
                 label = ChipLabel.Empty,
                 value = example.value.weightType.title().text(),
-                size = ChipSize.Medium,
+                size = ChipSize.Small,
                 stype = ChipStype.Default,
                 trailing = ChipTrailing.Empty,
                 contentColor = AppTokens.colors.static.white,
                 brush = SolidColor(example.value.weightType.color())
             )
-
-            Chip(
-                label = ChipLabel.Empty,
-                value = example.value.experience.title().text(),
-                size = ChipSize.Medium,
-                stype = ChipStype.Default,
-                trailing = ChipTrailing.Empty,
-                contentColor = AppTokens.colors.static.white,
-                brush = SolidColor(example.value.experience.color())
-            )
         }
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Text(
             modifier = Modifier
@@ -147,7 +137,7 @@ internal fun ExerciseExampleScreen(
             Text(
                 modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
                 text = AppTokens.strings.res(Res.string.required_equipment),
-                style = AppTokens.typography.b14Bold(),
+                style = AppTokens.typography.h4(),
                 color = AppTokens.colors.text.primary
             )
 
