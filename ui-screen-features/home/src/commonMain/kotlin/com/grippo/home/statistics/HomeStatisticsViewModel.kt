@@ -31,9 +31,6 @@ import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.muscles.toState
 import com.grippo.domain.state.training.toState
 import com.grippo.state.datetime.PeriodState
-import com.grippo.state.formatters.IntensityFormatState
-import com.grippo.state.formatters.RepetitionsFormatState
-import com.grippo.state.formatters.VolumeFormatState
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -142,15 +139,15 @@ internal class HomeStatisticsViewModel(
         if (trainings.isEmpty()) {
             update {
                 it.copy(
-                    totalVolume = VolumeFormatState.of(0f),
-                    totalRepetitions = RepetitionsFormatState.of(0),
-                    averageIntensity = IntensityFormatState.of(0f),
-                    exerciseVolumeData = DSBarData(items = emptyList()),
-                    categoryDistributionData = DSPieData(slices = emptyList()),
-                    forceTypeDistributionData = DSPieData(slices = emptyList()),
-                    weightTypeDistributionData = DSPieData(slices = emptyList()),
-                    muscleLoadData = DSProgressData(items = emptyList()),
-                    temporalHeatmapData = DSHeatmapData(rows = 0, cols = 0, values01 = emptyList()),
+                    totalVolume = null,
+                    totalRepetitions = null,
+                    averageIntensity = null,
+                    exerciseVolume = null,
+                    categoryDistribution = null,
+                    forceTypeDistribution = null,
+                    weightTypeDistribution = null,
+                    muscleLoad = null,
+                    temporalHeatmap = null,
                     muscleLoadSummary = null,
                 )
             }
@@ -161,25 +158,25 @@ internal class HomeStatisticsViewModel(
             trainings = trainings
         )
 
-        val categoryDistributionData = analytics.categoryDistributionFromTrainings(
+        val categoryDistributionChart = analytics.categoryDistributionFromTrainings(
             trainings = trainings,
             period = period,
         ).asChart()
 
-        val weightTypeDistributionData = analytics.weightTypeDistributionFromTrainings(
+        val weightTypeDistributionChart = analytics.weightTypeDistributionFromTrainings(
             trainings = trainings,
             period = period,
         ).asChart()
 
-        val forceTypeDistributionData = analytics.forceTypeDistributionFromTrainings(
+        val forceTypeDistributionChart = analytics.forceTypeDistributionFromTrainings(
             trainings = trainings,
             period = period,
         ).asChart()
 
-        val exerciseVolumeSeries = analytics.volumeFromTrainings(
+        val exerciseVolumeChart = analytics.volumeFromTrainings(
             trainings = trainings,
             period = period,
-        )
+        ).asChart()
 
         val muscleLoad = analytics.muscleLoadFromTrainings(
             trainings = trainings,
@@ -195,18 +192,27 @@ internal class HomeStatisticsViewModel(
             groups = muscles,
         )
 
+        val categoryData = categoryDistributionChart.takeIf { it.slices.isNotEmpty() }
+        val weightTypeData = weightTypeDistributionChart.takeIf { it.slices.isNotEmpty() }
+        val forceTypeData = forceTypeDistributionChart.takeIf { it.slices.isNotEmpty() }
+        val exerciseVolumeData = exerciseVolumeChart.takeIf { it.items.isNotEmpty() }
+        val muscleProgressChart = muscleLoad.perGroup.asChart()
+        val muscleProgressData = muscleProgressChart.takeIf { it.items.isNotEmpty() }
+        val muscleSummary = muscleProgressData?.let { muscleLoad }
+        val heatmapData = muscleLoadMatrix.asChart().takeIf { it.values01.isNotEmpty() }
+
         update {
             it.copy(
                 totalVolume = totalMetrics.volume,
                 totalRepetitions = totalMetrics.repetitions,
                 averageIntensity = totalMetrics.intensity,
-                exerciseVolumeData = exerciseVolumeSeries.asChart(),
-                categoryDistributionData = categoryDistributionData,
-                weightTypeDistributionData = weightTypeDistributionData,
-                forceTypeDistributionData = forceTypeDistributionData,
-                muscleLoadData = muscleLoad.perGroup.asChart(),
-                muscleLoadSummary = muscleLoad,
-                temporalHeatmapData = muscleLoadMatrix.asChart(),
+                exerciseVolume = exerciseVolumeData,
+                categoryDistribution = categoryData,
+                weightTypeDistribution = weightTypeData,
+                forceTypeDistribution = forceTypeData,
+                muscleLoad = muscleProgressData,
+                muscleLoadSummary = muscleSummary,
+                temporalHeatmap = heatmapData,
             )
         }
     }

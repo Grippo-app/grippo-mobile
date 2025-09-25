@@ -132,13 +132,14 @@ internal fun ExerciseExampleScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
+        val progressData = state.muscleLoadData
         val summary = state.muscleLoadSummary
-        if (state.muscleLoadData.items.isNotEmpty() && summary != null) {
+        if (progressData != null && summary != null && progressData.items.isNotEmpty()) {
             MuscleLoad(
                 modifier = Modifier
                     .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                     .fillMaxWidth(),
-                chartData = state.muscleLoadData,
+                chartData = progressData,
                 valueSummary = summary,
             )
 

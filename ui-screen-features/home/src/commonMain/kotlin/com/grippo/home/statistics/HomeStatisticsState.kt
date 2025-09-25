@@ -25,26 +25,22 @@ internal data class HomeStatisticsState(
     val muscles: ImmutableList<MuscleGroupState<MuscleRepresentationState.Plain>> = persistentListOf(),
 
     // === Basic metrics chips ===
-    val totalVolume: VolumeFormatState = VolumeFormatState.of(0f),
-    val totalRepetitions: RepetitionsFormatState = RepetitionsFormatState.of(0),
-    val averageIntensity: IntensityFormatState = IntensityFormatState.of(0f),
+    val totalVolume: VolumeFormatState? = null,
+    val totalRepetitions: RepetitionsFormatState? = null,
+    val averageIntensity: IntensityFormatState? = null,
 
     // === Exercise volume (bar) ===
-    val exerciseVolumeData: DSBarData = DSBarData(items = emptyList()),
+    val exerciseVolume: DSBarData? = null,
 
     // === Muscle analysis (progress/heatmap) ===
-    val muscleLoadData: DSProgressData = DSProgressData(items = emptyList()),
+    val muscleLoad: DSProgressData? = null,
     val muscleLoadSummary: MuscleLoadSummary? = null,
 
     // === Exercise example distributions (pie) ===
-    val categoryDistributionData: DSPieData = DSPieData(slices = emptyList()),
-    val weightTypeDistributionData: DSPieData = DSPieData(slices = emptyList()),
-    val forceTypeDistributionData: DSPieData = DSPieData(slices = emptyList()),
+    val categoryDistribution: DSPieData? = null,
+    val weightTypeDistribution: DSPieData? = null,
+    val forceTypeDistribution: DSPieData? = null,
 
     // === Temporal heatmap ===
-    val temporalHeatmapData: DSHeatmapData = DSHeatmapData(
-        rows = 0,
-        cols = 0,
-        values01 = emptyList()
-    )
+    val temporalHeatmap: DSHeatmapData? = null,
 )

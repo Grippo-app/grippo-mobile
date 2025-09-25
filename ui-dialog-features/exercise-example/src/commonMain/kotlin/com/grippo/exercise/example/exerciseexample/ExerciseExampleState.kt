@@ -8,6 +8,6 @@ import com.grippo.state.exercise.examples.ExerciseExampleState
 @Immutable
 public data class ExerciseExampleState(
     val example: ExerciseExampleState? = null,
-    val muscleLoadData: DSProgressData = DSProgressData(items = emptyList()),
+    val muscleLoadData: DSProgressData? = null,
     val muscleLoadSummary: MuscleLoadSummary? = null,
 )

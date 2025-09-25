@@ -40,13 +40,15 @@ public class ExerciseExampleViewModel(
             example = exampleState
         )
 
-        val progress = muscleLoad.perGroup.asChart()
+        val progressChart = muscleLoad.perGroup.asChart()
+        val progress = progressChart.takeIf { it.items.isNotEmpty() }
+        val summary = progress?.let { muscleLoad }
 
         update { current ->
             current.copy(
                 example = exampleState,
                 muscleLoadData = progress,
-                muscleLoadSummary = muscleLoad,
+                muscleLoadSummary = summary,
             )
         }
     }

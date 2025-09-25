@@ -67,74 +67,97 @@ internal fun StatisticsPage(
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
 
-        item(key = "summary_chips_volume", span = { GridItemSpan(1) }) {
-            VolumeChip(
-                value = state.totalVolume,
-                style = VolumeChipStyle.SHORT,
-                size = ChipSize.Medium
-            )
-        }
-
-        item(key = "summary_chips_repeat", span = { GridItemSpan(1) }) {
-            RepetitionsChip(
-                value = state.totalRepetitions,
-                style = RepetitionsChipStyle.SHORT,
-                size = ChipSize.Medium
-            )
-        }
-
-        item(key = "summary_chips_intensity", span = { GridItemSpan(1) }) {
-            IntensityChip(
-                value = state.averageIntensity,
-                style = IntensityChipStyle.SHORT,
-                size = ChipSize.Medium
-            )
-        }
-
-        if (state.exerciseVolumeData.items.isNotEmpty()) {
-            item(key = "exercise_volume", span = { GridItemSpan(3) }) {
-                ChartCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1.4f),
-                    title = AppTokens.strings.res(Res.string.chart_title_exercise_volume),
-                    content = {
-                        BarChart(
-                            modifier = Modifier.fillMaxWidth().weight(1f),
-                            data = state.exerciseVolumeData,
-                        )
-                    }
-                )
-            }
-        }
-
-            item(key = "category_distribution", span = { GridItemSpan(1) }) {
-                PieChart(
-                    modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-                    data = state.categoryDistributionData
-                )
+        state.totalVolume
+            ?.takeIf { it.value != null }
+            ?.let { data ->
+                item(key = "summary_chips_volume", span = { GridItemSpan(1) }) {
+                    VolumeChip(
+                        value = data,
+                        style = VolumeChipStyle.SHORT,
+                        size = ChipSize.Medium
+                    )
+                }
             }
 
-        if (state.weightTypeDistributionData.slices.isNotEmpty()) {
-            item(key = "weight_type_distribution", span = { GridItemSpan(1) }) {
-                PieChart(
-                    modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-                    data = state.weightTypeDistributionData
-                )
+        state.totalRepetitions
+            ?.takeIf { it.value != null }
+            ?.let { data ->
+                item(key = "summary_chips_repeat", span = { GridItemSpan(1) }) {
+                    RepetitionsChip(
+                        value = data,
+                        style = RepetitionsChipStyle.SHORT,
+                        size = ChipSize.Medium
+                    )
+                }
             }
-        }
 
-        if (state.forceTypeDistributionData.slices.isNotEmpty()) {
-            item(key = "force_type_distribution", span = { GridItemSpan(1) }) {
-                PieChart(
-                    modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-                    data = state.forceTypeDistributionData
-                )
+        state.averageIntensity
+            ?.takeIf { it.value != null }
+            ?.let { data ->
+                item(key = "summary_chips_intensity", span = { GridItemSpan(1) }) {
+                    IntensityChip(
+                        value = data,
+                        style = IntensityChipStyle.SHORT,
+                        size = ChipSize.Medium
+                    )
+                }
             }
-        }
 
+        state.exerciseVolume
+            ?.takeIf { it.items.isNotEmpty() }
+            ?.let { data ->
+                item(key = "exercise_volume", span = { GridItemSpan(3) }) {
+                    ChartCard(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1.4f),
+                        title = AppTokens.strings.res(Res.string.chart_title_exercise_volume),
+                        content = {
+                            BarChart(
+                                modifier = Modifier.fillMaxWidth().weight(1f),
+                                data = data,
+                            )
+                        }
+                    )
+                }
+            }
+
+        state.categoryDistribution
+            ?.takeIf { it.slices.isNotEmpty() }
+            ?.let { data ->
+                item(key = "category_distribution", span = { GridItemSpan(1) }) {
+                    PieChart(
+                        modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+                        data = data
+                    )
+                }
+            }
+
+        state.weightTypeDistribution
+            ?.takeIf { it.slices.isNotEmpty() }
+            ?.let { data ->
+                item(key = "weight_type_distribution", span = { GridItemSpan(1) }) {
+                    PieChart(
+                        modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+                        data = data
+                    )
+                }
+            }
+
+        state.forceTypeDistribution
+            ?.takeIf { it.slices.isNotEmpty() }
+            ?.let { data ->
+                item(key = "force_type_distribution", span = { GridItemSpan(1) }) {
+                    PieChart(
+                        modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+                        data = data
+                    )
+                }
+            }
+
+        val progressData = state.muscleLoad
         val summary = state.muscleLoadSummary
-        if (state.muscleLoadData.items.isNotEmpty() && summary != null) {
+        if (progressData != null && summary != null && progressData.items.isNotEmpty()) {
             item(key = "muscle_load", span = { GridItemSpan(3) }) {
                 ChartCard(
                     modifier = Modifier.fillMaxWidth(),
@@ -142,7 +165,7 @@ internal fun StatisticsPage(
                     content = {
                         MuscleLoad(
                             modifier = Modifier.fillMaxWidth(),
-                            chartData = state.muscleLoadData,
+                            chartData = progressData,
                             valueSummary = summary,
                         )
                     }

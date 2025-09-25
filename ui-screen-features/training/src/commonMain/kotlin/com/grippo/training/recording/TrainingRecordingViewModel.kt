@@ -256,11 +256,11 @@ internal class TrainingRecordingViewModel(
                     totalVolume = VolumeFormatState.of(0f),
                     totalRepetitions = RepetitionsFormatState.of(0),
                     averageIntensity = IntensityFormatState.of(0f),
-                    exerciseVolumeData = DSBarData(items = emptyList()),
-                    categoryDistributionData = DSPieData(slices = emptyList()),
-                    forceTypeDistributionData = DSPieData(slices = emptyList()),
-                    weightTypeDistributionData = DSPieData(slices = emptyList()),
-                    muscleLoadData = DSProgressData(items = emptyList()),
+                    exerciseVolume = null,
+                    categoryDistribution = null,
+                    forceTypeDistribution = null,
+                    weightTypeDistribution = null,
+                    muscleLoad = null,
                     muscleLoadSummary = null,
                 )
             }
@@ -271,21 +271,21 @@ internal class TrainingRecordingViewModel(
             exercises = exercises
         )
 
-        val categoryDistributionData = analytics.categoryDistributionFromExercises(
+        val categoryDistribution = analytics.categoryDistributionFromExercises(
             exercises = exercises
         ).asChart()
 
-        val weightTypeDistributionData = analytics.weightTypeDistributionFromExercises(
+        val weightTypeDistributionChart = analytics.weightTypeDistributionFromExercises(
             exercises = exercises
         ).asChart()
 
-        val forceTypeDistributionData = analytics.forceTypeDistributionFromExercises(
+        val forceTypeDistributionChart = analytics.forceTypeDistributionFromExercises(
             exercises = exercises
         ).asChart()
 
-        val exerciseVolumeSeries = analytics.volumeFromExercises(
+        val exerciseVolumeChart = analytics.volumeFromExercises(
             exercises = exercises
-        )
+        ).asChart()
 
         val muscleLoad = analytics.muscleLoadFromExercises(
             exercises = exercises,
@@ -293,17 +293,25 @@ internal class TrainingRecordingViewModel(
             groups = muscles,
         )
 
+        val categoryData = categoryDistribution.takeIf { it.slices.isNotEmpty() }
+        val weightTypeData = weightTypeDistributionChart.takeIf { it.slices.isNotEmpty() }
+        val forceTypeData = forceTypeDistributionChart.takeIf { it.slices.isNotEmpty() }
+        val exerciseVolumeData = exerciseVolumeChart.takeIf { it.items.isNotEmpty() }
+        val muscleProgressChart = muscleLoad.perGroup.asChart()
+        val muscleProgressData = muscleProgressChart.takeIf { it.items.isNotEmpty() }
+        val muscleSummary = muscleProgressData?.let { muscleLoad }
+
         update {
             it.copy(
                 totalVolume = totalMetrics.volume,
                 totalRepetitions = totalMetrics.repetitions,
                 averageIntensity = totalMetrics.intensity,
-                exerciseVolumeData = exerciseVolumeSeries.asChart(),
-                categoryDistributionData = categoryDistributionData,
-                weightTypeDistributionData = weightTypeDistributionData,
-                forceTypeDistributionData = forceTypeDistributionData,
-                muscleLoadData = muscleLoad.perGroup.asChart(),
-                muscleLoadSummary = muscleLoad,
+                exerciseVolume = exerciseVolumeData,
+                categoryDistribution = categoryData,
+                weightTypeDistribution = weightTypeData,
+                forceTypeDistribution = forceTypeData,
+                muscleLoad = muscleProgressData,
+                muscleLoadSummary = muscleSummary,
             )
         }
     }
