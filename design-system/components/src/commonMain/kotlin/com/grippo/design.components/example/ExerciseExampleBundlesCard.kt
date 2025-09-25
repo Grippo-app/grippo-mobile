@@ -36,8 +36,8 @@ import com.grippo.design.resources.provider.percent
 import com.grippo.state.exercise.examples.ExerciseExampleBundleState
 import com.grippo.state.exercise.examples.stubExerciseExample
 import com.grippo.state.formatters.PercentageFormatState
-import com.grippo.state.muscles.factory.MuscleColorStrategy
-import com.grippo.state.muscles.factory.MuscleEngine
+import com.grippo.calculation.muscle.MuscleEngine
+import com.grippo.calculation.muscle.factory.MuscleColorStrategy
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 

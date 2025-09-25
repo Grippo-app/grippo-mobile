@@ -66,7 +66,7 @@ internal class TrainingRecordingViewModel(
             .safeLaunch()
 
         state
-            .map { it.exercises.mapNotNull { m -> m.exerciseExample?.id }.toSet().toList() }
+            .map { it.exercises.mapNotNull { exercise -> exercise.exerciseExample.id }.toSet().toList() }
             .distinctUntilChanged()
             .flatMapLatest { ids -> exerciseExampleFeature.observeExerciseExamples(ids) }
             .onEach(::provideExerciseExamples)
@@ -257,54 +257,50 @@ internal class TrainingRecordingViewModel(
                     exerciseVolumeData = DSBarData(items = emptyList()) to null,
                     categoryDistributionData = DSPieData(slices = emptyList()),
                     forceTypeDistributionData = DSPieData(slices = emptyList()),
-                    experienceDistributionData = DSPieData(slices = emptyList()),
                     weightTypeDistributionData = DSPieData(slices = emptyList()),
                     muscleLoadData = DSProgressData(items = emptyList()) to null,
+                    muscleLoadBreakdown = null,
                 )
             }
             return
         }
 
-        val totalMetrics = metricsAggregator.calculateExercises(
-            exercises = exercises
-        )
-        val categoryDistributionData =
-            distributionCalculator.calculateCategoryDistributionFromExercises(
-                exercises = exercises
+        val totalMetrics = metricsAggregator
+            .calculateExercises(exercises = exercises)
+
+        val categoryDistributionData = distributionCalculator
+            .calculateCategoryDistributionFromExercises(exercises = exercises)
+            .asChart()
+
+        val weightTypeDistributionData = distributionCalculator
+            .calculateWeightTypeDistributionFromExercises(exercises = exercises)
+            .asChart()
+
+        val forceTypeDistributionData = distributionCalculator
+            .calculateForceTypeDistributionFromExercises(exercises = exercises)
+            .asChart()
+
+        val (exerciseVolumeSeries, exerciseVolumeInstruction) = volumeAnalytics
+            .calculateExerciseVolumeChartFromExercises(exercises = exercises)
+
+        val (muscleLoadBreakdown, muscleLoadInstruction) = muscleLoadCalculator
+            .calculateMuscleLoadDistributionFromExercises(
+                exercises = exercises,
+                examples = examples,
+                groups = muscles,
             )
-        val weightTypeDistributionData =
-            distributionCalculator.calculateWeightTypeDistributionFromExercises(
-                exercises = exercises
-            )
-        val forceTypeDistributionData =
-            distributionCalculator.calculateForceTypeDistributionFromExercises(
-                exercises = exercises
-            )
-        val experienceDistributionData =
-            distributionCalculator.calculateExperienceDistributionFromExercises(
-                exercises = exercises
-            )
-        val exerciseVolumeData =
-            volumeAnalytics.calculateExerciseVolumeChartFromExercises(
-                exercises = exercises
-            )
-        val muscleLoadData = muscleLoadCalculator.calculateMuscleLoadDistributionFromExercises(
-            exercises = exercises,
-            examples = examples,
-            groups = muscles,
-        )
 
         update {
             it.copy(
                 totalVolume = totalMetrics.volume,
                 totalRepetitions = totalMetrics.repetitions,
                 averageIntensity = totalMetrics.intensity,
-                exerciseVolumeData = exerciseVolumeData,
+                exerciseVolumeData = exerciseVolumeSeries.asChart() to exerciseVolumeInstruction,
                 categoryDistributionData = categoryDistributionData,
                 weightTypeDistributionData = weightTypeDistributionData,
                 forceTypeDistributionData = forceTypeDistributionData,
-                experienceDistributionData = experienceDistributionData,
-                muscleLoadData = muscleLoadData,
+                muscleLoadData = muscleLoadBreakdown.asChart() to muscleLoadInstruction,
+                muscleLoadBreakdown = muscleLoadBreakdown,
             )
         }
     }

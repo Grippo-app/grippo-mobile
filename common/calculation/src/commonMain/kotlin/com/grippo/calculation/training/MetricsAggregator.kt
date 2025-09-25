@@ -1,4 +1,4 @@
-package com.grippo.calculation
+package com.grippo.calculation.training
 
 import com.grippo.state.formatters.IntensityFormatState
 import com.grippo.state.formatters.RepetitionsFormatState
@@ -9,17 +9,7 @@ import com.grippo.state.trainings.TrainingMetrics
 import com.grippo.state.trainings.TrainingState
 
 /**
- * 📊 Metrics Aggregator
- *
- * Calculates Volume, Repetitions, and Intensity at three levels:
- * - Iterations → raw sets
- * - Exercises  → aggregate over iterations
- * - Trainings  → aggregate over exercises across sessions
- *
- * Definitions
- * - Volume (kg·rep): Σ(weight × reps) using only sets with positive weight and reps > 0
- * - Repetitions: Σ(reps) across all valid sets (weight may be missing/zero)
- * - Intensity (kg/rep): Volume ÷ Repetitions (only where weight is valid) ⇒ reps-weighted average load
+ * Metrics aggregator for volume, repetitions, and intensity across sets, exercises, and sessions.
  */
 public class MetricsAggregator {
 
@@ -29,12 +19,12 @@ public class MetricsAggregator {
         var repsAll: Long = 0
         var repsWithWeight: Long = 0
 
-        for (itn in iterations) {
+        iterations.forEach { iteration ->
             accumulate(
-                itn,
+                iteration,
                 sumT = { sum -> sumTonnage += sum },
-                incAll = { d -> repsAll += d },
-                incWithW = { d -> repsWithWeight += d }
+                incAll = { delta -> repsAll += delta },
+                incWithW = { delta -> repsWithWeight += delta },
             )
         }
         return buildMetrics(sumTonnage, repsAll, repsWithWeight)
@@ -46,13 +36,13 @@ public class MetricsAggregator {
         var repsAll: Long = 0
         var repsWithWeight: Long = 0
 
-        for (ex in exercises) {
-            for (itn in ex.iterations) {
+        exercises.forEach { exercise ->
+            exercise.iterations.forEach { iteration ->
                 accumulate(
-                    itn,
+                    iteration,
                     sumT = { sum -> sumTonnage += sum },
-                    incAll = { d -> repsAll += d },
-                    incWithW = { d -> repsWithWeight += d }
+                    incAll = { delta -> repsAll += delta },
+                    incWithW = { delta -> repsWithWeight += delta },
                 )
             }
         }
@@ -65,14 +55,14 @@ public class MetricsAggregator {
         var repsAll: Long = 0
         var repsWithWeight: Long = 0
 
-        for (tr in trainings) {
-            for (ex in tr.exercises) {
-                for (itn in ex.iterations) {
+        trainings.forEach { training ->
+            training.exercises.forEach { exercise ->
+                exercise.iterations.forEach { iteration ->
                     accumulate(
-                        itn,
+                        iteration,
                         sumT = { sum -> sumTonnage += sum },
-                        incAll = { d -> repsAll += d },
-                        incWithW = { d -> repsWithWeight += d }
+                        incAll = { delta -> repsAll += delta },
+                        incWithW = { delta -> repsWithWeight += delta },
                     )
                 }
             }
@@ -80,24 +70,18 @@ public class MetricsAggregator {
         return buildMetrics(sumTonnage, repsAll, repsWithWeight)
     }
 
-    // ---- Core helpers (English-only comments) ----
-
     private inline fun accumulate(
-        itn: IterationState,
+        iteration: IterationState,
         sumT: (Double) -> Unit,
         incAll: (Long) -> Unit,
-        incWithW: (Long) -> Unit
+        incWithW: (Long) -> Unit,
     ) {
-        val weight = (itn.volume as? VolumeFormatState.Valid)?.value
-        val reps = (itn.repetitions as? RepetitionsFormatState.Valid)?.value
+        val weight = (iteration.volume as? VolumeFormatState.Valid)?.value
+        val reps = (iteration.repetitions as? RepetitionsFormatState.Valid)?.value
 
-        // Guard invalid/negative reps
         if (reps == null || reps <= 0) return
-
-        // Count all valid reps (even if weight is missing/zero)
         incAll(reps.toLong())
 
-        // Only positive known weight contributes to Volume and Intensity
         if (weight != null && weight > 0f) {
             sumT(weight.toDouble() * reps.toDouble())
             incWithW(reps.toLong())
@@ -107,24 +91,15 @@ public class MetricsAggregator {
     private fun buildMetrics(
         sumTonnage: Double,
         repsAll: Long,
-        repsWithWeight: Long
+        repsWithWeight: Long,
     ): TrainingMetrics {
         val safeVolume = sumTonnage.coerceAtLeast(0.0).toFloat()
 
-        val safeRepsAll: Int = when {
-            repsAll < 0 -> 0
-            repsAll > Int.MAX_VALUE -> Int.MAX_VALUE
-            else -> repsAll.toInt()
-        }
+        val safeRepsAll = repsAll.coerceIn(0, Int.MAX_VALUE.toLong()).toInt()
+        val safeRepsWithWeight = repsWithWeight.coerceIn(0, Int.MAX_VALUE.toLong()).toInt()
 
-        val safeRepsWithW: Int = when {
-            repsWithWeight <= 0 -> 0
-            repsWithWeight > Int.MAX_VALUE -> Int.MAX_VALUE
-            else -> repsWithWeight.toInt()
-        }
-
-        val avgIntensity: Float = if (safeRepsWithW > 0) {
-            (sumTonnage / safeRepsWithW.toDouble()).toFloat()
+        val avgIntensity = if (safeRepsWithWeight > 0) {
+            (sumTonnage / safeRepsWithWeight.toDouble()).toFloat()
         } else {
             0f
         }
@@ -132,7 +107,7 @@ public class MetricsAggregator {
         return TrainingMetrics(
             volume = VolumeFormatState.of(safeVolume),
             repetitions = RepetitionsFormatState.of(safeRepsAll),
-            intensity = IntensityFormatState.of(avgIntensity)
+            intensity = IntensityFormatState.of(avgIntensity),
         )
     }
 }

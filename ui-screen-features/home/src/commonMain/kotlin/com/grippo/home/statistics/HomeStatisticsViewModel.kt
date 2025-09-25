@@ -1,10 +1,17 @@
 package com.grippo.home.statistics
 
-import com.grippo.calculation.DistributionCalculator
-import com.grippo.calculation.MetricsAggregator
-import com.grippo.calculation.MuscleLoadCalculator
-import com.grippo.calculation.TemporalHeatmapCalculator
-import com.grippo.calculation.VolumeAnalytics
+import com.grippo.calculation.distribution.DistributionCalculator
+import com.grippo.calculation.muscle.MuscleLoadCalculator
+import com.grippo.calculation.muscle.TemporalHeatmapCalculator
+import com.grippo.calculation.training.MetricsAggregator
+import com.grippo.calculation.training.VolumeAnalytics
+import com.grippo.calculation.models.DistributionBreakdown
+import com.grippo.calculation.models.DistributionSlice
+import com.grippo.calculation.models.MetricPoint
+import com.grippo.calculation.models.MetricSeries
+import com.grippo.calculation.models.MuscleLoadBreakdown
+import com.grippo.calculation.models.MuscleLoadEntry
+import com.grippo.calculation.models.MuscleLoadMatrix
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample

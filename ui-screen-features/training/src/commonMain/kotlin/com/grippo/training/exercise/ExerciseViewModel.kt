@@ -1,6 +1,6 @@
 package com.grippo.training.exercise
 
-import com.grippo.calculation.MetricsAggregator
+import com.grippo.calculation.training.MetricsAggregator
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample

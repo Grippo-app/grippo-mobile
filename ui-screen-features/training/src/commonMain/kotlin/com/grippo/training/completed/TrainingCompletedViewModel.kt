@@ -1,6 +1,6 @@
 package com.grippo.training.completed
 
-import com.grippo.calculation.MetricsAggregator
+import com.grippo.calculation.training.MetricsAggregator
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.SetTraining

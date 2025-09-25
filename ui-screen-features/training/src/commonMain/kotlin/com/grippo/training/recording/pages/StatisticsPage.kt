@@ -1,5 +1,6 @@
 package com.grippo.training.recording.pages
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.grippo.calculation.models.toColorSources
 import com.grippo.design.components.chart.BarChart
 import com.grippo.design.components.chart.PieChart
 import com.grippo.design.components.chart.ProgressChart
@@ -43,6 +45,7 @@ import com.grippo.design.resources.provider.chart_title_exercise_volume
 import com.grippo.design.resources.provider.icons.Reports
 import com.grippo.design.resources.provider.no_data_yet
 import com.grippo.state.trainings.stubTraining
+import com.grippo.calculation.muscle.MuscleEngine
 import com.grippo.training.recording.RecordingTab
 import com.grippo.training.recording.TrainingRecordingContract
 import com.grippo.training.recording.TrainingRecordingScreen
@@ -175,10 +178,43 @@ internal fun StatisticsPage(
                     title = "Muscle Load Distribution",
                     tooltip = toolTip,
                     content = {
-                        ProgressChart(
+                        Column(
                             modifier = Modifier.fillMaxWidth(),
-                            data = state.muscleLoadData.first
-                        )
+                            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+                        ) {
+                            val sources = state.muscleLoadBreakdown?.toColorSources()
+                            val preset = sources?.takeIf { it.isNotEmpty() }?.let {
+                                MuscleEngine.generatePreset(it)
+                            }
+                            val images = preset?.let { MuscleEngine.generateImages(it) }
+
+                            images?.let { (front, back) ->
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Image(
+                                        modifier = Modifier
+                                            .weight(1f),
+                                        imageVector = front,
+                                        contentDescription = null
+                                    )
+
+                                    Image(
+                                        modifier = Modifier
+                                            .weight(1f),
+                                        imageVector = back,
+                                        contentDescription = null
+                                    )
+                                }
+                            }
+
+                            ProgressChart(
+                                modifier = Modifier.fillMaxWidth(),
+                                data = state.muscleLoadData.first
+                            )
+                        }
                     }
                 )
             }
