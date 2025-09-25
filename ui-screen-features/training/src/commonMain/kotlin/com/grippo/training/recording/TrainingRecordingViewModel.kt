@@ -1,15 +1,15 @@
 package com.grippo.training.recording
 
 import com.grippo.calculation.distribution.DistributionCalculator
-import com.grippo.calculation.muscle.MuscleLoadCalculator
-import com.grippo.calculation.training.MetricsAggregator
-import com.grippo.calculation.training.VolumeAnalytics
 import com.grippo.calculation.models.DistributionBreakdown
 import com.grippo.calculation.models.DistributionSlice
 import com.grippo.calculation.models.MetricPoint
 import com.grippo.calculation.models.MetricSeries
 import com.grippo.calculation.models.MuscleLoadBreakdown
 import com.grippo.calculation.models.MuscleLoadEntry
+import com.grippo.calculation.muscle.MuscleLoadCalculator
+import com.grippo.calculation.training.MetricsAggregator
+import com.grippo.calculation.training.VolumeAnalytics
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
@@ -75,7 +75,9 @@ internal class TrainingRecordingViewModel(
             .safeLaunch()
 
         state
-            .map { it.exercises.mapNotNull { exercise -> exercise.exerciseExample.id }.toSet().toList() }
+            .map {
+                it.exercises.mapNotNull { exercise -> exercise.exerciseExample.id }.toSet().toList()
+            }
             .distinctUntilChanged()
             .flatMapLatest { ids -> exerciseExampleFeature.observeExerciseExamples(ids) }
             .onEach(::provideExerciseExamples)
@@ -263,11 +265,11 @@ internal class TrainingRecordingViewModel(
                     totalVolume = VolumeFormatState.of(0f),
                     totalRepetitions = RepetitionsFormatState.of(0),
                     averageIntensity = IntensityFormatState.of(0f),
-                    exerciseVolumeData = DSBarData(items = emptyList()) to null,
+                    exerciseVolumeData = DSBarData(items = emptyList()),
                     categoryDistributionData = DSPieData(slices = emptyList()),
                     forceTypeDistributionData = DSPieData(slices = emptyList()),
                     weightTypeDistributionData = DSPieData(slices = emptyList()),
-                    muscleLoadData = DSProgressData(items = emptyList()) to null,
+                    muscleLoadData = DSProgressData(items = emptyList()),
                     muscleLoadBreakdown = null,
                 )
             }
@@ -289,10 +291,10 @@ internal class TrainingRecordingViewModel(
             .calculateForceTypeDistributionFromExercises(exercises = exercises)
             .asChart()
 
-        val (exerciseVolumeSeries, exerciseVolumeInstruction) = volumeAnalytics
+        val exerciseVolumeSeries = volumeAnalytics
             .calculateExerciseVolumeChartFromExercises(exercises = exercises)
 
-        val (muscleLoadBreakdown, muscleLoadInstruction) = muscleLoadCalculator
+        val muscleLoadBreakdown = muscleLoadCalculator
             .calculateMuscleLoadDistributionFromExercises(
                 exercises = exercises,
                 examples = examples,
@@ -304,11 +306,11 @@ internal class TrainingRecordingViewModel(
                 totalVolume = totalMetrics.volume,
                 totalRepetitions = totalMetrics.repetitions,
                 averageIntensity = totalMetrics.intensity,
-                exerciseVolumeData = exerciseVolumeSeries.asChart() to exerciseVolumeInstruction,
+                exerciseVolumeData = exerciseVolumeSeries.asChart(),
                 categoryDistributionData = categoryDistributionData,
                 weightTypeDistributionData = weightTypeDistributionData,
                 forceTypeDistributionData = forceTypeDistributionData,
-                muscleLoadData = muscleLoadBreakdown.asChart() to muscleLoadInstruction,
+                muscleLoadData = muscleLoadBreakdown.asChart(),
                 muscleLoadBreakdown = muscleLoadBreakdown,
             )
         }

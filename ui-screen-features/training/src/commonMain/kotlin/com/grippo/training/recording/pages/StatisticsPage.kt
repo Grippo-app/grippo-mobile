@@ -18,13 +18,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.calculation.models.toColorSources
+import com.grippo.calculation.muscle.MuscleEngine
 import com.grippo.design.components.chart.BarChart
 import com.grippo.design.components.chart.PieChart
 import com.grippo.design.components.chart.ProgressChart
@@ -36,16 +36,15 @@ import com.grippo.design.components.chip.RepetitionsChipStyle
 import com.grippo.design.components.chip.VolumeChip
 import com.grippo.design.components.chip.VolumeChipStyle
 import com.grippo.design.components.statistics.ChartCard
-import com.grippo.design.components.tooltip.TooltipData
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.chart_title_exercise_volume
+import com.grippo.design.resources.provider.chart_title_muscle_load
 import com.grippo.design.resources.provider.icons.Reports
 import com.grippo.design.resources.provider.no_data_yet
 import com.grippo.state.trainings.stubTraining
-import com.grippo.calculation.muscle.MuscleEngine
 import com.grippo.training.recording.RecordingTab
 import com.grippo.training.recording.TrainingRecordingContract
 import com.grippo.training.recording.TrainingRecordingScreen
@@ -94,27 +93,17 @@ internal fun StatisticsPage(
             )
         }
 
-        if (state.exerciseVolumeData.first.items.isNotEmpty()) {
+        if (state.exerciseVolumeData.items.isNotEmpty()) {
             item(key = "exercise_volume", span = { GridItemSpan(3) }) {
-                val toolTip = remember(state.exerciseVolumeData.second) {
-                    state.exerciseVolumeData.second?.let { instruction ->
-                        TooltipData(
-                            title = instruction.title,
-                            description = instruction.description
-                        )
-                    }
-                }
-
                 ChartCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(1.4f),
                     title = AppTokens.strings.res(Res.string.chart_title_exercise_volume),
-                    tooltip = toolTip,
                     content = {
                         BarChart(
                             modifier = Modifier.fillMaxWidth().weight(1f),
-                            data = state.exerciseVolumeData.first,
+                            data = state.exerciseVolumeData,
                         )
                     }
                 )
@@ -148,20 +137,11 @@ internal fun StatisticsPage(
             }
         }
 
-        if (state.muscleLoadData.first.items.isNotEmpty()) {
+        if (state.muscleLoadData.items.isNotEmpty()) {
             item(key = "muscle_load", span = { GridItemSpan(3) }) {
-                val toolTip = remember(state.muscleLoadData.second) {
-                    state.muscleLoadData.second?.let { instruction ->
-                        TooltipData(
-                            title = instruction.title,
-                            description = instruction.description
-                        )
-                    }
-                }
                 ChartCard(
                     modifier = Modifier.fillMaxWidth(),
-                    title = "Muscle Load Distribution",
-                    tooltip = toolTip,
+                    title = AppTokens.strings.res(Res.string.chart_title_muscle_load),
                     content = {
                         Column(
                             modifier = Modifier.fillMaxWidth(),
@@ -197,7 +177,7 @@ internal fun StatisticsPage(
 
                             ProgressChart(
                                 modifier = Modifier.fillMaxWidth(),
-                                data = state.muscleLoadData.first
+                                data = state.muscleLoadData
                             )
                         }
                     }

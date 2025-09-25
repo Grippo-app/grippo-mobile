@@ -78,7 +78,6 @@ public data object AppDp {
     val connectionSnackbar: ConnectionSnackbar = ConnectionSnackbar
     val toggle: Toggle = Toggle
     val radio: Radio = Radio
-    val tooltip: Tooltip = Tooltip
     val badge: Badge = Badge
 
     public data object Screen {
@@ -106,12 +105,6 @@ public data object AppDp {
 
     public data object Badge {
         val size: Dp = icon.medium
-    }
-
-    public data object Tooltip {
-        val horizontalPadding: Dp = padding.medium
-        val verticalPadding: Dp = padding.medium
-        val radius: Dp = AppDp.radius.medium
     }
 
     public data object BottomSheet {

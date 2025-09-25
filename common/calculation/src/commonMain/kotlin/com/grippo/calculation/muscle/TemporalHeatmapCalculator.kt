@@ -1,38 +1,14 @@
 package com.grippo.calculation.muscle
 
 import com.grippo.calculation.internal.buildBuckets
-import com.grippo.calculation.internal.daysInclusive
 import com.grippo.calculation.internal.defaultTimeLabels
 import com.grippo.calculation.internal.deriveScale
 import com.grippo.calculation.models.BucketScale
-import com.grippo.calculation.models.Instruction
 import com.grippo.calculation.models.MuscleLoadMatrix
 import com.grippo.date.utils.contains
-import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.providers.StringProvider
-import com.grippo.design.resources.provider.tooltip_heatmap_description_day_reps
-import com.grippo.design.resources.provider.tooltip_heatmap_description_day_tonnage
-import com.grippo.design.resources.provider.tooltip_heatmap_description_month_reps
-import com.grippo.design.resources.provider.tooltip_heatmap_description_month_tonnage
-import com.grippo.design.resources.provider.tooltip_heatmap_description_training_reps
-import com.grippo.design.resources.provider.tooltip_heatmap_description_training_tonnage
-import com.grippo.design.resources.provider.tooltip_heatmap_description_week_reps
-import com.grippo.design.resources.provider.tooltip_heatmap_description_week_tonnage
-import com.grippo.design.resources.provider.tooltip_heatmap_description_year_reps
-import com.grippo.design.resources.provider.tooltip_heatmap_description_year_tonnage
-import com.grippo.design.resources.provider.tooltip_heatmap_title_day_reps
-import com.grippo.design.resources.provider.tooltip_heatmap_title_day_tonnage
-import com.grippo.design.resources.provider.tooltip_heatmap_title_month_reps
-import com.grippo.design.resources.provider.tooltip_heatmap_title_month_tonnage
-import com.grippo.design.resources.provider.tooltip_heatmap_title_training_reps
-import com.grippo.design.resources.provider.tooltip_heatmap_title_training_tonnage
-import com.grippo.design.resources.provider.tooltip_heatmap_title_week_reps
-import com.grippo.design.resources.provider.tooltip_heatmap_title_week_tonnage
-import com.grippo.design.resources.provider.tooltip_heatmap_title_year_reps
-import com.grippo.design.resources.provider.tooltip_heatmap_title_year_tonnage
 import com.grippo.state.datetime.PeriodState
 import com.grippo.state.exercise.examples.ExerciseExampleState
-import com.grippo.state.formatters.UiText
 import com.grippo.state.muscles.MuscleEnumState
 import com.grippo.state.muscles.MuscleGroupState
 import com.grippo.state.muscles.MuscleRepresentationState
@@ -57,7 +33,7 @@ public class TemporalHeatmapCalculator(
         examples: List<ExerciseExampleState>,
         groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
         metric: Metric,
-    ): Pair<MuscleLoadMatrix, Instruction> {
+    ): MuscleLoadMatrix {
         val inRange = trainings.filter { it.createdAt in period.range }
         val scale = deriveScale(period)
 
@@ -66,7 +42,6 @@ public class TemporalHeatmapCalculator(
         val colLabels: List<String> = defaultTimeLabels(builtBuckets, scale, stringProvider)
 
         if (cols == 0) {
-            val tipEmpty = instructionForMuscleLoad(period, metric)
             val empty = MuscleLoadMatrix(
                 rows = 0,
                 cols = 0,
@@ -74,14 +49,13 @@ public class TemporalHeatmapCalculator(
                 rowLabels = emptyList(),
                 colLabels = emptyList(),
             )
-            return empty to tipEmpty
+            return empty
         }
 
         val rowSpec = buildRowSpec(groups, examples)
         val rows = rowSpec.labels.size
 
         if (rows == 0 || cols == 0) {
-            val tipEmpty = instructionForMuscleLoad(period, metric)
             val empty = MuscleLoadMatrix(
                 rows = 0,
                 cols = 0,
@@ -89,7 +63,7 @@ public class TemporalHeatmapCalculator(
                 rowLabels = emptyList(),
                 colLabels = emptyList(),
             )
-            return empty to tipEmpty
+            return empty
         }
 
         val exampleMap: Map<String, ExerciseExampleState> = examples.associateBy { it.value.id }
@@ -121,7 +95,10 @@ public class TemporalHeatmapCalculator(
 
             rowSpec.rows.forEachIndexed { r, row ->
                 val value = when (row) {
-                    is Row.Group -> row.muscles.fold(0f) { acc, muscle -> acc + (perMuscle[muscle] ?: 0f) }
+                    is Row.Group -> row.muscles.fold(0f) { acc, muscle ->
+                        acc + (perMuscle[muscle] ?: 0f)
+                    }
+
                     is Row.Single -> perMuscle[row.muscle] ?: 0f
                 }
                 raw[r * cols + c] = value
@@ -143,8 +120,7 @@ public class TemporalHeatmapCalculator(
             colLabels = colLabels,
         )
 
-        val tip = instructionForMuscleLoad(period, metric)
-        return data to tip
+        return data
     }
 
     private sealed interface Row {
@@ -172,7 +148,12 @@ public class TemporalHeatmapCalculator(
         } else {
             val muscles = buildMuscleList(examples)
             RowSpec(
-                rows = muscles.map { Row.Single(name = it.title().text(stringProvider), muscle = it) },
+                rows = muscles.map {
+                    Row.Single(
+                        name = it.title().text(stringProvider),
+                        muscle = it
+                    )
+                },
                 labels = muscles.map { it.title().text(stringProvider) },
             )
         }
@@ -182,48 +163,6 @@ public class TemporalHeatmapCalculator(
         val ordered = LinkedHashSet<MuscleEnumState>()
         examples.forEach { example -> example.bundles.forEach { ordered += it.muscle.type } }
         return ordered.toList()
-    }
-
-    private fun instructionForMuscleLoad(
-        period: PeriodState,
-        metric: Metric,
-    ): Instruction {
-        val scale = deriveScale(period)
-        val isYear = daysInclusive(period.range.from.date, period.range.to.date) >= 365
-
-        val ids = when (scale) {
-            BucketScale.EXERCISE -> when (metric) {
-                Metric.TONNAGE -> Res.string.tooltip_heatmap_title_training_tonnage to Res.string.tooltip_heatmap_description_training_tonnage
-                Metric.REPS -> Res.string.tooltip_heatmap_title_training_reps to Res.string.tooltip_heatmap_description_training_reps
-            }
-
-            BucketScale.DAY -> when (metric) {
-                Metric.TONNAGE -> Res.string.tooltip_heatmap_title_day_tonnage to Res.string.tooltip_heatmap_description_day_tonnage
-                Metric.REPS -> Res.string.tooltip_heatmap_title_day_reps to Res.string.tooltip_heatmap_description_day_reps
-            }
-
-            BucketScale.WEEK -> when (metric) {
-                Metric.TONNAGE -> Res.string.tooltip_heatmap_title_week_tonnage to Res.string.tooltip_heatmap_description_week_tonnage
-                Metric.REPS -> Res.string.tooltip_heatmap_title_week_reps to Res.string.tooltip_heatmap_description_week_reps
-            }
-
-            BucketScale.MONTH -> if (isYear) {
-                when (metric) {
-                    Metric.TONNAGE -> Res.string.tooltip_heatmap_title_year_tonnage to Res.string.tooltip_heatmap_description_year_tonnage
-                    Metric.REPS -> Res.string.tooltip_heatmap_title_year_reps to Res.string.tooltip_heatmap_description_year_reps
-                }
-            } else {
-                when (metric) {
-                    Metric.TONNAGE -> Res.string.tooltip_heatmap_title_month_tonnage to Res.string.tooltip_heatmap_description_month_tonnage
-                    Metric.REPS -> Res.string.tooltip_heatmap_title_month_reps to Res.string.tooltip_heatmap_description_month_reps
-                }
-            }
-        }
-
-        return Instruction(
-            title = UiText.Res(ids.first),
-            description = UiText.Res(ids.second),
-        )
     }
 
     private fun chooseNormalizationFor(scale: BucketScale): Normalization = when (scale) {

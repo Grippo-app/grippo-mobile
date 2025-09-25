@@ -4,7 +4,6 @@ import com.grippo.calculation.internal.deriveScale
 import com.grippo.calculation.internal.groupTrainingsByBucket
 import com.grippo.calculation.internal.label
 import com.grippo.calculation.models.BucketScale
-import com.grippo.calculation.models.Instruction
 import com.grippo.calculation.models.MetricPoint
 import com.grippo.calculation.models.MetricSeries
 import com.grippo.date.utils.contains
@@ -12,16 +11,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.ex
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
-import com.grippo.design.resources.provider.tooltip_estimated1rm_description_day
-import com.grippo.design.resources.provider.tooltip_estimated1rm_description_month
-import com.grippo.design.resources.provider.tooltip_estimated1rm_description_training
-import com.grippo.design.resources.provider.tooltip_estimated1rm_description_year
-import com.grippo.design.resources.provider.tooltip_estimated1rm_title_day
-import com.grippo.design.resources.provider.tooltip_estimated1rm_title_month
-import com.grippo.design.resources.provider.tooltip_estimated1rm_title_training
-import com.grippo.design.resources.provider.tooltip_estimated1rm_title_year
 import com.grippo.state.datetime.PeriodState
-import com.grippo.state.formatters.UiText
 import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.TrainingState
 
@@ -66,7 +56,9 @@ public class Estimated1RMAnalytics(
             val reps = repsInt.toFloat()
             val brzycki = brzycki(weight, reps)
             val epley = epley(weight, reps)
-            val average = listOfNotNull(brzycki, epley).let { if (it.isEmpty()) null else it.average().toFloat() }
+            val average = listOfNotNull(brzycki, epley).let {
+                if (it.isEmpty()) null else it.average().toFloat()
+            }
             if (average != null && average.isFinite() && average > 0f) {
                 val quality = qualityWeight(reps)
                 pairs += average to quality
@@ -93,7 +85,7 @@ public class Estimated1RMAnalytics(
 
     public suspend fun calculateEstimated1RMFromExercises(
         exercises: List<ExerciseState>,
-    ): Pair<MetricSeries, Instruction> {
+    ): MetricSeries {
         val colors = colorProvider.get()
         val palette = colors.palette.palette18ColorfulRandom
         val exTxt = stringProvider.get(Res.string.ex)
@@ -107,14 +99,13 @@ public class Estimated1RMAnalytics(
             )
         }
         val data = MetricSeries(points)
-        val tip = instructionForEstimated1RM(BucketScale.EXERCISE)
-        return data to tip
+        return data
     }
 
     public suspend fun calculateEstimated1RMFromTrainings(
         trainings: List<TrainingState>,
         period: PeriodState,
-    ): Pair<MetricSeries, Instruction> {
+    ): MetricSeries {
         val colors = colorProvider.get()
         val palette = colors.palette.palette18ColorfulRandom
 
@@ -139,30 +130,7 @@ public class Estimated1RMAnalytics(
                 )
             }
             val data = MetricSeries(points)
-            val tip = instructionForEstimated1RM(scale)
-            data to tip
+            data
         }
-    }
-
-    private fun instructionForEstimated1RM(scale: BucketScale): Instruction = when (scale) {
-        BucketScale.EXERCISE -> Instruction(
-            UiText.Res(Res.string.tooltip_estimated1rm_title_training),
-            UiText.Res(Res.string.tooltip_estimated1rm_description_training),
-        )
-
-        BucketScale.DAY -> Instruction(
-            UiText.Res(Res.string.tooltip_estimated1rm_title_day),
-            UiText.Res(Res.string.tooltip_estimated1rm_description_day),
-        )
-
-        BucketScale.WEEK -> Instruction(
-            UiText.Res(Res.string.tooltip_estimated1rm_title_month),
-            UiText.Res(Res.string.tooltip_estimated1rm_description_month),
-        )
-
-        BucketScale.MONTH -> Instruction(
-            UiText.Res(Res.string.tooltip_estimated1rm_title_year),
-            UiText.Res(Res.string.tooltip_estimated1rm_description_year),
-        )
     }
 }

@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
@@ -31,7 +30,6 @@ import com.grippo.design.components.datetime.PeriodPicker
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.statistics.ChartCard
 import com.grippo.design.components.toolbar.Toolbar
-import com.grippo.design.components.tooltip.TooltipData
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -110,27 +108,17 @@ internal fun HomeStatisticsScreen(
             )
         }
 
-        if (state.exerciseVolumeData.first.items.isNotEmpty()) {
+        if (state.exerciseVolumeData.items.isNotEmpty()) {
             item(key = "exercise_volume", span = { GridItemSpan(3) }) {
-                val toolTip = remember(state.exerciseVolumeData.second) {
-                    state.exerciseVolumeData.second?.let { instruction ->
-                        TooltipData(
-                            title = instruction.title,
-                            description = instruction.description
-                        )
-                    }
-                }
-
                 ChartCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(1.4f),
                     title = AppTokens.strings.res(Res.string.chart_title_exercise_volume),
-                    tooltip = toolTip,
                     content = {
                         BarChart(
                             modifier = Modifier.fillMaxWidth().weight(1f),
-                            data = state.exerciseVolumeData.first,
+                            data = state.exerciseVolumeData,
                         )
                     }
                 )
@@ -164,48 +152,30 @@ internal fun HomeStatisticsScreen(
             }
         }
 
-        if (state.muscleLoadData.first.items.isNotEmpty()) {
+        if (state.muscleLoadData.items.isNotEmpty()) {
             item(key = "muscle_load", span = { GridItemSpan(3) }) {
-                val toolTip = remember(state.muscleLoadData.second) {
-                    state.muscleLoadData.second?.let { instruction ->
-                        TooltipData(
-                            title = instruction.title,
-                            description = instruction.description
-                        )
-                    }
-                }
                 ChartCard(
                     modifier = Modifier.fillMaxWidth(),
                     title = AppTokens.strings.res(Res.string.chart_title_muscle_load),
-                    tooltip = toolTip,
                     content = {
                         ProgressChart(
                             modifier = Modifier.fillMaxWidth(),
-                            data = state.muscleLoadData.first
+                            data = state.muscleLoadData
                         )
                     }
                 )
             }
         }
 
-        if (state.temporalHeatmapData.first.values01.isNotEmpty()) {
+        if (state.temporalHeatmapData.values01.isNotEmpty()) {
             item(key = "temporal_heatmap", span = { GridItemSpan(3) }) {
-                val toolTip = remember(state.temporalHeatmapData.second) {
-                    state.temporalHeatmapData.second?.let { instruction ->
-                        TooltipData(
-                            title = instruction.title,
-                            description = instruction.description
-                        )
-                    }
-                }
                 ChartCard(
                     modifier = Modifier.fillMaxWidth(),
                     title = AppTokens.strings.res(Res.string.chart_title_muscle_heap),
-                    tooltip = toolTip,
                     content = {
                         HeatmapChart(
                             modifier = Modifier.fillMaxWidth(),
-                            data = state.temporalHeatmapData.first,
+                            data = state.temporalHeatmapData,
                         )
                     }
                 )

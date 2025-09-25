@@ -1,55 +1,13 @@
 package com.grippo.calculation.muscle
 
 import androidx.compose.ui.graphics.Color
-import com.grippo.calculation.internal.daysInclusive
-import com.grippo.calculation.internal.deriveScale
-import com.grippo.calculation.models.BucketScale
-import com.grippo.calculation.models.Instruction
 import com.grippo.calculation.models.MuscleLoadBreakdown
 import com.grippo.calculation.models.MuscleLoadEntry
 import com.grippo.date.utils.contains
-import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
-import com.grippo.design.resources.provider.tooltip_ml_desc_day_rel_reps
-import com.grippo.design.resources.provider.tooltip_ml_desc_day_rel_tut
-import com.grippo.design.resources.provider.tooltip_ml_desc_day_rel_volume
-import com.grippo.design.resources.provider.tooltip_ml_desc_month_rel_reps
-import com.grippo.design.resources.provider.tooltip_ml_desc_month_rel_tut
-import com.grippo.design.resources.provider.tooltip_ml_desc_month_rel_volume
-import com.grippo.design.resources.provider.tooltip_ml_desc_training_abs_reps
-import com.grippo.design.resources.provider.tooltip_ml_desc_training_abs_tut
-import com.grippo.design.resources.provider.tooltip_ml_desc_training_abs_volume
-import com.grippo.design.resources.provider.tooltip_ml_desc_training_rel_reps
-import com.grippo.design.resources.provider.tooltip_ml_desc_training_rel_tut
-import com.grippo.design.resources.provider.tooltip_ml_desc_training_rel_volume
-import com.grippo.design.resources.provider.tooltip_ml_desc_week_rel_reps
-import com.grippo.design.resources.provider.tooltip_ml_desc_week_rel_tut
-import com.grippo.design.resources.provider.tooltip_ml_desc_week_rel_volume
-import com.grippo.design.resources.provider.tooltip_ml_desc_year_rel_reps
-import com.grippo.design.resources.provider.tooltip_ml_desc_year_rel_tut
-import com.grippo.design.resources.provider.tooltip_ml_desc_year_rel_volume
-import com.grippo.design.resources.provider.tooltip_ml_title_day_rel_reps
-import com.grippo.design.resources.provider.tooltip_ml_title_day_rel_tut
-import com.grippo.design.resources.provider.tooltip_ml_title_day_rel_volume
-import com.grippo.design.resources.provider.tooltip_ml_title_month_rel_reps
-import com.grippo.design.resources.provider.tooltip_ml_title_month_rel_tut
-import com.grippo.design.resources.provider.tooltip_ml_title_month_rel_volume
-import com.grippo.design.resources.provider.tooltip_ml_title_training_abs_reps
-import com.grippo.design.resources.provider.tooltip_ml_title_training_abs_tut
-import com.grippo.design.resources.provider.tooltip_ml_title_training_abs_volume
-import com.grippo.design.resources.provider.tooltip_ml_title_training_rel_reps
-import com.grippo.design.resources.provider.tooltip_ml_title_training_rel_tut
-import com.grippo.design.resources.provider.tooltip_ml_title_training_rel_volume
-import com.grippo.design.resources.provider.tooltip_ml_title_week_rel_reps
-import com.grippo.design.resources.provider.tooltip_ml_title_week_rel_tut
-import com.grippo.design.resources.provider.tooltip_ml_title_week_rel_volume
-import com.grippo.design.resources.provider.tooltip_ml_title_year_rel_reps
-import com.grippo.design.resources.provider.tooltip_ml_title_year_rel_tut
-import com.grippo.design.resources.provider.tooltip_ml_title_year_rel_volume
 import com.grippo.state.datetime.PeriodState
 import com.grippo.state.exercise.examples.ExerciseExampleState
-import com.grippo.state.formatters.UiText
 import com.grippo.state.muscles.MuscleEnumState
 import com.grippo.state.muscles.MuscleGroupState
 import com.grippo.state.muscles.MuscleRepresentationState
@@ -69,7 +27,7 @@ public class MuscleLoadCalculator(
         exercises: List<ExerciseState>,
         examples: List<ExerciseExampleState>,
         groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
-    ): Pair<MuscleLoadBreakdown, Instruction> {
+    ): MuscleLoadBreakdown {
         val workload = computeAutoWorkload(exercises)
         val mode = Mode.RELATIVE
 
@@ -81,13 +39,7 @@ public class MuscleLoadCalculator(
             relativeMode = RelativeMode.SUM,
             workload = workload,
         )
-
-        val instruction = instructionForMuscleLoad(
-            scale = BucketScale.EXERCISE,
-            mode = mode,
-            workload = workload,
-        )
-        return data to instruction
+        return data
     }
 
     public suspend fun calculateMuscleLoadDistributionFromTrainings(
@@ -95,7 +47,7 @@ public class MuscleLoadCalculator(
         period: PeriodState,
         examples: List<ExerciseExampleState>,
         groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
-    ): Pair<MuscleLoadBreakdown, Instruction> {
+    ): MuscleLoadBreakdown {
         val inRange = trainings.filter { it.createdAt in period.range }
         val exercises = inRange.flatMap { it.exercises }
 
@@ -110,14 +62,7 @@ public class MuscleLoadCalculator(
             relativeMode = RelativeMode.SUM,
             workload = workload,
         )
-
-        val instruction = instructionForMuscleLoad(
-            scale = deriveScale(period),
-            mode = mode,
-            workload = workload,
-            isYear = daysInclusive(period.range.from.date, period.range.to.date) >= 365,
-        )
-        return data to instruction
+        return data
     }
 
     private enum class Mode { ABSOLUTE, RELATIVE }
@@ -298,61 +243,9 @@ public class MuscleLoadCalculator(
 
         val normalized = percent.coerceIn(0f, 100f)
         val bandWidth = 100f / size
-        val idx = if (normalized >= 100f) size - 1 else (normalized / bandWidth).toInt().coerceIn(0, size - 1)
+        val idx = if (normalized >= 100f) size - 1 else (normalized / bandWidth).toInt()
+            .coerceIn(0, size - 1)
         return colors[idx]
     }
 
-    private fun instructionForMuscleLoad(
-        scale: BucketScale,
-        mode: Mode,
-        workload: Workload,
-        isYear: Boolean = false,
-    ): Instruction {
-        val ids = when (scale) {
-            BucketScale.EXERCISE -> when (mode) {
-                Mode.ABSOLUTE -> when (workload) {
-                    is Workload.Volume -> Res.string.tooltip_ml_title_training_abs_volume to Res.string.tooltip_ml_desc_training_abs_volume
-                    is Workload.Reps -> Res.string.tooltip_ml_title_training_abs_reps to Res.string.tooltip_ml_desc_training_abs_reps
-                    is Workload.Tut -> Res.string.tooltip_ml_title_training_abs_tut to Res.string.tooltip_ml_desc_training_abs_tut
-                }
-
-                Mode.RELATIVE -> when (workload) {
-                    is Workload.Volume -> Res.string.tooltip_ml_title_training_rel_volume to Res.string.tooltip_ml_desc_training_rel_volume
-                    is Workload.Reps -> Res.string.tooltip_ml_title_training_rel_reps to Res.string.tooltip_ml_desc_training_rel_reps
-                    is Workload.Tut -> Res.string.tooltip_ml_title_training_rel_tut to Res.string.tooltip_ml_desc_training_rel_tut
-                }
-            }
-
-            BucketScale.DAY -> when (workload) {
-                is Workload.Volume -> Res.string.tooltip_ml_title_day_rel_volume to Res.string.tooltip_ml_desc_day_rel_volume
-                is Workload.Reps -> Res.string.tooltip_ml_title_day_rel_reps to Res.string.tooltip_ml_desc_day_rel_reps
-                is Workload.Tut -> Res.string.tooltip_ml_title_day_rel_tut to Res.string.tooltip_ml_desc_day_rel_tut
-            }
-
-            BucketScale.WEEK -> when (workload) {
-                is Workload.Volume -> Res.string.tooltip_ml_title_week_rel_volume to Res.string.tooltip_ml_desc_week_rel_volume
-                is Workload.Reps -> Res.string.tooltip_ml_title_week_rel_reps to Res.string.tooltip_ml_desc_week_rel_reps
-                is Workload.Tut -> Res.string.tooltip_ml_title_week_rel_tut to Res.string.tooltip_ml_desc_week_rel_tut
-            }
-
-            BucketScale.MONTH -> if (isYear) {
-                when (workload) {
-                    is Workload.Volume -> Res.string.tooltip_ml_title_year_rel_volume to Res.string.tooltip_ml_desc_year_rel_volume
-                    is Workload.Reps -> Res.string.tooltip_ml_title_year_rel_reps to Res.string.tooltip_ml_desc_year_rel_reps
-                    is Workload.Tut -> Res.string.tooltip_ml_title_year_rel_tut to Res.string.tooltip_ml_desc_year_rel_tut
-                }
-            } else {
-                when (workload) {
-                    is Workload.Volume -> Res.string.tooltip_ml_title_month_rel_volume to Res.string.tooltip_ml_desc_month_rel_volume
-                    is Workload.Reps -> Res.string.tooltip_ml_title_month_rel_reps to Res.string.tooltip_ml_desc_month_rel_reps
-                    is Workload.Tut -> Res.string.tooltip_ml_title_month_rel_tut to Res.string.tooltip_ml_desc_month_rel_tut
-                }
-            }
-        }
-
-        return Instruction(
-            title = UiText.Res(ids.first),
-            description = UiText.Res(ids.second),
-        )
-    }
 }

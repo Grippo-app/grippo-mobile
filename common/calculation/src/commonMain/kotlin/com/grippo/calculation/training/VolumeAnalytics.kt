@@ -6,7 +6,6 @@ import com.grippo.calculation.internal.defaultLabeler
 import com.grippo.calculation.internal.deriveScale
 import com.grippo.calculation.internal.groupTrainingsByBucket
 import com.grippo.calculation.models.BucketScale
-import com.grippo.calculation.models.Instruction
 import com.grippo.calculation.models.MetricPoint
 import com.grippo.calculation.models.MetricSeries
 import com.grippo.date.utils.contains
@@ -14,16 +13,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.ex
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
-import com.grippo.design.resources.provider.tooltip_volume_description_day
-import com.grippo.design.resources.provider.tooltip_volume_description_training
-import com.grippo.design.resources.provider.tooltip_volume_description_week
-import com.grippo.design.resources.provider.tooltip_volume_description_year
-import com.grippo.design.resources.provider.tooltip_volume_title_day
-import com.grippo.design.resources.provider.tooltip_volume_title_training
-import com.grippo.design.resources.provider.tooltip_volume_title_week
-import com.grippo.design.resources.provider.tooltip_volume_title_year
 import com.grippo.state.datetime.PeriodState
-import com.grippo.state.formatters.UiText
 import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.TrainingState
 
@@ -59,14 +49,14 @@ public class VolumeAnalytics(
 
     public suspend fun calculateExerciseVolumeChartFromExercises(
         exercises: List<ExerciseState>,
-    ): Pair<MetricSeries, Instruction> {
+    ): MetricSeries {
         val colors = colorProvider.get()
         val palette = colors.palette.palette7BlueGrowth
         val exTxt = stringProvider.get(Res.string.ex)
 
         val n = exercises.size
         if (n == 0) {
-            return MetricSeries(emptyList()) to instructionForVolume(BucketScale.EXERCISE)
+            return MetricSeries(emptyList())
         }
 
         val values = ArrayList<Float>(n)
@@ -110,14 +100,13 @@ public class VolumeAnalytics(
         }
 
         val series = MetricSeries(points)
-        val tip = instructionForVolume(BucketScale.EXERCISE)
-        return series to tip
+        return series
     }
 
     public suspend fun calculateExerciseVolumeChartFromTrainings(
         trainings: List<TrainingState>,
         period: PeriodState,
-    ): Pair<MetricSeries, Instruction> {
+    ): MetricSeries {
         val colors = colorProvider.get()
         val palette = colors.palette.palette7BlueGrowth
 
@@ -137,7 +126,7 @@ public class VolumeAnalytics(
 
                 val n = buckets.size
                 if (n == 0) {
-                    return MetricSeries(emptyList()) to instructionForVolume(scale)
+                    return MetricSeries(emptyList())
                 }
 
                 val totals = ArrayList<Float>(n)
@@ -184,32 +173,8 @@ public class VolumeAnalytics(
                 }
 
                 val series = MetricSeries(points)
-                val tip = instructionForVolume(scale)
-                series to tip
+                series
             }
         }
     }
-
-    private fun instructionForVolume(scale: BucketScale): Instruction =
-        when (scale) {
-            BucketScale.EXERCISE -> Instruction(
-                title = UiText.Res(Res.string.tooltip_volume_title_training),
-                description = UiText.Res(Res.string.tooltip_volume_description_training),
-            )
-
-            BucketScale.DAY -> Instruction(
-                title = UiText.Res(Res.string.tooltip_volume_title_day),
-                description = UiText.Res(Res.string.tooltip_volume_description_day),
-            )
-
-            BucketScale.WEEK -> Instruction(
-                title = UiText.Res(Res.string.tooltip_volume_title_week),
-                description = UiText.Res(Res.string.tooltip_volume_description_week),
-            )
-
-            BucketScale.MONTH -> Instruction(
-                title = UiText.Res(Res.string.tooltip_volume_title_year),
-                description = UiText.Res(Res.string.tooltip_volume_description_year),
-            )
-        }
 }
