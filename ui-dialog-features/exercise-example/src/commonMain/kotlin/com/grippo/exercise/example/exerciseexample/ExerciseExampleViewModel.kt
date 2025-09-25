@@ -33,29 +33,26 @@ public class ExerciseExampleViewModel(
         }
     }
 
-    private fun provideExerciseExample(value: ExerciseExample?) {
-        val exampleState = value?.toState()
-        update {
-            it.copy(
+    private suspend fun provideExerciseExample(value: ExerciseExample?) {
+        val exampleState = value?.toState() ?: return
+
+        val visualization = analytics.muscleLoadFromExample(
+            example = exampleState
+        )
+
+        val progress = visualization.perGroup.asChart()
+
+        val muscleImages = analytics.muscleImagesFromBreakdown(
+            visualization.perMuscle
+        )
+
+        update { current ->
+            current.copy(
                 example = exampleState,
-                muscleLoadData = DSProgressData(items = emptyList()),
-                muscleLoadMuscles = MuscleLoadBreakdown(entries = emptyList()),
+                muscleLoadData = progress,
+                muscleLoadMuscles = visualization.perMuscle,
+                muscleLoadImages = muscleImages,
             )
-        }
-
-        exampleState ?: return
-
-        safeLaunch {
-            val visualization = analytics.muscleLoadFromExample(exampleState)
-            val progress = visualization.perGroup.asChart()
-
-            update { current ->
-                if (current.example?.value?.id != exampleState.value.id) current
-                else current.copy(
-                    muscleLoadData = progress,
-                    muscleLoadMuscles = visualization.perMuscle,
-                )
-            }
         }
     }
 

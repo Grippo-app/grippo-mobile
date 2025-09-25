@@ -20,6 +20,8 @@ internal class ExerciseComponent(
             exercise = exercise,
             exerciseExampleFeature = getKoin().get(),
             dialogController = getKoin().get(),
+            stringProvider = getKoin().get(),
+            colorProvider = getKoin().get(),
         )
     }
 

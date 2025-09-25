@@ -7,7 +7,6 @@ import com.grippo.calculation.models.MetricPoint
 import com.grippo.calculation.models.MetricSeries
 import com.grippo.calculation.models.MuscleLoadBreakdown
 import com.grippo.calculation.models.MuscleLoadEntry
-import com.grippo.calculation.training.MetricsAggregator
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
@@ -62,7 +61,6 @@ internal class TrainingRecordingViewModel(
     TrainingRecordingState()
 ), TrainingRecordingContract {
 
-    private val metricsAggregator = MetricsAggregator()
     private val analytics = AnalyticsApi(stringProvider, colorProvider)
 
     init {
@@ -233,8 +231,7 @@ internal class TrainingRecordingViewModel(
         safeLaunch {
             val exercises = state.value.exercises
             val duration = DateTimeUtils.ago(state.value.startAt)
-
-            val totals = metricsAggregator.calculateExercises(exercises)
+            val totals = analytics.metricsFromExercises(exercises)
 
             val training = SetTraining(
                 exercises = exercises.toDomain(),
@@ -265,29 +262,40 @@ internal class TrainingRecordingViewModel(
                     weightTypeDistributionData = DSPieData(slices = emptyList()),
                     muscleLoadData = DSProgressData(items = emptyList()),
                     muscleLoadMuscles = MuscleLoadBreakdown(entries = emptyList()),
+                    muscleLoadImages = null,
                 )
             }
             return
         }
 
-        val totalMetrics = metricsAggregator
-            .calculateExercises(exercises = exercises)
+        val totalMetrics = analytics.metricsFromExercises(
+            exercises = exercises
+        )
 
-        val categoryDistributionData =
-            analytics.categoryDistributionFromExercises(exercises = exercises).asChart()
+        val categoryDistributionData = analytics.categoryDistributionFromExercises(
+            exercises = exercises
+        ).asChart()
 
-        val weightTypeDistributionData =
-            analytics.weightTypeDistributionFromExercises(exercises = exercises).asChart()
+        val weightTypeDistributionData = analytics.weightTypeDistributionFromExercises(
+            exercises = exercises
+        ).asChart()
 
-        val forceTypeDistributionData =
-            analytics.forceTypeDistributionFromExercises(exercises = exercises).asChart()
+        val forceTypeDistributionData = analytics.forceTypeDistributionFromExercises(
+            exercises = exercises
+        ).asChart()
 
-        val exerciseVolumeSeries = analytics.volumeFromExercises(exercises = exercises)
+        val exerciseVolumeSeries = analytics.volumeFromExercises(
+            exercises = exercises
+        )
 
         val muscleLoadVisualization = analytics.muscleLoadFromExercises(
             exercises = exercises,
             examples = examples,
             groups = muscles,
+        )
+
+        val muscleImages = analytics.muscleImagesFromBreakdown(
+            breakdown = muscleLoadVisualization.perMuscle,
         )
 
         update {
@@ -301,6 +309,7 @@ internal class TrainingRecordingViewModel(
                 forceTypeDistributionData = forceTypeDistributionData,
                 muscleLoadData = muscleLoadVisualization.perGroup.asChart(),
                 muscleLoadMuscles = muscleLoadVisualization.perMuscle,
+                muscleLoadImages = muscleImages,
             )
         }
     }

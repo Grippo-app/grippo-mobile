@@ -1,21 +1,32 @@
 package com.grippo.profile.muscles
 
+import com.grippo.calculation.AnalyticsApi
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.excluded.muscles.ExcludedMusclesFeature
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.Muscle
 import com.grippo.data.features.api.muscle.models.MuscleGroup
+import com.grippo.design.resources.provider.muscles.MuscleColorPreset
+import com.grippo.design.resources.provider.providers.ColorProvider
+import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.domain.state.muscles.toState
+import com.grippo.state.muscles.MuscleGroupState
+import com.grippo.state.muscles.MuscleRepresentationState
 import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.combine
 
 internal class ProfileMusclesViewModel(
     muscleFeature: MuscleFeature,
-    private val excludedMusclesFeature: ExcludedMusclesFeature
+    private val excludedMusclesFeature: ExcludedMusclesFeature,
+    stringProvider: StringProvider,
+    colorProvider: ColorProvider,
 ) : BaseViewModel<ProfileMusclesState, ProfileMusclesDirection, ProfileMusclesLoader>(
     ProfileMusclesState()
 ), ProfileMusclesContract {
+
+    private val analytics = AnalyticsApi(stringProvider, colorProvider)
 
     init {
         combine(
@@ -29,10 +40,7 @@ internal class ProfileMusclesViewModel(
         }
     }
 
-    private fun provideMuscles(
-        list: List<MuscleGroup>,
-        excluded: List<Muscle>
-    ) {
+    private suspend fun provideMuscles(list: List<MuscleGroup>, excluded: List<Muscle>) {
         val suggestions = list.toState()
         val selectedIds = suggestions
             .flatMap { it.muscles }
@@ -40,22 +48,21 @@ internal class ProfileMusclesViewModel(
             .minus(excluded.map { it.id })
             .toPersistentList()
 
-        update {
-            it.copy(
-                suggestions = suggestions,
-                selectedMuscleIds = selectedIds
-            )
-        }
+        update { it.copy(suggestions = suggestions, selectedMuscleIds = selectedIds) }
+
+        calculatePresets(suggestions, selectedIds)
     }
 
     override fun onSelect(id: String) {
-        update {
-            val newList: PersistentList<String> = it.selectedMuscleIds
-                .toMutableList()
-                .apply { if (contains(id)) remove(id) else add(id) }
-                .toPersistentList()
+        val newList: PersistentList<String> = state.value.selectedMuscleIds
+            .toMutableList()
+            .apply { if (contains(id)) remove(id) else add(id) }
+            .toPersistentList()
 
-            it.copy(selectedMuscleIds = newList)
+        update { it.copy(selectedMuscleIds = newList) }
+
+        safeLaunch {
+            calculatePresets(state.value.suggestions, newList)
         }
     }
 
@@ -63,7 +70,6 @@ internal class ProfileMusclesViewModel(
         val formattedList = state.value.suggestions
             .flatMap { it.muscles }
             .map { it.value.id } - state.value.selectedMuscleIds
-
 
         safeLaunch(loader = ProfileMusclesLoader.ApplyButton) {
             excludedMusclesFeature.setExcludedMuscles(formattedList).getOrThrow()
@@ -73,5 +79,22 @@ internal class ProfileMusclesViewModel(
 
     override fun onBack() {
         navigateTo(ProfileMusclesDirection.Back)
+    }
+
+    private suspend fun calculatePresets(
+        suggestions: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
+        selectedIds: PersistentList<String>,
+    ) {
+        val selectedSet = selectedIds.toSet()
+        val builder = persistentMapOf<String, MuscleColorPreset>().builder()
+
+        for (group in suggestions) {
+            val preset = analytics.musclePresetFromSelection(group, selectedSet)
+            builder[group.id] = preset
+        }
+
+        val presets = builder.build()
+
+        update { it.copy(musclePresets = presets) }
     }
 }

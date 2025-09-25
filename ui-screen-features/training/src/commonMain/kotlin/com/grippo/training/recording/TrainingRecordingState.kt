@@ -1,6 +1,7 @@
 package com.grippo.training.recording
 
 import androidx.compose.runtime.Immutable
+import com.grippo.calculation.models.MuscleImages
 import com.grippo.calculation.models.MuscleLoadBreakdown
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.components.chart.DSBarData
@@ -40,6 +41,7 @@ internal data class TrainingRecordingState(
     // === Muscle analysis (progress/heatmap) ===
     val muscleLoadData: DSProgressData = DSProgressData(items = emptyList()),
     val muscleLoadMuscles: MuscleLoadBreakdown = MuscleLoadBreakdown(entries = emptyList()),
+    val muscleLoadImages: MuscleImages? = null,
 
     // === Exercise example distributions (pie) ===
     val categoryDistributionData: DSPieData = DSPieData(slices = emptyList()),

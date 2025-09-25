@@ -24,7 +24,7 @@ import com.grippo.design.components.chip.ChipTrailing
 import com.grippo.design.components.equipment.EquipmentsCard
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
-import com.grippo.design.components.statistics.MuscleLoad
+import com.grippo.design.components.muscle.MuscleLoad
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -134,9 +134,12 @@ internal fun ExerciseExampleScreen(
 
         if (state.muscleLoadData.items.isNotEmpty()) {
             MuscleLoad(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                    .fillMaxWidth(),
                 chartData = state.muscleLoadData,
                 muscleBreakdown = state.muscleLoadMuscles,
+                muscleImages = state.muscleLoadImages,
             )
 
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))

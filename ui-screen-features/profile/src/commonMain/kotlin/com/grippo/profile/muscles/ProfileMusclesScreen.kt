@@ -55,8 +55,10 @@ internal fun ProfileMusclesScreen(
     ) {
         itemsIndexed(
             state.suggestions,
-            key = { _, item -> item.id }) { index, group ->
+            key = { _, item -> item.id }
+        ) { index, group ->
             val isEven = index % 2 == 0
+            val preset = state.musclePresets[group.id] ?: return@itemsIndexed
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -73,13 +75,13 @@ internal fun ProfileMusclesScreen(
                     MusclesImage(
                         modifier = Modifier.weight(1f),
                         item = group,
-                        selectedIds = state.selectedMuscleIds
+                        preset = preset
                     )
                 } else {
                     MusclesImage(
                         modifier = Modifier.weight(1f),
                         item = group,
-                        selectedIds = state.selectedMuscleIds
+                        preset = preset
                     )
                     MusclesColumn(
                         modifier = Modifier.weight(1f),

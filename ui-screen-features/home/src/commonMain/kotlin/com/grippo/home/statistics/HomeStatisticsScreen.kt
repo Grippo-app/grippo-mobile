@@ -27,8 +27,8 @@ import com.grippo.design.components.chip.VolumeChip
 import com.grippo.design.components.chip.VolumeChipStyle
 import com.grippo.design.components.datetime.PeriodPicker
 import com.grippo.design.components.loading.Loader
+import com.grippo.design.components.muscle.MuscleLoad
 import com.grippo.design.components.statistics.ChartCard
-import com.grippo.design.components.statistics.MuscleLoad
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -162,6 +162,7 @@ internal fun HomeStatisticsScreen(
                             modifier = Modifier.fillMaxWidth(),
                             chartData = state.muscleLoadData,
                             muscleBreakdown = state.muscleLoadMuscles,
+                            muscleImages = state.muscleLoadImages,
                         )
                     }
                 )

@@ -1,9 +1,10 @@
-package com.grippo.calculation.muscle
+package com.grippo.calculation.internal.muscle
 
 import com.grippo.calculation.internal.buildBuckets
 import com.grippo.calculation.internal.defaultTimeLabels
 import com.grippo.calculation.internal.deriveScale
 import com.grippo.calculation.models.BucketScale
+import com.grippo.calculation.models.Metric
 import com.grippo.calculation.models.MuscleLoadMatrix
 import com.grippo.date.utils.contains
 import com.grippo.design.resources.provider.providers.StringProvider
@@ -14,20 +15,16 @@ import com.grippo.state.muscles.MuscleGroupState
 import com.grippo.state.muscles.MuscleRepresentationState
 import com.grippo.state.trainings.TrainingState
 
-public class TemporalHeatmapCalculator(
+internal class TemporalHeatmapCalculator(
     private val stringProvider: StringProvider,
 ) {
-    public sealed interface Metric {
-        public data object TONNAGE : Metric
-        public data object REPS : Metric
-    }
 
     private sealed interface Normalization {
         data class Percentile(val p: Float = 0.95f) : Normalization
         data object PerColMax : Normalization
     }
 
-    public suspend fun computeMuscleGroupHeatmap(
+    suspend fun computeMuscleGroupHeatmap(
         trainings: List<TrainingState>,
         period: PeriodState,
         examples: List<ExerciseExampleState>,

@@ -10,6 +10,7 @@ kotlin {
         implementation(projects.common.core)
         implementation(projects.common.dateUtils)
         implementation(projects.common.state)
+        implementation(projects.common.calculation)
         implementation(projects.dataMappers.domainToState)
         implementation(projects.dataMappers.stateToDomain)
         implementation(projects.uiDialogFeatures.dialogApi)

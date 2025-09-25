@@ -1,4 +1,4 @@
-package com.grippo.calculation.training
+package com.grippo.calculation.internal.training
 
 import com.grippo.state.formatters.IntensityFormatState
 import com.grippo.state.formatters.RepetitionsFormatState
@@ -11,10 +11,10 @@ import com.grippo.state.trainings.TrainingState
 /**
  * Metrics aggregator for volume, repetitions, and intensity across sets, exercises, and sessions.
  */
-public class MetricsAggregator {
+internal class MetricsAggregator {
 
     /** Aggregate metrics from raw iterations. */
-    public fun calculateIterations(iterations: List<IterationState>): TrainingMetrics {
+    fun calculateIterations(iterations: List<IterationState>): TrainingMetrics {
         var sumTonnage = 0.0
         var repsAll: Long = 0
         var repsWithWeight: Long = 0
@@ -31,7 +31,7 @@ public class MetricsAggregator {
     }
 
     /** Aggregate metrics from a list of exercises. */
-    public fun calculateExercises(exercises: List<ExerciseState>): TrainingMetrics {
+    fun calculateExercises(exercises: List<ExerciseState>): TrainingMetrics {
         var sumTonnage = 0.0
         var repsAll: Long = 0
         var repsWithWeight: Long = 0
@@ -50,7 +50,7 @@ public class MetricsAggregator {
     }
 
     /** Aggregate metrics from multiple training sessions. */
-    public fun calculateTrainings(trainings: List<TrainingState>): TrainingMetrics {
+    fun calculateTrainings(trainings: List<TrainingState>): TrainingMetrics {
         var sumTonnage = 0.0
         var repsAll: Long = 0
         var repsWithWeight: Long = 0

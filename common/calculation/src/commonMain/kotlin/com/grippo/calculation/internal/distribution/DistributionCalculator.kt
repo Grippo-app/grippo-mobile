@@ -1,8 +1,9 @@
-package com.grippo.calculation.distribution
+package com.grippo.calculation.internal.distribution
 
 import androidx.compose.ui.graphics.Color
 import com.grippo.calculation.models.DistributionBreakdown
 import com.grippo.calculation.models.DistributionSlice
+import com.grippo.calculation.models.DistributionWeighting
 import com.grippo.date.utils.contains
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
@@ -13,7 +14,7 @@ import com.grippo.state.exercise.examples.WeightTypeEnumState
 import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.TrainingState
 
-public class DistributionCalculator(
+internal class DistributionCalculator(
     private val stringProvider: StringProvider,
     private val colorProvider: ColorProvider,
 ) {
@@ -22,16 +23,9 @@ public class DistributionCalculator(
         private const val EPS: Float = 1e-3f
     }
 
-    public sealed interface Weighting {
-        public data object Count : Weighting
-        public data object Sets : Weighting
-        public data object Reps : Weighting
-        public data object Volume : Weighting
-    }
-
-    public suspend fun calculateCategoryDistributionFromExercises(
+    suspend fun calculateCategoryDistributionFromExercises(
         exercises: List<ExerciseState>,
-        weighting: Weighting = Weighting.Count,
+        weighting: DistributionWeighting = DistributionWeighting.Count,
     ): DistributionBreakdown {
         val ordered = enumValues<CategoryEnumState>()
         val totals = aggregateTotals(exercises, weighting) { it.exerciseExample.category }
@@ -54,18 +48,21 @@ public class DistributionCalculator(
         )
     }
 
-    public suspend fun calculateCategoryDistributionFromTrainings(
+    suspend fun calculateCategoryDistributionFromTrainings(
         trainings: List<TrainingState>,
         period: PeriodState,
-        weighting: Weighting = Weighting.Count,
+        weighting: DistributionWeighting = DistributionWeighting.Count,
     ): DistributionBreakdown {
         val inRange = trainings.filter { it.createdAt in period.range }
-        return calculateCategoryDistributionFromExercises(inRange.flatMap { it.exercises }, weighting)
+        return calculateCategoryDistributionFromExercises(
+            inRange.flatMap { it.exercises },
+            weighting
+        )
     }
 
-    public suspend fun calculateWeightTypeDistributionFromExercises(
+    suspend fun calculateWeightTypeDistributionFromExercises(
         exercises: List<ExerciseState>,
-        weighting: Weighting = Weighting.Count,
+        weighting: DistributionWeighting = DistributionWeighting.Count,
     ): DistributionBreakdown {
         val ordered = enumValues<WeightTypeEnumState>()
         val totals = aggregateTotals(exercises, weighting) { it.exerciseExample.weightType }
@@ -89,18 +86,21 @@ public class DistributionCalculator(
         )
     }
 
-    public suspend fun calculateWeightTypeDistributionFromTrainings(
+    suspend fun calculateWeightTypeDistributionFromTrainings(
         trainings: List<TrainingState>,
         period: PeriodState,
-        weighting: Weighting = Weighting.Count,
+        weighting: DistributionWeighting = DistributionWeighting.Count,
     ): DistributionBreakdown {
         val inRange = trainings.filter { it.createdAt in period.range }
-        return calculateWeightTypeDistributionFromExercises(inRange.flatMap { it.exercises }, weighting)
+        return calculateWeightTypeDistributionFromExercises(
+            inRange.flatMap { it.exercises },
+            weighting
+        )
     }
 
-    public suspend fun calculateForceTypeDistributionFromExercises(
+    suspend fun calculateForceTypeDistributionFromExercises(
         exercises: List<ExerciseState>,
-        weighting: Weighting = Weighting.Count,
+        weighting: DistributionWeighting = DistributionWeighting.Count,
     ): DistributionBreakdown {
         val ordered = enumValues<ForceTypeEnumState>()
         val totals = aggregateTotals(exercises, weighting) { it.exerciseExample.forceType }
@@ -124,13 +124,16 @@ public class DistributionCalculator(
         )
     }
 
-    public suspend fun calculateForceTypeDistributionFromTrainings(
+    suspend fun calculateForceTypeDistributionFromTrainings(
         trainings: List<TrainingState>,
         period: PeriodState,
-        weighting: Weighting = Weighting.Count,
+        weighting: DistributionWeighting = DistributionWeighting.Count,
     ): DistributionBreakdown {
         val inRange = trainings.filter { it.createdAt in period.range }
-        return calculateForceTypeDistributionFromExercises(inRange.flatMap { it.exercises }, weighting)
+        return calculateForceTypeDistributionFromExercises(
+            inRange.flatMap { it.exercises },
+            weighting
+        )
     }
 
     private fun <E : Enum<E>> buildPie(
@@ -153,7 +156,7 @@ public class DistributionCalculator(
 
     private fun <E : Enum<E>> aggregateTotals(
         exercises: List<ExerciseState>,
-        weighting: Weighting,
+        weighting: DistributionWeighting,
         keySelector: (ExerciseState) -> E?,
     ): Map<E, Float> {
         val totals = HashMap<E, Float>(8)
@@ -166,19 +169,24 @@ public class DistributionCalculator(
         return totals
     }
 
-    private fun weightOfExercise(exercise: ExerciseState, weighting: Weighting): Float = when (weighting) {
-        Weighting.Count -> 1f
-        Weighting.Sets -> exercise.iterations.count { (it.repetitions.value ?: 0) > 0 }.toFloat()
-        Weighting.Reps -> exercise.iterations.fold(0) { acc, iteration ->
-            val reps = iteration.repetitions.value ?: 0
-            if (reps > 0) acc + reps else acc
-        }.toFloat()
-        Weighting.Volume -> exercise.iterations.fold(0.0) { acc, iteration ->
-            val reps = iteration.repetitions.value ?: 0
-            if (reps <= 0) return@fold acc
-            val wRaw = iteration.volume.value ?: 0f
-            val weight = if (wRaw > EPS) wRaw else 0f
-            if (weight == 0f) acc else acc + weight.toDouble() * reps.toDouble()
-        }.toFloat()
-    }.coerceAtLeast(0f)
+    private fun weightOfExercise(exercise: ExerciseState, weighting: DistributionWeighting): Float =
+        when (weighting) {
+            DistributionWeighting.Count -> 1f
+            DistributionWeighting.Sets -> exercise.iterations.count {
+                (it.repetitions.value ?: 0) > 0
+            }.toFloat()
+
+            DistributionWeighting.Reps -> exercise.iterations.fold(0) { acc, iteration ->
+                val reps = iteration.repetitions.value ?: 0
+                if (reps > 0) acc + reps else acc
+            }.toFloat()
+
+            DistributionWeighting.Volume -> exercise.iterations.fold(0.0) { acc, iteration ->
+                val reps = iteration.repetitions.value ?: 0
+                if (reps <= 0) return@fold acc
+                val wRaw = iteration.volume.value ?: 0f
+                val weight = if (wRaw > EPS) wRaw else 0f
+                if (weight == 0f) acc else acc + weight.toDouble() * reps.toDouble()
+            }.toFloat()
+        }.coerceAtLeast(0f)
 }

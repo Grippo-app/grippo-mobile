@@ -1,15 +1,21 @@
 package com.grippo.calculation
 
-import com.grippo.calculation.distribution.DistributionCalculator
-import com.grippo.calculation.distribution.DistributionCalculator.Weighting
+import com.grippo.calculation.internal.distribution.DistributionCalculator
+import com.grippo.calculation.internal.muscle.MuscleImageBuilder
+import com.grippo.calculation.internal.muscle.MuscleLoadCalculator
+import com.grippo.calculation.internal.muscle.TemporalHeatmapCalculator
+import com.grippo.calculation.internal.strength.Estimated1RMAnalytics
+import com.grippo.calculation.internal.training.MetricsAggregator
+import com.grippo.calculation.internal.training.VolumeAnalytics
 import com.grippo.calculation.models.DistributionBreakdown
+import com.grippo.calculation.models.DistributionWeighting
+import com.grippo.calculation.models.Metric
 import com.grippo.calculation.models.MetricSeries
+import com.grippo.calculation.models.MuscleImages
+import com.grippo.calculation.models.MuscleLoadBreakdown
 import com.grippo.calculation.models.MuscleLoadMatrix
 import com.grippo.calculation.models.MuscleLoadVisualization
-import com.grippo.calculation.muscle.MuscleLoadCalculator
-import com.grippo.calculation.muscle.TemporalHeatmapCalculator
-import com.grippo.calculation.strength.Estimated1RMAnalytics
-import com.grippo.calculation.training.VolumeAnalytics
+import com.grippo.design.resources.provider.muscles.MuscleColorPreset
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.state.datetime.PeriodState
@@ -17,6 +23,8 @@ import com.grippo.state.exercise.examples.ExerciseExampleState
 import com.grippo.state.muscles.MuscleGroupState
 import com.grippo.state.muscles.MuscleRepresentationState
 import com.grippo.state.trainings.ExerciseState
+import com.grippo.state.trainings.IterationState
+import com.grippo.state.trainings.TrainingMetrics
 import com.grippo.state.trainings.TrainingState
 
 /**
@@ -28,11 +36,13 @@ public class AnalyticsApi(
     stringProvider: StringProvider,
     colorProvider: ColorProvider,
 ) {
+    private val distributionCalculator = DistributionCalculator(stringProvider, colorProvider)
     private val volumeAnalytics = VolumeAnalytics(colorProvider, stringProvider)
     private val muscleLoadCalculator = MuscleLoadCalculator(stringProvider, colorProvider)
     private val heatmapCalculator = TemporalHeatmapCalculator(stringProvider)
-    private val distributionCalculator = DistributionCalculator(stringProvider, colorProvider)
     private val estimated1RMAnalytics = Estimated1RMAnalytics(colorProvider, stringProvider)
+    private val metricsAggregator = MetricsAggregator()
+    private val muscleImageBuilder = MuscleImageBuilder(colorProvider)
 
     /**
      * Builds a volume series for a plain list of exercises.
@@ -95,7 +105,7 @@ public class AnalyticsApi(
         period: PeriodState,
         examples: List<ExerciseExampleState>,
         groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
-        metric: TemporalHeatmapCalculator.Metric = TemporalHeatmapCalculator.Metric.REPS,
+        metric: Metric = Metric.REPS,
     ): MuscleLoadMatrix = heatmapCalculator
         .computeMuscleGroupHeatmap(trainings, period, examples, groups, metric)
 
@@ -122,7 +132,7 @@ public class AnalyticsApi(
      */
     public suspend fun categoryDistributionFromExercises(
         exercises: List<ExerciseState>,
-        weighting: Weighting = Weighting.Count,
+        weighting: DistributionWeighting = DistributionWeighting.Count,
     ): DistributionBreakdown = distributionCalculator
         .calculateCategoryDistributionFromExercises(exercises, weighting)
 
@@ -132,7 +142,7 @@ public class AnalyticsApi(
     public suspend fun categoryDistributionFromTrainings(
         trainings: List<TrainingState>,
         period: PeriodState,
-        weighting: Weighting = Weighting.Count,
+        weighting: DistributionWeighting = DistributionWeighting.Count,
     ): DistributionBreakdown = distributionCalculator
         .calculateCategoryDistributionFromTrainings(trainings, period, weighting)
 
@@ -141,7 +151,7 @@ public class AnalyticsApi(
      */
     public suspend fun weightTypeDistributionFromExercises(
         exercises: List<ExerciseState>,
-        weighting: Weighting = Weighting.Count,
+        weighting: DistributionWeighting = DistributionWeighting.Count,
     ): DistributionBreakdown = distributionCalculator
         .calculateWeightTypeDistributionFromExercises(exercises, weighting)
 
@@ -151,7 +161,7 @@ public class AnalyticsApi(
     public suspend fun weightTypeDistributionFromTrainings(
         trainings: List<TrainingState>,
         period: PeriodState,
-        weighting: Weighting = Weighting.Count,
+        weighting: DistributionWeighting = DistributionWeighting.Count,
     ): DistributionBreakdown = distributionCalculator
         .calculateWeightTypeDistributionFromTrainings(trainings, period, weighting)
 
@@ -160,7 +170,7 @@ public class AnalyticsApi(
      */
     public suspend fun forceTypeDistributionFromExercises(
         exercises: List<ExerciseState>,
-        weighting: Weighting = Weighting.Count,
+        weighting: DistributionWeighting = DistributionWeighting.Count,
     ): DistributionBreakdown = distributionCalculator
         .calculateForceTypeDistributionFromExercises(exercises, weighting)
 
@@ -170,7 +180,48 @@ public class AnalyticsApi(
     public suspend fun forceTypeDistributionFromTrainings(
         trainings: List<TrainingState>,
         period: PeriodState,
-        weighting: Weighting = Weighting.Count,
+        weighting: DistributionWeighting = DistributionWeighting.Count,
     ): DistributionBreakdown = distributionCalculator
         .calculateForceTypeDistributionFromTrainings(trainings, period, weighting)
+
+    /**
+     * Aggregates training metrics from a list of iterations.
+     */
+    public fun metricsFromIterations(
+        iterations: List<IterationState>
+    ): TrainingMetrics = metricsAggregator
+        .calculateIterations(iterations)
+
+    /**
+     * Aggregates training metrics from a list of exercises.
+     */
+    public fun metricsFromExercises(
+        exercises: List<ExerciseState>
+    ): TrainingMetrics = metricsAggregator
+        .calculateExercises(exercises)
+
+    /**
+     * Aggregates training metrics from a list of trainings.
+     */
+    public fun metricsFromTrainings(
+        trainings: List<TrainingState>
+    ): TrainingMetrics = metricsAggregator
+        .calculateTrainings(trainings)
+
+    /**
+     * Builds body front/back images for a given muscle load breakdown.
+     */
+    public suspend fun muscleImagesFromBreakdown(
+        breakdown: MuscleLoadBreakdown,
+    ): MuscleImages? = muscleImageBuilder
+        .generateImagesFromBreakdown(breakdown)
+
+    /**
+     * Builds a muscle color preset for a specific [group] with [selectedIds] highlighted.
+     */
+    public suspend fun musclePresetFromSelection(
+        group: MuscleGroupState<MuscleRepresentationState.Plain>,
+        selectedIds: Collection<String>,
+    ): MuscleColorPreset = muscleImageBuilder
+        .presetFromSelection(group, selectedIds.toSet())
 }

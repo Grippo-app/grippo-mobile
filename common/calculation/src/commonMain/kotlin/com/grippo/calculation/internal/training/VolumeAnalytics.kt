@@ -1,4 +1,4 @@
-package com.grippo.calculation.training
+package com.grippo.calculation.internal.training
 
 import androidx.compose.ui.graphics.Color
 import com.grippo.calculation.internal.buildBuckets
@@ -17,7 +17,7 @@ import com.grippo.state.datetime.PeriodState
 import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.TrainingState
 
-public class VolumeAnalytics(
+internal class VolumeAnalytics(
     private val colorProvider: ColorProvider,
     private val stringProvider: StringProvider,
 ) {
@@ -47,7 +47,7 @@ public class VolumeAnalytics(
         return total
     }
 
-    public suspend fun computeVolumeSeriesFromExercises(
+    suspend fun computeVolumeSeriesFromExercises(
         exercises: List<ExerciseState>,
     ): MetricSeries {
         val colors = colorProvider.get()
@@ -103,7 +103,7 @@ public class VolumeAnalytics(
         return series
     }
 
-    public suspend fun computeVolumeSeriesFromTrainings(
+    suspend fun computeVolumeSeriesFromTrainings(
         trainings: List<TrainingState>,
         period: PeriodState,
     ): MetricSeries {

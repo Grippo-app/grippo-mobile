@@ -1,4 +1,4 @@
-package com.grippo.calculation.strength
+package com.grippo.calculation.internal.strength
 
 import com.grippo.calculation.internal.deriveScale
 import com.grippo.calculation.internal.groupTrainingsByBucket
@@ -15,7 +15,7 @@ import com.grippo.state.datetime.PeriodState
 import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.TrainingState
 
-public class Estimated1RMAnalytics(
+internal class Estimated1RMAnalytics(
     private val colorProvider: ColorProvider,
     private val stringProvider: StringProvider,
 ) {
@@ -83,7 +83,7 @@ public class Estimated1RMAnalytics(
         return if (value.isFinite()) value else 0f
     }
 
-    public suspend fun computeEstimated1RmFromExercises(
+    suspend fun computeEstimated1RmFromExercises(
         exercises: List<ExerciseState>,
     ): MetricSeries {
         val colors = colorProvider.get()
@@ -102,7 +102,7 @@ public class Estimated1RMAnalytics(
         return data
     }
 
-    public suspend fun computeEstimated1RmFromTrainings(
+    suspend fun computeEstimated1RmFromTrainings(
         trainings: List<TrainingState>,
         period: PeriodState,
     ): MetricSeries {

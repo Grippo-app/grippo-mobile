@@ -1,4 +1,4 @@
-package com.grippo.calculation.muscle
+package com.grippo.calculation.internal.muscle
 
 import androidx.compose.ui.graphics.Color
 import com.grippo.calculation.models.MuscleLoadBreakdown
@@ -18,7 +18,7 @@ import com.grippo.state.muscles.MuscleRepresentationState
 import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.TrainingState
 
-public class MuscleLoadCalculator(
+internal class MuscleLoadCalculator(
     private val stringProvider: StringProvider,
     private val colorProvider: ColorProvider,
 ) {
@@ -27,7 +27,7 @@ public class MuscleLoadCalculator(
         private const val EPS: Float = 1e-3f
     }
 
-    public suspend fun computeMuscleLoadVisualizationFromExercises(
+    suspend fun computeMuscleLoadVisualizationFromExercises(
         exercises: List<ExerciseState>,
         examples: List<ExerciseExampleState>,
         groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
@@ -41,7 +41,7 @@ public class MuscleLoadCalculator(
         )
     }
 
-    public suspend fun computeMuscleLoadVisualizationFromTrainings(
+    suspend fun computeMuscleLoadVisualizationFromTrainings(
         trainings: List<TrainingState>,
         period: PeriodState,
         examples: List<ExerciseExampleState>,
@@ -59,7 +59,7 @@ public class MuscleLoadCalculator(
         )
     }
 
-    public suspend fun computeMuscleLoadVisualizationFromExample(
+    suspend fun computeMuscleLoadVisualizationFromExample(
         example: ExerciseExampleState,
     ): MuscleLoadVisualization {
         val muscleLoad = buildMap {

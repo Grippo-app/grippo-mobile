@@ -14,7 +14,11 @@ internal class ExcludedMusclesComponent(
 ) : BaseComponent<ExcludedMusclesDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        ExcludedMusclesViewModel(getKoin().get())
+        ExcludedMusclesViewModel(
+            muscleFeature = getKoin().get(),
+            stringProvider = getKoin().get(),
+            colorProvider = getKoin().get(),
+        )
     }
 
     private val backCallback = BackCallback(onBack = viewModel::onBack)

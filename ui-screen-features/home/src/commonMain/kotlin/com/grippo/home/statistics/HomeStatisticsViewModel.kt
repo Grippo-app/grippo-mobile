@@ -8,7 +8,6 @@ import com.grippo.calculation.models.MetricSeries
 import com.grippo.calculation.models.MuscleLoadBreakdown
 import com.grippo.calculation.models.MuscleLoadEntry
 import com.grippo.calculation.models.MuscleLoadMatrix
-import com.grippo.calculation.training.MetricsAggregator
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
@@ -55,7 +54,6 @@ internal class HomeStatisticsViewModel(
     HomeStatisticsState()
 ), HomeStatisticsContract {
 
-    private val metricsAggregator = MetricsAggregator()
     private val analytics = AnalyticsApi(stringProvider, colorProvider)
 
     init {
@@ -153,18 +151,16 @@ internal class HomeStatisticsViewModel(
                     weightTypeDistributionData = DSPieData(slices = emptyList()),
                     muscleLoadData = DSProgressData(items = emptyList()),
                     muscleLoadMuscles = MuscleLoadBreakdown(entries = emptyList()),
-                    temporalHeatmapData = DSHeatmapData(
-                        rows = 0,
-                        cols = 0,
-                        values01 = emptyList()
-                    )
+                    temporalHeatmapData = DSHeatmapData(rows = 0, cols = 0, values01 = emptyList()),
+                    muscleLoadImages = null,
                 )
             }
             return
         }
 
-        val totalMetrics = metricsAggregator
-            .calculateTrainings(trainings = trainings)
+        val totalMetrics = analytics.metricsFromTrainings(
+            trainings = trainings
+        )
 
         val categoryDistributionData = analytics.categoryDistributionFromTrainings(
             trainings = trainings,
@@ -200,6 +196,10 @@ internal class HomeStatisticsViewModel(
             groups = muscles,
         )
 
+        val muscleImages = analytics.muscleImagesFromBreakdown(
+            breakdown = muscleLoadVisualization.perMuscle,
+        )
+
         update {
             it.copy(
                 totalVolume = totalMetrics.volume,
@@ -211,6 +211,7 @@ internal class HomeStatisticsViewModel(
                 forceTypeDistributionData = forceTypeDistributionData,
                 muscleLoadData = muscleLoadVisualization.perGroup.asChart(),
                 muscleLoadMuscles = muscleLoadVisualization.perMuscle,
+                muscleLoadImages = muscleImages,
                 temporalHeatmapData = muscleLoadMatrix.asChart(),
             )
         }

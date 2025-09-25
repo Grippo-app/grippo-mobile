@@ -1,11 +1,13 @@
 package com.grippo.training.completed
 
-import com.grippo.calculation.training.MetricsAggregator
+import com.grippo.calculation.AnalyticsApi
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.date.utils.DateTimeUtils
+import com.grippo.design.resources.provider.providers.ColorProvider
+import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState
@@ -20,17 +22,23 @@ internal class TrainingCompletedViewModel(
     trainingFeature: TrainingFeature,
     startAt: LocalDateTime,
     private val dialogController: DialogController,
+    stringProvider: StringProvider,
+    colorProvider: ColorProvider,
 ) : BaseViewModel<TrainingCompletedState, TrainingCompletedDirection, TrainingCompletedLoader>(
     TrainingCompletedState()
 ), TrainingCompletedContract {
 
-    private val metricsAggregator = MetricsAggregator()
+    private val analytics = AnalyticsApi(stringProvider, colorProvider)
 
     init {
         safeLaunch(loader = TrainingCompletedLoader.SaveTraining) {
-            val duration = DateTimeUtils.ago(startAt)
+            val duration = DateTimeUtils.ago(
+                value = startAt
+            )
 
-            val totals = metricsAggregator.calculateExercises(exercises)
+            val totals = analytics.metricsFromExercises(
+                exercises = exercises
+            )
 
             val training = SetTraining(
                 exercises = exercises.toDomain(),

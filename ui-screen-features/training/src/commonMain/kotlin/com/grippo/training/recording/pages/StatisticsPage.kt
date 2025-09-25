@@ -30,8 +30,8 @@ import com.grippo.design.components.chip.RepetitionsChip
 import com.grippo.design.components.chip.RepetitionsChipStyle
 import com.grippo.design.components.chip.VolumeChip
 import com.grippo.design.components.chip.VolumeChipStyle
+import com.grippo.design.components.muscle.MuscleLoad
 import com.grippo.design.components.statistics.ChartCard
-import com.grippo.design.components.statistics.MuscleLoad
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -145,6 +145,7 @@ internal fun StatisticsPage(
                             modifier = Modifier.fillMaxWidth(),
                             chartData = state.muscleLoadData,
                             muscleBreakdown = state.muscleLoadMuscles,
+                            muscleImages = state.muscleLoadImages,
                         )
                     }
                 )
