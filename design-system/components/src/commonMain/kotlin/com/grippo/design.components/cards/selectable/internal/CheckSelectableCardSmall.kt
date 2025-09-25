@@ -123,7 +123,7 @@ internal fun CheckSelectableCardSmall(
 
         Text(
             text = style.title,
-            style = AppTokens.typography.b14Bold(),
+            style = AppTokens.typography.b15Bold(),
             color = textColor.value
         )
 

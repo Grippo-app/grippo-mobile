@@ -41,7 +41,7 @@ public fun TimeLabel(
 
         Text(
             text = AppTokens.strings.res(Res.string.training_at_value, text),
-            style = AppTokens.typography.b13Bold(),
+            style = AppTokens.typography.b14Bold(),
             color = AppTokens.colors.text.secondary
         )
 

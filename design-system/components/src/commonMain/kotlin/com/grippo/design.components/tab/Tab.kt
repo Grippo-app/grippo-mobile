@@ -89,9 +89,9 @@ public fun <KEY> Tab(
                             Text(
                                 text = item.second.text.text(),
                                 style = if (item.first == selected) {
-                                    AppTokens.typography.b13Bold()
+                                    AppTokens.typography.b14Bold()
                                 } else {
-                                    AppTokens.typography.b13Semi()
+                                    AppTokens.typography.b14Semi()
                                 },
                                 color = if (item.first == selected) {
                                     AppTokens.colors.segment.active

@@ -46,10 +46,10 @@ internal fun ProgressChart(
             strokeColor = AppTokens.colors.divider.default,
         ),
         labels = ProgressStyle.Labels(
-            textStyle = AppTokens.typography.b10Med().copy(color = AppTokens.colors.text.primary)
+            textStyle = AppTokens.typography.b12Semi().copy(color = AppTokens.colors.text.primary)
         ),
         values = ProgressStyle.Values.Inside(
-            textStyle = AppTokens.typography.b10Bold().copy(color = AppTokens.colors.text.primary),
+            textStyle = AppTokens.typography.b10Bold().copy(color = AppTokens.colors.static.white),
             formatter = { v, d -> ceil(v).toInt().toString() },
             minInnerPadding = 6.dp,
             insideColor = null,

@@ -59,7 +59,7 @@ internal fun ToggleSelectableCardMedium(
         Text(
             modifier = Modifier.weight(1f),
             text = style.title,
-            style = AppTokens.typography.b14Bold(),
+            style = AppTokens.typography.b15Bold(),
             maxLines = 2,
             color = AppTokens.colors.text.primary,
             overflow = TextOverflow.Ellipsis

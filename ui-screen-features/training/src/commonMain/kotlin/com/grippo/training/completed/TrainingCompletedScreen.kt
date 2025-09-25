@@ -128,7 +128,6 @@ internal fun TrainingCompletedScreen(
                         .offset(y = offsetY)
                         .alpha(alpha),
                     contentPadding = PaddingValues(
-                        horizontal = AppTokens.dp.screen.horizontalPadding,
                         vertical = AppTokens.dp.contentPadding.content
                     ),
                     verticalArrangement = Arrangement.Center

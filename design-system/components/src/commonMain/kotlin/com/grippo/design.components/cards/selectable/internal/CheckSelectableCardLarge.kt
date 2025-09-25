@@ -75,17 +75,17 @@ internal fun CheckSelectableCardLarge(
 
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
             ) {
                 Text(
                     text = style.title,
-                    style = AppTokens.typography.b14Bold(),
+                    style = AppTokens.typography.b15Bold(),
                     color = AppTokens.colors.text.primary
                 )
 
                 Text(
                     text = style.description,
-                    style = AppTokens.typography.b13Semi(),
+                    style = AppTokens.typography.b14Semi(),
                     color = AppTokens.colors.text.secondary
                 )
             }
