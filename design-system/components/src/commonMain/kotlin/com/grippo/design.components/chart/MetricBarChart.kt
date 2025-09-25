@@ -5,9 +5,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.calculation.models.MetricPoint
 import com.grippo.calculation.models.MetricSeries
+import com.grippo.chart.bar.BarData
+import com.grippo.chart.bar.BarEntry
 import com.grippo.design.components.chart.internal.BarChart
-import com.grippo.design.components.chart.internal.DSBarData
-import com.grippo.design.components.chart.internal.DSBarItem
 
 @Composable
 public fun MetricBarChart(
@@ -24,11 +24,11 @@ public fun MetricBarChart(
     )
 }
 
-private fun MetricSeries.toBarData(): DSBarData = DSBarData(
+private fun MetricSeries.toBarData(): BarData = BarData(
     items = points.map { it.toBarItem() }
 )
 
-private fun MetricPoint.toBarItem(): DSBarItem = DSBarItem(
+private fun MetricPoint.toBarItem(): BarEntry = BarEntry(
     label = label,
     value = value,
     color = color,

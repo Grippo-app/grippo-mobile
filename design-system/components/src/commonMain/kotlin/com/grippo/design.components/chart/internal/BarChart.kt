@@ -2,8 +2,6 @@ package com.grippo.design.components.chart.internal
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -17,30 +15,10 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import kotlin.math.roundToInt
 
-@Immutable
-public data class DSBarItem(
-    val label: String,
-    val value: Float,
-    val color: Color,
-)
-
-@Immutable
-public data class DSBarData(
-    val items: List<DSBarItem>,
-    val xName: String? = null,
-    val yName: String? = null,
-)
-
-@Immutable
-public enum class XAxisLabelStyle {
-    ADAPTIVE,
-    SHOW_ALL,
-}
-
 @Composable
-public fun BarChart(
+internal fun BarChart(
     modifier: Modifier = Modifier,
-    data: DSBarData,
+    data: BarData,
 ) {
     val style = BarStyle(
         layout = BarStyle.Layout(
@@ -93,40 +71,28 @@ public fun BarChart(
 
     BarChart(
         modifier = modifier,
-        data = remember(data) { data.toChart() },
+        data = data,
         style = style
     )
 }
-
-private fun DSBarItem.toChart(): BarEntry = BarEntry(
-    label = label,
-    value = value,
-    color = color
-)
-
-private fun DSBarData.toChart(): BarData = BarData(
-    items = items.map { it.toChart() },
-    xName = xName,
-    yName = yName,
-)
 
 @AppPreview
 @Composable
 private fun BarChartPreview() {
     PreviewContainer {
-        val ds = DSBarData(
+        val ds = BarData(
             items = listOf(
-                DSBarItem("Mon", 6f, Color(0xFF6AA9FF)),
-                DSBarItem("Tue", 10f, Color(0xFF00E6A7)),
-                DSBarItem("Wed", 4f, Color(0xFFFF7A33)),
-                DSBarItem("Thu", 12f, Color(0xFFB049F8)),
-                DSBarItem("Fri", 8f, Color(0xFFFFC53D)),
-                DSBarItem("Sat", 14f, Color(0xFF3A86FF)),
-                DSBarItem("Sun", 9f, Color(0xFFFF5E8A)),
-                DSBarItem("Sun", 9f, Color(0xFFFF5E8A)),
-                DSBarItem("Sun", 9f, Color(0xFFFF5E8A)),
-                DSBarItem("Sun", 9f, Color(0xFFFF5E8A)),
-                DSBarItem("Sun", 9f, Color(0xFFFF5E8A)),
+                BarEntry("Mon", 6f, Color(0xFF6AA9FF)),
+                BarEntry("Tue", 10f, Color(0xFF00E6A7)),
+                BarEntry("Wed", 4f, Color(0xFFFF7A33)),
+                BarEntry("Thu", 12f, Color(0xFFB049F8)),
+                BarEntry("Fri", 8f, Color(0xFFFFC53D)),
+                BarEntry("Sat", 14f, Color(0xFF3A86FF)),
+                BarEntry("Sun", 9f, Color(0xFFFF5E8A)),
+                BarEntry("Sun", 9f, Color(0xFFFF5E8A)),
+                BarEntry("Sun", 9f, Color(0xFFFF5E8A)),
+                BarEntry("Sun", 9f, Color(0xFFFF5E8A)),
+                BarEntry("Sun", 9f, Color(0xFFFF5E8A)),
             ),
             xName = "Day",
             yName = "Volume",

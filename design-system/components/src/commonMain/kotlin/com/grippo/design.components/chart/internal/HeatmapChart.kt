@@ -1,7 +1,6 @@
 package com.grippo.design.components.chart.internal
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -15,19 +14,10 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import kotlin.math.min
 
-@Immutable
-public data class DSHeatmapData(
-    val rows: Int,
-    val cols: Int,
-    val values01: List<Float>,
-    val rowLabels: List<String> = emptyList(),
-    val colLabels: List<String> = emptyList(),
-)
-
 @Composable
-public fun HeatmapChart(
+internal fun HeatmapChart(
     modifier: Modifier = Modifier,
-    data: DSHeatmapData
+    data: HeatmapData
 ) {
     val missingCell = AppTokens.colors.charts.heatmap.missingCell
     val palette = AppTokens.colors.palette
@@ -76,17 +66,8 @@ public fun HeatmapChart(
 
     HeatmapChart(
         modifier = modifier,
-        data = remember(data) { data.toChart() },
+        data = data,
         style = style
-    )
-}
-
-private fun DSHeatmapData.toChart(): HeatmapData {
-    val matrix = Matrix01.fromFlat(rows, cols, values01)
-    return HeatmapData(
-        matrix = matrix,
-        rowLabels = rowLabels,
-        colLabels = colLabels,
     )
 }
 
@@ -96,24 +77,29 @@ private fun HeatmapChartPreview() {
     PreviewContainer {
         val rows = 6
         val cols = 7
-        val labelsRow = listOf("Chest", "Back", "Legs", "Shoulders", "Arms", "Core")
-        val labelsCol = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+        val rowLabels = listOf("Chest", "Back", "Legs", "Shoulders", "Arms", "Core")
+        val colLabels = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 
-        val ds = DSHeatmapData(
+        // Generate flat 0..1 values (discrete bins)
+        val values01 = List(rows * cols) { idx ->
+            val r = idx / cols
+            val c = idx % cols
+            val base = (r + 1) * (c + 1)
+            ((base % 6) / 5f) // spreads values across discrete bins
+        }
+
+        val matrix = Matrix01.fromFlat(
             rows = rows,
             cols = cols,
-            values01 = List(rows * cols) { idx ->
-                val r = idx / cols
-                val c = idx % cols
-                val base = (r + 1) * (c + 1)
-                ((base % 6) / 5f) // spreads values across discrete bins
-            },
-            rowLabels = labelsRow,
-            colLabels = labelsCol,
+            values01 = values01
         )
 
-        HeatmapChart(
-            data = ds
+        val data = HeatmapData(
+            matrix = matrix,
+            rowLabels = rowLabels,
+            colLabels = colLabels,
         )
+
+        HeatmapChart(data = data)
     }
 }

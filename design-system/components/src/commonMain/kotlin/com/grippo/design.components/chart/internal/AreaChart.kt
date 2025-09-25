@@ -2,8 +2,6 @@ package com.grippo.design.components.chart.internal
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
@@ -16,22 +14,10 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import kotlin.math.roundToInt
 
-@Immutable
-public data class DSAreaPoint(
-    val x: Float,
-    val y: Float,
-    val xLabel: String? = null,
-)
-
-@Immutable
-public data class DSAreaData(
-    val points: List<DSAreaPoint>
-)
-
 @Composable
-public fun AreaChart(
+internal fun AreaChart(
     modifier: Modifier = Modifier,
-    data: DSAreaData
+    data: AreaData
 ) {
     val charts = AppTokens.colors.charts
 
@@ -89,33 +75,23 @@ public fun AreaChart(
 
     AreaChart(
         modifier = modifier,
-        data = remember(data) { data.toChart() },
+        data = data,
         style = style
     )
 }
-
-private fun DSAreaPoint.toChart(): AreaPoint = AreaPoint(
-    x = x,
-    y = y,
-    xLabel = xLabel
-)
-
-private fun DSAreaData.toChart(): AreaData = AreaData(
-    points = points.map { it.toChart() }
-)
 
 @AppPreview
 @Composable
 private fun AreaChartPreview() {
     PreviewContainer {
-        val ds = DSAreaData(
+        val ds = AreaData(
             points = listOf(
-                DSAreaPoint(0f, 0f, "Mon"),
-                DSAreaPoint(2f, 6f, "Wed"),
-                DSAreaPoint(4f, 8f, "Fri"),
-                DSAreaPoint(6f, 7f, "Sun"),
-                DSAreaPoint(8f, 9f, "Tue"),
-                DSAreaPoint(10f, 11f, "Thu"),
+                AreaPoint(0f, 0f, "Mon"),
+                AreaPoint(2f, 6f, "Wed"),
+                AreaPoint(4f, 8f, "Fri"),
+                AreaPoint(6f, 7f, "Sun"),
+                AreaPoint(8f, 9f, "Tue"),
+                AreaPoint(10f, 11f, "Thu"),
             )
         )
 
