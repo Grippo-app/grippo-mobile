@@ -9,8 +9,10 @@ import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.state.datetime.PeriodState
 import com.grippo.state.exercise.examples.ExerciseExampleState
+import com.grippo.state.formatters.PercentageFormatState
 import com.grippo.state.formatters.UiText
 import com.grippo.state.muscles.MuscleEnumState
+import com.grippo.state.muscles.MuscleGroupEnumState
 import com.grippo.state.muscles.MuscleGroupState
 import com.grippo.state.muscles.MuscleRepresentationState
 import com.grippo.state.trainings.ExerciseState
@@ -54,6 +56,52 @@ public class MuscleLoadCalculator(
             examples = examples,
             groups = groups,
             workload = workload,
+        )
+    }
+
+    public suspend fun calculateMuscleLoadVisualizationFromExample(
+        example: ExerciseExampleState,
+    ): MuscleLoadVisualization {
+        val muscleLoad = buildMap {
+            example.bundles.forEach { bundle ->
+                val weight = bundle.percentage.valueOrZero()
+                if (weight <= 0f) return@forEach
+                val muscle = bundle.muscle.type
+                this[muscle] = (this[muscle] ?: 0f) + weight
+            }
+        }
+
+        if (muscleLoad.isEmpty()) {
+            val empty = MuscleLoadBreakdown(emptyList())
+            return MuscleLoadVisualization(perMuscle = empty, perGroup = empty)
+        }
+
+        val colors = colorProvider.get()
+        val scaleStops: List<Pair<Float, Color>> = colors.palette.palette5OrangeRedGrowth
+            .let { palette ->
+                val last = (palette.size - 1).coerceAtLeast(1)
+                palette.mapIndexed { idx, color -> idx.toFloat() / last.toFloat() to color }
+            }
+
+        val perMuscleValues = buildExamplePerMuscleValues(muscleLoad)
+        val perGroupValues = buildExampleGroupValues(muscleLoad)
+
+        val perMuscleBreakdown = buildBreakdown(
+            labelValues = perMuscleValues,
+            mode = Mode.RELATIVE,
+            relativeMode = RelativeMode.MAX,
+            scaleStops = scaleStops,
+        )
+        val perGroupBreakdown = buildBreakdown(
+            labelValues = perGroupValues,
+            mode = Mode.RELATIVE,
+            relativeMode = RelativeMode.SUM,
+            scaleStops = scaleStops,
+        )
+
+        return MuscleLoadVisualization(
+            perMuscle = perMuscleBreakdown,
+            perGroup = perGroupBreakdown,
         )
     }
 
@@ -226,6 +274,42 @@ public class MuscleLoadCalculator(
         }
     }
 
+    private fun buildExamplePerMuscleValues(
+        muscleLoad: Map<MuscleEnumState, Float>,
+    ): List<LabelValue> {
+        if (muscleLoad.isEmpty()) return emptyList()
+        return muscleLoad.map { (muscle, value) ->
+            LabelValue(
+                label = muscle.title(),
+                value = value,
+                muscles = listOf(muscle),
+            )
+        }
+    }
+
+    private fun buildExampleGroupValues(
+        muscleLoad: Map<MuscleEnumState, Float>,
+    ): List<LabelValue> {
+        if (muscleLoad.isEmpty()) return emptyList()
+
+        val totals = LinkedHashMap<MuscleGroupEnumState, Float>()
+        val musclesByGroup = LinkedHashMap<MuscleGroupEnumState, MutableList<MuscleEnumState>>()
+
+        muscleLoad.forEach { (muscle, value) ->
+            val group = muscle.group()
+            totals[group] = (totals[group] ?: 0f) + value
+            musclesByGroup.getOrPut(group) { mutableListOf() }.add(muscle)
+        }
+
+        return totals.map { (group, value) ->
+            LabelValue(
+                label = group.title(),
+                value = value,
+                muscles = musclesByGroup[group]?.toList() ?: emptyList(),
+            )
+        }
+    }
+
     private suspend fun buildBreakdown(
         labelValues: List<LabelValue>,
         mode: Mode,
@@ -306,5 +390,40 @@ public class MuscleLoadCalculator(
         val idx = if (normalized >= 100f) size - 1 else (normalized / bandWidth).toInt()
             .coerceIn(0, size - 1)
         return colors[idx]
+    }
+
+    private fun PercentageFormatState.valueOrZero(): Float = when (this) {
+        is PercentageFormatState.Valid -> value.toFloat()
+        is PercentageFormatState.Invalid -> value?.toFloat() ?: 0f
+        is PercentageFormatState.Empty -> 0f
+    }
+
+    private fun MuscleEnumState.group(): MuscleGroupEnumState = when (this) {
+        MuscleEnumState.PECTORALIS_MAJOR_CLAVICULAR,
+        MuscleEnumState.PECTORALIS_MAJOR_STERNOCOSTAL,
+        MuscleEnumState.PECTORALIS_MAJOR_ABDOMINAL -> MuscleGroupEnumState.CHEST_MUSCLES
+
+        MuscleEnumState.TRAPEZIUS,
+        MuscleEnumState.LATISSIMUS_DORSI,
+        MuscleEnumState.RHOMBOIDS,
+        MuscleEnumState.TERES_MAJOR -> MuscleGroupEnumState.BACK_MUSCLES
+
+        MuscleEnumState.RECTUS_ABDOMINIS,
+        MuscleEnumState.OBLIQUES -> MuscleGroupEnumState.ABDOMINAL_MUSCLES
+
+        MuscleEnumState.CALF,
+        MuscleEnumState.GLUTEAL,
+        MuscleEnumState.HAMSTRINGS,
+        MuscleEnumState.QUADRICEPS,
+        MuscleEnumState.ADDUCTORS,
+        MuscleEnumState.ABDUCTORS -> MuscleGroupEnumState.LEGS
+
+        MuscleEnumState.ANTERIOR_DELTOID,
+        MuscleEnumState.LATERAL_DELTOID,
+        MuscleEnumState.POSTERIOR_DELTOID -> MuscleGroupEnumState.SHOULDER_MUSCLES
+
+        MuscleEnumState.BICEPS,
+        MuscleEnumState.TRICEPS,
+        MuscleEnumState.FOREARM -> MuscleGroupEnumState.ARMS_AND_FOREARMS
     }
 }
