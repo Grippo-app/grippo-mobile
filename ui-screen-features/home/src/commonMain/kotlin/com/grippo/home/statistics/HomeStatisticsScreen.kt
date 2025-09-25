@@ -152,7 +152,8 @@ internal fun HomeStatisticsScreen(
             }
         }
 
-        if (state.muscleLoadData.items.isNotEmpty()) {
+        val summary = state.muscleLoadSummary
+        if (state.muscleLoadData.items.isNotEmpty() && summary != null) {
             item(key = "muscle_load", span = { GridItemSpan(3) }) {
                 ChartCard(
                     modifier = Modifier.fillMaxWidth(),
@@ -161,8 +162,7 @@ internal fun HomeStatisticsScreen(
                         MuscleLoad(
                             modifier = Modifier.fillMaxWidth(),
                             chartData = state.muscleLoadData,
-                            muscleBreakdown = state.muscleLoadMuscles,
-                            muscleImages = state.muscleLoadImages,
+                            valueSummary = summary,
                         )
                     }
                 )

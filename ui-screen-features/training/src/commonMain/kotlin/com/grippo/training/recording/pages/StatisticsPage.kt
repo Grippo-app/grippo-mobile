@@ -108,14 +108,12 @@ internal fun StatisticsPage(
             }
         }
 
-        if (state.categoryDistributionData.slices.isNotEmpty()) {
             item(key = "category_distribution", span = { GridItemSpan(1) }) {
                 PieChart(
                     modifier = Modifier.fillMaxWidth().aspectRatio(1f),
                     data = state.categoryDistributionData
                 )
             }
-        }
 
         if (state.weightTypeDistributionData.slices.isNotEmpty()) {
             item(key = "weight_type_distribution", span = { GridItemSpan(1) }) {
@@ -135,7 +133,8 @@ internal fun StatisticsPage(
             }
         }
 
-        if (state.muscleLoadData.items.isNotEmpty()) {
+        val summary = state.muscleLoadSummary
+        if (state.muscleLoadData.items.isNotEmpty() && summary != null) {
             item(key = "muscle_load", span = { GridItemSpan(3) }) {
                 ChartCard(
                     modifier = Modifier.fillMaxWidth(),
@@ -144,8 +143,7 @@ internal fun StatisticsPage(
                         MuscleLoad(
                             modifier = Modifier.fillMaxWidth(),
                             chartData = state.muscleLoadData,
-                            muscleBreakdown = state.muscleLoadMuscles,
-                            muscleImages = state.muscleLoadImages,
+                            valueSummary = summary,
                         )
                     }
                 )

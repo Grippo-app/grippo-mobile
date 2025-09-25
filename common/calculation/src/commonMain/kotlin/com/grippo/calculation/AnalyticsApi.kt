@@ -11,10 +11,8 @@ import com.grippo.calculation.models.DistributionBreakdown
 import com.grippo.calculation.models.DistributionWeighting
 import com.grippo.calculation.models.Metric
 import com.grippo.calculation.models.MetricSeries
-import com.grippo.calculation.models.MuscleImages
-import com.grippo.calculation.models.MuscleLoadBreakdown
 import com.grippo.calculation.models.MuscleLoadMatrix
-import com.grippo.calculation.models.MuscleLoadVisualization
+import com.grippo.calculation.models.MuscleLoadSummary
 import com.grippo.design.resources.provider.muscles.MuscleColorPreset
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
@@ -64,36 +62,60 @@ public class AnalyticsApi(
         .computeVolumeSeriesFromTrainings(trainings, period)
 
     /**
-     * Aggregates muscle load for the provided [exercises].
-     * The response combines per-muscle coloring data (for the body preset) and group level progress values.
+     * Aggregates muscle load for the provided [exercises] and returns the group breakdown together with
+     * pre-built front/back muscle images colored by intensity.
      */
     public suspend fun muscleLoadFromExercises(
         exercises: List<ExerciseState>,
         examples: List<ExerciseExampleState>,
         groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
-    ): MuscleLoadVisualization = muscleLoadCalculator
-        .computeMuscleLoadVisualizationFromExercises(exercises, examples, groups)
+    ): MuscleLoadSummary {
+        val breakdowns = muscleLoadCalculator
+            .computeMuscleLoadBreakdownsFromExercises(exercises, examples, groups)
+        val images = muscleImageBuilder.generateImagesFromBreakdown(breakdowns.perMuscle)
+
+        return MuscleLoadSummary(
+            perGroup = breakdowns.perGroup,
+            images = images,
+        )
+    }
 
     /**
      * Aggregates muscle load across [trainings] filtered by [period].
-     * This is the counterpart used for dashboards that operate on training history.
+     * The result contains the group breakdown and ready-to-render images colored by intensity.
      */
     public suspend fun muscleLoadFromTrainings(
         trainings: List<TrainingState>,
         period: PeriodState,
         examples: List<ExerciseExampleState>,
         groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
-    ): MuscleLoadVisualization = muscleLoadCalculator
-        .computeMuscleLoadVisualizationFromTrainings(trainings, period, examples, groups)
+    ): MuscleLoadSummary {
+        val breakdowns = muscleLoadCalculator
+            .computeMuscleLoadBreakdownsFromTrainings(trainings, period, examples, groups)
+        val images = muscleImageBuilder.generateImagesFromBreakdown(breakdowns.perMuscle)
+
+        return MuscleLoadSummary(
+            perGroup = breakdowns.perGroup,
+            images = images,
+        )
+    }
 
     /**
-     * Maps a single exercise example into the visual muscle load representation using bundle percentages.
+     * Maps a single exercise example into the muscle load representation using bundle percentages.
      * Handy for dialogs that visualise how an exercise targets the body without loading a training list.
      */
     public suspend fun muscleLoadFromExample(
         example: ExerciseExampleState
-    ): MuscleLoadVisualization = muscleLoadCalculator
-        .computeMuscleLoadVisualizationFromExample(example)
+    ): MuscleLoadSummary {
+        val breakdowns = muscleLoadCalculator
+            .computeMuscleLoadBreakdownsFromExample(example)
+        val images = muscleImageBuilder.generateImagesFromBreakdown(breakdowns.perMuscle)
+
+        return MuscleLoadSummary(
+            perGroup = breakdowns.perGroup,
+            images = images,
+        )
+    }
 
     /**
      * Builds the temporal heatmap matrix for [trainings] using the provided filters.
@@ -207,14 +229,6 @@ public class AnalyticsApi(
         trainings: List<TrainingState>
     ): TrainingMetrics = metricsAggregator
         .calculateTrainings(trainings)
-
-    /**
-     * Builds body front/back images for a given muscle load breakdown.
-     */
-    public suspend fun muscleImagesFromBreakdown(
-        breakdown: MuscleLoadBreakdown,
-    ): MuscleImages? = muscleImageBuilder
-        .generateImagesFromBreakdown(breakdown)
 
     /**
      * Builds a muscle color preset for a specific [group] with [selectedIds] highlighted.

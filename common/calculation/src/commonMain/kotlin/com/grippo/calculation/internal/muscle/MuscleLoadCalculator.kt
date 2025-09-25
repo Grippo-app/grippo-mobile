@@ -3,7 +3,6 @@ package com.grippo.calculation.internal.muscle
 import androidx.compose.ui.graphics.Color
 import com.grippo.calculation.models.MuscleLoadBreakdown
 import com.grippo.calculation.models.MuscleLoadEntry
-import com.grippo.calculation.models.MuscleLoadVisualization
 import com.grippo.date.utils.contains
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
@@ -18,6 +17,11 @@ import com.grippo.state.muscles.MuscleRepresentationState
 import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.TrainingState
 
+internal data class MuscleLoadBreakdowns(
+    val perMuscle: MuscleLoadBreakdown,
+    val perGroup: MuscleLoadBreakdown,
+)
+
 internal class MuscleLoadCalculator(
     private val stringProvider: StringProvider,
     private val colorProvider: ColorProvider,
@@ -27,11 +31,11 @@ internal class MuscleLoadCalculator(
         private const val EPS: Float = 1e-3f
     }
 
-    suspend fun computeMuscleLoadVisualizationFromExercises(
+    suspend fun computeMuscleLoadBreakdownsFromExercises(
         exercises: List<ExerciseState>,
         examples: List<ExerciseExampleState>,
         groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
-    ): MuscleLoadVisualization {
+    ): MuscleLoadBreakdowns {
         val workload = computeAutoWorkload(exercises)
         return calculateCore(
             exercises = exercises,
@@ -41,12 +45,12 @@ internal class MuscleLoadCalculator(
         )
     }
 
-    suspend fun computeMuscleLoadVisualizationFromTrainings(
+    suspend fun computeMuscleLoadBreakdownsFromTrainings(
         trainings: List<TrainingState>,
         period: PeriodState,
         examples: List<ExerciseExampleState>,
         groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
-    ): MuscleLoadVisualization {
+    ): MuscleLoadBreakdowns {
         val inRange = trainings.filter { it.createdAt in period.range }
         val exercises = inRange.flatMap { it.exercises }
         val workload = computeAutoWorkload(exercises)
@@ -59,9 +63,9 @@ internal class MuscleLoadCalculator(
         )
     }
 
-    suspend fun computeMuscleLoadVisualizationFromExample(
+    suspend fun computeMuscleLoadBreakdownsFromExample(
         example: ExerciseExampleState,
-    ): MuscleLoadVisualization {
+    ): MuscleLoadBreakdowns {
         val muscleLoad = buildMap {
             example.bundles.forEach { bundle ->
                 val weight = bundle.percentage.valueOrZero()
@@ -73,7 +77,7 @@ internal class MuscleLoadCalculator(
 
         if (muscleLoad.isEmpty()) {
             val empty = MuscleLoadBreakdown(emptyList())
-            return MuscleLoadVisualization(perMuscle = empty, perGroup = empty)
+            return MuscleLoadBreakdowns(perMuscle = empty, perGroup = empty)
         }
 
         val colors = colorProvider.get()
@@ -99,7 +103,7 @@ internal class MuscleLoadCalculator(
             scaleStops = scaleStops,
         )
 
-        return MuscleLoadVisualization(
+        return MuscleLoadBreakdowns(
             perMuscle = perMuscleBreakdown,
             perGroup = perGroupBreakdown,
         )
@@ -130,9 +134,9 @@ internal class MuscleLoadCalculator(
         examples: List<ExerciseExampleState>,
         groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
         workload: Workload,
-    ): MuscleLoadVisualization {
+    ): MuscleLoadBreakdowns {
         if (exercises.isEmpty()) {
-            return MuscleLoadVisualization(
+            return MuscleLoadBreakdowns(
                 perMuscle = MuscleLoadBreakdown(emptyList()),
                 perGroup = MuscleLoadBreakdown(emptyList()),
             )
@@ -148,7 +152,7 @@ internal class MuscleLoadCalculator(
         val exampleMap = examples.associateBy { it.value.id }
         val muscleLoad = computeMuscleLoad(exercises, exampleMap, workload)
         if (muscleLoad.isEmpty()) {
-            return MuscleLoadVisualization(
+            return MuscleLoadBreakdowns(
                 perMuscle = MuscleLoadBreakdown(emptyList()),
                 perGroup = MuscleLoadBreakdown(emptyList()),
             )
@@ -174,7 +178,7 @@ internal class MuscleLoadCalculator(
             scaleStops = scaleStops,
         )
 
-        return MuscleLoadVisualization(
+        return MuscleLoadBreakdowns(
             perMuscle = perMuscleBreakdown,
             perGroup = perGroupBreakdown,
         )

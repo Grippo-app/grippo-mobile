@@ -36,22 +36,17 @@ public class ExerciseExampleViewModel(
     private suspend fun provideExerciseExample(value: ExerciseExample?) {
         val exampleState = value?.toState() ?: return
 
-        val visualization = analytics.muscleLoadFromExample(
+        val muscleLoad = analytics.muscleLoadFromExample(
             example = exampleState
         )
 
-        val progress = visualization.perGroup.asChart()
-
-        val muscleImages = analytics.muscleImagesFromBreakdown(
-            visualization.perMuscle
-        )
+        val progress = muscleLoad.perGroup.asChart()
 
         update { current ->
             current.copy(
                 example = exampleState,
                 muscleLoadData = progress,
-                muscleLoadMuscles = visualization.perMuscle,
-                muscleLoadImages = muscleImages,
+                muscleLoadSummary = muscleLoad,
             )
         }
     }

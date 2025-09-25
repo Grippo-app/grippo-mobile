@@ -44,15 +44,15 @@ public data class MuscleLoadBreakdown(
 )
 
 @Immutable
-public data class MuscleLoadVisualization(
-    val perMuscle: MuscleLoadBreakdown,
-    val perGroup: MuscleLoadBreakdown,
-)
-
-@Immutable
 public data class MuscleImages(
     val front: ImageVector,
     val back: ImageVector,
+)
+
+@Immutable
+public data class MuscleLoadSummary(
+    val perGroup: MuscleLoadBreakdown,
+    val images: MuscleImages?,
 )
 
 public sealed interface Metric {

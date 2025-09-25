@@ -44,12 +44,11 @@ internal class ExcludedMusclesViewModel(
         calculatePresets(suggestions, selectedIds)
     }
 
-    override fun onSelectMuscle(id: String) {
-        update {
-            val newList: PersistentList<String> = it.selectedMuscleIds
-                .toMutableList()
-                .apply { if (contains(id)) remove(id) else add(id) }
-                .toPersistentList()
+    override fun onSelect(id: String) {
+        val newList: PersistentList<String> = state.value.selectedMuscleIds
+            .toMutableList()
+            .apply { if (contains(id)) remove(id) else add(id) }
+            .toPersistentList()
 
         update { it.copy(selectedMuscleIds = newList) }
 

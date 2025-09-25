@@ -6,11 +6,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.grippo.calculation.models.MuscleImages
-import com.grippo.calculation.models.MuscleLoadBreakdown
+import com.grippo.calculation.models.MuscleLoadSummary
 import com.grippo.design.components.chart.DSProgressData
 import com.grippo.design.components.chart.ProgressChart
 import com.grippo.design.core.AppTokens
@@ -19,16 +17,14 @@ import com.grippo.design.core.AppTokens
 public fun MuscleLoad(
     modifier: Modifier = Modifier,
     chartData: DSProgressData,
-    muscleBreakdown: MuscleLoadBreakdown,
-    muscleImages: MuscleImages?,
+    valueSummary: MuscleLoadSummary,
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
-        val entries = remember(muscleBreakdown) { muscleBreakdown.entries }
-
-        if (entries.isNotEmpty() && muscleImages != null) {
+        val images = valueSummary.images
+        if (images != null) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
@@ -36,12 +32,12 @@ public fun MuscleLoad(
             ) {
                 Image(
                     modifier = Modifier.weight(1f),
-                    imageVector = muscleImages.front,
+                    imageVector = images.front,
                     contentDescription = null,
                 )
                 Image(
                     modifier = Modifier.weight(1f),
-                    imageVector = muscleImages.back,
+                    imageVector = images.back,
                     contentDescription = null,
                 )
             }

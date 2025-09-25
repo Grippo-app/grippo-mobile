@@ -261,8 +261,7 @@ internal class TrainingRecordingViewModel(
                     forceTypeDistributionData = DSPieData(slices = emptyList()),
                     weightTypeDistributionData = DSPieData(slices = emptyList()),
                     muscleLoadData = DSProgressData(items = emptyList()),
-                    muscleLoadMuscles = MuscleLoadBreakdown(entries = emptyList()),
-                    muscleLoadImages = null,
+                    muscleLoadSummary = null,
                 )
             }
             return
@@ -288,14 +287,10 @@ internal class TrainingRecordingViewModel(
             exercises = exercises
         )
 
-        val muscleLoadVisualization = analytics.muscleLoadFromExercises(
+        val muscleLoad = analytics.muscleLoadFromExercises(
             exercises = exercises,
             examples = examples,
             groups = muscles,
-        )
-
-        val muscleImages = analytics.muscleImagesFromBreakdown(
-            breakdown = muscleLoadVisualization.perMuscle,
         )
 
         update {
@@ -307,9 +302,8 @@ internal class TrainingRecordingViewModel(
                 categoryDistributionData = categoryDistributionData,
                 weightTypeDistributionData = weightTypeDistributionData,
                 forceTypeDistributionData = forceTypeDistributionData,
-                muscleLoadData = muscleLoadVisualization.perGroup.asChart(),
-                muscleLoadMuscles = muscleLoadVisualization.perMuscle,
-                muscleLoadImages = muscleImages,
+                muscleLoadData = muscleLoad.perGroup.asChart(),
+                muscleLoadSummary = muscleLoad,
             )
         }
     }

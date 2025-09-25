@@ -150,9 +150,8 @@ internal class HomeStatisticsViewModel(
                     forceTypeDistributionData = DSPieData(slices = emptyList()),
                     weightTypeDistributionData = DSPieData(slices = emptyList()),
                     muscleLoadData = DSProgressData(items = emptyList()),
-                    muscleLoadMuscles = MuscleLoadBreakdown(entries = emptyList()),
                     temporalHeatmapData = DSHeatmapData(rows = 0, cols = 0, values01 = emptyList()),
-                    muscleLoadImages = null,
+                    muscleLoadSummary = null,
                 )
             }
             return
@@ -182,7 +181,7 @@ internal class HomeStatisticsViewModel(
             period = period,
         )
 
-        val muscleLoadVisualization = analytics.muscleLoadFromTrainings(
+        val muscleLoad = analytics.muscleLoadFromTrainings(
             trainings = trainings,
             period = period,
             examples = examples,
@@ -196,10 +195,6 @@ internal class HomeStatisticsViewModel(
             groups = muscles,
         )
 
-        val muscleImages = analytics.muscleImagesFromBreakdown(
-            breakdown = muscleLoadVisualization.perMuscle,
-        )
-
         update {
             it.copy(
                 totalVolume = totalMetrics.volume,
@@ -209,9 +204,8 @@ internal class HomeStatisticsViewModel(
                 categoryDistributionData = categoryDistributionData,
                 weightTypeDistributionData = weightTypeDistributionData,
                 forceTypeDistributionData = forceTypeDistributionData,
-                muscleLoadData = muscleLoadVisualization.perGroup.asChart(),
-                muscleLoadMuscles = muscleLoadVisualization.perMuscle,
-                muscleLoadImages = muscleImages,
+                muscleLoadData = muscleLoad.perGroup.asChart(),
+                muscleLoadSummary = muscleLoad,
                 temporalHeatmapData = muscleLoadMatrix.asChart(),
             )
         }

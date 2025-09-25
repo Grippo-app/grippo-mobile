@@ -1,8 +1,7 @@
 package com.grippo.home.statistics
 
 import androidx.compose.runtime.Immutable
-import com.grippo.calculation.models.MuscleImages
-import com.grippo.calculation.models.MuscleLoadBreakdown
+import com.grippo.calculation.models.MuscleLoadSummary
 import com.grippo.design.components.chart.DSBarData
 import com.grippo.design.components.chart.DSHeatmapData
 import com.grippo.design.components.chart.DSPieData
@@ -35,8 +34,7 @@ internal data class HomeStatisticsState(
 
     // === Muscle analysis (progress/heatmap) ===
     val muscleLoadData: DSProgressData = DSProgressData(items = emptyList()),
-    val muscleLoadMuscles: MuscleLoadBreakdown = MuscleLoadBreakdown(entries = emptyList()),
-    val muscleLoadImages: MuscleImages? = null,
+    val muscleLoadSummary: MuscleLoadSummary? = null,
 
     // === Exercise example distributions (pie) ===
     val categoryDistributionData: DSPieData = DSPieData(slices = emptyList()),
