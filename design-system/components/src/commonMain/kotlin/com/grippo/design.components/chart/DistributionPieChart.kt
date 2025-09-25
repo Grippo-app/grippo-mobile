@@ -5,8 +5,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.calculation.models.DistributionBreakdown
 import com.grippo.calculation.models.DistributionSlice
-import com.grippo.design.components.chart.internal.DSPieData
-import com.grippo.design.components.chart.internal.DSPieSlice
+import com.grippo.chart.pie.PieData
+import com.grippo.chart.pie.PieSlice
 import com.grippo.design.components.chart.internal.PieChart
 
 @Composable
@@ -24,11 +24,11 @@ public fun DistributionPieChart(
     )
 }
 
-private fun DistributionBreakdown.toPieData(): DSPieData = DSPieData(
+private fun DistributionBreakdown.toPieData(): PieData = PieData(
     slices = slices.map { it.toPieSlice() }
 )
 
-private fun DistributionSlice.toPieSlice(): DSPieSlice = DSPieSlice(
+private fun DistributionSlice.toPieSlice(): PieSlice = PieSlice(
     id = id,
     label = label,
     value = value,

@@ -2,7 +2,6 @@ package com.grippo.design.components.chart.internal
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,29 +16,10 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
-@Immutable
-public data class DSRadarAxis(
-    val id: String,
-    val label: String
-)
-
-@Immutable
-public data class DSRadarSeries(
-    val name: String,
-    val color: Color,
-    val valuesByAxisId: Map<String, Float>, // 0..1
-)
-
-@Immutable
-public data class DSRadarData(
-    val axes: List<DSRadarAxis>,
-    val series: List<DSRadarSeries>,
-)
-
 @Composable
-public fun RadarChart(
+internal fun RadarChart(
     modifier: Modifier = Modifier,
-    data: DSRadarData
+    data: RadarData
 ) {
     val charts = AppTokens.colors.charts
     val palette = AppTokens.colors.palette
@@ -92,51 +72,37 @@ public fun RadarChart(
 
     RadarChart(
         modifier = modifier,
-        data = remember(data) { data.toChart() },
+        data = data,
         style = style
     )
 }
-
-private fun DSRadarAxis.toChart(): RadarAxis = RadarAxis(
-    id = id,
-    label = label
-)
-
-private fun DSRadarSeries.toChart(): RadarSeries = RadarSeries(
-    name = name,
-    color = color,
-    values = RadarValues.ByAxisId(valuesByAxisId)
-)
-
-private fun DSRadarData.toChart(): RadarData = RadarData(
-    axes = axes.map { it.toChart() },
-    series = series.map { it.toChart() },
-)
 
 @AppPreview
 @Composable
 private fun RadarChartPreview() {
     PreviewContainer {
-        val ds = DSRadarData(
+        val ds = RadarData(
             axes = listOf(
-                DSRadarAxis("chest", "Chest"),
-                DSRadarAxis("back", "Back"),
-                DSRadarAxis("legs", "Legs"),
-                DSRadarAxis("shoulders", "Shoulders"),
-                DSRadarAxis("arms", "Arms"),
-                DSRadarAxis("core", "Core"),
+                RadarAxis("chest", "Chest"),
+                RadarAxis("back", "Back"),
+                RadarAxis("legs", "Legs"),
+                RadarAxis("shoulders", "Shoulders"),
+                RadarAxis("arms", "Arms"),
+                RadarAxis("core", "Core"),
             ),
             series = listOf(
-                DSRadarSeries(
+                RadarSeries(
                     name = "Current",
                     color = Color(0xFFB049F8),
-                    valuesByAxisId = mapOf(
-                        "chest" to 0.75f,
-                        "back" to 0.6f,
-                        "legs" to 0.9f,
-                        "shoulders" to 0.55f,
-                        "arms" to 0.7f,
-                        "core" to 0.5f
+                    values = RadarValues.ByAxisId(
+                        mapOf(
+                            "chest" to 0.75f,
+                            "back" to 0.6f,
+                            "legs" to 0.9f,
+                            "shoulders" to 0.55f,
+                            "arms" to 0.7f,
+                            "core" to 0.5f
+                        )
                     )
                 )
             )

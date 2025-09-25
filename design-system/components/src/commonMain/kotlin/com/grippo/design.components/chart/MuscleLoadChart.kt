@@ -10,8 +10,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.calculation.models.MuscleLoadSummary
-import com.grippo.design.components.chart.internal.DSProgressData
-import com.grippo.design.components.chart.internal.DSProgressItem
+import com.grippo.chart.progress.ProgressChartData
+import com.grippo.chart.progress.ProgressData
 import com.grippo.design.components.chart.internal.ProgressChart
 import com.grippo.design.core.AppTokens
 
@@ -56,9 +56,9 @@ public fun MuscleLoadChart(
     }
 }
 
-private fun MuscleLoadSummary.toProgressData(): DSProgressData = DSProgressData(
+private fun MuscleLoadSummary.toProgressData(): ProgressData = ProgressData(
     items = perGroup.entries.map { entry ->
-        DSProgressItem(
+        ProgressChartData(
             label = entry.label,
             value = entry.value,
             color = entry.color,

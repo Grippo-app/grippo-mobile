@@ -2,8 +2,6 @@ package com.grippo.design.components.chart.internal
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -17,22 +15,10 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import kotlin.math.ceil
 
-@Immutable
-public data class DSProgressItem(
-    val label: String,
-    val value: Float,
-    val color: Color
-)
-
-@Immutable
-public data class DSProgressData(
-    val items: List<DSProgressItem>,
-)
-
 @Composable
-public fun ProgressChart(
+internal fun ProgressChart(
     modifier: Modifier = Modifier,
-    data: DSProgressData
+    data: ProgressData
 ) {
     val charts = AppTokens.colors.charts
 
@@ -75,32 +61,22 @@ public fun ProgressChart(
 
     ProgressChart(
         modifier = modifier,
-        data = remember(data) { data.toChart() },
+        data = data,
         style = style
     )
 }
-
-private fun DSProgressItem.toChart(): ProgressChartData = ProgressChartData(
-    label = label,
-    value = value,
-    color = color
-)
-
-private fun DSProgressData.toChart(): ProgressData = ProgressData(
-    items = items.map { it.toChart() },
-)
 
 @AppPreview
 @Composable
 private fun ProgressChartPreview() {
     PreviewContainer {
-        val ds = DSProgressData(
+        val ds = ProgressData(
             items = listOf(
-                DSProgressItem("Bench Press", 72f, Color(0xFF6AA9FF)),
-                DSProgressItem("Deadlift", 100f, Color(0xFF00E6A7)),
-                DSProgressItem("Squat", 86f, Color(0xFFFF7A33)),
-                DSProgressItem("Overhead Press", 58f, Color(0xFFB049F8)),
-                DSProgressItem("Row", 64f, Color(0xFFFFC53D)),
+                ProgressChartData("Bench Press", 72f, Color(0xFF6AA9FF)),
+                ProgressChartData("Deadlift", 100f, Color(0xFF00E6A7)),
+                ProgressChartData("Squat", 86f, Color(0xFFFF7A33)),
+                ProgressChartData("Overhead Press", 58f, Color(0xFFB049F8)),
+                ProgressChartData("Row", 64f, Color(0xFFFFC53D)),
             ),
         )
 
