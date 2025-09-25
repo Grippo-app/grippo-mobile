@@ -1,6 +1,5 @@
 package com.grippo.exercise
 
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -54,13 +53,13 @@ internal fun ExerciseScreen(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
             .verticalScroll(rememberScrollState())
     ) {
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
         ExerciseExampleImage(
-            modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
             value = exercise.exerciseExample.imageUrl,
             style = ExerciseExampleImageStyle.LARGE
         )
@@ -68,9 +67,7 @@ internal fun ExerciseScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
         Text(
-            modifier = Modifier
-                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             text = exercise.name,
             style = AppTokens.typography.h1(),
             color = AppTokens.colors.text.primary,
@@ -82,7 +79,6 @@ internal fun ExerciseScreen(
 
             IterationsCard(
                 modifier = Modifier
-                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                     .fillMaxWidth(),
                 value = exercise.iterations
             )
@@ -90,27 +86,27 @@ internal fun ExerciseScreen(
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
             Row(
-                modifier = Modifier
-                    .horizontalScroll(rememberScrollState())
-                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
             ) {
                 VolumeChip(
+                    modifier = Modifier.weight(1f),
                     value = exercise.metrics.volume,
-                    style = VolumeChipStyle.LONG,
+                    style = VolumeChipStyle.SHORT,
                     size = ChipSize.Medium
                 )
 
                 IntensityChip(
+                    modifier = Modifier.weight(1f),
                     value = exercise.metrics.intensity,
-                    style = IntensityChipStyle.LONG,
+                    style = IntensityChipStyle.SHORT,
                     size = ChipSize.Medium
                 )
 
                 RepetitionsChip(
+                    modifier = Modifier.weight(1f),
                     value = exercise.metrics.repetitions,
-                    style = RepetitionsChipStyle.LONG,
+                    style = RepetitionsChipStyle.SHORT,
                     size = ChipSize.Medium
                 )
             }
@@ -125,8 +121,7 @@ internal fun ExerciseScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         Row(
-            modifier = Modifier
-                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
         ) {
@@ -153,9 +148,7 @@ internal fun ExerciseScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
         Text(
-            modifier = Modifier
-                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             text = example.description,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,

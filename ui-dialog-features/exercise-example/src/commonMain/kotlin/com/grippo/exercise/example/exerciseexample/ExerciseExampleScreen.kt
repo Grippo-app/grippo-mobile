@@ -130,33 +130,36 @@ internal fun ExerciseExampleScreen(
             color = AppTokens.colors.text.primary,
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
         state.muscleLoad?.let { summary ->
+
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
             MuscleLoadChart(
                 modifier = Modifier
                     .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                     .fillMaxWidth(),
                 value = summary,
             )
-
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
         }
 
-        Text(
-            modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-            text = AppTokens.strings.res(Res.string.required_equipment),
-            style = AppTokens.typography.b14Bold(),
-            color = AppTokens.colors.text.primary
-        )
+        if (example.equipments.isNotEmpty()) {
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+            Text(
+                modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                text = AppTokens.strings.res(Res.string.required_equipment),
+                style = AppTokens.typography.b14Bold(),
+                color = AppTokens.colors.text.primary
+            )
 
-        EquipmentsCard(
-            modifier = Modifier.fillMaxWidth(),
-            value = example.equipments,
-            contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
-        )
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+            EquipmentsCard(
+                modifier = Modifier.fillMaxWidth(),
+                value = example.equipments,
+                contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
+            )
+        }
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
     }
