@@ -2,8 +2,8 @@ package com.grippo.exercise.example.exerciseexample
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -71,17 +71,16 @@ internal fun ExerciseExampleScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
-        FlowRow(
+        Row(
             modifier = Modifier
                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                 .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
         ) {
             Chip(
                 label = ChipLabel.Empty,
                 value = example.value.category.title().text(),
-                size = ChipSize.Small,
+                size = ChipSize.Medium,
                 stype = ChipStype.Default,
                 trailing = ChipTrailing.Empty,
                 contentColor = AppTokens.colors.static.white,
@@ -91,7 +90,7 @@ internal fun ExerciseExampleScreen(
             Chip(
                 label = ChipLabel.Empty,
                 value = example.value.forceType.title().text(),
-                size = ChipSize.Small,
+                size = ChipSize.Medium,
                 stype = ChipStype.Default,
                 trailing = ChipTrailing.Empty,
                 contentColor = AppTokens.colors.static.white,
@@ -101,7 +100,7 @@ internal fun ExerciseExampleScreen(
             Chip(
                 label = ChipLabel.Empty,
                 value = example.value.weightType.title().text(),
-                size = ChipSize.Small,
+                size = ChipSize.Medium,
                 stype = ChipStype.Default,
                 trailing = ChipTrailing.Empty,
                 contentColor = AppTokens.colors.static.white,
@@ -111,7 +110,7 @@ internal fun ExerciseExampleScreen(
             Chip(
                 label = ChipLabel.Empty,
                 value = example.value.experience.title().text(),
-                size = ChipSize.Small,
+                size = ChipSize.Medium,
                 stype = ChipStype.Default,
                 trailing = ChipTrailing.Empty,
                 contentColor = AppTokens.colors.static.white,
@@ -126,8 +125,8 @@ internal fun ExerciseExampleScreen(
                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                 .fillMaxWidth(),
             text = example.value.description,
-            style = AppTokens.typography.b14Reg(),
-            color = AppTokens.colors.text.primary,
+            style = AppTokens.typography.b14Med(),
+            color = AppTokens.colors.text.secondary,
         )
 
         state.muscleLoad?.let { summary ->

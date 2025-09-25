@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -73,50 +74,54 @@ internal fun ExerciseScreen(
             color = AppTokens.colors.text.primary,
         )
 
-        if (exercise.iterations.isNotEmpty()) {
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-            IterationsCard(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                value = exercise.iterations
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+        ) {
+            VolumeChip(
+                modifier = Modifier.weight(1f),
+                value = exercise.metrics.volume,
+                style = VolumeChipStyle.SHORT,
+                size = ChipSize.Medium
             )
 
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+            IntensityChip(
+                modifier = Modifier.weight(1f),
+                value = exercise.metrics.intensity,
+                style = IntensityChipStyle.SHORT,
+                size = ChipSize.Medium
+            )
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-            ) {
-                VolumeChip(
-                    modifier = Modifier.weight(1f),
-                    value = exercise.metrics.volume,
-                    style = VolumeChipStyle.SHORT,
-                    size = ChipSize.Medium
-                )
-
-                IntensityChip(
-                    modifier = Modifier.weight(1f),
-                    value = exercise.metrics.intensity,
-                    style = IntensityChipStyle.SHORT,
-                    size = ChipSize.Medium
-                )
-
-                RepetitionsChip(
-                    modifier = Modifier.weight(1f),
-                    value = exercise.metrics.repetitions,
-                    style = RepetitionsChipStyle.SHORT,
-                    size = ChipSize.Medium
-                )
-            }
+            RepetitionsChip(
+                modifier = Modifier.weight(1f),
+                value = exercise.metrics.repetitions,
+                style = RepetitionsChipStyle.SHORT,
+                size = ChipSize.Medium
+            )
         }
 
-        val example = exercise.exerciseExample
+        if (exercise.iterations.isNotEmpty()) {
+
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+            IterationsCard(
+                modifier = Modifier.fillMaxWidth(),
+                value = exercise.iterations
+            )
+        }
 
         val onExampleDetailsClick = remember {
-            { contract.onExampleDetailsClick(example.id) }
+            { contract.onExampleDetailsClick(exercise.exerciseExample.id) }
         }
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+        HorizontalDivider(
+            modifier = Modifier.fillMaxWidth(),
+            color = AppTokens.colors.divider.default
+        )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
@@ -127,7 +132,7 @@ internal fun ExerciseScreen(
         ) {
             Text(
                 modifier = Modifier.weight(1f),
-                text = example.name,
+                text = exercise.exerciseExample.name,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = AppTokens.typography.b14Bold(),
@@ -149,10 +154,10 @@ internal fun ExerciseScreen(
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = example.description,
+            text = exercise.exerciseExample.description,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
-            style = AppTokens.typography.b14Reg(),
+            style = AppTokens.typography.b14Med(),
             color = AppTokens.colors.text.secondary,
         )
 
