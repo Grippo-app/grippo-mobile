@@ -79,13 +79,13 @@ internal fun CheckSelectableCardLarge(
             ) {
                 Text(
                     text = style.title,
-                    style = AppTokens.typography.b15Bold(),
+                    style = AppTokens.typography.h5(),
                     color = AppTokens.colors.text.primary
                 )
 
                 Text(
                     text = style.description,
-                    style = AppTokens.typography.b14Semi(),
+                    style = AppTokens.typography.b14Med(),
                     color = AppTokens.colors.text.secondary
                 )
             }

@@ -68,7 +68,7 @@ public fun MenuCard(
             text = title,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            style = AppTokens.typography.b15Bold(),
+            style = AppTokens.typography.b14Semi(),
             color = AppTokens.colors.text.primary
         )
 

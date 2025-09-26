@@ -91,7 +91,7 @@ public fun <KEY> Tab(
                                 style = if (item.first == selected) {
                                     AppTokens.typography.b14Bold()
                                 } else {
-                                    AppTokens.typography.b14Semi()
+                                    AppTokens.typography.b14Med()
                                 },
                                 color = if (item.first == selected) {
                                     AppTokens.colors.segment.active

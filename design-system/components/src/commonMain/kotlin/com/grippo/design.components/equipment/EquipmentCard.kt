@@ -52,7 +52,7 @@ public fun EquipmentCard(
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,
-            style = AppTokens.typography.b13Bold(),
+            style = AppTokens.typography.b14Bold(),
             color = AppTokens.colors.text.primary
         )
     }

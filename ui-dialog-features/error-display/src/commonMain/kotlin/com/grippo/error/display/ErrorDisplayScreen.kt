@@ -66,7 +66,7 @@ internal fun ErrorDisplayScreen(
         val description = state.error.description()
 
         if (description != null) {
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
 
             Text(
                 modifier = Modifier

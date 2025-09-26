@@ -74,7 +74,7 @@ internal fun LoginScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
 
         Text(
             modifier = Modifier.fillMaxWidth(),
@@ -135,8 +135,8 @@ internal fun LoginScreen(
 
             Text(
                 text = AppTokens.strings.res(Res.string.or),
-                style = AppTokens.typography.b14Reg(),
-                color = AppTokens.colors.text.primary,
+                style = AppTokens.typography.b14Med(),
+                color = AppTokens.colors.text.tertiary,
             )
 
             HorizontalDivider(
@@ -157,7 +157,7 @@ internal fun LoginScreen(
         ) {
             Text(
                 text = AppTokens.strings.res(Res.string.login_button_registration_label),
-                style = AppTokens.typography.b15Reg(),
+                style = AppTokens.typography.b14Med(),
                 color = AppTokens.colors.text.secondary,
             )
 

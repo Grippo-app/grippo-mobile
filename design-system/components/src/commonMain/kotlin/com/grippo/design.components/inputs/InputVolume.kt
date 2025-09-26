@@ -42,7 +42,7 @@ public fun InputVolume(
             Text(
                 modifier = Modifier.padding(end = 8.dp),
                 text = AppTokens.strings.res(Res.string.kg),
-                style = AppTokens.typography.b15Semi(),
+                style = AppTokens.typography.b15Med(),
                 color = color
             )
         },

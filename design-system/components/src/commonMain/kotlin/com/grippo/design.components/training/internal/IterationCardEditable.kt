@@ -45,7 +45,7 @@ internal fun IterationCardEditable(
                 .wrapContentHeight(),
             text = label,
             textAlign = TextAlign.Center,
-            style = AppTokens.typography.b13Bold(),
+            style = AppTokens.typography.b14Bold(),
             color = AppTokens.colors.text.primary
         )
 
@@ -59,7 +59,7 @@ internal fun IterationCardEditable(
                 .wrapContentHeight(),
             text = value.volume.short(),
             textAlign = TextAlign.Center,
-            style = AppTokens.typography.b13Bold(),
+            style = AppTokens.typography.b14Bold(),
             color = AppTokens.colors.text.primary
         )
 
@@ -73,7 +73,7 @@ internal fun IterationCardEditable(
                 .wrapContentHeight(),
             textAlign = TextAlign.Center,
             text = value.repetitions.short(),
-            style = AppTokens.typography.b13Bold(),
+            style = AppTokens.typography.b14Bold(),
             color = AppTokens.colors.text.primary
         )
     }

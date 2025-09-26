@@ -54,7 +54,7 @@ public fun DatePicker(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = title,
-                style = AppTokens.typography.b16Bold(),
+                style = AppTokens.typography.h5(),
                 color = titleColor
             )
 
@@ -72,7 +72,7 @@ public fun DatePicker(
 
         Text(
             text = text,
-            style = AppTokens.typography.b13Semi(),
+            style = AppTokens.typography.b14Med(),
             color = descriptionColor
         )
     }

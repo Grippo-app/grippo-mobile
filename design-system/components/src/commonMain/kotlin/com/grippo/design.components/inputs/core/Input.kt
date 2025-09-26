@@ -265,7 +265,7 @@ internal fun Input(
                                 style = lerp(
                                     start = AppTokens.typography.b13Semi()
                                         .copy(color = placeholderColor),
-                                    stop = AppTokens.typography.b12Semi().copy(color = labelColor),
+                                    stop = AppTokens.typography.b13Semi().copy(color = labelColor),
                                     fraction = textStyleAnimateFraction.value,
                                 ),
                                 maxLines = maxLines,

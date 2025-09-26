@@ -41,7 +41,7 @@ internal fun OverviewCard(
 
         Text(
             text = title,
-            style = AppTokens.typography.b13Bold(),
+            style = AppTokens.typography.b14Med(),
             color = AppTokens.colors.text.primary,
             textAlign = TextAlign.Center,
             maxLines = 2,

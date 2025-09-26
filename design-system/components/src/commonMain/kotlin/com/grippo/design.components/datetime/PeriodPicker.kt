@@ -50,7 +50,7 @@ public fun PeriodPicker(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = value.text(),
-                style = AppTokens.typography.b16Bold(),
+                style = AppTokens.typography.h5(),
                 color = titleColor
             )
 
@@ -69,7 +69,7 @@ public fun PeriodPicker(
 
         Text(
             text = value.range(format),
-            style = AppTokens.typography.b13Semi(),
+            style = AppTokens.typography.b14Med(),
             color = descriptionColor
         )
     }
