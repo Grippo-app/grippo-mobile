@@ -159,7 +159,7 @@ internal fun ExerciseScreen(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(AppTokens.dp.screen.horizontalPadding),
+            .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
         Button(
