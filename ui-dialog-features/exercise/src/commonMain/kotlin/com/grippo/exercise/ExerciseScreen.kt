@@ -150,7 +150,7 @@ internal fun ExerciseScreen(
             )
         }
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
 
         Text(
             modifier = Modifier.fillMaxWidth(),

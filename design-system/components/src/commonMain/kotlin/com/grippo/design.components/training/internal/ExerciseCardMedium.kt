@@ -53,7 +53,6 @@ internal fun ExerciseCardMedium(
                 vertical = AppTokens.dp.exerciseCard.medium.verticalPadding
             )
     ) {
-
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
@@ -81,18 +80,21 @@ internal fun ExerciseCardMedium(
                     horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
                 ) {
                     VolumeChip(
+                        modifier = Modifier.weight(1f),
                         value = value.metrics.volume,
                         style = VolumeChipStyle.SHORT,
                         size = ChipSize.Small
                     )
 
                     IntensityChip(
+                        modifier = Modifier.weight(1f),
                         value = value.metrics.intensity,
                         style = IntensityChipStyle.SHORT,
                         size = ChipSize.Small
                     )
 
                     RepetitionsChip(
+                        modifier = Modifier.weight(1f),
                         value = value.metrics.repetitions,
                         style = RepetitionsChipStyle.SHORT,
                         size = ChipSize.Small
@@ -110,7 +112,7 @@ internal fun ExerciseCardMedium(
                 color = AppTokens.colors.text.tertiary
             )
 
-            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.subContent))
+            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.text))
 
             FlowRow(
                 modifier = Modifier.fillMaxWidth(),
