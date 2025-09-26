@@ -73,9 +73,9 @@ public fun <KEY> Segment(
                                 AppTokens.typography.b14Med()
                             },
                             color = if (item.first == selected) {
-                                AppTokens.colors.segment.active
+                                AppTokens.colors.text.primary
                             } else {
-                                AppTokens.colors.segment.inactive
+                                AppTokens.colors.text.tertiary
                             },
                         )
                     },
