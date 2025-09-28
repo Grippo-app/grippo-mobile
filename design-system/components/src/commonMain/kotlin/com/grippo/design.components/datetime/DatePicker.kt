@@ -1,7 +1,5 @@
 package com.grippo.design.components.datetime
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
@@ -37,43 +35,47 @@ public fun DatePicker(
         false -> AppTokens.colors.text.disabled
     }
 
-    val descriptionColor = when (enabled) {
+    when (enabled) {
         true -> AppTokens.colors.text.secondary
         false -> AppTokens.colors.text.disabled
     }
 
-    val iconColor = when (enabled) {
-        true -> AppTokens.colors.icon.secondary
+    when (enabled) {
+        true -> AppTokens.colors.icon.tertiary
         false -> AppTokens.colors.icon.disabled
     }
 
-    Column(
+    val iconArrowColor = when (enabled) {
+        true -> AppTokens.colors.icon.tertiary
+        false -> AppTokens.colors.icon.disabled
+    }
+
+    Row(
         modifier = modifier.scalableClick(enabled = enabled, onClick = onClick),
-        verticalArrangement = Arrangement.Center
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = title,
-                style = AppTokens.typography.h5(),
-                color = titleColor
-            )
-
-            Spacer(Modifier.width(AppTokens.dp.datePicker.spacer))
-
-            Icon(
-                modifier = Modifier.size(AppTokens.dp.datePicker.icon),
-                imageVector = AppTokens.icons.NavArrowDown,
-                tint = iconColor,
-                contentDescription = null
-            )
-        }
-
-        Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
+//        Icon(
+//            modifier = Modifier.size(AppTokens.dp.datePicker.icon),
+//            imageVector = AppTokens.icons.Calendar,
+//            tint = iconCalendarColor,
+//            contentDescription = null
+//        )
+//
+//        Spacer(Modifier.width(AppTokens.dp.datePicker.spacer))
 
         Text(
             text = text,
-            style = AppTokens.typography.b14Med(),
-            color = descriptionColor
+            style = AppTokens.typography.h6(),
+            color = titleColor
+        )
+
+        Spacer(Modifier.width(AppTokens.dp.datePicker.spacer))
+
+        Icon(
+            modifier = Modifier.size(AppTokens.dp.datePicker.icon),
+            imageVector = AppTokens.icons.NavArrowDown,
+            tint = iconArrowColor,
+            contentDescription = null
         )
     }
 }

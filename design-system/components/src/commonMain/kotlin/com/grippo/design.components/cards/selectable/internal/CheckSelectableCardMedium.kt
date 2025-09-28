@@ -69,7 +69,7 @@ internal fun CheckSelectableCardMedium(
         ) {
             Text(
                 text = style.title,
-                style = AppTokens.typography.b15Bold(),
+                style = AppTokens.typography.h6(),
                 color = AppTokens.colors.text.primary
             )
 

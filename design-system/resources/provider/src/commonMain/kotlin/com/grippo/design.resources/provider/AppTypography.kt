@@ -54,7 +54,7 @@ public data object AppTypography {
     )
 
     @Composable
-    public fun b15Bold(): TextStyle = TextStyle(
+    public fun h6(): TextStyle = TextStyle(
         fontSize = 15.sp,
         fontFamily = manrope(),
         lineHeight = 22.sp, // ×1.47

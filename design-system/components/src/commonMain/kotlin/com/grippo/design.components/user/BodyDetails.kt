@@ -1,15 +1,12 @@
 package com.grippo.design.components.user
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
@@ -33,10 +30,6 @@ internal fun BodyItem(
 ) {
     Row(
         modifier = modifier
-            .background(
-                AppTokens.colors.background.screen,
-                RoundedCornerShape(AppTokens.dp.bodyDetails.radius)
-            )
             .height(intrinsicSize = IntrinsicSize.Min)
             .padding(
                 vertical = AppTokens.dp.bodyDetails.verticalPadding,
@@ -45,9 +38,7 @@ internal fun BodyItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            modifier = Modifier
-                .padding(4.dp)
-                .size(AppTokens.dp.bodyDetails.icon),
+            modifier = Modifier.padding(4.dp),
             imageVector = AppTokens.icons.Weight,
             tint = AppTokens.colors.icon.accent,
             contentDescription = null
@@ -81,9 +72,7 @@ internal fun BodyItem(
         Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
 
         Icon(
-            modifier = Modifier
-                .padding(4.dp)
-                .size(AppTokens.dp.bodyDetails.icon),
+            modifier = Modifier.padding(4.dp),
             imageVector = AppTokens.icons.ExpandLines,
             tint = AppTokens.colors.icon.accent,
             contentDescription = null

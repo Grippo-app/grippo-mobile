@@ -86,7 +86,7 @@ public data object AppDp {
         val verticalPadding: Dp = padding.extraLarge
 
         public data object Toolbar {
-            val height: Dp = size.medium
+            val height: Dp = size.small
         }
     }
 
@@ -172,8 +172,6 @@ public data object AppDp {
     public data object BodyDetails {
         val horizontalPadding: Dp = padding.extraSmall
         val verticalPadding: Dp = padding.extraSmall
-        val radius: Dp = AppDp.radius.small
-        val icon: Dp = AppDp.icon.medium
     }
 
     public data object OverviewCard {
@@ -363,9 +361,8 @@ public data object AppDp {
     }
 
     public data object Tab {
-        val horizontalPadding: Dp = AppDp.padding.large
-        val verticalPadding: Dp = AppDp.padding.small
-        val padding: Dp = AppDp.padding.extraSmall
+        val horizontalPadding: Dp = padding.large
+        val verticalPadding: Dp = padding.medium
         val icon: Dp = AppDp.icon.medium
     }
 

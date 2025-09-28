@@ -135,7 +135,7 @@ internal fun ExerciseScreen(
                 text = exercise.exerciseExample.name,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = AppTokens.typography.b15Bold(),
+                style = AppTokens.typography.h6(),
                 color = AppTokens.colors.text.primary,
             )
 
