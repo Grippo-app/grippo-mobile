@@ -13,18 +13,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
-import com.grippo.design.components.button.ButtonColorTokens
-import com.grippo.design.components.button.ButtonSize
-import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.toolbar.BottomSheetToolbar
-import com.grippo.design.components.toolbar.BottomSheetToolbarActionButton
 import com.grippo.design.core.AppTokens
-import com.grippo.design.resources.provider.icons.Cancel
-import com.grippo.design.resources.provider.icons.NavArrowLeft
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.shared.dialog.content.DialogContentComponent
 import kotlinx.collections.immutable.ImmutableSet
@@ -108,44 +101,9 @@ private fun BottomSheet(
     ) {
         BottomSheetToolbar(
             modifier = Modifier.fillMaxWidth(),
-            start = if (showBackButton) BottomSheetToolbarActionButton(
-                icon = AppTokens.icons.NavArrowLeft,
-                style = ButtonStyle.Custom(
-                    enabled = ButtonColorTokens(
-                        background = Color.Transparent,
-                        content = AppTokens.colors.text.primary,
-                        border = Color.Transparent,
-                        icon = AppTokens.colors.icon.primary,
-                    ),
-                    disabled = ButtonColorTokens(
-                        background = Color.Transparent,
-                        content = AppTokens.colors.text.disabled,
-                        border = Color.Transparent,
-                        icon = AppTokens.colors.icon.disabled
-                    ),
-                ),
-                size = ButtonSize.Small,
-                onClick = onBack
-            ) else null,
-            end = BottomSheetToolbarActionButton(
-                icon = AppTokens.icons.Cancel,
-                style = ButtonStyle.Custom(
-                    enabled = ButtonColorTokens(
-                        background = Color.Transparent,
-                        content = AppTokens.colors.text.primary,
-                        border = Color.Transparent,
-                        icon = AppTokens.colors.icon.primary,
-                    ),
-                    disabled = ButtonColorTokens(
-                        background = Color.Transparent,
-                        content = AppTokens.colors.text.disabled,
-                        border = Color.Transparent,
-                        icon = AppTokens.colors.icon.disabled
-                    ),
-                ),
-                size = ButtonSize.Small,
-                onClick = onClose
-            ),
+            onBack = onBack,
+            onClose = onClose,
+            allowBack = showBackButton
         )
 
         Column(
