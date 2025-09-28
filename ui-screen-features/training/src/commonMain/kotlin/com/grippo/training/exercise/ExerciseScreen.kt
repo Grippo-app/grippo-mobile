@@ -1,7 +1,6 @@
 package com.grippo.training.exercise
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -54,31 +53,28 @@ internal fun ExerciseScreen(
         modifier = Modifier.fillMaxWidth(),
         onBack = contract::onBack,
         title = AppTokens.strings.res(Res.string.exercise_record),
-        content = {
-            state.exerciseExample?.let { example ->
-                ExerciseExampleCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                        .padding(bottom = AppTokens.dp.contentPadding.content),
-                    style = ExerciseExampleCardStyle.Small(
-                        onCardClick = contract::onExampleClick,
-                    ),
-                    value = example
-                )
-            }
-        }
     )
 
-    Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
+    Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
+
+    state.exerciseExample?.let { example ->
+        ExerciseExampleCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+            style = ExerciseExampleCardStyle.Small(
+                onCardClick = contract::onExampleClick,
+            ),
+            value = example
+        )
+    }
+
+    Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
 
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f),
-        contentPadding = PaddingValues(
-            top = AppTokens.dp.contentPadding.content
-        ),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
     ) {
         item {
