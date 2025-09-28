@@ -1,7 +1,6 @@
 package com.grippo.design.components.toolbar
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -42,13 +41,12 @@ public fun Toolbar(
     Column(
         modifier = modifier.statusBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
 
         Row(
             modifier = Modifier
-                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                .padding(vertical = AppTokens.dp.contentPadding.subContent)
+                .padding(horizontal = AppTokens.dp.contentPadding.content)
+                .padding(vertical = AppTokens.dp.contentPadding.content)
                 .height(AppTokens.dp.screen.toolbar.height)
                 .fillMaxWidth(),
         ) {
