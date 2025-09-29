@@ -111,10 +111,26 @@ internal fun HomeTrainingsScreen(
 
                         Spacer(Modifier.weight(1f))
 
-                        VolumeChip(
-                            value = value.volume,
-                            style = VolumeChipStyle.SHORT,
-                            size = ChipSize.Medium
+                        Button(
+                            content = ButtonContent.Icon(
+                                icon = AppTokens.icons.Menu,
+                            ),
+                            style = ButtonStyle.Custom(
+                                enabled = ButtonColorTokens(
+                                    background = Color.Transparent,
+                                    content = AppTokens.colors.text.primary,
+                                    border = Color.Transparent,
+                                    icon = AppTokens.colors.icon.primary,
+                                ),
+                                disabled = ButtonColorTokens(
+                                    background = Color.Transparent,
+                                    content = AppTokens.colors.text.disabled,
+                                    border = Color.Transparent,
+                                    icon = AppTokens.colors.icon.disabled
+                                ),
+                            ),
+                            size = ButtonSize.Small,
+                            onClick = clickProvider
                         )
                     }
                 }
