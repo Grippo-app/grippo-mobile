@@ -1,11 +1,11 @@
-package com.grippo.state.item
+package com.grippo.state.menu
 
 import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 
 @Serializable
 @Immutable
-public data class ItemState(
+public data class MenuItemState(
     val id: String,
     val text: String,
 )

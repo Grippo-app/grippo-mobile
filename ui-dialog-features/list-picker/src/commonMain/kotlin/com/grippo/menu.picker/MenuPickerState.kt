@@ -1,12 +1,12 @@
-package com.grippo.list.picker
+package com.grippo.menu.picker
 
 import androidx.compose.runtime.Immutable
-import com.grippo.state.item.ItemState
+import com.grippo.state.menu.MenuItemState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
-public data class ListPickerState(
+public data class MenuPickerState(
     val title: String,
-    val items: ImmutableList<ItemState> = persistentListOf(),
+    val items: ImmutableList<MenuItemState> = persistentListOf(),
 )

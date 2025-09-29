@@ -8,7 +8,7 @@ import com.grippo.state.filters.FilterValue
 import com.grippo.state.formatters.DateFormatState
 import com.grippo.state.formatters.HeightFormatState
 import com.grippo.state.formatters.WeightFormatState
-import com.grippo.state.item.ItemState
+import com.grippo.state.menu.MenuItemState
 import com.grippo.state.trainings.IterationFocus
 import com.grippo.state.trainings.IterationState
 import kotlinx.serialization.Serializable
@@ -123,9 +123,9 @@ public sealed class DialogConfig(
     )
 
     @Serializable
-    public data class ListPicker(
+    public data class MenuPicker(
         val title: String,
-        val items: List<ItemState>,
+        val items: List<MenuItemState>,
         @Transient val onResult: (id: String) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,

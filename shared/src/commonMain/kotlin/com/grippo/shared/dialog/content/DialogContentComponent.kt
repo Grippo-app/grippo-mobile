@@ -21,7 +21,7 @@ import com.grippo.exercise.example.picker.ExerciseExamplePickerComponent
 import com.grippo.filter.picker.FilterPickerComponent
 import com.grippo.height.picker.HeightPickerComponent
 import com.grippo.iteration.picker.IterationPickerComponent
-import com.grippo.list.picker.ListPickerComponent
+import com.grippo.menu.picker.MenuPickerComponent
 import com.grippo.period.picker.PeriodPickerComponent
 import com.grippo.weight.picker.WeightPickerComponent
 
@@ -161,8 +161,8 @@ internal class DialogContentComponent(
                 )
             )
 
-            is DialogConfig.ListPicker -> Child.ListPicker(
-                ListPickerComponent(
+            is DialogConfig.MenuPicker -> Child.MenuPicker(
+                MenuPickerComponent(
                     componentContext = context,
                     title = router.title,
                     items = router.items,
@@ -227,7 +227,7 @@ internal class DialogContentComponent(
         data class FilterPicker(override val component: FilterPickerComponent) :
             Child(component)
 
-        data class ListPicker(override val component: ListPickerComponent) :
+        data class MenuPicker(override val component: MenuPickerComponent) :
             Child(component)
     }
 }

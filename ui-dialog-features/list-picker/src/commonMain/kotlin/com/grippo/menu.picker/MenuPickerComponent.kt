@@ -1,4 +1,4 @@
-package com.grippo.list.picker
+package com.grippo.menu.picker
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
@@ -6,18 +6,18 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.platform.collectAsStateMultiplatform
-import com.grippo.state.item.ItemState
+import com.grippo.state.menu.MenuItemState
 
-public class ListPickerComponent(
+public class MenuPickerComponent(
     componentContext: ComponentContext,
     title: String,
-    items: List<ItemState>,
+    items: List<MenuItemState>,
     private val onResult: (id: String) -> Unit,
     private val back: () -> Unit,
-) : BaseComponent<ListPickerDirection>(componentContext) {
+) : BaseComponent<MenuPickerDirection>(componentContext) {
 
-    override val viewModel: ListPickerViewModel = componentContext.retainedInstance {
-        ListPickerViewModel(
+    override val viewModel: MenuPickerViewModel = componentContext.retainedInstance {
+        MenuPickerViewModel(
             title = title,
             items = items,
         )
@@ -29,10 +29,10 @@ public class ListPickerComponent(
         backHandler.register(backCallback)
     }
 
-    override suspend fun eventListener(direction: ListPickerDirection) {
+    override suspend fun eventListener(direction: MenuPickerDirection) {
         when (direction) {
-            is ListPickerDirection.BackWithResult -> onResult.invoke(direction.id)
-            ListPickerDirection.Back -> back.invoke()
+            is MenuPickerDirection.BackWithResult -> onResult.invoke(direction.id)
+            MenuPickerDirection.Back -> back.invoke()
         }
     }
 
@@ -40,6 +40,6 @@ public class ListPickerComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        ListPickerScreen(state.value, loaders.value, viewModel)
+        MenuPickerScreen(state.value, loaders.value, viewModel)
     }
 }

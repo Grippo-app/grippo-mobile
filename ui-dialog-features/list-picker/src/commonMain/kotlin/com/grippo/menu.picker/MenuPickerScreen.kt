@@ -1,4 +1,4 @@
-package com.grippo.list.picker
+package com.grippo.menu.picker
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -19,17 +19,17 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.state.formatters.UiText
-import com.grippo.state.item.ItemState
+import com.grippo.state.menu.MenuItemState
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 
 @Composable
-internal fun ListPickerScreen(
-    state: ListPickerState,
-    loaders: ImmutableSet<ListPickerLoader>,
-    contract: ListPickerContract
+internal fun MenuPickerScreen(
+    state: MenuPickerState,
+    loaders: ImmutableSet<MenuPickerLoader>,
+    contract: MenuPickerContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
     Column(
@@ -70,17 +70,17 @@ internal fun ListPickerScreen(
 @Composable
 private fun ScreenPreview() {
     PreviewContainer {
-        ListPickerScreen(
-            state = ListPickerState(
+        MenuPickerScreen(
+            state = MenuPickerState(
                 title = "Select option",
                 items = persistentListOf(
-                    ItemState(id = "1", text = "First"),
-                    ItemState(id = "2", text = "Second"),
-                    ItemState(id = "3", text = "Third")
+                    MenuItemState(id = "1", text = "First"),
+                    MenuItemState(id = "2", text = "Second"),
+                    MenuItemState(id = "3", text = "Third")
                 ),
             ),
             loaders = persistentSetOf(),
-            contract = ListPickerContract.Empty
+            contract = MenuPickerContract.Empty
         )
     }
 }

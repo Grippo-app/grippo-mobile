@@ -14,7 +14,7 @@ import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
 import com.grippo.state.formatters.DateFormatState
-import com.grippo.state.item.ItemState
+import com.grippo.state.menu.MenuItemState
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -51,13 +51,13 @@ internal class HomeTrainingsViewModel(
     override fun onTrainingMenuClick(id: String) {
         safeLaunch {
             val list = TrainingMenu.entries.map {
-                ItemState(
+                MenuItemState(
                     id = it.id,
                     text = it.text(stringProvider)
                 )
             }
 
-            val dialog = DialogConfig.ListPicker(
+            val dialog = DialogConfig.MenuPicker(
                 title = stringProvider.get(Res.string.select),
                 items = list,
                 onResult = {
