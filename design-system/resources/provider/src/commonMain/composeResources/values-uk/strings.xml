@@ -71,7 +71,7 @@
     <string name="registration_experience_description">Без паніки — у нас є плани для будь-якого рівня.</string>
 
     <string name="registration_muscles_title">Хочете щось пропустити?</string>
-    <string name="registration_muscles_description">Виберіть групи м’язів, які не хочете тренувати. Це необов’язково!</string>
+    <string name="registration_muscles_description">Виберіть групи м’язів, які не хочете тренувати.</string>
 
     <string name="registration_equipment_title">Чого немає у вашому залі?</string>
     <string name="registration_equipment_description">Ми приберемо вправи, що потребують цього обладнання.</string>
@@ -126,7 +126,7 @@
     <string name="this_week">Цей тиждень</string>
     <string name="this_year">Цей рік</string>
     <string name="this_month">Цей місяць</string>
-    <string name="custom_range">Власний діапазон</string>
+    <string name="custom_range">Власний</string>
     <string name="select_start_date">Оберіть початкову дату</string>
     <string name="select_end_date">Оберіть кінцеву дату</string>
     <string name="r">R</string>

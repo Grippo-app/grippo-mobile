@@ -90,7 +90,7 @@ internal class HomeStatisticsViewModel(
     }
 
     override fun onSelectPeriod() {
-        val custom = (state.value.period as? PeriodState.CUSTOM) ?: PeriodState.CUSTOM(
+        val custom = (state.value.period as? PeriodState.Custom) ?: PeriodState.Custom(
             range = DateTimeUtils.thisWeek(),
             limitations = DateTimeUtils.trailingYear()
         )

@@ -28,7 +28,7 @@ public class PeriodPickerViewModel(
     override fun onSelectClick(value: PeriodState) {
         update { it.copy(value = value, list = it.list.synchronize(value)) }
 
-        if (state.value.list.none { it is PeriodState.CUSTOM }) {
+        if (state.value.list.none { it is PeriodState.Custom }) {
             safeLaunch {
                 delay(com.grippo.dialog.api.SELECTION_FEEDBACK_DELAY)
                 navigateTo(PeriodPickerDirection.BackWithResult(state.value.value))
@@ -37,7 +37,7 @@ public class PeriodPickerViewModel(
     }
 
     override fun onFromClick() {
-        val custom = (state.value.value as? PeriodState.CUSTOM) ?: return
+        val custom = (state.value.value as? PeriodState.Custom) ?: return
 
         val limits = custom.limitations.copy(to = custom.range.to)
         val data = DateFormatState.of(custom.range.from, limits)
@@ -60,7 +60,7 @@ public class PeriodPickerViewModel(
     }
 
     override fun onToClick() {
-        val custom = (state.value.value as? PeriodState.CUSTOM) ?: return
+        val custom = (state.value.value as? PeriodState.Custom) ?: return
 
         safeLaunch {
             val limits = custom.limitations.copy(from = custom.range.from)

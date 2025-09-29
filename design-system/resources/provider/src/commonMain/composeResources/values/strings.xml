@@ -73,7 +73,7 @@
     <string name="registration_experience_description">No worries — we’ve got plans for every level.</string>
 
     <string name="registration_muscles_title">Anything you’d rather skip?</string>
-    <string name="registration_muscles_description">Pick muscle groups you don’t want to train. Totally optional!</string>
+    <string name="registration_muscles_description">Pick muscle groups you don’t want to train.</string>
 
     <string name="registration_equipment_title">What’s not in your gym?</string>
     <string name="registration_equipment_description">We’ll leave out exercises that need that equipment.</string>
@@ -129,7 +129,7 @@
     <string name="this_week">This week</string>
     <string name="this_year">This year</string>
     <string name="this_month">This month</string>
-    <string name="custom_range">Custom range</string>
+    <string name="custom_range">Custom</string>
     <string name="select_start_date">Select start date</string>
     <string name="select_end_date">Select end date</string>
     <string name="r">R</string>

@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
@@ -63,7 +62,6 @@ internal fun ExcludedMusclesScreen(
             ).imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.registration_muscles_title),

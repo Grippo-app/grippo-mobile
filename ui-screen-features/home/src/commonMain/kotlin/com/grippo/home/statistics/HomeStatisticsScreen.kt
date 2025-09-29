@@ -64,7 +64,7 @@ internal fun HomeStatisticsScreen(
             ) {
                 PeriodPicker(
                     value = state.period,
-                    format = DateFormat.DATE_DD_MMM,
+                    format = DateFormat.DATE_DD_DOT_MM,
                     onClick = contract::onSelectPeriod
                 )
             }

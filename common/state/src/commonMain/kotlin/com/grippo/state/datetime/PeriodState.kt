@@ -53,14 +53,34 @@ public sealed interface PeriodState {
 
     @Serializable
     @Immutable
-    public data class CUSTOM(
+    public data class Custom(
         override val range: DateRange,
         val limitations: DateRange
     ) : PeriodState
 
     @Composable
-    public fun text(): String = when (this) {
-        is CUSTOM -> AppTokens.strings.res(Res.string.custom_range)
+    public fun label(): String = when (this) {
+        is Custom -> {
+            val sameDay = remember(range.from, range.to) { range.from.date == range.to.date }
+
+            val from = DateCompose.rememberFormat(range.from, DateFormat.DATE_DD_MMM)
+            if (sameDay) {
+                from
+            } else {
+                val to = DateCompose.rememberFormat(range.to, DateFormat.DATE_DD_MMM)
+                "$from - $to"
+            }
+        }
+
+        is ThisDay -> AppTokens.strings.res(Res.string.this_day)
+        is ThisWeek -> AppTokens.strings.res(Res.string.this_week)
+        is ThisMonth -> AppTokens.strings.res(Res.string.this_month)
+        is ThisYear -> AppTokens.strings.res(Res.string.this_year)
+    }
+
+    @Composable
+    public fun title(): String = when (this) {
+        is Custom -> AppTokens.strings.res(Res.string.custom_range)
         is ThisDay -> AppTokens.strings.res(Res.string.this_day)
         is ThisWeek -> AppTokens.strings.res(Res.string.this_week)
         is ThisMonth -> AppTokens.strings.res(Res.string.this_month)
@@ -69,7 +89,7 @@ public sealed interface PeriodState {
 
     @Composable
     public fun icon(): ImageVector = when (this) {
-        is CUSTOM -> AppTokens.icons.Settings
+        is Custom -> AppTokens.icons.Settings
         is ThisDay -> AppTokens.icons.Day
         is ThisWeek -> AppTokens.icons.Week
         is ThisMonth -> AppTokens.icons.Calendar
@@ -96,7 +116,7 @@ public sealed interface PeriodState {
                 return "$from - $to"
             }
 
-            is CUSTOM -> {
+            is Custom -> {
                 val sameDay = remember(range.from, range.to) { range.from.date == range.to.date }
 
                 val from = DateCompose.rememberFormat(range.from, format)

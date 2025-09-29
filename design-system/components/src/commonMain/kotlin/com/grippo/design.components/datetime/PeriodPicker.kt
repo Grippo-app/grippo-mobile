@@ -1,7 +1,5 @@
 package com.grippo.design.components.datetime
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
@@ -33,51 +31,45 @@ public fun PeriodPicker(
         false -> AppTokens.colors.text.disabled
     }
 
-    val descriptionColor = when (enabled) {
+    when (enabled) {
         true -> AppTokens.colors.text.secondary
         false -> AppTokens.colors.text.disabled
     }
 
-    val iconColor = when (enabled) {
-        true -> AppTokens.colors.icon.secondary
+    when (enabled) {
+        true -> AppTokens.colors.icon.tertiary
         false -> AppTokens.colors.icon.disabled
     }
 
-    Column(
-        modifier = modifier.scalableClick(onClick = onClick),
-        verticalArrangement = Arrangement.Center
+    val iconArrowColor = when (enabled) {
+        true -> AppTokens.colors.icon.tertiary
+        false -> AppTokens.colors.icon.disabled
+    }
+
+    Row(
+        modifier = modifier.scalableClick(enabled = enabled, onClick = onClick),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = value.text(),
-                style = AppTokens.typography.h6(),
-                color = titleColor
-            )
-
-            Spacer(Modifier.width(AppTokens.dp.periodPicker.spacer))
-
-            Icon(
-                modifier = Modifier
-                    .size(AppTokens.dp.periodPicker.icon),
-                imageVector = AppTokens.icons.NavArrowDown,
-                tint = iconColor,
-                contentDescription = null
-            )
-        }
-
-        Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
-
         Text(
-            text = value.range(format),
-            style = AppTokens.typography.b14Med(),
-            color = descriptionColor
+            text = value.label(),
+            style = AppTokens.typography.h6(),
+            color = titleColor
+        )
+
+        Spacer(Modifier.width(AppTokens.dp.periodPicker.spacer))
+
+        Icon(
+            modifier = Modifier.size(AppTokens.dp.periodPicker.icon),
+            imageVector = AppTokens.icons.NavArrowDown,
+            tint = iconArrowColor,
+            contentDescription = null
         )
     }
 }
 
 @AppPreview
 @Composable
-private fun DatePickerPreview() {
+private fun PeriodPickerPreview() {
     PreviewContainer {
         PeriodPicker(
             value = PeriodState.ThisDay,

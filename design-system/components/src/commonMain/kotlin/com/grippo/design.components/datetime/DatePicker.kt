@@ -54,15 +54,6 @@ public fun DatePicker(
         modifier = modifier.scalableClick(enabled = enabled, onClick = onClick),
         verticalAlignment = Alignment.CenterVertically
     ) {
-//        Icon(
-//            modifier = Modifier.size(AppTokens.dp.datePicker.icon),
-//            imageVector = AppTokens.icons.Calendar,
-//            tint = iconCalendarColor,
-//            contentDescription = null
-//        )
-//
-//        Spacer(Modifier.width(AppTokens.dp.datePicker.spacer))
-
         Text(
             text = text,
             style = AppTokens.typography.h6(),
