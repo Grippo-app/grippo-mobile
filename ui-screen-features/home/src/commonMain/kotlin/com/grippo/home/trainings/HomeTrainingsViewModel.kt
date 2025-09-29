@@ -8,11 +8,13 @@ import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.date_picker_title
 import com.grippo.design.resources.provider.providers.StringProvider
+import com.grippo.design.resources.provider.select
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
 import com.grippo.state.formatters.DateFormatState
+import com.grippo.state.item.ItemState
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -44,6 +46,32 @@ internal class HomeTrainingsViewModel(
     private fun provideTrainings(list: List<Training>) {
         val trainings = list.toState().transformToTrainingListValue()
         update { it.copy(trainings = trainings) }
+    }
+
+    override fun onTrainingMenuClick(id: String) {
+        safeLaunch {
+            val list = TrainingMenu.entries.map {
+                ItemState(
+                    id = it.id,
+                    text = it.text(stringProvider)
+                )
+            }
+
+            val dialog = DialogConfig.ListPicker(
+                title = stringProvider.get(Res.string.select),
+                items = list,
+                onResult = {
+                    safeLaunch {
+                        when (TrainingMenu.of(it)) {
+                            TrainingMenu.Delete -> trainingFeature.deleteTraining(id).getOrThrow()
+                            null -> {}
+                        }
+                    }
+                }
+            )
+
+            dialogController.show(dialog)
+        }
     }
 
     override fun onExerciseClick(id: String) {

@@ -18,7 +18,7 @@ import kotlinx.collections.immutable.ImmutableList
 @Immutable
 public data class MenuItem(
     val title: UiText,
-    val icon: ImageVector
+    val icon: ImageVector? = null
 )
 
 @Composable
@@ -36,12 +36,16 @@ public fun <KEY> Menu(
     ) {
 
         items.forEachIndexed { index, item ->
-            val onClickProvider = remember(item) { { onClick.invoke(item.first) } }
+            val onClickProvider = remember(item) {
+                { onClick.invoke(item.first) }
+            }
 
             MenuCard(
                 modifier = Modifier.fillMaxWidth(),
                 title = item.second.title.text(),
-                trailing = MenuTrailing.Icon(item.second.icon),
+                trailing = item.second.icon?.let { icon ->
+                    MenuTrailing.Icon(icon)
+                } ?: MenuTrailing.Empty,
                 onClick = onClickProvider
             )
 

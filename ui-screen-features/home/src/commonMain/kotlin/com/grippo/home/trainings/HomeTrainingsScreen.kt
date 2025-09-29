@@ -13,12 +13,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.date.utils.DateFormat
-import com.grippo.design.components.chip.ChipSize
-import com.grippo.design.components.chip.VolumeChip
-import com.grippo.design.components.chip.VolumeChipStyle
+import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonColorTokens
+import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonSize
+import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.datetime.DatePicker
 import com.grippo.design.components.timeline.TimeLabel
 import com.grippo.design.components.timeline.TimelineIndicator
@@ -29,6 +32,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.icons.Menu
 import com.grippo.design.resources.provider.selected
 import com.grippo.design.resources.provider.trainings
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
@@ -91,6 +95,11 @@ internal fun HomeTrainingsScreen(
             val exercise = remember(value) { value.exercise() }
 
             TimelineIndicator(style = style) {
+
+                val clickProvider = remember {
+                    { contract.onTrainingMenuClick(value.id) }
+                }
+
 
                 if (value is TrainingListValue.DateTime) {
                     Row(

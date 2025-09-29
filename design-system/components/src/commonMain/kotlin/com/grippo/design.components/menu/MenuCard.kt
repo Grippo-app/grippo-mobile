@@ -16,7 +16,6 @@ import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.icons.NavArrowRight
 import com.grippo.design.resources.provider.icons.User
 
 @Stable
@@ -55,7 +54,7 @@ public fun MenuCard(
 
             is MenuTrailing.Icon -> {
                 Icon(
-                    modifier = Modifier.size(AppTokens.dp.menu.item.trailing),
+                    modifier = Modifier.size(AppTokens.dp.menu.item.icon),
                     imageVector = trailing.icon,
                     tint = AppTokens.colors.icon.primary,
                     contentDescription = null
@@ -70,13 +69,6 @@ public fun MenuCard(
             overflow = TextOverflow.Ellipsis,
             style = AppTokens.typography.b14Semi(),
             color = AppTokens.colors.text.primary
-        )
-
-        Icon(
-            modifier = Modifier.size(AppTokens.dp.menu.item.trailing),
-            imageVector = AppTokens.icons.NavArrowRight,
-            tint = AppTokens.colors.icon.secondary,
-            contentDescription = null
         )
     }
 }

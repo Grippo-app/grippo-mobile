@@ -73,8 +73,8 @@ internal fun ProfileEquipmentsScreen(
             .fillMaxWidth()
             .weight(1f),
         contentPadding = PaddingValues(
-            vertical = AppTokens.dp.screen.horizontalPadding,
-            horizontal = AppTokens.dp.contentPadding.content,
+            horizontal = AppTokens.dp.screen.horizontalPadding,
+            vertical = AppTokens.dp.contentPadding.content,
         ),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
     ) {

@@ -154,7 +154,7 @@ public data object AppDp {
         public data object Item {
             val horizontalPadding: Dp = padding.large
             val verticalPadding: Dp = padding.large
-            val trailing: Dp = icon.medium
+            val icon: Dp = AppDp.icon.medium
         }
     }
 
