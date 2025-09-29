@@ -11,6 +11,13 @@ import org.koin.core.annotation.Single
 @Single(binds = [DialogController::class, DialogProvider::class])
 internal class DialogControllerImpl : DialogController, DialogProvider {
 
+    // Todo for testing
+//    private val _dialog = MutableSharedFlow<DialogConfig>(
+//        replay = 1,
+//        extraBufferCapacity = 32,
+//        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+//    )
+
     private val _dialog = Channel<DialogConfig>(Channel.CONFLATED)
     override val dialog: Flow<DialogConfig> = _dialog.receiveAsFlow()
 

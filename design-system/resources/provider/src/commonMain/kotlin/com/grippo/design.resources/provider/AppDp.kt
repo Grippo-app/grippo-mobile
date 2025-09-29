@@ -74,6 +74,7 @@ public data object AppDp {
     val exerciseExampleImage: ExerciseExampleImage = ExerciseExampleImage
     val iterationCard: IterationCard = IterationCard
     val iterationsCard: IterationsCard = IterationsCard
+    val descriptionText: DescriptionText = DescriptionText
     val chip: Chip = Chip
     val connectionSnackbar: ConnectionSnackbar = ConnectionSnackbar
     val toggle: Toggle = Toggle
@@ -197,6 +198,10 @@ public data object AppDp {
 
     public data object Timeline {
         val dot: Dp = 10.dp
+    }
+
+    public data object DescriptionText {
+        val radius: Dp = AppDp.radius.medium
     }
 
     public data object IterationsCard {

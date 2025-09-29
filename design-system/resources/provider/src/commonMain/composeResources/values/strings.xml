@@ -130,6 +130,8 @@
     <string name="this_year">This year</string>
     <string name="this_month">This month</string>
     <string name="custom_range">Custom</string>
+    <string name="show_more">Show more</string>
+    <string name="show_less">Show less</string>
     <string name="today">Today</string>
     <string name="yesterday">Yesterday</string>
     <string name="tomorrow">Tomorrow</string>
