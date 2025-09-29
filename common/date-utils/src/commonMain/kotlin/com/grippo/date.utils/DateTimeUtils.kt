@@ -115,6 +115,11 @@ public object DateTimeUtils {
         return DateFormatting.current.format(value, format.value, null) ?: "-"
     }
 
+    @OptIn(FormatStringsInDatetimeFormats::class)
+    public fun format(value: LocalDate, format: DateFormat): String {
+        return DateFormatting.current.format(value, format.value, null) ?: "-"
+    }
+
     public fun ago(value: LocalDateTime): Duration {
         val now = Clock.System.now()
         val fromInstant = value.toInstant(timeZone)

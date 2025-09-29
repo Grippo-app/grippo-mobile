@@ -28,7 +28,7 @@ public fun DatePicker(
     enabled: Boolean = true,
     onClick: () -> Unit
 ) {
-    val text = DateCompose.rememberFormat(value, format)
+    val text = DateCompose.rememberFormat(value.date, format)
 
     val titleColor = when (enabled) {
         true -> AppTokens.colors.text.primary

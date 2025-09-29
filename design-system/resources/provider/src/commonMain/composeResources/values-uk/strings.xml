@@ -127,6 +127,9 @@
     <string name="this_year">Цей рік</string>
     <string name="this_month">Цей місяць</string>
     <string name="custom_range">Власний</string>
+    <string name="today">Сьогодні</string>
+    <string name="yesterday">Вчора</string>
+    <string name="tomorrow">Завтра</string>
     <string name="select_start_date">Оберіть початкову дату</string>
     <string name="select_end_date">Оберіть кінцеву дату</string>
     <string name="r">R</string>
