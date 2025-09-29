@@ -49,7 +49,7 @@ internal fun MenuPickerScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         val menu = remember(state.items) {
             state.items

@@ -70,7 +70,7 @@ internal fun ExerciseExamplePickerScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         Row(
             modifier = Modifier

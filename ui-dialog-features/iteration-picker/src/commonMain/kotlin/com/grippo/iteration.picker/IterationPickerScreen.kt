@@ -88,7 +88,7 @@ internal fun IterationPickerScreen(
         textAlign = TextAlign.Center
     )
 
-    Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
+    Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
 
     Row(
         modifier = Modifier

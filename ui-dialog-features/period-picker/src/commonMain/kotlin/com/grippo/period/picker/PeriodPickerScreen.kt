@@ -59,7 +59,7 @@ internal fun PeriodPickerScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),

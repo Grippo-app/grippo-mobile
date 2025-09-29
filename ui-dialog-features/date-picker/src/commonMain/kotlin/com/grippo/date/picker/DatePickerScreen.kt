@@ -53,7 +53,7 @@ internal fun DatePickerScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         DateWheelPicker(
             modifier = Modifier
