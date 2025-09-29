@@ -20,7 +20,6 @@ import com.grippo.design.components.chip.ChipSize
 import com.grippo.design.components.chip.VolumeChip
 import com.grippo.design.components.chip.VolumeChipStyle
 import com.grippo.design.components.datetime.DatePicker
-import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.timeline.TimeLabel
 import com.grippo.design.components.timeline.TimelineIndicator
 import com.grippo.design.components.toolbar.Toolbar
@@ -118,11 +117,10 @@ internal fun HomeTrainingsScreen(
 
                     ExerciseCard(
                         modifier = Modifier
-                            .scalableClick(onClick = clickProvider)
                             .background(AppTokens.colors.background.card, shape)
                             .fillMaxWidth(),
                         value = exercise,
-                        style = ExerciseCardStyle.Small
+                        style = ExerciseCardStyle.Small(clickProvider)
                     )
                 }
             }
