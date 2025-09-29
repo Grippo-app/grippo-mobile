@@ -22,6 +22,7 @@ import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.equipment.EquipmentRow
 import com.grippo.design.components.segment.Segment
+import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.segment.SegmentWidth
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
@@ -60,6 +61,7 @@ internal fun ProfileEquipmentsScreen(
                 selected = state.selectedGroupId,
                 onSelect = contract::onSelectGroup,
                 segmentWidth = SegmentWidth.Unspecified,
+                style = SegmentStyle.Outline
             )
         }
     )

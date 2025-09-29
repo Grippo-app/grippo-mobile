@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.segment.Segment
+import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.segment.SegmentWidth
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
@@ -47,6 +48,7 @@ internal fun DebugScreen(
                 selected = state.selected,
                 onSelect = contract::onSelect,
                 segmentWidth = SegmentWidth.Unspecified,
+                style = SegmentStyle.Outline
             )
         }
     )

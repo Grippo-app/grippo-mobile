@@ -26,6 +26,7 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.equipment.EquipmentRow
 import com.grippo.design.components.segment.Segment
+import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.segment.SegmentWidth
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
@@ -103,6 +104,7 @@ internal fun MissingEquipmentsScreen(
                 selected = state.selectedGroupId,
                 onSelect = contract::onGroupClick,
                 segmentWidth = SegmentWidth.Unspecified,
+                style = SegmentStyle.Outline
             )
 
             val equipments = remember(state.selectedGroupId, state.suggestions) {

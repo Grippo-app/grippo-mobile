@@ -19,6 +19,7 @@ import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.segment.Segment
+import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -72,7 +73,8 @@ internal fun TrainingRecordingScreen(
                 Segment(
                     items = segmentItems,
                     selected = state.tab,
-                    onSelect = contract::onSelectTab
+                    onSelect = contract::onSelectTab,
+                    style = SegmentStyle.Fill
                 )
 
                 Spacer(modifier = Modifier.weight(1f))

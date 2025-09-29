@@ -29,7 +29,8 @@ public data object AppDp {
     }
 
     private data object Radius {
-        val small: Dp = 8.dp
+        val tiny: Dp = 8.dp
+        val small: Dp = 12.dp
         val medium: Dp = 16.dp
         val large: Dp = 28.dp
     }
@@ -140,7 +141,7 @@ public data object AppDp {
         public data object Small {
             val height: Dp = size.small
             val horizontalPadding: Dp = padding.medium
-            val radius: Dp = AppDp.radius.small
+            val radius: Dp = AppDp.radius.tiny
             val icon: Dp = AppDp.icon.medium
             val space: Dp = padding.small
             val spaceTransparent: Dp = padding.tiny
@@ -214,7 +215,7 @@ public data object AppDp {
         public data object Editable {
             val horizontalPadding: Dp = padding.medium
             val height: Dp = size.medium
-            val radius: Dp = AppDp.radius.small
+            val radius: Dp = AppDp.radius.tiny
             val spacing: Dp = padding.medium
         }
     }
@@ -353,8 +354,20 @@ public data object AppDp {
     }
 
     public data object Segment {
-        val height: Dp = size.medium
-        val horizontalPadding: Dp = padding.large
+        val outline: Outline = Outline
+        val fill: Fill = Fill
+
+        public data object Outline {
+            val height: Dp = size.medium
+            val horizontalPadding: Dp = padding.large
+        }
+
+        public data object Fill {
+            val horizontalPadding: Dp = padding.large
+            val verticalPadding: Dp = padding.small
+            val radiusOut: Dp = radius.small
+            val radiusIn: Dp = radius.tiny
+        }
     }
 
     public data object Tab {
