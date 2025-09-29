@@ -117,8 +117,6 @@ internal fun ExerciseScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,

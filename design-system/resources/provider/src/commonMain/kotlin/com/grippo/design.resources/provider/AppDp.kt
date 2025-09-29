@@ -253,7 +253,6 @@ public data object AppDp {
     public data object ExerciseExampleImage {
         val large: Large = Large
         val medium: Medium = Medium
-        val tooltip: Tooltip = Tooltip
 
         public data object Medium {
             val size: Dp = icon.xLarge
@@ -263,13 +262,6 @@ public data object AppDp {
         public data object Large {
             val size: Dp = icon.xxLarge
             val radius: Dp = AppDp.radius.medium
-        }
-
-        public data object Tooltip {
-            val horizontalPadding: Dp = padding.medium
-            val verticalPadding: Dp = padding.medium
-            val radius: Dp = AppDp.radius.large
-            val size: Dp = 240.dp
         }
     }
 
