@@ -1,22 +1,35 @@
 package com.grippo.design.components.datetime
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.grippo.date.utils.DateCompose
 import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateTimeUtils
+import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonColorTokens
+import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonSize
+import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.icons.NavArrowDown
+import com.grippo.design.resources.provider.icons.NavArrowLeft
+import com.grippo.design.resources.provider.icons.NavArrowRight
 import kotlinx.datetime.LocalDateTime
 
 @Composable
@@ -26,7 +39,9 @@ public fun DatePicker(
     value: LocalDateTime,
     format: DateFormat,
     enabled: Boolean = true,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onNextClick: () -> Unit,
+    onPreviousClick: () -> Unit,
 ) {
     val text = DateCompose.rememberFormat(value.date, format)
 
@@ -45,28 +60,103 @@ public fun DatePicker(
         false -> AppTokens.colors.icon.disabled
     }
 
-    val iconArrowColor = when (enabled) {
-        true -> AppTokens.colors.icon.tertiary
-        false -> AppTokens.colors.icon.disabled
-    }
-
     Row(
-        modifier = modifier.scalableClick(enabled = enabled, onClick = onClick),
+        modifier = modifier
+            .height(IntrinsicSize.Min)
+            .background(
+                AppTokens.colors.background.card,
+                RoundedCornerShape(AppTokens.dp.datePicker.radius)
+            ).padding(
+                horizontal = AppTokens.dp.datePicker.horizontalPadding,
+                vertical = AppTokens.dp.datePicker.verticalPadding
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        Button(
+            content = ButtonContent.Icon(
+                icon = AppTokens.icons.NavArrowLeft
+            ),
+            size = ButtonSize.Small,
+            style = ButtonStyle.Custom(
+                enabled = ButtonColorTokens(
+                    background = Color.Transparent,
+                    content = AppTokens.colors.text.primary,
+                    border = Color.Transparent,
+                    icon = AppTokens.colors.icon.primary,
+                ),
+                disabled = ButtonColorTokens(
+                    background = Color.Transparent,
+                    content = AppTokens.colors.text.disabled,
+                    border = Color.Transparent,
+                    icon = AppTokens.colors.icon.disabled
+                ),
+            ),
+            onClick = onPreviousClick
+        )
+
+        Button(
+            content = ButtonContent.Icon(
+                icon = AppTokens.icons.NavArrowRight
+            ),
+            size = ButtonSize.Small,
+            style = ButtonStyle.Custom(
+                enabled = ButtonColorTokens(
+                    background = Color.Transparent,
+                    content = AppTokens.colors.text.primary,
+                    border = Color.Transparent,
+                    icon = AppTokens.colors.icon.primary,
+                ),
+                disabled = ButtonColorTokens(
+                    background = Color.Transparent,
+                    content = AppTokens.colors.text.disabled,
+                    border = Color.Transparent,
+                    icon = AppTokens.colors.icon.disabled
+                ),
+            ),
+            onClick = onNextClick
+        )
+
+        Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
+
+        VerticalDivider(
+            modifier = Modifier.fillMaxHeight(),
+            color = AppTokens.colors.divider.default
+        )
+
+        Spacer(Modifier.width(AppTokens.dp.contentPadding.content))
+
         Text(
+            modifier = Modifier.scalableClick(
+                enabled = enabled,
+                onClick = onClick
+            ),
             text = text,
             style = AppTokens.typography.h6(),
             color = titleColor
         )
 
-        Spacer(Modifier.width(AppTokens.dp.datePicker.spacer))
+        Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
 
-        Icon(
-            modifier = Modifier.size(AppTokens.dp.datePicker.icon),
-            imageVector = AppTokens.icons.NavArrowDown,
-            tint = iconArrowColor,
-            contentDescription = null
+        Button(
+            content = ButtonContent.Icon(
+                icon = AppTokens.icons.NavArrowDown
+            ),
+            size = ButtonSize.Small,
+            style = ButtonStyle.Custom(
+                enabled = ButtonColorTokens(
+                    background = Color.Transparent,
+                    content = AppTokens.colors.text.primary,
+                    border = Color.Transparent,
+                    icon = AppTokens.colors.icon.primary,
+                ),
+                disabled = ButtonColorTokens(
+                    background = Color.Transparent,
+                    content = AppTokens.colors.text.disabled,
+                    border = Color.Transparent,
+                    icon = AppTokens.colors.icon.disabled
+                ),
+            ),
+            onClick = onClick
         )
     }
 }
@@ -80,7 +170,9 @@ private fun DatePickerPreview() {
             format = DateFormat.DATE_MMM_DD_YYYY,
             title = "Text",
             enabled = true,
-            onClick = {}
+            onClick = {},
+            onNextClick = {},
+            onPreviousClick = {}
         )
 
         DatePicker(
@@ -88,7 +180,9 @@ private fun DatePickerPreview() {
             format = DateFormat.DATE_MMM_DD_YYYY,
             title = "Text",
             enabled = false,
-            onClick = {}
+            onClick = {},
+            onNextClick = {},
+            onPreviousClick = {}
         )
     }
 }

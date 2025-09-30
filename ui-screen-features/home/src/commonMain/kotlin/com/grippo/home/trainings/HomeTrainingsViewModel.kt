@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.datetime.DatePeriod
 
 internal class HomeTrainingsViewModel(
     private val trainingFeature: TrainingFeature,
@@ -73,6 +74,14 @@ internal class HomeTrainingsViewModel(
 
             dialogController.show(dialog)
         }
+    }
+
+    override fun onNextClick() {
+        update { it.copy(date = DateTimeUtils.shift(it.date, DatePeriod(days = +1))) }
+    }
+
+    override fun onPreviousClick() {
+        update { it.copy(date = DateTimeUtils.shift(it.date, DatePeriod(days = -1))) }
     }
 
     override fun onExerciseClick(id: String) {

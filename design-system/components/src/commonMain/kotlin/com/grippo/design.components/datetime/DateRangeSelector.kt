@@ -31,7 +31,9 @@ public fun DateRangeSelector(
             value = value.from,
             format = DateFormat.DATE_MMM_DD_YYYY,
             enabled = enabled,
-            onClick = onFromClick
+            onClick = onFromClick,
+            onNextClick = {}, // TODO FIX
+            onPreviousClick = {} // TODO FIX
         )
 
         DatePicker(
@@ -40,7 +42,9 @@ public fun DateRangeSelector(
             value = value.to,
             format = DateFormat.DATE_MMM_DD_YYYY,
             enabled = enabled,
-            onClick = onToClick
+            onClick = onToClick,
+            onNextClick = {}, // TODO FIX
+            onPreviousClick = {} // TODO FIX
         )
     }
 }

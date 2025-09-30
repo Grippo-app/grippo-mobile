@@ -15,11 +15,8 @@ import com.grippo.design.resources.provider.time_ago_years
 import com.grippo.design.resources.provider.today
 import com.grippo.design.resources.provider.tomorrow
 import com.grippo.design.resources.provider.yesterday
-import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.minus
-import kotlinx.datetime.plus
 
 @Stable
 public object DateCompose {
@@ -76,12 +73,10 @@ public object DateCompose {
         val yesterday: String = AppTokens.strings.res(Res.string.yesterday)
 
         return remember(value, format) {
-            val currentDate = DateTimeUtils.now().date
-
-            val contextual = when (value) {
-                currentDate -> today
-                currentDate.minus(1, DateTimeUnit.DAY) -> yesterday
-                currentDate.plus(1, DateTimeUnit.DAY) -> tomorrow
+            val contextual = when {
+                DateTimeUtils.isToday(value) -> today
+                DateTimeUtils.isYesterday(value) -> yesterday
+                DateTimeUtils.isTomorrow(value) -> tomorrow
                 else -> null
             }
 

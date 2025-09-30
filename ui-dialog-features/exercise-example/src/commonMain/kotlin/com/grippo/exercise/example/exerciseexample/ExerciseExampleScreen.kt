@@ -82,7 +82,7 @@ internal fun ExerciseExampleScreen(
             Chip(
                 label = ChipLabel.Empty,
                 value = example.value.category.title().text(),
-                size = ChipSize.Small,
+                size = ChipSize.Medium,
                 stype = ChipStype.Default,
                 trailing = ChipTrailing.Empty,
                 contentColor = AppTokens.colors.static.white,
@@ -92,7 +92,7 @@ internal fun ExerciseExampleScreen(
             Chip(
                 label = ChipLabel.Empty,
                 value = example.value.forceType.title().text(),
-                size = ChipSize.Small,
+                size = ChipSize.Medium,
                 stype = ChipStype.Default,
                 trailing = ChipTrailing.Empty,
                 contentColor = AppTokens.colors.static.white,
@@ -102,7 +102,7 @@ internal fun ExerciseExampleScreen(
             Chip(
                 label = ChipLabel.Empty,
                 value = example.value.weightType.title().text(),
-                size = ChipSize.Small,
+                size = ChipSize.Medium,
                 stype = ChipStype.Default,
                 trailing = ChipTrailing.Empty,
                 contentColor = AppTokens.colors.static.white,

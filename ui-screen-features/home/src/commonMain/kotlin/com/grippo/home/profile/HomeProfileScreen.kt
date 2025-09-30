@@ -64,7 +64,7 @@ internal fun HomeProfileScreen(
             .verticalScroll(rememberScrollState())
             .padding(
                 horizontal = AppTokens.dp.screen.horizontalPadding,
-                vertical = AppTokens.dp.screen.verticalPadding
+                vertical = AppTokens.dp.contentPadding.content
             ).imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

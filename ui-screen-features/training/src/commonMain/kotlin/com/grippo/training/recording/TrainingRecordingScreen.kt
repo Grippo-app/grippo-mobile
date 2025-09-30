@@ -70,7 +70,11 @@ internal fun TrainingRecordingScreen(
         content = {
             Row(
                 modifier = Modifier
-                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                    .padding(
+                        start = AppTokens.dp.screen.horizontalPadding,
+                        end = AppTokens.dp.screen.horizontalPadding,
+                        bottom = AppTokens.dp.contentPadding.content,
+                    )
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)

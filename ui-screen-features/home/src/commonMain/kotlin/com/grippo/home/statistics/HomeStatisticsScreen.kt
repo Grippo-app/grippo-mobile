@@ -81,7 +81,10 @@ internal fun HomeStatisticsScreen(
             .fillMaxWidth()
             .weight(1f),
         columns = GridCells.Fixed(3),
-        contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
+        contentPadding = PaddingValues(
+            vertical = AppTokens.dp.contentPadding.content,
+            horizontal = AppTokens.dp.screen.horizontalPadding
+        ),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {

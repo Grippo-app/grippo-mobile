@@ -70,7 +70,9 @@ internal fun HomeTrainingsScreen(
                     title = AppTokens.strings.res(Res.string.selected),
                     value = state.date.from,
                     format = DateFormat.DATE_MMM_DD_YYYY,
-                    onClick = contract::onSelectDate
+                    onClick = contract::onSelectDate,
+                    onPreviousClick = contract::onPreviousClick,
+                    onNextClick = contract::onNextClick
                 )
             }
         }
@@ -80,7 +82,6 @@ internal fun HomeTrainingsScreen(
         modifier = Modifier.fillMaxWidth().weight(1f),
         contentPadding = PaddingValues(
             horizontal = AppTokens.dp.screen.horizontalPadding,
-            vertical = AppTokens.dp.contentPadding.content
         ),
     ) {
         items(

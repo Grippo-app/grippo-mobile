@@ -136,6 +136,15 @@ public object DateTimeUtils {
         return instant.toLocalDateTime(timeZone)
     }
 
+    public fun shift(range: DateRange, period: DatePeriod): DateRange {
+        val newFromDate = range.from.date.plus(period)
+        val newToDate = range.to.date.plus(period)
+        return DateRange(
+            from = newFromDate.atTime(range.from.time),
+            to = newToDate.atTime(range.to.time)
+        )
+    }
+
     /* * * * * * * * * * *
      * Timeline
      * * * * * * * * * * */
