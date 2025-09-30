@@ -4,8 +4,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.grippo.state.formatters.RepetitionsFormatState
-import com.grippo.state.formatters.VolumeFormatState
 import kotlinx.datetime.LocalDateTime
 
 @Immutable
@@ -57,8 +55,7 @@ public sealed class TrainingListValue(
     @Immutable
     public data class DateTime(
         val date: LocalDateTime,
-        val volume: VolumeFormatState,
-        val repetitions: RepetitionsFormatState,
+        val trainingId: String,
         override val position: TrainingPosition,
         override val id: String,
     ) : TrainingListValue(id, position)

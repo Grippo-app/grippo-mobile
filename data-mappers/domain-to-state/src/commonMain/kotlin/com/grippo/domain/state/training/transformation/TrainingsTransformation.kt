@@ -22,9 +22,8 @@ public fun List<TrainingState>.transformToTrainingListValue(): ImmutableList<Tra
                 TrainingListValue.DateTime(
                     date = training.createdAt,
                     position = position,
+                    trainingId = training.id,
                     id = "date-${training.id}",
-                    volume = training.metrics.volume,
-                    repetitions = training.metrics.repetitions
                 )
             )
 

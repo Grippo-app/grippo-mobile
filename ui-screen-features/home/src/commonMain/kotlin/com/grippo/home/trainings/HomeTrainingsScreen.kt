@@ -95,13 +95,11 @@ internal fun HomeTrainingsScreen(
             val exercise = remember(value) { value.exercise() }
 
             TimelineIndicator(style = style) {
-
-                val clickProvider = remember {
-                    { contract.onTrainingMenuClick(value.id) }
-                }
-
-
                 if (value is TrainingListValue.DateTime) {
+                    val clickProvider = remember {
+                        { contract.onTrainingMenuClick(value.trainingId) }
+                    }
+
                     Row(
                         modifier = Modifier.padding(vertical = contentPadding),
                         verticalAlignment = Alignment.CenterVertically,
