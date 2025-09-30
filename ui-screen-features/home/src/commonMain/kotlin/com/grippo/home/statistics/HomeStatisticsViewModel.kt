@@ -20,6 +20,7 @@ import com.grippo.state.datetime.PeriodState
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
@@ -48,20 +49,24 @@ internal class HomeStatisticsViewModel(
             .map {
                 it.trainings
                     .flatMap { f -> f.exercises.map { m -> m.exerciseExample.id } }
-                    .toSet().toList()
+                    .toSet()
+                    .toList()
             }
+            .filter { it.isNotEmpty() }
             .distinctUntilChanged()
-            .flatMapLatest { ids -> exerciseExampleFeature.observeExerciseExamples(ids) }
+            .flatMapLatest(exerciseExampleFeature::observeExerciseExamples)
             .onEach(::provideExerciseExamples)
             .safeLaunch()
 
         state
             .map { it.period.range }
+            .distinctUntilChanged()
             .onEach { trainingFeature.getTrainings(start = it.from, end = it.to).getOrThrow() }
             .safeLaunch()
 
         state
             .map { it.period.range }
+            .distinctUntilChanged()
             .flatMapLatest { r -> trainingFeature.observeTrainings(start = r.from, end = r.to) }
             .onEach(::provideTrainings)
             .safeLaunch()

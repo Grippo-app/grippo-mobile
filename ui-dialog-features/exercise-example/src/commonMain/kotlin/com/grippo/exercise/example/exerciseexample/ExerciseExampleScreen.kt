@@ -30,6 +30,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.muscles
 import com.grippo.design.resources.provider.required_equipment
 import com.grippo.state.exercise.examples.stubExerciseExample
 import kotlinx.collections.immutable.ImmutableSet
@@ -118,25 +119,13 @@ internal fun ExerciseExampleScreen(
             text = example.value.description,
         )
 
-        state.muscleLoad?.let { summary ->
-
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-            MuscleLoadChart(
-                modifier = Modifier
-                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                    .fillMaxWidth(),
-                value = summary,
-            )
-        }
-
         if (example.equipments.isNotEmpty()) {
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
             Text(
                 modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
                 text = AppTokens.strings.res(Res.string.required_equipment),
-                style = AppTokens.typography.h4(),
+                style = AppTokens.typography.h5(),
                 color = AppTokens.colors.text.primary
             )
 
@@ -146,6 +135,27 @@ internal fun ExerciseExampleScreen(
                 modifier = Modifier.fillMaxWidth(),
                 value = example.equipments,
                 contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
+            )
+        }
+
+        state.muscleLoad?.let { summary ->
+
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+            Text(
+                modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                text = AppTokens.strings.res(Res.string.muscles),
+                style = AppTokens.typography.h5(),
+                color = AppTokens.colors.text.primary
+            )
+
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+            MuscleLoadChart(
+                modifier = Modifier
+                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                    .fillMaxWidth(),
+                value = summary,
             )
         }
 
