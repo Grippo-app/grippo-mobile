@@ -1,11 +1,13 @@
 package com.grippo.shared.root
 
+import com.grippo.state.stage.StageState
+
 public interface RootContract {
     public fun onClose()
     public fun toHome()
     public fun toProfile()
     public fun toDebug()
-    public fun toTraining(id: String?)
+    public fun toTraining(stage: StageState)
     public fun toWeightHistory()
     public fun toMissingEquipment()
     public fun toExcludedMuscles()
@@ -16,7 +18,7 @@ public interface RootContract {
         override fun toHome() {}
         override fun toProfile() {}
         override fun toDebug() {}
-        override fun toTraining(id: String?) {}
+        override fun toTraining(stage: StageState) {}
         override fun toWeightHistory() {}
         override fun toMissingEquipment() {}
         override fun toExcludedMuscles() {}

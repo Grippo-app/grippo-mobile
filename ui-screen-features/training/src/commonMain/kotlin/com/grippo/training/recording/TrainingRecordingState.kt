@@ -8,6 +8,7 @@ import com.grippo.date.utils.DateTimeUtils
 import com.grippo.state.exercise.examples.ExerciseExampleState
 import com.grippo.state.muscles.MuscleGroupState
 import com.grippo.state.muscles.MuscleRepresentationState
+import com.grippo.state.stage.StageState
 import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.TrainingMetrics
 import kotlinx.collections.immutable.ImmutableList
@@ -16,7 +17,7 @@ import kotlinx.datetime.LocalDateTime
 
 @Immutable
 internal data class TrainingRecordingState(
-    val stage: RecordingStage,
+    val stage: StageState,
     val tab: RecordingTab = RecordingTab.Exercises,
 
     // === Main data ===
@@ -41,12 +42,6 @@ internal data class TrainingRecordingState(
     val weightTypeDistribution: DistributionBreakdown? = null,
     val forceTypeDistribution: DistributionBreakdown? = null
 )
-
-@Immutable
-internal sealed interface RecordingStage {
-    data object AddTraining : RecordingStage
-    data class EditTraining(val id: String) : RecordingStage
-}
 
 @Immutable
 internal enum class RecordingTab {

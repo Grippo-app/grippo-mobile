@@ -13,11 +13,13 @@ import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState
 import com.grippo.domain.state.training.transformation.toTrainingListValues
 import com.grippo.state.domain.training.toDomain
+import com.grippo.state.stage.StageState
 import com.grippo.state.trainings.ExerciseState
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.LocalDateTime
 
 internal class TrainingCompletedViewModel(
+    stage: StageState,
     exercises: List<ExerciseState>,
     trainingFeature: TrainingFeature,
     startAt: LocalDateTime,
@@ -48,9 +50,21 @@ internal class TrainingCompletedViewModel(
                 repetitions = totals.repetitions.value ?: 0
             )
 
-            val id = trainingFeature
-                .setTraining(training)
-                .getOrThrow() ?: return@safeLaunch
+            val id = when (val allocatedId = stage.id) {
+                null -> {
+                    val result = trainingFeature
+                        .setTraining(training)
+                        .getOrThrow() ?: return@safeLaunch
+                    result
+                }
+
+                else -> {
+                    val result = trainingFeature
+                        .updateTraining(allocatedId, training)
+                        .getOrThrow() ?: return@safeLaunch
+                    result
+                }
+            }
 
             trainingFeature.deleteDraftTraining().getOrThrow()
 

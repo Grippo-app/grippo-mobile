@@ -13,6 +13,7 @@ public interface TrainingFeature {
 
     public suspend fun getTrainings(start: LocalDateTime, end: LocalDateTime): Result<Unit>
     public suspend fun setTraining(training: SetTraining): Result<String?>
+    public suspend fun updateTraining(id: String, training: SetTraining): Result<String?>
     public suspend fun deleteTraining(id: String): Result<Unit>
 
     public fun getDraftTraining(): Flow<SetTraining?>

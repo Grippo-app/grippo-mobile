@@ -40,8 +40,8 @@ import com.grippo.design.resources.provider.chart_title_exercise_volume
 import com.grippo.design.resources.provider.chart_title_muscle_load
 import com.grippo.design.resources.provider.icons.Reports
 import com.grippo.design.resources.provider.no_data_yet
+import com.grippo.state.stage.StageState
 import com.grippo.state.trainings.stubTraining
-import com.grippo.training.recording.RecordingStage
 import com.grippo.training.recording.RecordingTab
 import com.grippo.training.recording.TrainingRecordingContract
 import com.grippo.training.recording.TrainingRecordingScreen
@@ -212,7 +212,7 @@ private fun StatisticsPagePreview() {
     PreviewContainer {
         TrainingRecordingScreen(
             state = TrainingRecordingState(
-                stage = RecordingStage.AddTraining,
+                stage = StageState.Add,
                 exercises = stubTraining().exercises,
                 tab = RecordingTab.Stats
             ),
@@ -228,7 +228,7 @@ private fun StatisticsPageEmptyPreview() {
     PreviewContainer {
         TrainingRecordingScreen(
             state = TrainingRecordingState(
-                stage = RecordingStage.AddTraining,
+                stage = StageState.Add,
                 exercises = persistentListOf(),
                 tab = RecordingTab.Stats
             ),

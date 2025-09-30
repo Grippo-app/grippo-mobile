@@ -33,6 +33,10 @@ internal class TrainingFeatureImpl(
         return repository.setTraining(training)
     }
 
+    override suspend fun updateTraining(id: String, training: SetTraining): Result<String?> {
+        return repository.updateTraining(id, training)
+    }
+
     override suspend fun deleteTraining(id: String): Result<Unit> {
         return repository.deleteTraining(id)
     }

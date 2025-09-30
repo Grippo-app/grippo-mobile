@@ -1,6 +1,7 @@
 package com.grippo.screen.api
 
 import com.grippo.core.models.BaseRouter
+import com.grippo.state.stage.StageState
 import com.grippo.state.trainings.ExerciseState
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
@@ -9,13 +10,14 @@ import kotlinx.serialization.Serializable
 public sealed class TrainingRouter : BaseRouter {
 
     @Serializable
-    public data class Recording(val id: String?) : TrainingRouter()
+    public data class Recording(val stage: StageState) : TrainingRouter()
 
     @Serializable
     public data class Exercise(val exercise: ExerciseState) : TrainingRouter()
 
     @Serializable
     public data class Completed(
+        val stage: StageState,
         val exercises: List<ExerciseState>,
         val startAt: LocalDateTime,
     ) : TrainingRouter()

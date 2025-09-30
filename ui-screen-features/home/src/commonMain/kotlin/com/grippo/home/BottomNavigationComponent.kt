@@ -15,6 +15,7 @@ import com.grippo.home.profile.HomeProfileComponent
 import com.grippo.home.statistics.HomeStatisticsComponent
 import com.grippo.home.trainings.HomeTrainingsComponent
 import com.grippo.screen.api.BottomNavigationRouter
+import com.grippo.state.stage.StageState
 
 public class BottomNavigationComponent(
     initial: BottomNavigationRouter,
@@ -23,7 +24,7 @@ public class BottomNavigationComponent(
     private val toMissingEquipment: () -> Unit,
     private val toWeightHistory: () -> Unit,
     private val toDebug: () -> Unit,
-    private val toTraining: (id: String?) -> Unit,
+    private val toTraining: (stage: StageState) -> Unit,
     private val close: () -> Unit,
 ) : BaseComponent<BottomNavigationDirection>(componentContext) {
 
@@ -51,8 +52,12 @@ public class BottomNavigationComponent(
             BottomNavigationDirection.ToMissingEquipment -> toMissingEquipment.invoke()
             BottomNavigationDirection.ToWeightHistory -> toWeightHistory.invoke()
             BottomNavigationDirection.ToDebug -> toDebug.invoke()
-            BottomNavigationDirection.ToAddTraining -> toTraining.invoke(null)
-            is BottomNavigationDirection.ToEditTraining -> toTraining.invoke(direction.id)
+            BottomNavigationDirection.ToAddTraining -> toTraining.invoke(StageState.Add)
+            is BottomNavigationDirection.ToEditTraining -> toTraining.invoke(
+                StageState.Edit(
+                    direction.id
+                )
+            )
         }
     }
 

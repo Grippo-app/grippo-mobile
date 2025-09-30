@@ -25,6 +25,7 @@ import com.grippo.state.formatters.IntensityFormatState
 import com.grippo.state.formatters.PercentageFormatState
 import com.grippo.state.formatters.RepetitionsFormatState
 import com.grippo.state.formatters.VolumeFormatState
+import com.grippo.state.stage.StageState
 import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.TrainingMetrics
 import kotlinx.collections.immutable.persistentListOf
@@ -40,7 +41,7 @@ import kotlin.uuid.Uuid
 
 @OptIn(FlowPreview::class)
 internal class TrainingRecordingViewModel(
-    id: String?,
+    stage: StageState,
     muscleFeature: MuscleFeature,
     private val exerciseExampleFeature: ExerciseExampleFeature,
     private val trainingFeature: TrainingFeature,
@@ -49,10 +50,7 @@ internal class TrainingRecordingViewModel(
     colorProvider: ColorProvider,
 ) : BaseViewModel<TrainingRecordingState, TrainingRecordingDirection, TrainingRecordingLoader>(
     TrainingRecordingState(
-        stage = when (id == null) {
-            true -> RecordingStage.AddTraining
-            false -> RecordingStage.EditTraining(id)
-        }
+        stage = stage
     )
 ), TrainingRecordingContract {
 
@@ -79,12 +77,13 @@ internal class TrainingRecordingViewModel(
 
         safeLaunch {
             when (val stage = state.value.stage) {
-                RecordingStage.AddTraining -> {
+                StageState.Add -> {
                     val training = trainingFeature.getDraftTraining().firstOrNull()
                     provideDraftTraining(training)
                 }
 
-                is RecordingStage.EditTraining -> {
+                is StageState.Edit -> {
+                    trainingFeature.deleteDraftTraining().getOrThrow()
                     val training = trainingFeature.observeTraining(stage.id).firstOrNull()
                     provideTraining(training)
                 }
@@ -206,6 +205,7 @@ internal class TrainingRecordingViewModel(
 
     override fun onSave() {
         val direction = TrainingRecordingDirection.ToCompleted(
+            stage = state.value.stage,
             exercises = state.value.exercises,
             startAt = state.value.startAt
         )
