@@ -172,8 +172,10 @@
     <string name="select_exercise">Виберіть вправу</string>
     <string name="not_found">Не знайдено</string>
     <string name="reset">Скинути</string>
-    <string name="draft_training_alert_title">Незавершене тренування</string>
-    <string name="draft_training_alert_description">У вас є незавершене тренування. Продовжити з місця, де зупинилися?</string>
+    <string name="draft_training_alert_title_add">Продовжити чернетку тренування</string>
+    <string name="draft_training_alert_description_add">У вас є незавершена чернетка тренування, збережена локально. Продовжити з місця, де зупинилися?</string>
+    <string name="draft_training_alert_title_edit">Продовжити редагування тренування</string>
+    <string name="draft_training_alert_description_edit">Ви редагували збережене тренування і залишили незавершені зміни. Продовжити редагування?</string>
     <string name="last_used_label">Ост. використання:</string>
 
     <!-- Filter strings -->

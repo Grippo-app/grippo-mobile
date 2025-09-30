@@ -173,8 +173,11 @@
     <string name="timeout_error">Timeout</string>
     <string name="unexpected_network_error">Unexpected network error</string>
     <string name="select_exercise">Select exercise</string>
-    <string name="draft_training_alert_title">Unfinished training</string>
-    <string name="draft_training_alert_description">You have an unfinished training session. Continue where you left off?</string>
+    <string name="draft_training_alert_title_add">Resume draft workout</string>
+    <string name="draft_training_alert_description_add">You have an unfinished draft workout saved locally. Continue where you left off?</string>
+    <string name="draft_training_alert_title_edit">Resume editing workout</string>
+    <string name="draft_training_alert_description_edit">You were editing a saved workout and left some changes unfinished. Continue editing?</string>
+
     <string name="last_used_label">Last used:</string>
 
     <string name="filter_weight_type">Weight type</string>

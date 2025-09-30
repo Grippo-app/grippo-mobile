@@ -30,9 +30,12 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.clear_btn
 import com.grippo.design.resources.provider.continue_btn
-import com.grippo.design.resources.provider.draft_training_alert_description
-import com.grippo.design.resources.provider.draft_training_alert_title
+import com.grippo.design.resources.provider.draft_training_alert_description_add
+import com.grippo.design.resources.provider.draft_training_alert_description_edit
+import com.grippo.design.resources.provider.draft_training_alert_title_add
+import com.grippo.design.resources.provider.draft_training_alert_title_edit
 import com.grippo.design.resources.provider.icons.QuestionMarkCircleOutline
+import com.grippo.state.stage.StageState
 import com.grippo.state.trainings.stubExercises
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -64,7 +67,11 @@ internal fun DraftTrainingScreen(
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.draft_training_alert_title),
+            text = when (state.stage) {
+                StageState.Add -> AppTokens.strings.res(Res.string.draft_training_alert_title_add)
+                StageState.Draft -> AppTokens.strings.res(Res.string.draft_training_alert_title_add)
+                is StageState.Edit -> AppTokens.strings.res(Res.string.draft_training_alert_title_edit)
+            },
             style = AppTokens.typography.h2(),
             color = AppTokens.colors.text.primary,
             textAlign = TextAlign.Center
@@ -74,7 +81,11 @@ internal fun DraftTrainingScreen(
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.draft_training_alert_description),
+            text = when (state.stage) {
+                StageState.Add -> AppTokens.strings.res(Res.string.draft_training_alert_description_add)
+                StageState.Draft -> AppTokens.strings.res(Res.string.draft_training_alert_description_add)
+                is StageState.Edit -> AppTokens.strings.res(Res.string.draft_training_alert_description_edit)
+            },
             style = AppTokens.typography.b14Med(),
             color = AppTokens.colors.text.secondary,
             textAlign = TextAlign.Center
@@ -142,11 +153,27 @@ internal fun DraftTrainingScreen(
 
 @AppPreview
 @Composable
-private fun ScreenPreview() {
+private fun ScreenPreviewAdd() {
     PreviewContainer {
         DraftTrainingScreen(
             state = DraftTrainingState(
-                exercises = stubExercises()
+                exercises = stubExercises(),
+                stage = StageState.Add
+            ),
+            contract = DraftTrainingContract.Empty,
+            loaders = persistentSetOf()
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewEdit() {
+    PreviewContainer {
+        DraftTrainingScreen(
+            state = DraftTrainingState(
+                exercises = stubExercises(),
+                stage = StageState.Edit("")
             ),
             contract = DraftTrainingContract.Empty,
             loaders = persistentSetOf()
