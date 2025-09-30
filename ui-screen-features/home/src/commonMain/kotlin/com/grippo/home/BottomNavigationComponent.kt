@@ -51,7 +51,7 @@ public class BottomNavigationComponent(
             BottomNavigationDirection.ToMissingEquipment -> toMissingEquipment.invoke()
             BottomNavigationDirection.ToWeightHistory -> toWeightHistory.invoke()
             BottomNavigationDirection.ToDebug -> toDebug.invoke()
-            BottomNavigationDirection.ToCreateTraining -> toTraining.invoke(null)
+            BottomNavigationDirection.ToAddTraining -> toTraining.invoke(null)
             is BottomNavigationDirection.ToEditTraining -> toTraining.invoke(direction.id)
         }
     }
@@ -90,7 +90,7 @@ public class BottomNavigationComponent(
                     toExcludedMuscles = viewModel::toExcludedMuscles,
                     toMissingEquipment = viewModel::toMissingEquipment,
                     toWeightHistory = viewModel::toWeightHistory,
-                    toTraining = viewModel::toCreateTraining,
+                    toAddTraining = viewModel::toAddTraining,
                     toDebug = viewModel::toDebug,
                     back = viewModel::onBack
                 ),

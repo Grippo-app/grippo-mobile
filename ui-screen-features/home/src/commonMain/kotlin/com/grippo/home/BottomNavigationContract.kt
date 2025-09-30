@@ -8,7 +8,7 @@ internal interface BottomNavigationContract {
     fun toWeightHistory()
     fun toDebug()
     fun toEditTraining(id: String)
-    fun toCreateTraining()
+    fun toAddTraining()
 
     companion object Empty : BottomNavigationContract {
         override fun selectTab(origin: Int) {}
@@ -18,6 +18,6 @@ internal interface BottomNavigationContract {
         override fun toWeightHistory() {}
         override fun toDebug() {}
         override fun toEditTraining(id: String) {}
-        override fun toCreateTraining() {}
+        override fun toAddTraining() {}
     }
 }

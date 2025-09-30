@@ -16,6 +16,7 @@ import kotlinx.datetime.LocalDateTime
 
 @Immutable
 internal data class TrainingRecordingState(
+    val stage: RecordingStage,
     val tab: RecordingTab = RecordingTab.Exercises,
 
     // === Main data ===
@@ -40,6 +41,12 @@ internal data class TrainingRecordingState(
     val weightTypeDistribution: DistributionBreakdown? = null,
     val forceTypeDistribution: DistributionBreakdown? = null
 )
+
+@Immutable
+internal sealed interface RecordingStage {
+    data object AddTraining : RecordingStage
+    data class EditTraining(val id: String) : RecordingStage
+}
 
 @Immutable
 internal enum class RecordingTab {

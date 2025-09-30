@@ -13,6 +13,7 @@ import kotlinx.datetime.LocalDateTime
 
 internal class TrainingRecordingComponent(
     componentContext: ComponentContext,
+    id: String?,
     private val toCompleted: (exercises: List<ExerciseState>, startAt: LocalDateTime) -> Unit,
     private val toExercise: (exercise: ExerciseState) -> Unit,
     private val back: () -> Unit,
@@ -27,6 +28,7 @@ internal class TrainingRecordingComponent(
 
     override val viewModel: TrainingRecordingViewModel = componentContext.retainedInstance {
         TrainingRecordingViewModel(
+            id = id,
             exerciseExampleFeature = getKoin().get(),
             muscleFeature = getKoin().get(),
             trainingFeature = getKoin().get(),

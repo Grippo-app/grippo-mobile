@@ -147,7 +147,7 @@ public class RootComponent(
             is RootRouter.Training -> Training(
                 TrainingComponent(
                     componentContext = context,
-                    initial = TrainingRouter.Recording,
+                    initial = TrainingRouter.Recording(router.id),
                     close = viewModel::onBack
                 )
             )

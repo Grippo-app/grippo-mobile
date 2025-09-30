@@ -18,7 +18,7 @@ public fun TrainingPack.toDomain(): Training {
         volume = training.volume,
         repetitions = training.repetitions,
         intensity = training.intensity,
-        duration = training.duration,
+        duration = training.duration.minutes,
         createdAt = DateTimeUtils.toLocalDateTime(training.createdAt)
     )
 }

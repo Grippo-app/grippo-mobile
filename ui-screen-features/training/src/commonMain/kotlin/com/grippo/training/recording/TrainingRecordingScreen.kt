@@ -142,6 +142,7 @@ private fun ScreenPreview1() {
     PreviewContainer {
         TrainingRecordingScreen(
             state = TrainingRecordingState(
+                stage = RecordingStage.AddTraining,
                 exercises = stubTraining().exercises,
                 tab = RecordingTab.Exercises
             ),
@@ -157,6 +158,7 @@ private fun ScreenPreview2() {
     PreviewContainer {
         TrainingRecordingScreen(
             state = TrainingRecordingState(
+                stage = RecordingStage.AddTraining,
                 exercises = stubTraining().exercises,
                 examples = persistentListOf(stubExerciseExample()),
                 muscles = stubMuscles(),

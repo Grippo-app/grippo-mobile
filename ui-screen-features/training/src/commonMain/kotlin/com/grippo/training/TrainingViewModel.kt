@@ -17,8 +17,8 @@ public class TrainingViewModel :
         navigateTo(TrainingDirection.Close)
     }
 
-    override fun toRecording() {
-        navigateTo(TrainingDirection.ToRecording)
+    override fun toRecording(id: String?) {
+        navigateTo(TrainingDirection.ToRecording(id))
     }
 
     override fun toExercise(exercise: ExerciseState) {

@@ -36,6 +36,7 @@ import com.grippo.design.resources.provider.icons.Cancel
 import com.grippo.design.resources.provider.icons.Gym
 import com.grippo.design.resources.provider.no_exercises_yet
 import com.grippo.state.trainings.stubTraining
+import com.grippo.training.recording.RecordingStage
 import com.grippo.training.recording.RecordingTab
 import com.grippo.training.recording.TrainingRecordingContract
 import com.grippo.training.recording.TrainingRecordingScreen
@@ -148,6 +149,7 @@ private fun ExercisesPagePreview() {
     PreviewContainer {
         TrainingRecordingScreen(
             state = TrainingRecordingState(
+                stage = RecordingStage.AddTraining,
                 exercises = stubTraining().exercises,
                 tab = RecordingTab.Exercises
             ),
@@ -163,6 +165,7 @@ private fun ExercisesPageEmptyPreview() {
     PreviewContainer {
         TrainingRecordingScreen(
             state = TrainingRecordingState(
+                stage = RecordingStage.AddTraining,
                 exercises = persistentListOf(),
                 tab = RecordingTab.Exercises
             ),

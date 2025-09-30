@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 public sealed class TrainingRouter : BaseRouter {
 
     @Serializable
-    public data object Recording : TrainingRouter()
+    public data class Recording(val id: String?) : TrainingRouter()
 
     @Serializable
     public data class Exercise(val exercise: ExerciseState) : TrainingRouter()

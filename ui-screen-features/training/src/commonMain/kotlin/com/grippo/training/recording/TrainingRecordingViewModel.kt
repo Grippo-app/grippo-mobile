@@ -8,6 +8,7 @@ import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.SetTraining
+import com.grippo.data.features.api.training.models.Training
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.providers.ColorProvider
@@ -39,6 +40,7 @@ import kotlin.uuid.Uuid
 
 @OptIn(FlowPreview::class)
 internal class TrainingRecordingViewModel(
+    id: String?,
     muscleFeature: MuscleFeature,
     private val exerciseExampleFeature: ExerciseExampleFeature,
     private val trainingFeature: TrainingFeature,
@@ -46,7 +48,12 @@ internal class TrainingRecordingViewModel(
     private val stringProvider: StringProvider,
     colorProvider: ColorProvider,
 ) : BaseViewModel<TrainingRecordingState, TrainingRecordingDirection, TrainingRecordingLoader>(
-    TrainingRecordingState()
+    TrainingRecordingState(
+        stage = when (id == null) {
+            true -> RecordingStage.AddTraining
+            false -> RecordingStage.EditTraining(id)
+        }
+    )
 ), TrainingRecordingContract {
 
     private val analytics = AnalyticsApi(stringProvider, colorProvider)
@@ -71,12 +78,27 @@ internal class TrainingRecordingViewModel(
             .safeLaunch()
 
         safeLaunch {
-            val training = trainingFeature.getDraftTraining().firstOrNull()
-            provideDraftTraining(training)
+            when (val stage = state.value.stage) {
+                RecordingStage.AddTraining -> {
+                    val training = trainingFeature.getDraftTraining().firstOrNull()
+                    provideDraftTraining(training)
+                }
+
+                is RecordingStage.EditTraining -> {
+                    val training = trainingFeature.observeTraining(stage.id).firstOrNull()
+                    provideTraining(training)
+                }
+            }
         }
     }
 
     private fun provideDraftTraining(value: SetTraining?) {
+        val exercises = value?.exercises?.toState() ?: return
+        val startAt = DateTimeUtils.minus(DateTimeUtils.now(), value.duration)
+        update { it.copy(exercises = exercises.toPersistentList(), startAt = startAt) }
+    }
+
+    private fun provideTraining(value: Training?) {
         val exercises = value?.exercises?.toState() ?: return
         val startAt = DateTimeUtils.minus(DateTimeUtils.now(), value.duration)
         update { it.copy(exercises = exercises.toPersistentList(), startAt = startAt) }
