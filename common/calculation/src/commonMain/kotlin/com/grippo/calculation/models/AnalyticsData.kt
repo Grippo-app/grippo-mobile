@@ -86,6 +86,7 @@ public interface MuscleColorSource {
     public val color: Color
 }
 
+@Immutable
 public sealed interface DistributionWeighting {
     public data object Count : DistributionWeighting
     public data object Sets : DistributionWeighting

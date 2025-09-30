@@ -23,7 +23,7 @@ public fun List<TrainingState>.transformToTrainingListValue(): ImmutableList<Tra
                     date = training.createdAt,
                     position = position,
                     trainingId = training.id,
-                    id = "date-${training.id}",
+                    key = "date-${training.id}",
                 )
             )
 

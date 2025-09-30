@@ -85,7 +85,7 @@ internal fun HomeTrainingsScreen(
     ) {
         items(
             items = state.trainings,
-            key = { it.id },
+            key = { it.key },
             contentType = { it::class }
         ) { value ->
             val radius = AppTokens.dp.menu.radius
