@@ -23,7 +23,7 @@ public class BottomNavigationComponent(
     private val toMissingEquipment: () -> Unit,
     private val toWeightHistory: () -> Unit,
     private val toDebug: () -> Unit,
-    private val toTraining: () -> Unit,
+    private val toTraining: (id: String?) -> Unit,
     private val close: () -> Unit,
 ) : BaseComponent<BottomNavigationDirection>(componentContext) {
 
@@ -51,7 +51,8 @@ public class BottomNavigationComponent(
             BottomNavigationDirection.ToMissingEquipment -> toMissingEquipment.invoke()
             BottomNavigationDirection.ToWeightHistory -> toWeightHistory.invoke()
             BottomNavigationDirection.ToDebug -> toDebug.invoke()
-            BottomNavigationDirection.ToTraining -> toTraining.invoke()
+            BottomNavigationDirection.ToCreateTraining -> toTraining.invoke(null)
+            is BottomNavigationDirection.ToEditTraining -> toTraining.invoke(direction.id)
         }
     }
 
@@ -71,6 +72,7 @@ public class BottomNavigationComponent(
             is BottomNavigationRouter.Trainings -> Child.Trainings(
                 HomeTrainingsComponent(
                     componentContext = context,
+                    toEditTraining = viewModel::toEditTraining,
                     back = viewModel::onBack
                 ),
             )
@@ -88,7 +90,7 @@ public class BottomNavigationComponent(
                     toExcludedMuscles = viewModel::toExcludedMuscles,
                     toMissingEquipment = viewModel::toMissingEquipment,
                     toWeightHistory = viewModel::toWeightHistory,
-                    toWorkout = viewModel::toWorkout,
+                    toTraining = viewModel::toCreateTraining,
                     toDebug = viewModel::toDebug,
                     back = viewModel::onBack
                 ),

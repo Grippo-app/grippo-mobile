@@ -5,6 +5,7 @@ import com.grippo.date.utils.DateRange
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.delete_btn
+import com.grippo.design.resources.provider.edit_btn
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.design.resources.provider.selected
 import com.grippo.state.trainings.TrainingListValue
@@ -19,6 +20,7 @@ internal data class HomeTrainingsState(
 
 @Immutable
 internal enum class TrainingMenu(val id: String) {
+    Edit("edit"),
     Delete("delete");
 
     companion object {
@@ -34,6 +36,7 @@ internal enum class TrainingMenu(val id: String) {
     suspend fun text(stringProvider: StringProvider): String {
         return when (this) {
             Delete -> stringProvider.get(Res.string.delete_btn)
+            Edit -> stringProvider.get(Res.string.edit_btn)
         }
     }
 }

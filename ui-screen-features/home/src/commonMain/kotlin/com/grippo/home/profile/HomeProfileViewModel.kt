@@ -8,7 +8,8 @@ import com.grippo.domain.state.user.toState
 import kotlinx.coroutines.flow.onEach
 
 internal class HomeProfileViewModel(
-    userFeature: UserFeature, private val authorizationFeature: AuthorizationFeature
+    userFeature: UserFeature,
+    private val authorizationFeature: AuthorizationFeature
 ) : BaseViewModel<HomeProfileState, HomeProfileDirection, HomeProfileLoader>(HomeProfileState()),
     HomeProfileContract {
 
@@ -43,8 +44,8 @@ internal class HomeProfileViewModel(
         navigateTo(direction)
     }
 
-    override fun onStartWorkoutClick() {
-        navigateTo(HomeProfileDirection.Workout)
+    override fun onStartTrainingClick() {
+        navigateTo(HomeProfileDirection.Training)
     }
 
     override fun onBack() {

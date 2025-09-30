@@ -9,7 +9,8 @@ import com.grippo.core.platform.collectAsStateMultiplatform
 
 internal class HomeTrainingsComponent(
     componentContext: ComponentContext,
-    private val back: () -> Unit
+    private val back: () -> Unit,
+    private val toEditTraining: (id: String) -> Unit,
 ) : BaseComponent<HomeTrainingsDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
@@ -29,6 +30,7 @@ internal class HomeTrainingsComponent(
     override suspend fun eventListener(direction: HomeTrainingsDirection) {
         when (direction) {
             HomeTrainingsDirection.Back -> back.invoke()
+            is HomeTrainingsDirection.EditTraining -> toEditTraining.invoke(direction.id)
         }
     }
 

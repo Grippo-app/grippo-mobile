@@ -19,5 +19,5 @@ public sealed class RootRouter : BaseRouter {
     public data object Debug : RootRouter()
 
     @Serializable
-    public data object Training : RootRouter()
+    public data class Training(val id: String?) : RootRouter()
 }

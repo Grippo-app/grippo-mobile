@@ -64,6 +64,7 @@ internal class HomeTrainingsViewModel(
                     safeLaunch {
                         when (TrainingMenu.of(it)) {
                             TrainingMenu.Delete -> trainingFeature.deleteTraining(id).getOrThrow()
+                            TrainingMenu.Edit -> navigateTo(HomeTrainingsDirection.EditTraining(id))
                             null -> {}
                         }
                     }

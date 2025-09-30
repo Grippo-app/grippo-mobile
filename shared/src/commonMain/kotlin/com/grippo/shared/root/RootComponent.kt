@@ -84,8 +84,8 @@ public class RootComponent(
                 RootRouter.Debug
             )
 
-            RootDirection.ToTraining -> navigation.push(
-                RootRouter.Training
+            is RootDirection.ToTraining -> navigation.push(
+                RootRouter.Training(direction.id)
             )
 
             RootDirection.ToWeightHistory -> navigation.push(

@@ -47,8 +47,8 @@ public class RootViewModel(
         navigateTo(RootDirection.ToDebug)
     }
 
-    override fun toTraining() {
-        navigateTo(RootDirection.ToTraining)
+    override fun toTraining(id: String?) {
+        navigateTo(RootDirection.ToTraining(id))
     }
 
     override fun toWeightHistory() {

@@ -29,7 +29,7 @@ public class BottomNavigationViewModel(
         if (hasDraftTraining) {
             safeLaunch {
                 val config = DialogConfig.DraftTraining(
-                    onResult = { navigateTo(BottomNavigationDirection.ToTraining) }
+                    onResult = { navigateTo(BottomNavigationDirection.ToCreateTraining) }
                 )
 
                 dialogController.show(config)
@@ -71,7 +71,11 @@ public class BottomNavigationViewModel(
         navigateTo(BottomNavigationDirection.ToDebug)
     }
 
-    override fun toWorkout() {
-        navigateTo(BottomNavigationDirection.ToTraining)
+    override fun toEditTraining(id: String) {
+        navigateTo(BottomNavigationDirection.ToEditTraining(id))
+    }
+
+    override fun toCreateTraining() {
+        navigateTo(BottomNavigationDirection.ToCreateTraining)
     }
 }
