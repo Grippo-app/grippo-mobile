@@ -5,10 +5,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.menu.Menu
@@ -16,6 +18,8 @@ import com.grippo.design.components.menu.MenuItem
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.menu
 import com.grippo.state.formatters.UiText
 import com.grippo.state.menu.MenuItemState
 import kotlinx.collections.immutable.ImmutableSet
@@ -39,6 +43,16 @@ internal fun MenuPickerScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = AppTokens.strings.res(Res.string.menu),
+            style = AppTokens.typography.h3(),
+            color = AppTokens.colors.text.primary,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
         val menu = remember(state.items) {
             state.items
                 .map { it.id to MenuItem(UiText.Str(it.text)) }
@@ -60,7 +74,6 @@ private fun ScreenPreview() {
     PreviewContainer {
         MenuPickerScreen(
             state = MenuPickerState(
-                title = "Select option",
                 items = persistentListOf(
                     MenuItemState(id = "1", text = "First"),
                     MenuItemState(id = "2", text = "Second"),

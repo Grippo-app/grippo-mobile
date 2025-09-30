@@ -7,6 +7,5 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 public data class MenuPickerState(
-    val title: String,
     val items: ImmutableList<MenuItemState> = persistentListOf(),
 )

@@ -10,7 +10,6 @@ import com.grippo.state.menu.MenuItemState
 
 public class MenuPickerComponent(
     componentContext: ComponentContext,
-    title: String,
     items: List<MenuItemState>,
     private val onResult: (id: String) -> Unit,
     private val back: () -> Unit,
@@ -18,7 +17,6 @@ public class MenuPickerComponent(
 
     override val viewModel: MenuPickerViewModel = componentContext.retainedInstance {
         MenuPickerViewModel(
-            title = title,
             items = items,
         )
     }

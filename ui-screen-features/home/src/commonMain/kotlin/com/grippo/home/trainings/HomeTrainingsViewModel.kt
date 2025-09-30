@@ -8,7 +8,6 @@ import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.date_picker_title
 import com.grippo.design.resources.provider.providers.StringProvider
-import com.grippo.design.resources.provider.select
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState
@@ -60,7 +59,6 @@ internal class HomeTrainingsViewModel(
             }
 
             val dialog = DialogConfig.MenuPicker(
-                title = stringProvider.get(Res.string.select),
                 items = list,
                 onResult = {
                     safeLaunch {

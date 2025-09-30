@@ -94,7 +94,10 @@ internal fun HomeTrainingsScreen(
             val shape = remember(value) { value.shape(radius) }
             val exercise = remember(value) { value.exercise() }
 
-            TimelineIndicator(style = style) {
+            TimelineIndicator(
+                modifier = Modifier.animateItem(),
+                style = style
+            ) {
                 if (value is TrainingListValue.DateTime) {
                     val clickProvider = remember {
                         { contract.onTrainingMenuClick(value.trainingId) }

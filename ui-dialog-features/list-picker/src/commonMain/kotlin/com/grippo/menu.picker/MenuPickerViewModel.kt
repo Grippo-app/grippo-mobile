@@ -5,11 +5,9 @@ import com.grippo.state.menu.MenuItemState
 import kotlinx.collections.immutable.toPersistentList
 
 public class MenuPickerViewModel(
-    title: String,
     items: List<MenuItemState>,
 ) : BaseViewModel<MenuPickerState, MenuPickerDirection, MenuPickerLoader>(
     MenuPickerState(
-        title = title,
         items = items.toPersistentList(),
     )
 ), MenuPickerContract {

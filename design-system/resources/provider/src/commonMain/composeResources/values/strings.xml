@@ -178,6 +178,8 @@
     <string name="draft_training_alert_title_edit">Resume editing workout</string>
     <string name="draft_training_alert_description_edit">You were editing a saved workout and left some changes unfinished. Continue editing?</string>
 
+    <string name="menu">Menu</string>
+
     <string name="last_used_label">Last used:</string>
 
     <string name="add_training_title">Add training</string>

@@ -164,7 +164,6 @@ internal class DialogContentComponent(
             is DialogConfig.MenuPicker -> Child.MenuPicker(
                 MenuPickerComponent(
                     componentContext = context,
-                    title = router.title,
                     items = router.items,
                     onResult = { id -> viewModel.onBack { router.onResult.invoke(id) } },
                     back = { viewModel.onBack(null) }

@@ -124,7 +124,6 @@ public sealed class DialogConfig(
 
     @Serializable
     public data class MenuPicker(
-        val title: String,
         val items: List<MenuItemState>,
         @Transient val onResult: (id: String) -> Unit = {},
     ) : DialogConfig(

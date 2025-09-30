@@ -177,6 +177,7 @@
     <string name="draft_training_alert_title_edit">Продовжити редагування тренування</string>
     <string name="draft_training_alert_description_edit">Ви редагували збережене тренування і залишили незавершені зміни. Продовжити редагування?</string>
     <string name="last_used_label">Ост. використання:</string>
+    <string name="menu">Меню</string>
 
     <string name="add_training_title">Додати тренування</string>
     <string name="edit_training_title">Редагувати тренування</string>
