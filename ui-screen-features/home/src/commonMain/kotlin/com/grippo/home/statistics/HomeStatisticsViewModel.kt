@@ -105,7 +105,7 @@ internal class HomeStatisticsViewModel(
             PeriodState.ThisWeek,
             PeriodState.ThisMonth,
             PeriodState.ThisYear,
-            custom
+            // custom
         )
 
         val dialog = DialogConfig.PeriodPicker(
