@@ -5,12 +5,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.menu.Menu
@@ -40,16 +38,6 @@ internal fun MenuPickerScreen(
     ) {
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
-
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = state.title,
-            style = AppTokens.typography.h3(),
-            color = AppTokens.colors.text.primary,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         val menu = remember(state.items) {
             state.items

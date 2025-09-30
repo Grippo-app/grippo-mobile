@@ -13,6 +13,8 @@ import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
+import com.grippo.home.trainings.HomeTrainingsDirection.Back
+import com.grippo.home.trainings.HomeTrainingsDirection.EditTraining
 import com.grippo.state.formatters.DateFormatState
 import com.grippo.state.menu.MenuItemState
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -64,7 +66,7 @@ internal class HomeTrainingsViewModel(
                     safeLaunch {
                         when (TrainingMenu.of(it)) {
                             TrainingMenu.Delete -> trainingFeature.deleteTraining(id).getOrThrow()
-                            TrainingMenu.Edit -> navigateTo(HomeTrainingsDirection.EditTraining(id))
+                            TrainingMenu.Edit -> navigateTo(EditTraining(id))
                             null -> {}
                         }
                     }
@@ -105,6 +107,6 @@ internal class HomeTrainingsViewModel(
     }
 
     override fun onBack() {
-        navigateTo(HomeTrainingsDirection.Back)
+        navigateTo(Back)
     }
 }
