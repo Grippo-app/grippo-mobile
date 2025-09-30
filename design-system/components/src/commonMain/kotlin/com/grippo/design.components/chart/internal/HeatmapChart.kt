@@ -46,7 +46,7 @@ internal fun HeatmapChart(
             maxCellSize = 20.dp
         ),
         rowLabels = HeatmapStyle.AxisLabels.ShowAll(
-            textStyle = AppTokens.typography.b10Reg().copy(color = AppTokens.colors.text.primary)
+            textStyle = AppTokens.typography.b12Semi().copy(color = AppTokens.colors.text.primary)
         ),
         colLabels = HeatmapStyle.AxisLabels.Adaptive(
             textStyle = AppTokens.typography.b10Reg().copy(color = AppTokens.colors.text.primary),
