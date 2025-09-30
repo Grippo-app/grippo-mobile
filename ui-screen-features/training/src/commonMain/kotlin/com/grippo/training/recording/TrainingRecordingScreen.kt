@@ -26,11 +26,12 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.add_exercise_btn
+import com.grippo.design.resources.provider.add_training_title
+import com.grippo.design.resources.provider.edit_training_title
 import com.grippo.design.resources.provider.exercises
 import com.grippo.design.resources.provider.icons.NavArrowRight
 import com.grippo.design.resources.provider.save_btn
 import com.grippo.design.resources.provider.statistics
-import com.grippo.design.resources.provider.training
 import com.grippo.state.exercise.examples.stubExerciseExample
 import com.grippo.state.formatters.UiText
 import com.grippo.state.muscles.stubMuscles
@@ -61,7 +62,11 @@ internal fun TrainingRecordingScreen(
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
-        title = AppTokens.strings.res(Res.string.training),
+        title = when (state.stage) {
+            StageState.Add -> AppTokens.strings.res(Res.string.add_training_title)
+            StageState.Draft -> AppTokens.strings.res(Res.string.add_training_title)
+            is StageState.Edit -> AppTokens.strings.res(Res.string.edit_training_title)
+        },
         onBack = contract::onBack,
         content = {
             Row(

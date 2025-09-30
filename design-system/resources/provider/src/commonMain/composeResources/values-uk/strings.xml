@@ -178,6 +178,9 @@
     <string name="draft_training_alert_description_edit">Ви редагували збережене тренування і залишили незавершені зміни. Продовжити редагування?</string>
     <string name="last_used_label">Ост. використання:</string>
 
+    <string name="add_training_title">Додати тренування</string>
+    <string name="edit_training_title">Редагувати тренування</string>
+
     <!-- Filter strings -->
     <string name="filter_weight_type">Тип ваги</string>
     <string name="filter_force_type">Тип сили</string>

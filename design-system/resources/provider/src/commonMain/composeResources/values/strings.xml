@@ -180,6 +180,9 @@
 
     <string name="last_used_label">Last used:</string>
 
+    <string name="add_training_title">Add training</string>
+    <string name="edit_training_title">Edit training</string>
+
     <string name="filter_weight_type">Weight type</string>
     <string name="filter_force_type">Force type</string>
     <string name="filter_category">Category</string>
