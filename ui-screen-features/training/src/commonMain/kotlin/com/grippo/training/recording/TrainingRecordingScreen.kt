@@ -29,7 +29,6 @@ import com.grippo.design.resources.provider.add_exercise_btn
 import com.grippo.design.resources.provider.add_training_title
 import com.grippo.design.resources.provider.edit_training_title
 import com.grippo.design.resources.provider.exercises
-import com.grippo.design.resources.provider.icons.NavArrowRight
 import com.grippo.design.resources.provider.save_btn
 import com.grippo.design.resources.provider.statistics
 import com.grippo.state.exercise.examples.stubExerciseExample
@@ -93,10 +92,7 @@ internal fun TrainingRecordingScreen(
                 }
 
                 Button(
-                    content = ButtonContent.Text(
-                        text = AppTokens.strings.res(Res.string.save_btn),
-                        endIcon = AppTokens.icons.NavArrowRight,
-                    ),
+                    content = ButtonContent.Text(text = AppTokens.strings.res(Res.string.save_btn)),
                     size = ButtonSize.Small,
                     style = ButtonStyle.Transparent,
                     state = buttonState,

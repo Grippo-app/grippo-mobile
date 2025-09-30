@@ -99,8 +99,8 @@ public fun <KEY> Segment(
 
         SegmentStyle.Fill -> SegmentedFrame(
             modifier = modifier.background(
-                AppTokens.colors.background.card,
-                RoundedCornerShape(AppTokens.dp.segment.fill.radiusOut)
+                AppTokens.colors.background.dialog,
+                RoundedCornerShape(AppTokens.dp.segment.fill.radius)
             ),
             segmentSizing = when (segmentWidth) {
                 SegmentWidth.Unspecified -> SegmentSizing.Unspecified
@@ -109,11 +109,10 @@ public fun <KEY> Segment(
             thumb = {
                 Box(
                     modifier = Modifier
-                        .padding(4.dp)
                         .fillMaxSize()
                         .background(
-                            AppTokens.colors.background.accent,
-                            RoundedCornerShape(AppTokens.dp.segment.fill.radiusOut)
+                            AppTokens.colors.background.card,
+                            RoundedCornerShape(AppTokens.dp.segment.fill.radius)
                         ),
                 )
             },
@@ -140,7 +139,7 @@ public fun <KEY> Segment(
                                     AppTokens.typography.b14Med()
                                 },
                                 color = if (item.first == selected) {
-                                    AppTokens.colors.static.white
+                                    AppTokens.colors.text.primary
                                 } else {
                                     AppTokens.colors.text.tertiary
                                 },

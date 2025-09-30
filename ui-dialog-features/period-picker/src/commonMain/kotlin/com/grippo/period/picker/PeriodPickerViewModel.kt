@@ -11,7 +11,6 @@ import com.grippo.state.datetime.PeriodState
 import com.grippo.state.formatters.DateFormatState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
-import kotlinx.coroutines.delay
 
 public class PeriodPickerViewModel(
     initial: PeriodState,
@@ -29,10 +28,7 @@ public class PeriodPickerViewModel(
         update { it.copy(value = value, list = it.list.synchronize(value)) }
 
         if (state.value.list.none { it is PeriodState.Custom }) {
-            safeLaunch {
-                delay(com.grippo.dialog.api.SELECTION_FEEDBACK_DELAY)
-                navigateTo(PeriodPickerDirection.BackWithResult(state.value.value))
-            }
+            navigateTo(PeriodPickerDirection.BackWithResult(state.value.value))
         }
     }
 
