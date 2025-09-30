@@ -53,10 +53,9 @@ public class BottomNavigationComponent(
             BottomNavigationDirection.ToWeightHistory -> toWeightHistory.invoke()
             BottomNavigationDirection.ToDebug -> toDebug.invoke()
             BottomNavigationDirection.ToAddTraining -> toTraining.invoke(StageState.Add)
+            BottomNavigationDirection.ToDraftTraining -> toTraining.invoke(StageState.Draft)
             is BottomNavigationDirection.ToEditTraining -> toTraining.invoke(
-                StageState.Edit(
-                    direction.id
-                )
+                StageState.Edit(direction.id)
             )
         }
     }

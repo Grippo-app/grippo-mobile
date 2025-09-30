@@ -30,6 +30,7 @@ public interface TrainingDao {
         """
         SELECT * FROM training
         WHERE id = :id
+        ORDER BY createdAt DESC
         LIMIT 1
         """
     )

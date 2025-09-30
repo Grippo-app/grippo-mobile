@@ -26,6 +26,7 @@
     <string name="loading">Loading..</string>
     <string name="submit_btn">Submit</string>
     <string name="delete_btn">Delete</string>
+    <string name="clear_btn">Clear</string>
     <string name="edit_btn">Edit</string>
     <string name="get_started_btn">Get Started</string>
     <string name="continue_btn">Continue</string>

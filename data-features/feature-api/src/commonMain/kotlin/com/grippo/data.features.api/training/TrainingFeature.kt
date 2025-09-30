@@ -1,6 +1,7 @@
 package com.grippo.data.features.api.training
 
 import com.grippo.data.features.api.training.models.Exercise
+import com.grippo.data.features.api.training.models.SetDraftTraining
 import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.data.features.api.training.models.Training
 import kotlinx.coroutines.flow.Flow
@@ -16,7 +17,7 @@ public interface TrainingFeature {
     public suspend fun updateTraining(id: String, training: SetTraining): Result<String?>
     public suspend fun deleteTraining(id: String): Result<Unit>
 
-    public fun getDraftTraining(): Flow<SetTraining?>
-    public suspend fun setDraftTraining(training: SetTraining): Result<Unit>
+    public fun getDraftTraining(): Flow<SetDraftTraining?>
+    public suspend fun setDraftTraining(training: SetDraftTraining): Result<Unit>
     public suspend fun deleteDraftTraining(): Result<Unit>
 }

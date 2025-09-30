@@ -2,7 +2,7 @@ package com.grippo.drart.training
 
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.training.TrainingFeature
-import com.grippo.data.features.api.training.models.SetTraining
+import com.grippo.data.features.api.training.models.SetDraftTraining
 import com.grippo.domain.state.training.toState
 import kotlinx.coroutines.flow.onEach
 
@@ -18,8 +18,8 @@ public class DraftTrainingViewModel(
             .safeLaunch()
     }
 
-    private fun provideDraftTraining(value: SetTraining?) {
-        val exercises = value?.exercises?.toState() ?: return
+    private fun provideDraftTraining(value: SetDraftTraining?) {
+        val exercises = value?.training?.exercises?.toState() ?: return
         update { it.copy(exercises = exercises) }
     }
 

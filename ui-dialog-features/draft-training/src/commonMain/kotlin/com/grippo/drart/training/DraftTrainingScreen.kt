@@ -28,8 +28,8 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.clear_btn
 import com.grippo.design.resources.provider.continue_btn
-import com.grippo.design.resources.provider.delete_btn
 import com.grippo.design.resources.provider.draft_training_alert_description
 import com.grippo.design.resources.provider.draft_training_alert_title
 import com.grippo.design.resources.provider.icons.QuestionMarkCircleOutline
@@ -107,7 +107,7 @@ internal fun DraftTrainingScreen(
             Button(
                 modifier = Modifier.weight(1f),
                 content = ButtonContent.Text(
-                    text = AppTokens.strings.res(Res.string.delete_btn),
+                    text = AppTokens.strings.res(Res.string.clear_btn),
                 ),
                 style = ButtonStyle.Custom(
                     enabled = ButtonColorTokens(

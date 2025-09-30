@@ -1,6 +1,7 @@
 package com.grippo.data.features.trainings.data
 
 import com.grippo.data.features.api.training.models.Exercise
+import com.grippo.data.features.api.training.models.SetDraftTraining
 import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.data.features.trainings.domain.TrainingRepository
@@ -107,12 +108,12 @@ internal class TrainingRepositoryImpl(
         trainingDao.insertOrReplace(training, exercises, iterations)
     }
 
-    override fun getDraftTraining(): Flow<SetTraining?> {
+    override fun getDraftTraining(): Flow<SetDraftTraining?> {
         return draftTrainingDao.get()
             .map { it?.toSetDomain() }
     }
 
-    override suspend fun setDraftTraining(training: SetTraining): Result<Unit> {
+    override suspend fun setDraftTraining(training: SetDraftTraining): Result<Unit> {
         val activeId = userActiveDao.get().firstOrNull() ?: return Result.success(Unit)
 
         val pack = training.toEntity(activeId)

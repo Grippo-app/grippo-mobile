@@ -12,7 +12,7 @@ public fun SetExercise.toBody(): ExerciseBody {
         repetitions = repetitions,
         intensity = intensity,
         volume = volume,
-        exerciseExampleId = exerciseExample?.id,
+        exerciseExampleId = exerciseExample.id,
         iterations = iterations.toBody(),
         name = name
     )

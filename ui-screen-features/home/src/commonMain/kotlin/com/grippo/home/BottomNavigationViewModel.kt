@@ -2,7 +2,7 @@ package com.grippo.home
 
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.training.TrainingFeature
-import com.grippo.data.features.api.training.models.SetTraining
+import com.grippo.data.features.api.training.models.SetDraftTraining
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.screen.api.BottomNavigationRouter
@@ -23,13 +23,13 @@ public class BottomNavigationViewModel(
         }
     }
 
-    private fun provideDraftTraining(value: SetTraining?) {
+    private fun provideDraftTraining(value: SetDraftTraining?) {
         val hasDraftTraining = value != null
 
         if (hasDraftTraining) {
             safeLaunch {
                 val config = DialogConfig.DraftTraining(
-                    onResult = { navigateTo(BottomNavigationDirection.ToAddTraining) }
+                    onResult = { navigateTo(BottomNavigationDirection.ToDraftTraining) }
                 )
 
                 dialogController.show(config)

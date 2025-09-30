@@ -41,6 +41,10 @@ public fun ExerciseResponse.toEntityOrNull(): ExerciseEntity? {
         "ExerciseResponse.updatedAt is null"
     } ?: return null
 
+    val exerciseExampleId = AppLogger.Mapping.log(exerciseExampleId) {
+        "ExerciseResponse.exerciseExampleId is null"
+    } ?: return null
+
     return ExerciseEntity(
         id = entityId,
         trainingId = entityTrainingId,
