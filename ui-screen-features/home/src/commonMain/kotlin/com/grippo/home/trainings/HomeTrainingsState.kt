@@ -15,6 +15,7 @@ import kotlinx.collections.immutable.persistentListOf
 @Immutable
 internal data class HomeTrainingsState(
     val date: DateRange = DateTimeUtils.thisDay(),
+    val limitations: DateRange = DateTimeUtils.trailingYear(),
     val trainings: ImmutableList<TrainingListValue> = persistentListOf(),
 )
 

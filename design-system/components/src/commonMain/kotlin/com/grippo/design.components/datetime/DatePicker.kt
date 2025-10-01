@@ -5,16 +5,19 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.grippo.date.utils.DateCompose
 import com.grippo.date.utils.DateFormat
+import com.grippo.date.utils.DateRange
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonColorTokens
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonSize
+import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
@@ -28,9 +31,9 @@ import kotlinx.datetime.LocalDateTime
 @Composable
 public fun DatePicker(
     modifier: Modifier = Modifier,
-    title: String,
     value: LocalDateTime,
     format: DateFormat,
+    limitations: DateRange,
     enabled: Boolean = true,
     onClick: () -> Unit,
     onNextClick: () -> Unit,
@@ -57,6 +60,13 @@ public fun DatePicker(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
+
+        val previousState = remember(limitations, value) {
+            if (value.date == limitations.from.date) {
+                ButtonState.Disabled
+            } else ButtonState.Enabled
+        }
+
         Button(
             content = ButtonContent.Icon(
                 icon = AppTokens.icons.NavArrowLeft
@@ -76,8 +86,15 @@ public fun DatePicker(
                     icon = AppTokens.colors.icon.disabled
                 ),
             ),
-            onClick = onPreviousClick
+            onClick = onPreviousClick,
+            state = previousState
         )
+
+        val nextState = remember(limitations, value) {
+            if (value.date == limitations.to.date) {
+                ButtonState.Disabled
+            } else ButtonState.Enabled
+        }
 
         Button(
             content = ButtonContent.Icon(
@@ -98,7 +115,8 @@ public fun DatePicker(
                     icon = AppTokens.colors.icon.disabled
                 ),
             ),
-            onClick = onNextClick
+            onClick = onNextClick,
+            state = nextState
         )
 
         Spacer(Modifier.width(AppTokens.dp.contentPadding.content))
@@ -146,21 +164,21 @@ private fun DatePickerPreview() {
         DatePicker(
             value = DateTimeUtils.now(),
             format = DateFormat.DATE_MMM_DD_YYYY,
-            title = "Text",
             enabled = true,
             onClick = {},
             onNextClick = {},
-            onPreviousClick = {}
+            onPreviousClick = {},
+            limitations = DateTimeUtils.thisWeek()
         )
 
         DatePicker(
             value = DateTimeUtils.now(),
             format = DateFormat.DATE_MMM_DD_YYYY,
-            title = "Text",
             enabled = false,
             onClick = {},
             onNextClick = {},
-            onPreviousClick = {}
+            onPreviousClick = {},
+            limitations = DateTimeUtils.thisWeek()
         )
     }
 }

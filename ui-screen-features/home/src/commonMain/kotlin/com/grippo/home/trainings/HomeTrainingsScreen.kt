@@ -35,7 +35,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.Menu
-import com.grippo.design.resources.provider.selected
 import com.grippo.design.resources.provider.trainings
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
 import com.grippo.home.trainings.factory.timelineStyle
@@ -69,8 +68,8 @@ internal fun HomeTrainingsScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 DatePicker(
-                    title = AppTokens.strings.res(Res.string.selected),
                     value = state.date.from,
+                    limitations = state.limitations,
                     format = DateFormat.DATE_MMM_DD_YYYY,
                     onClick = contract::onSelectDate,
                     onPreviousClick = contract::onPreviousClick,

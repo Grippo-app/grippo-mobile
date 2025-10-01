@@ -94,13 +94,12 @@ internal class HomeTrainingsViewModel(
 
     override fun onSelectDate() {
         safeLaunch {
-            val limits = DateTimeUtils.trailingYear()
-            val value = DateFormatState.of(state.value.date.from, limits)
+            val value = DateFormatState.of(state.value.date.from, state.value.limitations)
 
             val dialog = DialogConfig.DatePicker(
                 title = stringProvider.get(Res.string.date_picker_title),
                 initial = value,
-                limitations = limits,
+                limitations = state.value.limitations,
                 onResult = { value ->
                     val date = value.value ?: return@DatePicker
                     val from = DateTimeUtils.startOfDay(date)
