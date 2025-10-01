@@ -29,6 +29,8 @@ public sealed class HeightFormatState : FormatState<Int> {
     ) : HeightFormatState()
 
     public companion object {
+        public val HeightLimitation: IntRange = 100..250
+
         public fun of(display: String): HeightFormatState {
             if (display.isEmpty()) {
                 return Empty()
@@ -77,7 +79,7 @@ public sealed class HeightFormatState : FormatState<Int> {
 
     private object HeightValidator {
         fun isValid(value: Int): Boolean {
-            return value in 100..250
+            return value in HeightLimitation
         }
     }
 }

@@ -30,12 +30,12 @@ public interface DraftTrainingDao {
 
         insertTraining(training)
 
-        for (exercise in exercises) {
-            insertExercise(exercise)
+        if (exercises.isNotEmpty()) {
+            insertExercises(exercises)
         }
 
-        for (iteration in iterations) {
-            insertIteration(iteration)
+        if (iterations.isNotEmpty()) {
+            insertIterations(iterations)
         }
     }
 
@@ -47,6 +47,12 @@ public interface DraftTrainingDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public suspend fun insertIteration(iteration: DraftIterationEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public suspend fun insertExercises(exercises: List<DraftExerciseEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public suspend fun insertIterations(iterations: List<DraftIterationEntity>)
 
     // ────────────── DELETE ──────────────
 

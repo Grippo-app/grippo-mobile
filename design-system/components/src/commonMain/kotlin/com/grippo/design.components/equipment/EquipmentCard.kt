@@ -32,8 +32,9 @@ public fun EquipmentCard(
             .background(
                 color = AppTokens.colors.background.card,
                 shape = RoundedCornerShape(AppTokens.dp.equipmentCard.radius)
-            ).width(intrinsicSize = IntrinsicSize.Max)
-            .padding(
+            ).width(
+                intrinsicSize = IntrinsicSize.Max
+            ).padding(
                 horizontal = AppTokens.dp.equipmentCard.horizontalPadding,
                 vertical = AppTokens.dp.equipmentCard.verticalPadding
             ),

@@ -4,15 +4,14 @@ import com.grippo.calculation.AnalyticsApi
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
-import com.grippo.design.resources.provider.muscles.MuscleColorPreset
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.domain.state.muscles.toState
 import com.grippo.state.muscles.MuscleGroupState
 import com.grippo.state.muscles.MuscleRepresentationState
 import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.collections.immutable.toPersistentMap
 import kotlinx.coroutines.flow.onEach
 
 internal class ExcludedMusclesViewModel(
@@ -77,14 +76,11 @@ internal class ExcludedMusclesViewModel(
         selectedIds: PersistentList<String>,
     ) {
         val selectedSet = selectedIds.toSet()
-        val builder = persistentMapOf<String, MuscleColorPreset>().builder()
-
-        for (group in suggestions) {
-            val preset = analytics.musclePresetFromSelection(group, selectedSet)
-            builder[group.id] = preset
-        }
-
-        val presets = builder.build()
+        val presets = suggestions
+            .associate { group ->
+                group.id to analytics.musclePresetFromSelection(group, selectedSet)
+            }
+            .toPersistentMap()
 
         update { it.copy(musclePresets = presets) }
     }

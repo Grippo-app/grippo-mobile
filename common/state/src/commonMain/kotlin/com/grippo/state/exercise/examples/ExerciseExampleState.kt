@@ -16,9 +16,7 @@ public data class ExerciseExampleState(
     val equipments: ImmutableList<EquipmentState>,
 ) {
     public companion object {
-        public val filters: ImmutableList<FilterValue> = buildList {
-            addAll(ExerciseExampleValueState.filters)
-        }.toPersistentList()
+        public val filters: ImmutableList<FilterValue> = ExerciseExampleValueState.filters
     }
 }
 

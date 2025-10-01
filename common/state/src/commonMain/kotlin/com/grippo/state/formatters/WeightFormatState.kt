@@ -29,6 +29,8 @@ public sealed class WeightFormatState : FormatState<Float> {
     ) : WeightFormatState()
 
     public companion object {
+        public val WeightLimitation: ClosedFloatingPointRange<Float> = 30.0f..150.0f
+
         public fun of(display: String): WeightFormatState {
             if (display.isEmpty()) {
                 return Empty()
@@ -77,7 +79,7 @@ public sealed class WeightFormatState : FormatState<Float> {
 
     private object WeightValidator {
         fun isValid(value: Float): Boolean {
-            val withinRange = value in 30.0f..150.0f
+            val withinRange = value in WeightLimitation
             val hasOneDecimal = (value * 10).rem(1f) == 0f
             return withinRange && hasOneDecimal
         }
