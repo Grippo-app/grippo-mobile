@@ -11,5 +11,7 @@ public sealed interface BottomNavigationDirection : BaseDirection {
     public data object ToMissingEquipment : BottomNavigationDirection
     public data object ToWeightHistory : BottomNavigationDirection
     public data object ToDebug : BottomNavigationDirection
-    public data object ToTraining : BottomNavigationDirection
+    public data class ToEditTraining(val id: String) : BottomNavigationDirection
+    public data object ToAddTraining : BottomNavigationDirection
+    public data object ToDraftTraining : BottomNavigationDirection
 }

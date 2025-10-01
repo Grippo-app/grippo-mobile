@@ -2,8 +2,8 @@ package com.grippo.exercise.example.exerciseexample
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,19 +16,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
+import com.grippo.design.components.chart.MuscleLoadChart
 import com.grippo.design.components.chip.Chip
 import com.grippo.design.components.chip.ChipLabel
 import com.grippo.design.components.chip.ChipSize
 import com.grippo.design.components.chip.ChipStype
 import com.grippo.design.components.chip.ChipTrailing
 import com.grippo.design.components.equipment.EquipmentsCard
-import com.grippo.design.components.example.ExerciseExampleBundlesCard
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
+import com.grippo.design.components.text.DescriptionText
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.muscles
 import com.grippo.design.resources.provider.required_equipment
 import com.grippo.state.exercise.examples.stubExerciseExample
 import kotlinx.collections.immutable.ImmutableSet
@@ -71,17 +73,16 @@ internal fun ExerciseExampleScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
-        FlowRow(
+        Row(
             modifier = Modifier
                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                 .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
         ) {
             Chip(
                 label = ChipLabel.Empty,
                 value = example.value.category.title().text(),
-                size = ChipSize.Small,
+                size = ChipSize.Medium,
                 stype = ChipStype.Default,
                 trailing = ChipTrailing.Empty,
                 contentColor = AppTokens.colors.static.white,
@@ -91,7 +92,7 @@ internal fun ExerciseExampleScreen(
             Chip(
                 label = ChipLabel.Empty,
                 value = example.value.forceType.title().text(),
-                size = ChipSize.Small,
+                size = ChipSize.Medium,
                 stype = ChipStype.Default,
                 trailing = ChipTrailing.Empty,
                 contentColor = AppTokens.colors.static.white,
@@ -101,58 +102,62 @@ internal fun ExerciseExampleScreen(
             Chip(
                 label = ChipLabel.Empty,
                 value = example.value.weightType.title().text(),
-                size = ChipSize.Small,
+                size = ChipSize.Medium,
                 stype = ChipStype.Default,
                 trailing = ChipTrailing.Empty,
                 contentColor = AppTokens.colors.static.white,
                 brush = SolidColor(example.value.weightType.color())
             )
-
-            Chip(
-                label = ChipLabel.Empty,
-                value = example.value.experience.title().text(),
-                size = ChipSize.Small,
-                stype = ChipStype.Default,
-                trailing = ChipTrailing.Empty,
-                contentColor = AppTokens.colors.static.white,
-                brush = SolidColor(example.value.experience.color())
-            )
         }
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-        Text(
+        DescriptionText(
             modifier = Modifier
                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                 .fillMaxWidth(),
             text = example.value.description,
-            style = AppTokens.typography.b14Reg(),
-            color = AppTokens.colors.text.primary,
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+        if (example.equipments.isNotEmpty()) {
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        ExerciseExampleBundlesCard(
-            modifier = Modifier.fillMaxWidth(),
-            value = example.bundles
-        )
+            Text(
+                modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                text = AppTokens.strings.res(Res.string.required_equipment),
+                style = AppTokens.typography.h5(),
+                color = AppTokens.colors.text.primary
+            )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-        Text(
-            modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-            text = AppTokens.strings.res(Res.string.required_equipment),
-            style = AppTokens.typography.b14Bold(),
-            color = AppTokens.colors.text.primary
-        )
+            EquipmentsCard(
+                modifier = Modifier.fillMaxWidth(),
+                value = example.equipments,
+                contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
+            )
+        }
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+        state.muscleLoad?.let { summary ->
 
-        EquipmentsCard(
-            modifier = Modifier.fillMaxWidth(),
-            value = example.equipments,
-            contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
-        )
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+            Text(
+                modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                text = AppTokens.strings.res(Res.string.muscles),
+                style = AppTokens.typography.h5(),
+                color = AppTokens.colors.text.primary
+            )
+
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+            MuscleLoadChart(
+                modifier = Modifier
+                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                    .fillMaxWidth(),
+                value = summary,
+            )
+        }
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
     }

@@ -1,6 +1,5 @@
 package com.grippo.exercise
 
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -54,13 +53,13 @@ internal fun ExerciseScreen(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
             .verticalScroll(rememberScrollState())
     ) {
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
         ExerciseExampleImage(
-            modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
             value = exercise.exerciseExample.imageUrl,
             style = ExerciseExampleImageStyle.LARGE
         )
@@ -68,74 +67,67 @@ internal fun ExerciseScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
         Text(
-            modifier = Modifier
-                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             text = exercise.name,
             style = AppTokens.typography.h1(),
             color = AppTokens.colors.text.primary,
         )
 
-        if (exercise.iterations.isNotEmpty()) {
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-            IterationsCard(
-                modifier = Modifier
-                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                    .fillMaxWidth(),
-                value = exercise.iterations
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+        ) {
+            VolumeChip(
+                modifier = Modifier.weight(1f),
+                value = exercise.metrics.volume,
+                style = VolumeChipStyle.SHORT,
+                size = ChipSize.Medium
             )
 
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+            IntensityChip(
+                modifier = Modifier.weight(1f),
+                value = exercise.metrics.intensity,
+                style = IntensityChipStyle.SHORT,
+                size = ChipSize.Medium
+            )
 
-            Row(
-                modifier = Modifier
-                    .horizontalScroll(rememberScrollState())
-                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-            ) {
-                VolumeChip(
-                    value = exercise.metrics.volume,
-                    style = VolumeChipStyle.LONG,
-                    size = ChipSize.Medium
-                )
-
-                IntensityChip(
-                    value = exercise.metrics.intensity,
-                    style = IntensityChipStyle.LONG,
-                    size = ChipSize.Medium
-                )
-
-                RepetitionsChip(
-                    value = exercise.metrics.repetitions,
-                    style = RepetitionsChipStyle.LONG,
-                    size = ChipSize.Medium
-                )
-            }
+            RepetitionsChip(
+                modifier = Modifier.weight(1f),
+                value = exercise.metrics.repetitions,
+                style = RepetitionsChipStyle.SHORT,
+                size = ChipSize.Medium
+            )
         }
 
-        val example = exercise.exerciseExample
+        if (exercise.iterations.isNotEmpty()) {
+
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+            IterationsCard(
+                modifier = Modifier.fillMaxWidth(),
+                value = exercise.iterations
+            )
+        }
 
         val onExampleDetailsClick = remember {
-            { contract.onExampleDetailsClick(example.id) }
+            { contract.onExampleDetailsClick(exercise.exerciseExample.id) }
         }
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         Row(
-            modifier = Modifier
-                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
         ) {
             Text(
                 modifier = Modifier.weight(1f),
-                text = example.name,
+                text = exercise.exerciseExample.name,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = AppTokens.typography.b14Bold(),
+                style = AppTokens.typography.h6(),
                 color = AppTokens.colors.text.primary,
             )
 
@@ -150,16 +142,14 @@ internal fun ExerciseScreen(
             )
         }
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
 
         Text(
-            modifier = Modifier
-                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                .fillMaxWidth(),
-            text = example.description,
-            maxLines = 2,
+            modifier = Modifier.fillMaxWidth(),
+            text = exercise.exerciseExample.description,
+            maxLines = 3,
             overflow = TextOverflow.Ellipsis,
-            style = AppTokens.typography.b14Reg(),
+            style = AppTokens.typography.b14Med(),
             color = AppTokens.colors.text.secondary,
         )
 

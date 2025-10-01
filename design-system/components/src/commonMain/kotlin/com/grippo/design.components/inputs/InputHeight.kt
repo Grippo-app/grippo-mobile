@@ -42,7 +42,7 @@ public fun InputHeight(
             Text(
                 modifier = Modifier.padding(end = 8.dp),
                 text = AppTokens.strings.res(Res.string.cm),
-                style = AppTokens.typography.b14Semi(),
+                style = AppTokens.typography.b15Med(),
                 color = color
             )
         },

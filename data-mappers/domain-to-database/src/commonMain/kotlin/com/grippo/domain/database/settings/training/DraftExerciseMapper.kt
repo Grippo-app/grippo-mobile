@@ -16,7 +16,7 @@ public fun SetExercise.toEntity(trainingId: String): DraftExercisePack {
         volume = volume,
         repetitions = repetitions,
         intensity = intensity,
-        exerciseExampleId = exerciseExample?.id,
+        exerciseExampleId = exerciseExample.id,
     )
 
     return DraftExercisePack(

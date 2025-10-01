@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
@@ -30,11 +28,14 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.clear_btn
 import com.grippo.design.resources.provider.continue_btn
-import com.grippo.design.resources.provider.delete_btn
-import com.grippo.design.resources.provider.draft_training_alert_description
-import com.grippo.design.resources.provider.draft_training_alert_title
+import com.grippo.design.resources.provider.draft_training_alert_description_add
+import com.grippo.design.resources.provider.draft_training_alert_description_edit
+import com.grippo.design.resources.provider.draft_training_alert_title_add
+import com.grippo.design.resources.provider.draft_training_alert_title_edit
 import com.grippo.design.resources.provider.icons.QuestionMarkCircleOutline
+import com.grippo.state.stage.StageState
 import com.grippo.state.trainings.stubExercises
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -66,19 +67,25 @@ internal fun DraftTrainingScreen(
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.draft_training_alert_title),
+            text = when (state.stage) {
+                StageState.Add -> AppTokens.strings.res(Res.string.draft_training_alert_title_add)
+                StageState.Draft -> AppTokens.strings.res(Res.string.draft_training_alert_title_add)
+                is StageState.Edit -> AppTokens.strings.res(Res.string.draft_training_alert_title_edit)
+            },
             style = AppTokens.typography.h2(),
             color = AppTokens.colors.text.primary,
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
 
         Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(max = 400.dp),
-            text = AppTokens.strings.res(Res.string.draft_training_alert_description),
+            modifier = Modifier.fillMaxWidth(),
+            text = when (state.stage) {
+                StageState.Add -> AppTokens.strings.res(Res.string.draft_training_alert_description_add)
+                StageState.Draft -> AppTokens.strings.res(Res.string.draft_training_alert_description_add)
+                is StageState.Edit -> AppTokens.strings.res(Res.string.draft_training_alert_description_edit)
+            },
             style = AppTokens.typography.b14Med(),
             color = AppTokens.colors.text.secondary,
             textAlign = TextAlign.Center
@@ -95,7 +102,7 @@ internal fun DraftTrainingScreen(
                 ExerciseCard(
                     modifier = Modifier.fillMaxWidth(),
                     value = item,
-                    style = ExerciseCardStyle.Small,
+                    style = ExerciseCardStyle.Small {},
                 )
             }
         }
@@ -111,7 +118,7 @@ internal fun DraftTrainingScreen(
             Button(
                 modifier = Modifier.weight(1f),
                 content = ButtonContent.Text(
-                    text = AppTokens.strings.res(Res.string.delete_btn),
+                    text = AppTokens.strings.res(Res.string.clear_btn),
                 ),
                 style = ButtonStyle.Custom(
                     enabled = ButtonColorTokens(
@@ -146,11 +153,27 @@ internal fun DraftTrainingScreen(
 
 @AppPreview
 @Composable
-private fun ScreenPreview() {
+private fun ScreenPreviewAdd() {
     PreviewContainer {
         DraftTrainingScreen(
             state = DraftTrainingState(
-                exercises = stubExercises()
+                exercises = stubExercises(),
+                stage = StageState.Add
+            ),
+            contract = DraftTrainingContract.Empty,
+            loaders = persistentSetOf()
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPreviewEdit() {
+    PreviewContainer {
+        DraftTrainingScreen(
+            state = DraftTrainingState(
+                exercises = stubExercises(),
+                stage = StageState.Edit("")
             ),
             contract = DraftTrainingContract.Empty,
             loaders = persistentSetOf()

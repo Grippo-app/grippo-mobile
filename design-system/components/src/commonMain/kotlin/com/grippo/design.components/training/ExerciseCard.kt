@@ -18,7 +18,9 @@ public sealed interface ExerciseCardStyle {
     ) : ExerciseCardStyle
 
     @Immutable
-    public data object Small : ExerciseCardStyle
+    public data class Small(
+        val onClick: () -> Unit
+    ) : ExerciseCardStyle
 }
 
 @Composable
@@ -35,9 +37,10 @@ public fun ExerciseCard(
             onClick = style.onClick
         )
 
-        ExerciseCardStyle.Small -> ExerciseCardSmall(
+        is ExerciseCardStyle.Small -> ExerciseCardSmall(
             modifier = modifier,
             value = value,
+            onClick = style.onClick
         )
     }
 }
@@ -48,7 +51,9 @@ private fun ExerciseCardPreview() {
     PreviewContainer {
         ExerciseCard(
             value = stubExercise(),
-            style = ExerciseCardStyle.Small,
+            style = ExerciseCardStyle.Small(
+                onClick = {}
+            ),
         )
         ExerciseCard(
             value = stubExercise(),

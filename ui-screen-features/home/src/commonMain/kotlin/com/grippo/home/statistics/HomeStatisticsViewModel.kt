@@ -1,10 +1,6 @@
 package com.grippo.home.statistics
 
-import com.grippo.calculation.DistributionCalculator
-import com.grippo.calculation.MetricsAggregator
-import com.grippo.calculation.MuscleLoadCalculator
-import com.grippo.calculation.TemporalHeatmapCalculator
-import com.grippo.calculation.VolumeAnalytics
+import com.grippo.calculation.AnalyticsApi
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
@@ -13,10 +9,6 @@ import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.date.utils.DateTimeUtils
-import com.grippo.design.components.chart.DSBarData
-import com.grippo.design.components.chart.DSHeatmapData
-import com.grippo.design.components.chart.DSPieData
-import com.grippo.design.components.chart.DSProgressData
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.dialog.api.DialogConfig
@@ -25,12 +17,10 @@ import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.muscles.toState
 import com.grippo.domain.state.training.toState
 import com.grippo.state.datetime.PeriodState
-import com.grippo.state.formatters.IntensityFormatState
-import com.grippo.state.formatters.RepetitionsFormatState
-import com.grippo.state.formatters.VolumeFormatState
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
@@ -48,11 +38,7 @@ internal class HomeStatisticsViewModel(
     HomeStatisticsState()
 ), HomeStatisticsContract {
 
-    private val metricsAggregator = MetricsAggregator()
-    private val temporalHeatmapCalculator = TemporalHeatmapCalculator(stringProvider)
-    private val volumeAnalytics = VolumeAnalytics(colorProvider, stringProvider)
-    private val distributionCalculator = DistributionCalculator(stringProvider, colorProvider)
-    private val muscleLoadCalculator = MuscleLoadCalculator(stringProvider, colorProvider)
+    private val analytics = AnalyticsApi(stringProvider, colorProvider)
 
     init {
         muscleFeature.observeMuscles()
@@ -63,20 +49,24 @@ internal class HomeStatisticsViewModel(
             .map {
                 it.trainings
                     .flatMap { f -> f.exercises.map { m -> m.exerciseExample.id } }
-                    .toSet().toList()
+                    .toSet()
+                    .toList()
             }
+            .filter { it.isNotEmpty() }
             .distinctUntilChanged()
-            .flatMapLatest { ids -> exerciseExampleFeature.observeExerciseExamples(ids) }
+            .flatMapLatest(exerciseExampleFeature::observeExerciseExamples)
             .onEach(::provideExerciseExamples)
             .safeLaunch()
 
         state
             .map { it.period.range }
+            .distinctUntilChanged()
             .onEach { trainingFeature.getTrainings(start = it.from, end = it.to).getOrThrow() }
             .safeLaunch()
 
         state
             .map { it.period.range }
+            .distinctUntilChanged()
             .flatMapLatest { r -> trainingFeature.observeTrainings(start = r.from, end = r.to) }
             .onEach(::provideTrainings)
             .safeLaunch()
@@ -105,7 +95,7 @@ internal class HomeStatisticsViewModel(
     }
 
     override fun onSelectPeriod() {
-        val custom = (state.value.period as? PeriodState.CUSTOM) ?: PeriodState.CUSTOM(
+        val custom = (state.value.period as? PeriodState.Custom) ?: PeriodState.Custom(
             range = DateTimeUtils.thisWeek(),
             limitations = DateTimeUtils.trailingYear()
         )
@@ -115,7 +105,7 @@ internal class HomeStatisticsViewModel(
             PeriodState.ThisWeek,
             PeriodState.ThisMonth,
             PeriodState.ThisYear,
-            custom
+            // custom
         )
 
         val dialog = DialogConfig.PeriodPicker(
@@ -140,75 +130,65 @@ internal class HomeStatisticsViewModel(
         if (trainings.isEmpty()) {
             update {
                 it.copy(
-                    totalVolume = VolumeFormatState.of(0f),
-                    totalRepetitions = RepetitionsFormatState.of(0),
-                    averageIntensity = IntensityFormatState.of(0f),
-                    exerciseVolumeData = DSBarData(items = emptyList()) to null,
-                    categoryDistributionData = DSPieData(slices = emptyList()),
-                    forceTypeDistributionData = DSPieData(slices = emptyList()),
-                    weightTypeDistributionData = DSPieData(slices = emptyList()),
-                    muscleLoadData = DSProgressData(items = emptyList()) to null,
-                    temporalHeatmapData = DSHeatmapData(
-                        rows = 0,
-                        cols = 0,
-                        values01 = emptyList()
-                    ) to null
+                    totalMetrics = null,
+                    exerciseVolume = null,
+                    categoryDistribution = null,
+                    forceTypeDistribution = null,
+                    weightTypeDistribution = null,
+                    muscleLoad = null,
+                    temporalHeatmap = null,
                 )
             }
             return
         }
 
-        val totalMetrics =
-            metricsAggregator.calculateTrainings(
-                trainings = trainings
-            )
-        val categoryDistributionData =
-            distributionCalculator.calculateCategoryDistributionFromTrainings(
-                trainings = trainings,
-                period = period
-            )
-        val weightTypeDistributionData =
-            distributionCalculator.calculateWeightTypeDistributionFromTrainings(
-                trainings = trainings,
-                period = period
-            )
-        val forceTypeDistributionData =
-            distributionCalculator.calculateForceTypeDistributionFromTrainings(
-                trainings = trainings,
-                period = period
-            )
-        val exerciseVolumeData =
-            volumeAnalytics.calculateExerciseVolumeChartFromTrainings(
-                trainings = trainings,
-                period = period
-            )
-        val muscleLoadData =
-            muscleLoadCalculator.calculateMuscleLoadDistributionFromTrainings(
-                trainings = trainings,
-                examples = examples,
-                groups = muscles,
-                period = period
-            )
-        val temporalHeatmapData =
-            temporalHeatmapCalculator.calculateMuscleGroupHeatmapFromTrainings(
-                trainings = trainings,
-                period = period,
-                examples = examples,
-                groups = muscles,
-                metric = TemporalHeatmapCalculator.Metric.REPS
-            )
+        val totalMetrics = analytics.metricsFromTrainings(
+            trainings = trainings
+        )
+
+        val categoryDistribution = analytics.categoryDistributionFromTrainings(
+            trainings = trainings,
+            period = period,
+        )
+
+        val weightTypeDistribution = analytics.weightTypeDistributionFromTrainings(
+            trainings = trainings,
+            period = period,
+        )
+
+        val forceTypeDistribution = analytics.forceTypeDistributionFromTrainings(
+            trainings = trainings,
+            period = period,
+        )
+
+        val exerciseVolume = analytics.volumeFromTrainings(
+            trainings = trainings,
+            period = period,
+        )
+
+        val muscleLoad = analytics.muscleLoadFromTrainings(
+            trainings = trainings,
+            period = period,
+            examples = examples,
+            groups = muscles,
+        )
+
+        val muscleLoadMatrix = analytics.heatmapFromTrainings(
+            trainings = trainings,
+            period = period,
+            examples = examples,
+            groups = muscles,
+        )
 
         update {
             it.copy(
-                totalVolume = totalMetrics.volume,
-                totalRepetitions = totalMetrics.repetitions,
-                averageIntensity = totalMetrics.intensity,
-                exerciseVolumeData = exerciseVolumeData,
-                categoryDistributionData = categoryDistributionData,
-                weightTypeDistributionData = weightTypeDistributionData,
-                forceTypeDistributionData = forceTypeDistributionData,
-                muscleLoadData = muscleLoadData,
-                temporalHeatmapData = temporalHeatmapData,
+                totalMetrics = totalMetrics,
+                exerciseVolume = exerciseVolume,
+                categoryDistribution = categoryDistribution,
+                weightTypeDistribution = weightTypeDistribution,
+                forceTypeDistribution = forceTypeDistribution,
+                muscleLoad = muscleLoad,
+                temporalHeatmap = muscleLoadMatrix,
             )
         }
     }

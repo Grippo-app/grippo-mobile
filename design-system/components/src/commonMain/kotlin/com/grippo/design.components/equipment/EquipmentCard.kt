@@ -32,8 +32,9 @@ public fun EquipmentCard(
             .background(
                 color = AppTokens.colors.background.card,
                 shape = RoundedCornerShape(AppTokens.dp.equipmentCard.radius)
-            ).width(intrinsicSize = IntrinsicSize.Max)
-            .padding(
+            ).width(
+                intrinsicSize = IntrinsicSize.Max
+            ).padding(
                 horizontal = AppTokens.dp.equipmentCard.horizontalPadding,
                 vertical = AppTokens.dp.equipmentCard.verticalPadding
             ),
@@ -52,7 +53,7 @@ public fun EquipmentCard(
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,
-            style = AppTokens.typography.b13Bold(),
+            style = AppTokens.typography.b14Bold(),
             color = AppTokens.colors.text.primary
         )
     }

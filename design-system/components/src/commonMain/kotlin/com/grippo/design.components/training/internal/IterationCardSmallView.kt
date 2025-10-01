@@ -27,7 +27,7 @@ internal fun IterationCardSmallView(
 
         Text(
             text = value.volume.short(),
-            style = AppTokens.typography.b13Bold(),
+            style = AppTokens.typography.b14Bold(),
             color = AppTokens.colors.text.secondary
         )
 
@@ -35,7 +35,7 @@ internal fun IterationCardSmallView(
 
         Text(
             text = value.repetitions.short(),
-            style = AppTokens.typography.b13Semi(),
+            style = AppTokens.typography.b14Semi(),
             color = AppTokens.colors.text.secondary
         )
     }

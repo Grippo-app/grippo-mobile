@@ -6,6 +6,8 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.BaseComponent
 import com.grippo.core.platform.collectAsStateMultiplatform
+import com.grippo.design.resources.provider.providers.ColorProvider
+import com.grippo.design.resources.provider.providers.StringProvider
 
 public class ExerciseExampleComponent(
     componentContext: ComponentContext,
@@ -16,7 +18,9 @@ public class ExerciseExampleComponent(
     override val viewModel: ExerciseExampleViewModel = componentContext.retainedInstance {
         ExerciseExampleViewModel(
             id = id,
-            exerciseExampleFeature = getKoin().get()
+            exerciseExampleFeature = getKoin().get(),
+            stringProvider = getKoin().get<StringProvider>(),
+            colorProvider = getKoin().get<ColorProvider>(),
         )
     }
 

@@ -10,11 +10,11 @@ import com.grippo.design.components.wheel.WheelItem
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.height.picker.DefaultHeightSuggestions
 import com.grippo.wheel.picker.DefaultSelectorProperties
 import com.grippo.wheel.picker.MultiWheelPicker
 import com.grippo.wheel.picker.WheelColumn
 import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun HeightWheelPicker(
@@ -57,7 +57,7 @@ internal fun HeightWheelPicker(
 private fun HeightWheelPickerPreview() {
     PreviewContainer {
         HeightWheelPicker(
-            suggestions = (100..250).toPersistentList(),
+            suggestions = DefaultHeightSuggestions,
             value = 150,
             select = {},
         )

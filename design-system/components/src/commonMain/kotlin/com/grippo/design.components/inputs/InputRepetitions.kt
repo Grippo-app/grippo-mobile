@@ -42,7 +42,7 @@ public fun InputRepetitions(
             Text(
                 modifier = Modifier.padding(end = 8.dp),
                 text = AppTokens.strings.res(Res.string.reps),
-                style = AppTokens.typography.b14Semi(),
+                style = AppTokens.typography.b15Med(),
                 color = color
             )
         },

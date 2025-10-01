@@ -33,7 +33,7 @@ internal fun deriveScale(period: PeriodState): BucketScale = when (period) {
     is PeriodState.ThisWeek -> BucketScale.DAY
     is PeriodState.ThisMonth -> BucketScale.WEEK
     is PeriodState.ThisYear -> BucketScale.MONTH
-    is PeriodState.CUSTOM -> deriveCustomScale(period.range)
+    is PeriodState.Custom -> deriveCustomScale(period.range)
 }
 
 private fun deriveCustomScale(range: DateRange): BucketScale {

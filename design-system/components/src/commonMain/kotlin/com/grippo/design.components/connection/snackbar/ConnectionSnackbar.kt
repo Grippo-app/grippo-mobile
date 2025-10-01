@@ -83,7 +83,7 @@ public fun ConnectionSnackbar(
 
             Text(
                 text = AppTokens.strings.res(Res.string.no_internet_connection),
-                style = AppTokens.typography.b12Med(),
+                style = AppTokens.typography.b12Semi(),
                 color = AppTokens.colors.text.inverted
             )
         }

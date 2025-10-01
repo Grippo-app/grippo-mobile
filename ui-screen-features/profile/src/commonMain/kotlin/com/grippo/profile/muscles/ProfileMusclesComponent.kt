@@ -15,7 +15,9 @@ internal class ProfileMusclesComponent(
     override val viewModel = componentContext.retainedInstance {
         ProfileMusclesViewModel(
             muscleFeature = getKoin().get(),
-            excludedMusclesFeature = getKoin().get()
+            excludedMusclesFeature = getKoin().get(),
+            stringProvider = getKoin().get(),
+            colorProvider = getKoin().get(),
         )
     }
 

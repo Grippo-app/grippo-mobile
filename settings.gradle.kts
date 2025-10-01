@@ -78,6 +78,7 @@ include(":ui-dialog-features:period-picker")
 include(":ui-dialog-features:filter-picker")
 include(":ui-dialog-features:iteration-picker")
 include(":ui-dialog-features:exercise-example-picker")
+include(":ui-dialog-features:list-picker")
 
 include(":common:platform-core")
 include(":common:logger")

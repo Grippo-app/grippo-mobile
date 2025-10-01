@@ -1,18 +1,28 @@
 package com.grippo.authorization.registration.excluded.muscles
 
+import com.grippo.calculation.AnalyticsApi
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
+import com.grippo.design.resources.provider.providers.ColorProvider
+import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.domain.state.muscles.toState
+import com.grippo.state.muscles.MuscleGroupState
+import com.grippo.state.muscles.MuscleRepresentationState
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.collections.immutable.toPersistentMap
 import kotlinx.coroutines.flow.onEach
 
 internal class ExcludedMusclesViewModel(
     muscleFeature: MuscleFeature,
+    stringProvider: StringProvider,
+    colorProvider: ColorProvider,
 ) : BaseViewModel<ExcludedMusclesState, ExcludedMusclesDirection, ExcludedMusclesLoader>(
     ExcludedMusclesState()
 ), ExcludedMusclesContract {
+
+    private val analytics = AnalyticsApi(stringProvider, colorProvider)
 
     init {
         muscleFeature
@@ -21,20 +31,28 @@ internal class ExcludedMusclesViewModel(
             .safeLaunch()
     }
 
-    private fun provideMuscles(list: List<MuscleGroup>) {
+    private suspend fun provideMuscles(list: List<MuscleGroup>) {
         val suggestions = list.toState()
-        val selectedIds = suggestions.flatMap { it.muscles }.map { it.value.id }.toPersistentList()
+        val selectedIds = suggestions
+            .flatMap { it.muscles }
+            .map { it.value.id }
+            .toPersistentList()
+
         update { it.copy(suggestions = suggestions, selectedMuscleIds = selectedIds) }
+
+        calculatePresets(suggestions, selectedIds)
     }
 
-    override fun onSelectMuscle(id: String) {
-        update {
-            val newList: PersistentList<String> = it.selectedMuscleIds
-                .toMutableList()
-                .apply { if (contains(id)) remove(id) else add(id) }
-                .toPersistentList()
+    override fun onSelect(id: String) {
+        val newList: PersistentList<String> = state.value.selectedMuscleIds
+            .toMutableList()
+            .apply { if (contains(id)) remove(id) else add(id) }
+            .toPersistentList()
 
-            it.copy(selectedMuscleIds = newList)
+        update { it.copy(selectedMuscleIds = newList) }
+
+        safeLaunch {
+            calculatePresets(state.value.suggestions, newList)
         }
     }
 
@@ -51,5 +69,19 @@ internal class ExcludedMusclesViewModel(
 
     override fun onBack() {
         navigateTo(ExcludedMusclesDirection.Back)
+    }
+
+    private suspend fun calculatePresets(
+        suggestions: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
+        selectedIds: PersistentList<String>,
+    ) {
+        val selectedSet = selectedIds.toSet()
+        val presets = suggestions
+            .associate { group ->
+                group.id to analytics.musclePresetFromSelection(group, selectedSet)
+            }
+            .toPersistentMap()
+
+        update { it.copy(musclePresets = presets) }
     }
 }

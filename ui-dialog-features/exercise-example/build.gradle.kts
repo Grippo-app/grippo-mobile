@@ -9,6 +9,7 @@ kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.common.core)
         implementation(projects.common.state)
+        implementation(projects.common.calculation)
         implementation(projects.uiScreenFeatures.screenApi)
         implementation(projects.dataMappers.domainToState)
         implementation(projects.dataFeatures.featureApi)

@@ -12,6 +12,10 @@ import com.grippo.design.resources.provider.time_ago_month
 import com.grippo.design.resources.provider.time_ago_months
 import com.grippo.design.resources.provider.time_ago_year
 import com.grippo.design.resources.provider.time_ago_years
+import com.grippo.design.resources.provider.today
+import com.grippo.design.resources.provider.tomorrow
+import com.grippo.design.resources.provider.yesterday
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 
 @Stable
@@ -56,8 +60,27 @@ public object DateCompose {
     }
 
     @Composable
-    public fun rememberFormat(value: LocalDateTime, format: DateFormat): String =
-        remember(value, format) {
+    public fun rememberFormat(value: LocalDateTime, format: DateFormat): String {
+        return remember(value, format) {
             DateTimeUtils.format(value, format)
         }
+    }
+
+    @Composable
+    public fun rememberFormat(value: LocalDate, format: DateFormat): String {
+        val today: String = AppTokens.strings.res(Res.string.today)
+        val tomorrow: String = AppTokens.strings.res(Res.string.tomorrow)
+        val yesterday: String = AppTokens.strings.res(Res.string.yesterday)
+
+        return remember(value, format) {
+            val contextual = when {
+                DateTimeUtils.isToday(value) -> today
+                DateTimeUtils.isYesterday(value) -> yesterday
+                DateTimeUtils.isTomorrow(value) -> tomorrow
+                else -> null
+            }
+
+            contextual ?: DateTimeUtils.format(value, format)
+        }
+    }
 }

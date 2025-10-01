@@ -1,31 +1,24 @@
 package com.grippo.training.recording.pages
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import com.grippo.design.components.chart.BarChart
-import com.grippo.design.components.chart.PieChart
-import com.grippo.design.components.chart.ProgressChart
+import com.grippo.design.components.chart.ChartCard
+import com.grippo.design.components.chart.DistributionPieChart
+import com.grippo.design.components.chart.MetricBarChart
+import com.grippo.design.components.chart.MuscleLoadChart
 import com.grippo.design.components.chip.ChipSize
 import com.grippo.design.components.chip.IntensityChip
 import com.grippo.design.components.chip.IntensityChipStyle
@@ -33,15 +26,14 @@ import com.grippo.design.components.chip.RepetitionsChip
 import com.grippo.design.components.chip.RepetitionsChipStyle
 import com.grippo.design.components.chip.VolumeChip
 import com.grippo.design.components.chip.VolumeChipStyle
-import com.grippo.design.components.statistics.ChartCard
-import com.grippo.design.components.tooltip.TooltipData
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.chart_title_exercise_volume
-import com.grippo.design.resources.provider.icons.Reports
+import com.grippo.design.resources.provider.chart_title_muscle_load
 import com.grippo.design.resources.provider.no_data_yet
+import com.grippo.state.stage.StageState
 import com.grippo.state.trainings.stubTraining
 import com.grippo.training.recording.RecordingTab
 import com.grippo.training.recording.TrainingRecordingContract
@@ -63,126 +55,122 @@ internal fun StatisticsPage(
         )
     } else LazyVerticalGrid(
         modifier = modifier,
-        columns = GridCells.Fixed(4),
-        contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
+        columns = GridCells.Fixed(3),
+        contentPadding = PaddingValues(
+            vertical = AppTokens.dp.contentPadding.content,
+            horizontal = AppTokens.dp.screen.horizontalPadding
+        ),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
 
-        item(key = "summary_chips", span = { GridItemSpan(4) }) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-            ) {
-                VolumeChip(
-                    modifier = Modifier.weight(1f),
-                    value = state.totalVolume,
-                    style = VolumeChipStyle.SHORT,
-                    size = ChipSize.Medium
-                )
-
-                RepetitionsChip(
-                    modifier = Modifier.weight(1f),
-                    value = state.totalRepetitions,
-                    style = RepetitionsChipStyle.SHORT,
-                    size = ChipSize.Medium
-                )
-
-                IntensityChip(
-                    modifier = Modifier.weight(1f),
-                    value = state.averageIntensity,
-                    style = IntensityChipStyle.SHORT,
-                    size = ChipSize.Medium
-                )
-            }
-        }
-
-        if (state.exerciseVolumeData.first.items.isNotEmpty()) {
-            item(key = "exercise_volume", span = { GridItemSpan(4) }) {
-                val toolTip = remember(state.exerciseVolumeData.second) {
-                    state.exerciseVolumeData.second?.let { instruction ->
-                        TooltipData(
-                            title = instruction.title,
-                            description = instruction.description
-                        )
-                    }
+        state.totalMetrics
+            ?.volume
+            ?.takeIf { it.value != null }
+            ?.let { data ->
+                item(key = "summary_chips_volume", span = { GridItemSpan(1) }) {
+                    VolumeChip(
+                        value = data,
+                        style = VolumeChipStyle.SHORT,
+                        size = ChipSize.Medium
+                    )
                 }
-
-                ChartCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1.4f),
-                    title = AppTokens.strings.res(Res.string.chart_title_exercise_volume),
-                    tooltip = toolTip,
-                    content = {
-                        BarChart(
-                            modifier = Modifier.fillMaxWidth().weight(1f),
-                            data = state.exerciseVolumeData.first,
-                        )
-                    }
-                )
             }
-        }
 
-        if (state.categoryDistributionData.slices.isNotEmpty()) {
-            item(key = "category_distribution", span = { GridItemSpan(1) }) {
-                PieChart(
-                    modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-                    data = state.categoryDistributionData
-                )
-            }
-        }
-
-        if (state.weightTypeDistributionData.slices.isNotEmpty()) {
-            item(key = "weight_type_distribution", span = { GridItemSpan(1) }) {
-                PieChart(
-                    modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-                    data = state.weightTypeDistributionData
-                )
-            }
-        }
-
-        if (state.experienceDistributionData.slices.isNotEmpty()) {
-            item(key = "experience_distribution", span = { GridItemSpan(1) }) {
-                PieChart(
-                    modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-                    data = state.experienceDistributionData
-                )
-            }
-        }
-
-        if (state.forceTypeDistributionData.slices.isNotEmpty()) {
-            item(key = "force_type_distribution", span = { GridItemSpan(1) }) {
-                PieChart(
-                    modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-                    data = state.forceTypeDistributionData
-                )
-            }
-        }
-
-        if (state.muscleLoadData.first.items.isNotEmpty()) {
-            item(key = "muscle_load", span = { GridItemSpan(4) }) {
-                val toolTip = remember(state.muscleLoadData.second) {
-                    state.muscleLoadData.second?.let { instruction ->
-                        TooltipData(
-                            title = instruction.title,
-                            description = instruction.description
-                        )
-                    }
+        state.totalMetrics
+            ?.repetitions
+            ?.takeIf { it.value != null }
+            ?.let { data ->
+                item(key = "summary_chips_repeat", span = { GridItemSpan(1) }) {
+                    RepetitionsChip(
+                        value = data,
+                        style = RepetitionsChipStyle.SHORT,
+                        size = ChipSize.Medium
+                    )
                 }
-                ChartCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    title = "Muscle Load Distribution",
-                    tooltip = toolTip,
-                    content = {
-                        ProgressChart(
-                            modifier = Modifier.fillMaxWidth(),
-                            data = state.muscleLoadData.first
-                        )
-                    }
-                )
             }
-        }
+
+        state.totalMetrics
+            ?.intensity
+            ?.takeIf { it.value != null }
+            ?.let { data ->
+                item(key = "summary_chips_intensity", span = { GridItemSpan(1) }) {
+                    IntensityChip(
+                        value = data,
+                        style = IntensityChipStyle.SHORT,
+                        size = ChipSize.Medium
+                    )
+                }
+            }
+
+        state.exerciseVolume
+            ?.takeIf { it.points.isNotEmpty() }
+            ?.let { data ->
+                item(key = "exercise_volume", span = { GridItemSpan(3) }) {
+                    ChartCard(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1.4f),
+                        title = AppTokens.strings.res(Res.string.chart_title_exercise_volume),
+                        content = {
+                            MetricBarChart(
+                                modifier = Modifier.fillMaxWidth().weight(1f),
+                                value = data,
+                            )
+                        }
+                    )
+                }
+            }
+
+        state.categoryDistribution
+            ?.takeIf { it.slices.isNotEmpty() }
+            ?.let { data ->
+                item(key = "category_distribution", span = { GridItemSpan(1) }) {
+                    DistributionPieChart(
+                        modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+                        value = data
+                    )
+                }
+            }
+
+        state.weightTypeDistribution
+            ?.takeIf { it.slices.isNotEmpty() }
+            ?.let { data ->
+                item(key = "weight_type_distribution", span = { GridItemSpan(1) }) {
+                    DistributionPieChart(
+                        modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+                        value = data
+                    )
+                }
+            }
+
+        state.forceTypeDistribution
+            ?.takeIf { it.slices.isNotEmpty() }
+            ?.let { data ->
+                item(key = "force_type_distribution", span = { GridItemSpan(1) }) {
+                    DistributionPieChart(
+                        modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+                        value = data
+                    )
+                }
+            }
+
+        state.muscleLoad
+            ?.takeIf { it.perGroup.entries.isNotEmpty() }
+            ?.let { summary ->
+                item(key = "muscle_load", span = { GridItemSpan(3) }) {
+                    ChartCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        title = AppTokens.strings.res(Res.string.chart_title_muscle_load),
+                        content = {
+                            MuscleLoadChart(
+                                modifier = Modifier.fillMaxWidth(),
+                                value = summary,
+                            )
+                        }
+                    )
+                }
+            }
     }
 }
 
@@ -195,20 +183,10 @@ private fun Placeholder(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
-        Icon(
-            modifier = Modifier
-                .background(AppTokens.colors.background.card, CircleShape)
-                .size(200.dp)
-                .padding(24.dp),
-            imageVector = AppTokens.icons.Reports,
-            contentDescription = null,
-            tint = AppTokens.colors.icon.primary
-        )
-
         Text(
             text = AppTokens.strings.res(Res.string.no_data_yet),
             textAlign = TextAlign.Center,
-            style = AppTokens.typography.h3(),
+            style = AppTokens.typography.b14Bold(),
             color = AppTokens.colors.text.primary
         )
     }
@@ -220,6 +198,7 @@ private fun StatisticsPagePreview() {
     PreviewContainer {
         TrainingRecordingScreen(
             state = TrainingRecordingState(
+                stage = StageState.Add,
                 exercises = stubTraining().exercises,
                 tab = RecordingTab.Stats
             ),
@@ -235,6 +214,7 @@ private fun StatisticsPageEmptyPreview() {
     PreviewContainer {
         TrainingRecordingScreen(
             state = TrainingRecordingState(
+                stage = StageState.Add,
                 exercises = persistentListOf(),
                 tab = RecordingTab.Stats
             ),

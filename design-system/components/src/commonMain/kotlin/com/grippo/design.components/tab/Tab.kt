@@ -1,15 +1,15 @@
 package com.grippo.design.components.tab
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,15 +18,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.icons.NavArrowDown
-import com.grippo.segment.control.SegmentBox
-import com.grippo.segment.control.SegmentSizing
-import com.grippo.segment.control.SegmentedFrame
 import com.grippo.state.formatters.UiText
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -44,81 +40,49 @@ public fun <KEY> Tab(
     selected: KEY?,
     onSelect: (KEY) -> Unit,
 ) {
-    SegmentedFrame(
-        modifier = modifier,
-        segmentSizing = SegmentSizing.EqualFill,
-        thumb = {
-            HorizontalDivider(
+
+    Row(modifier = modifier) {
+        items.forEach { item ->
+
+            val clickProvider = remember(item.first) { { onSelect.invoke(item.first) } }
+
+            Row(
                 modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .fillMaxWidth(),
-                color = AppTokens.colors.segment.selector,
-                thickness = 2.dp,
-            )
-        },
-        content = {
-            items.forEach { item ->
+                    .weight(1f)
+                    .scalableClick(onClick = clickProvider)
+                    .animateContentSize()
+                    .padding(
+                        horizontal = AppTokens.dp.tab.horizontalPadding,
+                        vertical = AppTokens.dp.tab.verticalPadding,
+                    ),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
 
-                val clickProvider = remember(item.first) { { onSelect.invoke(item.first) } }
-
-                SegmentBox(
-                    selected = item.first == selected,
-                    content = {
-                        Column(
-                            modifier = Modifier
-                                .scalableClick(onClick = clickProvider)
-                                .padding(
-                                    horizontal = AppTokens.dp.tab.horizontalPadding,
-                                    vertical = AppTokens.dp.tab.verticalPadding,
-                                ),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.tab.padding)
-                        ) {
-
-                            Icon(
-                                modifier = Modifier.size(AppTokens.dp.tab.icon),
-                                imageVector = item.second.icon,
-                                tint = if (item.first == selected) {
-                                    AppTokens.colors.segment.active
-                                } else {
-                                    AppTokens.colors.segment.inactive
-                                },
-                                contentDescription = null
-                            )
-
-                            Text(
-                                text = item.second.text.text(),
-                                style = if (item.first == selected) {
-                                    AppTokens.typography.b13Bold()
-                                } else {
-                                    AppTokens.typography.b13Semi()
-                                },
-                                color = if (item.first == selected) {
-                                    AppTokens.colors.segment.active
-                                } else {
-                                    AppTokens.colors.segment.inactive
-                                },
-                            )
-                        }
+                Icon(
+                    modifier = Modifier.size(AppTokens.dp.tab.icon),
+                    imageVector = item.second.icon,
+                    tint = if (item.first == selected) {
+                        AppTokens.colors.segment.active
+                    } else {
+                        AppTokens.colors.segment.inactive
                     },
+                    contentDescription = null
                 )
-            }
-        }
-    )
-}
 
-@Composable
-public fun SegmentSkeleton(modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        repeat(4) {
-            Box(
-                modifier = Modifier
-                    .height(AppTokens.dp.segment.height)
-                    .width(140.dp)
-            )
+                AnimatedVisibility(
+                    visible = item.first == selected,
+                    enter = fadeIn() + expandHorizontally(expandFrom = Alignment.Start),
+                    exit = fadeOut() + shrinkHorizontally(shrinkTowards = Alignment.Start),
+                ) {
+                    Text(
+                        modifier = Modifier.padding(start = AppTokens.dp.contentPadding.text),
+                        text = item.second.text.text(),
+                        style = AppTokens.typography.b13Bold(),
+                        color = AppTokens.colors.segment.active,
+                    )
+                }
+            }
         }
     }
 }

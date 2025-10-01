@@ -15,6 +15,7 @@ import com.grippo.home.profile.HomeProfileComponent
 import com.grippo.home.statistics.HomeStatisticsComponent
 import com.grippo.home.trainings.HomeTrainingsComponent
 import com.grippo.screen.api.BottomNavigationRouter
+import com.grippo.state.stage.StageState
 
 public class BottomNavigationComponent(
     initial: BottomNavigationRouter,
@@ -23,7 +24,7 @@ public class BottomNavigationComponent(
     private val toMissingEquipment: () -> Unit,
     private val toWeightHistory: () -> Unit,
     private val toDebug: () -> Unit,
-    private val toTraining: () -> Unit,
+    private val toTraining: (stage: StageState) -> Unit,
     private val close: () -> Unit,
 ) : BaseComponent<BottomNavigationDirection>(componentContext) {
 
@@ -51,7 +52,11 @@ public class BottomNavigationComponent(
             BottomNavigationDirection.ToMissingEquipment -> toMissingEquipment.invoke()
             BottomNavigationDirection.ToWeightHistory -> toWeightHistory.invoke()
             BottomNavigationDirection.ToDebug -> toDebug.invoke()
-            BottomNavigationDirection.ToTraining -> toTraining.invoke()
+            BottomNavigationDirection.ToAddTraining -> toTraining.invoke(StageState.Add)
+            BottomNavigationDirection.ToDraftTraining -> toTraining.invoke(StageState.Draft)
+            is BottomNavigationDirection.ToEditTraining -> toTraining.invoke(
+                StageState.Edit(direction.id)
+            )
         }
     }
 
@@ -71,6 +76,7 @@ public class BottomNavigationComponent(
             is BottomNavigationRouter.Trainings -> Child.Trainings(
                 HomeTrainingsComponent(
                     componentContext = context,
+                    toEditTraining = viewModel::toEditTraining,
                     back = viewModel::onBack
                 ),
             )
@@ -88,7 +94,7 @@ public class BottomNavigationComponent(
                     toExcludedMuscles = viewModel::toExcludedMuscles,
                     toMissingEquipment = viewModel::toMissingEquipment,
                     toWeightHistory = viewModel::toWeightHistory,
-                    toWorkout = viewModel::toWorkout,
+                    toAddTraining = viewModel::toAddTraining,
                     toDebug = viewModel::toDebug,
                     back = viewModel::onBack
                 ),

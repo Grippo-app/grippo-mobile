@@ -3,7 +3,6 @@ package com.grippo.design.components.menu
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
@@ -18,7 +17,7 @@ import kotlinx.collections.immutable.ImmutableList
 @Immutable
 public data class MenuItem(
     val title: UiText,
-    val icon: ImageVector
+    val icon: ImageVector? = null
 )
 
 @Composable
@@ -36,19 +35,23 @@ public fun <KEY> Menu(
     ) {
 
         items.forEachIndexed { index, item ->
-            val onClickProvider = remember(item) { { onClick.invoke(item.first) } }
+            val onClickProvider = remember(item) {
+                { onClick.invoke(item.first) }
+            }
 
             MenuCard(
                 modifier = Modifier.fillMaxWidth(),
                 title = item.second.title.text(),
-                trailing = MenuTrailing.Icon(item.second.icon),
+                trailing = item.second.icon?.let { icon ->
+                    MenuTrailing.Icon(icon)
+                } ?: MenuTrailing.Empty,
                 onClick = onClickProvider
             )
 
             if (index < items.lastIndex) {
                 HorizontalDivider(
                     modifier = Modifier
-                        .padding(horizontal = AppTokens.dp.menu.item.horizontalPadding)
+//                        .padding(horizontal = AppTokens.dp.menu.item.horizontalPadding)
                         .fillMaxWidth(),
                     color = AppTokens.colors.divider.default
                 )

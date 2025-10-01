@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
@@ -63,7 +62,6 @@ internal fun ExcludedMusclesScreen(
             ).imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.registration_muscles_title),
@@ -72,7 +70,7 @@ internal fun ExcludedMusclesScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
 
         Text(
             modifier = Modifier.fillMaxWidth(),
@@ -95,10 +93,11 @@ internal fun ExcludedMusclesScreen(
                 key = { _, item -> item.id },
             ) { index, group ->
                 val isEven = index % 2 == 0
+                val preset = state.musclePresets[group.id] ?: return@itemsIndexed
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     if (isEven) {
@@ -106,24 +105,24 @@ internal fun ExcludedMusclesScreen(
                             modifier = Modifier.weight(1f),
                             item = group,
                             selectedIds = state.selectedMuscleIds,
-                            onSelect = contract::onSelectMuscle
+                            onSelect = contract::onSelect
                         )
                         MusclesImage(
                             modifier = Modifier.weight(1f),
                             item = group,
-                            selectedIds = state.selectedMuscleIds
+                            preset = preset
                         )
                     } else {
                         MusclesImage(
                             modifier = Modifier.weight(1f),
                             item = group,
-                            selectedIds = state.selectedMuscleIds
+                            preset = preset
                         )
                         MusclesColumn(
                             modifier = Modifier.weight(1f),
                             item = group,
                             selectedIds = state.selectedMuscleIds,
-                            onSelect = contract::onSelectMuscle
+                            onSelect = contract::onSelect
                         )
                     }
                 }

@@ -1,6 +1,7 @@
 package com.grippo.shared.root
 
 import com.grippo.core.models.BaseDirection
+import com.grippo.state.stage.StageState
 
 public sealed interface RootDirection : BaseDirection {
     public data object Login : RootDirection
@@ -8,7 +9,7 @@ public sealed interface RootDirection : BaseDirection {
     public data object ToHome : RootDirection
     public data object ToProfile : RootDirection
     public data object ToDebug : RootDirection
-    public data object ToTraining : RootDirection
+    public data class ToTraining(val stage: StageState) : RootDirection
     public data object ToWeightHistory : RootDirection
     public data object ToMissingEquipment : RootDirection
     public data object ToExcludedMuscles : RootDirection

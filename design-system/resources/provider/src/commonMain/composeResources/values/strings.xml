@@ -26,6 +26,8 @@
     <string name="loading">Loading..</string>
     <string name="submit_btn">Submit</string>
     <string name="delete_btn">Delete</string>
+    <string name="clear_btn">Clear</string>
+    <string name="edit_btn">Edit</string>
     <string name="get_started_btn">Get Started</string>
     <string name="continue_btn">Continue</string>
     <string name="skip_btn">Skip</string>
@@ -73,7 +75,7 @@
     <string name="registration_experience_description">No worries — we’ve got plans for every level.</string>
 
     <string name="registration_muscles_title">Anything you’d rather skip?</string>
-    <string name="registration_muscles_description">Pick muscle groups you don’t want to train. Totally optional!</string>
+    <string name="registration_muscles_description">Pick muscle groups you don’t want to train.</string>
 
     <string name="registration_equipment_title">What’s not in your gym?</string>
     <string name="registration_equipment_description">We’ll leave out exercises that need that equipment.</string>
@@ -129,7 +131,12 @@
     <string name="this_week">This week</string>
     <string name="this_year">This year</string>
     <string name="this_month">This month</string>
-    <string name="custom_range">Custom range</string>
+    <string name="custom_range">Custom</string>
+    <string name="show_more">Show more</string>
+    <string name="show_less">Show less</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="tomorrow">Tomorrow</string>
     <string name="select_start_date">Select start date</string>
     <string name="select_end_date">Select end date</string>
     <string name="r">R</string>
@@ -166,9 +173,17 @@
     <string name="timeout_error">Timeout</string>
     <string name="unexpected_network_error">Unexpected network error</string>
     <string name="select_exercise">Select exercise</string>
-    <string name="draft_training_alert_title">Unfinished training</string>
-    <string name="draft_training_alert_description">You have an unfinished training session. Continue where you left off?</string>
+    <string name="draft_training_alert_title_add">Resume draft workout</string>
+    <string name="draft_training_alert_description_add">You have an unfinished draft workout saved locally. Continue where you left off?</string>
+    <string name="draft_training_alert_title_edit">Resume editing workout</string>
+    <string name="draft_training_alert_description_edit">You were editing a saved workout and left some changes unfinished. Continue editing?</string>
+
+    <string name="menu">Menu</string>
+
     <string name="last_used_label">Last used:</string>
+
+    <string name="add_training_title">Add training</string>
+    <string name="edit_training_title">Edit training</string>
 
     <string name="filter_weight_type">Weight type</string>
     <string name="filter_force_type">Force type</string>
@@ -187,7 +202,7 @@
     <!-- WeightTypeEnumState -->
     <string name="weight_type_free">Free</string>
     <string name="weight_type_fixed">Fixed</string>
-    <string name="weight_type_body_weight">Body Weight</string>
+    <string name="weight_type_body_weight">Body</string>
 
     <!-- ResourceTypeEnumState -->
     <string name="resource_type_youtube_video">YouTube Video</string>
@@ -317,86 +332,4 @@
     <string name="chart_title_muscle_load">Muscle Load (%)</string>
     <string name="chart_title_muscle_heap">Warm map of Load</string>
 
-    <!-- ============= VOLUME ============= -->
-    <string name="tooltip_volume_title_training">Exercise Volume</string>
-    <string name="tooltip_volume_description_training">Total work per exercise (weight × reps); shows which lifts contributed most today.\nTip: Volume rewards high-rep/light sets; check %1RM/Intensity to see how heavy it was.\nTargets: Advanced ~±10–15% vs last comparable session; Novice/Intermediate ±15–25%.\nAvoid spikes: &gt;20–30% unless you are peaking.\nAfter a break: resume ~10% lower and add ~10% per session for a week.</string>
-    <string name="tooltip_volume_title_day">Daily Volume</string>
-    <string name="tooltip_volume_description_day">Total work per day; compare to your rolling 7-day average.\nTargets: Advanced ~±10–15%; Novice/Intermediate ±15–25% day-to-day.\nSpikes: avoid &gt;20–30% unless planned; light days (−20–40%) aid recovery.\nAfter time off: add ~10% per session in week 1.\nUse small waves (hard/medium/light) for sustainable progress.</string>
-    <string name="tooltip_volume_title_week">Weekly Volume (Month View)</string>
-    <string name="tooltip_volume_description_week">Total work per week inside this month.\nProgression: grow ~5–10% WoW for 2–4 weeks, then deload 20–40%.\nBalance: keep the heaviest week &lt;~40–50% of the month’s total to avoid overreaching.\nSignals: if volume climbs but performance stalls, deload or improve sleep/nutrition.\nPlan: place hard weeks when life stress is lower; deload before testing/new blocks.</string>
-    <string name="tooltip_volume_title_year">Yearly Volume Trend</string>
-    <string name="tooltip_volume_description_year">Zoomed-out monthly trend across the year.\nStructure: plan 3–5 progressive blocks with clear deloads.\nSafety: avoid month-to-month spikes &gt;~30–40%; prefer steady growth.\nExpectations: YoY gains of ~10–30% are realistic depending on training age.\nIf PRs lag while volume rises, shift work toward main lifts or increase intensity modestly.</string>
-
-    <!-- ========== HEATMAP ========== -->
-    <string name="tooltip_heatmap_title_training_tonnage">Muscle Heatmap — Session (Tonnage)</string>
-    <string name="tooltip_heatmap_description_training_tonnage">Each cell shows Σ(weight×reps) credited to a muscle, allocated by exercise muscle splits.\nNormalization: per-column max (colors are relative within this session; columns are not comparable).\nUse when you care about total load distribution across muscles in this session.\nNotes: Tonnage favors high-rep/light sets; pair with intensity charts for context.\nGaps mean no work recorded for that muscle in that exercise bucket.</string>
-    <string name="tooltip_heatmap_title_training_reps">Muscle Heatmap — Session (Reps)</string>
-    <string name="tooltip_heatmap_description_training_reps">Each cell shows Σ(reps) credited to a muscle via exercise muscle splits (weight ignored).\nNormalization: per-column max (relative within this session only).\nBest for bodyweight/isolation work and technique volume.\nLimit: treats all reps equally; heavy triples and easy fifteens look similar.\nUse with %1RM/Intensity for a complete picture.</string>
-    <string name="tooltip_heatmap_title_day_tonnage">Muscle Heatmap — Day Range (Tonnage)</string>
-    <string name="tooltip_heatmap_description_day_tonnage">Cells show Σ(weight×reps) per muscle for each day in range.\nNormalization: per-column max (relative per day; do not compare colors across days).\nLook for balanced coverage of big movers (quads, hamstrings, back, chest).\nSpikes highlight days dominated by a few muscles; plan lighter coverage next day if recovery lags.</string>
-    <string name="tooltip_heatmap_title_day_reps">Muscle Heatmap — Day Range (Reps)</string>
-    <string name="tooltip_heatmap_description_day_reps">Cells show Σ(reps) per muscle for each day; weight ignored.\nNormalization: per-column max (relative per day).\nGreat for tracking bodyweight or accessory emphasis.\nIf a target muscle stays near zero across days, add direct work.</string>
-    <string name="tooltip_heatmap_title_week_tonnage">Muscle Heatmap — Weeks (Tonnage)</string>
-    <string name="tooltip_heatmap_description_week_tonnage">Σ(weight×reps) per muscle per week inside this month view.\nNormalization: per-column max (relative per week; colors across weeks are not directly comparable).\nUse to see which weeks emphasized which muscles; follow heavy weeks with easier ones.\nPersistent near-zero rows suggest undertrained muscles.</string>
-    <string name="tooltip_heatmap_title_week_reps">Muscle Heatmap — Weeks (Reps)</string>
-    <string name="tooltip_heatmap_description_week_reps">Σ(reps) per muscle per week; weight ignored.\nNormalization: per-column max (relative per week).\nGood for specialty blocks and bodyweight phases.\nAdd intensity checks if reps climb without strength progress.</string>
-    <string name="tooltip_heatmap_title_month_tonnage">Muscle Heatmap — Months (Tonnage)</string>
-    <string name="tooltip_heatmap_description_month_tonnage">Σ(weight×reps) per muscle per month.\nNormalization: global cap at P95 (extremes clipped; colors are comparable across months).\nRead trends across months: specialization blocks should visibly raise the target row.\nIf volume rises but PRs stall, shift work from accessories to main lifts or increase intensity modestly.</string>
-    <string name="tooltip_heatmap_title_month_reps">Muscle Heatmap — Months (Reps)</string>
-    <string name="tooltip_heatmap_description_month_reps">Σ(reps) per muscle per month; weight ignored.\nNormalization: global cap at P95 (comparable across months).\nGreat for long technique or hypertrophy phases.\nPlateaus with high reps often mean intensity is too low — add heavier work.</string>
-    <string name="tooltip_heatmap_title_year_tonnage">Muscle Heatmap — Year (Tonnage)</string>
-    <string name="tooltip_heatmap_description_year_tonnage">Year-to-date Σ(weight×reps) per muscle (monthly buckets).\nNormalization: global cap at P95 (comparable across months).\nLook for 3–5 progressive blocks and clear deloads; avoid persistent imbalance (e.g., push≫pull).\nLarge gaps suggest injury/time off or program drift — rebalance accordingly.</string>
-    <string name="tooltip_heatmap_title_year_reps">Muscle Heatmap — Year (Reps)</string>
-    <string name="tooltip_heatmap_description_year_reps">Year-to-date Σ(reps) per muscle.\nNormalization: global cap at P95 (comparable across months).\nUseful to audit total practice volume per muscle group.\nIf reps are high but strength stagnant, blend in lower-rep, higher-load work.</string>
-
-    <!-- ============= MUSCLE LOAD ============= -->
-    <string name="tooltip_ml_title_training_abs_volume">Muscle Load — Session (Absolute, Volume)</string>
-    <string name="tooltip_ml_desc_training_abs_volume">Each bar shows total work Σ(weight×reps) per muscle or group.\nColor scale: smooth by share vs session max (darker = more work).\nTip: Volume rewards high-rep/light sets; pair with intensity charts for context.\nAuto mode: if no meaningful weights are entered today, the view will switch to Reps.</string>
-    <string name="tooltip_ml_title_training_abs_reps">Muscle Load — Session (Absolute, Reps)</string>
-    <string name="tooltip_ml_desc_training_abs_reps">Each bar shows total repetitions Σ(reps) credited to a muscle via exercise splits (weight ignored).\nColor scale: smooth by share vs session max.\nBest for bodyweight/isolation work and technique volume.\nIf heavy sets exist, consider switching to Volume for load context.</string>
-    <string name="tooltip_ml_title_training_abs_tut">Muscle Load — Session (Absolute, Time-Under-Tension)</string>
-    <string name="tooltip_ml_desc_training_abs_tut">Bars show Σ(reps×sec/rep) per muscle using a fixed tempo.\nColor scale: smooth by share vs session max.\nGood proxy when weights vary widely between exercises; verify tempo really matches your sets.</string>
-    <string name="tooltip_ml_title_training_rel_volume">Muscle Load — Session (% of Total, Volume)</string>
-    <string name="tooltip_ml_desc_training_rel_volume">Bars show each muscle’s share of Σ(weight×reps) within the session (100% total).\nColor scale: banded by percent.\nUse to compare balance across muscles today regardless of absolute workload.</string>
-    <string name="tooltip_ml_title_training_rel_reps">Muscle Load — Session (% of Total, Reps)</string>
-    <string name="tooltip_ml_desc_training_rel_reps">Bars show each muscle’s share of Σ(reps) within the session (100% total).\nColor scale: banded by percent.\nUseful when weights are missing or mostly bodyweight.</string>
-    <string name="tooltip_ml_title_training_rel_tut">Muscle Load — Session (% of Total, TUT)</string>
-    <string name="tooltip_ml_desc_training_rel_tut">Bars show share of Σ(reps×sec/rep) within the session (100% total).\nColor scale: banded by percent.\nUse when tempo is consistent across exercises.</string>
-    <string name="tooltip_ml_title_day_rel_volume">Muscle Load — Days (% of Total, Volume)</string>
-    <string name="tooltip_ml_desc_day_rel_volume">Share of Σ(weight×reps) per muscle across selected days (adds to 100%).\nColor scale: banded by percent; bars are comparable across items.\nGoal: big movers (quads, hamstrings, back, chest) should receive meaningful shares; avoid leaving target muscles &lt;10–15% week after week.</string>
-    <string name="tooltip_ml_title_day_rel_reps">Muscle Load — Days (% of Total, Reps)</string>
-    <string name="tooltip_ml_desc_day_rel_reps">Share of Σ(reps) per muscle across selected days (100% total).\nUseful when many sets lack weights or are bodyweight.\nIf shares look fine but strength stalls, add heavier work to main lifts.</string>
-    <string name="tooltip_ml_title_day_rel_tut">Muscle Load — Days (% of Total, TUT)</string>
-    <string name="tooltip_ml_desc_day_rel_tut">Share of Σ(reps×sec/rep) per muscle across days.\nGood for tempo-driven phases; ensure tempo is consistent to keep comparisons fair.</string>
-    <string name="tooltip_ml_title_week_rel_volume">Muscle Load — Weeks (% of Total, Volume)</string>
-    <string name="tooltip_ml_desc_week_rel_volume">Share of weekly Σ(weight×reps) by muscle (100% within the selected month).\nLook for clear emphasis weeks, followed by easier weeks.\nPersistent near-zero rows suggest undertrained muscles.</string>
-    <string name="tooltip_ml_title_week_rel_reps">Muscle Load — Weeks (% of Total, Reps)</string>
-    <string name="tooltip_ml_desc_week_rel_reps">Share of weekly Σ(reps) by muscle.\nUse for bodyweight blocks and technique phases; complement with intensity checks.</string>
-    <string name="tooltip_ml_title_week_rel_tut">Muscle Load — Weeks (% of Total, TUT)</string>
-    <string name="tooltip_ml_desc_week_rel_tut">Share of weekly Σ(reps×sec/rep) by muscle.\nHelps compare slow-tempo blocks; verify consistency of tempo in logging.</string>
-    <string name="tooltip_ml_title_month_rel_volume">Muscle Load — Months (% of Total, Volume)</string>
-    <string name="tooltip_ml_desc_month_rel_volume">Share of Σ(weight×reps) per muscle by month (adds to 100%).\nTrack specialization blocks: the target muscle should visibly gain share.\nIf volume share rises but PRs stall, shift work toward main lifts or raise intensity modestly.</string>
-    <string name="tooltip_ml_title_month_rel_reps">Muscle Load — Months (% of Total, Reps)</string>
-    <string name="tooltip_ml_desc_month_rel_reps">Share of Σ(reps) per muscle by month.\nGreat for long technique/hypertrophy phases.\nPlateaus with high rep share usually mean intensity is too low — add heavier work.</string>
-    <string name="tooltip_ml_title_month_rel_tut">Muscle Load — Months (% of Total, TUT)</string>
-    <string name="tooltip_ml_desc_month_rel_tut">Share of Σ(reps×sec/rep) per muscle by month.\nUseful when load tracking is noisy; keep tempo realistic for fair comparisons.</string>
-    <string name="tooltip_ml_title_year_rel_volume">Muscle Load — Year (% of Total, Volume)</string>
-    <string name="tooltip_ml_desc_year_rel_volume">Year-to-date share of Σ(weight×reps) per muscle (100% over the year).\nSeek 3–5 progressive blocks with deloads; avoid chronic push≫pull or quad≫posterior chain imbalances.</string>
-    <string name="tooltip_ml_title_year_rel_reps">Muscle Load — Year (% of Total, Reps)</string>
-    <string name="tooltip_ml_desc_year_rel_reps">Year-to-date share of Σ(reps) per muscle.\nGood to audit practice volume.\nIf rep share is high but strength lags, blend in lower-rep, higher-load work.</string>
-    <string name="tooltip_ml_title_year_rel_tut">Muscle Load — Year (% of Total, TUT)</string>
-    <string name="tooltip_ml_desc_year_rel_tut">Year-to-date share of Σ(reps×sec/rep) per muscle.\nHandy for tempo phases; confirm logging stays consistent over months.</string>
-
-    <!-- ============= ESTIMATED 1RM ============= -->
-    <string name="tooltip_estimated1rm_title_training">Estimated 1RM</string>
-    <string name="tooltip_estimated1rm_description_training">Best strength estimate per exercise today from your sets and reps—no need to test a true max. Small PRs of about +0.5–2.5% are meaningful; a flat trend or −2–5% is common during high-volume phases.</string>
-
-    <string name="tooltip_estimated1rm_title_day">Estimated 1RM — Daily Peaks</string>
-    <string name="tooltip_estimated1rm_description_day">Near-max strength for each day. Do not chase a PR every session; a few strong days per week are enough. If daily peaks dip slightly (around −2–5%) while volume is high, that’s normal.</string>
-
-    <string name="tooltip_estimated1rm_title_month">Estimated 1RM — Weekly Peaks</string>
-    <string name="tooltip_estimated1rm_description_month">Best or near-best sets each week across the month. Aim for gradual improvement of about +0.5–2% month over month. Short dips during deload weeks are expected.</string>
-
-    <string name="tooltip_estimated1rm_title_year">Estimated 1RM — Yearly Trend</string>
-    <string name="tooltip_estimated1rm_description_year">Peak or near-peak strength across the year. A realistic goal is +1–5% per year depending on training level. Long plateaus can happen—stay patient, cycle volume and intensity, and focus on technique.</string>
 </resources>

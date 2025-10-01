@@ -8,6 +8,7 @@ import com.grippo.state.filters.FilterValue
 import com.grippo.state.formatters.DateFormatState
 import com.grippo.state.formatters.HeightFormatState
 import com.grippo.state.formatters.WeightFormatState
+import com.grippo.state.menu.MenuItemState
 import com.grippo.state.trainings.IterationFocus
 import com.grippo.state.trainings.IterationState
 import kotlinx.serialization.Serializable
@@ -116,6 +117,15 @@ public sealed class DialogConfig(
     public data class ExerciseExamplePicker(
         val targetMuscleGroupId: String?,
         @Transient val onResult: (ExerciseExampleState) -> Unit = {},
+    ) : DialogConfig(
+        onDismiss = null,
+        dismissBySwipe = true
+    )
+
+    @Serializable
+    public data class MenuPicker(
+        val items: List<MenuItemState>,
+        @Transient val onResult: (id: String) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true

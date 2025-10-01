@@ -1,36 +1,46 @@
 package com.grippo.training.completed
 
-import com.grippo.calculation.MetricsAggregator
+import com.grippo.calculation.AnalyticsApi
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.date.utils.DateTimeUtils
+import com.grippo.design.resources.provider.providers.ColorProvider
+import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState
 import com.grippo.domain.state.training.transformation.toTrainingListValues
 import com.grippo.state.domain.training.toDomain
+import com.grippo.state.stage.StageState
 import com.grippo.state.trainings.ExerciseState
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.LocalDateTime
 
 internal class TrainingCompletedViewModel(
+    stage: StageState,
     exercises: List<ExerciseState>,
     trainingFeature: TrainingFeature,
     startAt: LocalDateTime,
     private val dialogController: DialogController,
+    stringProvider: StringProvider,
+    colorProvider: ColorProvider,
 ) : BaseViewModel<TrainingCompletedState, TrainingCompletedDirection, TrainingCompletedLoader>(
     TrainingCompletedState()
 ), TrainingCompletedContract {
 
-    private val metricsAggregator = MetricsAggregator()
+    private val analytics = AnalyticsApi(stringProvider, colorProvider)
 
     init {
         safeLaunch(loader = TrainingCompletedLoader.SaveTraining) {
-            val duration = DateTimeUtils.ago(startAt)
+            val duration = DateTimeUtils.ago(
+                value = startAt
+            )
 
-            val totals = metricsAggregator.calculateExercises(exercises)
+            val totals = analytics.metricsFromExercises(
+                exercises = exercises
+            )
 
             val training = SetTraining(
                 exercises = exercises.toDomain(),
@@ -40,9 +50,21 @@ internal class TrainingCompletedViewModel(
                 repetitions = totals.repetitions.value ?: 0
             )
 
-            val id = trainingFeature
-                .setTraining(training)
-                .getOrThrow() ?: return@safeLaunch
+            val id = when (val allocatedId = stage.id) {
+                null -> {
+                    val result = trainingFeature
+                        .setTraining(training)
+                        .getOrThrow() ?: return@safeLaunch
+                    result
+                }
+
+                else -> {
+                    val result = trainingFeature
+                        .updateTraining(allocatedId, training)
+                        .getOrThrow() ?: return@safeLaunch
+                    result
+                }
+            }
 
             trainingFeature.deleteDraftTraining().getOrThrow()
 

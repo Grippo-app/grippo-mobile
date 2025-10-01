@@ -7,14 +7,9 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import com.grippo.design.components.modifiers.ShadowElevation
-import com.grippo.design.components.modifiers.models.Side
-import com.grippo.design.components.modifiers.shadowDefault
 import com.grippo.design.components.tab.Tab
 import com.grippo.design.components.tab.TabItem
 import com.grippo.design.core.AppTokens
@@ -24,7 +19,6 @@ import com.grippo.design.resources.provider.icons.NavArrowDown
 import com.grippo.home.BottomBarMenu
 import com.grippo.state.formatters.UiText
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 
 @Composable
@@ -40,11 +34,6 @@ internal fun BottomNavigationMenu(
 
         Tab(
             modifier = Modifier
-                .shadowDefault(
-                    shape = RoundedCornerShape(0.dp),
-                    elevation = ShadowElevation.Container,
-                    sides = persistentListOf(Side.TOP)
-                )
                 .background(AppTokens.colors.background.dialog)
                 .navigationBarsPadding()
                 .fillMaxWidth(),

@@ -14,7 +14,7 @@ public fun WheelItem(
     Text(
         modifier = modifier,
         text = text,
-        style = AppTokens.typography.b16Bold(),
+        style = AppTokens.typography.h5(),
         color = if (isValid) AppTokens.colors.text.primary else AppTokens.colors.semantic.error
     )
 }

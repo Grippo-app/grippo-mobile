@@ -16,15 +16,8 @@ import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
-import com.grippo.design.components.button.ButtonSize
-import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.toolbar.BottomSheetToolbar
-import com.grippo.design.components.toolbar.BottomSheetToolbarActionButton
 import com.grippo.design.core.AppTokens
-import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.back
-import com.grippo.design.resources.provider.close
-import com.grippo.design.resources.provider.icons.NavArrowLeft
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.shared.dialog.content.DialogContentComponent
 import kotlinx.collections.immutable.ImmutableSet
@@ -108,20 +101,9 @@ private fun BottomSheet(
     ) {
         BottomSheetToolbar(
             modifier = Modifier.fillMaxWidth(),
-            start = if (showBackButton) BottomSheetToolbarActionButton(
-                text = AppTokens.strings.res(Res.string.back),
-                startIcon = AppTokens.icons.NavArrowLeft,
-                style = ButtonStyle.Transparent,
-                size = ButtonSize.Small,
-                onClick = onBack
-            ) else null,
-            end = BottomSheetToolbarActionButton(
-                text = AppTokens.strings.res(Res.string.close),
-                startIcon = null,
-                style = ButtonStyle.Transparent,
-                size = ButtonSize.Small,
-                onClick = onClose
-            ),
+            onBack = onBack,
+            onClose = onClose,
+            allowBack = showBackButton
         )
 
         Column(

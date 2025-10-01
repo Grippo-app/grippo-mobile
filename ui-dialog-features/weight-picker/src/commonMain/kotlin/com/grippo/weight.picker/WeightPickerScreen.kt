@@ -51,7 +51,7 @@ internal fun WeightPickerScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
 
         Text(
             modifier = Modifier.fillMaxWidth(),
@@ -61,7 +61,7 @@ internal fun WeightPickerScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         WeightWheelPicker(
             modifier = Modifier.fillMaxWidth(),

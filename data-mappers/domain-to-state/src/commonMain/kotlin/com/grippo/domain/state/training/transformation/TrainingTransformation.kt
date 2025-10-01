@@ -21,7 +21,7 @@ public fun TrainingState.toTrainingListValues(
             result += TrainingListValue.SingleExercise(
                 exerciseState = ex,
                 position = position,
-                id = "single-${this.id}-${ex.id}",
+                key = "single-${this.id}-${ex.id}",
                 indexInTraining = 1
             )
         }
@@ -33,17 +33,17 @@ public fun TrainingState.toTrainingListValues(
             result += TrainingListValue.FirstExercise(
                 exerciseState = first,
                 position = position,
-                id = "first-${this.id}-${first.id}",
+                key = "first-${this.id}-${first.id}",
                 indexInTraining = 1
             )
             result += TrainingListValue.BetweenExercises(
                 position = position,
-                id = "between-${this.id}-${first.id}-${last.id}"
+                key = "between-${this.id}-${first.id}-${last.id}"
             )
             result += TrainingListValue.LastExercise(
                 exerciseState = last,
                 position = position,
-                id = "last-${this.id}-${last.id}",
+                key = "last-${this.id}-${last.id}",
                 indexInTraining = 2
             )
         }
@@ -56,14 +56,14 @@ public fun TrainingState.toTrainingListValues(
             result += TrainingListValue.FirstExercise(
                 exerciseState = first,
                 position = position,
-                id = "first-${this.id}-${first.id}",
+                key = "first-${this.id}-${first.id}",
                 indexInTraining = 1
             )
 
             // separator between first and first middle
             result += TrainingListValue.BetweenExercises(
                 position = position,
-                id = "between-${this.id}-${first.id}-${middle.first().id}"
+                key = "between-${this.id}-${first.id}-${middle.first().id}"
             )
 
             middle.forEachIndexed { i, ex ->
@@ -72,21 +72,21 @@ public fun TrainingState.toTrainingListValues(
                 result += TrainingListValue.MiddleExercise(
                     exerciseState = ex,
                     position = position,
-                    id = "middle-${this.id}-${ex.id}",
+                    key = "middle-${this.id}-${ex.id}",
                     indexInTraining = indexInTraining
                 )
 
                 val next = middle.getOrNull(i + 1) ?: last
                 result += TrainingListValue.BetweenExercises(
                     position = position,
-                    id = "between-${this.id}-${ex.id}-${next.id}"
+                    key = "between-${this.id}-${ex.id}-${next.id}"
                 )
             }
 
             result += TrainingListValue.LastExercise(
                 exerciseState = last,
                 position = position,
-                id = "last-${this.id}-${last.id}",
+                key = "last-${this.id}-${last.id}",
                 indexInTraining = exercises.size
             )
         }

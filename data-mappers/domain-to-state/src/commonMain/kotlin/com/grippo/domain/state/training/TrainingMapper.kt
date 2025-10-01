@@ -8,7 +8,6 @@ import com.grippo.state.trainings.TrainingMetrics
 import com.grippo.state.trainings.TrainingState
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
-import kotlin.time.Duration.Companion.minutes
 
 public fun List<Training>.toState(): PersistentList<TrainingState> {
     return map { it.toState() }.toPersistentList()
@@ -23,7 +22,7 @@ public fun Training.toState(): TrainingState {
             repetitions = RepetitionsFormatState.of(repetitions),
             intensity = IntensityFormatState.of(intensity),
         ),
-        duration = duration.minutes,
+        duration = duration,
         createdAt = createdAt
     )
 }

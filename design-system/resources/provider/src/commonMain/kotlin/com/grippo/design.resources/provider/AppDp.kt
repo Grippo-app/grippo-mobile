@@ -29,7 +29,8 @@ public data object AppDp {
     }
 
     private data object Radius {
-        val small: Dp = 8.dp
+        val tiny: Dp = 8.dp
+        val small: Dp = 12.dp
         val medium: Dp = 16.dp
         val large: Dp = 28.dp
     }
@@ -37,7 +38,7 @@ public data object AppDp {
     private data object Icon {
         val extraSmall: Dp = 12.dp
         val small: Dp = 18.dp
-        val medium: Dp = 22.dp
+        val medium: Dp = 24.dp
         val large: Dp = 32.dp
         val xLarge: Dp = 68.dp
         val xxLarge: Dp = 100.dp
@@ -67,18 +68,16 @@ public data object AppDp {
     val equipmentCard: EquipmentCard = EquipmentCard
     val timeline: Timeline = Timeline
     val timeLabel: TimeLabel = TimeLabel
-    val datePicker: DatePicker = DatePicker
-    val periodPicker: PeriodPicker = PeriodPicker
     val exerciseCard: ExerciseCard = ExerciseCard
     val exerciseExampleCard: ExerciseExampleCard = ExerciseExampleCard
     val exerciseExampleImage: ExerciseExampleImage = ExerciseExampleImage
     val iterationCard: IterationCard = IterationCard
     val iterationsCard: IterationsCard = IterationsCard
+    val descriptionText: DescriptionText = DescriptionText
     val chip: Chip = Chip
     val connectionSnackbar: ConnectionSnackbar = ConnectionSnackbar
     val toggle: Toggle = Toggle
     val radio: Radio = Radio
-    val tooltip: Tooltip = Tooltip
     val badge: Badge = Badge
 
     public data object Screen {
@@ -87,7 +86,7 @@ public data object AppDp {
         val verticalPadding: Dp = padding.extraLarge
 
         public data object Toolbar {
-            val height: Dp = size.medium
+            val height: Dp = size.small
         }
     }
 
@@ -106,12 +105,6 @@ public data object AppDp {
 
     public data object Badge {
         val size: Dp = icon.medium
-    }
-
-    public data object Tooltip {
-        val horizontalPadding: Dp = padding.medium
-        val verticalPadding: Dp = padding.medium
-        val radius: Dp = AppDp.radius.medium
     }
 
     public data object BottomSheet {
@@ -146,7 +139,7 @@ public data object AppDp {
         public data object Small {
             val height: Dp = size.small
             val horizontalPadding: Dp = padding.medium
-            val radius: Dp = AppDp.radius.small
+            val radius: Dp = AppDp.radius.tiny
             val icon: Dp = AppDp.icon.medium
             val space: Dp = padding.small
             val spaceTransparent: Dp = padding.tiny
@@ -160,7 +153,7 @@ public data object AppDp {
         public data object Item {
             val horizontalPadding: Dp = padding.large
             val verticalPadding: Dp = padding.large
-            val trailing: Dp = icon.medium
+            val icon: Dp = AppDp.icon.medium
         }
     }
 
@@ -168,7 +161,6 @@ public data object AppDp {
         val horizontalPadding: Dp = padding.large
         val verticalPadding: Dp = padding.large
         val radius: Dp = AppDp.radius.medium
-        val icon: Dp = AppDp.icon.medium
     }
 
     public data object UserCard {
@@ -180,24 +172,12 @@ public data object AppDp {
     public data object BodyDetails {
         val horizontalPadding: Dp = padding.extraSmall
         val verticalPadding: Dp = padding.extraSmall
-        val radius: Dp = AppDp.radius.small
-        val icon: Dp = AppDp.icon.medium
     }
 
     public data object OverviewCard {
         val horizontalPadding: Dp = padding.small
         val verticalPadding: Dp = padding.small
         val icon: Dp = AppDp.icon.small
-    }
-
-    public data object DatePicker {
-        val icon: Dp = AppDp.icon.medium
-        val spacer: Dp = padding.extraSmall
-    }
-
-    public data object PeriodPicker {
-        val icon: Dp = AppDp.icon.medium
-        val spacer: Dp = padding.extraSmall
     }
 
     public data object TimeLabel {
@@ -207,6 +187,10 @@ public data object AppDp {
 
     public data object Timeline {
         val dot: Dp = 10.dp
+    }
+
+    public data object DescriptionText {
+        val radius: Dp = AppDp.radius.medium
     }
 
     public data object IterationsCard {
@@ -219,7 +203,7 @@ public data object AppDp {
         public data object Editable {
             val horizontalPadding: Dp = padding.medium
             val height: Dp = size.medium
-            val radius: Dp = AppDp.radius.small
+            val radius: Dp = AppDp.radius.tiny
             val spacing: Dp = padding.medium
         }
     }
@@ -263,7 +247,6 @@ public data object AppDp {
     public data object ExerciseExampleImage {
         val large: Large = Large
         val medium: Medium = Medium
-        val tooltip: Tooltip = Tooltip
 
         public data object Medium {
             val size: Dp = icon.xLarge
@@ -273,13 +256,6 @@ public data object AppDp {
         public data object Large {
             val size: Dp = icon.xxLarge
             val radius: Dp = AppDp.radius.medium
-        }
-
-        public data object Tooltip {
-            val horizontalPadding: Dp = padding.medium
-            val verticalPadding: Dp = padding.medium
-            val radius: Dp = AppDp.radius.large
-            val size: Dp = 240.dp
         }
     }
 
@@ -366,14 +342,24 @@ public data object AppDp {
     }
 
     public data object Segment {
-        val height: Dp = size.medium
-        val horizontalPadding: Dp = padding.large
+        val outline: Outline = Outline
+        val fill: Fill = Fill
+
+        public data object Outline {
+            val height: Dp = size.medium
+            val horizontalPadding: Dp = padding.large
+        }
+
+        public data object Fill {
+            val horizontalPadding: Dp = padding.large
+            val verticalPadding: Dp = padding.small
+            val radius: Dp = AppDp.radius.small
+        }
     }
 
     public data object Tab {
-        val horizontalPadding: Dp = AppDp.padding.large
-        val verticalPadding: Dp = AppDp.padding.small
-        val padding: Dp = AppDp.padding.extraSmall
+        val horizontalPadding: Dp = padding.large
+        val verticalPadding: Dp = padding.medium
         val icon: Dp = AppDp.icon.medium
     }
 
@@ -404,7 +390,7 @@ public data object AppDp {
         public data object Medium {
             val horizontalPadding: Dp = padding.medium
             val verticalPadding: Dp = padding.small
-            val radius: Dp = AppDp.radius.medium
+            val radius: Dp = AppDp.radius.small
             val trailingSize: Dp = icon.small
             val spaceBetween: Dp = padding.small
         }
@@ -412,7 +398,7 @@ public data object AppDp {
         public data object Small {
             val horizontalPadding: Dp = padding.small
             val verticalPadding: Dp = padding.extraSmall
-            val radius: Dp = AppDp.radius.medium
+            val radius: Dp = AppDp.radius.tiny
             val trailingSize: Dp = icon.extraSmall
             val spaceBetween: Dp = padding.extraSmall
         }

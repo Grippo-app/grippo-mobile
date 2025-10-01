@@ -1,39 +1,35 @@
 package com.grippo.design.components.toolbar
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.grippo.design.components.modifiers.ShadowElevation
-import com.grippo.design.components.modifiers.models.Side
-import com.grippo.design.components.modifiers.scalableClick
-import com.grippo.design.components.modifiers.shadowDefault
+import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonColorTokens
+import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonSize
+import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.icons.NavArrowLeft
-import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 public enum class ToolbarStyle {
+    Transparent,
     Default,
-    Transparent
 }
 
 @Composable
@@ -44,58 +40,57 @@ public fun Toolbar(
     onBack: (() -> Unit)? = null,
     content: (@Composable ColumnScope.() -> Unit)? = null
 ) {
-
-    val color = when (style) {
-        ToolbarStyle.Default -> AppTokens.colors.background.dialog
-        ToolbarStyle.Transparent -> Color.Transparent
-    }
-
-    val shadowElevation = when (style) {
-        ToolbarStyle.Default -> ShadowElevation.Container
-        ToolbarStyle.Transparent -> ShadowElevation.Non
-    }
-
     Column(
         modifier = modifier
-            .shadowDefault(
-                shape = RoundedCornerShape(0.dp),
-                elevation = shadowElevation,
-                sides = persistentListOf(Side.BOTTOM)
+            .background(
+                when (style) {
+                    ToolbarStyle.Transparent -> Color.Transparent
+                    ToolbarStyle.Default -> AppTokens.colors.background.dialog
+                }
             )
-            .background(color)
             .statusBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
 
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(AppTokens.dp.screen.toolbar.height),
+                .padding(horizontal = AppTokens.dp.contentPadding.content)
+                .padding(vertical = AppTokens.dp.contentPadding.content)
+                .height(AppTokens.dp.screen.toolbar.height)
+                .fillMaxWidth(),
         ) {
             onBack?.let {
-                Icon(
-                    modifier = Modifier
-                        .scalableClick(onClick = it)
-                        .fillMaxHeight()
-                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-                    imageVector = AppTokens.icons.NavArrowLeft,
-                    contentDescription = null,
-                    tint = AppTokens.colors.icon.primary,
-
-                    )
+                Button(
+                    modifier = Modifier,
+                    content = ButtonContent.Icon(
+                        icon = AppTokens.icons.NavArrowLeft
+                    ),
+                    style = ButtonStyle.Custom(
+                        enabled = ButtonColorTokens(
+                            background = Color.Transparent,
+                            content = AppTokens.colors.text.primary,
+                            border = Color.Transparent,
+                            icon = AppTokens.colors.icon.primary,
+                        ),
+                        disabled = ButtonColorTokens(
+                            background = Color.Transparent,
+                            content = AppTokens.colors.text.disabled,
+                            border = Color.Transparent,
+                            icon = AppTokens.colors.icon.disabled
+                        ),
+                    ),
+                    size = ButtonSize.Small,
+                    onClick = it
+                )
             }
 
             title?.let {
                 Text(
-                    modifier = Modifier
-                        .padding(horizontal = AppTokens.dp.screen.toolbar.height)
-                        .align(Alignment.Center),
+                    modifier = Modifier.fillMaxWidth(1f),
                     text = it,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
                     style = AppTokens.typography.h3(),
                     color = AppTokens.colors.text.primary,
+                    textAlign = TextAlign.Center
                 )
             }
         }
@@ -108,12 +103,6 @@ public fun Toolbar(
 @Composable
 private fun ToolbarPreview() {
     PreviewContainer {
-        Toolbar(
-            title = "Primary Primary Primary Primary Primary",
-            onBack = {},
-            style = ToolbarStyle.Default
-        )
-
         Toolbar(
             title = "Secondary Secondary Secondary Secondary",
             onBack = {},

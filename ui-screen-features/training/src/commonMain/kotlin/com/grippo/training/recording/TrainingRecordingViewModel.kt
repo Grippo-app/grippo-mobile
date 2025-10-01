@@ -1,20 +1,16 @@
 package com.grippo.training.recording
 
-import com.grippo.calculation.DistributionCalculator
-import com.grippo.calculation.MetricsAggregator
-import com.grippo.calculation.MuscleLoadCalculator
-import com.grippo.calculation.VolumeAnalytics
+import com.grippo.calculation.AnalyticsApi
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.data.features.api.training.TrainingFeature
+import com.grippo.data.features.api.training.models.SetDraftTraining
 import com.grippo.data.features.api.training.models.SetTraining
+import com.grippo.data.features.api.training.models.Training
 import com.grippo.date.utils.DateTimeUtils
-import com.grippo.design.components.chart.DSBarData
-import com.grippo.design.components.chart.DSPieData
-import com.grippo.design.components.chart.DSProgressData
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
@@ -30,6 +26,7 @@ import com.grippo.state.formatters.IntensityFormatState
 import com.grippo.state.formatters.PercentageFormatState
 import com.grippo.state.formatters.RepetitionsFormatState
 import com.grippo.state.formatters.VolumeFormatState
+import com.grippo.state.stage.StageState
 import com.grippo.state.trainings.ExerciseState
 import com.grippo.state.trainings.TrainingMetrics
 import kotlinx.collections.immutable.persistentListOf
@@ -45,6 +42,7 @@ import kotlin.uuid.Uuid
 
 @OptIn(FlowPreview::class)
 internal class TrainingRecordingViewModel(
+    stage: StageState,
     muscleFeature: MuscleFeature,
     private val exerciseExampleFeature: ExerciseExampleFeature,
     private val trainingFeature: TrainingFeature,
@@ -52,13 +50,10 @@ internal class TrainingRecordingViewModel(
     private val stringProvider: StringProvider,
     colorProvider: ColorProvider,
 ) : BaseViewModel<TrainingRecordingState, TrainingRecordingDirection, TrainingRecordingLoader>(
-    TrainingRecordingState()
+    TrainingRecordingState(stage = stage)
 ), TrainingRecordingContract {
 
-    private val metricsAggregator = MetricsAggregator()
-    private val volumeAnalytics = VolumeAnalytics(colorProvider, stringProvider)
-    private val distributionCalculator = DistributionCalculator(stringProvider, colorProvider)
-    private val muscleLoadCalculator = MuscleLoadCalculator(stringProvider, colorProvider)
+    private val analytics = AnalyticsApi(stringProvider, colorProvider)
 
     init {
         muscleFeature.observeMuscles()
@@ -66,9 +61,9 @@ internal class TrainingRecordingViewModel(
             .safeLaunch()
 
         state
-            .map { it.exercises.mapNotNull { m -> m.exerciseExample?.id }.toSet().toList() }
+            .map { it.exercises.map { exercise -> exercise.exerciseExample.id }.toSet().toList() }
             .distinctUntilChanged()
-            .flatMapLatest { ids -> exerciseExampleFeature.observeExerciseExamples(ids) }
+            .flatMapLatest(exerciseExampleFeature::observeExerciseExamples)
             .onEach(::provideExerciseExamples)
             .safeLaunch()
 
@@ -80,12 +75,41 @@ internal class TrainingRecordingViewModel(
             .safeLaunch()
 
         safeLaunch {
-            val training = trainingFeature.getDraftTraining().firstOrNull()
-            provideDraftTraining(training)
+            when (val stage = state.value.stage) {
+                StageState.Add -> {
+                    trainingFeature.deleteDraftTraining().getOrThrow()
+                }
+
+                is StageState.Edit -> {
+                    trainingFeature.deleteDraftTraining().getOrThrow()
+                    val training = trainingFeature.observeTraining(stage.id).firstOrNull()
+                    provideTraining(training)
+                }
+
+                StageState.Draft -> {
+                    val training = trainingFeature.getDraftTraining().firstOrNull()
+                    provideDraftTraining(training)
+                }
+            }
         }
     }
 
-    private fun provideDraftTraining(value: SetTraining?) {
+    private fun provideDraftTraining(value: SetDraftTraining?) {
+        val exercises = value?.training?.exercises?.toState() ?: return
+        val startAt = DateTimeUtils.minus(DateTimeUtils.now(), value.training.duration)
+        update {
+            it.copy(
+                stage = when (val trainingId = value.trainingId) {
+                    null -> StageState.Add
+                    else -> StageState.Edit(trainingId)
+                },
+                exercises = exercises.toPersistentList(),
+                startAt = startAt
+            )
+        }
+    }
+
+    private fun provideTraining(value: Training?) {
         val exercises = value?.exercises?.toState() ?: return
         val startAt = DateTimeUtils.minus(DateTimeUtils.now(), value.duration)
         update { it.copy(exercises = exercises.toPersistentList(), startAt = startAt) }
@@ -193,6 +217,7 @@ internal class TrainingRecordingViewModel(
 
     override fun onSave() {
         val direction = TrainingRecordingDirection.ToCompleted(
+            stage = state.value.stage,
             exercises = state.value.exercises,
             startAt = state.value.startAt
         )
@@ -228,8 +253,7 @@ internal class TrainingRecordingViewModel(
         safeLaunch {
             val exercises = state.value.exercises
             val duration = DateTimeUtils.ago(state.value.startAt)
-
-            val totals = metricsAggregator.calculateExercises(exercises)
+            val totals = analytics.metricsFromExercises(exercises)
 
             val training = SetTraining(
                 exercises = exercises.toDomain(),
@@ -239,7 +263,14 @@ internal class TrainingRecordingViewModel(
                 repetitions = totals.repetitions.value ?: 0
             )
 
-            trainingFeature.setDraftTraining(training).getOrThrow()
+            val trainingId = state.value.stage.id
+
+            val draft = SetDraftTraining(
+                trainingId = trainingId,
+                training = training
+            )
+
+            trainingFeature.setDraftTraining(draft).getOrThrow()
         }
     }
 
@@ -251,44 +282,38 @@ internal class TrainingRecordingViewModel(
         if (exercises.isEmpty()) {
             update {
                 it.copy(
-                    totalVolume = VolumeFormatState.of(0f),
-                    totalRepetitions = RepetitionsFormatState.of(0),
-                    averageIntensity = IntensityFormatState.of(0f),
-                    exerciseVolumeData = DSBarData(items = emptyList()) to null,
-                    categoryDistributionData = DSPieData(slices = emptyList()),
-                    forceTypeDistributionData = DSPieData(slices = emptyList()),
-                    experienceDistributionData = DSPieData(slices = emptyList()),
-                    weightTypeDistributionData = DSPieData(slices = emptyList()),
-                    muscleLoadData = DSProgressData(items = emptyList()) to null,
+                    totalMetrics = null,
+                    exerciseVolume = null,
+                    categoryDistribution = null,
+                    forceTypeDistribution = null,
+                    weightTypeDistribution = null,
+                    muscleLoad = null,
                 )
             }
             return
         }
 
-        val totalMetrics = metricsAggregator.calculateExercises(
+        val totalMetrics = analytics.metricsFromExercises(
             exercises = exercises
         )
-        val categoryDistributionData =
-            distributionCalculator.calculateCategoryDistributionFromExercises(
-                exercises = exercises
-            )
-        val weightTypeDistributionData =
-            distributionCalculator.calculateWeightTypeDistributionFromExercises(
-                exercises = exercises
-            )
-        val forceTypeDistributionData =
-            distributionCalculator.calculateForceTypeDistributionFromExercises(
-                exercises = exercises
-            )
-        val experienceDistributionData =
-            distributionCalculator.calculateExperienceDistributionFromExercises(
-                exercises = exercises
-            )
-        val exerciseVolumeData =
-            volumeAnalytics.calculateExerciseVolumeChartFromExercises(
-                exercises = exercises
-            )
-        val muscleLoadData = muscleLoadCalculator.calculateMuscleLoadDistributionFromExercises(
+
+        val categoryDistribution = analytics.categoryDistributionFromExercises(
+            exercises = exercises
+        )
+
+        val weightTypeDistribution = analytics.weightTypeDistributionFromExercises(
+            exercises = exercises
+        )
+
+        val forceTypeDistribution = analytics.forceTypeDistributionFromExercises(
+            exercises = exercises
+        )
+
+        val exerciseVolume = analytics.volumeFromExercises(
+            exercises = exercises
+        )
+
+        val muscleLoad = analytics.muscleLoadFromExercises(
             exercises = exercises,
             examples = examples,
             groups = muscles,
@@ -296,15 +321,12 @@ internal class TrainingRecordingViewModel(
 
         update {
             it.copy(
-                totalVolume = totalMetrics.volume,
-                totalRepetitions = totalMetrics.repetitions,
-                averageIntensity = totalMetrics.intensity,
-                exerciseVolumeData = exerciseVolumeData,
-                categoryDistributionData = categoryDistributionData,
-                weightTypeDistributionData = weightTypeDistributionData,
-                forceTypeDistributionData = forceTypeDistributionData,
-                experienceDistributionData = experienceDistributionData,
-                muscleLoadData = muscleLoadData,
+                totalMetrics = totalMetrics,
+                exerciseVolume = exerciseVolume,
+                categoryDistribution = categoryDistribution,
+                weightTypeDistribution = weightTypeDistribution,
+                forceTypeDistribution = forceTypeDistribution,
+                muscleLoad = muscleLoad,
             )
         }
     }

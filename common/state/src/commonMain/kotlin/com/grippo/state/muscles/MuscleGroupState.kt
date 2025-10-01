@@ -1,18 +1,9 @@
 package com.grippo.state.muscles
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.graphics.vector.ImageVector
-import com.grippo.design.resources.provider.muscles.bodyBack
-import com.grippo.design.resources.provider.muscles.bodyFront
-import com.grippo.design.resources.provider.muscles.bodySplit
-import com.grippo.design.resources.provider.muscles.legsSplit
-import com.grippo.state.muscles.factory.MuscleColorStrategy
-import com.grippo.state.muscles.factory.MuscleEngine
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.collections.immutable.toPersistentList
 
 @Immutable
@@ -21,26 +12,6 @@ public data class MuscleGroupState<T : MuscleRepresentationState>(
     val muscles: ImmutableList<T>,
     val type: MuscleGroupEnumState,
 ) {
-    @Composable
-    public fun image(
-        selectedIds: ImmutableList<String>
-    ): ImageVector {
-        val preset = MuscleEngine.generatePreset(
-            MuscleColorStrategy.BySelection(
-                group = this,
-                selectedIds = selectedIds.toImmutableSet()
-            )
-        )
-
-        return when (type) {
-            MuscleGroupEnumState.CHEST_MUSCLES -> bodyFront(preset)
-            MuscleGroupEnumState.BACK_MUSCLES -> bodyBack(preset)
-            MuscleGroupEnumState.ABDOMINAL_MUSCLES -> bodyFront(preset)
-            MuscleGroupEnumState.LEGS -> legsSplit(preset)
-            MuscleGroupEnumState.ARMS_AND_FOREARMS -> bodySplit(preset)
-            MuscleGroupEnumState.SHOULDER_MUSCLES -> bodySplit(preset)
-        }
-    }
 }
 
 public fun stubMuscles(): PersistentList<MuscleGroupState<MuscleRepresentationState.Plain>> {

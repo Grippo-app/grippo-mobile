@@ -1,8 +1,9 @@
 package com.grippo.calculation.models
 
+import androidx.compose.runtime.Immutable
 import kotlinx.datetime.LocalDateTime
 
-// Keep your enum & data class
+@Immutable
 internal enum class BucketScale {
     EXERCISE,
     DAY,
@@ -10,4 +11,8 @@ internal enum class BucketScale {
     MONTH
 }
 
-internal data class Bucket(val start: LocalDateTime, val end: LocalDateTime)
+@Immutable
+internal data class Bucket(
+    val start: LocalDateTime,
+    val end: LocalDateTime
+)

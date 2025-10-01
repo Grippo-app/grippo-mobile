@@ -12,11 +12,15 @@ import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
+import com.grippo.home.trainings.HomeTrainingsDirection.Back
+import com.grippo.home.trainings.HomeTrainingsDirection.EditTraining
 import com.grippo.state.formatters.DateFormatState
+import com.grippo.state.menu.MenuItemState
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.datetime.DatePeriod
 
 internal class HomeTrainingsViewModel(
     private val trainingFeature: TrainingFeature,
@@ -46,6 +50,40 @@ internal class HomeTrainingsViewModel(
         update { it.copy(trainings = trainings) }
     }
 
+    override fun onTrainingMenuClick(id: String) {
+        safeLaunch {
+            val list = TrainingMenu.entries.map {
+                MenuItemState(
+                    id = it.id,
+                    text = it.text(stringProvider)
+                )
+            }
+
+            val dialog = DialogConfig.MenuPicker(
+                items = list,
+                onResult = {
+                    safeLaunch {
+                        when (TrainingMenu.of(it)) {
+                            TrainingMenu.Delete -> trainingFeature.deleteTraining(id).getOrThrow()
+                            TrainingMenu.Edit -> navigateTo(EditTraining(id))
+                            null -> {}
+                        }
+                    }
+                }
+            )
+
+            dialogController.show(dialog)
+        }
+    }
+
+    override fun onNextClick() {
+        update { it.copy(date = DateTimeUtils.shift(it.date, DatePeriod(days = +1))) }
+    }
+
+    override fun onPreviousClick() {
+        update { it.copy(date = DateTimeUtils.shift(it.date, DatePeriod(days = -1))) }
+    }
+
     override fun onExerciseClick(id: String) {
         val dialog = DialogConfig.Exercise(
             id = id,
@@ -56,13 +94,12 @@ internal class HomeTrainingsViewModel(
 
     override fun onSelectDate() {
         safeLaunch {
-            val limits = DateTimeUtils.trailingYear()
-            val value = DateFormatState.of(state.value.date.from, limits)
+            val value = DateFormatState.of(state.value.date.from, state.value.limitations)
 
             val dialog = DialogConfig.DatePicker(
                 title = stringProvider.get(Res.string.date_picker_title),
                 initial = value,
-                limitations = limits,
+                limitations = state.value.limitations,
                 onResult = { value ->
                     val date = value.value ?: return@DatePicker
                     val from = DateTimeUtils.startOfDay(date)
@@ -76,6 +113,6 @@ internal class HomeTrainingsViewModel(
     }
 
     override fun onBack() {
-        navigateTo(HomeTrainingsDirection.Back)
+        navigateTo(Back)
     }
 }

@@ -19,20 +19,22 @@ import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.segment.Segment
+import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.add_exercise_btn
+import com.grippo.design.resources.provider.add_training_title
+import com.grippo.design.resources.provider.edit_training_title
 import com.grippo.design.resources.provider.exercises
-import com.grippo.design.resources.provider.icons.NavArrowRight
 import com.grippo.design.resources.provider.save_btn
 import com.grippo.design.resources.provider.statistics
-import com.grippo.design.resources.provider.training
 import com.grippo.state.exercise.examples.stubExerciseExample
 import com.grippo.state.formatters.UiText
 import com.grippo.state.muscles.stubMuscles
+import com.grippo.state.stage.StageState
 import com.grippo.state.trainings.stubTraining
 import com.grippo.training.recording.pages.ExercisesPage
 import com.grippo.training.recording.pages.StatisticsPage
@@ -59,12 +61,20 @@ internal fun TrainingRecordingScreen(
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
-        title = AppTokens.strings.res(Res.string.training),
+        title = when (state.stage) {
+            StageState.Add -> AppTokens.strings.res(Res.string.add_training_title)
+            StageState.Draft -> AppTokens.strings.res(Res.string.add_training_title)
+            is StageState.Edit -> AppTokens.strings.res(Res.string.edit_training_title)
+        },
         onBack = contract::onBack,
         content = {
             Row(
                 modifier = Modifier
-                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                    .padding(
+                        start = AppTokens.dp.screen.horizontalPadding,
+                        end = AppTokens.dp.screen.horizontalPadding,
+                        bottom = AppTokens.dp.contentPadding.content,
+                    )
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
@@ -72,7 +82,8 @@ internal fun TrainingRecordingScreen(
                 Segment(
                     items = segmentItems,
                     selected = state.tab,
-                    onSelect = contract::onSelectTab
+                    onSelect = contract::onSelectTab,
+                    style = SegmentStyle.Fill
                 )
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -85,10 +96,7 @@ internal fun TrainingRecordingScreen(
                 }
 
                 Button(
-                    content = ButtonContent.Text(
-                        text = AppTokens.strings.res(Res.string.save_btn),
-                        endIcon = AppTokens.icons.NavArrowRight,
-                    ),
+                    content = ButtonContent.Text(text = AppTokens.strings.res(Res.string.save_btn)),
                     size = ButtonSize.Small,
                     style = ButtonStyle.Transparent,
                     state = buttonState,
@@ -140,6 +148,7 @@ private fun ScreenPreview1() {
     PreviewContainer {
         TrainingRecordingScreen(
             state = TrainingRecordingState(
+                stage = StageState.Add,
                 exercises = stubTraining().exercises,
                 tab = RecordingTab.Exercises
             ),
@@ -155,6 +164,7 @@ private fun ScreenPreview2() {
     PreviewContainer {
         TrainingRecordingScreen(
             state = TrainingRecordingState(
+                stage = StageState.Add,
                 exercises = stubTraining().exercises,
                 examples = persistentListOf(stubExerciseExample()),
                 muscles = stubMuscles(),

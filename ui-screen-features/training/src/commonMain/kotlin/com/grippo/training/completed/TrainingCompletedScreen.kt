@@ -38,7 +38,6 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.konfetti.KonfettiParade
 import com.grippo.design.components.loading.Loader
-import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.components.training.ExerciseCard
@@ -128,14 +127,13 @@ internal fun TrainingCompletedScreen(
                         .offset(y = offsetY)
                         .alpha(alpha),
                     contentPadding = PaddingValues(
-                        horizontal = AppTokens.dp.screen.horizontalPadding,
                         vertical = AppTokens.dp.contentPadding.content
                     ),
                     verticalArrangement = Arrangement.Center
                 ) {
                     items(
                         items = state.training,
-                        key = { it.id },
+                        key = { it.key },
                         contentType = { it::class }
                     ) { value ->
                         val radius = AppTokens.dp.menu.radius
@@ -149,11 +147,10 @@ internal fun TrainingCompletedScreen(
 
                             ExerciseCard(
                                 modifier = Modifier
-                                    .scalableClick(onClick = clickProvider)
                                     .background(AppTokens.colors.background.card, shape)
                                     .fillMaxWidth(),
                                 value = exercise,
-                                style = ExerciseCardStyle.Small
+                                style = ExerciseCardStyle.Small(clickProvider)
                             )
                         }
 

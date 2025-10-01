@@ -10,11 +10,11 @@ import com.grippo.design.components.wheel.WheelItem
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.weight.picker.DefaultWeightSuggestions
 import com.grippo.wheel.picker.DefaultSelectorProperties
 import com.grippo.wheel.picker.MultiWheelPicker
 import com.grippo.wheel.picker.WheelColumn
 import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun WeightWheelPicker(
@@ -57,11 +57,7 @@ internal fun WeightWheelPicker(
 private fun WeightWheelPickerPreview() {
     PreviewContainer {
         WeightWheelPicker(
-            suggestions = buildList(capacity = 1201) {
-                for (i in 301..1500) {
-                    add(i / 10f)
-                }
-            }.toPersistentList(),
+            suggestions = DefaultWeightSuggestions,
             value = 403f,
             select = {},
         )

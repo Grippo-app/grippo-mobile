@@ -115,6 +115,11 @@ public object DateTimeUtils {
         return DateFormatting.current.format(value, format.value, null) ?: "-"
     }
 
+    @OptIn(FormatStringsInDatetimeFormats::class)
+    public fun format(value: LocalDate, format: DateFormat): String {
+        return DateFormatting.current.format(value, format.value, null) ?: "-"
+    }
+
     public fun ago(value: LocalDateTime): Duration {
         val now = Clock.System.now()
         val fromInstant = value.toInstant(timeZone)
@@ -129,6 +134,15 @@ public object DateTimeUtils {
     public fun plus(value: LocalDateTime, plus: Duration): LocalDateTime {
         val instant = value.toInstant(timeZone) + plus
         return instant.toLocalDateTime(timeZone)
+    }
+
+    public fun shift(range: DateRange, period: DatePeriod): DateRange {
+        val newFromDate = range.from.date.plus(period)
+        val newToDate = range.to.date.plus(period)
+        return DateRange(
+            from = newFromDate.atTime(range.from.time),
+            to = newToDate.atTime(range.to.time)
+        )
     }
 
     /* * * * * * * * * * *

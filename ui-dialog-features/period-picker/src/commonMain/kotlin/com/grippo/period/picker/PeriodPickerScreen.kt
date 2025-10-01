@@ -59,7 +59,7 @@ internal fun PeriodPickerScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
@@ -77,10 +77,10 @@ internal fun PeriodPickerScreen(
                     isSelected = isSelected,
                     onSelect = clickProvider,
                     style = CheckSelectableCardStyle.Large(
-                        title = item.text(),
+                        title = item.title(),
                         description = item.range(DateFormat.DATE_MMM_DD_YYYY),
                         icon = item.icon(),
-                        subContent = if (item is PeriodState.CUSTOM) {
+                        subContent = if (item is PeriodState.Custom) {
                             {
                                 DateRangeSelector(
                                     modifier = Modifier.fillMaxWidth(),
@@ -99,7 +99,7 @@ internal fun PeriodPickerScreen(
         }
 
         val hasCustomPicker = remember(state.list) {
-            state.list.any { it is PeriodState.CUSTOM }
+            state.list.any { it is PeriodState.Custom }
         }
 
         if (hasCustomPicker) {
@@ -131,7 +131,7 @@ private fun ScreenPreview() {
                     PeriodState.ThisDay,
                     PeriodState.ThisWeek,
                     PeriodState.ThisMonth,
-                    PeriodState.CUSTOM(
+                    PeriodState.Custom(
                         range = DateTimeUtils.thisWeek(),
                         limitations = DateTimeUtils.trailingYear()
                     ),

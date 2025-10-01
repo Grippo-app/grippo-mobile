@@ -22,6 +22,7 @@ import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.equipment.EquipmentRow
 import com.grippo.design.components.segment.Segment
+import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.segment.SegmentWidth
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
@@ -60,6 +61,7 @@ internal fun ProfileEquipmentsScreen(
                 selected = state.selectedGroupId,
                 onSelect = contract::onSelectGroup,
                 segmentWidth = SegmentWidth.Unspecified,
+                style = SegmentStyle.Outline
             )
         }
     )
@@ -73,9 +75,8 @@ internal fun ProfileEquipmentsScreen(
             .fillMaxWidth()
             .weight(1f),
         contentPadding = PaddingValues(
-            top = AppTokens.dp.contentPadding.content,
-            start = AppTokens.dp.screen.horizontalPadding,
-            end = AppTokens.dp.screen.horizontalPadding,
+            horizontal = AppTokens.dp.screen.horizontalPadding,
+            vertical = AppTokens.dp.contentPadding.content,
         ),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
     ) {

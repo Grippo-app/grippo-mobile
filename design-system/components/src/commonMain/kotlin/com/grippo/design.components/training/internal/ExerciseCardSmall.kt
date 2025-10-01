@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.training.IterationCard
 import com.grippo.design.components.training.IterationCardStyle
 import com.grippo.design.core.AppTokens
@@ -27,9 +28,11 @@ import com.grippo.state.trainings.stubExercise
 internal fun ExerciseCardSmall(
     modifier: Modifier = Modifier,
     value: ExerciseState,
+    onClick: () -> Unit
 ) {
     Column(
         modifier = modifier
+            .scalableClick(onClick = onClick)
             .background(
                 color = AppTokens.colors.background.card,
                 shape = RoundedCornerShape(AppTokens.dp.exerciseCard.small.radius)
@@ -51,7 +54,7 @@ internal fun ExerciseCardSmall(
 
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
             ) {
                 Text(
                     text = value.name,
@@ -86,6 +89,7 @@ private fun ExerciseCardSmallPreview() {
     PreviewContainer {
         ExerciseCardSmall(
             value = stubExercise(),
+            onClick = {}
         )
     }
 }

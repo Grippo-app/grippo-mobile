@@ -10,16 +10,16 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.date.utils.DateFormat
-import com.grippo.design.components.chart.BarChart
-import com.grippo.design.components.chart.HeatmapChart
-import com.grippo.design.components.chart.PieChart
-import com.grippo.design.components.chart.ProgressChart
+import com.grippo.design.components.chart.ChartCard
+import com.grippo.design.components.chart.DistributionPieChart
+import com.grippo.design.components.chart.MetricBarChart
+import com.grippo.design.components.chart.MuscleHeatmapChart
+import com.grippo.design.components.chart.MuscleLoadChart
 import com.grippo.design.components.chip.ChipSize
 import com.grippo.design.components.chip.IntensityChip
 import com.grippo.design.components.chip.IntensityChipStyle
@@ -29,9 +29,7 @@ import com.grippo.design.components.chip.VolumeChip
 import com.grippo.design.components.chip.VolumeChipStyle
 import com.grippo.design.components.datetime.PeriodPicker
 import com.grippo.design.components.loading.Loader
-import com.grippo.design.components.statistics.ChartCard
 import com.grippo.design.components.toolbar.Toolbar
-import com.grippo.design.components.tooltip.TooltipData
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -66,7 +64,7 @@ internal fun HomeStatisticsScreen(
             ) {
                 PeriodPicker(
                     value = state.period,
-                    format = DateFormat.DATE_DD_MMM,
+                    format = DateFormat.DATE_DD_DOT_MM,
                     onClick = contract::onSelectPeriod
                 )
             }
@@ -83,137 +81,141 @@ internal fun HomeStatisticsScreen(
             .fillMaxWidth()
             .weight(1f),
         columns = GridCells.Fixed(3),
-        contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
+        contentPadding = PaddingValues(
+            vertical = AppTokens.dp.contentPadding.content,
+            horizontal = AppTokens.dp.screen.horizontalPadding
+        ),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
 
-        item(key = "summary_chips_volume", span = { GridItemSpan(1) }) {
-            VolumeChip(
-                modifier = Modifier.weight(1f),
-                value = state.totalVolume,
-                style = VolumeChipStyle.SHORT,
-                size = ChipSize.Medium
-            )
-        }
-        item(key = "summary_chips_repeat", span = { GridItemSpan(1) }) {
-            RepetitionsChip(
-                modifier = Modifier.weight(1f),
-                value = state.totalRepetitions,
-                style = RepetitionsChipStyle.SHORT,
-                size = ChipSize.Medium
-            )
-        }
-        item(key = "summary_chips_intensity", span = { GridItemSpan(1) }) {
-            IntensityChip(
-                modifier = Modifier.weight(1f),
-                value = state.averageIntensity,
-                style = IntensityChipStyle.SHORT,
-                size = ChipSize.Medium
-            )
-        }
-
-        if (state.exerciseVolumeData.first.items.isNotEmpty()) {
-            item(key = "exercise_volume", span = { GridItemSpan(3) }) {
-                val toolTip = remember(state.exerciseVolumeData.second) {
-                    state.exerciseVolumeData.second?.let { instruction ->
-                        TooltipData(
-                            title = instruction.title,
-                            description = instruction.description
-                        )
-                    }
+        state
+            .totalMetrics
+            ?.volume
+            ?.takeIf { it.value != null }
+            ?.let { data ->
+                item(key = "summary_chips_volume", span = { GridItemSpan(1) }) {
+                    VolumeChip(
+                        value = data,
+                        style = VolumeChipStyle.SHORT,
+                        size = ChipSize.Medium
+                    )
                 }
-
-                ChartCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1.4f),
-                    title = AppTokens.strings.res(Res.string.chart_title_exercise_volume),
-                    tooltip = toolTip,
-                    content = {
-                        BarChart(
-                            modifier = Modifier.fillMaxWidth().weight(1f),
-                            data = state.exerciseVolumeData.first,
-                        )
-                    }
-                )
             }
-        }
 
-        if (state.categoryDistributionData.slices.isNotEmpty()) {
-            item(key = "category_distribution", span = { GridItemSpan(1) }) {
-                PieChart(
-                    modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-                    data = state.categoryDistributionData
-                )
-            }
-        }
-
-        if (state.weightTypeDistributionData.slices.isNotEmpty()) {
-            item(key = "weight_type_distribution", span = { GridItemSpan(1) }) {
-                PieChart(
-                    modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-                    data = state.weightTypeDistributionData
-                )
-            }
-        }
-
-        if (state.forceTypeDistributionData.slices.isNotEmpty()) {
-            item(key = "force_type_distribution", span = { GridItemSpan(1) }) {
-                PieChart(
-                    modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-                    data = state.forceTypeDistributionData
-                )
-            }
-        }
-
-        if (state.muscleLoadData.first.items.isNotEmpty()) {
-            item(key = "muscle_load", span = { GridItemSpan(3) }) {
-                val toolTip = remember(state.muscleLoadData.second) {
-                    state.muscleLoadData.second?.let { instruction ->
-                        TooltipData(
-                            title = instruction.title,
-                            description = instruction.description
-                        )
-                    }
+        state
+            .totalMetrics
+            ?.repetitions
+            ?.takeIf { it.value != null }
+            ?.let { data ->
+                item(key = "summary_chips_repeat", span = { GridItemSpan(1) }) {
+                    RepetitionsChip(
+                        value = data,
+                        style = RepetitionsChipStyle.SHORT,
+                        size = ChipSize.Medium
+                    )
                 }
-                ChartCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    title = AppTokens.strings.res(Res.string.chart_title_muscle_load),
-                    tooltip = toolTip,
-                    content = {
-                        ProgressChart(
-                            modifier = Modifier.fillMaxWidth(),
-                            data = state.muscleLoadData.first
-                        )
-                    }
-                )
             }
-        }
 
-        if (state.temporalHeatmapData.first.values01.isNotEmpty()) {
-            item(key = "temporal_heatmap", span = { GridItemSpan(3) }) {
-                val toolTip = remember(state.temporalHeatmapData.second) {
-                    state.temporalHeatmapData.second?.let { instruction ->
-                        TooltipData(
-                            title = instruction.title,
-                            description = instruction.description
-                        )
-                    }
+        state
+            .totalMetrics
+            ?.intensity
+            ?.takeIf { it.value != null }
+            ?.let { data ->
+                item(key = "summary_chips_intensity", span = { GridItemSpan(1) }) {
+                    IntensityChip(
+                        value = data,
+                        style = IntensityChipStyle.SHORT,
+                        size = ChipSize.Medium
+                    )
                 }
-                ChartCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    title = AppTokens.strings.res(Res.string.chart_title_muscle_heap),
-                    tooltip = toolTip,
-                    content = {
-                        HeatmapChart(
-                            modifier = Modifier.fillMaxWidth(),
-                            data = state.temporalHeatmapData.first,
-                        )
-                    }
-                )
             }
-        }
+
+        state.exerciseVolume
+            ?.takeIf { it.points.isNotEmpty() }
+            ?.let { data ->
+                item(key = "exercise_volume", span = { GridItemSpan(3) }) {
+                    ChartCard(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1.4f),
+                        title = AppTokens.strings.res(Res.string.chart_title_exercise_volume),
+                        content = {
+                            MetricBarChart(
+                                modifier = Modifier.fillMaxWidth().weight(1f),
+                                value = data,
+                            )
+                        }
+                    )
+                }
+            }
+
+        state.categoryDistribution
+            ?.takeIf { it.slices.isNotEmpty() }
+            ?.let { data ->
+                item(key = "category_distribution", span = { GridItemSpan(1) }) {
+                    DistributionPieChart(
+                        modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+                        value = data
+                    )
+                }
+            }
+
+        state.weightTypeDistribution
+            ?.takeIf { it.slices.isNotEmpty() }
+            ?.let { data ->
+                item(key = "weight_type_distribution", span = { GridItemSpan(1) }) {
+                    DistributionPieChart(
+                        modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+                        value = data
+                    )
+                }
+            }
+
+        state.forceTypeDistribution
+            ?.takeIf { it.slices.isNotEmpty() }
+            ?.let { data ->
+                item(key = "force_type_distribution", span = { GridItemSpan(1) }) {
+                    DistributionPieChart(
+                        modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+                        value = data
+                    )
+                }
+            }
+
+        state.muscleLoad
+            ?.takeIf { it.perGroup.entries.isNotEmpty() }
+            ?.let { summary ->
+                item(key = "muscle_load", span = { GridItemSpan(3) }) {
+                    ChartCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        title = AppTokens.strings.res(Res.string.chart_title_muscle_load),
+                        content = {
+                            MuscleLoadChart(
+                                modifier = Modifier.fillMaxWidth(),
+                                value = summary,
+                            )
+                        }
+                    )
+                }
+            }
+
+        state.temporalHeatmap
+            ?.takeIf { it.values01.isNotEmpty() }
+            ?.let { data ->
+                item(key = "temporal_heatmap", span = { GridItemSpan(3) }) {
+                    ChartCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        title = AppTokens.strings.res(Res.string.chart_title_muscle_heap),
+                        content = {
+                            MuscleHeatmapChart(
+                                modifier = Modifier.fillMaxWidth(),
+                                value = data,
+                            )
+                        }
+                    )
+                }
+            }
     }
 }
 

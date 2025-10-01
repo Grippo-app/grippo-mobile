@@ -64,7 +64,7 @@ internal fun HomeProfileScreen(
             .verticalScroll(rememberScrollState())
             .padding(
                 horizontal = AppTokens.dp.screen.horizontalPadding,
-                vertical = AppTokens.dp.screen.verticalPadding
+                vertical = AppTokens.dp.contentPadding.content
             ).imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -85,7 +85,7 @@ internal fun HomeProfileScreen(
                 startIcon = AppTokens.icons.Rocket,
                 text = AppTokens.strings.res(Res.string.start_workout),
             ),
-            onClick = contract::onStartWorkoutClick
+            onClick = contract::onStartTrainingClick
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))

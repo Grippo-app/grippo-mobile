@@ -5,12 +5,12 @@ import com.grippo.data.features.excluded.equipments.domain.ExcludedEquipmentsRep
 import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.dao.UserDao
 import com.grippo.database.domain.equipment.toDomain
-import com.grippo.database.entity.UserExcludedEquipmentEntity
 import com.grippo.network.Api
-import com.grippo.network.database.equipment.toEntities
 import com.grippo.network.user.IdsBody
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
 
@@ -22,20 +22,24 @@ internal class ExcludedEquipmentsRepositoryImpl(
 ) : ExcludedEquipmentsRepository {
 
     override fun observeExcludedEquipments(): Flow<List<Equipment>> {
-        return userDao.getExcludedEquipments()
-            .map { it.toDomain() }
+        return userActiveDao.get()
+            .flatMapLatest { userId ->
+                if (userId.isNullOrEmpty()) flowOf(emptyList())
+                else userDao.getExcludedEquipments(userId).map { it.toDomain() }
+            }
     }
 
     override suspend fun getExcludedEquipments(): Result<Unit> {
         val response = api.getExcludedEquipments()
 
         response.onSuccess {
-            val userId = userActiveDao.get().firstOrNull() ?: return@onSuccess
-            val entities = it
-                .mapNotNull { m -> m.id }
-                .map { id -> UserExcludedEquipmentEntity(userId, id) }
+            val userId = userActiveDao.get()
+                .firstOrNull()
+                ?: return@onSuccess
 
-            userDao.insertOrReplaceExcludedEquipments(entities)
+            val ids = it.mapNotNull { m -> m.id }
+
+            userDao.insertOrReplaceExcludedEquipments(userId, ids)
         }
 
         return response.map { }
@@ -45,14 +49,16 @@ internal class ExcludedEquipmentsRepositoryImpl(
         val response = api.postExcludedEquipments(IdsBody(ids))
 
         response.onSuccess {
-            val userId = userActiveDao.get().firstOrNull() ?: return@onSuccess
-            val entities = api.getExcludedEquipments()
-                .getOrNull()
-                ?.toEntities()
-                ?.map { UserExcludedEquipmentEntity(userId = userId, equipmentId = it.id) }
+            val userId = userActiveDao.get()
+                .firstOrNull()
                 ?: return@onSuccess
 
-            userDao.insertOrReplaceExcludedEquipments(entities)
+            val ids = api.getExcludedEquipments()
+                .getOrNull()
+                ?.mapNotNull { it.id }
+                ?: return@onSuccess
+
+            userDao.insertOrReplaceExcludedEquipments(userId, ids)
         }
 
         return response.map { }

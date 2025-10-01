@@ -7,8 +7,6 @@ public data class HeatmapData(
     val matrix: Matrix01,
     val rowLabels: List<String> = emptyList(),
     val colLabels: List<String> = emptyList(),
-    val rowDim: String? = null,
-    val colDim: String? = null,
 ) {
     init {
         require(rowLabels.isEmpty() || rowLabels.size == matrix.rows) {
@@ -24,8 +22,6 @@ public data class HeatmapData(
             values01: List<List<Float>>,
             rowLabels: List<String> = emptyList(),
             colLabels: List<String> = emptyList(),
-            rowDim: String? = null,
-            colDim: String? = null,
         ): HeatmapData {
             val m = Matrix01.fromRows(values01)
             require(rowLabels.isEmpty() || rowLabels.size == m.rows) {
@@ -38,8 +34,6 @@ public data class HeatmapData(
                 matrix = m,
                 rowLabels = rowLabels,
                 colLabels = colLabels,
-                rowDim = rowDim,
-                colDim = colDim,
             )
         }
     }

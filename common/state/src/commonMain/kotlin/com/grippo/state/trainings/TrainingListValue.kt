@@ -4,9 +4,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.grippo.state.formatters.RepetitionsFormatState
-import com.grippo.state.formatters.VolumeFormatState
 import kotlinx.datetime.LocalDateTime
+import kotlin.time.Duration
 
 @Immutable
 public enum class TrainingPosition {
@@ -18,7 +17,7 @@ public enum class TrainingPosition {
 
 @Immutable
 public sealed class TrainingListValue(
-    public open val id: String,
+    public open val key: String,
     public open val position: TrainingPosition,
 ) {
 
@@ -26,48 +25,48 @@ public sealed class TrainingListValue(
     public data class FirstExercise(
         val exerciseState: ExerciseState,
         override val position: TrainingPosition,
-        override val id: String,
+        override val key: String,
         val indexInTraining: Int
-    ) : TrainingListValue(id, position)
+    ) : TrainingListValue(key, position)
 
     @Immutable
     public data class MiddleExercise(
         val exerciseState: ExerciseState,
         override val position: TrainingPosition,
-        override val id: String,
+        override val key: String,
         val indexInTraining: Int
-    ) : TrainingListValue(id, position)
+    ) : TrainingListValue(key, position)
 
     @Immutable
     public data class LastExercise(
         val exerciseState: ExerciseState,
         override val position: TrainingPosition,
-        override val id: String,
+        override val key: String,
         val indexInTraining: Int
-    ) : TrainingListValue(id, position)
+    ) : TrainingListValue(key, position)
 
     @Immutable
     public data class SingleExercise(
         val exerciseState: ExerciseState,
         override val position: TrainingPosition,
-        override val id: String,
+        override val key: String,
         val indexInTraining: Int
-    ) : TrainingListValue(id, position)
+    ) : TrainingListValue(key, position)
 
     @Immutable
     public data class DateTime(
-        val date: LocalDateTime,
-        val volume: VolumeFormatState,
-        val repetitions: RepetitionsFormatState,
+        val createAt: LocalDateTime,
+        val duration: Duration,
+        val trainingId: String,
         override val position: TrainingPosition,
-        override val id: String,
-    ) : TrainingListValue(id, position)
+        override val key: String,
+    ) : TrainingListValue(key, position)
 
     @Immutable
     public data class BetweenExercises(
         override val position: TrainingPosition,
-        override val id: String
-    ) : TrainingListValue(id, position)
+        override val key: String
+    ) : TrainingListValue(key, position)
 
     public companion object {
         public fun TrainingListValue.shape(radius: Dp): RoundedCornerShape = when (this) {

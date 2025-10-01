@@ -13,7 +13,7 @@ public fun ExerciseState.toDomain(): SetExercise? {
     return SetExercise(
         name = name,
         iterations = iterations.toDomain(),
-        exerciseExample = exerciseExample?.toDomain() ?: return null,
+        exerciseExample = exerciseExample.toDomain() ?: return null,
         repetitions = metrics.repetitions.value ?: return null,
         volume = metrics.volume.value ?: return null,
         intensity = metrics.intensity.value ?: return null

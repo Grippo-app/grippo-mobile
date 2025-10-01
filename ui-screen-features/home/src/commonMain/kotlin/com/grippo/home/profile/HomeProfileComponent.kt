@@ -13,7 +13,7 @@ internal class HomeProfileComponent(
     private val toMissingEquipment: () -> Unit,
     private val toWeightHistory: () -> Unit,
     private val toDebug: () -> Unit,
-    private val toWorkout: () -> Unit,
+    private val toAddTraining: () -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<HomeProfileDirection>(componentContext) {
 
@@ -37,7 +37,7 @@ internal class HomeProfileComponent(
             HomeProfileDirection.WeightHistory -> toWeightHistory.invoke()
             HomeProfileDirection.Back -> back.invoke()
             HomeProfileDirection.Debug -> toDebug.invoke()
-            HomeProfileDirection.Workout -> toWorkout.invoke()
+            HomeProfileDirection.Training -> toAddTraining.invoke()
         }
     }
 

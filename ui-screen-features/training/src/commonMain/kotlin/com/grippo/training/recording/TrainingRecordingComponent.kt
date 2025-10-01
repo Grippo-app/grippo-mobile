@@ -8,12 +8,14 @@ import com.grippo.core.BaseComponent
 import com.grippo.core.models.Result
 import com.grippo.core.models.ResultKeys
 import com.grippo.core.platform.collectAsStateMultiplatform
+import com.grippo.state.stage.StageState
 import com.grippo.state.trainings.ExerciseState
 import kotlinx.datetime.LocalDateTime
 
 internal class TrainingRecordingComponent(
     componentContext: ComponentContext,
-    private val toCompleted: (exercises: List<ExerciseState>, startAt: LocalDateTime) -> Unit,
+    stage: StageState,
+    private val toCompleted: (stage: StageState, exercises: List<ExerciseState>, startAt: LocalDateTime) -> Unit,
     private val toExercise: (exercise: ExerciseState) -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<TrainingRecordingDirection>(componentContext) {
@@ -27,6 +29,7 @@ internal class TrainingRecordingComponent(
 
     override val viewModel: TrainingRecordingViewModel = componentContext.retainedInstance {
         TrainingRecordingViewModel(
+            stage = stage,
             exerciseExampleFeature = getKoin().get(),
             muscleFeature = getKoin().get(),
             trainingFeature = getKoin().get(),
@@ -45,6 +48,7 @@ internal class TrainingRecordingComponent(
     override suspend fun eventListener(direction: TrainingRecordingDirection) {
         when (direction) {
             is TrainingRecordingDirection.ToCompleted -> toCompleted.invoke(
+                direction.stage,
                 direction.exercises,
                 direction.startAt
             )

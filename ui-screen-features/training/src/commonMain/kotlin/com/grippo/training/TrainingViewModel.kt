@@ -1,6 +1,7 @@
 package com.grippo.training
 
 import com.grippo.core.BaseViewModel
+import com.grippo.state.stage.StageState
 import com.grippo.state.trainings.ExerciseState
 import kotlinx.datetime.LocalDateTime
 import com.grippo.training.TrainingState as ScreenTrainingState
@@ -17,15 +18,19 @@ public class TrainingViewModel :
         navigateTo(TrainingDirection.Close)
     }
 
-    override fun toRecording() {
-        navigateTo(TrainingDirection.ToRecording)
+    override fun toRecording(stage: StageState) {
+        navigateTo(TrainingDirection.ToRecording(stage))
     }
 
     override fun toExercise(exercise: ExerciseState) {
         navigateTo(TrainingDirection.ToExercise(exercise))
     }
 
-    override fun toCompleted(exercises: List<ExerciseState>, startAt: LocalDateTime) {
-        navigateTo(TrainingDirection.ToCompleted(exercises, startAt))
+    override fun toCompleted(
+        stage: StageState,
+        exercises: List<ExerciseState>,
+        startAt: LocalDateTime
+    ) {
+        navigateTo(TrainingDirection.ToCompleted(stage, exercises, startAt))
     }
 }

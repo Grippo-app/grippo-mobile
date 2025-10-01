@@ -30,6 +30,7 @@ public interface TrainingDao {
         """
         SELECT * FROM training
         WHERE id = :id
+        ORDER BY createdAt DESC
         LIMIT 1
         """
     )
@@ -55,12 +56,12 @@ public interface TrainingDao {
     ) {
         insertTraining(training)
 
-        for (exercise in exercises) {
-            insertExercise(exercise)
+        if (exercises.isNotEmpty()) {
+            insertExercises(exercises)
         }
 
-        for (iteration in iterations) {
-            insertIteration(iteration)
+        if (iterations.isNotEmpty()) {
+            insertIterations(iterations)
         }
     }
 
@@ -72,6 +73,12 @@ public interface TrainingDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public suspend fun insertIteration(iteration: IterationEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public suspend fun insertExercises(exercises: List<ExerciseEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public suspend fun insertIterations(iterations: List<IterationEntity>)
 
     // ────────────── DELETE ──────────────
 

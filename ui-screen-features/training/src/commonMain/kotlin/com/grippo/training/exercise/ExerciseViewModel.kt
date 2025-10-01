@@ -1,9 +1,11 @@
 package com.grippo.training.exercise
 
-import com.grippo.calculation.MetricsAggregator
+import com.grippo.calculation.AnalyticsApi
 import com.grippo.core.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
+import com.grippo.design.resources.provider.providers.ColorProvider
+import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
@@ -20,6 +22,8 @@ import com.grippo.training.exercise.ExerciseState as ScreenExerciseState
 internal class ExerciseViewModel(
     exercise: ExerciseState,
     exerciseExampleFeature: ExerciseExampleFeature,
+    stringProvider: StringProvider,
+    colorProvider: ColorProvider,
     private val dialogController: DialogController,
 ) : BaseViewModel<ScreenExerciseState, ExerciseDirection, ExerciseLoader>(
     ScreenExerciseState(
@@ -27,7 +31,7 @@ internal class ExerciseViewModel(
     )
 ), ExerciseContract {
 
-    private val metricsAggregator = MetricsAggregator()
+    private val analytics = AnalyticsApi(stringProvider, colorProvider)
 
     init {
         exerciseExampleFeature
@@ -68,7 +72,7 @@ internal class ExerciseViewModel(
                         .toPersistentList()
 
                     // Recompute metrics for this exercise
-                    val metrics = metricsAggregator.calculateIterations(iterations)
+                    val metrics = analytics.metricsFromIterations(iterations)
 
                     val exercise = s.exercise.copy(
                         iterations = iterations,
@@ -94,7 +98,7 @@ internal class ExerciseViewModel(
                 .toPersistentList()
 
             // Recompute metrics after deletion
-            val metrics = metricsAggregator.calculateIterations(iterations)
+            val metrics = analytics.metricsFromIterations(iterations)
 
             val exercise = s.exercise.copy(
                 iterations = iterations,
@@ -126,7 +130,7 @@ internal class ExerciseViewModel(
                         .toPersistentList()
 
                     // Recompute metrics after edit
-                    val metrics = metricsAggregator.calculateIterations(iterations)
+                    val metrics = analytics.metricsFromIterations(iterations)
 
                     val exercise = s.exercise.copy(
                         iterations = iterations,
@@ -162,7 +166,7 @@ internal class ExerciseViewModel(
                         .toPersistentList()
 
                     // Recompute metrics after edit
-                    val metrics = metricsAggregator.calculateIterations(iterations)
+                    val metrics = analytics.metricsFromIterations(iterations)
 
                     val exercise = s.exercise.copy(
                         iterations = iterations,
@@ -184,7 +188,7 @@ internal class ExerciseViewModel(
                 .toPersistentList()
 
             // Recompute metrics after removal
-            val metrics = metricsAggregator.calculateIterations(iterations)
+            val metrics = analytics.metricsFromIterations(iterations)
 
             val exercise = s.exercise.copy(
                 iterations = iterations,

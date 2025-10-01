@@ -21,17 +21,19 @@ public interface UserDao {
         """
         SELECT m.* FROM muscle AS m
         INNER JOIN user_excluded_muscle AS uem ON m.id = uem.muscleId
+        WHERE uem.userId = :userId
     """
     )
-    public fun getExcludedMuscles(): Flow<List<MuscleEntity>>
+    public fun getExcludedMuscles(userId: String): Flow<List<MuscleEntity>>
 
     @Query(
         """
         SELECT e.* FROM equipment AS e
         INNER JOIN user_excluded_equipment AS uee ON e.id = uee.equipmentId
+        WHERE uee.userId = :userId
     """
     )
-    public fun getExcludedEquipments(): Flow<List<EquipmentEntity>>
+    public fun getExcludedEquipments(userId: String): Flow<List<EquipmentEntity>>
 
     @Query("SELECT * FROM user WHERE id = :id LIMIT 1")
     public fun getById(id: String): Flow<UserEntity?>
@@ -39,15 +41,26 @@ public interface UserDao {
     // ────────────── INSERT ──────────────
 
     @Transaction
-    public suspend fun insertOrReplaceExcludedEquipments(equipments: List<UserExcludedEquipmentEntity>) {
-        clearExcludedEquipments()
-        insertExcludedEquipments(equipments)
+    public suspend fun insertOrReplaceExcludedEquipments(
+        userId: String,
+        equipmentIds: List<String>
+    ) {
+        clearExcludedEquipments(userId)
+
+        if (equipmentIds.isNotEmpty()) {
+            val entities = equipmentIds.map { UserExcludedEquipmentEntity(userId, it) }
+            insertExcludedEquipments(entities)
+        }
     }
 
     @Transaction
-    public suspend fun insertOrReplaceExcludedMuscles(muscles: List<UserExcludedMuscleEntity>) {
-        clearExcludedMuscles()
-        insertExcludedMuscles(muscles)
+    public suspend fun insertOrReplaceExcludedMuscles(userId: String, muscleIds: List<String>) {
+        clearExcludedMuscles(userId)
+
+        if (muscleIds.isNotEmpty()) {
+            val entities = muscleIds.map { UserExcludedMuscleEntity(userId, it) }
+            insertExcludedMuscles(entities)
+        }
     }
 
     @Transaction
@@ -75,9 +88,9 @@ public interface UserDao {
 
     // ────────────── DELETE ──────────────
 
-    @Query("DELETE FROM user_excluded_equipment")
-    public suspend fun clearExcludedEquipments()
+    @Query("DELETE FROM user_excluded_equipment WHERE userId = :userId")
+    public suspend fun clearExcludedEquipments(userId: String)
 
-    @Query("DELETE FROM user_excluded_muscle")
-    public suspend fun clearExcludedMuscles()
+    @Query("DELETE FROM user_excluded_muscle WHERE userId = :userId")
+    public suspend fun clearExcludedMuscles(userId: String)
 }
