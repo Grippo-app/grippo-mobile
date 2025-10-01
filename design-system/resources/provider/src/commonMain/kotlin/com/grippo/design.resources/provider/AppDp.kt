@@ -10,7 +10,6 @@ public data object AppDp {
     private val icon: Icon = Icon
 
     private data object Padding {
-        val none: Dp = 0.dp
         val tiny: Dp = 2.dp
         val extraSmall: Dp = 4.dp
         val small: Dp = 8.dp
@@ -25,12 +24,10 @@ public data object AppDp {
         val medium: Dp = 50.dp
         val large: Dp = 64.dp
         val xLarge: Dp = 72.dp
-        val xxLarge: Dp = 96.dp
     }
 
     private data object Radius {
-        val tiny: Dp = 8.dp
-        val small: Dp = 12.dp
+        val small: Dp = 8.dp
         val medium: Dp = 16.dp
         val large: Dp = 28.dp
     }
@@ -60,7 +57,6 @@ public data object AppDp {
     val toggleSelectableCard: ToggleSelectableCard = ToggleSelectableCard
     val informationCard: InformationCard = InformationCard
     val wheelPicker: WheelPicker = WheelPicker
-    val chart: Chart = Chart
     val userCard: UserCard = UserCard
     val chartCard: ChartCard = ChartCard
     val bodyDetails: BodyDetails = BodyDetails
@@ -139,7 +135,7 @@ public data object AppDp {
         public data object Small {
             val height: Dp = size.small
             val horizontalPadding: Dp = padding.medium
-            val radius: Dp = AppDp.radius.tiny
+            val radius: Dp = AppDp.radius.small
             val icon: Dp = AppDp.icon.medium
             val space: Dp = padding.small
             val spaceTransparent: Dp = padding.tiny
@@ -203,7 +199,7 @@ public data object AppDp {
         public data object Editable {
             val horizontalPadding: Dp = padding.medium
             val height: Dp = size.medium
-            val radius: Dp = AppDp.radius.tiny
+            val radius: Dp = AppDp.radius.small
             val spacing: Dp = padding.medium
         }
     }
@@ -351,9 +347,9 @@ public data object AppDp {
         }
 
         public data object Fill {
+            val height: Dp = size.small
             val horizontalPadding: Dp = padding.large
-            val verticalPadding: Dp = padding.small
-            val radius: Dp = AppDp.radius.small
+            val radius: Dp = AppDp.radius.medium
         }
     }
 
@@ -375,32 +371,25 @@ public data object AppDp {
         val radius: Dp = AppDp.radius.medium
     }
 
-    public data object Chart {
-        val pie: Pie = Pie
-
-        public data object Pie {
-            val width: Dp = size.tiny
-        }
-    }
-
     public data object Chip {
         val medium: Medium = Medium
         val small: Small = Small
 
         public data object Medium {
             val horizontalPadding: Dp = padding.medium
-            val verticalPadding: Dp = padding.small
-            val radius: Dp = AppDp.radius.small
+            val radius: Dp = AppDp.radius.medium
             val trailingSize: Dp = icon.small
             val spaceBetween: Dp = padding.small
+            val height: Dp = size.small
         }
 
         public data object Small {
             val horizontalPadding: Dp = padding.small
             val verticalPadding: Dp = padding.extraSmall
-            val radius: Dp = AppDp.radius.tiny
+            val radius: Dp = AppDp.radius.small
             val trailingSize: Dp = icon.extraSmall
             val spaceBetween: Dp = padding.extraSmall
+            val height: Dp = size.tiny
         }
     }
 }

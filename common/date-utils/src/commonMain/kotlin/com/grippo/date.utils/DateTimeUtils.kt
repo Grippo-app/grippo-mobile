@@ -6,6 +6,7 @@ import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
@@ -24,6 +25,18 @@ public object DateTimeUtils {
     public fun now(): LocalDateTime {
         return Clock.System.now().toLocalDateTime(timeZone)
     }
+
+    /* * * * * * * * * * *
+     * Instant
+     * * * * * * * * * * */
+
+    public fun asInstant(value: LocalDateTime): Instant {
+        return value.toInstant(timeZone)
+    }
+
+    /* * * * * * * * * * *
+     * Date Range
+     * * * * * * * * * * */
 
     public fun thisDay(): DateRange {
         val date = Clock.System.now().toLocalDateTime(timeZone).date
@@ -116,9 +129,18 @@ public object DateTimeUtils {
     }
 
     @OptIn(FormatStringsInDatetimeFormats::class)
+    public fun format(value: LocalTime, format: DateFormat): String {
+        return DateFormatting.current.format(value, format.value, null) ?: "-"
+    }
+
+    @OptIn(FormatStringsInDatetimeFormats::class)
     public fun format(value: LocalDate, format: DateFormat): String {
         return DateFormatting.current.format(value, format.value, null) ?: "-"
     }
+
+    /* * * * * * * * * * *
+     * Calculation
+     * * * * * * * * * * */
 
     public fun ago(value: LocalDateTime): Duration {
         val now = Clock.System.now()

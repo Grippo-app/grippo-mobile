@@ -11,7 +11,7 @@ import com.grippo.design.core.AppTokens
 internal data class ChipStyle(
     val radius: Dp,
     val horizontalPadding: Dp,
-    val verticalPadding: Dp,
+    val height: Dp,
     val trailingSize: Dp,
     val spaceBetween: Dp,
     val labelTextStyle: TextStyle,
@@ -25,7 +25,7 @@ internal fun resolveChipStyle(size: ChipSize): ChipStyle {
         ChipSize.Small -> ChipStyle(
             radius = dp.small.radius,
             horizontalPadding = dp.small.horizontalPadding,
-            verticalPadding = dp.small.verticalPadding,
+            height = dp.small.height,
             trailingSize = dp.small.trailingSize,
             spaceBetween = dp.small.spaceBetween,
             labelTextStyle = AppTokens.typography.b11Semi(),
@@ -35,7 +35,7 @@ internal fun resolveChipStyle(size: ChipSize): ChipStyle {
         ChipSize.Medium -> ChipStyle(
             radius = dp.medium.radius,
             horizontalPadding = dp.medium.horizontalPadding,
-            verticalPadding = dp.medium.verticalPadding,
+            height = dp.medium.height,
             trailingSize = dp.medium.trailingSize,
             spaceBetween = dp.medium.spaceBetween,
             labelTextStyle = AppTokens.typography.b14Semi(),

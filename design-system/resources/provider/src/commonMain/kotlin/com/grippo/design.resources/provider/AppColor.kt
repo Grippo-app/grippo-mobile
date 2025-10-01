@@ -212,6 +212,7 @@ public interface AppColor {
 
     public interface ChipColors {
         public val intensity: GradientColors
+        public val timer: GradientColors
         public val volume: GradientColors
         public val repetitions: GradientColors
 

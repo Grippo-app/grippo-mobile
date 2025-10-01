@@ -18,6 +18,8 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.chip.ChipSize
+import com.grippo.design.components.chip.TimerChip
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.toolbar.Toolbar
@@ -84,6 +86,11 @@ internal fun TrainingRecordingScreen(
                     selected = state.tab,
                     onSelect = contract::onSelectTab,
                     style = SegmentStyle.Fill
+                )
+
+                TimerChip(
+                    value = state.startAt,
+                    size = ChipSize.Medium,
                 )
 
                 Spacer(modifier = Modifier.weight(1f))

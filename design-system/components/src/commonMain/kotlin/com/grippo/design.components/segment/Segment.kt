@@ -129,7 +129,8 @@ public fun <KEY> Segment(
                                     .scalableClick(onClick = clickProvider)
                                     .padding(
                                         horizontal = AppTokens.dp.segment.fill.horizontalPadding,
-                                        vertical = AppTokens.dp.segment.fill.verticalPadding
+                                    ).height(
+                                        AppTokens.dp.segment.fill.height
                                     )
                                     .wrapContentHeight(),
                                 text = item.second.text(),

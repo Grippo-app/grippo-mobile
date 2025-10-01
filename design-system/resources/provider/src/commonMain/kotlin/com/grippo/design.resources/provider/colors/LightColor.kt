@@ -156,6 +156,11 @@ public object LightColor : AppColor {
             override val endColor = AppPalette.Unique.Violet
             override val contentColor = AppPalette.Common.White
         }
+        override val timer = object : AppColor.ChipColors.GradientColors {
+            override val startColor = AppPalette.Unique.Olive
+            override val endColor = AppPalette.Unique.Cyan
+            override val contentColor = AppPalette.Common.White
+        }
     }
 
     public override val example: AppColor.ExampleColors = object : AppColor.ExampleColors {
