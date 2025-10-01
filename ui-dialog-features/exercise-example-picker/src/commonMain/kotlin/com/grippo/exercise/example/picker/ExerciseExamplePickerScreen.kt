@@ -146,9 +146,7 @@ internal fun ExerciseExamplePickerScreen(
                     }
 
                     ExerciseExampleCard(
-                        modifier = Modifier
-                            .animateItem()
-                            .fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                         value = item,
                         style = ExerciseExampleCardStyle.Medium(
                             onCardClick = selectClickProvider,
