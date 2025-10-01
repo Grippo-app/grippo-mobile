@@ -5,12 +5,12 @@ import com.grippo.data.features.excluded.muscles.domain.ExcludedMusclesRepositor
 import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.dao.UserDao
 import com.grippo.database.domain.muscles.toDomain
-import com.grippo.database.entity.UserExcludedMuscleEntity
 import com.grippo.network.Api
-import com.grippo.network.database.muscles.toEntities
 import com.grippo.network.user.IdsBody
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
 
@@ -22,21 +22,24 @@ internal class ExcludedMusclesRepositoryImpl(
 ) : ExcludedMusclesRepository {
 
     override fun observeExcludedMuscles(): Flow<List<Muscle>> {
-        return userDao.getExcludedMuscles()
-            .map { it.toDomain() }
+        return userActiveDao.get()
+            .flatMapLatest { userId ->
+                if (userId.isNullOrEmpty()) flowOf(emptyList())
+                else userDao.getExcludedMuscles(userId).map { it.toDomain() }
+            }
     }
 
     override suspend fun getExcludedMuscles(): Result<Unit> {
         val response = api.getExcludedMuscles()
 
         response.onSuccess {
-            val id = userActiveDao.get().firstOrNull() ?: return@onSuccess
-            val userId = userDao.getById(id).firstOrNull()?.id ?: return@onSuccess
-            val entities = it
-                .mapNotNull { m -> m.id }
-                .map { id -> UserExcludedMuscleEntity(userId, id) }
+            val userId = userActiveDao.get()
+                .firstOrNull()
+                ?: return@onSuccess
 
-            userDao.insertOrReplaceExcludedMuscles(entities)
+            val ids = it.mapNotNull { m -> m.id }
+
+            userDao.insertOrReplaceExcludedMuscles(userId, ids)
         }
 
         return response.map { }
@@ -46,15 +49,16 @@ internal class ExcludedMusclesRepositoryImpl(
         val response = api.postExcludedMuscles(IdsBody(ids))
 
         response.onSuccess {
-            val id = userActiveDao.get().firstOrNull() ?: return@onSuccess
-            val userId = userDao.getById(id).firstOrNull()?.id ?: return@onSuccess
-            val entities = api.getExcludedMuscles()
-                .getOrNull()
-                ?.toEntities()
-                ?.map { UserExcludedMuscleEntity(userId = userId, muscleId = it.id) }
+            val userId = userActiveDao.get()
+                .firstOrNull()
                 ?: return@onSuccess
 
-            userDao.insertOrReplaceExcludedMuscles(entities)
+            val ids = api.getExcludedMuscles()
+                .getOrNull()
+                ?.mapNotNull { it.id }
+                ?: return@onSuccess
+
+            userDao.insertOrReplaceExcludedMuscles(userId, ids)
         }
 
         return response.map { }

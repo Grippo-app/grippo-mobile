@@ -130,8 +130,14 @@ public interface ExerciseExampleDao {
         equipments: List<ExerciseExampleEquipmentEntity>,
     ) {
         insertExerciseExample(example)
-        insertBundles(bundles)
-        insertEquipments(equipments)
+
+        if (bundles.isNotEmpty()) {
+            insertBundles(bundles)
+        }
+
+        if (equipments.isNotEmpty()) {
+            insertEquipments(equipments)
+        }
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
