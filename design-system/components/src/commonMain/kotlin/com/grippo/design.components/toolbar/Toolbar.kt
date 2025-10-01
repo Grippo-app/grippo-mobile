@@ -28,19 +28,27 @@ import com.grippo.design.resources.provider.icons.NavArrowLeft
 
 @Immutable
 public enum class ToolbarStyle {
-    Transparent
+    Transparent,
+    Default,
 }
 
 @Composable
 public fun Toolbar(
     modifier: Modifier = Modifier,
     title: String? = null,
-    style: ToolbarStyle = ToolbarStyle.Transparent,
+    style: ToolbarStyle = ToolbarStyle.Default,
     onBack: (() -> Unit)? = null,
     content: (@Composable ColumnScope.() -> Unit)? = null
 ) {
     Column(
-        modifier = modifier.statusBarsPadding(),
+        modifier = modifier
+            .background(
+                when (style) {
+                    ToolbarStyle.Transparent -> Color.Transparent
+                    ToolbarStyle.Default -> AppTokens.colors.background.dialog
+                }
+            )
+            .statusBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 

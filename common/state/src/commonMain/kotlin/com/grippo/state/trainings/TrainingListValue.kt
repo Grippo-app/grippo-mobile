@@ -5,6 +5,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.datetime.LocalDateTime
+import kotlin.time.Duration
 
 @Immutable
 public enum class TrainingPosition {
@@ -54,7 +55,8 @@ public sealed class TrainingListValue(
 
     @Immutable
     public data class DateTime(
-        val date: LocalDateTime,
+        val createAt: LocalDateTime,
+        val duration: Duration,
         val trainingId: String,
         override val position: TrainingPosition,
         override val key: String,

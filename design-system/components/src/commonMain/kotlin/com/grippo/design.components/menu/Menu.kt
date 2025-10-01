@@ -3,7 +3,6 @@ package com.grippo.design.components.menu
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
@@ -52,7 +51,7 @@ public fun <KEY> Menu(
             if (index < items.lastIndex) {
                 HorizontalDivider(
                     modifier = Modifier
-                        .padding(horizontal = AppTokens.dp.menu.item.horizontalPadding)
+//                        .padding(horizontal = AppTokens.dp.menu.item.horizontalPadding)
                         .fillMaxWidth(),
                     color = AppTokens.colors.divider.default
                 )

@@ -14,9 +14,7 @@ import com.grippo.date.utils.DateFormat
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.ClockOutline
-import com.grippo.design.resources.provider.training_at_value
 import kotlinx.datetime.LocalDateTime
 
 @Composable
@@ -40,12 +38,10 @@ public fun TimeLabel(
         Spacer(Modifier.width(AppTokens.dp.timeLabel.spacer))
 
         Text(
-            text = AppTokens.strings.res(Res.string.training_at_value, text),
+            text = text,
             style = AppTokens.typography.b14Bold(),
             color = AppTokens.colors.text.secondary
         )
-
-        Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
     }
 }
 

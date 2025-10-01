@@ -1,16 +1,9 @@
 package com.grippo.design.components.datetime
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,15 +54,7 @@ public fun DatePicker(
     }
 
     Row(
-        modifier = modifier
-            .height(IntrinsicSize.Min)
-            .background(
-                AppTokens.colors.background.card,
-                RoundedCornerShape(AppTokens.dp.datePicker.radius)
-            ).padding(
-                horizontal = AppTokens.dp.datePicker.horizontalPadding,
-                vertical = AppTokens.dp.datePicker.verticalPadding
-            ),
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Button(
@@ -114,13 +99,6 @@ public fun DatePicker(
                 ),
             ),
             onClick = onNextClick
-        )
-
-        Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
-
-        VerticalDivider(
-            modifier = Modifier.fillMaxHeight(),
-            color = AppTokens.colors.divider.default
         )
 
         Spacer(Modifier.width(AppTokens.dp.contentPadding.content))

@@ -68,8 +68,6 @@ public data object AppDp {
     val equipmentCard: EquipmentCard = EquipmentCard
     val timeline: Timeline = Timeline
     val timeLabel: TimeLabel = TimeLabel
-    val datePicker: DatePicker = DatePicker
-    val periodPicker: PeriodPicker = PeriodPicker
     val exerciseCard: ExerciseCard = ExerciseCard
     val exerciseExampleCard: ExerciseExampleCard = ExerciseExampleCard
     val exerciseExampleImage: ExerciseExampleImage = ExerciseExampleImage
@@ -180,18 +178,6 @@ public data object AppDp {
         val horizontalPadding: Dp = padding.small
         val verticalPadding: Dp = padding.small
         val icon: Dp = AppDp.icon.small
-    }
-
-    public data object DatePicker {
-        val horizontalPadding: Dp = padding.extraSmall
-        val verticalPadding: Dp = padding.extraSmall
-        val radius: Dp = AppDp.radius.small
-    }
-
-    public data object PeriodPicker {
-        val horizontalPadding: Dp = padding.extraSmall
-        val verticalPadding: Dp = padding.extraSmall
-        val radius: Dp = AppDp.radius.small
     }
 
     public data object TimeLabel {
