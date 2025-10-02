@@ -40,20 +40,23 @@ public interface AppColor {
     }
 
     public interface ButtonColors {
-        public val backgroundPrimary: Color
+        public val backgroundPrimary1: Color
+        public val backgroundPrimary2: Color
         public val textPrimary: Color
         public val iconPrimary: Color
         public val backgroundPrimaryDisabled: Color
         public val contentPrimaryDisabled: Color
 
-        public val backgroundSecondary: Color
+        public val backgroundSecondary1: Color
+        public val backgroundSecondary2: Color
         public val textSecondary: Color
         public val iconSecondary: Color
         public val borderSecondary: Color
         public val backgroundSecondaryDisabled: Color
         public val contentSecondaryDisabled: Color
 
-        public val backgroundTertiary: Color
+        public val backgroundTertiary1: Color
+        public val backgroundTertiary2: Color
         public val textTertiary: Color
         public val iconTertiary: Color
         public val borderTertiary: Color

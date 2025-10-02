@@ -108,13 +108,15 @@ internal fun HomeProfileScreen(
             modifier = Modifier.fillMaxWidth(),
             style = ButtonStyle.Custom(
                 enabled = ButtonColorTokens(
-                    background = Color.Transparent,
+                    background1 = Color.Transparent,
+                    background2 = Color.Transparent,
                     icon = AppTokens.colors.semantic.error,
                     content = AppTokens.colors.semantic.error,
                     border = AppTokens.colors.semantic.error,
                 ),
                 disabled = ButtonColorTokens(
-                    background = AppTokens.colors.button.backgroundSecondaryDisabled,
+                    background1 = AppTokens.colors.button.backgroundSecondaryDisabled,
+                    background2 = AppTokens.colors.button.backgroundSecondaryDisabled,
                     content = AppTokens.colors.button.contentSecondaryDisabled,
                     border = Color.Transparent,
                     icon = AppTokens.colors.button.contentSecondaryDisabled

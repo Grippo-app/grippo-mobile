@@ -35,6 +35,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -85,7 +86,11 @@ public sealed interface ButtonStyle {
 }
 
 @Immutable
-public enum class ButtonState { Enabled, Loading, Disabled }
+public enum class ButtonState {
+    Enabled,
+    Loading,
+    Disabled
+}
 
 /**
  * Canonical button with two layouts:
@@ -102,14 +107,22 @@ public fun Button(
     onClick: () -> Unit,
     textStyle: TextStyle = AppTokens.typography.b14Bold(),
 ) {
-    val colorTokens = resolveButtonColors(style = style, state = state)
+    val colorTokens = resolveButtonColors(
+        style = style,
+        state = state
+    )
+
+    val metrics = resolveButtonSize(
+        size = size
+    )
+
     val shape = RoundedCornerShape(
         when (size) {
             ButtonSize.Medium -> AppTokens.dp.button.medium.radius
             ButtonSize.Small -> AppTokens.dp.button.small.radius
         }
     )
-    val metrics = resolveButtonSize(size)
+
     val iconSize = metrics.icon
     val isLoading = state == ButtonState.Loading
 
@@ -124,9 +137,19 @@ public fun Button(
     val minSide = metrics.height
 
     val baseModifier = modifier
-        .scalableClick(enabled = state == ButtonState.Enabled, onClick = onClick)
-        .background(colorTokens.background, shape)
-        .border(1.dp, colorTokens.border, shape)
+        .scalableClick(
+            enabled = state == ButtonState.Enabled,
+            onClick = onClick
+        ).background(
+            Brush.horizontalGradient(
+                0f to colorTokens.background1,
+                1f to colorTokens.background2,
+            ), shape
+        ).border(
+            1.dp,
+            colorTokens.border,
+            shape
+        )
 
     val loadingTransition = rememberInfiniteTransition(label = "button_loading")
 

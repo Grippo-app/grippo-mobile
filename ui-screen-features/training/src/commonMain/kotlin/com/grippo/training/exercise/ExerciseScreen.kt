@@ -119,13 +119,15 @@ internal fun ExerciseScreen(
                         ),
                         style = ButtonStyle.Custom(
                             enabled = ButtonColorTokens(
-                                background = AppTokens.colors.semantic.error,
+                                background1 = AppTokens.colors.semantic.error,
+                                background2 = AppTokens.colors.semantic.error,
                                 icon = AppTokens.colors.button.iconPrimary,
                                 content = AppTokens.colors.button.textPrimary,
                                 border = AppTokens.colors.semantic.error,
                             ),
                             disabled = ButtonColorTokens(
-                                background = AppTokens.colors.button.backgroundPrimaryDisabled,
+                                background1 = AppTokens.colors.button.backgroundPrimaryDisabled,
+                                background2 = AppTokens.colors.button.backgroundPrimaryDisabled,
                                 content = AppTokens.colors.button.contentPrimaryDisabled,
                                 border = Color.Transparent,
                                 icon = AppTokens.colors.button.contentPrimaryDisabled

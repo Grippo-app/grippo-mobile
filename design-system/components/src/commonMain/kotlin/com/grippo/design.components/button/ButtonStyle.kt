@@ -5,7 +5,8 @@ import androidx.compose.ui.graphics.Color
 import com.grippo.design.core.AppTokens
 
 public data class ButtonColorTokens(
-    val background: Color,
+    val background1: Color,
+    val background2: Color,
     val content: Color,
     val border: Color,
     val icon: Color
@@ -21,28 +22,32 @@ internal fun resolveButtonColors(
     return when (state) {
         ButtonState.Disabled -> when (style) {
             ButtonStyle.Primary -> ButtonColorTokens(
-                background = colors.backgroundPrimaryDisabled,
+                background1 = colors.backgroundPrimaryDisabled,
+                background2 = colors.backgroundPrimaryDisabled,
                 content = colors.contentPrimaryDisabled,
                 border = Color.Transparent,
                 icon = colors.contentPrimaryDisabled
             )
 
             ButtonStyle.Secondary -> ButtonColorTokens(
-                background = colors.backgroundSecondaryDisabled,
+                background1 = colors.backgroundSecondaryDisabled,
+                background2 = colors.backgroundSecondaryDisabled,
                 content = colors.contentSecondaryDisabled,
                 border = Color.Transparent,
                 icon = colors.contentSecondaryDisabled
             )
 
             ButtonStyle.Tertiary -> ButtonColorTokens(
-                background = colors.backgroundTertiaryDisabled,
+                background1 = colors.backgroundTertiaryDisabled,
+                background2 = colors.backgroundTertiaryDisabled,
                 content = colors.contentTertiaryDisabled,
                 border = Color.Transparent,
                 icon = colors.contentTertiaryDisabled
             )
 
             ButtonStyle.Transparent -> ButtonColorTokens(
-                background = Color.Transparent,
+                background1 = Color.Transparent,
+                background2 = Color.Transparent,
                 content = colors.contentTransparentDisabled,
                 border = Color.Transparent,
                 icon = colors.contentTransparentDisabled
@@ -53,28 +58,32 @@ internal fun resolveButtonColors(
 
         else -> when (style) {
             ButtonStyle.Primary -> ButtonColorTokens(
-                background = colors.backgroundPrimary,
+                background1 = colors.backgroundPrimary1,
+                background2 = colors.backgroundPrimary2,
                 content = colors.textPrimary,
                 border = Color.Transparent,
                 icon = colors.iconPrimary,
             )
 
             ButtonStyle.Secondary -> ButtonColorTokens(
-                background = colors.backgroundSecondary,
+                background1 = colors.backgroundSecondary1,
+                background2 = colors.backgroundSecondary2,
                 content = colors.textSecondary,
                 border = colors.borderSecondary,
                 icon = colors.iconSecondary,
             )
 
             ButtonStyle.Tertiary -> ButtonColorTokens(
-                background = colors.backgroundTertiary,
+                background1 = colors.backgroundTertiary1,
+                background2 = colors.backgroundTertiary2,
                 content = colors.textTertiary,
                 border = colors.borderTertiary,
                 icon = colors.iconTertiary,
             )
 
             ButtonStyle.Transparent -> ButtonColorTokens(
-                background = Color.Transparent,
+                background1 = Color.Transparent,
+                background2 = Color.Transparent,
                 content = colors.textTransparent,
                 border = Color.Transparent,
                 icon = colors.iconTransparent,

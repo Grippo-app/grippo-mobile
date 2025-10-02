@@ -11,20 +11,23 @@ public object DarkColor : AppColor {
     }
 
     override val button: AppColor.ButtonColors = object : AppColor.ButtonColors {
-        override val backgroundPrimary = AppPalette.Primary.P600
+        override val backgroundPrimary1 = AppPalette.Primary.P600
+        override val backgroundPrimary2 = AppPalette.Primary.P500
         override val textPrimary = AppPalette.Common.White
         override val iconPrimary = AppPalette.Common.White
         override val backgroundPrimaryDisabled = AppPalette.NeutralDark.N300
         override val contentPrimaryDisabled = AppPalette.NeutralDark.N550
 
-        override val backgroundSecondary = Color.Transparent
+        override val backgroundSecondary1 = Color.Transparent
+        override val backgroundSecondary2 = Color.Transparent
         override val textSecondary = AppPalette.Common.White
         override val iconSecondary = AppPalette.Common.Accent
         override val borderSecondary = AppPalette.Common.Accent
         override val backgroundSecondaryDisabled = AppPalette.NeutralDark.N300
         override val contentSecondaryDisabled = AppPalette.NeutralDark.N550
 
-        override val backgroundTertiary: Color = AppPalette.NeutralDark.N150
+        override val backgroundTertiary1: Color = AppPalette.NeutralDark.N150
+        override val backgroundTertiary2: Color = AppPalette.NeutralDark.N150
         override val textTertiary: Color = AppPalette.NeutralDark.N800
         override val borderTertiary: Color = Color.Transparent
         override val iconTertiary: Color = AppPalette.NeutralDark.N600

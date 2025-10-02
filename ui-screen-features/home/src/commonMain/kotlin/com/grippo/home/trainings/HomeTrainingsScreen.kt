@@ -133,13 +133,15 @@ internal fun HomeTrainingsScreen(
                             ),
                             style = ButtonStyle.Custom(
                                 enabled = ButtonColorTokens(
-                                    background = Color.Transparent,
+                                    background1 = Color.Transparent,
+                                    background2 = Color.Transparent,
                                     content = AppTokens.colors.text.primary,
                                     border = Color.Transparent,
                                     icon = AppTokens.colors.icon.primary,
                                 ),
                                 disabled = ButtonColorTokens(
-                                    background = Color.Transparent,
+                                    background1 = Color.Transparent,
+                                    background2 = Color.Transparent,
                                     content = AppTokens.colors.text.disabled,
                                     border = Color.Transparent,
                                     icon = AppTokens.colors.icon.disabled
