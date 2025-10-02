@@ -58,7 +58,7 @@ private fun formatFromSeconds(totalSeconds: Long): String {
         negative = neg
     }
 
-    val core = DateTimeUtils.format(time, DateFormat.TIME_24H_HH_MM_SS)
+    val core = DateTimeUtils.format(time, DateFormat.TIME_24H_HH_MM)
 
     return if (negative) "-$core" else core
 }

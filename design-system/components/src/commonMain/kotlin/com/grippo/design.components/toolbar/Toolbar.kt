@@ -2,8 +2,10 @@ package com.grippo.design.components.toolbar
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -38,6 +40,7 @@ public fun Toolbar(
     title: String? = null,
     style: ToolbarStyle = ToolbarStyle.Default,
     onBack: (() -> Unit)? = null,
+    trailing: (@Composable BoxScope.() -> Unit)? = null,
     content: (@Composable ColumnScope.() -> Unit)? = null
 ) {
     Column(
@@ -91,6 +94,16 @@ public fun Toolbar(
                     style = AppTokens.typography.h3(),
                     color = AppTokens.colors.text.primary,
                     textAlign = TextAlign.Center
+                )
+            }
+
+            trailing?.let { trailing ->
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .fillMaxHeight(),
+                    content = trailing,
+                    contentAlignment = Alignment.Center
                 )
             }
         }

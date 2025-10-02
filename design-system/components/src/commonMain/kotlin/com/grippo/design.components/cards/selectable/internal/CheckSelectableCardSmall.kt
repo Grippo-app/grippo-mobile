@@ -21,6 +21,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
@@ -74,10 +75,15 @@ internal fun CheckSelectableCardSmall(
         label = "icon-color"
     ) { selected -> if (selected) AppTokens.colors.static.white else Color.Transparent }
 
-    val backgroundColor = transition.animateColor(
+    val backgroundColor1 = transition.animateColor(
         transitionSpec = { tween(durationMillis = 220, easing = FastOutSlowInEasing) },
-        label = "text-color"
-    ) { selected -> if (selected) AppTokens.colors.background.accent else AppTokens.colors.background.card }
+        label = "background-color-1"
+    ) { selected -> if (selected) AppTokens.colors.selectableCardColors.small.selectedBackground1 else AppTokens.colors.background.card }
+
+    val backgroundColor2 = transition.animateColor(
+        transitionSpec = { tween(durationMillis = 220, easing = FastOutSlowInEasing) },
+        label = "background-color-2"
+    ) { selected -> if (selected) AppTokens.colors.selectableCardColors.small.selectedBackground2 else AppTokens.colors.background.card }
 
     // Keep the icon in composition while animating to avoid popping on exit
     val renderIcon = remember(transition) {
@@ -87,7 +93,12 @@ internal fun CheckSelectableCardSmall(
     Row(
         modifier = modifier
             .scalableClick(onClick = onClick)
-            .background(backgroundColor.value, shape)
+            .background(
+                Brush.horizontalGradient(
+                    0f to backgroundColor1.value,
+                    1f to backgroundColor2.value,
+                ), shape
+            )
             .padding(
                 horizontal = AppTokens.dp.checkSelectableCard.small.horizontalPadding,
                 vertical = AppTokens.dp.checkSelectableCard.small.verticalPadding,

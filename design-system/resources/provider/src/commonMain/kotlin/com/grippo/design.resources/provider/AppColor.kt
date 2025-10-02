@@ -25,6 +25,7 @@ public interface AppColor {
     public val profile: ProfileColors
     public val palette: PaletteColors
     public val static: Static
+    public val selectableCardColors: SelectableCardColors
 
     public interface DividerColors {
         public val default: Color
@@ -208,6 +209,15 @@ public interface AppColor {
         public val confettiColor8: Color
         public val confettiColor9: Color
         public val confettiColor10: Color
+    }
+
+    public interface SelectableCardColors {
+        public val small: Small
+
+        public interface Small {
+            public val selectedBackground1: Color
+            public val selectedBackground2: Color
+        }
     }
 
     public interface ChipColors {

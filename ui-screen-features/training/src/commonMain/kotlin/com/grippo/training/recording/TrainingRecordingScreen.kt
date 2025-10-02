@@ -69,6 +69,23 @@ internal fun TrainingRecordingScreen(
             is StageState.Edit -> AppTokens.strings.res(Res.string.edit_training_title)
         },
         onBack = contract::onBack,
+        trailing = {
+            val buttonState = remember(loaders, state.exercises) {
+                when {
+                    state.exercises.isEmpty() -> ButtonState.Disabled
+                    else -> ButtonState.Enabled
+                }
+            }
+
+            Button(
+                modifier = Modifier.padding(end = AppTokens.dp.contentPadding.content),
+                content = ButtonContent.Text(text = AppTokens.strings.res(Res.string.save_btn)),
+                size = ButtonSize.Medium,
+                style = ButtonStyle.Transparent,
+                state = buttonState,
+                onClick = contract::onSave
+            )
+        },
         content = {
             Row(
                 modifier = Modifier
@@ -88,26 +105,11 @@ internal fun TrainingRecordingScreen(
                     style = SegmentStyle.Fill
                 )
 
+                Spacer(modifier = Modifier.weight(1f))
+
                 TimerChip(
                     value = state.startAt,
                     size = ChipSize.Medium,
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                val buttonState = remember(loaders, state.exercises) {
-                    when {
-                        state.exercises.isEmpty() -> ButtonState.Disabled
-                        else -> ButtonState.Enabled
-                    }
-                }
-
-                Button(
-                    content = ButtonContent.Text(text = AppTokens.strings.res(Res.string.save_btn)),
-                    size = ButtonSize.Small,
-                    style = ButtonStyle.Transparent,
-                    state = buttonState,
-                    onClick = contract::onSave
                 )
             }
         }

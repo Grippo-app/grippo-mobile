@@ -140,6 +140,15 @@ public object DarkColor : AppColor {
         override val confettiColor10 = AppPalette.NeutralDark.N700
     }
 
+    override val selectableCardColors: AppColor.SelectableCardColors =
+        object : AppColor.SelectableCardColors {
+            override val small: AppColor.SelectableCardColors.Small =
+                object : AppColor.SelectableCardColors.Small {
+                    override val selectedBackground1: Color = AppPalette.Primary.P600
+                    override val selectedBackground2: Color = AppPalette.Primary.P500
+                }
+        }
+
     override val chip: AppColor.ChipColors = object : AppColor.ChipColors {
         override val intensity = object : AppColor.ChipColors.GradientColors {
             override val startColor = AppPalette.Unique.Red
