@@ -74,7 +74,7 @@ internal fun HomeProfileScreen(
             )
         }
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Button(
             modifier = Modifier.fillMaxWidth(),
@@ -86,21 +86,21 @@ internal fun HomeProfileScreen(
             onClick = contract::onStartTrainingClick
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Menu(
             items = activity,
             onClick = contract::onActivityMenuClick
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Menu(
             items = settings,
             onClick = contract::onSettingsMenuClick
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Button(
             modifier = Modifier.fillMaxWidth(),
