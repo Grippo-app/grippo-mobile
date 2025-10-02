@@ -70,10 +70,12 @@ public interface AppColor {
 
     public interface ToggleColors {
         public val checkedThumb: Color
-        public val checkedTrack: Color
+        public val checkedTrack1: Color
+        public val checkedTrack2: Color
 
         public val uncheckedThumb: Color
-        public val uncheckedTrack: Color
+        public val uncheckedTrack1: Color
+        public val uncheckedTrack2: Color
     }
 
     public interface RadioColors {

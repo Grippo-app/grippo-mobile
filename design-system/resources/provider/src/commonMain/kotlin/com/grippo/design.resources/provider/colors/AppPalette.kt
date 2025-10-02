@@ -7,7 +7,6 @@ internal object AppPalette {
     object Common {
         val White = Color(0xFFFAFAFA)
         val Black = Color(0xFF121212)
-        val Accent = Color(0xFF3366FF)
     }
 
     object Primary {
@@ -131,7 +130,7 @@ internal object AppPalette {
             Unique.Olive,
             Unique.Cyan,
             Unique.Indigo,
-            Common.Accent,
+            Primary.P500,
         )
 
         val Palette5OrangeRedGrowth: List<Color> = listOf(

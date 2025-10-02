@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
@@ -49,10 +50,14 @@ public fun Toggle(
             .background(color = Color.Transparent)
     ) {
         Canvas(modifier = Modifier.matchParentSize()) {
-            val backgroundColor = if (checked) toggle.checkedTrack else toggle.uncheckedTrack
+            val background1Color = if (checked) toggle.checkedTrack1 else toggle.uncheckedTrack1
+            val background2Color = if (checked) toggle.checkedTrack2 else toggle.uncheckedTrack2
 
             drawRoundRect(
-                color = backgroundColor,
+                brush = Brush.verticalGradient(
+                    0f to background1Color,
+                    1f to background2Color,
+                ),
                 size = Size(size.width, size.height),
                 cornerRadius = CornerRadius(dp.radius.toPx(), dp.radius.toPx())
             )

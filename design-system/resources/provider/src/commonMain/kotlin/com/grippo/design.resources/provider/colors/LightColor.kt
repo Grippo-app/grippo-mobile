@@ -7,7 +7,7 @@ public object LightColor : AppColor {
 
     override val border: AppColor.BorderColors = object : AppColor.BorderColors {
         override val default = AppPalette.NeutralLight.N200
-        override val focus = AppPalette.Common.Accent
+        override val focus = AppPalette.Primary.P500
     }
 
     override val button: AppColor.ButtonColors = object : AppColor.ButtonColors {
@@ -21,7 +21,7 @@ public object LightColor : AppColor {
         override val backgroundSecondary1 = Color.Transparent
         override val backgroundSecondary2 = Color.Transparent
         override val textSecondary = AppPalette.Common.Black
-        override val iconSecondary = AppPalette.Common.Accent
+        override val iconSecondary = AppPalette.Primary.P500
         override val borderSecondary = AppPalette.Primary.P250
         override val backgroundSecondaryDisabled = AppPalette.NeutralLight.N200
         override val contentSecondaryDisabled = AppPalette.NeutralLight.N550
@@ -34,8 +34,8 @@ public object LightColor : AppColor {
         override val backgroundTertiaryDisabled: Color = AppPalette.NeutralLight.N300
         override val contentTertiaryDisabled: Color = AppPalette.NeutralLight.N550
 
-        override val textTransparent = AppPalette.Common.Accent
-        override val iconTransparent = AppPalette.Common.Accent
+        override val textTransparent = AppPalette.Primary.P500
+        override val iconTransparent = AppPalette.Primary.P500
         override val contentTransparentDisabled = AppPalette.NeutralLight.N550
     }
 
@@ -44,20 +44,22 @@ public object LightColor : AppColor {
         override val secondary = AppPalette.NeutralLight.N600
         override val tertiary = AppPalette.NeutralLight.N550
         override val disabled = AppPalette.NeutralLight.N200
-        override val accent = AppPalette.Common.Accent
+        override val accent = AppPalette.Primary.P500
         override val inverted = AppPalette.Common.White
     }
 
     override val toggle: AppColor.ToggleColors = object : AppColor.ToggleColors {
         override val checkedThumb = AppPalette.Common.White
-        override val checkedTrack = AppPalette.Common.Accent
+        override val checkedTrack1 = AppPalette.Primary.P500
+        override val checkedTrack2 = AppPalette.Primary.P600
         override val uncheckedThumb = AppPalette.Common.White
-        override val uncheckedTrack = AppPalette.NeutralLight.N200
+        override val uncheckedTrack1 = AppPalette.NeutralDark.N200
+        override val uncheckedTrack2 = AppPalette.NeutralDark.N300
     }
 
     override val radio: AppColor.RadioColors = object : AppColor.RadioColors {
-        override val selectedThumb = AppPalette.Common.Accent
-        override val selectedTrack = AppPalette.Common.Accent
+        override val selectedThumb = AppPalette.Primary.P500
+        override val selectedTrack = AppPalette.Primary.P500
         override val unselectedTrack = AppPalette.NeutralLight.N200
         override val disabledSelectedThumb = AppPalette.NeutralLight.N550
         override val disabledUnselectedTrack = AppPalette.NeutralLight.N200
@@ -78,7 +80,7 @@ public object LightColor : AppColor {
         override val screen = AppPalette.NeutralLight.N150
         override val dialog = AppPalette.NeutralLight.N100
         override val card = AppPalette.Common.White
-        override val accent = AppPalette.Common.Accent
+        override val accent = AppPalette.Primary.P500
         override val inverted = AppPalette.NeutralDark.N100
     }
 
@@ -107,8 +109,8 @@ public object LightColor : AppColor {
         override val success = AppPalette.Unique.Green
         override val error = AppPalette.Unique.Red
         override val warning = AppPalette.Unique.Orange
-        override val info = AppPalette.Common.Accent
-        override val accent = AppPalette.Common.Accent
+        override val info = AppPalette.Primary.P500
+        override val accent = AppPalette.Primary.P500
     }
 
     override val overlay: AppColor.OverlayColors = object : AppColor.OverlayColors {
@@ -123,7 +125,7 @@ public object LightColor : AppColor {
     override val segment: AppColor.SegmentColors = object : AppColor.SegmentColors {
         override val active = AppPalette.Common.Black
         override val inactive = AppPalette.NeutralLight.N550
-        override val selector = AppPalette.Common.Accent
+        override val selector = AppPalette.Primary.P500
     }
 
     override val divider: AppColor.DividerColors = object : AppColor.DividerColors {
@@ -134,7 +136,7 @@ public object LightColor : AppColor {
         override val confettiColor1 = AppPalette.Unique.Green
         override val confettiColor2 = AppPalette.Unique.Orange
         override val confettiColor3 = AppPalette.Unique.Red
-        override val confettiColor4 = AppPalette.Common.Accent
+        override val confettiColor4 = AppPalette.Primary.P500
         override val confettiColor5 = AppPalette.Primary.P300
         override val confettiColor6 = AppPalette.Primary.P400
         override val confettiColor7 = AppPalette.Primary.P500
