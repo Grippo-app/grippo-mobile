@@ -78,6 +78,8 @@ public sealed interface ButtonStyle {
     public data object Primary : ButtonStyle
     public data object Secondary : ButtonStyle
     public data object Tertiary : ButtonStyle
+    public data object Error : ButtonStyle
+    public data object Warning : ButtonStyle
     public data object Transparent : ButtonStyle
     public data class Custom(
         val enabled: ButtonColorTokens,
@@ -392,24 +394,49 @@ private fun CollapsingLoaderSlot(
 
 @AppPreview
 @Composable
-private fun ButtonTextPreview() {
+private fun ButtonPrimaryPreview() {
     PreviewContainer {
         Button(
             content = ButtonContent.Text(text = "Enabled", startIcon = Icons.Default.Check),
             style = ButtonStyle.Primary,
             state = ButtonState.Enabled,
+            size = ButtonSize.Medium,
             onClick = {}
         )
         Button(
             content = ButtonContent.Text(text = "Loading", startIcon = Icons.Default.Check),
             style = ButtonStyle.Primary,
             state = ButtonState.Loading,
+            size = ButtonSize.Medium,
             onClick = {}
         )
         Button(
             content = ButtonContent.Text(text = "Disabled", startIcon = Icons.Default.Check),
             style = ButtonStyle.Primary,
             state = ButtonState.Disabled,
+            size = ButtonSize.Medium,
+            onClick = {}
+        )
+
+        Button(
+            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            style = ButtonStyle.Primary,
+            state = ButtonState.Enabled,
+            size = ButtonSize.Small,
+            onClick = {}
+        )
+        Button(
+            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            style = ButtonStyle.Primary,
+            state = ButtonState.Loading,
+            size = ButtonSize.Small,
+            onClick = {}
+        )
+        Button(
+            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            style = ButtonStyle.Primary,
+            state = ButtonState.Disabled,
+            size = ButtonSize.Small,
             onClick = {}
         )
     }
@@ -417,24 +444,49 @@ private fun ButtonTextPreview() {
 
 @AppPreview
 @Composable
-private fun ButtonIconPreview() {
+private fun ButtonSecondaryPreview() {
     PreviewContainer {
+        Button(
+            content = ButtonContent.Text(text = "Enabled", startIcon = Icons.Default.Check),
+            style = ButtonStyle.Secondary,
+            state = ButtonState.Enabled,
+            size = ButtonSize.Medium,
+            onClick = {}
+        )
+        Button(
+            content = ButtonContent.Text(text = "Loading", startIcon = Icons.Default.Check),
+            style = ButtonStyle.Secondary,
+            state = ButtonState.Loading,
+            size = ButtonSize.Medium,
+            onClick = {}
+        )
+        Button(
+            content = ButtonContent.Text(text = "Disabled", startIcon = Icons.Default.Check),
+            style = ButtonStyle.Secondary,
+            state = ButtonState.Disabled,
+            size = ButtonSize.Medium,
+            onClick = {}
+        )
+
         Button(
             content = ButtonContent.Icon(icon = Icons.Default.Check),
             style = ButtonStyle.Secondary,
             state = ButtonState.Enabled,
+            size = ButtonSize.Small,
             onClick = {}
         )
         Button(
             content = ButtonContent.Icon(icon = Icons.Default.Check),
             style = ButtonStyle.Secondary,
             state = ButtonState.Loading,
+            size = ButtonSize.Small,
             onClick = {}
         )
         Button(
             content = ButtonContent.Icon(icon = Icons.Default.Check),
             style = ButtonStyle.Secondary,
             state = ButtonState.Disabled,
+            size = ButtonSize.Small,
             onClick = {}
         )
     }
@@ -442,49 +494,49 @@ private fun ButtonIconPreview() {
 
 @AppPreview
 @Composable
-private fun ButtonTextTransparentPreview() {
+private fun ButtonTransparentPreview() {
     PreviewContainer {
         Button(
             content = ButtonContent.Text(text = "Enabled", startIcon = Icons.Default.Check),
             style = ButtonStyle.Transparent,
             state = ButtonState.Enabled,
+            size = ButtonSize.Medium,
             onClick = {}
         )
         Button(
             content = ButtonContent.Text(text = "Loading", startIcon = Icons.Default.Check),
             style = ButtonStyle.Transparent,
             state = ButtonState.Loading,
+            size = ButtonSize.Medium,
             onClick = {}
         )
         Button(
             content = ButtonContent.Text(text = "Disabled", startIcon = Icons.Default.Check),
             style = ButtonStyle.Transparent,
             state = ButtonState.Disabled,
+            size = ButtonSize.Medium,
             onClick = {}
         )
-    }
-}
 
-@AppPreview
-@Composable
-private fun ButtonIconTransparentPreview() {
-    PreviewContainer {
         Button(
             content = ButtonContent.Icon(icon = Icons.Default.Check),
             style = ButtonStyle.Transparent,
             state = ButtonState.Enabled,
+            size = ButtonSize.Small,
             onClick = {}
         )
         Button(
             content = ButtonContent.Icon(icon = Icons.Default.Check),
             style = ButtonStyle.Transparent,
             state = ButtonState.Loading,
+            size = ButtonSize.Small,
             onClick = {}
         )
         Button(
             content = ButtonContent.Icon(icon = Icons.Default.Check),
             style = ButtonStyle.Transparent,
             state = ButtonState.Disabled,
+            size = ButtonSize.Small,
             onClick = {}
         )
     }
@@ -492,53 +544,47 @@ private fun ButtonIconTransparentPreview() {
 
 @AppPreview
 @Composable
-private fun ButtonTextSmallPreview() {
+private fun ButtonTertiaryPreview() {
     PreviewContainer {
         Button(
             content = ButtonContent.Text(text = "Enabled", startIcon = Icons.Default.Check),
-            style = ButtonStyle.Primary,
+            style = ButtonStyle.Tertiary,
             state = ButtonState.Enabled,
-            size = ButtonSize.Small,
+            size = ButtonSize.Medium,
             onClick = {}
         )
         Button(
             content = ButtonContent.Text(text = "Loading", startIcon = Icons.Default.Check),
-            style = ButtonStyle.Primary,
+            style = ButtonStyle.Tertiary,
             state = ButtonState.Loading,
-            size = ButtonSize.Small,
+            size = ButtonSize.Medium,
             onClick = {}
         )
         Button(
             content = ButtonContent.Text(text = "Disabled", startIcon = Icons.Default.Check),
-            style = ButtonStyle.Primary,
+            style = ButtonStyle.Tertiary,
             state = ButtonState.Disabled,
-            size = ButtonSize.Small,
+            size = ButtonSize.Medium,
             onClick = {}
         )
-    }
-}
 
-@AppPreview
-@Composable
-private fun ButtonIconSmallPreview() {
-    PreviewContainer {
         Button(
             content = ButtonContent.Icon(icon = Icons.Default.Check),
-            style = ButtonStyle.Secondary,
+            style = ButtonStyle.Tertiary,
             state = ButtonState.Enabled,
             size = ButtonSize.Small,
             onClick = {}
         )
         Button(
             content = ButtonContent.Icon(icon = Icons.Default.Check),
-            style = ButtonStyle.Secondary,
+            style = ButtonStyle.Tertiary,
             state = ButtonState.Loading,
             size = ButtonSize.Small,
             onClick = {}
         )
         Button(
             content = ButtonContent.Icon(icon = Icons.Default.Check),
-            style = ButtonStyle.Secondary,
+            style = ButtonStyle.Tertiary,
             state = ButtonState.Disabled,
             size = ButtonSize.Small,
             onClick = {}
@@ -548,25 +594,47 @@ private fun ButtonIconSmallPreview() {
 
 @AppPreview
 @Composable
-private fun ButtonTextTransparentSmallPreview() {
+private fun ButtonErrorPreview() {
     PreviewContainer {
         Button(
             content = ButtonContent.Text(text = "Enabled", startIcon = Icons.Default.Check),
-            style = ButtonStyle.Transparent,
+            style = ButtonStyle.Error,
             state = ButtonState.Enabled,
-            size = ButtonSize.Small,
+            size = ButtonSize.Medium,
             onClick = {}
         )
         Button(
             content = ButtonContent.Text(text = "Loading", startIcon = Icons.Default.Check),
-            style = ButtonStyle.Transparent,
+            style = ButtonStyle.Error,
+            state = ButtonState.Loading,
+            size = ButtonSize.Medium,
+            onClick = {}
+        )
+        Button(
+            content = ButtonContent.Text(text = "Disabled", startIcon = Icons.Default.Check),
+            style = ButtonStyle.Error,
+            state = ButtonState.Disabled,
+            size = ButtonSize.Medium,
+            onClick = {}
+        )
+
+        Button(
+            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            style = ButtonStyle.Error,
+            state = ButtonState.Enabled,
+            size = ButtonSize.Small,
+            onClick = {}
+        )
+        Button(
+            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            style = ButtonStyle.Error,
             state = ButtonState.Loading,
             size = ButtonSize.Small,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Text(text = "Disabled", startIcon = Icons.Default.Check),
-            style = ButtonStyle.Transparent,
+            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            style = ButtonStyle.Error,
             state = ButtonState.Disabled,
             size = ButtonSize.Small,
             onClick = {}
@@ -576,25 +644,47 @@ private fun ButtonTextTransparentSmallPreview() {
 
 @AppPreview
 @Composable
-private fun ButtonIconTransparentSmallPreview() {
+private fun ButtonWarningPreview() {
     PreviewContainer {
         Button(
+            content = ButtonContent.Text(text = "Enabled", startIcon = Icons.Default.Check),
+            style = ButtonStyle.Warning,
+            state = ButtonState.Enabled,
+            size = ButtonSize.Medium,
+            onClick = {}
+        )
+        Button(
+            content = ButtonContent.Text(text = "Loading", startIcon = Icons.Default.Check),
+            style = ButtonStyle.Warning,
+            state = ButtonState.Loading,
+            size = ButtonSize.Medium,
+            onClick = {}
+        )
+        Button(
+            content = ButtonContent.Text(text = "Disabled", startIcon = Icons.Default.Check),
+            style = ButtonStyle.Warning,
+            state = ButtonState.Disabled,
+            size = ButtonSize.Medium,
+            onClick = {}
+        )
+
+        Button(
             content = ButtonContent.Icon(icon = Icons.Default.Check),
-            style = ButtonStyle.Transparent,
+            style = ButtonStyle.Warning,
             state = ButtonState.Enabled,
             size = ButtonSize.Small,
             onClick = {}
         )
         Button(
             content = ButtonContent.Icon(icon = Icons.Default.Check),
-            style = ButtonStyle.Transparent,
+            style = ButtonStyle.Warning,
             state = ButtonState.Loading,
             size = ButtonSize.Small,
             onClick = {}
         )
         Button(
             content = ButtonContent.Icon(icon = Icons.Default.Check),
-            style = ButtonStyle.Transparent,
+            style = ButtonStyle.Warning,
             state = ButtonState.Disabled,
             size = ButtonSize.Small,
             onClick = {}

@@ -53,6 +53,22 @@ internal fun resolveButtonColors(
                 icon = colors.contentTransparentDisabled
             )
 
+            ButtonStyle.Error -> ButtonColorTokens(
+                background1 = AppTokens.colors.button.backgroundPrimaryDisabled,
+                background2 = AppTokens.colors.button.backgroundPrimaryDisabled,
+                content = AppTokens.colors.button.contentPrimaryDisabled,
+                border = Color.Transparent,
+                icon = AppTokens.colors.button.contentPrimaryDisabled
+            )
+
+            ButtonStyle.Warning -> ButtonColorTokens(
+                background1 = AppTokens.colors.button.backgroundPrimaryDisabled,
+                background2 = AppTokens.colors.button.backgroundPrimaryDisabled,
+                content = AppTokens.colors.button.contentPrimaryDisabled,
+                border = Color.Transparent,
+                icon = AppTokens.colors.button.contentPrimaryDisabled
+            )
+
             is ButtonStyle.Custom -> style.disabled
         }
 
@@ -87,6 +103,22 @@ internal fun resolveButtonColors(
                 content = colors.textTransparent,
                 border = Color.Transparent,
                 icon = colors.iconTransparent,
+            )
+
+            ButtonStyle.Error -> ButtonColorTokens(
+                background1 = AppTokens.colors.semantic.error,
+                background2 = AppTokens.colors.semantic.error,
+                icon = AppTokens.colors.button.iconPrimary,
+                content = AppTokens.colors.button.textPrimary,
+                border = AppTokens.colors.semantic.error,
+            )
+
+            ButtonStyle.Warning -> ButtonColorTokens(
+                background1 = AppTokens.colors.semantic.warning,
+                background2 = AppTokens.colors.semantic.warning,
+                icon = AppTokens.colors.button.iconPrimary,
+                content = AppTokens.colors.button.textPrimary,
+                border = AppTokens.colors.semantic.warning,
             )
 
             is ButtonStyle.Custom -> style.enabled

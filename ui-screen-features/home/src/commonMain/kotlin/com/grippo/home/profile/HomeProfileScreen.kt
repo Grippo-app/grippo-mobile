@@ -11,11 +11,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonColorTokens
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.menu.Menu
@@ -106,22 +104,7 @@ internal fun HomeProfileScreen(
 
         Button(
             modifier = Modifier.fillMaxWidth(),
-            style = ButtonStyle.Custom(
-                enabled = ButtonColorTokens(
-                    background1 = Color.Transparent,
-                    background2 = Color.Transparent,
-                    icon = AppTokens.colors.semantic.error,
-                    content = AppTokens.colors.semantic.error,
-                    border = AppTokens.colors.semantic.error,
-                ),
-                disabled = ButtonColorTokens(
-                    background1 = AppTokens.colors.button.backgroundSecondaryDisabled,
-                    background2 = AppTokens.colors.button.backgroundSecondaryDisabled,
-                    content = AppTokens.colors.button.contentSecondaryDisabled,
-                    border = Color.Transparent,
-                    icon = AppTokens.colors.button.contentSecondaryDisabled
-                ),
-            ),
+            style = ButtonStyle.Error,
             content = ButtonContent.Text(
                 startIcon = AppTokens.icons.LogOut,
                 text = AppTokens.strings.res(Res.string.logout_btn),

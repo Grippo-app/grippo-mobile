@@ -13,12 +13,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
 import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonColorTokens
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
@@ -117,22 +115,7 @@ internal fun ExerciseScreen(
                         content = ButtonContent.Icon(
                             icon = AppTokens.icons.Cancel
                         ),
-                        style = ButtonStyle.Custom(
-                            enabled = ButtonColorTokens(
-                                background1 = AppTokens.colors.semantic.error,
-                                background2 = AppTokens.colors.semantic.error,
-                                icon = AppTokens.colors.button.iconPrimary,
-                                content = AppTokens.colors.button.textPrimary,
-                                border = AppTokens.colors.semantic.error,
-                            ),
-                            disabled = ButtonColorTokens(
-                                background1 = AppTokens.colors.button.backgroundPrimaryDisabled,
-                                background2 = AppTokens.colors.button.backgroundPrimaryDisabled,
-                                content = AppTokens.colors.button.contentPrimaryDisabled,
-                                border = Color.Transparent,
-                                icon = AppTokens.colors.button.contentPrimaryDisabled
-                            ),
-                        ),
+                        style = ButtonStyle.Error,
                         onClick = deleteIterationProvider
                     )
                 }
