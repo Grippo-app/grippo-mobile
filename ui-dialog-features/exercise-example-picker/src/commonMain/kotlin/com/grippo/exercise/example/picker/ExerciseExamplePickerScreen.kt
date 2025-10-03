@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -18,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
@@ -31,6 +29,7 @@ import com.grippo.design.components.cards.selectable.SelectableCard
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.components.inputs.InputSearch
+import com.grippo.design.components.placeholder.ScreenPlaceholder
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -126,10 +125,11 @@ internal fun ExerciseExamplePickerScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         if (state.exerciseExamples.isEmpty()) {
-            Placeholder(
+            ScreenPlaceholder(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
+                    .weight(1f),
+                text = AppTokens.strings.res(Res.string.not_found),
             )
         } else {
             LazyColumn(
@@ -157,24 +157,6 @@ internal fun ExerciseExamplePickerScreen(
         }
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-    }
-}
-
-@Composable
-private fun Placeholder(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
-            .alpha(0.2f)
-            .wrapContentSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-    ) {
-        Text(
-            text = AppTokens.strings.res(Res.string.not_found),
-            textAlign = TextAlign.Center,
-            style = AppTokens.typography.b14Bold(),
-            color = AppTokens.colors.text.primary
-        )
     }
 }
 

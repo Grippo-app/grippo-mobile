@@ -1,23 +1,18 @@
 package com.grippo.training.recording.pages
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.text.style.TextAlign
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.placeholder.ScreenPlaceholder
 import com.grippo.design.components.swipe.SwipeToReveal
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
@@ -45,8 +40,9 @@ internal fun ExercisesPage(
     val exercises = remember(state.exercises) { state.exercises }
 
     if (exercises.isEmpty()) {
-        Placeholder(
-            modifier = modifier
+        ScreenPlaceholder(
+            modifier = modifier,
+            text = AppTokens.strings.res(Res.string.no_exercises_yet),
         )
     } else {
         LazyColumn(
@@ -91,24 +87,6 @@ internal fun ExercisesPage(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun Placeholder(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
-            .alpha(0.2f)
-            .wrapContentSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-    ) {
-        Text(
-            text = AppTokens.strings.res(Res.string.no_exercises_yet),
-            textAlign = TextAlign.Center,
-            style = AppTokens.typography.b14Bold(),
-            color = AppTokens.colors.text.primary
-        )
     }
 }
 

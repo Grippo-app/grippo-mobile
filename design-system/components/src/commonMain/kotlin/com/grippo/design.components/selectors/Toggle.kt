@@ -54,7 +54,7 @@ public fun Toggle(
             val background2Color = if (checked) toggle.checkedTrack2 else toggle.uncheckedTrack2
 
             drawRoundRect(
-                brush = Brush.verticalGradient(
+                brush = Brush.horizontalGradient(
                     0f to background1Color,
                     1f to background2Color,
                 ),
