@@ -43,5 +43,4 @@ public class ExerciseExampleViewModel(
     override fun onDismiss() {
         navigateTo(ExerciseExampleDirection.Back)
     }
-
 }

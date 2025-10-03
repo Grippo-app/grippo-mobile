@@ -41,8 +41,6 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun SystemBarsIcons(isDark: Boolean) {
-    // isDark = true  -> dark background -> light icons
-    // isDark = false -> light background -> dark icons
     val view = LocalView.current
 
     // Local helper inlined inside the composable (no top-level function)

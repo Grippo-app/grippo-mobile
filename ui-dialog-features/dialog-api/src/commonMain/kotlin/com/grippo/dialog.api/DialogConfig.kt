@@ -18,8 +18,8 @@ import kotlinx.serialization.Transient
 public sealed class DialogConfig(
     public open val onDismiss: (() -> Unit)?,
     public open val dismissBySwipe: Boolean,
+) {
 
-    ) {
     @Serializable
     public data class ErrorDisplay(
         val error: AppErrorState,
