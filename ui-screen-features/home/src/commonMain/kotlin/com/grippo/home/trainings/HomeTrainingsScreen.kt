@@ -82,7 +82,9 @@ internal fun HomeTrainingsScreen(
     LazyColumn(
         modifier = Modifier.fillMaxWidth().weight(1f),
         contentPadding = PaddingValues(
-            horizontal = AppTokens.dp.screen.horizontalPadding,
+            start = AppTokens.dp.screen.horizontalPadding,
+            end = AppTokens.dp.screen.horizontalPadding,
+            bottom = AppTokens.dp.contentPadding.content
         ),
     ) {
         items(

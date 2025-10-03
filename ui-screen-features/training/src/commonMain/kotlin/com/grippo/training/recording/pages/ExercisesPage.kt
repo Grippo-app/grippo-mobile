@@ -1,7 +1,6 @@
 package com.grippo.training.recording.pages
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -47,7 +46,6 @@ internal fun ExercisesPage(
     } else {
         LazyColumn(
             modifier = modifier,
-            contentPadding = PaddingValues(top = AppTokens.dp.contentPadding.content),
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
         ) {
             items(

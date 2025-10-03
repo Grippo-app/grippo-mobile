@@ -23,6 +23,7 @@ import com.grippo.design.components.chip.TimerChip
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.toolbar.Toolbar
+import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -63,6 +64,7 @@ internal fun TrainingRecordingScreen(
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
+        style = ToolbarStyle.Transparent,
         title = when (state.stage) {
             StageState.Add -> AppTokens.strings.res(Res.string.add_training_title)
             StageState.Draft -> AppTokens.strings.res(Res.string.add_training_title)

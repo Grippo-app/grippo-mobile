@@ -52,10 +52,7 @@ internal fun StatisticsPage(
     } else LazyVerticalGrid(
         modifier = modifier,
         columns = GridCells.Fixed(3),
-        contentPadding = PaddingValues(
-            vertical = AppTokens.dp.contentPadding.content,
-            horizontal = AppTokens.dp.screen.horizontalPadding
-        ),
+        contentPadding = PaddingValues(horizontal = AppTokens.dp.screen.horizontalPadding),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {

@@ -24,6 +24,7 @@ import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.components.swipe.SwipeToReveal
 import com.grippo.design.components.toolbar.Toolbar
+import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.components.training.IterationCard
 import com.grippo.design.components.training.IterationCardStyle
 import com.grippo.design.core.AppTokens
@@ -50,24 +51,26 @@ internal fun ExerciseScreen(
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         onBack = contract::onBack,
+        style = ToolbarStyle.Transparent,
+        content = {
+            state.exerciseExample?.let { example ->
+                ExerciseExampleCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = AppTokens.dp.screen.horizontalPadding,
+                            end = AppTokens.dp.screen.horizontalPadding,
+                            bottom = AppTokens.dp.contentPadding.content,
+                        ),
+                    style = ExerciseExampleCardStyle.Small(
+                        onCardClick = contract::onExampleClick,
+                    ),
+                    value = example
+                )
+            }
+        },
         title = AppTokens.strings.res(Res.string.exercise_record),
     )
-
-    Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
-
-    state.exerciseExample?.let { example ->
-        ExerciseExampleCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-            style = ExerciseExampleCardStyle.Small(
-                onCardClick = contract::onExampleClick,
-            ),
-            value = example
-        )
-    }
-
-    Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
 
     LazyColumn(
         modifier = Modifier
