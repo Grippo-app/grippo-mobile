@@ -21,7 +21,7 @@ public data class ExerciseExamplePickerState(
     val filters: ImmutableList<FilterValue> = ExerciseExampleState.filters
 )
 
-internal class SearchKey(
+internal data class SearchKey(
     val query: String,
     val weightType: WeightTypeEnum?,
     val forceType: ForceTypeEnum?,
