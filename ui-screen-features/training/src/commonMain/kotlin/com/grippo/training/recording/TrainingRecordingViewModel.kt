@@ -134,9 +134,7 @@ internal class TrainingRecordingViewModel(
         val lastTargetMuscleId = state.value.examples
             .firstOrNull { it.value.id == lastExampleId }
             ?.bundles
-            ?.maxByOrNull {
-                (it.percentage as? PercentageFormatState.Valid)?.value ?: Int.MIN_VALUE
-            }
+            ?.maxByOrNull { (it.percentage as? PercentageFormatState.Valid)?.value ?: 0 }
             ?.muscle
             ?.id
 

@@ -2,6 +2,7 @@ package com.grippo.training.completed
 
 import com.grippo.calculation.AnalyticsApi
 import com.grippo.core.BaseViewModel
+import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.data.features.api.training.models.Training
@@ -23,9 +24,10 @@ internal class TrainingCompletedViewModel(
     exercises: List<ExerciseState>,
     trainingFeature: TrainingFeature,
     startAt: LocalDateTime,
-    private val dialogController: DialogController,
     stringProvider: StringProvider,
     colorProvider: ColorProvider,
+    private val dialogController: DialogController,
+    private val exerciseExampleFeature: ExerciseExampleFeature
 ) : BaseViewModel<TrainingCompletedState, TrainingCompletedDirection, TrainingCompletedLoader>(
     TrainingCompletedState()
 ), TrainingCompletedContract {
@@ -69,6 +71,8 @@ internal class TrainingCompletedViewModel(
             trainingFeature.deleteDraftTraining().getOrThrow()
 
             val domain = trainingFeature.observeTraining(id).firstOrNull()
+
+            exerciseExampleFeature.getExerciseExamples()
 
             provideTraining(domain)
         }

@@ -77,10 +77,6 @@ public class ExerciseExamplePickerViewModel(
             }
             .onEach(::provideExerciseExamples)
             .safeLaunch()
-
-        safeLaunch {
-            exerciseExampleFeature.getExerciseExamples()
-        }
     }
 
     private fun provideMuscles(list: List<MuscleGroup>) {
@@ -112,7 +108,15 @@ public class ExerciseExamplePickerViewModel(
     }
 
     override fun onMuscleGroupClick(id: String) {
-        update { it.copy(selectedMuscleGroupId = id) }
+        update {
+            val value = if (it.selectedMuscleGroupId == id) {
+                null
+            } else {
+                id
+            }
+
+            it.copy(selectedMuscleGroupId = value)
+        }
     }
 
     override fun onDismiss() {
