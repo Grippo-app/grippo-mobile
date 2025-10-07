@@ -16,6 +16,7 @@ import com.grippo.state.domain.example.toDomain
 import com.grippo.state.filters.FilterValue
 import com.grippo.state.sorting.SortingEnumState
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -24,7 +25,6 @@ import kotlinx.coroutines.flow.onEach
 public class ExerciseExamplePickerViewModel(
     targetMuscleGroupId: String?,
     userExerciseExamplesUseCase: UserExerciseExamplesUseCase,
-    exerciseExampleFeature: ExerciseExampleFeature,
     muscleFeature: MuscleFeature,
     private val dialogController: DialogController,
 ) : BaseViewModel<ExerciseExamplePickerState, ExerciseExamplePickerDirection, ExerciseExamplePickerLoader>(

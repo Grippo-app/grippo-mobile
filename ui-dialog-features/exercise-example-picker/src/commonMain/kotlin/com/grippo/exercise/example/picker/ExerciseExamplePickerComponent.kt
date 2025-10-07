@@ -18,7 +18,6 @@ public class ExerciseExamplePickerComponent(
     override val viewModel: ExerciseExamplePickerViewModel = componentContext.retainedInstance {
         ExerciseExamplePickerViewModel(
             targetMuscleGroupId = targetMuscleGroupId,
-            exerciseExampleFeature = getKoin().get(),
             userExerciseExamplesUseCase = getKoin().get(),
             muscleFeature = getKoin().get(),
             dialogController = getKoin().get(),
