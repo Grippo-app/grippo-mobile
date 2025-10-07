@@ -226,7 +226,7 @@ internal class TrainingRecordingViewModel(
     override fun onBack() {
         if (state.value.exercises.isEmpty()) {
             safeLaunch {
-                trainingFeature.deleteDraftTraining()
+                trainingFeature.deleteDraftTraining().getOrThrow()
                 navigateTo(TrainingRecordingDirection.Back)
             }
         } else {
@@ -236,7 +236,7 @@ internal class TrainingRecordingViewModel(
                     description = stringProvider.get(Res.string.training_progress_lost_description),
                     onResult = {
                         safeLaunch {
-                            trainingFeature.deleteDraftTraining()
+                            trainingFeature.deleteDraftTraining().getOrThrow()
                             navigateTo(TrainingRecordingDirection.Back)
                         }
                     }

@@ -41,10 +41,16 @@ internal class ProfileEquipmentsViewModel(
             .toPersistentList()
 
         update {
+            val currentGroup = it.selectedGroupId
+            val resolvedGroupId = when {
+                currentGroup != null && suggestions.any { group -> group.id == currentGroup } -> currentGroup
+                else -> suggestions.firstOrNull()?.id
+            }
+
             it.copy(
                 suggestions = suggestions,
                 selectedEquipmentIds = selectedIds,
-                selectedGroupId = suggestions.firstOrNull()?.id
+                selectedGroupId = resolvedGroupId
             )
         }
     }

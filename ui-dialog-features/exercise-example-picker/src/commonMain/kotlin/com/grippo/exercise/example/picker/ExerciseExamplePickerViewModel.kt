@@ -39,6 +39,7 @@ public class ExerciseExamplePickerViewModel(
             .safeLaunch()
 
         state
+            .debounce(200)
             .map { s ->
                 val muscleGroupId = s.selectedMuscleGroupId
                 val sortBy = SortingEnumState.RecentlyUsed.toDomain()

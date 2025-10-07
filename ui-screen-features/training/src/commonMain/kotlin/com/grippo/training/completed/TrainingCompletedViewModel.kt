@@ -72,7 +72,7 @@ internal class TrainingCompletedViewModel(
 
             val domain = trainingFeature.observeTraining(id).firstOrNull()
 
-            exerciseExampleFeature.getExerciseExamples()
+            exerciseExampleFeature.getExerciseExamples().getOrThrow()
 
             provideTraining(domain)
         }

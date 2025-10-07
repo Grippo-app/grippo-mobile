@@ -104,8 +104,11 @@ internal fun ExerciseExamplePickerScreen(
 
         val groupsListState = rememberLazyListState()
 
-        LaunchedEffect(state.muscleGroups.isNotEmpty()) {
-            val index = state.muscleGroups.map { it.id }.indexOf(state.selectedMuscleGroupId)
+        LaunchedEffect(state.muscleGroups, state.selectedMuscleGroupId) {
+            val index = state.muscleGroups
+                .map { it.id }
+                .indexOf(state.selectedMuscleGroupId)
+                .takeIf { it >= 0 } ?: return@LaunchedEffect
             groupsListState.scrollToItem(index)
         }
 
@@ -152,7 +155,7 @@ internal fun ExerciseExamplePickerScreen(
                     items = state.exerciseExamples,
                     key = { it.value.id },
                 ) { item ->
-                    val selectClickProvider = remember(item) {
+                    val selectClickProvider = remember(item.value.id) {
                         { contract.onExerciseExampleSelectClick(item.value.id) }
                     }
 

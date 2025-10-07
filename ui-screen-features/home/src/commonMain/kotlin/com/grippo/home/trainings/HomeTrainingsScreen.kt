@@ -103,7 +103,7 @@ internal fun HomeTrainingsScreen(
                 style = style
             ) {
                 if (value is TrainingListValue.DateTime) {
-                    val clickProvider = remember {
+                    val clickProvider = remember(value.trainingId) {
                         { contract.onTrainingMenuClick(value.trainingId) }
                     }
 
@@ -156,7 +156,7 @@ internal fun HomeTrainingsScreen(
                 }
 
                 if (exercise != null) {
-                    val clickProvider = remember {
+                    val clickProvider = remember(exercise.id) {
                         { contract.onExerciseClick(exercise.id) }
                     }
 

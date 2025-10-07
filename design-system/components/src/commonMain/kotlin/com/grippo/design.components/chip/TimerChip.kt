@@ -2,6 +2,7 @@ package com.grippo.design.components.chip
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import com.grippo.date.utils.DateTimeUtils
@@ -20,7 +21,8 @@ public fun TimerChip(
 ) {
     val colors = AppTokens.colors.chip.timer
 
-    val time = timerTextFlow(start = value).collectAsState(initial = "")
+    val timerFlow = remember(value) { timerTextFlow(start = value) }
+    val time = timerFlow.collectAsState(initial = "")
 
     Chip(
         modifier = modifier,

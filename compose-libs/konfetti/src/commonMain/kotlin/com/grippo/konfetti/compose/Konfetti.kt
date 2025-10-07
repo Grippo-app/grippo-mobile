@@ -24,8 +24,6 @@ public fun Konfetti(
     parties: List<Party>,
     updateListener: OnParticleSystemUpdateListener? = null,
 ) {
-    lateinit var partySystems: List<PartySystem>
-
     /**
      * Particles to draw
      */
@@ -44,9 +42,9 @@ public fun Konfetti(
     val density = LocalDensity.current.density
 
 
-    LaunchedEffect(Unit) {
-        partySystems = parties.map {
-            PartySystem(party = it, pixelDensity = density)
+    LaunchedEffect(parties, density) {
+        val partySystems = parties.map { party ->
+            PartySystem(party = party, pixelDensity = density)
         }
 
         while (true) {

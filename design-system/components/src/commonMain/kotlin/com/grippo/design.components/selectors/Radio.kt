@@ -12,6 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.disabled
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import com.grippo.design.components.modifiers.scalableClick
@@ -60,8 +63,12 @@ public fun Radio(
 
     Canvas(
         modifier = modifier
-            .semantics { this.selected = selected }
-            .scalableClick(onClick = onSelectedChange)
+            .semantics {
+                this.selected = selected
+                role = Role.RadioButton
+                if (!enabled) disabled()
+            }
+            .scalableClick(enabled = enabled, onClick = onSelectedChange)
             .size(dp.size)
     ) {
         val center = Offset(x = size.width / 2, y = size.height / 2)

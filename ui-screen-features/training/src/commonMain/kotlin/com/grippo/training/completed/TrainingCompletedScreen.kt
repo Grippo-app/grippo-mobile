@@ -137,11 +137,11 @@ internal fun TrainingCompletedScreen(
                         contentType = { it::class }
                     ) { value ->
                         val radius = AppTokens.dp.menu.radius
-                        val shape = remember(value) { value.shape(radius) }
-                        val exercise = remember(value) { value.exercise() }
+                        val shape = remember(value.key) { value.shape(radius) }
+                        val exercise = remember(value.key) { value.exercise() }
 
                         if (exercise != null) {
-                            val clickProvider = remember {
+                            val clickProvider = remember(exercise.id) {
                                 { contract.onExerciseClick(exercise.id) }
                             }
 

@@ -55,7 +55,7 @@ internal fun TrainingRecordingScreen(
     val exercisesTxt = AppTokens.strings.res(Res.string.exercises)
     val statisticsTxt = AppTokens.strings.res(Res.string.statistics)
 
-    val segmentItems = remember {
+    val segmentItems = remember(exercisesTxt, statisticsTxt) {
         persistentListOf(
             RecordingTab.Exercises to UiText.Str(exercisesTxt),
             RecordingTab.Stats to UiText.Str(statisticsTxt),

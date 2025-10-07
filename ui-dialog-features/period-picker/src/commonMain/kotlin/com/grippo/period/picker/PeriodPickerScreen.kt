@@ -70,7 +70,7 @@ internal fun PeriodPickerScreen(
                 key = { it.hashCode() },
             ) { item ->
                 val clickProvider = remember(item) { { contract.onSelectClick(item) } }
-                val isSelected = remember(state.value) { state.value == item }
+                val isSelected = remember(state.value, item) { state.value == item }
 
                 SelectableCard(
                     modifier = Modifier.fillMaxWidth(),

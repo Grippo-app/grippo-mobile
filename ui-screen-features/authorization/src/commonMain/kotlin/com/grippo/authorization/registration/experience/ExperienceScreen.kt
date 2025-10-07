@@ -93,8 +93,8 @@ internal fun ExperienceScreen(
                 items = state.suggestions,
                 key = { it.ordinal },
             ) { item ->
-                val selectProvider = remember { { contract.onExperienceClick(item) } }
-                val isSelected = remember(state.selected) { state.selected == item }
+                val selectProvider = remember(item) { { contract.onExperienceClick(item) } }
+                val isSelected = remember(state.selected, item) { state.selected == item }
 
                 SelectableCard(
                     modifier = Modifier.fillMaxWidth(),

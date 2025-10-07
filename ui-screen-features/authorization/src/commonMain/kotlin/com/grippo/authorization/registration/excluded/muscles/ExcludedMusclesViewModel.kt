@@ -33,14 +33,29 @@ internal class ExcludedMusclesViewModel(
 
     private suspend fun provideMuscles(list: List<MuscleGroup>) {
         val suggestions = list.toState()
-        val selectedIds = suggestions
+        val previous = state.value
+
+        val previousKnownIds = previous.suggestions
             .flatMap { it.muscles }
             .map { it.value.id }
+            .toSet()
+        val allIds = suggestions.flatMap { it.muscles }.map { it.value.id }
+
+        val retainedSet = previous.selectedMuscleIds
+            .filter { it in allIds }
+            .toSet()
+        val newlyDiscovered = allIds
+            .filter { it !in previousKnownIds }
+            .toSet()
+
+        val selected = allIds
+            .filter { it in retainedSet || it in newlyDiscovered }
             .toPersistentList()
+            .ifEmpty { allIds.toPersistentList() }
 
-        update { it.copy(suggestions = suggestions, selectedMuscleIds = selectedIds) }
+        update { it.copy(suggestions = suggestions, selectedMuscleIds = selected) }
 
-        calculatePresets(suggestions, selectedIds)
+        calculatePresets(suggestions, selected)
     }
 
     override fun onSelect(id: String) {
