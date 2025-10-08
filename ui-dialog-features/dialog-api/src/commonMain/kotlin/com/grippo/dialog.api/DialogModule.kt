@@ -4,5 +4,5 @@ import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
 
 @Module
-@ComponentScan("com.grippo.dialog.api")
+@ComponentScan
 public class DialogModule

@@ -15,7 +15,7 @@ import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
 
 @Module
-@ComponentScan("com.grippo.database")
+@ComponentScan
 public class DatabaseModule {
 
     @Single

@@ -11,7 +11,7 @@ import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
 
 @Module
-@ComponentScan("com.grippo.network")
+@ComponentScan
 public class NetworkModule {
 
     @Single

@@ -6,7 +6,7 @@ import org.koin.core.annotation.Single
 import org.koin.core.scope.Scope
 
 @Module
-@ComponentScan("com.grippo.platform.core")
+@ComponentScan
 public actual class PlatformModule actual constructor() {
 
     @Single

@@ -6,7 +6,7 @@ import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
 
 @Module
-@ComponentScan("com.grippo.connectivity")
+@ComponentScan
 public class ConnectivityModule {
 
     @Single
