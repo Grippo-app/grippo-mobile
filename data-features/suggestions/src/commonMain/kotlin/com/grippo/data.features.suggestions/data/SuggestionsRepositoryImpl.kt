@@ -2,7 +2,9 @@ package com.grippo.data.features.suggestions.data
 
 import com.grippo.ai.AiService
 import com.grippo.data.features.api.exercise.example.models.CategoryEnum
+import com.grippo.data.features.api.exercise.example.models.ExampleSortingEnum
 import com.grippo.data.features.api.exercise.example.models.ExerciseExampleValue
+import com.grippo.data.features.api.suggestion.models.ExerciseExampleSuggestion
 import com.grippo.data.features.suggestions.domain.SuggestionsRepository
 import com.grippo.database.dao.DraftTrainingDao
 import com.grippo.database.dao.ExerciseExampleDao
@@ -36,60 +38,52 @@ internal class SuggestionsRepositoryImpl(
     private val userActiveDao: UserActiveDao,
 ) : SuggestionsRepository {
 
-    override suspend fun predictExerciseExample(): ExerciseExampleValue? {
-        val now = DateTimeUtils.now()
-        val catalog = loadExampleCatalog() ?: return null
-        val signals = buildPredictionSignals(now, catalog)
+    override suspend fun predictExerciseExample(): Result<ExerciseExampleSuggestion?> {
+        return runCatching {
+            val now = DateTimeUtils.now()
+            val catalog = loadExampleCatalog() ?: return@runCatching null
+            val signals = buildPredictionSignals(now, catalog)
 
-        val candidates = selectCandidateContexts(catalog, signals)
-        if (candidates.isEmpty()) return null
+            val candidates = selectCandidateContexts(catalog, signals)
+            if (candidates.isEmpty()) return@runCatching null
 
-        val prompt = buildPrompt(now, signals, candidates)
-        val answer = aiService.ask(prompt, SYSTEM_PROMPT.trimIndent())
-        val chosenId = parseSuggestedExerciseId(answer)
-        return chosenId?.let(catalog.byId::get)?.value
+            val prompt = buildPrompt(now, signals, candidates)
+            val answer = aiService.ask(prompt, SYSTEM_PROMPT.trimIndent())
+            val chosenId = parseSuggestedExerciseId(answer)
+
+            chosenId?.let { ExerciseExampleSuggestion(id = chosenId) }
+        }
     }
 
     private suspend fun loadExampleCatalog(): ExampleCatalog? {
-        val contexts = exerciseExampleDao
-            .get()
-            .firstOrNull()
-            .orEmpty()
-            .mapNotNull { it.toContextOrNull() }
-        if (contexts.isEmpty()) return null
+        val userId = userActiveDao.get().firstOrNull() ?: return null
 
-        val exclusions = loadUserExclusions()
-        val filtered = contexts.filter { context ->
-            context.isAllowed(exclusions.muscleIds, exclusions.equipmentIds)
-        }
-        if (filtered.isEmpty()) return null
+        val excludedMuscleIds = userDao.getExcludedMuscles(userId)
+            .firstOrNull()
+            ?.map { it.id }
+            ?.toSet()
+            ?: emptySet()
+
+        val excludedEquipmentIds = userDao.getExcludedEquipments(userId)
+            .firstOrNull()
+            ?.map { it.id }
+            ?.toSet()
+            ?: emptySet()
+
+        val filtered = exerciseExampleDao.getAll(
+            excludedEquipmentIds = excludedEquipmentIds,
+            excludedMuscleIds = excludedMuscleIds,
+            limits = null,
+            number = null,
+            sorting = ExampleSortingEnum.RecentlyUsed.key
+        )
+            .firstOrNull()
+            ?.mapNotNull { it.toContextOrNull() } ?: return null
 
         return ExampleCatalog(
             contexts = filtered,
             byId = filtered.associateBy { it.id }
         )
-    }
-
-    private suspend fun loadUserExclusions(): UserExclusions {
-        val userId = userActiveDao.get().firstOrNull() ?: return UserExclusions.EMPTY
-
-        val muscleIds = userDao.getExcludedMuscles(userId)
-            .firstOrNull()
-            ?.map { it.id }
-            ?.toSet()
-            ?: emptySet()
-
-        val equipmentIds = userDao.getExcludedEquipments(userId)
-            .firstOrNull()
-            ?.map { it.id }
-            ?.toSet()
-            ?: emptySet()
-
-        if (muscleIds.isEmpty() && equipmentIds.isEmpty()) {
-            return UserExclusions.EMPTY
-        }
-
-        return UserExclusions(muscleIds, equipmentIds)
     }
 
     private suspend fun buildPredictionSignals(
@@ -102,6 +96,7 @@ internal class SuggestionsRepositoryImpl(
             ?: emptyList()
 
         val lookbackFrom = DateTimeUtils.minus(now, HISTORY_LOOKBACK_DAYS.days)
+
         val rawTrainings = trainingDao.get(
             from = DateTimeUtils.toUtcIso(lookbackFrom),
             to = DateTimeUtils.toUtcIso(now)
@@ -146,7 +141,8 @@ internal class SuggestionsRepositoryImpl(
         catalog: ExampleCatalog,
         signals: PredictionSignals
     ): List<ExampleContext> {
-        val comparator = exampleComparator(signals.stage, signals.muscleDeficits, signals.categoryStats)
+        val comparator =
+            exampleComparator(signals.stage, signals.muscleDeficits, signals.categoryStats)
         val filtered = catalog.contexts
             .filterNot { it.id in signals.performedExampleIds }
             .sortedWith(comparator)
@@ -161,17 +157,21 @@ internal class SuggestionsRepositoryImpl(
 
     private fun TrainingPack.toSummary(exampleContextMap: Map<String, ExampleContext>): TrainingSummary {
         val performedAt = DateTimeUtils.toLocalDateTime(training.createdAt)
-        val exercises = exercises.map { pack ->
+        val exercises = exercises.mapNotNull { pack ->
             val context = exampleContextMap[pack.exercise.exerciseExampleId]
             val example = pack.example
+            val forceType = context?.forceType ?: example?.forceType ?: return@mapNotNull null
+            val weightType = context?.weightType ?: example?.weightType ?: return@mapNotNull null
+            val experience = context?.experience ?: example?.experience ?: return@mapNotNull null
+
             ExerciseSummary(
                 exampleId = pack.exercise.exerciseExampleId,
                 displayName = context?.displayName ?: pack.exercise.name,
                 muscles = context?.muscles ?: emptyList(),
                 category = context?.category ?: example?.category ?: CategoryEnum.COMPOUND.key,
-                forceType = context?.forceType ?: example?.forceType ?: DEFAULT_FORCE_TYPE,
-                weightType = context?.weightType ?: example?.weightType ?: DEFAULT_WEIGHT_TYPE,
-                experience = context?.experience ?: example?.experience ?: DEFAULT_EXPERIENCE
+                forceType = forceType,
+                weightType = weightType,
+                experience = experience
             )
         }
 
@@ -185,17 +185,23 @@ internal class SuggestionsRepositoryImpl(
     private fun DraftTrainingPack.toSessionSummaries(
         exampleContextMap: Map<String, ExampleContext>
     ): List<ExerciseSummary> {
-        return exercises.map { pack ->
+        return exercises.mapNotNull { pack ->
             val exampleId = pack.exercise.exerciseExampleId
             val context = exampleContextMap[exampleId]
+            val forceType = context?.forceType ?: pack.example?.forceType ?: return@mapNotNull null
+            val weightType =
+                context?.weightType ?: pack.example?.weightType ?: return@mapNotNull null
+            val experience =
+                context?.experience ?: pack.example?.experience ?: return@mapNotNull null
+
             ExerciseSummary(
                 exampleId = exampleId,
                 displayName = context?.displayName ?: pack.exercise.name,
                 muscles = context?.muscles ?: emptyList(),
                 category = context?.category ?: pack.example?.category ?: CategoryEnum.COMPOUND.key,
-                forceType = context?.forceType ?: pack.example?.forceType ?: DEFAULT_FORCE_TYPE,
-                weightType = context?.weightType ?: pack.example?.weightType ?: DEFAULT_WEIGHT_TYPE,
-                experience = context?.experience ?: pack.example?.experience ?: DEFAULT_EXPERIENCE
+                forceType = forceType,
+                weightType = weightType,
+                experience = experience
             )
         }
     }
@@ -367,7 +373,12 @@ internal class SuggestionsRepositoryImpl(
                 appendLine(" - none recorded; rely on recent history")
             } else {
                 signals.session.take(MAX_SESSION_EXERCISES).forEach { exercise ->
-                    val tags = listOf(exercise.category, exercise.forceType, exercise.weightType, exercise.experience)
+                    val tags = listOf(
+                        exercise.category,
+                        exercise.forceType,
+                        exercise.weightType,
+                        exercise.experience
+                    )
                         .joinToString(separator = "/")
                     appendLine(" - ${exercise.displayName}${exercise.muscleSummary()} ($tags)")
                 }
@@ -425,7 +436,9 @@ internal class SuggestionsRepositoryImpl(
             } else {
                 signals.trainings.forEachIndexed { index, training ->
                     append(" ${index + 1}. ${training.performedAt} (${training.dayOfWeek.shortName()}): ")
-                    append(training.exercises.take(MAX_TRAINING_EXERCISES).joinToString { it.displayName + it.muscleSummary() })
+                    append(
+                        training.exercises.take(MAX_TRAINING_EXERCISES)
+                            .joinToString { it.displayName + it.muscleSummary() })
                     if (training.exercises.size > MAX_TRAINING_EXERCISES) {
                         append(" +${training.exercises.size - MAX_TRAINING_EXERCISES} more")
                     }
@@ -452,7 +465,12 @@ internal class SuggestionsRepositoryImpl(
             appendLine()
             appendLine("Candidates:")
             candidateContexts.forEach { context ->
-                val tags = listOf(context.category, context.forceType, context.weightType, context.experience)
+                val tags = listOf(
+                    context.category,
+                    context.forceType,
+                    context.weightType,
+                    context.experience
+                )
                     .joinToString(separator = "/")
                 val targetNote = context.primaryMuscleId()
                     ?.let { muscleTargetMap[it] }
@@ -486,7 +504,8 @@ internal class SuggestionsRepositoryImpl(
             val usageCompare = left.usageCount.compareTo(right.usageCount)
             if (usageCompare != 0) return@Comparator usageCompare
 
-            val lastUsedCompare = (left.lastUsed ?: OLDEST_DATE).compareTo(right.lastUsed ?: OLDEST_DATE)
+            val lastUsedCompare =
+                (left.lastUsed ?: OLDEST_DATE).compareTo(right.lastUsed ?: OLDEST_DATE)
             if (lastUsedCompare != 0) return@Comparator lastUsedCompare
 
             left.displayName.compareTo(right.displayName)
@@ -523,13 +542,15 @@ internal class SuggestionsRepositoryImpl(
 
     private fun ExerciseSummary.muscleSummary(): String {
         if (muscles.isEmpty()) return ""
-        val dominant = muscles.take(MAX_MUSCLES_PER_EXERCISE).joinToString { "${it.name}(${it.percentage})" }
+        val dominant =
+            muscles.take(MAX_MUSCLES_PER_EXERCISE).joinToString { "${it.name}(${it.percentage})" }
         return " [$dominant]"
     }
 
     private fun ExampleContext.muscleSummary(): String {
         if (muscles.isEmpty()) return "-"
-        return muscles.take(MAX_MUSCLES_PER_EXERCISE).joinToString { "${it.name}(${it.percentage})" }
+        return muscles.take(MAX_MUSCLES_PER_EXERCISE)
+            .joinToString { "${it.name}(${it.percentage})" }
     }
 
     private fun StringBuilder.appendMixSection(label: String, mix: Map<String, Int>) {
@@ -548,7 +569,8 @@ internal class SuggestionsRepositoryImpl(
     }
 
     private fun DayOfWeek.shortName(): String {
-        return name.lowercase().replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+        return name.lowercase()
+            .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
     }
 
     private data class PredictionSignals(
@@ -683,7 +705,9 @@ internal class SuggestionsRepositoryImpl(
 
         fun deficitScore(muscleDeficits: Map<String, Double>): Double {
             return muscles.sumOf { share ->
-                val deficit = muscleDeficits[share.id]?.let { value -> if (value < 0.0) 0.0 else value } ?: 0.0
+                val deficit =
+                    muscleDeficits[share.id]?.let { value -> if (value < 0.0) 0.0 else value }
+                        ?: 0.0
                 deficit * (share.percentage / 100.0)
             }
         }
@@ -731,25 +755,55 @@ internal class SuggestionsRepositoryImpl(
     }
 
     private companion object {
+        // Days of history considered when building usage statistics.
         private const val HISTORY_LOOKBACK_DAYS = 45
+
+        // Maximum number of recent training sessions we inspect per user.
         private const val RECENT_TRAININGS_LIMIT = 6
+
+        // Upper bound on exercises loaded from a single session for analysis.
         private const val MAX_SESSION_EXERCISES = 6
+
+        // Cap for how many exercises from today's draft we review.
         private const val MAX_TODAY_EXERCISES = 6
+
+        // Cap for exercises taken from a historic training pack.
         private const val MAX_TRAINING_EXERCISES = 6
+
+        // Limit of muscle groups captured per exercise context.
         private const val MAX_MUSCLES_PER_EXERCISE = 3
+
+        // Truncate muscle summary chips to avoid overwhelming the UI.
         private const val MAX_MUSCLE_SUMMARY = 6
+
+        // Limit number of lines shown in the muscle target view.
         private const val MAX_MUSCLE_TARGET_LINES = 4
+
+        // How many primary focus muscles we allow before rebalancing.
         private const val MAX_PRIMARY_FOCUS = 2
+
+        // Maximum muscles attached to a weekday habit line.
         private const val MAX_WEEKDAY_MUSCLES = 2
+
+        // Maximum weekday lines listed in the recap text.
         private const val MAX_WEEKDAY_LINES = 4
+
+        // Number of candidate exercises we keep before sending to the LLM.
         private const val MAX_CANDIDATE_COUNT = 8
+
+        // Compound lifts allowed early in a session during beginner stages.
         private const val EARLY_STAGE_COMPOUND_LIMIT = 2
+
+        // Epsilon tolerance when judging muscle deficit balance.
         private const val DEFICIT_EPS = 0.1
-        private const val DEFAULT_FORCE_TYPE = "unknown"
-        private const val DEFAULT_WEIGHT_TYPE = "unknown"
-        private const val DEFAULT_EXPERIENCE = "intermediate"
+
+        // Oldest timestamp placeholder when data is missing.
         private val OLDEST_DATE = LocalDateTime(1970, 1, 1, 0, 0, 0, 0)
+
+        // Shared JSON instance for resilient parsing of cached payloads.
         private val json = Json { ignoreUnknownKeys = true }
+
+        // Prompt guiding the LLM to respond with a single exercise choice.
         private const val SYSTEM_PROMPT = """
             You are a focused workout planner. Pick one exercise example ID that complements the current session, balances muscle deficits, keeps compound lifts early, and respects weekday habits. Respond with compact JSON {"exerciseExampleId":"<id>","reason":"<=120 chars"} and nothing else.
         """

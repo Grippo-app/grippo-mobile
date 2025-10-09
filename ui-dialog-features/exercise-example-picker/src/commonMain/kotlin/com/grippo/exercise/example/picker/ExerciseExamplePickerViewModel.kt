@@ -79,7 +79,8 @@ public class ExerciseExamplePickerViewModel(
             .safeLaunch()
 
         safeLaunch {
-            suggestionFeature.predictExerciseExample()
+            val result = suggestionFeature.predictExerciseExample().getOrThrow()
+            println("RESULT = $result")
         }
     }
 
