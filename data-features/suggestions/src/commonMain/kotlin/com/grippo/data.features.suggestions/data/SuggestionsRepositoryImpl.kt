@@ -70,14 +70,14 @@ internal class SuggestionsRepositoryImpl(
             ?.toSet()
             ?: emptySet()
 
-        val filtered = exerciseExampleDao.getAll(
-            excludedEquipmentIds = excludedEquipmentIds,
-            excludedMuscleIds = excludedMuscleIds,
-            limits = null,
-            number = null,
-            sorting = ExampleSortingEnum.RecentlyUsed.key
-        )
-            .firstOrNull()
+        val filtered = exerciseExampleDao
+            .getAll(
+                excludedEquipmentIds = excludedEquipmentIds,
+                excludedMuscleIds = excludedMuscleIds,
+                limits = null,
+                number = null,
+                sorting = ExampleSortingEnum.RecentlyUsed.key
+            ).firstOrNull()
             ?.mapNotNull { it.toContextOrNull() } ?: return null
 
         return ExampleCatalog(
@@ -158,7 +158,8 @@ internal class SuggestionsRepositoryImpl(
     private fun TrainingPack.toSummary(exampleContextMap: Map<String, ExampleContext>): TrainingSummary {
         val performedAt = DateTimeUtils.toLocalDateTime(training.createdAt)
         val exercises = exercises.mapNotNull { pack ->
-            val context = exampleContextMap[pack.exercise.exerciseExampleId] ?: return@mapNotNull null
+            val context =
+                exampleContextMap[pack.exercise.exerciseExampleId] ?: return@mapNotNull null
             if (context.id.isBlank()) return@mapNotNull null
             if (context.displayName.isBlank()) return@mapNotNull null
             if (context.muscles.isEmpty()) return@mapNotNull null
@@ -190,7 +191,8 @@ internal class SuggestionsRepositoryImpl(
         exampleContextMap: Map<String, ExampleContext>
     ): List<ExerciseSummary> {
         return exercises.mapNotNull { pack ->
-            val context = exampleContextMap[pack.exercise.exerciseExampleId] ?: return@mapNotNull null
+            val context =
+                exampleContextMap[pack.exercise.exerciseExampleId] ?: return@mapNotNull null
             if (context.id.isBlank()) return@mapNotNull null
             if (context.displayName.isBlank()) return@mapNotNull null
             if (context.muscles.isEmpty()) return@mapNotNull null
