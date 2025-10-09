@@ -1,7 +1,5 @@
 package com.grippo.ai
 
-import ai.koog.prompt.executor.clients.openai.OpenAIClientSettings
-import ai.koog.prompt.executor.clients.openai.OpenAILLMClient
 import ai.koog.prompt.executor.llms.all.simpleOpenRouterExecutor
 import ai.koog.prompt.executor.model.PromptExecutor
 import ai.koog.prompt.llm.LLMCapability
@@ -27,7 +25,7 @@ public class AiModule {
     internal fun provideLLModel(): LLModel {
         return LLModel(
             provider = LLMProvider.OpenRouter,
-            id = "deepseek/deepseek-chat-v3.1:free",
+            id = "qwen/qwen-2.5-7b-instruct", // stable & ultra-cheap
             capabilities = listOf(LLMCapability.Completion, LLMCapability.Tools),
             contextLength = 65_536
         )
