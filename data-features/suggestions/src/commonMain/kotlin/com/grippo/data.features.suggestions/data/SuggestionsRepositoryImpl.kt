@@ -158,17 +158,21 @@ internal class SuggestionsRepositoryImpl(
     private fun TrainingPack.toSummary(exampleContextMap: Map<String, ExampleContext>): TrainingSummary {
         val performedAt = DateTimeUtils.toLocalDateTime(training.createdAt)
         val exercises = exercises.mapNotNull { pack ->
-            val context = exampleContextMap[pack.exercise.exerciseExampleId]
-            val example = pack.example
-            val forceType = context?.forceType ?: example?.forceType ?: return@mapNotNull null
-            val weightType = context?.weightType ?: example?.weightType ?: return@mapNotNull null
-            val experience = context?.experience ?: example?.experience ?: return@mapNotNull null
+            val context = exampleContextMap[pack.exercise.exerciseExampleId] ?: return@mapNotNull null
+            if (context.id.isBlank()) return@mapNotNull null
+            if (context.displayName.isBlank()) return@mapNotNull null
+            if (context.muscles.isEmpty()) return@mapNotNull null
+
+            val forceType = context.forceType.takeIf { it.isNotBlank() } ?: return@mapNotNull null
+            val weightType = context.weightType.takeIf { it.isNotBlank() } ?: return@mapNotNull null
+            val experience = context.experience.takeIf { it.isNotBlank() } ?: return@mapNotNull null
+            val category = context.category.takeIf { it.isNotBlank() } ?: return@mapNotNull null
 
             ExerciseSummary(
-                exampleId = pack.exercise.exerciseExampleId,
-                displayName = context?.displayName ?: pack.exercise.name,
-                muscles = context?.muscles ?: emptyList(),
-                category = context?.category ?: example?.category ?: CategoryEnum.COMPOUND.key,
+                exampleId = context.id,
+                displayName = context.displayName,
+                muscles = context.muscles,
+                category = category,
                 forceType = forceType,
                 weightType = weightType,
                 experience = experience
@@ -186,19 +190,21 @@ internal class SuggestionsRepositoryImpl(
         exampleContextMap: Map<String, ExampleContext>
     ): List<ExerciseSummary> {
         return exercises.mapNotNull { pack ->
-            val exampleId = pack.exercise.exerciseExampleId
-            val context = exampleContextMap[exampleId]
-            val forceType = context?.forceType ?: pack.example?.forceType ?: return@mapNotNull null
-            val weightType =
-                context?.weightType ?: pack.example?.weightType ?: return@mapNotNull null
-            val experience =
-                context?.experience ?: pack.example?.experience ?: return@mapNotNull null
+            val context = exampleContextMap[pack.exercise.exerciseExampleId] ?: return@mapNotNull null
+            if (context.id.isBlank()) return@mapNotNull null
+            if (context.displayName.isBlank()) return@mapNotNull null
+            if (context.muscles.isEmpty()) return@mapNotNull null
+
+            val forceType = context.forceType.takeIf { it.isNotBlank() } ?: return@mapNotNull null
+            val weightType = context.weightType.takeIf { it.isNotBlank() } ?: return@mapNotNull null
+            val experience = context.experience.takeIf { it.isNotBlank() } ?: return@mapNotNull null
+            val category = context.category.takeIf { it.isNotBlank() } ?: return@mapNotNull null
 
             ExerciseSummary(
-                exampleId = exampleId,
-                displayName = context?.displayName ?: pack.exercise.name,
-                muscles = context?.muscles ?: emptyList(),
-                category = context?.category ?: pack.example?.category ?: CategoryEnum.COMPOUND.key,
+                exampleId = context.id,
+                displayName = context.displayName,
+                muscles = context.muscles,
+                category = category,
                 forceType = forceType,
                 weightType = weightType,
                 experience = experience
@@ -504,11 +510,19 @@ internal class SuggestionsRepositoryImpl(
             val usageCompare = left.usageCount.compareTo(right.usageCount)
             if (usageCompare != 0) return@Comparator usageCompare
 
-            val lastUsedCompare =
-                (left.lastUsed ?: OLDEST_DATE).compareTo(right.lastUsed ?: OLDEST_DATE)
+            val lastUsedCompare = compareLastUsed(left.lastUsed, right.lastUsed)
             if (lastUsedCompare != 0) return@Comparator lastUsedCompare
 
             left.displayName.compareTo(right.displayName)
+        }
+    }
+
+    private fun compareLastUsed(left: LocalDateTime?, right: LocalDateTime?): Int {
+        return when {
+            left == null && right == null -> 0
+            left == null -> -1
+            right == null -> 1
+            else -> left.compareTo(right)
         }
     }
 
@@ -723,26 +737,46 @@ internal class SuggestionsRepositoryImpl(
 
     private fun ExerciseExamplePack.toContextOrNull(): ExampleContext? {
         val value = example.toDomain() ?: return null
+        if (value.id.isBlank()) return null
+        if (value.name.isBlank()) return null
+
         val muscles = bundles
-            .sortedByDescending { it.bundle.percentage }
-            .take(MAX_MUSCLES_PER_EXERCISE)
-            .map {
-                MuscleShare(
-                    id = it.muscle.id,
-                    name = it.muscle.name,
-                    percentage = it.bundle.percentage
-                )
+            .mapNotNull { pack ->
+                val percentage = pack.bundle.percentage
+                val muscleId = pack.muscle.id
+                val muscleName = pack.muscle.name
+                when {
+                    percentage <= 0 -> null
+                    muscleId.isBlank() -> null
+                    muscleName.isBlank() -> null
+                    else -> MuscleShare(
+                        id = muscleId,
+                        name = muscleName,
+                        percentage = percentage
+                    )
+                }
             }
-        val equipmentIds = equipments.map { it.equipment.id }.toSet()
+            .sortedByDescending { it.percentage }
+            .take(MAX_MUSCLES_PER_EXERCISE)
+        if (muscles.isEmpty()) return null
+
+        val category = value.category.key.takeIf { it.isNotBlank() } ?: return null
+        val forceType = value.forceType.key.takeIf { it.isNotBlank() } ?: return null
+        val weightType = value.weightType.key.takeIf { it.isNotBlank() } ?: return null
+        val experience = value.experience.key.takeIf { it.isNotBlank() } ?: return null
+
+        val equipmentIds = equipments
+            .mapNotNull { it.equipment.id.takeIf { id -> id.isNotBlank() } }
+            .toSet()
 
         return ExampleContext(
             id = value.id,
             displayName = value.name,
             muscles = muscles,
-            category = value.category.key,
-            forceType = value.forceType.key,
-            weightType = value.weightType.key,
-            experience = value.experience.key,
+            category = category,
+            forceType = forceType,
+            weightType = weightType,
+            experience = experience,
             usageCount = value.usageCount,
             lastUsed = value.lastUsed,
             equipmentIds = equipmentIds,
@@ -796,9 +830,6 @@ internal class SuggestionsRepositoryImpl(
 
         // Epsilon tolerance when judging muscle deficit balance.
         private const val DEFICIT_EPS = 0.1
-
-        // Oldest timestamp placeholder when data is missing.
-        private val OLDEST_DATE = LocalDateTime(1970, 1, 1, 0, 0, 0, 0)
 
         // Shared JSON instance for resilient parsing of cached payloads.
         private val json = Json { ignoreUnknownKeys = true }
