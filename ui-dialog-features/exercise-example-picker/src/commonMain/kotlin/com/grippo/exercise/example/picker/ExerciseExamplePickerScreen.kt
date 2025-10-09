@@ -109,7 +109,7 @@ internal fun ExerciseExamplePickerScreen(
 
         val groupsListState = rememberLazyListState()
 
-        LaunchedEffect(state.muscleGroups, state.selectedMuscleGroupId) {
+        LaunchedEffect(state.muscleGroups) {
             val index = state.muscleGroups
                 .map { it.id }
                 .indexOf(state.selectedMuscleGroupId)
