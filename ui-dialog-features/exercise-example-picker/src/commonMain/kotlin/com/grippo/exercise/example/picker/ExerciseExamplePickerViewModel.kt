@@ -77,6 +77,10 @@ public class ExerciseExamplePickerViewModel(
             }
             .onEach(::provideExerciseExamples)
             .safeLaunch()
+
+        safeLaunch {
+            suggestionFeature.predictExerciseExample()
+        }
     }
 
     private fun provideMuscles(list: List<MuscleGroup>) {
