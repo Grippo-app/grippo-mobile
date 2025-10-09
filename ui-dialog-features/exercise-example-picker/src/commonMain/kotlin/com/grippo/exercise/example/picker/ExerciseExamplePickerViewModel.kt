@@ -7,6 +7,7 @@ import com.grippo.data.features.api.exercise.example.models.ExampleQueries
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
+import com.grippo.data.features.api.suggestion.SuggestionFeature
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
@@ -24,6 +25,7 @@ public class ExerciseExamplePickerViewModel(
     targetMuscleGroupId: String?,
     userExerciseExamplesUseCase: UserExerciseExamplesUseCase,
     muscleFeature: MuscleFeature,
+    suggestionFeature: SuggestionFeature,
     private val dialogController: DialogController,
 ) : BaseViewModel<ExerciseExamplePickerState, ExerciseExamplePickerDirection, ExerciseExamplePickerLoader>(
     ExerciseExamplePickerState(

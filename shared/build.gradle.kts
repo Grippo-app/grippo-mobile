@@ -28,6 +28,7 @@ kotlin {
 
         implementation(projects.dataServices.database)
         implementation(projects.dataServices.network)
+        implementation(projects.dataServices.ai)
 
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.dataFeatures.authorization)
@@ -39,6 +40,7 @@ kotlin {
         implementation(projects.dataFeatures.excludedEquipments)
         implementation(projects.dataFeatures.trainings)
         implementation(projects.dataFeatures.exerciseExamples)
+        implementation(projects.dataFeatures.suggestions)
 
         implementation(projects.dataMappers.domainToState)
 

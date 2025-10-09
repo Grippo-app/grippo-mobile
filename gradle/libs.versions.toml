@@ -17,6 +17,7 @@ immutable-collections = "0.4.0"
 sqlite = "2.6.1"
 appcompat = "1.7.1"
 coil = "3.3.0"
+koog = "0.5.0"
 
 [libraries]
 datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
@@ -35,6 +36,10 @@ android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 compose-gradle-plugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 ksp-plugin-api = { module = "com.google.devtools.ksp:symbol-processing-gradle-plugin", version.ref = "ksp" }
+
+#Koog
+koog-agent = { module = "ai.koog:koog-agents", version.ref = "koog" }
+openrouter-client = { module = "ai.koog:prompt-executor-openrouter-client", version.ref = "koog" }
 
 #Decompose
 decompose-core = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }

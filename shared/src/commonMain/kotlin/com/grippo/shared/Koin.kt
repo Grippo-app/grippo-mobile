@@ -1,5 +1,6 @@
 package com.grippo.shared
 
+import com.grippo.ai.AiModule
 import com.grippo.connectivity.ConnectivityModule
 import com.grippo.core.CoreModule
 import com.grippo.data.features.api.FeatureApiModule
@@ -9,6 +10,7 @@ import com.grippo.data.features.excluded.equipments.ExcludedEquipmentFeatureModu
 import com.grippo.data.features.excluded.muscles.ExcludedMusclesFeatureModule
 import com.grippo.data.features.exercise.examples.ExerciseExamplesFeatureModule
 import com.grippo.data.features.muscle.MusclesFeatureModule
+import com.grippo.data.features.suggestions.SuggestionsFeatureModule
 import com.grippo.data.features.trainings.TrainingsFeatureModule
 import com.grippo.data.features.user.UserFeatureModule
 import com.grippo.data.features.weight.history.WeightHistoryFeatureModule
@@ -46,7 +48,9 @@ public object Koin {
             ExcludedEquipmentFeatureModule().module,
             FeatureApiModule().module,
             ConnectivityModule().module,
-            ResourcesProviderModule().module
+            ResourcesProviderModule().module,
+            AiModule().module,
+            SuggestionsFeatureModule().module
         )
     }
 }
