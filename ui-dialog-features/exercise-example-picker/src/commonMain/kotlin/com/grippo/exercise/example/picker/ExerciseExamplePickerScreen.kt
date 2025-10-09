@@ -1,11 +1,17 @@
 package com.grippo.exercise.example.picker
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -79,7 +85,6 @@ internal fun ExerciseExamplePickerScreen(
                 value = state.query,
                 onValueChange = contract::onQueryChange
             )
-
             Box {
                 Button(
                     content = ButtonContent.Icon(
@@ -138,34 +143,43 @@ internal fun ExerciseExamplePickerScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-        if (state.exerciseExamples.isEmpty()) {
-            ScreenPlaceholder(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                text = AppTokens.strings.res(Res.string.not_found),
-            )
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth().weight(1f),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-                contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
-            ) {
-                items(
-                    items = state.exerciseExamples,
-                    key = { it.value.id },
-                ) { item ->
-                    val selectClickProvider = remember(item.value.id) {
-                        { contract.onExerciseExampleSelectClick(item.value.id) }
-                    }
+        AnimatedContent(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            transitionSpec = {
+                (fadeIn(animationSpec = tween(220, delayMillis = 90)))
+                    .togetherWith(fadeOut(animationSpec = tween(90)))
+            },
+            targetState = state.exerciseExamples.isEmpty(),
+        ) {
+            when (it) {
+                true -> ScreenPlaceholder(
+                    modifier = Modifier.fillMaxSize(),
+                    text = AppTokens.strings.res(Res.string.not_found),
+                )
 
-                    ExerciseExampleCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = item,
-                        style = ExerciseExampleCardStyle.Medium(
-                            onCardClick = selectClickProvider,
-                        ),
-                    )
+                false -> LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                    contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                ) {
+                    items(
+                        items = state.exerciseExamples,
+                        key = { it.value.id },
+                    ) { item ->
+                        val selectClickProvider = remember(item.value.id) {
+                            { contract.onExerciseExampleSelectClick(item.value.id) }
+                        }
+
+                        ExerciseExampleCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = item,
+                            style = ExerciseExampleCardStyle.Medium(
+                                onCardClick = selectClickProvider,
+                            ),
+                        )
+                    }
                 }
             }
         }

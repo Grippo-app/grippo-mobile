@@ -1,6 +1,12 @@
 package com.grippo.training.recording.pages
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -38,50 +44,59 @@ internal fun ExercisesPage(
 ) {
     val exercises = remember(state.exercises) { state.exercises }
 
-    if (exercises.isEmpty()) {
-        ScreenPlaceholder(
-            modifier = modifier,
-            text = AppTokens.strings.res(Res.string.no_exercises_yet),
-        )
-    } else {
-        LazyColumn(
-            modifier = modifier,
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-        ) {
-            items(
-                items = exercises,
-                key = { it.id }
-            ) { exercise ->
-                val editExerciseProvider = remember(exercise.id) {
-                    { contract.onEditExercise(exercise.id) }
-                }
+    AnimatedContent(
+        modifier = modifier,
+        transitionSpec = {
+            (fadeIn(animationSpec = tween(220, delayMillis = 90)))
+                .togetherWith(fadeOut(animationSpec = tween(90)))
+        },
+        targetState = exercises.isEmpty()
+    ) {
+        when (it) {
+            true -> ScreenPlaceholder(
+                modifier = Modifier.fillMaxSize(),
+                text = AppTokens.strings.res(Res.string.no_exercises_yet),
+            )
 
-                val deleteExerciseProvider = remember(exercise.id) {
-                    { contract.onDeleteExercise(exercise.id) }
-                }
+            false -> LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+            ) {
+                items(
+                    items = exercises,
+                    key = { k -> k.id }
+                ) { exercise ->
+                    val editExerciseProvider = remember(exercise.id) {
+                        { contract.onEditExercise(exercise.id) }
+                    }
 
-                SwipeToReveal(
-                    modifier = Modifier.animateItem(),
-                    actions = {
-                        Button(
-                            modifier = Modifier.padding(end = AppTokens.dp.screen.horizontalPadding),
-                            content = ButtonContent.Icon(
-                                icon = AppTokens.icons.Cancel
+                    val deleteExerciseProvider = remember(exercise.id) {
+                        { contract.onDeleteExercise(exercise.id) }
+                    }
+
+                    SwipeToReveal(
+                        modifier = Modifier.animateItem(),
+                        actions = {
+                            Button(
+                                modifier = Modifier.padding(end = AppTokens.dp.screen.horizontalPadding),
+                                content = ButtonContent.Icon(
+                                    icon = AppTokens.icons.Cancel
+                                ),
+                                style = ButtonStyle.Error,
+                                onClick = deleteExerciseProvider
+                            )
+                        }
+                    ) {
+                        ExerciseCard(
+                            modifier = Modifier
+                                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                                .fillMaxWidth(),
+                            value = exercise,
+                            style = ExerciseCardStyle.Medium(
+                                onClick = editExerciseProvider
                             ),
-                            style = ButtonStyle.Error,
-                            onClick = deleteExerciseProvider
                         )
                     }
-                ) {
-                    ExerciseCard(
-                        modifier = Modifier
-                            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                            .fillMaxWidth(),
-                        value = exercise,
-                        style = ExerciseCardStyle.Medium(
-                            onClick = editExerciseProvider
-                        ),
-                    )
                 }
             }
         }
