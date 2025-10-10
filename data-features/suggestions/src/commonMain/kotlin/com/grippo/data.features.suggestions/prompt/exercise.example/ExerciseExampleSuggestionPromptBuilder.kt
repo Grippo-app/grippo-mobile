@@ -58,7 +58,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         val answer = aiService.ask(prompt, SYSTEM_PROMPT)
         AppLogger.AI.answer(answer)
 
-        // Жёстко ограничиваем выбор только предложенными кандидатами
+        // Guardrail: only allow the model to pick from pre-ranked candidates
         val allowed = candidates.map { it.id }.toSet()
         return parseSuggestedExerciseId(answer, allowed) ?: run {
             candidates.firstOrNull()?.let {
@@ -125,7 +125,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             to = DateTimeUtils.toUtcIso(now)
         ).firstOrNull().orEmpty()
 
-        // Сортировка: новые → старые
+        // Sort trainings from newest to oldest to match downstream expectations
         val trainingSummaries = rawTrainings
             .sortedByDescending { it.training.createdAt }
             .take(RECENT_TRAININGS_LIMIT)
@@ -183,6 +183,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         nowDateTime: LocalDateTime
     ): List<ExampleContext> {
 
+        // Keep comparator in sync with prompt instructions; inconsistent ordering confuses the model
         val comparator = exampleComparator(
             stage = signals.stage,
             muscleDeficits = signals.muscleDeficits,
@@ -207,7 +208,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
                 .filterNot { it.id in signals.performedExampleIds }
                 .toList()
 
-            // 🔥 приоритет: сначала due/overdue по циклам, затем остальные
+            // Prioritize cycle-due muscles before we sort the rest of the tier
             val preferred = base.filter(::isPreferred).sortedWith(comparator)
             if (preferred.size >= MAX_CANDIDATE_COUNT) return preferred.take(MAX_CANDIDATE_COUNT)
 
@@ -215,7 +216,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             return (preferred + others).take(MAX_CANDIDATE_COUNT)
         }
 
-        // Tier A — строгий
+        // Tier A - strict recovery and fatigue gates
         val tierA = rankWithinTier(
             catalog.contexts.asSequence()
                 .filter {
@@ -233,7 +234,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         )
         if (tierA.isNotEmpty()) return tierA
 
-        // Tier B — только проверка primary recovery
+        // Tier B - only enforce primary-muscle recovery
         val tierB = rankWithinTier(
             catalog.contexts.asSequence()
                 .filter {
@@ -245,7 +246,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         )
         if (tierB.isNotEmpty()) return tierB
 
-        // Tier C — fallback
+        // Tier C - fallback
         return rankWithinTier(catalog.contexts.asSequence())
     }
 
@@ -867,7 +868,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         sessionHabits: Map<String, SessionHabit>
     ): Comparator<ExampleContext> {
         return Comparator { left, right ->
-            // 1) Дефицит по ПЕРВИЧНОЙ мышце (больше — выше)
+            // 1) Primary-muscle deficit (larger deficit ranks first)
             fun primaryDeficit(ctx: ExampleContext): Double {
                 val pm = ctx.primaryMuscleId() ?: return 0.0
                 return (muscleDeficits[pm] ?: 0.0).coerceAtLeast(0.0)
@@ -878,7 +879,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             val deficitCmp = dR.compareTo(dL).takeIf { abs(dL - dR) >= DEFICIT_EPS } ?: 0
             if (deficitCmp != 0) return@Comparator deficitCmp
 
-            // 2) Циклы (macro/micro): OVERDUE < DUE < NONE
+            // 2) Cycle pressure (macro/micro): OVERDUE < DUE < NONE
             fun cycleRank(ctx: ExampleContext): Int {
                 val pm = ctx.primaryMuscleId() ?: return 2
                 return when (combinedCycleState(pm, nowDateTime, periodicHabits, sessionHabits)) {
@@ -893,7 +894,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             val cycleCmp = cL.compareTo(cR)
             if (cycleCmp != 0) return@Comparator cycleCmp
 
-            // 3) Локальный баланс категории для целевой мышцы (тянемся к ~1:1 в текущей сессии)
+            // 3) Session-level category balance for the target muscle (~1:1 compound/isolation)
             fun prefMismatch(ctx: ExampleContext): Int {
                 val pm = ctx.primaryMuscleId()
                 val preferred = preferredCategoryForMuscleNext(pm, trainings, session)
@@ -905,12 +906,12 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             val pmCmp = pmL.compareTo(pmR)
             if (pmCmp != 0) return@Comparator pmCmp
 
-            // 4) Глобальная политика категории
+            // 4) Global category policy alignment
             val catCmp = categoryStats.priorityFor(left.category, stage)
                 .compareTo(categoryStats.priorityFor(right.category, stage))
             if (catCmp != 0) return@Comparator catCmp
 
-            // 5) Анти-монотония (мягкий штраф)
+            // 5) Anti-monotony penalty (recent loads get nudged down)
             fun mono(ctx: ExampleContext): Int =
                 antiMonotonyPenalty(ctx, nowDateTime, lastLoadByMuscleDateTime)
 
@@ -919,15 +920,15 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             val monoCmp = mL.compareTo(mR)
             if (monoCmp != 0) return@Comparator monoCmp
 
-            // 6) Разнообразие: меньше usageCount — выше
+            // 6) Variety: lower usage count wins
             val useCmp = left.usageCount.compareTo(right.usageCount)
             if (useCmp != 0) return@Comparator useCmp
 
-            // 7) Давность: старее lastUsed — выше
+            // 7) Recency: older lastUsed ranks higher
             val lastUsedCmp = compareLastUsed(left.lastUsed, right.lastUsed)
             if (lastUsedCmp != 0) return@Comparator lastUsedCmp
 
-            // 8) Имя (стабильный детерминизм)
+            // 8) Name tie-breaker for stable determinism
             left.displayName.compareTo(right.displayName)
         }
     }
@@ -960,7 +961,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         val h = sessionHabits[muscleId] ?: return CycleState.NONE
         val lastSeen = h.lastSeenIdx
         if (lastSeen < 0) return CycleState.NONE
-        val sessionsSince = lastSeen // текущий индекс = 0
+        val sessionsSince = lastSeen // current session index is zero
         return when {
             sessionsSince > h.medianIntervalSessions + PERIODIC_GRACE_SESSIONS -> CycleState.OVERDUE
             sessionsSince >= h.medianIntervalSessions - PERIODIC_GRACE_SESSIONS -> CycleState.DUE
@@ -1053,10 +1054,10 @@ internal class ExerciseExampleSuggestionPromptBuilder(
 
     private fun compareLastUsed(left: LocalDateTime?, right: LocalDateTime?): Int {
         return when {
-            left == null && right == null -> 0           // оба "никогда"
-            left == null -> -1                           // "никогда" — считаем самым давним => выше
+            left == null && right == null -> 0           // both never used
+            left == null -> -1                           // "never" counts as the oldest => higher rank
             right == null -> 1
-            else -> left.compareTo(right)                // более старый (меньше) идёт раньше
+            else -> left.compareTo(right)                // older timestamps (smaller) go first
         }
     }
 
@@ -1212,7 +1213,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             return hoursSince >= recoveryHours.toLong()
         }
 
-        // Strict mode: суммируем доли мышц, у которых окно восстановления ещё не завершено
+        // Strict mode: accumulate shares for muscles still inside their recovery window
         fun unrecoveredShare(
             nowDateTime: LocalDateTime,
             lastLoadByMuscleDateTime: Map<String, LocalDateTime>
@@ -1249,7 +1250,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
     private data class SessionHabit(
         val muscleId: String,
         val medianIntervalSessions: Int,
-        val lastSeenIdx: Int,    // 0 — самая свежая сессия; lastSeenIdx = 0 значит «была в прошлой сессии»
+        val lastSeenIdx: Int,    // 0 means the muscle appeared in the immediate previous session
         val nextDueIdx: Int      // lastSeenIdx + medianInterval
     )
 
