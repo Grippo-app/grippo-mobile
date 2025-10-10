@@ -23,6 +23,7 @@ kotlin {
         implementation(projects.common.state)
         implementation(projects.common.logger)
         implementation(projects.common.connectivity)
+        implementation(projects.common.serialization)
         implementation(projects.common.dateUtils)
         implementation(projects.common.error.errorProviderImpl)
 

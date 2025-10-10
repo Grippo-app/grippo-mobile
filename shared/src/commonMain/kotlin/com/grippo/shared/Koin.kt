@@ -20,6 +20,7 @@ import com.grippo.dialog.api.DialogModule
 import com.grippo.error.provider.impl.ErrorModule
 import com.grippo.network.NetworkModule
 import com.grippo.platform.core.PlatformModule
+import com.grippo.serialization.SerializationModule
 import org.koin.core.KoinApplication
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.ksp.generated.module
@@ -50,7 +51,8 @@ public object Koin {
             ConnectivityModule().module,
             ResourcesProviderModule().module,
             AiModule().module,
-            SuggestionsFeatureModule().module
+            SuggestionsFeatureModule().module,
+            SerializationModule().module
         )
     }
 }
