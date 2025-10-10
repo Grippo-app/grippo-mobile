@@ -24,6 +24,7 @@ public data class MuscleEntity(
     val muscleGroupId: String,
     val name: String,
     val type: String,
+    val recoveryTimeHours: Int,
     val createdAt: String,
     val updatedAt: String,
 )
