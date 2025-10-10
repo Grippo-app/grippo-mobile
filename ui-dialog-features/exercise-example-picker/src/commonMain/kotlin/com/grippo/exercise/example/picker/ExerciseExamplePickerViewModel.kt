@@ -14,9 +14,7 @@ import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.muscles.toState
 import com.grippo.state.domain.example.toDomain
-import com.grippo.state.exercise.examples.ExerciseExampleState
 import com.grippo.state.filters.FilterValue
-import com.grippo.state.sorting.SortingEnumState
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
@@ -32,9 +30,7 @@ public class ExerciseExamplePickerViewModel(
     private val suggestionFeature: SuggestionFeature,
     private val dialogController: DialogController,
 ) : BaseViewModel<ExerciseExamplePickerState, ExerciseExamplePickerDirection, ExerciseExamplePickerLoader>(
-    ExerciseExamplePickerState(
-        selectedMuscleGroupId = targetMuscleGroupId
-    )
+    ExerciseExamplePickerState(manual = ManualQueries(selectedMuscleGroupId = targetMuscleGroupId))
 ), ExerciseExamplePickerContract {
 
     init {
@@ -43,39 +39,60 @@ public class ExerciseExamplePickerViewModel(
             .safeLaunch()
 
         state
-            .map { s ->
-                val muscleGroupId = s.selectedMuscleGroupId
-                val sortBy = SortingEnumState.RecentlyUsed.toDomain()
+            .map { state ->
+                val manual = state.manual
+                val suggestion = state.suggestion
 
-                val weightType = s.filters.filterIsInstance<FilterValue.WeightType>().firstOrNull()
-                    ?.value?.toDomain()
-                val forceType = s.filters.filterIsInstance<FilterValue.ForceType>().firstOrNull()
-                    ?.value?.toDomain()
-                val category = s.filters.filterIsInstance<FilterValue.Category>().firstOrNull()
-                    ?.value?.toDomain()
+                val name = when (suggestion) {
+                    null -> manual.name.trim()
+                    else -> suggestion.name
+                }
 
-                SearchKey(
-                    query = s.query.trim(),
+                val weightType = if (suggestion == null) {
+                    manual.filters
+                        .filterIsInstance<FilterValue.WeightType>()
+                        .firstOrNull()
+                        ?.value?.toDomain()
+                } else {
+                    null
+                }
+
+                val forceType = if (suggestion == null) {
+                    manual.filters
+                        .filterIsInstance<FilterValue.ForceType>()
+                        .firstOrNull()
+                        ?.value?.toDomain()
+                } else {
+                    null
+                }
+
+                val category = if (suggestion == null) {
+                    manual.filters
+                        .filterIsInstance<FilterValue.Category>()
+                        .firstOrNull()
+                        ?.value?.toDomain()
+                } else {
+                    null
+                }
+
+                val muscleGroupId = if (suggestion == null) {
+                    manual.selectedMuscleGroupId
+                } else {
+                    null
+                }
+
+                ExampleQueries(
+                    name = name,
                     weightType = weightType,
                     forceType = forceType,
                     category = category,
-                    muscleGroupId = muscleGroupId,
-                    sortBy = sortBy
+                    muscleGroupId = muscleGroupId
                 )
             }
             .distinctUntilChanged()
-            .flatMapLatest { key ->
-                val queries = ExampleQueries(
-                    name = key.query,
-                    weightType = key.weightType,
-                    forceType = key.forceType,
-                    category = key.category,
-                    muscleGroupId = key.muscleGroupId
-                )
-
+            .flatMapLatest { queries ->
                 userExerciseExamplesUseCase.execute(
                     queries = queries,
-                    sorting = key.sortBy,
                     page = ExamplePage.First15
                 )
             }
@@ -85,7 +102,7 @@ public class ExerciseExamplePickerViewModel(
 
     private fun provideMuscles(list: List<MuscleGroup>) {
         val suggestions = list.toState()
-        update { it.copy(muscleGroups = suggestions) }
+        update { it.copy(manual = it.manual.copy(muscleGroups = suggestions)) }
     }
 
     private fun provideExerciseExamples(value: List<ExerciseExample>) {
@@ -94,45 +111,42 @@ public class ExerciseExamplePickerViewModel(
     }
 
     override fun onQueryChange(value: String) {
-        update { it.copy(query = value) }
+        update {
+            it.copy(
+                manual = it.manual.copy(name = value),
+                suggestion = null
+            )
+        }
     }
 
     override fun onFiltersClick() {
         val dialog = DialogConfig.FilterPicker(
-            initial = state.value.filters,
-            onResult = { value -> update { it.copy(filters = value.toPersistentList()) } }
+            initial = state.value.manual.filters,
+            onResult = { value ->
+                update {
+                    it.copy(
+                        manual = it.manual.copy(filters = value.toPersistentList()),
+                        suggestion = null
+                    )
+                }
+            }
         )
 
         dialogController.show(dialog)
     }
 
-    override fun onExerciseExampleSelectClick(id: String) {
-        val example = state.value.exerciseExamples.find { f -> f.value.id == id } ?: return
-        navigateTo(ExerciseExamplePickerDirection.BackWithResult(example))
-    }
-
     override fun onMuscleGroupClick(id: String) {
         update {
-            val value = if (it.selectedMuscleGroupId == id) {
-                null
-            } else {
-                id
-            }
-
-            it.copy(selectedMuscleGroupId = value)
+            val value = if (it.manual.selectedMuscleGroupId == id) null else id
+            it.copy(
+                manual = it.manual.copy(selectedMuscleGroupId = value),
+                suggestion = null
+            )
         }
     }
 
     override fun onSuggestClick() {
         safeLaunch(loader = ExerciseExamplePickerLoader.SuggestExample) {
-            update {
-                it.copy(
-                    filters = ExerciseExampleState.filters,
-                    selectedMuscleGroupId = null,
-                    query = ""
-                )
-            }
-
             val result = suggestionFeature
                 .predictExerciseExample()
                 .getOrThrow() ?: return@safeLaunch
@@ -141,8 +155,21 @@ public class ExerciseExamplePickerViewModel(
                 .observeExerciseExample(result.id)
                 .firstOrNull()?.value?.name ?: return@safeLaunch
 
-            update { it.copy(query = name) }
+            update {
+                it.copy(
+                    suggestion = SuggestionQueries(
+                        id = result.id,
+                        name = name,
+                        reason = result.reason
+                    )
+                )
+            }
         }
+    }
+
+    override fun onExerciseExampleSelectClick(id: String) {
+        val example = state.value.exerciseExamples.find { f -> f.value.id == id } ?: return
+        navigateTo(ExerciseExamplePickerDirection.BackWithResult(example))
     }
 
     override fun onDismiss() {

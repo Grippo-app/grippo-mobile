@@ -1,10 +1,6 @@
 package com.grippo.exercise.example.picker
 
 import androidx.compose.runtime.Immutable
-import com.grippo.data.features.api.exercise.example.models.CategoryEnum
-import com.grippo.data.features.api.exercise.example.models.ExampleSortingEnum
-import com.grippo.data.features.api.exercise.example.models.ForceTypeEnum
-import com.grippo.data.features.api.exercise.example.models.WeightTypeEnum
 import com.grippo.state.exercise.examples.ExerciseExampleState
 import com.grippo.state.filters.FilterValue
 import com.grippo.state.muscles.MuscleGroupState
@@ -15,26 +11,23 @@ import kotlinx.collections.immutable.persistentListOf
 @Immutable
 public data class ExerciseExamplePickerState(
     val exerciseExamples: ImmutableList<ExerciseExampleState> = persistentListOf(),
-    val muscleGroups: ImmutableList<MuscleGroupState<MuscleRepresentationState.Plain>> = persistentListOf(),
-    val query: String = "",
-    val selectedMuscleGroupId: String?,
-    val filters: ImmutableList<FilterValue> = ExerciseExampleState.filters,
-    val suggestion: ExerciseExampleSuggestion? = null
+
+    // Keep both sub-states in one state holder
+    val manual: ManualQueries = ManualQueries(),
+    val suggestion: SuggestionQueries? = null,
 )
 
 @Immutable
-public data class ExerciseExampleSuggestion(
+public data class ManualQueries(
+    val name: String = "",
+    val selectedMuscleGroupId: String? = null,
+    val filters: ImmutableList<FilterValue> = ExerciseExampleState.filters,
+    val muscleGroups: ImmutableList<MuscleGroupState<MuscleRepresentationState.Plain>> = persistentListOf(),
+)
+
+@Immutable
+public data class SuggestionQueries(
     val id: String,
     val name: String,
     val reason: String,
-    val warning: String?,
-)
-
-internal data class SearchKey(
-    val query: String,
-    val weightType: WeightTypeEnum?,
-    val forceType: ForceTypeEnum?,
-    val category: CategoryEnum?,
-    val muscleGroupId: String?,
-    val sortBy: ExampleSortingEnum
 )

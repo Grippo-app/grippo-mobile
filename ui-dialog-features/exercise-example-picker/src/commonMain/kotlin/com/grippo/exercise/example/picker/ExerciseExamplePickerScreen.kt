@@ -84,7 +84,7 @@ internal fun ExerciseExamplePickerScreen(
         ) {
             InputSearch(
                 modifier = Modifier.weight(1f),
-                value = state.query,
+                value = state.manual.name,
                 onValueChange = contract::onQueryChange
             )
             Box {
@@ -96,8 +96,8 @@ internal fun ExerciseExamplePickerScreen(
                     onClick = contract::onFiltersClick
                 )
 
-                val count = remember(state.filters) {
-                    state.filters.count { it.isSelected() }
+                val count = remember(state.manual.filters) {
+                    state.manual.filters.count { it.isSelected() }
                 }
 
                 Badge(
@@ -127,10 +127,10 @@ internal fun ExerciseExamplePickerScreen(
 
         val groupsListState = rememberLazyListState()
 
-        LaunchedEffect(state.muscleGroups) {
-            val index = state.muscleGroups
+        LaunchedEffect(state.manual.muscleGroups) {
+            val index = state.manual.muscleGroups
                 .map { it.id }
-                .indexOf(state.selectedMuscleGroupId)
+                .indexOf(state.manual.selectedMuscleGroupId)
                 .takeIf { it >= 0 } ?: return@LaunchedEffect
             groupsListState.scrollToItem(index)
         }
@@ -142,7 +142,7 @@ internal fun ExerciseExamplePickerScreen(
             state = groupsListState
         ) {
             items(
-                items = state.muscleGroups,
+                items = state.manual.muscleGroups,
                 key = { it.id },
             ) { item ->
                 val clickProvider = remember(item.id) {
@@ -153,7 +153,7 @@ internal fun ExerciseExamplePickerScreen(
                     style = CheckSelectableCardStyle.Small(
                         title = item.type.title().text()
                     ),
-                    isSelected = state.selectedMuscleGroupId == item.id,
+                    isSelected = state.manual.selectedMuscleGroupId == item.id,
                     onSelect = clickProvider
                 )
             }
@@ -212,7 +212,6 @@ private fun ScreenPreview() {
     PreviewContainer {
         ExerciseExamplePickerScreen(
             state = ExerciseExamplePickerState(
-                selectedMuscleGroupId = null,
                 exerciseExamples = persistentListOf(
                     stubExerciseExample(),
                     stubExerciseExample()
@@ -225,7 +224,6 @@ private fun ScreenPreview() {
         ExerciseExamplePickerScreen(
             state = ExerciseExamplePickerState(
                 exerciseExamples = persistentListOf(),
-                selectedMuscleGroupId = null
             ),
             loaders = persistentSetOf(),
             contract = ExerciseExamplePickerContract.Empty

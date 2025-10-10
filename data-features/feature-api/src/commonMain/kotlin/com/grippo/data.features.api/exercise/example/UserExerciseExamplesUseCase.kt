@@ -23,7 +23,6 @@ public class UserExerciseExamplesUseCase(
 ) {
     public fun execute(
         queries: ExampleQueries,
-        sorting: ExampleSortingEnum,
         page: ExamplePage
     ): Flow<List<ExerciseExample>> {
         return combine(
@@ -48,7 +47,7 @@ public class UserExerciseExamplesUseCase(
             .flatMapLatest { rules ->
                 exerciseExampleFeature.observeExerciseExamples(
                     queries = queries,
-                    sorting = sorting,
+                    sorting = ExampleSortingEnum.RecentlyUsed,
                     rules = rules,
                     page = page,
                     experience = rules.experience
