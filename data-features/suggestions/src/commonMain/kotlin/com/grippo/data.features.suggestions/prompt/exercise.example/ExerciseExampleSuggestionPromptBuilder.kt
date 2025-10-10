@@ -17,24 +17,25 @@ import com.grippo.database.models.TrainingPack
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.logger.AppLogger
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.daysUntil
+import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
-import kotlinx.datetime.until
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
+import org.koin.core.annotation.Single
 import kotlin.math.abs
-import kotlin.math.ceil
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.days
 
+@Single
 internal class ExerciseExampleSuggestionPromptBuilder(
     private val aiService: AiService,
     private val draftTrainingDao: DraftTrainingDao,
@@ -51,22 +52,27 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         if (candidates.isEmpty()) return null
 
         val prompt = buildPrompt(now, signals, candidates)
-
         AppLogger.AI.prompt(prompt)
 
         val answer = aiService.ask(prompt, SYSTEM_PROMPT)
-
         AppLogger.AI.answer(answer)
 
-        // Enforce that the model can only pick from allowed candidates
+        // Жёстко ограничиваем выбор только предложенными кандидатами
         val allowed = candidates.map { it.id }.toSet()
         return parseSuggestedExerciseId(answer, allowed) ?: run {
             candidates.firstOrNull()?.let {
-                ExerciseExampleSuggestion(id = it.id, reason = "fallback: model returned invalid id")
+                ExerciseExampleSuggestion(
+                    id = it.id,
+                    reason = "fallback: model returned invalid id",
+                    warning = ""
+                )
             }
         }
     }
 
+    // ---------------------------
+    // Catalog
+    // ---------------------------
     private suspend fun loadExampleCatalog(): ExampleCatalog? {
         val userId = userActiveDao.get().firstOrNull() ?: return null
 
@@ -100,6 +106,9 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         )
     }
 
+    // ---------------------------
+    // Signals
+    // ---------------------------
     private suspend fun buildPredictionSignals(
         now: LocalDateTime,
         catalog: ExampleCatalog
@@ -115,6 +124,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             to = DateTimeUtils.toUtcIso(now)
         ).firstOrNull().orEmpty()
 
+        // Сортировка: новые → старые
         val trainingSummaries = rawTrainings
             .sortedByDescending { it.training.createdAt }
             .take(RECENT_TRAININGS_LIMIT)
@@ -130,7 +140,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             .toSet()
 
         val categoryStats = computeCategoryStats(trainingSummaries, sessionExercises)
-        val muscleTargets = computeMuscleTargets(trainingSummaries, sessionExercises)
+        val muscleTargets = computeMuscleTargetsPrimaryOnly(trainingSummaries, sessionExercises)
 
         val lastLoadByMuscleDateTime = computeLastLoadDateTimeByMuscle(
             trainings = trainingSummaries,
@@ -142,6 +152,11 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             significantShareThreshold = SIGNIFICANT_SHARE_THRESHOLD
         )
 
+        val sessionHabits = computeSessionHabits(
+            trainings = trainingSummaries,
+            significantShareThreshold = SIGNIFICANT_SHARE_THRESHOLD
+        )
+
         return PredictionSignals(
             session = sessionExercises,
             stage = sessionExercises.size,
@@ -149,7 +164,6 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             historicalToday = todayHistory,
             performedExampleIds = performedIds,
             muscleLoads = computeMuscleLoads(trainingSummaries, catalog.byId),
-            weekdayPatterns = computeWeekdayPatterns(trainingSummaries, catalog.byId),
             categoryStats = categoryStats,
             muscleTargets = muscleTargets,
             muscleDeficits = muscleTargets.associate { it.id to it.deficit },
@@ -157,23 +171,20 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             weightMix = sessionExercises.groupingBy { it.weightType }.eachCount(),
             experienceMix = sessionExercises.groupingBy { it.experience }.eachCount(),
             lastLoadByMuscleDateTime = lastLoadByMuscleDateTime,
-            periodicHabits = periodicHabits
+            periodicHabits = periodicHabits,
+            sessionHabits = sessionHabits
         )
     }
 
+    // ---------------------------
+    // Candidate selection (tiers + preferred first)
+    // ---------------------------
     private fun selectCandidateContexts(
         catalog: ExampleCatalog,
         signals: PredictionSignals,
         nowDateTime: LocalDateTime
     ): List<ExampleContext> {
-        // Build weekday habit set for today's day-of-week (primary muscles, top-N).
-        val weekdayTop = topPrimaryMuscleIdsForDay(
-            trainings = signals.trainings,
-            day = nowDateTime.date.dayOfWeek,
-            topN = MAX_WEEKDAY_MUSCLES
-        )
 
-        // Comparator with habit & anti-monotony awareness.
         val comparator = exampleComparator(
             stage = signals.stage,
             muscleDeficits = signals.muscleDeficits,
@@ -182,49 +193,67 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             session = signals.session,
             nowDateTime = nowDateTime,
             lastLoadByMuscleDateTime = signals.lastLoadByMuscleDateTime,
-            weekdayPreferredMuscleIds = weekdayTop
+            periodicHabits = signals.periodicHabits,
+            sessionHabits = signals.sessionHabits
         )
 
-        // Base recovered & strict filters as 3 tiers. Inside each tier,
-        // prefer "habit/due" pool, then fill from the rest.
+        fun isPreferred(ctx: ExampleContext): Boolean {
+            val pm = ctx.primaryMuscleId() ?: return false
+            val st =
+                combinedCycleState(pm, nowDateTime, signals.periodicHabits, signals.sessionHabits)
+            return st == CycleState.DUE || st == CycleState.OVERDUE
+        }
+
         fun rankWithinTier(seq: Sequence<ExampleContext>): List<ExampleContext> {
             val base = seq
                 .filterNot { it.id in signals.performedExampleIds }
                 .toList()
 
-            val preferred = base.filter { ctx ->
-                val pm = ctx.primaryMuscleId()
-                (pm != null && (pm in weekdayTop || isDueByWeeklyHeuristic(pm, nowDateTime, signals.lastLoadByMuscleDateTime)))
-            }
+            // 🔥 приоритет: сначала due/overdue по циклам, затем остальные
+            val preferred = base.filter(::isPreferred).sortedWith(comparator)
+            if (preferred.size >= MAX_CANDIDATE_COUNT) return preferred.take(MAX_CANDIDATE_COUNT)
 
-            val others = base.filterNot { it in preferred }
-
-            return (preferred.sortedWith(comparator) + others.sortedWith(comparator))
-                .distinctBy { it.id }
-                .take(MAX_CANDIDATE_COUNT)
+            val others = base.filterNot(::isPreferred).sortedWith(comparator)
+            return (preferred + others).take(MAX_CANDIDATE_COUNT)
         }
 
-        // Tier A: strict unrecovered-share + primary recovered
+        // Tier A — строгий
         val tierA = rankWithinTier(
             catalog.contexts.asSequence()
-                .filter { it.isPrimaryMuscleRecovered(nowDateTime, signals.lastLoadByMuscleDateTime) }
-                .filter { it.unrecoveredShare(nowDateTime, signals.lastLoadByMuscleDateTime) <= STRICT_UNRECOVERED_SHARE_LIMIT }
+                .filter {
+                    it.isPrimaryMuscleRecovered(
+                        nowDateTime,
+                        signals.lastLoadByMuscleDateTime
+                    )
+                }
+                .filter {
+                    it.unrecoveredShare(
+                        nowDateTime,
+                        signals.lastLoadByMuscleDateTime
+                    ) <= STRICT_UNRECOVERED_SHARE_LIMIT
+                }
         )
         if (tierA.isNotEmpty()) return tierA
 
-        // Tier B: only primary recovered
+        // Tier B — только проверка primary recovery
         val tierB = rankWithinTier(
             catalog.contexts.asSequence()
-                .filter { it.isPrimaryMuscleRecovered(nowDateTime, signals.lastLoadByMuscleDateTime) }
+                .filter {
+                    it.isPrimaryMuscleRecovered(
+                        nowDateTime,
+                        signals.lastLoadByMuscleDateTime
+                    )
+                }
         )
         if (tierB.isNotEmpty()) return tierB
 
-        // Tier C: fallback (no recovery filters)
-        return rankWithinTier(
-            catalog.contexts.asSequence()
-        )
+        // Tier C — fallback
+        return rankWithinTier(catalog.contexts.asSequence())
     }
 
+    // ---------------------------
+    // Prompt
+    // ---------------------------
     private fun buildPrompt(
         now: LocalDateTime,
         signals: PredictionSignals,
@@ -245,11 +274,9 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             renderMix("Force mix", signals.forceMix)
             renderMix("Weight mix", signals.weightMix)
             renderMix("Experience mix", signals.experienceMix)
-            renderTodayHistory(signals)
             renderGuidelines(dominantExperience)
             renderRecentTrainings(signals.trainings)
             renderMuscleLoads(signals)
-            renderWeekdayHabits(signals.weekdayPatterns)
             renderPeriodicHabits(now, signals.periodicHabits)
             renderCandidates(
                 contexts = candidates,
@@ -261,55 +288,58 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         }
     }
 
+    // ---------------------------
+    // Parsing LLM output
+    // ---------------------------
     private fun parseSuggestedExerciseId(raw: String): ExerciseExampleSuggestion? {
         val sanitized = raw.trim()
         if (sanitized.isEmpty()) return null
 
         val parsed = runCatching { json.parseToJsonElement(sanitized) }.getOrNull()
         if (parsed is JsonObject) {
-            val id = parsed["exerciseExampleId"]
-                ?.let { it as? JsonPrimitive }
-                ?.contentOrNull
-                ?.takeIf { it.isNotBlank() }
-
-            val reason = parsed["reason"]
-                ?.let { it as? JsonPrimitive }
-                ?.contentOrNull
-                ?.takeIf { it.isNotBlank() }
-
+            val id =
+                parsed["exerciseExampleId"]?.let { it as? JsonPrimitive }?.contentOrNull?.takeIf { it.isNotBlank() }
+            val reason =
+                parsed["reason"]?.let { it as? JsonPrimitive }?.contentOrNull?.takeIf { it.isNotBlank() }
+            val warning = parsed["warning"]?.let { it as? JsonPrimitive }?.contentOrNull ?: ""
             if (id != null && reason != null) {
-                return ExerciseExampleSuggestion(id = id, reason = reason)
+                return ExerciseExampleSuggestion(id = id, reason = reason, warning = warning)
             }
         }
 
-        val id = EXERCISE_ID_REGEX.find(sanitized)
-            ?.groupValues
-            ?.getOrNull(1)
-            ?.takeIf { it.isNotBlank() }
-
-        val reason = REASON_REGEX.find(sanitized)
-            ?.groupValues
-            ?.getOrNull(1)
-            ?.takeIf { it.isNotBlank() }
-
-        return if (id != null && reason != null) {
-            ExerciseExampleSuggestion(id = id, reason = reason)
-        } else {
-            null
-        }
+        val id =
+            EXERCISE_ID_REGEX.find(sanitized)?.groupValues?.getOrNull(1)?.takeIf { it.isNotBlank() }
+        val reason =
+            REASON_REGEX.find(sanitized)?.groupValues?.getOrNull(1)?.takeIf { it.isNotBlank() }
+        return if (id != null && reason != null) ExerciseExampleSuggestion(
+            id = id,
+            reason = reason,
+            warning = ""
+        ) else null
     }
 
-    private fun parseSuggestedExerciseId(raw: String, allowedIds: Set<String>): ExerciseExampleSuggestion? {
+    private fun parseSuggestedExerciseId(
+        raw: String,
+        allowedIds: Set<String>
+    ): ExerciseExampleSuggestion? {
         val parsed = parseSuggestedExerciseId(raw) ?: return null
         return if (allowedIds.contains(parsed.id)) parsed else null
     }
 
+    // ---------------------------
+    // Render helpers
+    // ---------------------------
     private fun StringBuilder.renderIntro(now: LocalDateTime) {
         appendLine("Goal: select the best next exercise example for the user.")
-        appendLine("""Reply ONLY with JSON {"exerciseExampleId":"id","reason":"<=500 chars"}.""")
+        appendLine("""Reply ONLY with JSON {"exerciseExampleId":"id","reason":"<=500 chars","warning":""}.""")
         appendLine()
         appendLine("Now: $now")
-        appendLine("Today: ${now.date} (${now.dayOfWeek.name.lowercase().replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }})")
+        appendLine(
+            "Today: ${now.date} (${
+                now.dayOfWeek.name.lowercase()
+                    .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+            })"
+        )
     }
 
     private fun StringBuilder.renderSession(signals: PredictionSignals) {
@@ -326,7 +356,8 @@ internal class ExerciseExampleSuggestionPromptBuilder(
                 exercise.forceType,
                 exercise.weightType,
                 exercise.experience
-            ).joinToString(separator = "/")
+            )
+                .joinToString("/")
             appendLine(" - ${exercise.displayName}${sessionMuscleSummary(exercise)} ($tags)")
         }
         if (signals.session.size > MAX_SESSION_EXERCISES) {
@@ -360,51 +391,37 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         appendLine("Muscle targets to cover:")
         positiveTargets.forEach { target ->
             appendLine(
-                " - ${target.name}: avg ${formatOneDecimal(target.average)}, " +
-                        "done ${formatOneDecimal(target.current)} (needs +${formatOneDecimal(target.deficit)})"
+                " - ${target.name}: avg ${formatOneDecimal(target.average)}, done ${
+                    formatOneDecimal(
+                        target.current
+                    )
+                } (needs +${formatOneDecimal(target.deficit)})"
             )
         }
-        val focusNames = positiveTargets
-            .take(MAX_PRIMARY_FOCUS)
-            .joinToString { it.name }
+        val focusNames = positiveTargets.take(MAX_PRIMARY_FOCUS).joinToString { it.name }
         appendLine("Primary focus: $focusNames")
     }
 
     private fun StringBuilder.renderMix(label: String, mix: Map<String, Int>) {
         if (mix.isEmpty() || mix.size <= 1) return
-
         appendLine()
         appendLine("$label:")
-        mix.entries
-            .sortedByDescending { it.value }
-            .forEach { (key, value) -> appendLine(" - ${formatTitleLabel(key)}: $value") }
-    }
-
-    private fun StringBuilder.renderTodayHistory(signals: PredictionSignals) {
-        if (signals.historicalToday.isEmpty()) return
-
-        appendLine()
-        appendLine("Earlier today (history):")
-        signals.historicalToday.take(MAX_TODAY_EXERCISES).forEach { exercise ->
-            appendLine(" - ${exercise.displayName}${sessionMuscleSummary(exercise)}")
-        }
-        if (signals.historicalToday.size > MAX_TODAY_EXERCISES) {
-            appendLine(" - ... and ${signals.historicalToday.size - MAX_TODAY_EXERCISES} more")
+        mix.entries.sortedByDescending { it.value }.forEach { (key, value) ->
+            appendLine(" - ${formatTitleLabel(key)}: $value")
         }
     }
 
     private fun StringBuilder.renderGuidelines(dominantExperience: String?) {
         appendLine()
         appendLine("Guidelines:")
-        appendLine(" - Prefer compounds early; when compound deficit is covered, use isolation for fine-tuning.")
-        appendLine(" - Cover muscles with the largest positive (weighted) deficits first.")
-        appendLine(" - Respect muscle recovery windows: skip candidates whose primary muscle hasn't recovered.")
-        appendLine(" - Skip candidates where unrecovered muscles share > 60% of total candidate load.")
-        appendLine(" - Adapt category per target muscle towards ~1:1 compound/isolation within the current session (use historical averages to break ties).")
-        appendLine(" - Mild anti-monotony: slightly penalize if the same primary muscle had a meaningful load yesterday (< 36h).")
-        appendLine(" - Use weekday habits and periodic habits (due/overdue) as tie-breakers.")
-        appendLine(" - Avoid exercises already completed in this session.")
-        appendLine(" - Respect user exclusions: skip banned muscles or equipment.")
+        appendLine(" - Cover primary-muscle deficits first (primary-only accounting).")
+        appendLine(" - Cycles: prefer due/overdue primary muscles by macro (days) or micro (sessions) cycles (with grace).")
+        appendLine(" - Respect recovery windows (hour-accurate): skip if primary not recovered; avoid candidates with >60% unrecovered shares.")
+        appendLine(" - Per-target muscle, steer category toward ~1:1 compound/isolation within this session (use history as reference).")
+        appendLine(" - Global category: use compounds early; favor categories with positive deficit.")
+        appendLine(" - Mild anti-monotony: small penalty if same primary had meaningful load recently (< ${ANTI_MONOTONY_HOURS}h).")
+        appendLine(" - Promote variety: lower usageCount, older lastUsed.")
+        appendLine(" - Avoid already performed; respect user exclusions.")
         dominantExperience?.let { appendLine(" - Keep difficulty around the $it level.") }
     }
 
@@ -417,15 +434,16 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         }
 
         trainings.forEachIndexed { index, training ->
-            append(" ${index + 1}. ${training.performedAt} (${training.dayOfWeek.name.lowercase().replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }}): ")
             append(
-                training.exercises
-                    .take(MAX_TRAINING_EXERCISES)
-                    .joinToString { it.displayName + sessionMuscleSummary(it) }
+                " ${index + 1}. ${training.performedAt} (${
+                    training.dayOfWeek.name.lowercase()
+                        .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+                }): "
             )
-            if (training.exercises.size > MAX_TRAINING_EXERCISES) {
-                append(" +${training.exercises.size - MAX_TRAINING_EXERCISES} more")
-            }
+            append(
+                training.exercises.take(MAX_TRAINING_EXERCISES)
+                    .joinToString { it.displayName + sessionMuscleSummary(it) })
+            if (training.exercises.size > MAX_TRAINING_EXERCISES) append(" +${training.exercises.size - MAX_TRAINING_EXERCISES} more")
             appendLine()
         }
     }
@@ -437,18 +455,9 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             appendLine(" - insufficient data")
             return
         }
-
         signals.muscleLoads.forEach { load ->
             appendLine(" - ${load.name}: ${load.total} load units over ${load.sessions} sessions")
         }
-    }
-
-    private fun StringBuilder.renderWeekdayHabits(weekdayPatterns: List<String>) {
-        if (weekdayPatterns.isEmpty()) return
-
-        appendLine()
-        appendLine("Weekday habits:")
-        weekdayPatterns.take(MAX_WEEKDAY_LINES).forEach { appendLine(" - $it") }
     }
 
     private fun StringBuilder.renderPeriodicHabits(
@@ -457,20 +466,24 @@ internal class ExerciseExampleSuggestionPromptBuilder(
     ) {
         if (habits.isEmpty()) return
         val today = now.date
-        val due = habits.values
+        val lines = habits.values
             .sortedBy { it.nextDue }
             .take(MAX_PERIODIC_LINES)
-            .joinToString(separator = "\n") { h ->
+            .joinToString("\n") { h ->
                 val status = when {
                     h.nextDue < today -> "overdue by ${h.nextDue.daysUntil(today)}d"
                     h.nextDue == today -> "due today"
                     else -> "in ${today.daysUntil(h.nextDue)}d"
                 }
-                " - ${h.muscleName}: every ~${h.medianIntervalDays}d (last ${h.lastDate}, next ${h.nextDue}, $status, conf ${formatOneDecimal(h.confidence)})"
+                " - ${h.muscleName}: every ~${h.medianIntervalDays}d (last ${h.lastDate}, next ${h.nextDue}, $status, conf ${
+                    formatOneDecimal(
+                        h.confidence
+                    )
+                })"
             }
         appendLine()
         appendLine("Periodic habits (per muscle):")
-        appendLine(due)
+        appendLine(lines)
     }
 
     private fun StringBuilder.renderCandidates(
@@ -489,92 +502,59 @@ internal class ExerciseExampleSuggestionPromptBuilder(
                 context.forceType,
                 context.weightType,
                 context.experience
-            ).joinToString(separator = "/")
-
-            val targetNote = context.primaryMuscleId()
+            ).joinToString("/")
+            val primaryId = context.primaryMuscleId()
+            val targetNote = primaryId
                 ?.let { muscleTargetMap[it] }
                 ?.let { target ->
                     when {
-                        target.deficit > DEFICIT_EPS ->
-                            " (helps +${formatOneDecimal(target.deficit)} on ${target.name})"
-                        target.deficit < -DEFICIT_EPS ->
-                            " (over +${formatOneDecimal(-target.deficit)} on ${target.name})"
+                        target.deficit > DEFICIT_EPS -> " (helps +${formatOneDecimal(target.deficit)} on ${target.name})"
+                        target.deficit < -DEFICIT_EPS -> " (over +${formatOneDecimal(-target.deficit)} on ${target.name})"
                         else -> ""
                     }
                 }.orEmpty()
 
-            val primaryId = context.primaryMuscleId()
-            val habitNote = primaryId
-                ?.let { periodicHabits[it] }
-                ?.let { h ->
-                    when {
-                        h.nextDue < nowDateTime.date -> " [habit: overdue]"
-                        h.nextDue == nowDateTime.date -> " [habit: due today]"
-                        nowDateTime.date.daysUntil(h.nextDue) <= PERIODIC_GRACE_DAYS -> " [habit: soon]"
-                        else -> ""
-                    }
-                }.orEmpty()
+            val cycleNote = primaryId?.let { pm ->
+                val h = periodicHabits[pm]
+                when {
+                    h == null -> ""
+                    h.nextDue < nowDateTime.date -> " [cycle: overdue]"
+                    h.nextDue == nowDateTime.date -> " [cycle: due]"
+                    nowDateTime.date.daysUntil(h.nextDue) <= PERIODIC_GRACE_DAYS -> " [cycle: soon]"
+                    else -> ""
+                }
+            }.orEmpty()
 
             val antiMonotony = primaryId
                 ?.let { lastLoadByMuscleDateTime[it] }
                 ?.let { last ->
-                    val hoursSince = (nowDateTime.toInstant(tz) - last.toInstant(tz)).inWholeHours
-                    if (hoursSince in 0..ANTI_MONOTONY_HOURS.toLong()) " [recent<${ANTI_MONOTONY_HOURS}h]" else ""
+                    val hours = (nowDateTime.toInstant(tz) - last.toInstant(tz)).inWholeHours
+                    if (hours in 0..ANTI_MONOTONY_HOURS.toLong()) " [recent<${ANTI_MONOTONY_HOURS}h]" else ""
                 }.orEmpty()
+
+            val unrecShare = context.unrecoveredShare(nowDateTime, lastLoadByMuscleDateTime)
+            val unrecNote =
+                if (unrecShare > 0.0) " [unrec ${(unrecShare * 100).roundToInt()}%]" else ""
 
             append(
                 " - ${context.id}: ${context.displayName}; muscles ${contextMuscleSummary(context)}; " +
-                        "tags $tags; usage ${context.usageCount}; lastUsed ${formatLastUsed(context.lastUsed)}$targetNote$habitNote$antiMonotony"
+                        "tags $tags; usage ${context.usageCount}; lastUsed ${formatLastUsed(context.lastUsed)}" +
+                        targetNote + cycleNote + antiMonotony + unrecNote
             )
             appendLine()
         }
     }
 
-    private fun formatOneDecimal(value: Double): String {
-        val scaled = (value * 10.0).roundToInt() / 10.0
-        val intPart = scaled.toInt()
-        return if (abs(scaled - intPart) < 1e-4) intPart.toString() else scaled.toString()
-    }
-
-    private fun formatTitleLabel(raw: String): String {
-        val normalized = raw.replace('-', ' ').replace('_', ' ')
-        val parts = normalized.split(' ').filter { it.isNotBlank() }
-        if (parts.isEmpty()) return raw
-
-        return parts.joinToString(" ") { part ->
-            val lower = part.lowercase()
-            lower.replaceFirstChar { ch -> if (ch.isLowerCase()) ch.titlecase() else ch.toString() }
-        }
-    }
-
-    private fun sessionMuscleSummary(exercise: ExerciseSummary): String {
-        if (exercise.muscles.isEmpty()) return ""
-        val dominant = exercise.muscles
-            .take(MAX_MUSCLES_PER_EXERCISE)
-            .joinToString { "${it.name}(${it.percentage})" }
-        return " [$dominant]"
-    }
-
-    private fun contextMuscleSummary(context: ExampleContext): String {
-        if (context.muscles.isEmpty()) return "-"
-        return context.muscles
-            .take(MAX_MUSCLES_PER_EXERCISE)
-            .joinToString { "${it.name}(${it.percentage})" }
-    }
-
-    private fun formatLastUsed(lastUsed: LocalDateTime?): String {
-        return lastUsed?.toString() ?: "never"
-    }
-
+    // ---------------------------
+    // Domain mappers
+    // ---------------------------
     private fun DraftTrainingPack.toSessionSummaries(
         exampleContextMap: Map<String, ExampleContext>
     ): List<ExerciseSummary> {
         return exercises.mapNotNull { pack ->
             val context =
                 exampleContextMap[pack.exercise.exerciseExampleId] ?: return@mapNotNull null
-            if (context.id.isBlank()) return@mapNotNull null
-            if (context.displayName.isBlank()) return@mapNotNull null
-            if (context.muscles.isEmpty()) return@mapNotNull null
+            if (context.id.isBlank() || context.displayName.isBlank() || context.muscles.isEmpty()) return@mapNotNull null
 
             val forceType = context.forceType.takeIf { it.isNotBlank() } ?: return@mapNotNull null
             val weightType = context.weightType.takeIf { it.isNotBlank() } ?: return@mapNotNull null
@@ -593,32 +573,6 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         }
     }
 
-    private fun computeLastLoadDateTimeByMuscle(
-        trainings: List<TrainingSummary>,
-        significantShareThreshold: Int
-    ): Map<String, LocalDateTime> {
-        // Map of muscleId -> latest LocalDateTime of meaningful load
-        val last = mutableMapOf<String, LocalDateTime>()
-
-        trainings.forEach { training ->
-            val ts = training.performedAt // LocalDateTime of the training
-            training.exercises.forEach { ex ->
-                ex.muscles.forEach { share ->
-                    // Consider only meaningful load for the muscle
-                    if (share.percentage >= significantShareThreshold) {
-                        val prev = last[share.id]
-                        // Keep the latest timestamp
-                        if (prev == null || prev < ts) {
-                            last[share.id] = ts
-                        }
-                    }
-                }
-            }
-        }
-
-        return last
-    }
-
     private fun TrainingPack.toSummary(
         exampleContextMap: Map<String, ExampleContext>
     ): TrainingSummary {
@@ -626,9 +580,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         val exercises = exercises.mapNotNull { pack ->
             val context =
                 exampleContextMap[pack.exercise.exerciseExampleId] ?: return@mapNotNull null
-            if (context.id.isBlank()) return@mapNotNull null
-            if (context.displayName.isBlank()) return@mapNotNull null
-            if (context.muscles.isEmpty()) return@mapNotNull null
+            if (context.id.isBlank() || context.displayName.isBlank() || context.muscles.isEmpty()) return@mapNotNull null
 
             val forceType = context.forceType.takeIf { it.isNotBlank() } ?: return@mapNotNull null
             val weightType = context.weightType.takeIf { it.isNotBlank() } ?: return@mapNotNull null
@@ -653,6 +605,59 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         )
     }
 
+    private fun ExerciseExamplePack.toContextOrNull(): ExampleContext? {
+        val value = example.toDomain() ?: return null
+        if (value.id.isBlank() || value.name.isBlank()) return null
+
+        val muscles = bundles
+            .mapNotNull { pack ->
+                val percentage = pack.bundle.percentage
+                val muscleId = pack.muscle.id
+                val muscleName = pack.muscle.name
+                val recoveryHours: Int? = pack.muscle.recoveryTimeHours
+                when {
+                    percentage <= 0 -> null
+                    muscleId.isBlank() -> null
+                    muscleName.isBlank() -> null
+                    else -> MuscleShare(
+                        id = muscleId,
+                        name = muscleName,
+                        percentage = percentage,
+                        recoveryTimeHours = recoveryHours
+                    )
+                }
+            }
+            .sortedByDescending { it.percentage }
+            .take(MAX_MUSCLES_PER_EXERCISE)
+        if (muscles.isEmpty()) return null
+
+        val category = value.category.key.takeIf { it.isNotBlank() } ?: return null
+        val forceType = value.forceType.key.takeIf { it.isNotBlank() } ?: return null
+        val weightType = value.weightType.key.takeIf { it.isNotBlank() } ?: return null
+        val experience = value.experience.key.takeIf { it.isNotBlank() } ?: return null
+
+        val equipmentIds = equipments
+            .mapNotNull { it.equipment.id.takeIf { id -> id.isNotBlank() } }
+            .toSet()
+
+        return ExampleContext(
+            id = value.id,
+            displayName = value.name,
+            muscles = muscles,
+            category = category,
+            forceType = forceType,
+            weightType = weightType,
+            experience = experience,
+            usageCount = value.usageCount,
+            lastUsed = value.lastUsed,
+            equipmentIds = equipmentIds,
+            value = value
+        )
+    }
+
+    // ---------------------------
+    // Stats & helpers
+    // ---------------------------
     private fun computeCategoryStats(
         trainings: List<TrainingSummary>,
         session: List<ExerciseSummary>
@@ -669,8 +674,8 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             }
         }
 
-        val average = total.mapValues { (category, sum) ->
-            val occ = occurrences[category] ?: trainings.size.coerceAtLeast(1)
+        val average = total.mapValues { (cat, sum) ->
+            val occ = occurrences[cat] ?: trainings.size.coerceAtLeast(1)
             sum.toDouble() / occ
         }
 
@@ -678,19 +683,17 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         return CategoryStats(average = average, current = current)
     }
 
-    // Weighted across top-3 muscle shares
-    private fun computeMuscleTargets(
+    // PRIMARY-ONLY accounting for deficits
+    private fun computeMuscleTargetsPrimaryOnly(
         trainings: List<TrainingSummary>,
         session: List<ExerciseSummary>
     ): List<MuscleTarget> {
-        fun weightedCount(exercises: List<ExerciseSummary>): Map<String, Double> {
+
+        fun primaryCount(exercises: List<ExerciseSummary>): Map<String, Double> {
             val map = mutableMapOf<String, Double>()
             exercises.forEach { ex ->
-                val total = ex.muscles.sumOf { it.percentage }.takeIf { it > 0 } ?: return@forEach
-                ex.muscles.forEach { share ->
-                    val weight = share.percentage.toDouble() / total.toDouble()
-                    map[share.id] = (map[share.id] ?: 0.0) + weight
-                }
+                val primary = ex.muscles.firstOrNull() ?: return@forEach
+                map[primary.id] = (map[primary.id] ?: 0.0) + 1.0
             }
             return map
         }
@@ -701,39 +704,30 @@ internal class ExerciseExampleSuggestionPromptBuilder(
 
         trainings.forEach { training ->
             if (training.exercises.isEmpty()) return@forEach
-            val w = weightedCount(training.exercises)
+            val w = primaryCount(training.exercises)
             if (w.isEmpty()) return@forEach
 
-            w.forEach { (id, value) ->
-                totals[id] = (totals[id] ?: 0.0) + value
-            }
-            w.keys.forEach { id ->
-                occurrences[id] = (occurrences[id] ?: 0) + 1
-            }
-            training.exercises.flatMap { it.muscles }.forEach { share ->
+            w.forEach { (id, value) -> totals[id] = (totals[id] ?: 0.0) + value }
+            w.keys.forEach { id -> occurrences[id] = (occurrences[id] ?: 0) + 1 }
+            training.exercises.mapNotNull { it.muscles.firstOrNull() }.forEach { share ->
                 if (!names.containsKey(share.id)) names[share.id] = share.name
             }
         }
 
-        session.flatMap { it.muscles }.forEach { share ->
+        session.mapNotNull { it.muscles.firstOrNull() }.forEach { share ->
             if (!names.containsKey(share.id)) names[share.id] = share.name
         }
 
-        val currentWeighted = weightedCount(session)
-        val ids = (totals.keys + currentWeighted.keys).toSet()
+        val currentPrimary = primaryCount(session)
+        val ids = (totals.keys + currentPrimary.keys).toSet()
         if (ids.isEmpty()) return emptyList()
 
         return ids.map { id ->
             val occ = occurrences[id] ?: trainings.size.coerceAtLeast(1)
             val average = (totals[id] ?: 0.0) / occ.toDouble()
-            val current = currentWeighted[id] ?: 0.0
+            val current = currentPrimary[id] ?: 0.0
             val name = names[id] ?: id
-            MuscleTarget(
-                id = id,
-                name = name,
-                average = average,
-                current = current
-            )
+            MuscleTarget(id = id, name = name, average = average, current = current)
         }.sortedByDescending { it.deficit }
     }
 
@@ -742,7 +736,6 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         exampleContextMap: Map<String, ExampleContext>
     ): List<MuscleLoad> {
         val loads = mutableMapOf<String, MuscleLoad>()
-
         trainings.forEach { training ->
             val musclesSeen = mutableSetOf<String>()
             training.exercises.forEach { exercise ->
@@ -750,51 +743,36 @@ internal class ExerciseExampleSuggestionPromptBuilder(
                 context.muscles.forEach { muscle ->
                     val load = loads.getOrPut(muscle.name) { MuscleLoad(muscle.name, 0, 0) }
                     load.total += muscle.percentage
-                    if (musclesSeen.add(muscle.name)) {
-                        load.sessions += 1
+                    if (musclesSeen.add(muscle.name)) load.sessions += 1
+                }
+            }
+        }
+        return loads.values.sortedByDescending { it.total }.take(MAX_MUSCLE_SUMMARY)
+    }
+
+    private fun computeLastLoadDateTimeByMuscle(
+        trainings: List<TrainingSummary>,
+        significantShareThreshold: Int
+    ): Map<String, LocalDateTime> {
+        val last = mutableMapOf<String, LocalDateTime>()
+        trainings.forEach { training ->
+            val ts = training.performedAt
+            training.exercises.forEach { ex ->
+                ex.muscles.forEach { share ->
+                    if (share.percentage >= significantShareThreshold) {
+                        val prev = last[share.id]
+                        if (prev == null || prev < ts) last[share.id] = ts
                     }
                 }
             }
         }
-
-        return loads.values
-            .sortedByDescending { it.total }
-            .take(MAX_MUSCLE_SUMMARY)
-    }
-
-    private fun computeWeekdayPatterns(
-        trainings: List<TrainingSummary>,
-        exampleContextMap: Map<String, ExampleContext>
-    ): List<String> {
-        val patterns = mutableMapOf<DayOfWeek, MutableMap<String, Int>>()
-
-        trainings.forEach { training ->
-            val perMuscle = patterns.getOrPut(training.dayOfWeek) { mutableMapOf() }
-            training.exercises.forEach { exercise ->
-                val context = exampleContextMap[exercise.exampleId] ?: return@forEach
-                context.muscles.forEach { muscle ->
-                    val current = perMuscle[muscle.name] ?: 0
-                    perMuscle[muscle.name] = current + muscle.percentage
-                }
-            }
-        }
-
-        return patterns.entries
-            .sortedBy { it.key.ordinal }
-            .map { (day, muscles) ->
-                val topMuscles = muscles.entries
-                    .sortedByDescending { it.value }
-                    .take(MAX_WEEKDAY_MUSCLES)
-                    .joinToString { "${it.key}(${it.value})" }
-                "${day.name.lowercase().replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }}: $topMuscles"
-            }
+        return last
     }
 
     private fun computePeriodicHabits(
         trainings: List<TrainingSummary>,
         significantShareThreshold: Int
     ): Map<String, PeriodicHabit> {
-        // Collect dates (LocalDate) when each muscle had a meaningful load
         val byMuscleDates = mutableMapOf<String, MutableList<LocalDate>>()
         val names = mutableMapOf<String, String>()
 
@@ -805,7 +783,6 @@ internal class ExerciseExampleSuggestionPromptBuilder(
                     if (share.percentage >= significantShareThreshold) {
                         val list = byMuscleDates.getOrPut(share.id) { mutableListOf() }
                         if (list.lastOrNull() != date) list.add(date) // de-dup per day
-                        // ✅ kmp-safe: fill display name once
                         names.getOrPut(share.id) { share.name }
                     }
                 }
@@ -818,21 +795,18 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             val intervals = dates.zipWithNext { a, b -> a.daysUntil(b) }.filter { it > 0 }
             if (intervals.size < PERIODIC_MIN_INTERVALS) return@forEach
 
-            val median = medianInt(intervals)
-            if (median <= 0) return@forEach
+            val median = medianInt(intervals).coerceAtLeast(1)
 
-            // Recent median for migration
             val recent = intervals.takeLast(PERIODIC_RECENT_WINDOW)
             val recentMedian = medianInt(recent)
 
-            // Confidence via IQR/median
             val iqr = iqrInt(intervals).toDouble()
             val spread = if (median > 0) (iqr / median.toDouble()) else 1.0
             val confidence = clamp01(1.0 - spread)
 
-            // Blend median to allow migration when confidence is low
             val alpha = 0.5 * (1.0 - confidence)
-            val blended = ((1 - alpha) * median + alpha * recentMedian).roundToInt().coerceAtLeast(1)
+            val blended =
+                ((1 - alpha) * median + alpha * recentMedian).roundToInt().coerceAtLeast(1)
 
             val lastDate = dates.last()
             val nextDue = lastDate.plus(blended, DateTimeUnit.DAY)
@@ -848,6 +822,45 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         return habits
     }
 
+    private fun computeSessionHabits(
+        trainings: List<TrainingSummary>,
+        significantShareThreshold: Int
+    ): Map<String, SessionHabit> {
+        // trainings: индекс 0 — самая свежая сессия
+        val indicesByMuscle = mutableMapOf<String, MutableList<Int>>()
+
+        trainings.forEachIndexed { idx, tr ->
+            tr.exercises.forEach { ex ->
+                val primary = ex.muscles.firstOrNull()
+                if (primary != null && primary.percentage >= significantShareThreshold) {
+                    indicesByMuscle.getOrPut(primary.id) { mutableListOf() }.add(idx)
+                }
+            }
+        }
+
+        val habits = mutableMapOf<String, SessionHabit>()
+        indicesByMuscle.forEach { (muscleId, idxsAsc) ->
+            if (idxsAsc.size < PERIODIC_MIN_EVENTS) return@forEach
+            val intervals = idxsAsc.zipWithNext { a, b -> b - a }.filter { it > 0 }
+            if (intervals.size < PERIODIC_MIN_INTERVALS) return@forEach
+
+            val median = medianInt(intervals).coerceAtLeast(1)
+            val lastSeenIdx = idxsAsc.firstOrNull() ?: -1 // 0 — самая свежая
+            val nextDueIdx = if (lastSeenIdx >= 0) lastSeenIdx + median else median
+
+            habits[muscleId] = SessionHabit(
+                muscleId = muscleId,
+                medianIntervalSessions = median,
+                lastSeenIdx = lastSeenIdx,
+                nextDueIdx = nextDueIdx
+            )
+        }
+        return habits
+    }
+
+    // ---------------------------
+    // Comparator (priorities)
+    // ---------------------------
     private fun exampleComparator(
         stage: Int,
         muscleDeficits: Map<String, Double>,
@@ -856,84 +869,141 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         session: List<ExerciseSummary>,
         nowDateTime: LocalDateTime,
         lastLoadByMuscleDateTime: Map<String, LocalDateTime>,
-        weekdayPreferredMuscleIds: Set<String>
+        periodicHabits: Map<String, PeriodicHabit>,
+        sessionHabits: Map<String, SessionHabit>
     ): Comparator<ExampleContext> {
         return Comparator { left, right ->
-            // 1) Larger weighted muscle deficit first
-            val muscleCompare = compareMuscleDeficit(left, right, muscleDeficits)
-            if (muscleCompare != 0) return@Comparator muscleCompare
+            // 1) Дефицит по ПЕРВИЧНОЙ мышце (больше — выше)
+            fun primaryDeficit(ctx: ExampleContext): Double {
+                val pm = ctx.primaryMuscleId() ?: return 0.0
+                return (muscleDeficits[pm] ?: 0.0).coerceAtLeast(0.0)
+            }
 
-            // 2) Per-muscle category steering towards ~1:1 within the session
-            fun prefMatch(ctx: ExampleContext): Int {
-                val targetMuscleId = ctx.primaryMuscleId()
-                val preferred = preferredCategoryForMuscleNext(targetMuscleId, trainings, session)
+            val dL = primaryDeficit(left)
+            val dR = primaryDeficit(right)
+            val deficitCmp = dR.compareTo(dL).takeIf { abs(dL - dR) >= DEFICIT_EPS } ?: 0
+            if (deficitCmp != 0) return@Comparator deficitCmp
+
+            // 2) Циклы (macro/micro): OVERDUE < DUE < NONE
+            fun cycleRank(ctx: ExampleContext): Int {
+                val pm = ctx.primaryMuscleId() ?: return 2
+                return when (combinedCycleState(pm, nowDateTime, periodicHabits, sessionHabits)) {
+                    CycleState.OVERDUE -> 0
+                    CycleState.DUE -> 1
+                    CycleState.NONE -> 2
+                }
+            }
+
+            val cL = cycleRank(left)
+            val cR = cycleRank(right)
+            val cycleCmp = cL.compareTo(cR)
+            if (cycleCmp != 0) return@Comparator cycleCmp
+
+            // 3) Локальный баланс категории для целевой мышцы (тянемся к ~1:1 в текущей сессии)
+            fun prefMismatch(ctx: ExampleContext): Int {
+                val pm = ctx.primaryMuscleId()
+                val preferred = preferredCategoryForMuscleNext(pm, trainings, session)
                 return if (preferred != null && ctx.category != preferred) 1 else 0
             }
-            val prefL = prefMatch(left)
-            val prefR = prefMatch(right)
-            val prefCompare = prefL.compareTo(prefR)
-            if (prefCompare != 0) return@Comparator prefCompare
 
-            // 3) Habit preference: prefer today's weekday muscles and weekly-due muscles
-            fun habitPenalty(ctx: ExampleContext): Int = habitPreferencePenalty(
-                ctx = ctx,
-                weekdayPreferredMuscleIds = weekdayPreferredMuscleIds,
-                nowDateTime = nowDateTime,
-                lastLoadByMuscleDateTime = lastLoadByMuscleDateTime
-            )
-            val habitL = habitPenalty(left)
-            val habitR = habitPenalty(right)
-            val habitCompare = habitL.compareTo(habitR)
-            if (habitCompare != 0) return@Comparator habitCompare
+            val pmL = prefMismatch(left)
+            val pmR = prefMismatch(right)
+            val pmCmp = pmL.compareTo(pmR)
+            if (pmCmp != 0) return@Comparator pmCmp
 
-            // 4) Global category policy (compounds early; per-category deficit)
-            val categoryCompare = categoryStats.priorityFor(left.category, stage)
+            // 4) Глобальная политика категории
+            val catCmp = categoryStats.priorityFor(left.category, stage)
                 .compareTo(categoryStats.priorityFor(right.category, stage))
-            if (categoryCompare != 0) return@Comparator categoryCompare
+            if (catCmp != 0) return@Comparator catCmp
 
-            // 5) Anti-monotony: slight penalty if same primary was loaded < ANTI_MONOTONY_HOURS
-            fun mono(ctx: ExampleContext): Int = antiMonotonyPenalty(
-                ctx = ctx,
-                nowDateTime = nowDateTime,
-                lastLoadByMuscleDateTime = lastLoadByMuscleDateTime
-            )
-            val monoL = mono(left)
-            val monoR = mono(right)
-            val monoCompare = monoL.compareTo(monoR)
-            if (monoCompare != 0) return@Comparator monoCompare
+            // 5) Анти-монотония (мягкий штраф)
+            fun mono(ctx: ExampleContext): Int =
+                antiMonotonyPenalty(ctx, nowDateTime, lastLoadByMuscleDateTime)
 
-            // 6) Lower usageCount first
-            val usageCompare = left.usageCount.compareTo(right.usageCount)
-            if (usageCompare != 0) return@Comparator usageCompare
+            val mL = mono(left)
+            val mR = mono(right)
+            val monoCmp = mL.compareTo(mR)
+            if (monoCmp != 0) return@Comparator monoCmp
 
-            // 7) Older lastUsed first
-            val lastUsedCompare = compareLastUsed(left.lastUsed, right.lastUsed)
-            if (lastUsedCompare != 0) return@Comparator lastUsedCompare
+            // 6) Разнообразие: меньше usageCount — выше
+            val useCmp = left.usageCount.compareTo(right.usageCount)
+            if (useCmp != 0) return@Comparator useCmp
 
-            // 8) Name fallback
+            // 7) Давность: старее lastUsed — выше
+            val lastUsedCmp = compareLastUsed(left.lastUsed, right.lastUsed)
+            if (lastUsedCmp != 0) return@Comparator lastUsedCmp
+
+            // 8) Имя (стабильный детерминизм)
             left.displayName.compareTo(right.displayName)
         }
     }
 
-    private fun topMuscleIdsForDay(
-        trainings: List<TrainingSummary>,
-        day: DayOfWeek
-    ): Set<String> {
-        val acc = mutableMapOf<String, Int>()
-        trainings.filter { it.dayOfWeek == day }.forEach { tr ->
-            tr.exercises.forEach { ex ->
-                ex.muscles.forEach { share ->
-                    acc[share.id] = (acc[share.id] ?: 0) + share.percentage
-                }
-            }
+    // ---------------------------
+    // Cycles (status + penalties)
+    // ---------------------------
+    private enum class CycleState { NONE, DUE, OVERDUE }
+
+    private fun dayCycleState(
+        muscleId: String,
+        now: LocalDateTime,
+        periodicHabits: Map<String, PeriodicHabit>
+    ): CycleState {
+        val h = periodicHabits[muscleId] ?: return CycleState.NONE
+        val today = now.date
+        val due = h.nextDue
+        val graceBefore = due.minus(PERIODIC_GRACE_DAYS, DateTimeUnit.DAY)
+        return when {
+            today > due -> CycleState.OVERDUE
+            today >= graceBefore -> CycleState.DUE
+            else -> CycleState.NONE
         }
-        return acc.entries
-            .sortedByDescending { it.value }
-            .take(MAX_WEEKDAY_MUSCLES)
-            .map { it.key }
-            .toSet()
     }
 
+    private fun sessionCycleState(
+        muscleId: String,
+        sessionHabits: Map<String, SessionHabit>
+    ): CycleState {
+        val h = sessionHabits[muscleId] ?: return CycleState.NONE
+        val lastSeen = h.lastSeenIdx
+        if (lastSeen < 0) return CycleState.NONE
+        val sessionsSince = lastSeen // текущий индекс = 0
+        return when {
+            sessionsSince > h.medianIntervalSessions + PERIODIC_GRACE_SESSIONS -> CycleState.OVERDUE
+            sessionsSince >= h.medianIntervalSessions - PERIODIC_GRACE_SESSIONS -> CycleState.DUE
+            else -> CycleState.NONE
+        }
+    }
+
+    private fun combinedCycleState(
+        muscleId: String,
+        now: LocalDateTime,
+        periodicHabits: Map<String, PeriodicHabit>,
+        sessionHabits: Map<String, SessionHabit>
+    ): CycleState {
+        val d = dayCycleState(muscleId, now, periodicHabits)
+        val s = sessionCycleState(muscleId, sessionHabits)
+        return when {
+            d == CycleState.OVERDUE || s == CycleState.OVERDUE -> CycleState.OVERDUE
+            d == CycleState.DUE || s == CycleState.DUE -> CycleState.DUE
+            else -> CycleState.NONE
+        }
+    }
+
+    private fun antiMonotonyPenalty(
+        ctx: ExampleContext,
+        nowDateTime: LocalDateTime,
+        lastLoadByMuscleDateTime: Map<String, LocalDateTime>
+    ): Int {
+        val pm = ctx.primaryMuscleId() ?: return 0
+        val last = lastLoadByMuscleDateTime[pm] ?: return 0
+        val tz = TimeZone.currentSystemDefault()
+        val hours = (nowDateTime.toInstant(tz) - last.toInstant(tz)).inWholeHours
+        return if (hours < ANTI_MONOTONY_HOURS.toLong()) 1 else 0
+    }
+
+    // ---------------------------
+    // Additional helpers just added
+    // ---------------------------
     private fun preferredCategoryForMuscleNext(
         muscleId: String?,
         trainings: List<TrainingSummary>,
@@ -987,81 +1057,54 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         }
     }
 
-    private fun compareMuscleDeficit(
-        left: ExampleContext,
-        right: ExampleContext,
-        muscleDeficits: Map<String, Double>
-    ): Int {
-        val leftDeficit = left.deficitScore(muscleDeficits)
-        val rightDeficit = right.deficitScore(muscleDeficits)
-        if (abs(leftDeficit - rightDeficit) < DEFICIT_EPS) return 0
-        return rightDeficit.compareTo(leftDeficit)
-    }
-
     private fun compareLastUsed(left: LocalDateTime?, right: LocalDateTime?): Int {
         return when {
-            left == null && right == null -> 0
-            left == null -> -1
+            left == null && right == null -> 0           // оба "никогда"
+            left == null -> -1                           // "никогда" — считаем самым давним => выше
             right == null -> 1
-            else -> left.compareTo(right)
+            else -> left.compareTo(right)                // более старый (меньше) идёт раньше
         }
     }
 
-    private fun ExerciseExamplePack.toContextOrNull(): ExampleContext? {
-        val value = example.toDomain() ?: return null
-        if (value.id.isBlank()) return null
-        if (value.name.isBlank()) return null
-
-        val muscles = bundles
-            .mapNotNull { pack ->
-                val percentage = pack.bundle.percentage
-                val muscleId = pack.muscle.id
-                val muscleName = pack.muscle.name
-                val recoveryTime: Int? = pack.muscle.recoveryTimeHours
-                when {
-                    percentage <= 0 -> null
-                    muscleId.isBlank() -> null
-                    muscleName.isBlank() -> null
-                    else -> MuscleShare(
-                        id = muscleId,
-                        name = muscleName,
-                        percentage = percentage,
-                        recoveryTimeHours = recoveryTime
-                    )
-                }
-            }
-            .sortedByDescending { it.percentage }
-            .take(MAX_MUSCLES_PER_EXERCISE)
-        if (muscles.isEmpty()) return null
-
-        val category = value.category.key.takeIf { it.isNotBlank() } ?: return null
-        val forceType = value.forceType.key.takeIf { it.isNotBlank() } ?: return null
-        val weightType = value.weightType.key.takeIf { it.isNotBlank() } ?: return null
-        val experience = value.experience.key.takeIf { it.isNotBlank() } ?: return null
-
-        val equipmentIds = equipments
-            .mapNotNull { it.equipment.id.takeIf { id -> id.isNotBlank() } }
-            .toSet()
-
-        return ExampleContext(
-            id = value.id,
-            displayName = value.name,
-            muscles = muscles,
-            category = category,
-            forceType = forceType,
-            weightType = weightType,
-            experience = experience,
-            usageCount = value.usageCount,
-            lastUsed = value.lastUsed,
-            equipmentIds = equipmentIds,
-            value = value
-        )
+    // ---------------------------
+    // Misc formatters
+    // ---------------------------
+    private fun formatOneDecimal(value: Double): String {
+        val scaled = (value * 10.0).roundToInt() / 10.0
+        val intPart = scaled.toInt()
+        return if (abs(scaled - intPart) < 1e-4) intPart.toString() else scaled.toString()
     }
 
-    private fun Map<String, Int>.dominantKey(): String? {
-        return entries.maxByOrNull { it.value }?.key
+    private fun formatTitleLabel(raw: String): String {
+        val normalized = raw.replace('-', ' ').replace('_', ' ')
+        val parts = normalized.split(' ').filter { it.isNotBlank() }
+        if (parts.isEmpty()) return raw
+        return parts.joinToString(" ") { part ->
+            val lower = part.lowercase()
+            lower.replaceFirstChar { ch -> if (ch.isLowerCase()) ch.titlecase() else ch.toString() }
+        }
     }
 
+    private fun sessionMuscleSummary(exercise: ExerciseSummary): String {
+        if (exercise.muscles.isEmpty()) return ""
+        val dominant = exercise.muscles.take(MAX_MUSCLES_PER_EXERCISE)
+            .joinToString { "${it.name}(${it.percentage})" }
+        return " [$dominant]"
+    }
+
+    private fun contextMuscleSummary(context: ExampleContext): String {
+        if (context.muscles.isEmpty()) return "-"
+        return context.muscles.take(MAX_MUSCLES_PER_EXERCISE)
+            .joinToString { "${it.name}(${it.percentage})" }
+    }
+
+    private fun formatLastUsed(lastUsed: LocalDateTime?): String = lastUsed?.toString() ?: "never"
+
+    private fun Map<String, Int>.dominantKey(): String? = entries.maxByOrNull { it.value }?.key
+
+    // ---------------------------
+    // Data classes
+    // ---------------------------
     private data class PredictionSignals(
         val session: List<ExerciseSummary>,
         val stage: Int,
@@ -1069,7 +1112,6 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         val historicalToday: List<ExerciseSummary>,
         val performedExampleIds: Set<String>,
         val muscleLoads: List<MuscleLoad>,
-        val weekdayPatterns: List<String>,
         val categoryStats: CategoryStats,
         val muscleTargets: List<MuscleTarget>,
         val muscleDeficits: Map<String, Double>,
@@ -1077,7 +1119,8 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         val weightMix: Map<String, Int>,
         val experienceMix: Map<String, Int>,
         val lastLoadByMuscleDateTime: Map<String, LocalDateTime>,
-        val periodicHabits: Map<String, PeriodicHabit>
+        val periodicHabits: Map<String, PeriodicHabit>,
+        val sessionHabits: Map<String, SessionHabit>
     )
 
     private data class ExampleCatalog(
@@ -1129,18 +1172,19 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         fun priorityFor(category: String, stage: Int): Int {
             val compoundKey = CategoryEnum.COMPOUND.key
             val isolationKey = CategoryEnum.ISOLATION.key
-
             return when (category) {
                 compoundKey -> when {
                     stage < EARLY_STAGE_COMPOUND_LIMIT -> 0
                     deficit(compoundKey) > DEFICIT_EPS -> 0
                     else -> 1
                 }
+
                 isolationKey -> when {
                     stage < EARLY_STAGE_COMPOUND_LIMIT -> 1
                     deficit(isolationKey) > DEFICIT_EPS -> 0
                     else -> 1
                 }
+
                 else -> 1
             }
         }
@@ -1159,16 +1203,9 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         val equipmentIds: Set<String>,
         val value: ExerciseExampleValue
     ) {
-        fun deficitScore(muscleDeficits: Map<String, Double>): Double {
-            return muscles.sumOf { share ->
-                val deficit = muscleDeficits[share.id]?.takeIf { it > 0.0 } ?: 0.0
-                deficit * (share.percentage / 100.0)
-            }
-        }
-
         fun primaryMuscleId(): String? = muscles.firstOrNull()?.id
 
-        // Hour-level recovery check: now - lastLoad >= recoveryHours
+        // Primary-only recovery: now - lastLoad >= recoveryHours
         fun isPrimaryMuscleRecovered(
             nowDateTime: LocalDateTime,
             lastLoadByMuscleDateTime: Map<String, LocalDateTime>
@@ -1176,13 +1213,12 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             val primary = muscles.firstOrNull() ?: return true
             val recoveryHours: Int = primary.recoveryTimeHours ?: return true
             val last = lastLoadByMuscleDateTime[primary.id] ?: return true
-
             val tz = TimeZone.currentSystemDefault()
             val hoursSince = (nowDateTime.toInstant(tz) - last.toInstant(tz)).inWholeHours
             return hoursSince >= recoveryHours.toLong()
         }
 
-        // Strict mode: sum of shares where now - lastLoad < recoveryHours
+        // Strict mode: суммируем доли мышц, у которых окно восстановления ещё не завершено
         fun unrecoveredShare(
             nowDateTime: LocalDateTime,
             lastLoadByMuscleDateTime: Map<String, LocalDateTime>
@@ -1194,71 +1230,10 @@ internal class ExerciseExampleSuggestionPromptBuilder(
                 val rh: Int = m.recoveryTimeHours ?: continue
                 val last = lastLoadByMuscleDateTime[m.id] ?: continue
                 val hoursSince = (nowDateTime.toInstant(tz) - last.toInstant(tz)).inWholeHours
-                if (hoursSince < rh.toLong()) {
-                    sumUnrec += m.percentage
-                }
+                if (hoursSince < rh.toLong()) sumUnrec += m.percentage
             }
             return (sumUnrec.coerceAtLeast(0)).toDouble() / 100.0
         }
-    }
-
-    // Pick primary muscles that dominate on a specific weekday (top-N by summed % across sessions).
-    private fun topPrimaryMuscleIdsForDay(
-        trainings: List<TrainingSummary>,
-        day: DayOfWeek,
-        topN: Int
-    ): Set<String> {
-        val totals = mutableMapOf<String, Int>() // muscleId -> summed primary %
-        trainings.forEach { tr ->
-            if (tr.dayOfWeek != day) return@forEach
-            tr.exercises.forEach { ex ->
-                val primary = ex.muscles.firstOrNull() ?: return@forEach
-                totals[primary.id] = (totals[primary.id] ?: 0) + primary.percentage
-            }
-        }
-        return totals.entries.sortedByDescending { it.value }
-            .take(topN.coerceAtLeast(1))
-            .map { it.key }
-            .toSet()
-    }
-
-    // Simple weekly "due" heuristic: treat muscle as due if last meaningful load ≥ (7d - grace).
-    private fun isDueByWeeklyHeuristic(
-        muscleId: String,
-        nowDateTime: LocalDateTime,
-        lastLoadByMuscleDateTime: Map<String, LocalDateTime>
-    ): Boolean {
-        val last = lastLoadByMuscleDateTime[muscleId] ?: return false
-        val tz = TimeZone.currentSystemDefault()
-        val hours = (nowDateTime.toInstant(tz) - last.toInstant(tz)).inWholeHours
-        val dueHours = (7L * 24L) - (PERIODIC_GRACE_DAYS.toLong() * 24L)
-        return hours >= dueHours
-    }
-
-    // Mild anti-monotony: return 1 if same primary muscle loaded very recently; else 0.
-    private fun antiMonotonyPenalty(
-        ctx: ExampleContext,
-        nowDateTime: LocalDateTime,
-        lastLoadByMuscleDateTime: Map<String, LocalDateTime>
-    ): Int {
-        val pm = ctx.primaryMuscleId() ?: return 0
-        val last = lastLoadByMuscleDateTime[pm] ?: return 0
-        val tz = TimeZone.currentSystemDefault()
-        val hours = (nowDateTime.toInstant(tz) - last.toInstant(tz)).inWholeHours
-        return if (hours < ANTI_MONOTONY_HOURS.toLong()) 1 else 0
-    }
-
-    // Habit preference penalty: 0 if muscle matches weekday habit or is due by weekly heuristic; else 1.
-    private fun habitPreferencePenalty(
-        ctx: ExampleContext,
-        weekdayPreferredMuscleIds: Set<String>,
-        nowDateTime: LocalDateTime,
-        lastLoadByMuscleDateTime: Map<String, LocalDateTime>
-    ): Int {
-        val pm = ctx.primaryMuscleId() ?: return 1
-        val matchesWeekday = pm in weekdayPreferredMuscleIds
-        val isDue = isDueByWeeklyHeuristic(pm, nowDateTime, lastLoadByMuscleDateTime)
-        return if (matchesWeekday || isDue) 0 else 1
     }
 
     private data class MuscleShare(
@@ -1277,78 +1252,46 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         val nextDue: LocalDate
     )
 
-    private companion object {
-        // Tunables & limits (Profile A)
-// All comments are in English.
+    private data class SessionHabit(
+        val muscleId: String,
+        val medianIntervalSessions: Int,
+        val lastSeenIdx: Int,    // 0 — самая свежая сессия; lastSeenIdx = 0 значит «была в прошлой сессии»
+        val nextDueIdx: Int      // lastSeenIdx + medianInterval
+    )
 
+    // ---------------------------
+    // Tunables
+    // ---------------------------
+    private companion object {
         private const val HISTORY_LOOKBACK_DAYS = 90
-        /** Days of history to load for stats (deficits, habits, loads).
-         *  Larger => more stable averages, slower adaptation. Suggested: 90. */
+
+        /** Days of history to load for stats (deficits, cycles, loads). */
 
         private const val RECENT_TRAININGS_LIMIT = 16
-        /** How many most recent sessions participate in stats AND are shown in prompt.
-         *  In this codebase it affects the computed stats (category/muscle targets, loads). */
+
+        /** How many most recent sessions participate in stats and are shown in prompt. */
 
         private const val MAX_SESSION_EXERCISES = 12
-        /** Max items printed from the current draft ("Session so far"). */
-
         private const val MAX_TODAY_EXERCISES = 16
-        /** Max earlier-same-day exercises printed. */
-
         private const val MAX_TRAINING_EXERCISES = 16
-        /** Max exercises per training printed in "Recent trainings". */
-
         private const val MAX_MUSCLES_PER_EXERCISE = 4
-        /** How many muscle shares per exercise to keep (sorted by %). Typical: 3–4. */
-
         private const val MAX_MUSCLE_SUMMARY = 12
-        /** How many top muscles to show in the "Muscle load" summary. */
-
         private const val MAX_MUSCLE_TARGET_LINES = 8
-        /** How many positive-deficit target muscles to list. */
-
         private const val MAX_PRIMARY_FOCUS = 3
-        /** From the targets list, how many to mark as "Primary focus". */
-
-        private const val MAX_WEEKDAY_MUSCLES = 3
-        /** In weekday habits, how many top muscles per weekday to show. */
-
-        private const val MAX_WEEKDAY_LINES = 7
-        /** How many weekday lines to print (ideally cover the whole week). */
-
         private const val MAX_CANDIDATE_COUNT = 16
-        /** How many ranked candidates to include for the model's final pick. */
 
         private const val EARLY_STAGE_COMPOUND_LIMIT = 2
-        /** Early-session rule: prefer compound until at least this many exercises are placed,
-         *  unless compound category still has a positive deficit. */
-
         private const val DEFICIT_EPS = 0.1
-        /** Epsilon for treating deficits as "equal" when tie-breaking. */
-
         private const val SIGNIFICANT_SHARE_THRESHOLD = 30 // %
-        /** % threshold to treat a muscle as meaningfully loaded (last-load & habits). */
-
         private const val STRICT_UNRECOVERED_SHARE_LIMIT = 0.6 // 60%
-        /** Block a candidate if unrecovered muscle shares exceed this fraction (0..1). */
 
         private const val ANTI_MONOTONY_HOURS = 48
-        /** Soft penalty window if the same primary muscle was trained recently, even if recovery is OK. */
-
-        private const val PERIODIC_MIN_EVENTS = 3
-        /** Minimal number of meaningful dates per muscle to infer a periodic habit. */
-
-        private const val PERIODIC_MIN_INTERVALS = 2
-        /** Minimal number of intervals (events-1) to compute stable interval statistics. */
-
-        private const val PERIODIC_RECENT_WINDOW = 3
-        /** Recent-interval window to blend median toward recent behavior (habit migration). */
-
         private const val PERIODIC_GRACE_DAYS = 1
-        /** Days of grace around "nextDue" to treat a habit as active/eligible. */
-
+        private const val PERIODIC_GRACE_SESSIONS = 1
+        private const val PERIODIC_MIN_EVENTS = 3
+        private const val PERIODIC_MIN_INTERVALS = 2
+        private const val PERIODIC_RECENT_WINDOW = 3
         private const val MAX_PERIODIC_LINES = 8
-        /** Max periodic-habit lines to print. */
 
         private val EXERCISE_ID_REGEX = "\\\"exerciseExampleId\\\"\\s*:\\s*\\\"([^\\\"]+)".toRegex()
         private val REASON_REGEX = "\\\"reason\\\"\\s*:\\s*\\\"([^\\\"]+)".toRegex()
@@ -1359,22 +1302,20 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             You are a strict workout planner.
             Choose EXACTLY ONE exercise from the "Candidates" list in the prompt.
             HARD CONSTRAINTS:
-            - Return ONLY JSON: {"exerciseExampleId":"<id>","reason":"<=500 chars"} (no code block, no extra text).
+            - Return ONLY JSON: {"exerciseExampleId":"<id>","reason":"<=500 chars","warning":""} (no code block, no extra text).
             - "exerciseExampleId" MUST be one of the candidate IDs.
             - Do NOT select exercises already performed in the current session.
             DECISION RULES (in order):
-            1) Cover muscles with the largest positive (weighted) deficits.
-            2) Respect recovery windows: avoid a candidate if its primary muscle hasn't recovered yet.
-            3) For the target muscle, adapt category towards ~1:1 compound/isolation within the current session, using historical averages to break ties.
-            4) Keep compounds early; once compound deficit is covered, prefer isolation for fine-tuning.
-            5) Use habits:
-               - Weekday habits: prefer muscles typically trained on today's weekday.
-               - Periodic habits: give a boost if the primary muscle is due/overdue by its learned interval.
-               - Mild anti-monotony: apply a small penalty if the same primary muscle had a meaningful load yesterday (~<36h).
-            6) Prefer candidates with LOWER usageCount and OLDER lastUsed (promote variety).
+            1) Maximize coverage of POSITIVE deficits for the PRIMARY muscle (primary-only accounting).
+            2) Cycles priority: prefer candidates whose PRIMARY muscle is OVERDUE, then DUE (by macro days OR micro sessions, both with grace).
+            3) Per-target category steering toward ~1:1 compound/isolation in the current session (use history as reference).
+            4) Global category policy: compounds earlier; if a category has a positive deficit, prioritize it.
+            5) Mild anti-monotony: apply a small penalty if the same PRIMARY muscle had meaningful load recently (< ${ANTI_MONOTONY_HOURS}h), even if recovered.
+            6) Promote variety: lower usageCount, older lastUsed.
             7) If still tied, pick the first candidate in the list.
-            
-            In "reason", justify briefly with: deficit alignment, recovery status, category rationale, habit triggers (weekday/periodic/anti-monotony), and variety (usage/rotation).
+
+            In "reason", justify briefly: primary deficit alignment, cycle status (due/overdue), recovery status, category rationale (local/global), and variety.
+            If there is any caution (e.g., non-primary unrecovered shares or long gap from user's typical pattern), put it into "warning" (or leave empty).
         """.trimIndent()
 
         private fun clamp01(v: Double) = when {
