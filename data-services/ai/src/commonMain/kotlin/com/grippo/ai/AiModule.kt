@@ -13,6 +13,9 @@ import org.koin.core.annotation.Single
 @ComponentScan
 public class AiModule {
 
+    // TLS sessions are not supported on Native platform
+    // https://github.com/JetBrains/koog/pull/869
+
     @Single
     internal fun provideAiService(executor: PromptExecutor, model: LLModel): AiService {
         return AiService(
