@@ -6,47 +6,33 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.BaseComposeScreen
 import com.grippo.core.ScreenBackground
-import com.grippo.design.components.badge.Badge
-import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonContent
-import com.grippo.design.components.button.ButtonState
-import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
-import com.grippo.design.components.cards.selectable.SelectableCard
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
-import com.grippo.design.components.inputs.InputSearch
 import com.grippo.design.components.placeholder.ScreenPlaceholder
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.icons.Filter
-import com.grippo.design.resources.provider.icons.Magic
 import com.grippo.design.resources.provider.not_found
 import com.grippo.design.resources.provider.select_exercise
+import com.grippo.exercise.example.picker.internal.ManualHeader
+import com.grippo.exercise.example.picker.internal.SuggestionHeader
 import com.grippo.state.exercise.examples.stubExerciseExample
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
@@ -76,85 +62,27 @@ internal fun ExerciseExamplePickerScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-        ) {
-            InputSearch(
-                modifier = Modifier.weight(1f),
-                value = state.manual.name,
-                onValueChange = contract::onQueryChange
-            )
-            Box {
-                Button(
-                    content = ButtonContent.Icon(
-                        icon = AppTokens.icons.Filter
-                    ),
-                    style = ButtonStyle.Tertiary,
-                    onClick = contract::onFiltersClick
-                )
-
-                val count = remember(state.manual.filters) {
-                    state.manual.filters.count { it.isSelected() }
-                }
-
-                Badge(
-                    modifier = Modifier.align(Alignment.TopEnd),
-                    value = count
-                )
-            }
-
-            val buttonState = remember(loaders) {
-                when {
-                    loaders.contains(ExerciseExamplePickerLoader.SuggestExample) -> ButtonState.Loading
-                    else -> ButtonState.Enabled
-                }
-            }
-
-            Button(
-                content = ButtonContent.Icon(
-                    icon = AppTokens.icons.Magic
-                ),
-                state = buttonState,
-                style = ButtonStyle.Magic,
-                onClick = contract::onSuggestClick
-            )
-        }
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
-        val groupsListState = rememberLazyListState()
-
-        LaunchedEffect(state.manual.muscleGroups) {
-            val index = state.manual.muscleGroups
-                .map { it.id }
-                .indexOf(state.manual.selectedMuscleGroupId)
-                .takeIf { it >= 0 } ?: return@LaunchedEffect
-            groupsListState.scrollToItem(index)
-        }
-
-        LazyRow(
+        AnimatedContent(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-            contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
-            state = groupsListState
-        ) {
-            items(
-                items = state.manual.muscleGroups,
-                key = { it.id },
-            ) { item ->
-                val clickProvider = remember(item.id) {
-                    { contract.onMuscleGroupClick(item.id) }
-                }
+            transitionSpec = {
+                (fadeIn(animationSpec = tween(220, delayMillis = 90)))
+                    .togetherWith(fadeOut(animationSpec = tween(90)))
+            },
+            targetState = state.suggestion,
+        ) { suggestion ->
 
-                SelectableCard(
-                    style = CheckSelectableCardStyle.Small(
-                        title = item.type.title().text()
-                    ),
-                    isSelected = state.manual.selectedMuscleGroupId == item.id,
-                    onSelect = clickProvider
+            when (suggestion) {
+                null -> ManualHeader(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = state.manual,
+                    contract = contract,
+                    loaders = loaders
+                )
+
+                else -> SuggestionHeader(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = suggestion,
+                    contract = contract
                 )
             }
         }

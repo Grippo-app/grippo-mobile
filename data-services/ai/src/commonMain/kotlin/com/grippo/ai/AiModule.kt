@@ -25,7 +25,7 @@ public class AiModule {
     internal fun provideLLModel(): LLModel {
         return LLModel(
             provider = LLMProvider.OpenRouter,
-            id = "qwen/qwen-2.5-7b-instruct", // stable & ultra-cheap
+            id = "qwen/qwen-2.5-7b-instruct",
             capabilities = listOf(LLMCapability.Completion, LLMCapability.Tools),
             contextLength = 65_536
         )
