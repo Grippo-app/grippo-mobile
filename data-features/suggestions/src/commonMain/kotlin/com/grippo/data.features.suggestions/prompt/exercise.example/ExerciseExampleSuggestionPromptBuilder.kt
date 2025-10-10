@@ -166,42 +166,63 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         signals: PredictionSignals,
         nowDateTime: LocalDateTime
     ): List<ExampleContext> {
+        // Build weekday habit set for today's day-of-week (primary muscles, top-N).
+        val weekdayTop = topPrimaryMuscleIdsForDay(
+            trainings = signals.trainings,
+            day = nowDateTime.date.dayOfWeek,
+            topN = MAX_WEEKDAY_MUSCLES
+        )
+
+        // Comparator with habit & anti-monotony awareness.
         val comparator = exampleComparator(
             stage = signals.stage,
             muscleDeficits = signals.muscleDeficits,
             categoryStats = signals.categoryStats,
             trainings = signals.trainings,
             session = signals.session,
-            now = nowDateTime,
-            periodicHabits = signals.periodicHabits,
-            lastLoadByMuscleDateTime = signals.lastLoadByMuscleDateTime
+            nowDateTime = nowDateTime,
+            lastLoadByMuscleDateTime = signals.lastLoadByMuscleDateTime,
+            weekdayPreferredMuscleIds = weekdayTop
         )
 
-        // Level A: strict share + primary recovered
-        val lvlA = catalog.contexts.asSequence()
-            .filterNot { it.id in signals.performedExampleIds }
-            .filter { it.isPrimaryMuscleRecovered(nowDateTime, signals.lastLoadByMuscleDateTime) }
-            .filter { it.unrecoveredShare(nowDateTime, signals.lastLoadByMuscleDateTime) <= STRICT_UNRECOVERED_SHARE_LIMIT }
-            .sortedWith(comparator)
-            .toList()
-            .take(MAX_CANDIDATE_COUNT)
-        if (lvlA.isNotEmpty()) return lvlA
+        // Base recovered & strict filters as 3 tiers. Inside each tier,
+        // prefer "habit/due" pool, then fill from the rest.
+        fun rankWithinTier(seq: Sequence<ExampleContext>): List<ExampleContext> {
+            val base = seq
+                .filterNot { it.id in signals.performedExampleIds }
+                .toList()
 
-        // Level B: only primary recovered
-        val lvlB = catalog.contexts.asSequence()
-            .filterNot { it.id in signals.performedExampleIds }
-            .filter { it.isPrimaryMuscleRecovered(nowDateTime, signals.lastLoadByMuscleDateTime) }
-            .sortedWith(comparator)
-            .toList()
-            .take(MAX_CANDIDATE_COUNT)
-        if (lvlB.isNotEmpty()) return lvlB
+            val preferred = base.filter { ctx ->
+                val pm = ctx.primaryMuscleId()
+                (pm != null && (pm in weekdayTop || isDueByWeeklyHeuristic(pm, nowDateTime, signals.lastLoadByMuscleDateTime)))
+            }
 
-        // Level C: no recovery filters (still exclude already performed)
-        return catalog.contexts.asSequence()
-            .filterNot { it.id in signals.performedExampleIds }
-            .sortedWith(comparator)
-            .toList()
-            .take(MAX_CANDIDATE_COUNT)
+            val others = base.filterNot { it in preferred }
+
+            return (preferred.sortedWith(comparator) + others.sortedWith(comparator))
+                .distinctBy { it.id }
+                .take(MAX_CANDIDATE_COUNT)
+        }
+
+        // Tier A: strict unrecovered-share + primary recovered
+        val tierA = rankWithinTier(
+            catalog.contexts.asSequence()
+                .filter { it.isPrimaryMuscleRecovered(nowDateTime, signals.lastLoadByMuscleDateTime) }
+                .filter { it.unrecoveredShare(nowDateTime, signals.lastLoadByMuscleDateTime) <= STRICT_UNRECOVERED_SHARE_LIMIT }
+        )
+        if (tierA.isNotEmpty()) return tierA
+
+        // Tier B: only primary recovered
+        val tierB = rankWithinTier(
+            catalog.contexts.asSequence()
+                .filter { it.isPrimaryMuscleRecovered(nowDateTime, signals.lastLoadByMuscleDateTime) }
+        )
+        if (tierB.isNotEmpty()) return tierB
+
+        // Tier C: fallback (no recovery filters)
+        return rankWithinTier(
+            catalog.contexts.asSequence()
+        )
     }
 
     private fun buildPrompt(
@@ -833,39 +854,16 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         categoryStats: CategoryStats,
         trainings: List<TrainingSummary>,
         session: List<ExerciseSummary>,
-        now: LocalDateTime,
-        periodicHabits: Map<String, PeriodicHabit>,
-        lastLoadByMuscleDateTime: Map<String, LocalDateTime>
+        nowDateTime: LocalDateTime,
+        lastLoadByMuscleDateTime: Map<String, LocalDateTime>,
+        weekdayPreferredMuscleIds: Set<String>
     ): Comparator<ExampleContext> {
-        val tz = TimeZone.currentSystemDefault()
-        val nowDay = now.date.dayOfWeek
-        val dayTopMuscles = topMuscleIdsForDay(trainings, nowDay)
-
-        fun dueFlag(ctx: ExampleContext): Int {
-            val id = ctx.primaryMuscleId() ?: return 1
-            val h = periodicHabits[id] ?: return 1
-            val today = now.date
-            return if (h.nextDue <= today.plus(PERIODIC_GRACE_DAYS, DateTimeUnit.DAY)) 0 else 1
-        }
-
-        fun weekdayPref(ctx: ExampleContext): Int {
-            val id = ctx.primaryMuscleId() ?: return 1
-            return if (dayTopMuscles.contains(id)) 0 else 1
-        }
-
-        fun antiMonotony(ctx: ExampleContext): Int {
-            val id = ctx.primaryMuscleId() ?: return 0
-            val last = lastLoadByMuscleDateTime[id] ?: return 0
-            val hours = (now.toInstant(tz) - last.toInstant(tz)).inWholeHours
-            return if (hours in 0..ANTI_MONOTONY_HOURS.toLong()) 1 else 0
-        }
-
         return Comparator { left, right ->
             // 1) Larger weighted muscle deficit first
             val muscleCompare = compareMuscleDeficit(left, right, muscleDeficits)
             if (muscleCompare != 0) return@Comparator muscleCompare
 
-            // 2) Per-muscle category preference toward ~1:1 inside current session
+            // 2) Per-muscle category steering towards ~1:1 within the session
             fun prefMatch(ctx: ExampleContext): Int {
                 val targetMuscleId = ctx.primaryMuscleId()
                 val preferred = preferredCategoryForMuscleNext(targetMuscleId, trainings, session)
@@ -876,38 +874,43 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             val prefCompare = prefL.compareTo(prefR)
             if (prefCompare != 0) return@Comparator prefCompare
 
-            // 3) Periodic habit due/overdue boost
-            val dueL = dueFlag(left)
-            val dueR = dueFlag(right)
-            val dueCompare = dueL.compareTo(dueR)
-            if (dueCompare != 0) return@Comparator dueCompare
+            // 3) Habit preference: prefer today's weekday muscles and weekly-due muscles
+            fun habitPenalty(ctx: ExampleContext): Int = habitPreferencePenalty(
+                ctx = ctx,
+                weekdayPreferredMuscleIds = weekdayPreferredMuscleIds,
+                nowDateTime = nowDateTime,
+                lastLoadByMuscleDateTime = lastLoadByMuscleDateTime
+            )
+            val habitL = habitPenalty(left)
+            val habitR = habitPenalty(right)
+            val habitCompare = habitL.compareTo(habitR)
+            if (habitCompare != 0) return@Comparator habitCompare
 
-            // 4) Mild anti-monotony penalty (yesterday <-> 36h)
-            val monoL = antiMonotony(left)
-            val monoR = antiMonotony(right)
-            val monoCompare = monoL.compareTo(monoR)
-            if (monoCompare != 0) return@Comparator monoCompare
-
-            // 5) Global category policy (early compounds, per-category deficit)
+            // 4) Global category policy (compounds early; per-category deficit)
             val categoryCompare = categoryStats.priorityFor(left.category, stage)
                 .compareTo(categoryStats.priorityFor(right.category, stage))
             if (categoryCompare != 0) return@Comparator categoryCompare
 
-            // 6) Weekday habit preference as additional tie-breaker
-            val wdl = weekdayPref(left)
-            val wdr = weekdayPref(right)
-            val wdCompare = wdl.compareTo(wdr)
-            if (wdCompare != 0) return@Comparator wdCompare
+            // 5) Anti-monotony: slight penalty if same primary was loaded < ANTI_MONOTONY_HOURS
+            fun mono(ctx: ExampleContext): Int = antiMonotonyPenalty(
+                ctx = ctx,
+                nowDateTime = nowDateTime,
+                lastLoadByMuscleDateTime = lastLoadByMuscleDateTime
+            )
+            val monoL = mono(left)
+            val monoR = mono(right)
+            val monoCompare = monoL.compareTo(monoR)
+            if (monoCompare != 0) return@Comparator monoCompare
 
-            // 7) Lower usageCount first (promote variety)
+            // 6) Lower usageCount first
             val usageCompare = left.usageCount.compareTo(right.usageCount)
             if (usageCompare != 0) return@Comparator usageCompare
 
-            // 8) Older lastUsed first (promote rotation)
+            // 7) Older lastUsed first
             val lastUsedCompare = compareLastUsed(left.lastUsed, right.lastUsed)
             if (lastUsedCompare != 0) return@Comparator lastUsedCompare
 
-            // 9) Name fallback
+            // 8) Name fallback
             left.displayName.compareTo(right.displayName)
         }
     }
@@ -1197,6 +1200,65 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             }
             return (sumUnrec.coerceAtLeast(0)).toDouble() / 100.0
         }
+    }
+
+    // Pick primary muscles that dominate on a specific weekday (top-N by summed % across sessions).
+    private fun topPrimaryMuscleIdsForDay(
+        trainings: List<TrainingSummary>,
+        day: DayOfWeek,
+        topN: Int
+    ): Set<String> {
+        val totals = mutableMapOf<String, Int>() // muscleId -> summed primary %
+        trainings.forEach { tr ->
+            if (tr.dayOfWeek != day) return@forEach
+            tr.exercises.forEach { ex ->
+                val primary = ex.muscles.firstOrNull() ?: return@forEach
+                totals[primary.id] = (totals[primary.id] ?: 0) + primary.percentage
+            }
+        }
+        return totals.entries.sortedByDescending { it.value }
+            .take(topN.coerceAtLeast(1))
+            .map { it.key }
+            .toSet()
+    }
+
+    // Simple weekly "due" heuristic: treat muscle as due if last meaningful load ≥ (7d - grace).
+    private fun isDueByWeeklyHeuristic(
+        muscleId: String,
+        nowDateTime: LocalDateTime,
+        lastLoadByMuscleDateTime: Map<String, LocalDateTime>
+    ): Boolean {
+        val last = lastLoadByMuscleDateTime[muscleId] ?: return false
+        val tz = TimeZone.currentSystemDefault()
+        val hours = (nowDateTime.toInstant(tz) - last.toInstant(tz)).inWholeHours
+        val dueHours = (7L * 24L) - (PERIODIC_GRACE_DAYS.toLong() * 24L)
+        return hours >= dueHours
+    }
+
+    // Mild anti-monotony: return 1 if same primary muscle loaded very recently; else 0.
+    private fun antiMonotonyPenalty(
+        ctx: ExampleContext,
+        nowDateTime: LocalDateTime,
+        lastLoadByMuscleDateTime: Map<String, LocalDateTime>
+    ): Int {
+        val pm = ctx.primaryMuscleId() ?: return 0
+        val last = lastLoadByMuscleDateTime[pm] ?: return 0
+        val tz = TimeZone.currentSystemDefault()
+        val hours = (nowDateTime.toInstant(tz) - last.toInstant(tz)).inWholeHours
+        return if (hours < ANTI_MONOTONY_HOURS.toLong()) 1 else 0
+    }
+
+    // Habit preference penalty: 0 if muscle matches weekday habit or is due by weekly heuristic; else 1.
+    private fun habitPreferencePenalty(
+        ctx: ExampleContext,
+        weekdayPreferredMuscleIds: Set<String>,
+        nowDateTime: LocalDateTime,
+        lastLoadByMuscleDateTime: Map<String, LocalDateTime>
+    ): Int {
+        val pm = ctx.primaryMuscleId() ?: return 1
+        val matchesWeekday = pm in weekdayPreferredMuscleIds
+        val isDue = isDueByWeeklyHeuristic(pm, nowDateTime, lastLoadByMuscleDateTime)
+        return if (matchesWeekday || isDue) 0 else 1
     }
 
     private data class MuscleShare(
