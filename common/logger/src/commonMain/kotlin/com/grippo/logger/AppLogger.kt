@@ -59,6 +59,11 @@ public object AppLogger {
         }
     }
 
+    public object AI {
+        public fun prompt(msg: String): Unit = present(LogCategory.PROMPT, msg)
+        public fun answer(msg: String): Unit = present(LogCategory.ANSWER, msg)
+    }
+
     private fun onDebug(action: () -> Unit) {
         action.invoke()
     }

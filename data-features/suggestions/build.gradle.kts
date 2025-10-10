@@ -7,6 +7,7 @@ plugins {
 kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.common.dateUtils)
+        implementation(projects.common.logger)
 
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.dataServices.database)
