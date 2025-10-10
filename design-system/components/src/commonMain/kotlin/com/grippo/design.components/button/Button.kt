@@ -75,16 +75,16 @@ public sealed interface ButtonSize {
 
 @Immutable
 public sealed interface ButtonStyle {
+    // Basic
     public data object Primary : ButtonStyle
     public data object Secondary : ButtonStyle
     public data object Tertiary : ButtonStyle
+    public data object Transparent : ButtonStyle
+
+    // Specific
     public data object Error : ButtonStyle
     public data object Warning : ButtonStyle
-    public data object Transparent : ButtonStyle
-    public data class Custom(
-        val enabled: ButtonColorTokens,
-        val disabled: ButtonColorTokens,
-    ) : ButtonStyle
+    public data object Magic : ButtonStyle
 }
 
 @Immutable

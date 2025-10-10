@@ -34,8 +34,8 @@ public object LightColor : AppColor {
         override val backgroundTertiaryDisabled: Color = AppPalette.NeutralLight.N300
         override val contentTertiaryDisabled: Color = AppPalette.NeutralLight.N550
 
-        override val textTransparent = AppPalette.Primary.P500
-        override val iconTransparent = AppPalette.Primary.P500
+        override val textTransparent = AppPalette.Common.Black
+        override val iconTransparent = AppPalette.Common.Black
         override val contentTransparentDisabled = AppPalette.NeutralLight.N550
     }
 

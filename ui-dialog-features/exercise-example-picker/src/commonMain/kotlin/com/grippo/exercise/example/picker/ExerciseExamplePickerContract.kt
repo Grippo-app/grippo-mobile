@@ -2,6 +2,7 @@ package com.grippo.exercise.example.picker
 
 internal interface ExerciseExamplePickerContract {
     fun onExerciseExampleSelectClick(id: String)
+    fun onSuggestClick()
     fun onMuscleGroupClick(id: String)
     fun onQueryChange(value: String)
     fun onFiltersClick()
@@ -12,6 +13,7 @@ internal interface ExerciseExamplePickerContract {
         override fun onMuscleGroupClick(id: String) {}
         override fun onQueryChange(value: String) {}
         override fun onFiltersClick() {}
+        override fun onSuggestClick() {}
         override fun onDismiss() {}
     }
 }

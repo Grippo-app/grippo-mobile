@@ -31,6 +31,7 @@ import com.grippo.core.ScreenBackground
 import com.grippo.design.components.badge.Badge
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
 import com.grippo.design.components.cards.selectable.SelectableCard
@@ -43,6 +44,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.Filter
+import com.grippo.design.resources.provider.icons.Magic
 import com.grippo.design.resources.provider.not_found
 import com.grippo.design.resources.provider.select_exercise
 import com.grippo.state.exercise.examples.stubExerciseExample
@@ -103,6 +105,22 @@ internal fun ExerciseExamplePickerScreen(
                     value = count
                 )
             }
+
+            val buttonState = remember(loaders) {
+                when {
+                    loaders.contains(ExerciseExamplePickerLoader.SuggestExample) -> ButtonState.Loading
+                    else -> ButtonState.Enabled
+                }
+            }
+
+            Button(
+                content = ButtonContent.Icon(
+                    icon = AppTokens.icons.Magic
+                ),
+                state = buttonState,
+                style = ButtonStyle.Magic,
+                onClick = contract::onSuggestClick
+            )
         }
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))

@@ -11,10 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonColorTokens
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
@@ -55,22 +53,7 @@ public fun BottomSheetToolbar(
                 content = ButtonContent.Icon(
                     icon = AppTokens.icons.NavArrowLeft,
                 ),
-                style = ButtonStyle.Custom(
-                    enabled = ButtonColorTokens(
-                        background1 = Color.Transparent,
-                        background2 = Color.Transparent,
-                        content = AppTokens.colors.text.primary,
-                        border = Color.Transparent,
-                        icon = AppTokens.colors.icon.primary,
-                    ),
-                    disabled = ButtonColorTokens(
-                        background1 = Color.Transparent,
-                        background2 = Color.Transparent,
-                        content = AppTokens.colors.text.disabled,
-                        border = Color.Transparent,
-                        icon = AppTokens.colors.icon.disabled
-                    ),
-                ),
+                style = ButtonStyle.Transparent,
                 size = ButtonSize.Small,
                 onClick = onBack
             )
@@ -82,22 +65,7 @@ public fun BottomSheetToolbar(
             content = ButtonContent.Icon(
                 icon = AppTokens.icons.Cancel,
             ),
-            style = ButtonStyle.Custom(
-                enabled = ButtonColorTokens(
-                    background1 = Color.Transparent,
-                    background2 = Color.Transparent,
-                    content = AppTokens.colors.text.primary,
-                    border = Color.Transparent,
-                    icon = AppTokens.colors.icon.primary,
-                ),
-                disabled = ButtonColorTokens(
-                    background1 = Color.Transparent,
-                    background2 = Color.Transparent,
-                    content = AppTokens.colors.text.disabled,
-                    border = Color.Transparent,
-                    icon = AppTokens.colors.icon.disabled
-                ),
-            ),
+            style = ButtonStyle.Transparent,
             size = ButtonSize.Small,
             onClick = onClose
         )

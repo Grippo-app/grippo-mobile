@@ -7,10 +7,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import com.grippo.date.utils.DateFormat
 import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonColorTokens
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
@@ -68,22 +66,7 @@ public fun PeriodPicker(
                 icon = AppTokens.icons.NavArrowDown
             ),
             size = ButtonSize.Small,
-            style = ButtonStyle.Custom(
-                enabled = ButtonColorTokens(
-                    background1 = Color.Transparent,
-                    background2 = Color.Transparent,
-                    content = AppTokens.colors.text.primary,
-                    border = Color.Transparent,
-                    icon = AppTokens.colors.icon.primary,
-                ),
-                disabled = ButtonColorTokens(
-                    background1 = Color.Transparent,
-                    background2 = Color.Transparent,
-                    content = AppTokens.colors.text.disabled,
-                    border = Color.Transparent,
-                    icon = AppTokens.colors.icon.disabled
-                ),
-            ),
+            style = ButtonStyle.Transparent,
             onClick = onClick
         )
     }

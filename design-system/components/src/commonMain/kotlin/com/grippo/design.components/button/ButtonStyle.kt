@@ -69,7 +69,13 @@ internal fun resolveButtonColors(
                 icon = AppTokens.colors.button.contentPrimaryDisabled
             )
 
-            is ButtonStyle.Custom -> style.disabled
+            ButtonStyle.Magic -> ButtonColorTokens(
+                background1 = AppTokens.colors.button.backgroundPrimaryDisabled,
+                background2 = AppTokens.colors.button.backgroundPrimaryDisabled,
+                content = AppTokens.colors.button.contentPrimaryDisabled,
+                border = Color.Transparent,
+                icon = AppTokens.colors.button.contentPrimaryDisabled
+            )
         }
 
         else -> when (style) {
@@ -121,7 +127,13 @@ internal fun resolveButtonColors(
                 border = AppTokens.colors.semantic.warning,
             )
 
-            is ButtonStyle.Custom -> style.enabled
+            ButtonStyle.Magic -> ButtonColorTokens(
+                background1 = AppTokens.colors.semantic.error,
+                background2 = AppTokens.colors.semantic.warning,
+                icon = AppTokens.colors.button.iconPrimary,
+                content = AppTokens.colors.button.textPrimary,
+                border = AppTokens.colors.semantic.success,
+            )
         }
     }
 }
