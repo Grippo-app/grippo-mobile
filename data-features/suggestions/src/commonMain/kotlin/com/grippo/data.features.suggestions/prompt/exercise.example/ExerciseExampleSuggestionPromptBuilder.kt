@@ -63,12 +63,15 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         val allowed = candidateMap.keys
         val parsed = parseSuggestedExerciseId(answer, allowed) ?: return null
         val candidate = candidateMap[parsed.id] ?: return null
-        return enrichWithWarning(
+
+        val enriched = enrichWithWarning(
             suggestion = parsed,
             candidate = candidate,
             signals = signals,
             nowDateTime = now
         )
+
+        return normalizeSuggestionOrNull(enriched)
     }
 
     // ---------------------------
@@ -300,20 +303,22 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         val id = parsed["exerciseExampleId"]
             ?.let { it as? JsonPrimitive }
             ?.contentOrNull
-            ?.takeIf { it.isNotBlank() }
+            ?.trim()
+            ?.takeIf { it.isNotEmpty() }
             ?: return null
 
         val reason = parsed["reason"]
             ?.let { it as? JsonPrimitive }
             ?.contentOrNull
-            ?.takeIf { it.isNotBlank() }
+            ?.trim()
+            ?.takeIf { it.isNotEmpty() }
             ?: return null
 
         val warning = parsed["warning"]
             ?.let { it as? JsonPrimitive }
             ?.contentOrNull
-            ?.takeIf { it.isNotBlank() }
-            ?: ""
+            ?.trim()
+            ?.takeIf { it.isNotEmpty() }
 
         return ExerciseExampleSuggestion(id = id, reason = reason, warning = warning)
     }
@@ -408,10 +413,11 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         return parts.joinToString(" ")
     }
 
-    private fun mergeWarnings(existing: String, generated: String): String {
-        val base = existing.trim()
+    private fun mergeWarnings(existing: String?, generated: String): String? {
+        val base = existing?.trim().orEmpty()
         val extra = generated.trim()
         return when {
+            base.isEmpty() && extra.isEmpty() -> null
             base.isEmpty() -> extra
             extra.isEmpty() -> base
             else -> buildString {
@@ -421,6 +427,20 @@ internal class ExerciseExampleSuggestionPromptBuilder(
                 append(extra)
             }
         }
+    }
+
+    private fun normalizeSuggestionOrNull(
+        suggestion: ExerciseExampleSuggestion
+    ): ExerciseExampleSuggestion? {
+        val id = suggestion.id.trim()
+        val reason = suggestion.reason.trim()
+        val warning = suggestion.warning
+            ?.trim()
+            ?.takeIf { it.isNotEmpty() }
+
+        if (id.isEmpty() || reason.isEmpty()) return null
+
+        return suggestion.copy(id = id, reason = reason, warning = warning)
     }
 
     private fun collectCycleAlerts(

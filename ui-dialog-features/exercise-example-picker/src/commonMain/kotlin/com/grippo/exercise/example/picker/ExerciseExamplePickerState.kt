@@ -15,10 +15,19 @@ import kotlinx.collections.immutable.persistentListOf
 @Immutable
 public data class ExerciseExamplePickerState(
     val exerciseExamples: ImmutableList<ExerciseExampleState> = persistentListOf(),
-    val query: String = "",
     val muscleGroups: ImmutableList<MuscleGroupState<MuscleRepresentationState.Plain>> = persistentListOf(),
+    val query: String = "",
     val selectedMuscleGroupId: String?,
-    val filters: ImmutableList<FilterValue> = ExerciseExampleState.filters
+    val filters: ImmutableList<FilterValue> = ExerciseExampleState.filters,
+    val suggestion: ExerciseExampleSuggestion? = null
+)
+
+@Immutable
+public data class ExerciseExampleSuggestion(
+    val id: String,
+    val name: String,
+    val reason: String,
+    val warning: String?,
 )
 
 internal data class SearchKey(
