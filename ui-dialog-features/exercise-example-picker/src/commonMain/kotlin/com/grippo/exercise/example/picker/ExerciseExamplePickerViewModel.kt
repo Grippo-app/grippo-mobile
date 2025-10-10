@@ -125,7 +125,14 @@ public class ExerciseExamplePickerViewModel(
 
     override fun onSuggestClick() {
         safeLaunch(loader = ExerciseExamplePickerLoader.SuggestExample) {
-            update { it.copy(filters = ExerciseExampleState.filters, selectedMuscleGroupId = null) }
+            update {
+                it.copy(
+                    filters = ExerciseExampleState.filters,
+                    selectedMuscleGroupId = null,
+                    query = ""
+                )
+            }
+
             val result = suggestionFeature
                 .predictExerciseExample()
                 .getOrThrow() ?: return@safeLaunch
