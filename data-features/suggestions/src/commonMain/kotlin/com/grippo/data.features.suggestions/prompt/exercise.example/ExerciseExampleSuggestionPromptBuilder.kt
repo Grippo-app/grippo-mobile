@@ -58,17 +58,17 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         val answer = aiService.ask(prompt, SYSTEM_PROMPT)
         AppLogger.AI.answer(answer)
 
+        val candidateMap = candidates.associateBy { it.id }
         // Guardrail: only allow the model to pick from pre-ranked candidates
-        val allowed = candidates.map { it.id }.toSet()
-        return parseSuggestedExerciseId(answer, allowed) ?: run {
-            candidates.firstOrNull()?.let {
-                ExerciseExampleSuggestion(
-                    id = it.id,
-                    reason = "fallback: model returned invalid id",
-                    warning = ""
-                )
-            }
-        }
+        val allowed = candidateMap.keys
+        val parsed = parseSuggestedExerciseId(answer, allowed) ?: return null
+        val candidate = candidateMap[parsed.id] ?: return null
+        return enrichWithWarning(
+            suggestion = parsed,
+            candidate = candidate,
+            signals = signals,
+            nowDateTime = now
+        )
     }
 
     // ---------------------------
@@ -294,27 +294,28 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         val sanitized = raw.trim()
         if (sanitized.isEmpty()) return null
 
-        val parsed = runCatching { json.parseToJsonElement(sanitized) }.getOrNull()
-        if (parsed is JsonObject) {
-            val id =
-                parsed["exerciseExampleId"]?.let { it as? JsonPrimitive }?.contentOrNull?.takeIf { it.isNotBlank() }
-            val reason =
-                parsed["reason"]?.let { it as? JsonPrimitive }?.contentOrNull?.takeIf { it.isNotBlank() }
-            val warning = parsed["warning"]?.let { it as? JsonPrimitive }?.contentOrNull ?: ""
-            if (id != null && reason != null) {
-                return ExerciseExampleSuggestion(id = id, reason = reason, warning = warning)
-            }
-        }
+        val parsed = runCatching { json.parseToJsonElement(sanitized) }.getOrNull() as? JsonObject
+            ?: return null
 
-        val id =
-            EXERCISE_ID_REGEX.find(sanitized)?.groupValues?.getOrNull(1)?.takeIf { it.isNotBlank() }
-        val reason =
-            REASON_REGEX.find(sanitized)?.groupValues?.getOrNull(1)?.takeIf { it.isNotBlank() }
-        return if (id != null && reason != null) ExerciseExampleSuggestion(
-            id = id,
-            reason = reason,
-            warning = ""
-        ) else null
+        val id = parsed["exerciseExampleId"]
+            ?.let { it as? JsonPrimitive }
+            ?.contentOrNull
+            ?.takeIf { it.isNotBlank() }
+            ?: return null
+
+        val reason = parsed["reason"]
+            ?.let { it as? JsonPrimitive }
+            ?.contentOrNull
+            ?.takeIf { it.isNotBlank() }
+            ?: return null
+
+        val warning = parsed["warning"]
+            ?.let { it as? JsonPrimitive }
+            ?.contentOrNull
+            ?.takeIf { it.isNotBlank() }
+            ?: ""
+
+        return ExerciseExampleSuggestion(id = id, reason = reason, warning = warning)
     }
 
     private fun parseSuggestedExerciseId(
@@ -324,6 +325,169 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         val parsed = parseSuggestedExerciseId(raw) ?: return null
         return if (allowedIds.contains(parsed.id)) parsed else null
     }
+
+    // ---------------------------
+    // Warning composer
+    // ---------------------------
+    private fun enrichWithWarning(
+        suggestion: ExerciseExampleSuggestion,
+        candidate: ExampleContext?,
+        signals: PredictionSignals,
+        nowDateTime: LocalDateTime
+    ): ExerciseExampleSuggestion {
+        val generated = buildAdaptiveWarning(candidate, signals, nowDateTime)
+        val merged = mergeWarnings(suggestion.warning, generated)
+        return suggestion.copy(warning = merged)
+    }
+
+    private fun buildAdaptiveWarning(
+        candidate: ExampleContext?,
+        signals: PredictionSignals,
+        nowDateTime: LocalDateTime
+    ): String {
+        val parts = mutableListOf<String>()
+        val primaryId = candidate?.primaryMuscleId()
+        val primaryName = resolveMuscleName(primaryId, candidate, signals)
+
+        val cycleAlerts = collectCycleAlerts(signals, nowDateTime)
+            .filter { alert -> alert.muscleId != primaryId }
+
+        val overdue = cycleAlerts.filter { it.state == CycleState.OVERDUE }
+        val due = cycleAlerts.filter { it.state == CycleState.DUE }
+
+        if (overdue.isNotEmpty()) {
+            val names = overdue.map { it.muscleName }.distinct()
+            if (names.isNotEmpty()) {
+                parts += "Keep ${formatHumanList(names)} in rotation—those muscles are overdue and risk detraining."
+            }
+        } else if (due.isNotEmpty()) {
+            val names = due.map { it.muscleName }.distinct()
+            if (names.isNotEmpty()) {
+                parts += "Plan ${formatHumanList(names)} soon; their cycles are coming due."
+            }
+        }
+
+        val deficitTargets = signals.muscleTargets
+            .filter { it.deficit > SIGNIFICANT_DEFICIT_THRESHOLD }
+            .filter { it.id != primaryId }
+        if (deficitTargets.isNotEmpty()) {
+            val topTargets =
+                deficitTargets.sortedByDescending { it.deficit }.take(MAX_WARNING_TARGETS)
+            val names = topTargets.map { it.name }.distinct()
+            if (names.isNotEmpty()) {
+                parts += "Volume gap: ${formatHumanList(names)} still lag the weekly target."
+            }
+        }
+
+        candidate?.let { ctx ->
+            val tz = TimeZone.currentSystemDefault()
+            ctx.lastUsed?.let { last ->
+                val hours = (nowDateTime.toInstant(tz) - last.toInstant(tz)).inWholeHours
+                if (hours in 0L..ADAPTATION_WARNING_HOURS) {
+                    val label = when {
+                        hours <= 0L -> "earlier today"
+                        hours < 24L -> "${hours}h ago"
+                        else -> "${hours / 24}d ago"
+                    }
+                    parts += "You used ${ctx.displayName} $label; rotate variations to avoid stagnation."
+                }
+            }
+
+            val repeatCount = recentUsageCount(ctx.id, signals)
+            if (repeatCount >= REPEAT_WARNING_THRESHOLD) {
+                parts += "${ctx.displayName} appeared in $repeatCount of the last $RECENT_USAGE_WINDOW sessions; vary the stimulus to keep adaptations coming."
+            }
+        }
+
+        if (parts.isEmpty()) {
+            return primaryName?.let {
+                "Stay responsive—monitor recovery for ${it} and neighboring muscles after this pick."
+            } ?: "Stay responsive—keep an eye on recovery and variety after this pick."
+        }
+
+        return parts.joinToString(" ")
+    }
+
+    private fun mergeWarnings(existing: String, generated: String): String {
+        val base = existing.trim()
+        val extra = generated.trim()
+        return when {
+            base.isEmpty() -> extra
+            extra.isEmpty() -> base
+            else -> buildString {
+                append(base.trimEnd())
+                if (!base.endsWith('.') && !base.endsWith('!') && !base.endsWith('?')) append('.')
+                append(' ')
+                append(extra)
+            }
+        }
+    }
+
+    private fun collectCycleAlerts(
+        signals: PredictionSignals,
+        nowDateTime: LocalDateTime
+    ): List<CycleAlert> {
+        if (signals.periodicHabits.isEmpty() && signals.sessionHabits.isEmpty()) return emptyList()
+        val ids = linkedSetOf<String>()
+        ids.addAll(signals.periodicHabits.keys)
+        ids.addAll(signals.sessionHabits.keys)
+        val result = mutableListOf<CycleAlert>()
+        for (id in ids) {
+            val state =
+                combinedCycleState(id, nowDateTime, signals.periodicHabits, signals.sessionHabits)
+            if (state == CycleState.NONE) continue
+            val name = resolveMuscleName(id, null, signals)
+                ?: signals.periodicHabits[id]?.muscleName
+            val label = name?.takeIf { it.isNotBlank() } ?: id
+            result += CycleAlert(muscleId = id, muscleName = label, state = state)
+        }
+        return result
+    }
+
+    private fun recentUsageCount(
+        exampleId: String,
+        signals: PredictionSignals,
+    ): Int {
+        if (RECENT_USAGE_WINDOW <= 0) return 0
+        var count = signals.historicalToday.count { it.exampleId == exampleId }
+        signals.trainings.take(RECENT_USAGE_WINDOW).forEach { training ->
+            count += training.exercises.count { it.exampleId == exampleId }
+        }
+        return count
+    }
+
+    private fun resolveMuscleName(
+        muscleId: String?,
+        candidate: ExampleContext?,
+        signals: PredictionSignals
+    ): String? {
+        if (muscleId.isNullOrBlank()) return null
+        candidate?.muscles?.firstOrNull { it.id == muscleId }?.name?.let { return it }
+        signals.muscleTargets.firstOrNull { it.id == muscleId }?.name?.let { return it }
+        signals.periodicHabits[muscleId]?.muscleName?.let { return it }
+        signals.session.asSequence()
+            .flatMap { it.muscles.asSequence() }
+            .firstOrNull { it.id == muscleId }
+            ?.name
+            ?.let { return it }
+        return null
+    }
+
+    private fun formatHumanList(items: List<String>): String {
+        val distinct = items.filter { it.isNotBlank() }.distinct()
+        return when (distinct.size) {
+            0 -> ""
+            1 -> distinct.first()
+            2 -> distinct.joinToString(" and ")
+            else -> distinct.dropLast(1).joinToString(", ") + ", and " + distinct.last()
+        }
+    }
+
+    private data class CycleAlert(
+        val muscleId: String,
+        val muscleName: String,
+        val state: CycleState
+    )
 
     // ---------------------------
     // Render helpers
@@ -1278,17 +1442,19 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         private const val DEFICIT_EPS = 0.1
         private const val SIGNIFICANT_SHARE_THRESHOLD = 30 // %
         private const val STRICT_UNRECOVERED_SHARE_LIMIT = 0.6 // 60%
+        private const val SIGNIFICANT_DEFICIT_THRESHOLD = 0.4
+        private const val MAX_WARNING_TARGETS = 3
 
         private const val ANTI_MONOTONY_HOURS = 48
+        private const val ADAPTATION_WARNING_HOURS = 48L
         private const val PERIODIC_GRACE_DAYS = 1
         private const val PERIODIC_GRACE_SESSIONS = 1
         private const val PERIODIC_MIN_EVENTS = 3
         private const val PERIODIC_MIN_INTERVALS = 2
         private const val PERIODIC_RECENT_WINDOW = 3
         private const val MAX_PERIODIC_LINES = 8
-
-        private val EXERCISE_ID_REGEX = "\\\"exerciseExampleId\\\"\\s*:\\s*\\\"([^\\\"]+)".toRegex()
-        private val REASON_REGEX = "\\\"reason\\\"\\s*:\\s*\\\"([^\\\"]+)".toRegex()
+        private const val RECENT_USAGE_WINDOW = 3
+        private const val REPEAT_WARNING_THRESHOLD = 2
 
         private val SYSTEM_PROMPT = """
             You are a strict workout planner.
