@@ -43,6 +43,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
     private val exerciseExampleDao: ExerciseExampleDao,
     private val userDao: UserDao,
     private val userActiveDao: UserActiveDao,
+    private val json: Json
 ) {
 
     suspend fun suggest(now: LocalDateTime = DateTimeUtils.now()): ExerciseExampleSuggestion? {
@@ -144,17 +145,14 @@ internal class ExerciseExampleSuggestionPromptBuilder(
 
         val lastLoadByMuscleDateTime = computeLastLoadDateTimeByMuscle(
             trainings = trainingSummaries,
-            significantShareThreshold = SIGNIFICANT_SHARE_THRESHOLD
         )
 
         val periodicHabits = computePeriodicHabits(
             trainings = trainingSummaries,
-            significantShareThreshold = SIGNIFICANT_SHARE_THRESHOLD
         )
 
         val sessionHabits = computeSessionHabits(
             trainings = trainingSummaries,
-            significantShareThreshold = SIGNIFICANT_SHARE_THRESHOLD
         )
 
         return PredictionSignals(
@@ -752,14 +750,13 @@ internal class ExerciseExampleSuggestionPromptBuilder(
 
     private fun computeLastLoadDateTimeByMuscle(
         trainings: List<TrainingSummary>,
-        significantShareThreshold: Int
     ): Map<String, LocalDateTime> {
         val last = mutableMapOf<String, LocalDateTime>()
         trainings.forEach { training ->
             val ts = training.performedAt
             training.exercises.forEach { ex ->
                 ex.muscles.forEach { share ->
-                    if (share.percentage >= significantShareThreshold) {
+                    if (share.percentage >= SIGNIFICANT_SHARE_THRESHOLD) {
                         val prev = last[share.id]
                         if (prev == null || prev < ts) last[share.id] = ts
                     }
@@ -771,7 +768,6 @@ internal class ExerciseExampleSuggestionPromptBuilder(
 
     private fun computePeriodicHabits(
         trainings: List<TrainingSummary>,
-        significantShareThreshold: Int
     ): Map<String, PeriodicHabit> {
         val byMuscleDates = mutableMapOf<String, MutableList<LocalDate>>()
         val names = mutableMapOf<String, String>()
@@ -780,7 +776,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             val date = tr.performedAt.date
             tr.exercises.forEach { ex ->
                 ex.muscles.forEach { share ->
-                    if (share.percentage >= significantShareThreshold) {
+                    if (share.percentage >= SIGNIFICANT_SHARE_THRESHOLD) {
                         val list = byMuscleDates.getOrPut(share.id) { mutableListOf() }
                         if (list.lastOrNull() != date) list.add(date) // de-dup per day
                         names.getOrPut(share.id) { share.name }
@@ -824,15 +820,13 @@ internal class ExerciseExampleSuggestionPromptBuilder(
 
     private fun computeSessionHabits(
         trainings: List<TrainingSummary>,
-        significantShareThreshold: Int
     ): Map<String, SessionHabit> {
-        // trainings: индекс 0 — самая свежая сессия
         val indicesByMuscle = mutableMapOf<String, MutableList<Int>>()
 
         trainings.forEachIndexed { idx, tr ->
             tr.exercises.forEach { ex ->
                 val primary = ex.muscles.firstOrNull()
-                if (primary != null && primary.percentage >= significantShareThreshold) {
+                if (primary != null && primary.percentage >= SIGNIFICANT_SHARE_THRESHOLD) {
                     indicesByMuscle.getOrPut(primary.id) { mutableListOf() }.add(idx)
                 }
             }
@@ -845,7 +839,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             if (intervals.size < PERIODIC_MIN_INTERVALS) return@forEach
 
             val median = medianInt(intervals).coerceAtLeast(1)
-            val lastSeenIdx = idxsAsc.firstOrNull() ?: -1 // 0 — самая свежая
+            val lastSeenIdx = idxsAsc.firstOrNull() ?: -1
             val nextDueIdx = if (lastSeenIdx >= 0) lastSeenIdx + median else median
 
             habits[muscleId] = SessionHabit(
@@ -1272,7 +1266,6 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         /** How many most recent sessions participate in stats and are shown in prompt. */
 
         private const val MAX_SESSION_EXERCISES = 12
-        private const val MAX_TODAY_EXERCISES = 16
         private const val MAX_TRAINING_EXERCISES = 16
         private const val MAX_MUSCLES_PER_EXERCISE = 4
         private const val MAX_MUSCLE_SUMMARY = 12
@@ -1295,8 +1288,6 @@ internal class ExerciseExampleSuggestionPromptBuilder(
 
         private val EXERCISE_ID_REGEX = "\\\"exerciseExampleId\\\"\\s*:\\s*\\\"([^\\\"]+)".toRegex()
         private val REASON_REGEX = "\\\"reason\\\"\\s*:\\s*\\\"([^\\\"]+)".toRegex()
-
-        private val json = Json { ignoreUnknownKeys = true }
 
         private val SYSTEM_PROMPT = """
             You are a strict workout planner.
