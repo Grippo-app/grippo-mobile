@@ -49,7 +49,7 @@ public fun Loader(modifier: Modifier = Modifier) {
                 .size(AppTokens.dp.loader.icon)
                 .rotate(rotation),
             imageVector = AppTokens.icons.SystemRestart,
-            tint = AppTokens.colors.skeleton.shimmer,
+            tint = AppTokens.colors.background.card,
             contentDescription = null
         )
 

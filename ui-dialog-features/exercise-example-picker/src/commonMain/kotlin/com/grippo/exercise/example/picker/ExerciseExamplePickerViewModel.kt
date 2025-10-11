@@ -157,7 +157,7 @@ public class ExerciseExamplePickerViewModel(
 
             update {
                 it.copy(
-                    suggestion = SuggestionQueries(
+                    suggestion = AiSuggestionQueries(
                         id = result.id,
                         name = name,
                         reason = result.reason

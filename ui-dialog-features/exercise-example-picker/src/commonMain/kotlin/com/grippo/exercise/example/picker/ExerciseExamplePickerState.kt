@@ -14,7 +14,7 @@ public data class ExerciseExamplePickerState(
 
     // Keep both sub-states in one state holder
     val manual: ManualQueries = ManualQueries(),
-    val suggestion: SuggestionQueries? = null,
+    val suggestion: AiSuggestionQueries? = null,
 )
 
 @Immutable
@@ -26,7 +26,7 @@ public data class ManualQueries(
 )
 
 @Immutable
-public data class SuggestionQueries(
+public data class AiSuggestionQueries(
     val id: String,
     val name: String,
     val reason: String,

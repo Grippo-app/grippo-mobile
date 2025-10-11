@@ -12,7 +12,6 @@ public interface AppColor {
     public val semantic: SemanticColors
     public val overlay: OverlayColors
     public val border: BorderColors
-    public val skeleton: SkeletonColors
     public val icon: IconColors
     public val toggle: ToggleColors
     public val muscle: MuscleColors
@@ -26,6 +25,7 @@ public interface AppColor {
     public val palette: PaletteColors
     public val static: Static
     public val selectableCardColors: SelectableCardColors
+    public val aiSuggestion: AiSuggestion
 
     public interface DividerColors {
         public val default: Color
@@ -139,11 +139,6 @@ public interface AppColor {
         public val focus: Color
     }
 
-    public interface SkeletonColors {
-        public val background: Color
-        public val shimmer: Color
-    }
-
     public interface IconColors {
         public val primary: Color
         public val secondary: Color
@@ -151,6 +146,13 @@ public interface AppColor {
         public val disabled: Color
         public val accent: Color
         public val inverted: Color
+    }
+
+    public interface AiSuggestion {
+        public val background1: Color
+        public val background2: Color
+        public val border: Color
+        public val content: Color
     }
 
     public interface ProfileColors {

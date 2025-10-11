@@ -26,12 +26,15 @@ import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
 import com.grippo.design.components.cards.selectable.SelectableCard
 import com.grippo.design.components.inputs.InputSearch
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.icons.Filter
 import com.grippo.design.resources.provider.icons.Magic
 import com.grippo.exercise.example.picker.ExerciseExamplePickerContract
 import com.grippo.exercise.example.picker.ExerciseExamplePickerLoader
 import com.grippo.exercise.example.picker.ManualQueries
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
 internal fun ManualHeader(
@@ -123,5 +126,20 @@ internal fun ManualHeader(
                 )
             }
         }
+    }
+}
+
+@Composable
+@AppPreview
+private fun ManualHeaderPreview() {
+    PreviewContainer {
+        ManualHeader(
+            value = ManualQueries(
+                name = "Bench",
+                selectedMuscleGroupId = null,
+            ),
+            contract = ExerciseExamplePickerContract.Empty,
+            loaders = persistentSetOf()
+        )
     }
 }

@@ -31,8 +31,8 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.not_found
 import com.grippo.design.resources.provider.select_exercise
+import com.grippo.exercise.example.picker.internal.AiSuggestionHeader
 import com.grippo.exercise.example.picker.internal.ManualHeader
-import com.grippo.exercise.example.picker.internal.SuggestionHeader
 import com.grippo.state.exercise.examples.stubExerciseExample
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
@@ -79,7 +79,7 @@ internal fun ExerciseExamplePickerScreen(
                     loaders = loaders
                 )
 
-                else -> SuggestionHeader(
+                else -> AiSuggestionHeader(
                     modifier = Modifier.fillMaxWidth(),
                     value = suggestion,
                     contract = contract

@@ -9,13 +9,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
+import com.grippo.exercise.example.picker.AiSuggestionQueries
 import com.grippo.exercise.example.picker.ExerciseExamplePickerContract
-import com.grippo.exercise.example.picker.SuggestionQueries
 
 @Composable
-internal fun SuggestionHeader(
+internal fun AiSuggestionHeader(
     modifier: Modifier = Modifier,
-    value: SuggestionQueries,
+    value: AiSuggestionQueries,
     contract: ExerciseExamplePickerContract,
 ) {
     Column(modifier = modifier) {
@@ -32,5 +34,20 @@ internal fun SuggestionHeader(
                 color = AppTokens.colors.text.primary
             )
         }
+    }
+}
+
+@Composable
+@AppPreview
+private fun AiSuggestionHeaderPreview() {
+    PreviewContainer {
+        AiSuggestionHeader(
+            value = AiSuggestionQueries(
+                name = "Bench",
+                reason = "For some reason",
+                id = "",
+            ),
+            contract = ExerciseExamplePickerContract.Empty,
+        )
     }
 }

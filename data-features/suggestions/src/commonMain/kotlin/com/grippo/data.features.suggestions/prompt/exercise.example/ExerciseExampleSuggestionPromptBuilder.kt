@@ -14,7 +14,6 @@ import com.grippo.database.models.DraftTrainingPack
 import com.grippo.database.models.ExerciseExamplePack
 import com.grippo.database.models.TrainingPack
 import com.grippo.date.utils.DateTimeUtils
-import com.grippo.logger.AppLogger
 import com.grippo.network.AiAgentApi
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.DateTimeUnit

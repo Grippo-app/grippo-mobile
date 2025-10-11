@@ -128,11 +128,11 @@ internal fun resolveButtonColors(
             )
 
             ButtonStyle.Magic -> ButtonColorTokens(
-                background1 = AppTokens.colors.semantic.error,
-                background2 = AppTokens.colors.semantic.warning,
-                icon = AppTokens.colors.button.iconPrimary,
-                content = AppTokens.colors.button.textPrimary,
-                border = AppTokens.colors.semantic.success,
+                background1 = AppTokens.colors.aiSuggestion.background1,
+                background2 = AppTokens.colors.aiSuggestion.background1,
+                icon = AppTokens.colors.aiSuggestion.content,
+                content = AppTokens.colors.aiSuggestion.content,
+                border = AppTokens.colors.aiSuggestion.background1,
             )
         }
     }

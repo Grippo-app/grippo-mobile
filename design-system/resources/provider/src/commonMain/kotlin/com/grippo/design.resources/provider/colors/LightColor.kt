@@ -39,6 +39,13 @@ public object LightColor : AppColor {
         override val contentTransparentDisabled = AppPalette.NeutralLight.N550
     }
 
+    override val aiSuggestion: AppColor.AiSuggestion = object : AppColor.AiSuggestion {
+        override val background1: Color = AppPalette.Unique.Red
+        override val background2: Color = AppPalette.Unique.Orange
+        override val border: Color = AppPalette.Unique.Red
+        override val content: Color = AppPalette.Common.White
+    }
+
     override val icon: AppColor.IconColors = object : AppColor.IconColors {
         override val primary = AppPalette.NeutralLight.N700
         override val secondary = AppPalette.NeutralLight.N600
@@ -115,11 +122,6 @@ public object LightColor : AppColor {
 
     override val overlay: AppColor.OverlayColors = object : AppColor.OverlayColors {
         override val defaultShadow = Color.Black.copy(alpha = 0.2f)
-    }
-
-    override val skeleton: AppColor.SkeletonColors = object : AppColor.SkeletonColors {
-        override val background = AppPalette.NeutralLight.N300
-        override val shimmer = AppPalette.NeutralLight.N400
     }
 
     override val segment: AppColor.SegmentColors = object : AppColor.SegmentColors {
