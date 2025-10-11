@@ -135,6 +135,10 @@ public class ExerciseExamplePickerViewModel(
         dialogController.show(dialog)
     }
 
+    override fun onClearSuggestion() {
+        update { it.copy(suggestion = null) }
+    }
+
     override fun onMuscleGroupClick(id: String) {
         update {
             val value = if (it.manual.selectedMuscleGroupId == id) null else id

@@ -136,7 +136,7 @@ internal fun ExerciseExamplePickerScreen(
 
 @AppPreview
 @Composable
-private fun ScreenPreview() {
+private fun ScreeManualPreview() {
     PreviewContainer {
         ExerciseExamplePickerScreen(
             state = ExerciseExamplePickerState(
@@ -148,10 +148,24 @@ private fun ScreenPreview() {
             loaders = persistentSetOf(),
             contract = ExerciseExamplePickerContract.Empty
         )
+    }
+}
 
+@AppPreview
+@Composable
+private fun ScreeSuggestionPreview() {
+    PreviewContainer {
         ExerciseExamplePickerScreen(
             state = ExerciseExamplePickerState(
-                exerciseExamples = persistentListOf(),
+                exerciseExamples = persistentListOf(
+                    stubExerciseExample(),
+                    stubExerciseExample()
+                ),
+                suggestion = AiSuggestionQueries(
+                    id = stubExerciseExample().value.id,
+                    name = stubExerciseExample().value.name,
+                    reason = "For some reason to change something"
+                )
             ),
             loaders = persistentSetOf(),
             contract = ExerciseExamplePickerContract.Empty

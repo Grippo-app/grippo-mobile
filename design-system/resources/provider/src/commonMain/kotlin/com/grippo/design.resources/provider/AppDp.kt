@@ -75,6 +75,7 @@ public data object AppDp {
     val toggle: Toggle = Toggle
     val radio: Radio = Radio
     val badge: Badge = Badge
+    val aiSuggestionCard: AiSuggestionCard = AiSuggestionCard
 
     public data object Screen {
         val toolbar: Toolbar = Toolbar
@@ -90,6 +91,12 @@ public data object AppDp {
         val top: Dp = padding.small
         val bottom: Dp = padding.extraLarge
         val horizontalPadding: Dp = padding.extraLarge
+    }
+
+    public data object AiSuggestionCard {
+        val horizontalPadding: Dp = padding.medium
+        val verticalPadding: Dp = padding.large
+        val radius: Dp = AppDp.radius.medium
     }
 
     public data object ContentPadding {

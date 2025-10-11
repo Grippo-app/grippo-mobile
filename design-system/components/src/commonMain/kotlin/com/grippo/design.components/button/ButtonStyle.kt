@@ -129,10 +129,10 @@ internal fun resolveButtonColors(
 
             ButtonStyle.Magic -> ButtonColorTokens(
                 background1 = AppTokens.colors.aiSuggestion.background1,
-                background2 = AppTokens.colors.aiSuggestion.background1,
+                background2 = AppTokens.colors.aiSuggestion.background2,
                 icon = AppTokens.colors.aiSuggestion.content,
                 content = AppTokens.colors.aiSuggestion.content,
-                border = AppTokens.colors.aiSuggestion.background1,
+                border = AppTokens.colors.aiSuggestion.border,
             )
         }
     }
