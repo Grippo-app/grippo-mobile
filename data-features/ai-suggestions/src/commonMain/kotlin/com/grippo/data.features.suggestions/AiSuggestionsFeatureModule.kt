@@ -8,4 +8,4 @@ import org.koin.core.annotation.Module
 
 @Module(includes = [NetworkModule::class, DatabaseModule::class, SerializationModule::class])
 @ComponentScan
-public class SuggestionsFeatureModule
+public class AiSuggestionsFeatureModule

@@ -8,7 +8,7 @@ import com.grippo.data.features.api.exercise.example.models.ExampleQueries
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
-import com.grippo.data.features.api.suggestion.SuggestionFeature
+import com.grippo.data.features.api.suggestion.AiSuggestionFeature
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
@@ -27,7 +27,7 @@ public class ExerciseExamplePickerViewModel(
     userExerciseExamplesUseCase: UserExerciseExamplesUseCase,
     muscleFeature: MuscleFeature,
     private val exampleFeature: ExerciseExampleFeature,
-    private val suggestionFeature: SuggestionFeature,
+    private val aiSuggestionFeature: AiSuggestionFeature,
     private val dialogController: DialogController,
 ) : BaseViewModel<ExerciseExamplePickerState, ExerciseExamplePickerDirection, ExerciseExamplePickerLoader>(
     ExerciseExamplePickerState(manual = ManualQueries(selectedMuscleGroupId = targetMuscleGroupId))
@@ -147,7 +147,7 @@ public class ExerciseExamplePickerViewModel(
 
     override fun onSuggestClick() {
         safeLaunch(loader = ExerciseExamplePickerLoader.SuggestExample) {
-            val result = suggestionFeature
+            val result = aiSuggestionFeature
                 .predictExerciseExample()
                 .getOrThrow() ?: return@safeLaunch
 

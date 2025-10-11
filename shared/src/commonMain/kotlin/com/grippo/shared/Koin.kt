@@ -9,7 +9,7 @@ import com.grippo.data.features.excluded.equipments.ExcludedEquipmentFeatureModu
 import com.grippo.data.features.excluded.muscles.ExcludedMusclesFeatureModule
 import com.grippo.data.features.exercise.examples.ExerciseExamplesFeatureModule
 import com.grippo.data.features.muscle.MusclesFeatureModule
-import com.grippo.data.features.suggestions.SuggestionsFeatureModule
+import com.grippo.data.features.suggestions.AiSuggestionsFeatureModule
 import com.grippo.data.features.trainings.TrainingsFeatureModule
 import com.grippo.data.features.user.UserFeatureModule
 import com.grippo.data.features.weight.history.WeightHistoryFeatureModule
@@ -49,7 +49,7 @@ public object Koin {
             FeatureApiModule().module,
             ConnectivityModule().module,
             ResourcesProviderModule().module,
-            SuggestionsFeatureModule().module,
+            AiSuggestionsFeatureModule().module,
             SerializationModule().module
         )
     }

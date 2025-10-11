@@ -21,7 +21,7 @@ public class ExerciseExamplePickerComponent(
             userExerciseExamplesUseCase = getKoin().get(),
             muscleFeature = getKoin().get(),
             dialogController = getKoin().get(),
-            suggestionFeature = getKoin().get(),
+            aiSuggestionFeature = getKoin().get(),
             exampleFeature = getKoin().get()
         )
     }

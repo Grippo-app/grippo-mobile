@@ -40,7 +40,7 @@ kotlin {
         implementation(projects.dataFeatures.excludedEquipments)
         implementation(projects.dataFeatures.trainings)
         implementation(projects.dataFeatures.exerciseExamples)
-        implementation(projects.dataFeatures.suggestions)
+        implementation(projects.dataFeatures.aiSuggestions)
 
         implementation(projects.dataMappers.domainToState)
 
