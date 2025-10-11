@@ -13,7 +13,7 @@ kotlin {
 
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.dataServices.database)
-        implementation(projects.dataServices.ai)
+        implementation(projects.dataServices.network)
         implementation(projects.dataMappers.databaseToDomain)
 
         implementation(libs.kotlinx.coroutines.core)

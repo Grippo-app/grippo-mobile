@@ -1,6 +1,5 @@
 package com.grippo.data.features.suggestions.prompt.exercise.example
 
-import com.grippo.ai.AiService
 import com.grippo.data.features.api.exercise.example.models.CategoryEnum
 import com.grippo.data.features.api.exercise.example.models.ExampleSortingEnum
 import com.grippo.data.features.api.exercise.example.models.ExerciseExampleValue
@@ -16,6 +15,7 @@ import com.grippo.database.models.ExerciseExamplePack
 import com.grippo.database.models.TrainingPack
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.logger.AppLogger
+import com.grippo.network.AiAgentApi
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
@@ -37,7 +37,7 @@ import kotlin.time.Duration.Companion.days
 
 @Single
 internal class ExerciseExampleSuggestionPromptBuilder(
-    private val aiService: AiService,
+    private val aiAgent: AiAgentApi,
     private val draftTrainingDao: DraftTrainingDao,
     private val trainingDao: TrainingDao,
     private val exerciseExampleDao: ExerciseExampleDao,
@@ -55,7 +55,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         val prompt = buildPrompt(now, signals, candidates)
         AppLogger.AI.prompt(prompt)
 
-        val answer = aiService.ask(prompt, SYSTEM_PROMPT)
+        val answer = aiAgent.ask(prompt, SYSTEM_PROMPT)
         AppLogger.AI.answer(answer)
 
         val candidateMap = candidates.associateBy { it.id }

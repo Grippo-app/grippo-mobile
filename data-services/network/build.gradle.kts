@@ -20,6 +20,24 @@ kotlin {
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.ktor.auth)
             implementation(libs.kotlinx.serialization.json)
+
+            // Issue https://youtrack.jetbrains.com/issue/KG-303/Packaging-issue-with-netty
+            val koogAgent = libs.koog.agent.get()
+            val openrouterClient = libs.openrouter.client.get()
+
+            val koogAgentNotation =
+                "${koogAgent.module.group}:${koogAgent.module.name}:${koogAgent.versionConstraint.requiredVersion}"
+            val koogPromptNotation =
+                "${openrouterClient.module.group}:${openrouterClient.module.name}:${openrouterClient.versionConstraint.requiredVersion}"
+
+            implementation(koogAgentNotation) {
+                exclude(group = "io.netty")
+                exclude(group = "io.vertx")
+            }
+            implementation(koogPromptNotation) {
+                exclude(group = "io.netty")
+                exclude(group = "io.vertx")
+            }
         }
 
         androidMain.dependencies {

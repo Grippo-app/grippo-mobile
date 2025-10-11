@@ -5,7 +5,7 @@ import com.grippo.data.features.excluded.muscles.domain.ExcludedMusclesRepositor
 import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.dao.UserDao
 import com.grippo.database.domain.muscles.toDomain
-import com.grippo.network.Api
+import com.grippo.network.GrippoApi
 import com.grippo.network.dto.user.IdsBody
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
@@ -16,7 +16,7 @@ import org.koin.core.annotation.Single
 
 @Single(binds = [ExcludedMusclesRepository::class])
 internal class ExcludedMusclesRepositoryImpl(
-    private val api: Api,
+    private val api: GrippoApi,
     private val userDao: UserDao,
     private val userActiveDao: UserActiveDao,
 ) : ExcludedMusclesRepository {

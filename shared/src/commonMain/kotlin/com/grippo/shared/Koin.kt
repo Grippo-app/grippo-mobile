@@ -1,6 +1,5 @@
 package com.grippo.shared
 
-import com.grippo.ai.AiModule
 import com.grippo.connectivity.ConnectivityModule
 import com.grippo.core.CoreModule
 import com.grippo.data.features.api.FeatureApiModule
@@ -50,7 +49,6 @@ public object Koin {
             FeatureApiModule().module,
             ConnectivityModule().module,
             ResourcesProviderModule().module,
-            AiModule().module,
             SuggestionsFeatureModule().module,
             SerializationModule().module
         )

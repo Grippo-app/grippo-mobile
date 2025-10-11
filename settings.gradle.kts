@@ -46,7 +46,6 @@ include(":design-system:components")
 
 include(":data-services:network")
 include(":data-services:database")
-include(":data-services:ai")
 
 include(":data-features:feature-api")
 include(":data-features:authorization")

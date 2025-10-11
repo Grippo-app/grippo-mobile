@@ -13,7 +13,7 @@ import com.grippo.database.domain.training.toSetDomain
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.domain.database.settings.training.toEntity
 import com.grippo.domain.network.user.training.toBody
-import com.grippo.network.Api
+import com.grippo.network.GrippoApi
 import com.grippo.network.database.training.toEntities
 import com.grippo.network.database.training.toEntityOrNull
 import com.grippo.network.dto.training.TrainingResponse
@@ -25,7 +25,7 @@ import org.koin.core.annotation.Single
 
 @Single(binds = [TrainingRepository::class])
 internal class TrainingRepositoryImpl(
-    private val api: Api,
+    private val api: GrippoApi,
     private val trainingDao: TrainingDao,
     private val draftTrainingDao: DraftTrainingDao,
     private val userActiveDao: UserActiveDao,

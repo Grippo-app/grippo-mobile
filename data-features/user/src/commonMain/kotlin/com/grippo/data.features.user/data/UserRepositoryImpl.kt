@@ -5,7 +5,7 @@ import com.grippo.data.features.user.domain.UserRepository
 import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.dao.UserDao
 import com.grippo.database.domain.user.toDomain
-import com.grippo.network.Api
+import com.grippo.network.GrippoApi
 import com.grippo.network.database.user.toEntityOrNull
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -15,7 +15,7 @@ import org.koin.core.annotation.Single
 
 @Single(binds = [UserRepository::class])
 internal class UserRepositoryImpl(
-    private val api: Api,
+    private val api: GrippoApi,
     private val userDao: UserDao,
     private val userActiveDao: UserActiveDao
 ) : UserRepository {

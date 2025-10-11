@@ -21,7 +21,7 @@ import io.ktor.http.HttpMethod
 import org.koin.core.annotation.Single
 
 @Single
-public class Api internal constructor(private val client: GrippoClient) {
+public class GrippoApi internal constructor(private val client: GrippoClient) {
 
     /* * * * * * * * * * * * * * * * *
      * Auth service

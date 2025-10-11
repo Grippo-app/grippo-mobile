@@ -9,7 +9,7 @@ import com.grippo.data.features.api.exercise.example.models.UserExerciseExampleR
 import com.grippo.data.features.exercise.examples.domain.ExerciseExampleRepository
 import com.grippo.database.dao.ExerciseExampleDao
 import com.grippo.database.domain.exercise.equipment.toDomain
-import com.grippo.network.Api
+import com.grippo.network.GrippoApi
 import com.grippo.network.database.exercise.example.toEntities
 import com.grippo.network.database.exercise.example.toEntityOrNull
 import kotlinx.coroutines.flow.Flow
@@ -18,7 +18,7 @@ import org.koin.core.annotation.Single
 
 @Single(binds = [ExerciseExampleRepository::class])
 internal class ExerciseExampleRepositoryImpl(
-    private val api: Api,
+    private val api: GrippoApi,
     private val exerciseExampleDao: ExerciseExampleDao,
 ) : ExerciseExampleRepository {
 

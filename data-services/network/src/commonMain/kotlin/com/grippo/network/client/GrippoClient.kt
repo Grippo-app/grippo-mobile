@@ -3,7 +3,10 @@ package com.grippo.network.client
 import com.grippo.network.internal.ApiErrorParser
 import com.grippo.network.internal.ClientLogger
 import com.grippo.network.internal.TokenProvider
+import com.grippo.network.internal.responseValidator
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
@@ -23,35 +26,43 @@ import org.koin.core.annotation.Single
 @Single
 internal class GrippoClient(
     httpClient: HttpClient,
-    json: Json,
     clientLogger: ClientLogger,
+    apiErrorParser: ApiErrorParser,
     tokenProvider: TokenProvider,
-    apiErrorParser: ApiErrorParser
+    json: Json,
 ) {
 
-    private val clientProvider = httpClient
-        .configureGrippo(
-            tokenProvider = tokenProvider,
-            apiErrorParser = apiErrorParser
-        ).config {
-            install(Logging) {
-                level = LogLevel.ALL
-                logger = clientLogger
-            }
-
-            install(ContentNegotiation) {
-                json(
-                    json = json,
-                    contentType = ContentType.Application.Json
-                )
-            }
-
-            defaultRequest {
-                host = "grippo-app.com"
-                url { protocol = URLProtocol.HTTPS }
-                contentType(ContentType.Application.Json)
-            }
+    private val clientProvider = httpClient.config {
+        install(HttpTimeout) {
+            requestTimeoutMillis = 10_000
+            connectTimeoutMillis = 10_000
+            socketTimeoutMillis = 10_000
         }
+
+        install(Auth) {
+            providers.add(tokenProvider)
+        }
+
+        install(Logging) {
+            level = LogLevel.ALL
+            logger = clientLogger
+        }
+
+        install(ContentNegotiation) {
+            json(
+                json = json,
+                contentType = ContentType.Application.Json
+            )
+        }
+
+        defaultRequest {
+            host = "grippo-app.com"
+            url { protocol = URLProtocol.HTTPS }
+            contentType(ContentType.Application.Json)
+        }
+
+        responseValidator(apiErrorParser)
+    }
 
     suspend fun invoke(
         method: HttpMethod,

@@ -6,7 +6,7 @@ import com.grippo.database.dao.TokenDao
 import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.entity.UserActiveEntity
 import com.grippo.domain.network.user.toBody
-import com.grippo.network.Api
+import com.grippo.network.GrippoApi
 import com.grippo.network.database.user.toEntityOrNull
 import com.grippo.network.dto.auth.AuthBody
 import kotlinx.coroutines.flow.Flow
@@ -18,7 +18,7 @@ import org.koin.core.annotation.Single
 
 @Single(binds = [AuthorizationRepository::class])
 internal class AuthorizationRepositoryImpl(
-    private val api: Api,
+    private val api: GrippoApi,
     private val tokenDao: TokenDao,
     private val userActiveDao: UserActiveDao,
 ) : AuthorizationRepository {
