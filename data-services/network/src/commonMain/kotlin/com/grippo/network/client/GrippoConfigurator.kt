@@ -1,10 +1,13 @@
 package com.grippo.network.client
 
+import com.grippo.network.internal.ApiErrorParser
+import com.grippo.network.internal.TokenProvider
+import com.grippo.network.internal.responseValidator
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.auth.Auth
 
-internal fun HttpClient.configure(
+internal fun HttpClient.configureGrippo(
     tokenProvider: TokenProvider,
     apiErrorParser: ApiErrorParser
 ) = this.config {

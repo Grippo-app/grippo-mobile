@@ -34,6 +34,23 @@ public sealed class AppError(
         ) : Network(message, cause)
     }
 
+    public sealed class AI(
+        override val message: String,
+        override val cause: Throwable? = null
+    ) : AppError(message, cause) {
+        public data class Expected(
+            val keys: List<String> = emptyList(),
+            val title: String,
+            val description: String?,
+            override val cause: Throwable? = null
+        ) : AI(title, cause)
+
+        public data class Unexpected(
+            override val message: String,
+            override val cause: Throwable? = null
+        ) : AI(message, cause)
+    }
+
     public data class Expected(
         override val message: String,
         val description: String?,

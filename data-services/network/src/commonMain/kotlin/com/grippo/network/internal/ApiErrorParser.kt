@@ -1,4 +1,4 @@
-package com.grippo.network.client
+package com.grippo.network.internal
 
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray

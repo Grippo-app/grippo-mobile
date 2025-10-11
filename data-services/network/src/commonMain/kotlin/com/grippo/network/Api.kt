@@ -1,6 +1,6 @@
 package com.grippo.network
 
-import com.grippo.network.client.NetworkClient
+import com.grippo.network.client.GrippoClient
 import com.grippo.network.dto.IdResponse
 import com.grippo.network.dto.auth.AuthBody
 import com.grippo.network.dto.auth.RefreshBody
@@ -13,15 +13,15 @@ import com.grippo.network.dto.muscle.MuscleGroupResponse
 import com.grippo.network.dto.muscle.MuscleResponse
 import com.grippo.network.dto.training.TrainingBody
 import com.grippo.network.dto.training.TrainingResponse
-import com.grippo.network.user.IdsBody
-import com.grippo.network.user.UserResponse
-import com.grippo.network.user.WeightHistoryResponse
+import com.grippo.network.dto.user.IdsBody
+import com.grippo.network.dto.user.UserResponse
+import com.grippo.network.dto.user.WeightHistoryResponse
 import io.ktor.client.call.body
 import io.ktor.http.HttpMethod
 import org.koin.core.annotation.Single
 
 @Single
-public class Api internal constructor(private val client: NetworkClient) {
+public class Api internal constructor(private val client: GrippoClient) {
 
     /* * * * * * * * * * * * * * * * *
      * Auth service

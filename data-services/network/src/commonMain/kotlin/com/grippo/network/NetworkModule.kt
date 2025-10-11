@@ -1,9 +1,8 @@
 package com.grippo.network
 
 import com.grippo.database.DatabaseModule
-import com.grippo.network.client.ApiErrorParser
-import com.grippo.network.client.TokenProvider
-import com.grippo.network.client.configure
+import com.grippo.network.internal.ApiErrorParser
+import com.grippo.network.internal.TokenProvider
 import com.grippo.platform.core.NativeContext
 import com.grippo.platform.core.PlatformModule
 import com.grippo.serialization.SerializationModule
@@ -17,14 +16,11 @@ import org.koin.core.annotation.Single
 public class NetworkModule {
 
     @Single
-    internal fun provideHttpClient(
+    internal fun HttpClient(
         context: NativeContext,
         tokenProvider: TokenProvider,
         apiErrorParser: ApiErrorParser
     ): HttpClient {
-        return context.driver().configure(
-            tokenProvider = tokenProvider,
-            apiErrorParser = apiErrorParser
-        )
+        return context.driver()
     }
 }

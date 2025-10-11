@@ -1,4 +1,4 @@
-package com.grippo.network.user
+package com.grippo.network.dto.user
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

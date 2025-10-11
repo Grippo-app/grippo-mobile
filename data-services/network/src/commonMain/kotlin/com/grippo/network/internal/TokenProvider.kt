@@ -1,4 +1,4 @@
-package com.grippo.network.client
+package com.grippo.network.internal
 
 import com.grippo.database.dao.TokenDao
 import com.grippo.database.dao.UserActiveDao
@@ -169,7 +169,7 @@ internal class TokenProvider(
 
         return client.submitForm {
             url {
-                method = HttpMethod.Post
+                method = HttpMethod.Companion.Post
                 path("/auth/refresh")
                 setBody(RefreshBody(refreshToken = refreshToken))
             }

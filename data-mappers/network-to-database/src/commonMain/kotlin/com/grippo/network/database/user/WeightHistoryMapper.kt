@@ -2,7 +2,7 @@ package com.grippo.network.database.user
 
 import com.grippo.database.entity.WeightHistoryEntity
 import com.grippo.logger.AppLogger
-import com.grippo.network.user.WeightHistoryResponse
+import com.grippo.network.dto.user.WeightHistoryResponse
 
 public fun List<WeightHistoryResponse>.toEntities(): List<WeightHistoryEntity> {
     return mapNotNull { it.toEntityOrNull() }

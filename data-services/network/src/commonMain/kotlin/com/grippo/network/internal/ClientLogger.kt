@@ -1,4 +1,4 @@
-package com.grippo.network.client
+package com.grippo.network.internal
 
 import com.grippo.logger.AppLogger
 import io.ktor.client.plugins.logging.Logger
