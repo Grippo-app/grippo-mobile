@@ -8,7 +8,6 @@ plugins {
 kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.common.dateUtils)
-        implementation(projects.common.logger)
         implementation(projects.common.serialization)
 
         implementation(projects.dataFeatures.featureApi)

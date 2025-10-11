@@ -51,13 +51,8 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         val signals = buildPredictionSignals(now, catalog)
         val candidates = selectCandidateContexts(catalog, signals, now)
         if (candidates.isEmpty()) return null
-
         val prompt = buildPrompt(now, signals, candidates)
-        AppLogger.AI.prompt(prompt)
-
         val answer = aiAgent.ask(prompt, SYSTEM_PROMPT)
-        AppLogger.AI.answer(answer)
-
         val candidateMap = candidates.associateBy { it.id }
         // Guardrail: only allow the model to pick from pre-ranked candidates
         val allowed = candidateMap.keys
