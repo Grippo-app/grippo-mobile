@@ -25,10 +25,9 @@ import kotlinx.datetime.daysUntil
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.contentOrNull
 import org.koin.core.annotation.Single
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -50,11 +49,14 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         val signals = buildPredictionSignals(now, catalog)
         val candidates = selectCandidateContexts(catalog, signals, now)
         if (candidates.isEmpty()) return null
+
         val prompt = buildPrompt(now, signals, candidates)
         val answer = aiAgent.ask(prompt, SYSTEM_PROMPT)
-        val candidateMap = candidates.associateBy { it.id }
+
         // Guardrail: only allow the model to pick from pre-ranked candidates
+        val candidateMap = candidates.associateBy { it.id }
         val allowed = candidateMap.keys
+
         val parsed = parseSuggestedExerciseId(answer, allowed) ?: return null
         if (!candidateMap.containsKey(parsed.id)) return null
 
@@ -278,28 +280,73 @@ internal class ExerciseExampleSuggestionPromptBuilder(
     }
 
     // ---------------------------
-    // Parsing LLM output
+    // Parsing LLM output (hardened)
     // ---------------------------
+
+    @Serializable
+    private data class ModelAnswer(
+        val exerciseExampleId: String,
+        val reason: String
+    )
+
+    /**
+     * Extract the first top-level JSON object from arbitrary text.
+     * Handles cases like code fences, extra prose, or logging noise.
+     */
+    private fun extractFirstJsonObject(input: String): String? {
+        var depth = 0
+        var start = -1
+        for (i in input.indices) {
+            when (input[i]) {
+                '{' -> {
+                    if (depth == 0) start = i
+                    depth++
+                }
+                '}' -> {
+                    if (depth > 0) {
+                        depth--
+                        if (depth == 0 && start >= 0) {
+                            return input.substring(start, i + 1)
+                        }
+                    }
+                }
+            }
+        }
+        return null
+    }
+
+    /**
+     * Best-effort sanitizer for curly/smart quotes and code fences.
+     */
+    private fun sanitizeRawModelText(raw: String): String {
+        return raw
+            .replace("```json", "```")
+            .replace("```", "")
+            .replace('“', '"')
+            .replace('”', '"')
+            .replace('’', '\'')
+            .trim()
+    }
+
     private fun parseSuggestedExerciseId(raw: String): ExerciseExampleSuggestion? {
-        val sanitized = raw.trim()
-        if (sanitized.isEmpty()) return null
+        val sanitized = sanitizeRawModelText(raw)
+        val jsonText = extractFirstJsonObject(sanitized) ?: return null
 
-        val parsed = runCatching { json.parseToJsonElement(sanitized) }.getOrNull() as? JsonObject
+        // Primary: strict JSON decoding by schema
+        val ans = runCatching { json.decodeFromString<ModelAnswer>(jsonText) }.getOrNull()
+            ?: run {
+                // Fallback: tolerant regex for the two required fields inside extracted object
+                val id = Regex("\"exerciseExampleId\"\\s*:\\s*\"([^\"]+)\"")
+                    .find(jsonText)?.groupValues?.getOrNull(1)?.trim().orEmpty()
+                val reason = Regex("\"reason\"\\s*:\\s*\"([\\s\\S]*?)\"\\s*[,}]")
+                    .find(jsonText)?.groupValues?.getOrNull(1)?.trim().orEmpty()
+                if (id.isNotEmpty() && reason.isNotEmpty()) ModelAnswer(id, reason) else null
+            }
             ?: return null
 
-        val id = parsed["exerciseExampleId"]
-            ?.let { it as? JsonPrimitive }
-            ?.contentOrNull
-            ?.trim()
-            ?.takeIf { it.isNotEmpty() }
-            ?: return null
-
-        val reason = parsed["reason"]
-            ?.let { it as? JsonPrimitive }
-            ?.contentOrNull
-            ?.trim()
-            ?.takeIf { it.isNotEmpty() }
-            ?: return null
+        val id = ans.exerciseExampleId.trim()
+        val reason = ans.reason.trim()
+        if (id.isEmpty() || reason.isEmpty()) return null
 
         return ExerciseExampleSuggestion(id = id, reason = reason)
     }
@@ -316,10 +363,10 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         suggestion: ExerciseExampleSuggestion
     ): ExerciseExampleSuggestion? {
         val id = suggestion.id.trim()
-        val reason = suggestion.reason.trim()
-
+        var reason = suggestion.reason.trim()
+            .replace(Regex("\\s+"), " ")
         if (id.isEmpty() || reason.isEmpty()) return null
-
+        if (reason.length > 500) reason = reason.substring(0, 500)
         return suggestion.copy(id = id, reason = reason)
     }
 
@@ -832,7 +879,9 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         }
 
         val habits = mutableMapOf<String, SessionHabit>()
-        indicesByMuscle.forEach { (muscleId, idxsAsc) ->
+        indicesByMuscle.forEach { (muscleId, rawIdxs) ->
+            // Ensure ascending order by session index (0 == most recent)
+            val idxsAsc = rawIdxs.sorted()
             if (idxsAsc.size < PERIODIC_MIN_EVENTS) return@forEach
             val intervals = idxsAsc.zipWithNext { a, b -> b - a }.filter { it > 0 }
             if (intervals.size < PERIODIC_MIN_INTERVALS) return@forEach
@@ -926,8 +975,8 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             val lastUsedCmp = compareLastUsed(left.lastUsed, right.lastUsed)
             if (lastUsedCmp != 0) return@Comparator lastUsedCmp
 
-            // 8) Name tie-breaker for stable determinism
-            left.displayName.compareTo(right.displayName)
+            // 8) On total tie, return 0 to preserve input order (stable sort).
+            0
         }
     }
 
@@ -995,7 +1044,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
     }
 
     // ---------------------------
-    // Additional helpers just added
+    // Additional helpers
     // ---------------------------
     private fun preferredCategoryForMuscleNext(
         muscleId: String?,
@@ -1257,12 +1306,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
     // ---------------------------
     private companion object {
         private const val HISTORY_LOOKBACK_DAYS = 90
-
-        /** Days of history to load for stats (deficits, cycles, loads). */
-
         private const val RECENT_TRAININGS_LIMIT = 16
-
-        /** How many most recent sessions participate in stats and are shown in prompt. */
 
         private const val MAX_SESSION_EXERCISES = 12
         private const val MAX_TRAINING_EXERCISES = 16
