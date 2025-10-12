@@ -26,7 +26,6 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.koin.core.annotation.Single
 import kotlin.math.abs
@@ -302,6 +301,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
                     if (depth == 0) start = i
                     depth++
                 }
+
                 '}' -> {
                     if (depth > 0) {
                         depth--
@@ -1320,7 +1320,6 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         private const val DEFICIT_EPS = 0.1
         private const val SIGNIFICANT_SHARE_THRESHOLD = 30 // %
         private const val STRICT_UNRECOVERED_SHARE_LIMIT = 0.6 // 60%
-        private const val SIGNIFICANT_DEFICIT_THRESHOLD = 0.4
 
         private const val ANTI_MONOTONY_HOURS = 48
         private const val PERIODIC_GRACE_DAYS = 1
