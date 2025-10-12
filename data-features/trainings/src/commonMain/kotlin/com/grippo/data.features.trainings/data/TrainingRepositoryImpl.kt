@@ -14,7 +14,7 @@ import com.grippo.database.domain.training.toDomain
 import com.grippo.database.domain.training.toSetDomain
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.domain.database.settings.training.toEntity
-import com.grippo.domain.network.user.training.toBody
+import com.grippo.domain.dto.training.toBody
 import com.grippo.network.database.training.toEntities
 import com.grippo.network.database.training.toEntityOrNull
 import kotlinx.coroutines.flow.Flow

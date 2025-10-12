@@ -7,7 +7,7 @@ import com.grippo.data.features.authorization.domain.AuthorizationRepository
 import com.grippo.database.dao.TokenDao
 import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.entity.UserActiveEntity
-import com.grippo.domain.network.user.toBody
+import com.grippo.domain.dto.user.toBody
 import com.grippo.network.database.user.toEntityOrNull
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull

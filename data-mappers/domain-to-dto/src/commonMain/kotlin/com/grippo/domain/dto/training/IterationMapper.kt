@@ -1,4 +1,4 @@
-package com.grippo.domain.network.user.training
+package com.grippo.domain.dto.training
 
 import com.grippo.backend.dto.training.IterationBody
 import com.grippo.data.features.api.training.models.SetIteration
