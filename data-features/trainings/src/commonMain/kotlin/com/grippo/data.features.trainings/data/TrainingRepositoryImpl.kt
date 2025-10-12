@@ -13,8 +13,8 @@ import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.domain.training.toDomain
 import com.grippo.database.domain.training.toSetDomain
 import com.grippo.date.utils.DateTimeUtils
-import com.grippo.domain.database.settings.training.toEntity
 import com.grippo.domain.dto.training.toBody
+import com.grippo.domain.entity.training.toEntity
 import com.grippo.dto.entity.training.toEntities
 import com.grippo.dto.entity.training.toEntityOrNull
 import kotlinx.coroutines.flow.Flow

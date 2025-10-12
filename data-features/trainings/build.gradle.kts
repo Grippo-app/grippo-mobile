@@ -10,7 +10,7 @@ kotlin {
         implementation(projects.dataServices.database)
         implementation(projects.dataServices.backend)
         implementation(projects.dataMappers.domainToState)
-        implementation(projects.dataMappers.domainToDatabase)
+        implementation(projects.dataMappers.domainToEntity)
         implementation(projects.dataMappers.databaseToDomain)
         implementation(projects.dataMappers.dtoToEntity)
         implementation(projects.dataMappers.domainToDto)
