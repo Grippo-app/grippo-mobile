@@ -1,6 +1,6 @@
 package com.grippo.data.features.suggestions
 
-import com.grippo.agent.AiAgentModule
+import com.grippo.ai.agent.AiAgentModule
 import com.grippo.database.DatabaseModule
 import com.grippo.serialization.SerializationModule
 import org.koin.core.annotation.ComponentScan

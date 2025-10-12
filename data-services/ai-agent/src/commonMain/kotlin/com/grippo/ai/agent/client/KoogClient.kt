@@ -1,4 +1,4 @@
-package com.grippo.agent.client
+package com.grippo.ai.agent.client
 
 import ai.koog.agents.core.agent.AIAgent
 import ai.koog.prompt.executor.clients.openrouter.OpenRouterLLMClient
@@ -11,9 +11,7 @@ import io.ktor.client.HttpClient
 import org.koin.core.annotation.Single
 
 @Single
-internal class KoogClient(
-    httpClient: HttpClient,
-) {
+internal class KoogClient(httpClient: HttpClient) {
 
     private val clientProvider = httpClient
 
@@ -36,7 +34,7 @@ internal class KoogClient(
         input: String,
         system: String
     ): String {
-        val agent = AIAgent(
+        val agent = AIAgent.Companion(
             promptExecutor = executor,
             llmModel = model,
             systemPrompt = system

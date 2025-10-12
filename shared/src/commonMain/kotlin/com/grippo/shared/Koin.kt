@@ -1,6 +1,6 @@
 package com.grippo.shared
 
-import com.grippo.agent.AiAgentModule
+import com.grippo.ai.agent.AiAgentModule
 import com.grippo.backend.NetworkModule
 import com.grippo.connectivity.ConnectivityModule
 import com.grippo.core.CoreModule

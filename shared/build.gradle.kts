@@ -30,6 +30,7 @@ kotlin {
 
         implementation(projects.dataServices.database)
         implementation(projects.dataServices.network)
+        implementation(projects.dataServices.aiAgent)
 
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.dataFeatures.authorization)

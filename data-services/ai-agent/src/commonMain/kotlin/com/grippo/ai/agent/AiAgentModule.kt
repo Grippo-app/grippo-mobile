@@ -1,4 +1,4 @@
-package com.grippo.agent
+package com.grippo.ai.agent
 
 import com.grippo.http.client.HttpModule
 import com.grippo.platform.core.PlatformModule

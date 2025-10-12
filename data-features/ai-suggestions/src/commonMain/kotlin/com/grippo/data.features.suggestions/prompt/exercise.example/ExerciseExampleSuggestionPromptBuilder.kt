@@ -1,6 +1,6 @@
 package com.grippo.data.features.suggestions.prompt.exercise.example
 
-import com.grippo.agent.AiAgentApi
+import com.grippo.ai.agent.AiAgentApi
 import com.grippo.data.features.api.exercise.example.models.CategoryEnum
 import com.grippo.data.features.api.exercise.example.models.ExampleSortingEnum
 import com.grippo.data.features.api.exercise.example.models.ExerciseExampleValue
