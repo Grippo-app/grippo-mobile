@@ -1,6 +1,6 @@
 package com.grippo.backend
 
-import com.grippo.backend.client.GrippoClient
+import com.grippo.backend.client.BackendClient
 import com.grippo.backend.dto.IdResponse
 import com.grippo.backend.dto.auth.AuthBody
 import com.grippo.backend.dto.auth.RefreshBody
@@ -21,7 +21,7 @@ import io.ktor.http.HttpMethod
 import org.koin.core.annotation.Single
 
 @Single
-public class GrippoApi internal constructor(private val client: GrippoClient) {
+public class GrippoApi internal constructor(private val client: BackendClient) {
 
     /* * * * * * * * * * * * * * * * *
      * Auth service

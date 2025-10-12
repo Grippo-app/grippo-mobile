@@ -18,7 +18,7 @@ import kotlinx.serialization.json.Json
 import org.koin.core.annotation.Single
 
 @Single
-internal class GrippoClient(
+internal class BackendClient(
     httpClient: HttpClient,
     tokenProvider: TokenProvider,
     json: Json,
