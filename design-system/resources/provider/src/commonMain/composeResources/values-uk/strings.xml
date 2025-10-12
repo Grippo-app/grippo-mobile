@@ -45,6 +45,7 @@
     <string name="height_placeholder">Вкажіть свій зріст</string>
     <string name="exercise_record">Запис вправи</string>
     <string name="not_used_before">Не використовувалося ще</string>
+    <string name="ai_suggestion_btn">Рекомендація ШІ</string>
 
     <string name="time_ago_day">%d день</string>
     <string name="time_ago_days">%d днів</string>

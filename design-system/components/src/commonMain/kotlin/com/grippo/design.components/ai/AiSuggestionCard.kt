@@ -17,7 +17,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
@@ -52,15 +51,12 @@ public fun AiSuggestionCard(
     Row(
         modifier = modifier
             .background(
-                brush = Brush.horizontalGradient(
-                    0f to AppTokens.colors.aiSuggestion.background1,
-                    1f to AppTokens.colors.aiSuggestion.background2,
-                ),
+                AppTokens.colors.background.card,
                 shape = RoundedCornerShape(AppTokens.dp.aiSuggestionCard.radius)
             ).border(
                 width = 2.dp,
                 shape = RoundedCornerShape(AppTokens.dp.aiSuggestionCard.radius),
-                color = AppTokens.colors.aiSuggestion.border
+                color = AppTokens.colors.semantic.success
             ).padding(
                 vertical = AppTokens.dp.aiSuggestionCard.verticalPadding,
                 horizontal = AppTokens.dp.aiSuggestionCard.horizontalPadding
@@ -76,7 +72,7 @@ public fun AiSuggestionCard(
             modifier = Modifier.weight(1f),
             text = displayedText,
             style = AppTokens.typography.b14Semi(),
-            color = AppTokens.colors.aiSuggestion.content,
+            color = AppTokens.colors.text.primary,
             softWrap = true
         )
 

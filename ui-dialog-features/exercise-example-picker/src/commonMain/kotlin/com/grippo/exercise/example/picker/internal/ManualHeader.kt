@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import com.grippo.design.components.badge.Badge
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
-import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
 import com.grippo.design.components.cards.selectable.SelectableCard
@@ -29,19 +28,14 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.icons.Filter
-import com.grippo.design.resources.provider.icons.Magic
 import com.grippo.exercise.example.picker.ExerciseExamplePickerContract
-import com.grippo.exercise.example.picker.ExerciseExamplePickerLoader
 import com.grippo.exercise.example.picker.ManualQueries
-import kotlinx.collections.immutable.ImmutableSet
-import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
 internal fun ManualHeader(
     modifier: Modifier = Modifier,
     value: ManualQueries,
     contract: ExerciseExamplePickerContract,
-    loaders: ImmutableSet<ExerciseExamplePickerLoader>
 ) {
     Column(modifier = modifier) {
         Row(
@@ -73,22 +67,6 @@ internal fun ManualHeader(
                     value = count
                 )
             }
-
-            val buttonState = remember(loaders) {
-                when {
-                    loaders.contains(ExerciseExamplePickerLoader.SuggestExample) -> ButtonState.Loading
-                    else -> ButtonState.Enabled
-                }
-            }
-
-            Button(
-                content = ButtonContent.Icon(
-                    icon = AppTokens.icons.Magic
-                ),
-                state = buttonState,
-                style = ButtonStyle.Magic,
-                onClick = contract::onSuggestClick
-            )
         }
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
@@ -139,7 +117,6 @@ private fun ManualHeaderPreview() {
                 selectedMuscleGroupId = null,
             ),
             contract = ExerciseExamplePickerContract.Empty,
-            loaders = persistentSetOf()
         )
     }
 }
