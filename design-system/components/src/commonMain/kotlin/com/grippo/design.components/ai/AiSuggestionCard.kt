@@ -58,7 +58,7 @@ public fun AiSuggestionCard(
                 ),
                 shape = RoundedCornerShape(AppTokens.dp.aiSuggestionCard.radius)
             ).border(
-                width = 1.dp,
+                width = 2.dp,
                 shape = RoundedCornerShape(AppTokens.dp.aiSuggestionCard.radius),
                 color = AppTokens.colors.aiSuggestion.border
             ).padding(

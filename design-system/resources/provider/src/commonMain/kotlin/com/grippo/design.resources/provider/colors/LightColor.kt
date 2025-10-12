@@ -40,9 +40,9 @@ public object LightColor : AppColor {
     }
 
     override val aiSuggestion: AppColor.AiSuggestion = object : AppColor.AiSuggestion {
-        override val background1: Color = AppPalette.Unique.Red
-        override val background2: Color = AppPalette.Unique.Orange
-        override val border: Color = AppPalette.Unique.Orange
+        override val background1: Color = AppPalette.Unique.Orange
+        override val background2: Color = AppPalette.Unique.Red
+        override val border: Color = AppPalette.Unique.Coral
         override val content: Color = AppPalette.Common.White
     }
 

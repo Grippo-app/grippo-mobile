@@ -135,6 +135,8 @@ public fun Button(
     val iconPadding =
         if (style == ButtonStyle.Transparent) metrics.spaceTransparent else metrics.space
 
+    val border = if (style == ButtonStyle.Magic) 2.dp else 1.dp
+
     // Minimum side for square icon-only layout
     val minSide = metrics.height
 
@@ -148,7 +150,7 @@ public fun Button(
                 1f to colorTokens.background2,
             ), shape
         ).border(
-            1.dp,
+            border,
             colorTokens.border,
             shape
         )

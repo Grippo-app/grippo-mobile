@@ -17,7 +17,6 @@ import com.grippo.state.domain.example.toDomain
 import com.grippo.state.filters.FilterValue
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -151,20 +150,20 @@ public class ExerciseExamplePickerViewModel(
 
     override fun onSuggestClick() {
         safeLaunch(loader = ExerciseExamplePickerLoader.SuggestExample) {
-            val result = aiSuggestionFeature
-                .predictExerciseExample()
-                .getOrThrow() ?: return@safeLaunch
+//            val result = aiSuggestionFeature
+//                .predictExerciseExample()
+//                .getOrThrow() ?: return@safeLaunch
 
-            val name = exampleFeature
-                .observeExerciseExample(result.id)
-                .firstOrNull()?.value?.name ?: return@safeLaunch
+//            val name = exampleFeature
+//                .observeExerciseExample(result.id)
+//                .firstOrNull()?.value?.name ?: return@safeLaunch
 
             update {
                 it.copy(
                     suggestion = AiSuggestionQueries(
-                        id = result.id,
-                        name = name,
-                        reason = result.reason
+                        id = "result.id",
+                        name = "name",
+                        reason = "result.reason"
                     )
                 )
             }

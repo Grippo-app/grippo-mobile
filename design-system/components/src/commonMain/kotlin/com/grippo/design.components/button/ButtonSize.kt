@@ -24,7 +24,7 @@ internal fun resolveButtonSize(
             horizontalPadding = AppTokens.dp.button.medium.horizontalPadding,
             space = AppTokens.dp.button.medium.space,
             spaceTransparent = AppTokens.dp.button.medium.spaceTransparent,
-            icon = AppTokens.dp.button.medium.icon,
+            icon = AppTokens.dp.button.medium.icon
         )
 
         ButtonSize.Small -> ButtonMetrics(
