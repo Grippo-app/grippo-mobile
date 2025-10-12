@@ -6,7 +6,7 @@ import com.grippo.data.features.user.domain.UserRepository
 import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.dao.UserDao
 import com.grippo.database.domain.user.toDomain
-import com.grippo.network.database.user.toEntityOrNull
+import com.grippo.dto.entity.user.toEntityOrNull
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf

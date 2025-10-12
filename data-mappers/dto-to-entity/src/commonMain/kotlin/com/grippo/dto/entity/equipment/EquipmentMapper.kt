@@ -1,4 +1,4 @@
-package com.grippo.network.database.equipment
+package com.grippo.dto.entity.equipment
 
 import com.grippo.backend.dto.equipment.EquipmentResponse
 import com.grippo.database.entity.EquipmentEntity

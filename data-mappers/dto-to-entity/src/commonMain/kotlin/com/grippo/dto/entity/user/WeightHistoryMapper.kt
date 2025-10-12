@@ -1,4 +1,4 @@
-package com.grippo.network.database.user
+package com.grippo.dto.entity.user
 
 import com.grippo.backend.dto.user.WeightHistoryResponse
 import com.grippo.database.entity.WeightHistoryEntity

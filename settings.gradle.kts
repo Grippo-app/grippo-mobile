@@ -100,7 +100,7 @@ include(":compose-libs:konfetti")
 include(":compose-libs:chart")
 
 include(":data-mappers:database-to-domain")
-include(":data-mappers:network-to-database")
+include(":data-mappers:dto-to-entity")
 include(":data-mappers:domain-to-state")
 include(":data-mappers:domain-to-database")
 include(":data-mappers:domain-to-dto")

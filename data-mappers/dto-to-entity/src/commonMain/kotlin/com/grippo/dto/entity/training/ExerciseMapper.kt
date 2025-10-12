@@ -1,4 +1,4 @@
-package com.grippo.network.database.training
+package com.grippo.dto.entity.training
 
 import com.grippo.backend.dto.training.ExerciseResponse
 import com.grippo.database.entity.ExerciseEntity

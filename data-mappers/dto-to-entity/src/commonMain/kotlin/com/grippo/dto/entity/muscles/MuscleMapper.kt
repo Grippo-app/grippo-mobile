@@ -1,4 +1,4 @@
-package com.grippo.network.database.muscles
+package com.grippo.dto.entity.muscles
 
 import com.grippo.backend.dto.muscle.MuscleResponse
 import com.grippo.database.entity.MuscleEntity

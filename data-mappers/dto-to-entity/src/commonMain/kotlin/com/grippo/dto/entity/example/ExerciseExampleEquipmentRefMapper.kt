@@ -1,4 +1,4 @@
-package com.grippo.network.database.exercise.example
+package com.grippo.dto.entity.example
 
 import com.grippo.backend.dto.exercise.example.ExerciseExampleEquipmentRefResponse
 import com.grippo.database.entity.ExerciseExampleEquipmentEntity

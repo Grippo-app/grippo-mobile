@@ -10,8 +10,8 @@ import com.grippo.data.features.api.exercise.example.models.UserExerciseExampleR
 import com.grippo.data.features.exercise.examples.domain.ExerciseExampleRepository
 import com.grippo.database.dao.ExerciseExampleDao
 import com.grippo.database.domain.exercise.equipment.toDomain
-import com.grippo.network.database.exercise.example.toEntities
-import com.grippo.network.database.exercise.example.toEntityOrNull
+import com.grippo.dto.entity.example.toEntities
+import com.grippo.dto.entity.example.toEntityOrNull
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single

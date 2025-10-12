@@ -12,7 +12,7 @@ kotlin {
         implementation(projects.dataMappers.domainToState)
         implementation(projects.dataMappers.domainToDatabase)
         implementation(projects.dataMappers.databaseToDomain)
-        implementation(projects.dataMappers.networkToDatabase)
+        implementation(projects.dataMappers.dtoToEntity)
         implementation(projects.dataMappers.domainToDto)
         implementation(projects.common.dateUtils)
 
