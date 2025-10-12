@@ -1,4 +1,4 @@
-package com.grippo.database.domain.training
+package com.grippo.entity.domain.training
 
 import com.grippo.data.features.api.training.models.SetDraftTraining
 import com.grippo.data.features.api.training.models.SetTraining

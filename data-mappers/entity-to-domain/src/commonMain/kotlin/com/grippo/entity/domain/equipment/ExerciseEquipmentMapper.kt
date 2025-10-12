@@ -1,7 +1,6 @@
-package com.grippo.database.domain.exercise.equipment
+package com.grippo.entity.domain.equipment
 
 import com.grippo.data.features.api.equipment.models.Equipment
-import com.grippo.database.domain.equipment.toDomain
 import com.grippo.database.models.ExerciseEquipmentWithEquipment
 import com.grippo.logger.AppLogger
 

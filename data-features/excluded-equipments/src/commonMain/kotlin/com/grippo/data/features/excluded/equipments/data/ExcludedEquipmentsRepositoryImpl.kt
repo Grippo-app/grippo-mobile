@@ -6,7 +6,7 @@ import com.grippo.data.features.api.equipment.models.Equipment
 import com.grippo.data.features.excluded.equipments.domain.ExcludedEquipmentsRepository
 import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.dao.UserDao
-import com.grippo.database.domain.equipment.toDomain
+import com.grippo.entity.domain.equipment.toDomain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest

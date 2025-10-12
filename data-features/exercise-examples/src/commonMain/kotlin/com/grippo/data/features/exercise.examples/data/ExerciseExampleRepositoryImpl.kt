@@ -9,7 +9,7 @@ import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
 import com.grippo.data.features.api.exercise.example.models.UserExerciseExampleRules
 import com.grippo.data.features.exercise.examples.domain.ExerciseExampleRepository
 import com.grippo.database.dao.ExerciseExampleDao
-import com.grippo.database.domain.exercise.equipment.toDomain
+import com.grippo.entity.domain.equipment.toDomain
 import com.grippo.dto.entity.example.toEntities
 import com.grippo.dto.entity.example.toEntityOrNull
 import kotlinx.coroutines.flow.Flow

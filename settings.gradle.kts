@@ -99,7 +99,7 @@ include(":compose-libs:segment-control")
 include(":compose-libs:konfetti")
 include(":compose-libs:chart")
 
-include(":data-mappers:database-to-domain")
+include(":data-mappers:entity-to-domain")
 include(":data-mappers:dto-to-entity")
 include(":data-mappers:domain-to-state")
 include(":data-mappers:domain-to-entity")

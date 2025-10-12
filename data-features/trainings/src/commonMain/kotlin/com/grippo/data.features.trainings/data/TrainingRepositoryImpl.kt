@@ -10,8 +10,8 @@ import com.grippo.data.features.trainings.domain.TrainingRepository
 import com.grippo.database.dao.DraftTrainingDao
 import com.grippo.database.dao.TrainingDao
 import com.grippo.database.dao.UserActiveDao
-import com.grippo.database.domain.training.toDomain
-import com.grippo.database.domain.training.toSetDomain
+import com.grippo.entity.domain.training.toDomain
+import com.grippo.entity.domain.training.toSetDomain
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.domain.dto.training.toBody
 import com.grippo.domain.entity.training.toEntity

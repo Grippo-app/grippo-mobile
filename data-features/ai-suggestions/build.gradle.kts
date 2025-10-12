@@ -13,7 +13,7 @@ kotlin {
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.dataServices.database)
         implementation(projects.dataServices.aiAgent)
-        implementation(projects.dataMappers.databaseToDomain)
+        implementation(projects.dataMappers.entityToDomain)
 
         implementation(libs.kotlinx.coroutines.core)
         implementation(libs.kotlinx.serialization.json)

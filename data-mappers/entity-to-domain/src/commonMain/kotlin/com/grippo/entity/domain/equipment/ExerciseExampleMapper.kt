@@ -1,4 +1,4 @@
-package com.grippo.database.domain.exercise.equipment
+package com.grippo.entity.domain.equipment
 
 import com.grippo.data.features.api.exercise.example.models.CategoryEnum
 import com.grippo.data.features.api.exercise.example.models.ExerciseExampleValue

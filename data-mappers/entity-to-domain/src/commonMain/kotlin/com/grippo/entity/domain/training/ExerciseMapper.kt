@@ -1,8 +1,8 @@
-package com.grippo.database.domain.training
+package com.grippo.entity.domain.training
 
 import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.data.features.api.training.models.SetExercise
-import com.grippo.database.domain.exercise.equipment.toDomain
+import com.grippo.entity.domain.equipment.toDomain
 import com.grippo.database.models.DraftExercisePack
 import com.grippo.database.models.ExercisePack
 

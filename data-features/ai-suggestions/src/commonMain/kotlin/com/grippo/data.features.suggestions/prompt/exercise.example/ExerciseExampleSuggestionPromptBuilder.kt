@@ -10,7 +10,7 @@ import com.grippo.database.dao.ExerciseExampleDao
 import com.grippo.database.dao.TrainingDao
 import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.dao.UserDao
-import com.grippo.database.domain.exercise.equipment.toDomain
+import com.grippo.entity.domain.equipment.toDomain
 import com.grippo.database.models.DraftTrainingPack
 import com.grippo.database.models.ExerciseExamplePack
 import com.grippo.database.models.TrainingPack
