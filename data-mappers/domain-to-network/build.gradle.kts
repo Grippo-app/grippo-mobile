@@ -6,7 +6,7 @@ plugins {
 kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.dataFeatures.featureApi)
-        implementation(projects.dataServices.network)
+        implementation(projects.dataServices.backend)
         implementation(projects.common.logger)
 
         implementation(libs.immutable.collections)

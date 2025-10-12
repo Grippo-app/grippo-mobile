@@ -44,7 +44,7 @@ include(":design-system:resources:provider")
 include(":design-system:resources:provider-impl")
 include(":design-system:components")
 
-include(":data-services:network")
+include(":data-services:backend")
 include(":data-services:database")
 include(":data-services:ai-agent")
 

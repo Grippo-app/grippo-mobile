@@ -6,7 +6,7 @@ plugins {
 kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.dataServices.database)
-        implementation(projects.dataServices.network)
+        implementation(projects.dataServices.backend)
         implementation(projects.common.logger)
     }
 }

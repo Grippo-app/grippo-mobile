@@ -29,7 +29,7 @@ kotlin {
         implementation(projects.common.error.errorProviderImpl)
 
         implementation(projects.dataServices.database)
-        implementation(projects.dataServices.network)
+        implementation(projects.dataServices.backend)
         implementation(projects.dataServices.aiAgent)
 
         implementation(projects.dataFeatures.featureApi)

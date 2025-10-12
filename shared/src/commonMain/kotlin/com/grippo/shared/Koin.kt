@@ -1,7 +1,7 @@
 package com.grippo.shared
 
 import com.grippo.ai.agent.AiAgentModule
-import com.grippo.backend.NetworkModule
+import com.grippo.backend.BackendModule
 import com.grippo.connectivity.ConnectivityModule
 import com.grippo.core.CoreModule
 import com.grippo.data.features.api.FeatureApiModule
@@ -35,7 +35,7 @@ public object Koin {
         modules(
             PlatformModule().module,
             DatabaseModule().module,
-            NetworkModule().module,
+            BackendModule().module,
             CoreModule().module,
             DialogModule().module,
             AuthorizationFeatureModule().module,

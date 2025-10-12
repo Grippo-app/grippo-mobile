@@ -8,4 +8,4 @@ import org.koin.core.annotation.Module
 
 @Module(includes = [HttpModule::class, DatabaseModule::class, SerializationModule::class])
 @ComponentScan
-public class NetworkModule
+public class BackendModule
