@@ -1,14 +1,14 @@
 package com.grippo.data.features.authorization.data
 
+import com.grippo.backend.GrippoApi
+import com.grippo.backend.dto.auth.AuthBody
 import com.grippo.data.features.api.authorization.models.SetRegistration
 import com.grippo.data.features.authorization.domain.AuthorizationRepository
 import com.grippo.database.dao.TokenDao
 import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.entity.UserActiveEntity
 import com.grippo.domain.network.user.toBody
-import com.grippo.network.GrippoApi
 import com.grippo.network.database.user.toEntityOrNull
-import com.grippo.network.dto.auth.AuthBody
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest

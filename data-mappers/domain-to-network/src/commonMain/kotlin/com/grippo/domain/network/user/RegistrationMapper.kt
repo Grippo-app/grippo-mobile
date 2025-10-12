@@ -1,7 +1,7 @@
 package com.grippo.domain.network.user
 
+import com.grippo.backend.dto.auth.RegisterBody
 import com.grippo.data.features.api.authorization.models.SetRegistration
-import com.grippo.network.dto.auth.RegisterBody
 
 public fun SetRegistration.toBody(): RegisterBody {
     return RegisterBody(

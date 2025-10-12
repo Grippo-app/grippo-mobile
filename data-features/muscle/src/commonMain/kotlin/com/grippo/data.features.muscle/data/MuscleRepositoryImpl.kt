@@ -1,10 +1,10 @@
 package com.grippo.data.features.muscle.data
 
+import com.grippo.backend.GrippoApi
 import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.data.features.muscle.domain.MuscleRepository
 import com.grippo.database.dao.MuscleDao
 import com.grippo.database.domain.muscles.toDomain
-import com.grippo.network.GrippoApi
 import com.grippo.network.database.muscles.toEntities
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

@@ -1,5 +1,7 @@
 package com.grippo.data.features.trainings.data
 
+import com.grippo.backend.GrippoApi
+import com.grippo.backend.dto.training.TrainingResponse
 import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.data.features.api.training.models.SetDraftTraining
 import com.grippo.data.features.api.training.models.SetTraining
@@ -13,10 +15,8 @@ import com.grippo.database.domain.training.toSetDomain
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.domain.database.settings.training.toEntity
 import com.grippo.domain.network.user.training.toBody
-import com.grippo.network.GrippoApi
 import com.grippo.network.database.training.toEntities
 import com.grippo.network.database.training.toEntityOrNull
-import com.grippo.network.dto.training.TrainingResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map

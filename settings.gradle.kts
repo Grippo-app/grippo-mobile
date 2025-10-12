@@ -46,6 +46,7 @@ include(":design-system:components")
 
 include(":data-services:network")
 include(":data-services:database")
+include(":data-services:ai-agent")
 
 include(":data-features:feature-api")
 include(":data-features:authorization")
@@ -91,6 +92,7 @@ include(":common:serialization")
 include(":common:error:error-provider-impl")
 include(":common:error:error-provider")
 include(":common:date-utils")
+include(":common:http-client")
 
 include(":compose-libs:wheel-picker")
 include(":compose-libs:segment-control")

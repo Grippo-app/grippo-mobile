@@ -1,5 +1,7 @@
 package com.grippo.shared
 
+import com.grippo.agent.AiAgentModule
+import com.grippo.backend.NetworkModule
 import com.grippo.connectivity.ConnectivityModule
 import com.grippo.core.CoreModule
 import com.grippo.data.features.api.FeatureApiModule
@@ -17,7 +19,7 @@ import com.grippo.database.DatabaseModule
 import com.grippo.design.resources.provider.impl.ResourcesProviderModule
 import com.grippo.dialog.api.DialogModule
 import com.grippo.error.provider.impl.ErrorModule
-import com.grippo.network.NetworkModule
+import com.grippo.http.client.HttpModule
 import com.grippo.platform.core.PlatformModule
 import com.grippo.serialization.SerializationModule
 import org.koin.core.KoinApplication
@@ -50,7 +52,9 @@ public object Koin {
             ConnectivityModule().module,
             ResourcesProviderModule().module,
             AiSuggestionsFeatureModule().module,
-            SerializationModule().module
+            SerializationModule().module,
+            HttpModule().module,
+            AiAgentModule().module,
         )
     }
 }

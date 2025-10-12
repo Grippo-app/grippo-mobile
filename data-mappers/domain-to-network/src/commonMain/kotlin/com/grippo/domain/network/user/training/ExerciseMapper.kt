@@ -1,7 +1,7 @@
 package com.grippo.domain.network.user.training
 
+import com.grippo.backend.dto.training.ExerciseBody
 import com.grippo.data.features.api.training.models.SetExercise
-import com.grippo.network.dto.training.ExerciseBody
 
 public fun List<SetExercise>.toBody(): List<ExerciseBody> {
     return map { exercise -> exercise.toBody() }

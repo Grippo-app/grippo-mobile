@@ -1,7 +1,7 @@
 package com.grippo.data.features.excluded.muscles
 
+import com.grippo.backend.NetworkModule
 import com.grippo.database.DatabaseModule
-import com.grippo.network.NetworkModule
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
 

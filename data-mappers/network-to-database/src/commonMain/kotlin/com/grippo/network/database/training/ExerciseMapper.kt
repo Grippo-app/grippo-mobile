@@ -1,8 +1,8 @@
 package com.grippo.network.database.training
 
+import com.grippo.backend.dto.training.ExerciseResponse
 import com.grippo.database.entity.ExerciseEntity
 import com.grippo.logger.AppLogger
-import com.grippo.network.dto.training.ExerciseResponse
 
 public fun List<ExerciseResponse>.toEntities(): List<ExerciseEntity> {
     return mapNotNull { it.toEntityOrNull() }

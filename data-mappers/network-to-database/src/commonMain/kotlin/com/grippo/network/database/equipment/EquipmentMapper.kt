@@ -1,8 +1,8 @@
 package com.grippo.network.database.equipment
 
+import com.grippo.backend.dto.equipment.EquipmentResponse
 import com.grippo.database.entity.EquipmentEntity
 import com.grippo.logger.AppLogger
-import com.grippo.network.dto.equipment.EquipmentResponse
 
 public fun List<EquipmentResponse>.toEntities(): List<EquipmentEntity> {
     return mapNotNull { it.toEntityOrNull() }

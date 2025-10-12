@@ -1,5 +1,6 @@
 package com.grippo.data.features.exercise.examples.data
 
+import com.grippo.backend.GrippoApi
 import com.grippo.data.features.api.exercise.example.models.ExamplePage
 import com.grippo.data.features.api.exercise.example.models.ExampleQueries
 import com.grippo.data.features.api.exercise.example.models.ExampleSortingEnum
@@ -9,7 +10,6 @@ import com.grippo.data.features.api.exercise.example.models.UserExerciseExampleR
 import com.grippo.data.features.exercise.examples.domain.ExerciseExampleRepository
 import com.grippo.database.dao.ExerciseExampleDao
 import com.grippo.database.domain.exercise.equipment.toDomain
-import com.grippo.network.GrippoApi
 import com.grippo.network.database.exercise.example.toEntities
 import com.grippo.network.database.exercise.example.toEntityOrNull
 import kotlinx.coroutines.flow.Flow
