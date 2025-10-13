@@ -89,8 +89,10 @@ internal class ExerciseExampleSuggestionPromptBuilder(
                 sorting = ExampleSortingEnum.RecentlyUsed.key
             )
             .firstOrNull()
-            ?.mapNotNull { it.toContextOrNull() }
+            ?.mapNotNull { it.toContextOrNullStrict() } // strict pruning, no fallbacks
             ?: return null
+
+        if (contexts.isEmpty()) return null
 
         return ExampleCatalog(
             contexts = contexts,
@@ -116,11 +118,12 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             to = DateTimeUtils.toUtcIso(now)
         ).firstOrNull().orEmpty()
 
-        // Sort trainings from newest to oldest to match downstream expectations
+        // Sort trainings from newest to oldest and keep only non-empty
         val trainingSummaries = rawTrainings
             .sortedByDescending { it.training.createdAt }
             .take(RECENT_TRAININGS_LIMIT)
             .map { it.toSummary(catalog.byId) }
+            .filter { it.exercises.isNotEmpty() }
 
         val todayHistory = trainingSummaries
             .filter { it.performedAt.date == now.date }
@@ -131,11 +134,20 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             .map { it.exampleId }
             .toSet()
 
+        val usedEquipmentIds: Set<String> =
+            sessionExercises.flatMap { it.equipmentIds }.toSet()
+
         val categoryStats = computeCategoryStats(trainingSummaries, sessionExercises)
         val muscleTargets = computeMuscleTargetsPrimaryOnly(trainingSummaries, sessionExercises)
 
         val lastLoadByMuscleDateTime = computeLastLoadDateTimeByMuscle(
             trainings = trainingSummaries,
+        )
+
+        // Residual fatigue per muscle (robust Q10–Q90 normalization with winsorization, data-only)
+        val residualFatigueByMuscle = computeResidualFatigueByMuscle(
+            now = now,
+            trainings = trainingSummaries
         )
 
         val periodicHabits = computePeriodicHabits(
@@ -160,8 +172,10 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             weightMix = sessionExercises.groupingBy { it.weightType }.eachCount(),
             experienceMix = sessionExercises.groupingBy { it.experience }.eachCount(),
             lastLoadByMuscleDateTime = lastLoadByMuscleDateTime,
+            residualFatigueByMuscle = residualFatigueByMuscle,
             periodicHabits = periodicHabits,
-            sessionHabits = sessionHabits
+            sessionHabits = sessionHabits,
+            usedEquipmentIds = usedEquipmentIds
         )
     }
 
@@ -174,7 +188,11 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         nowDateTime: LocalDateTime
     ): List<ExampleContext> {
 
-        // Keep comparator in sync with prompt instructions; inconsistent ordering confuses the model
+        // Adaptive Tier-A threshold: min(staticLimit, Q75 of unrecoveredWeightedShare across catalog)
+        val allUnrecShares = catalog.contexts.map { it.unrecoveredWeightedShare(signals.residualFatigueByMuscle) }
+        val q75Unrec = quantileDouble(allUnrecShares, 0.75).coerceIn(0.0, 1.0)
+        val tierALimit = minOf(STRICT_UNREC_WEIGHTED_SHARE_LIMIT, q75Unrec)
+
         val comparator = exampleComparator(
             stage = signals.stage,
             muscleDeficits = signals.muscleDeficits,
@@ -184,22 +202,23 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             nowDateTime = nowDateTime,
             lastLoadByMuscleDateTime = signals.lastLoadByMuscleDateTime,
             periodicHabits = signals.periodicHabits,
-            sessionHabits = signals.sessionHabits
+            sessionHabits = signals.sessionHabits,
+            usedEquipmentIds = signals.usedEquipmentIds,
+            residualFatigueByMuscle = signals.residualFatigueByMuscle
         )
 
         fun isPreferred(ctx: ExampleContext): Boolean {
             val pm = ctx.primaryMuscleId() ?: return false
-            val st =
-                combinedCycleState(pm, nowDateTime, signals.periodicHabits, signals.sessionHabits)
+            val st = combinedCycleState(pm, nowDateTime, signals.periodicHabits, signals.sessionHabits)
             return st == CycleState.DUE || st == CycleState.OVERDUE
         }
 
         fun rankWithinTier(seq: Sequence<ExampleContext>): List<ExampleContext> {
             val base = seq
-                .filterNot { it.id in signals.performedExampleIds }
+                .filterNot { it.id in signals.performedExampleIds } // do not offer already performed today/this session
+                .filter { it.muscles.isNotEmpty() }                  // strict inputs only
                 .toList()
 
-            // Prioritize cycle-due muscles before we sort the rest of the tier
             val preferred = base.filter(::isPreferred).sortedWith(comparator)
             if (preferred.size >= MAX_CANDIDATE_COUNT) return preferred.take(MAX_CANDIDATE_COUNT)
 
@@ -207,37 +226,22 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             return (preferred + others).take(MAX_CANDIDATE_COUNT)
         }
 
-        // Tier A - strict recovery and fatigue gates
+        // Tier A — strict: primary recovered by residual fatigue + bound on weighted unrecovered share
         val tierA = rankWithinTier(
             catalog.contexts.asSequence()
-                .filter {
-                    it.isPrimaryMuscleRecovered(
-                        nowDateTime,
-                        signals.lastLoadByMuscleDateTime
-                    )
-                }
-                .filter {
-                    it.unrecoveredShare(
-                        nowDateTime,
-                        signals.lastLoadByMuscleDateTime
-                    ) <= STRICT_UNRECOVERED_SHARE_LIMIT
-                }
+                .filter { it.isPrimaryRecoveredByResidual(signals.residualFatigueByMuscle) }
+                .filter { it.unrecoveredWeightedShare(signals.residualFatigueByMuscle) <= tierALimit }
         )
         if (tierA.isNotEmpty()) return tierA
 
-        // Tier B - only enforce primary-muscle recovery
+        // Tier B — softer: only require primary recovered by residual fatigue
         val tierB = rankWithinTier(
             catalog.contexts.asSequence()
-                .filter {
-                    it.isPrimaryMuscleRecovered(
-                        nowDateTime,
-                        signals.lastLoadByMuscleDateTime
-                    )
-                }
+                .filter { it.isPrimaryRecoveredByResidual(signals.residualFatigueByMuscle) }
         )
         if (tierB.isNotEmpty()) return tierB
 
-        // Tier C - fallback
+        // Tier C — fallback pool (still strictly validated inputs)
         return rankWithinTier(catalog.contexts.asSequence())
     }
 
@@ -267,31 +271,28 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             renderGuidelines(dominantExperience)
             renderRecentTrainings(signals.trainings)
             renderMuscleLoads(signals)
+            renderResidualFatigue(signals)
             renderPeriodicHabits(now, signals.periodicHabits)
             renderCandidates(
                 contexts = candidates,
                 muscleTargetMap = muscleTargetMap,
                 lastLoadByMuscleDateTime = signals.lastLoadByMuscleDateTime,
                 nowDateTime = now,
-                periodicHabits = signals.periodicHabits
+                periodicHabits = signals.periodicHabits,
+                residualFatigueByMuscle = signals.residualFatigueByMuscle
             )
         }
     }
 
     // ---------------------------
-    // Parsing LLM output (hardened)
+    // Parsing LLM output (strict)
     // ---------------------------
-
     @Serializable
     private data class ModelAnswer(
         val exerciseExampleId: String,
         val reason: String
     )
 
-    /**
-     * Extract the first top-level JSON object from arbitrary text.
-     * Handles cases like code fences, extra prose, or logging noise.
-     */
     private fun extractFirstJsonObject(input: String): String? {
         var depth = 0
         var start = -1
@@ -301,7 +302,6 @@ internal class ExerciseExampleSuggestionPromptBuilder(
                     if (depth == 0) start = i
                     depth++
                 }
-
                 '}' -> {
                     if (depth > 0) {
                         depth--
@@ -315,9 +315,6 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         return null
     }
 
-    /**
-     * Best-effort sanitizer for curly/smart quotes and code fences.
-     */
     private fun sanitizeRawModelText(raw: String): String {
         return raw
             .replace("```json", "```")
@@ -332,10 +329,8 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         val sanitized = sanitizeRawModelText(raw)
         val jsonText = extractFirstJsonObject(sanitized) ?: return null
 
-        // Primary: strict JSON decoding by schema
         val ans = runCatching { json.decodeFromString<ModelAnswer>(jsonText) }.getOrNull()
             ?: run {
-                // Fallback: tolerant regex for the two required fields inside extracted object
                 val id = Regex("\"exerciseExampleId\"\\s*:\\s*\"([^\"]+)\"")
                     .find(jsonText)?.groupValues?.getOrNull(1)?.trim().orEmpty()
                 val reason = Regex("\"reason\"\\s*:\\s*\"([\\s\\S]*?)\"\\s*[,}]")
@@ -363,8 +358,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         suggestion: ExerciseExampleSuggestion
     ): ExerciseExampleSuggestion? {
         val id = suggestion.id.trim()
-        var reason = suggestion.reason.trim()
-            .replace(Regex("\\s+"), " ")
+        var reason = suggestion.reason.trim().replace(Regex("\\s+"), " ")
         if (id.isEmpty() || reason.isEmpty()) return null
         if (reason.length > 500) reason = reason.substring(0, 500)
         return suggestion.copy(id = id, reason = reason)
@@ -400,9 +394,11 @@ internal class ExerciseExampleSuggestionPromptBuilder(
                 exercise.forceType,
                 exercise.weightType,
                 exercise.experience
-            )
-                .joinToString("/")
-            appendLine(" - ${exercise.displayName}${sessionMuscleSummary(exercise)} ($tags)")
+            ).joinToString("/")
+            val eq = if (exercise.equipmentIds.isNotEmpty()) {
+                " | equip ${exercise.equipmentIds.joinToString(",")}"
+            } else ""
+            appendLine(" - ${exercise.displayName}${sessionMuscleSummary(exercise)} ($tags)$eq")
         }
         if (signals.session.size > MAX_SESSION_EXERCISES) {
             appendLine(" - ... and ${signals.session.size - MAX_SESSION_EXERCISES} more")
@@ -436,9 +432,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         positiveTargets.forEach { target ->
             appendLine(
                 " - ${target.name}: avg ${formatOneDecimal(target.average)}, done ${
-                    formatOneDecimal(
-                        target.current
-                    )
+                    formatOneDecimal(target.current)
                 } (needs +${formatOneDecimal(target.deficit)})"
             )
         }
@@ -459,14 +453,18 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         appendLine()
         appendLine("Guidelines:")
         appendLine(" - Cover primary-muscle deficits first (primary-only accounting).")
-        appendLine(" - Cycles: prefer due/overdue primary muscles by macro (days) or micro (sessions) cycles (with grace).")
-        appendLine(" - Respect recovery windows (hour-accurate): skip if primary not recovered; avoid candidates with >60% unrecovered shares.")
-        appendLine(" - Per-target muscle, steer category toward ~1:1 compound/isolation within this session (use history as reference).")
-        appendLine(" - Global category: use compounds early; favor categories with positive deficit.")
-        appendLine(" - Mild anti-monotony: small penalty if same primary had meaningful load recently (< ${ANTI_MONOTONY_HOURS}h).")
-        appendLine(" - Promote variety: lower usageCount, older lastUsed.")
-        appendLine(" - Avoid already performed; respect user exclusions.")
+        appendLine(" - Cycles: prefer due/overdue primary muscles by macro (days) or micro (sessions), both with grace.")
+        appendLine(" - Respect recovery windows: skip if primary not recovered; avoid candidates with >60% weighted-unrecovered share (adaptive cap).")
+        appendLine(" - Per-target muscle, steer category toward ~1:1 compound/isolation in this session (use history as reference).")
+        appendLine(" - Global category: compounds earlier; if a category has a positive deficit, prioritize it.")
+        appendLine(" - Mild anti-monotony: small penalty if the same primary muscle had meaningful load recently (< ${ANTI_MONOTONY_HOURS}h).")
+        appendLine(" - Equipment tiebreak: prefer candidates whose equipmentIds DO NOT intersect with equipment used in this session.")
+        appendLine(" - Promote variety: lower usageCount, older lastUsed. Avoid already performed; respect user exclusions.")
         dominantExperience?.let { appendLine(" - Keep difficulty around the $it level.") }
+        appendLine(" - IMPORTANT: Write the `reason` in friendly, user-facing language:")
+        appendLine("   * No raw metrics, IDs, percentages, scores, or decimals.")
+        appendLine("   * Explain simply why this exercise fits now (target, freshness, balance, variety).")
+        appendLine("   * You may include a brief set/rep/rest cue (e.g., \"3x8 @ RIR2, rest 90s\").")
     }
 
     private fun StringBuilder.renderRecentTrainings(trainings: List<TrainingSummary>) {
@@ -477,17 +475,17 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             return
         }
 
-        trainings.forEachIndexed { index, training ->
+        trainings.forEachIndexed { index, tr ->
+            val dow = tr.dayOfWeek.name.lowercase()
+                .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
             append(
-                " ${index + 1}. ${training.performedAt} (${
-                    training.dayOfWeek.name.lowercase()
-                        .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
-                }): "
+                " ${index + 1}. ${tr.performedAt} ($dow) " +
+                        "[vol ${formatOneDecimal(tr.totalVolume.toDouble())}, reps ${tr.totalRepetitions}, inten ${formatOneDecimal(tr.avgIntensity.toDouble())}]: "
             )
             append(
-                training.exercises.take(MAX_TRAINING_EXERCISES)
+                tr.exercises.take(MAX_TRAINING_EXERCISES)
                     .joinToString { it.displayName + sessionMuscleSummary(it) })
-            if (training.exercises.size > MAX_TRAINING_EXERCISES) append(" +${training.exercises.size - MAX_TRAINING_EXERCISES} more")
+            if (tr.exercises.size > MAX_TRAINING_EXERCISES) append(" +${tr.exercises.size - MAX_TRAINING_EXERCISES} more")
             appendLine()
         }
     }
@@ -502,6 +500,20 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         signals.muscleLoads.forEach { load ->
             appendLine(" - ${load.name}: ${load.total} load units over ${load.sessions} sessions")
         }
+    }
+
+    private fun StringBuilder.renderResidualFatigue(signals: PredictionSignals) {
+        if (signals.residualFatigueByMuscle.isEmpty()) return
+        appendLine()
+        appendLine("Residual fatigue by muscle (0..1, higher = less recovered):")
+        signals.residualFatigueByMuscle
+            .entries
+            .sortedByDescending { it.value }
+            .take(MAX_MUSCLE_SUMMARY)
+            .forEach { (id, rf) ->
+                val name = signals.muscleTargets.find { it.id == id }?.name ?: id
+                appendLine(" - $name: ${formatOneDecimal(rf)}")
+            }
     }
 
     private fun StringBuilder.renderPeriodicHabits(
@@ -519,11 +531,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
                     h.nextDue == today -> "due today"
                     else -> "in ${today.daysUntil(h.nextDue)}d"
                 }
-                " - ${h.muscleName}: every ~${h.medianIntervalDays}d (last ${h.lastDate}, next ${h.nextDue}, $status, conf ${
-                    formatOneDecimal(
-                        h.confidence
-                    )
-                })"
+                " - ${h.muscleName}: every ~${h.medianIntervalDays}d (last ${h.lastDate}, next ${h.nextDue}, $status, conf ${formatOneDecimal(h.confidence)})"
             }
         appendLine()
         appendLine("Periodic habits (per muscle):")
@@ -535,11 +543,12 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         muscleTargetMap: Map<String, MuscleTarget>,
         lastLoadByMuscleDateTime: Map<String, LocalDateTime>,
         nowDateTime: LocalDateTime,
-        periodicHabits: Map<String, PeriodicHabit>
+        periodicHabits: Map<String, PeriodicHabit>,
+        residualFatigueByMuscle: Map<String, Double>
     ) {
         appendLine()
         appendLine("Candidates:")
-        val tz = TimeZone.currentSystemDefault()
+        val tz = USER_TIME_ZONE
         contexts.forEach { context ->
             val tags = listOf(
                 context.category,
@@ -550,10 +559,10 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             val primaryId = context.primaryMuscleId()
             val targetNote = primaryId
                 ?.let { muscleTargetMap[it] }
-                ?.let { target ->
+                ?.let { t ->
                     when {
-                        target.deficit > DEFICIT_EPS -> " (helps +${formatOneDecimal(target.deficit)} on ${target.name})"
-                        target.deficit < -DEFICIT_EPS -> " (over +${formatOneDecimal(-target.deficit)} on ${target.name})"
+                        t.deficit > DEFICIT_EPS -> " (helps +${formatOneDecimal(t.deficit)} on ${t.name})"
+                        t.deficit < -DEFICIT_EPS -> " (over +${formatOneDecimal(-t.deficit)} on ${t.name})"
                         else -> ""
                     }
                 }.orEmpty()
@@ -576,28 +585,28 @@ internal class ExerciseExampleSuggestionPromptBuilder(
                     if (hours in 0..ANTI_MONOTONY_HOURS.toLong()) " [recent<${ANTI_MONOTONY_HOURS}h]" else ""
                 }.orEmpty()
 
-            val unrecShare = context.unrecoveredShare(nowDateTime, lastLoadByMuscleDateTime)
-            val unrecNote =
-                if (unrecShare > 0.0) " [unrec ${(unrecShare * 100).roundToInt()}%]" else ""
+            val unrecWeighted = context.unrecoveredWeightedShare(residualFatigueByMuscle)
+            val unrecNote = if (unrecWeighted > 0.0) " [unrecW ${(unrecWeighted * 100).roundToInt()}%]" else ""
+
+            val equip = if (context.equipmentIds.isNotEmpty()) " | equip ${context.equipmentIds.joinToString(",")}" else ""
 
             append(
                 " - ${context.id}: ${context.displayName}; muscles ${contextMuscleSummary(context)}; " +
                         "tags $tags; usage ${context.usageCount}; lastUsed ${formatLastUsed(context.lastUsed)}" +
-                        targetNote + cycleNote + antiMonotony + unrecNote
+                        targetNote + cycleNote + antiMonotony + unrecNote + equip
             )
             appendLine()
         }
     }
 
     // ---------------------------
-    // Domain mappers
+    // Domain mappers (strict)
     // ---------------------------
     private fun DraftTrainingPack.toSessionSummaries(
         exampleContextMap: Map<String, ExampleContext>
     ): List<ExerciseSummary> {
         return exercises.mapNotNull { pack ->
-            val context =
-                exampleContextMap[pack.exercise.exerciseExampleId] ?: return@mapNotNull null
+            val context = exampleContextMap[pack.exercise.exerciseExampleId] ?: return@mapNotNull null
             if (context.id.isBlank() || context.displayName.isBlank() || context.muscles.isEmpty()) return@mapNotNull null
 
             val forceType = context.forceType.takeIf { it.isNotBlank() } ?: return@mapNotNull null
@@ -612,7 +621,8 @@ internal class ExerciseExampleSuggestionPromptBuilder(
                 category = category,
                 forceType = forceType,
                 weightType = weightType,
-                experience = experience
+                experience = experience,
+                equipmentIds = context.equipmentIds
             )
         }
     }
@@ -621,9 +631,9 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         exampleContextMap: Map<String, ExampleContext>
     ): TrainingSummary {
         val performedAt = DateTimeUtils.toLocalDateTime(training.createdAt)
-        val exercises = exercises.mapNotNull { pack ->
-            val context =
-                exampleContextMap[pack.exercise.exerciseExampleId] ?: return@mapNotNull null
+
+        val exSummaries = exercises.mapNotNull { pack ->
+            val context = exampleContextMap[pack.exercise.exerciseExampleId] ?: return@mapNotNull null
             if (context.id.isBlank() || context.displayName.isBlank() || context.muscles.isEmpty()) return@mapNotNull null
 
             val forceType = context.forceType.takeIf { it.isNotBlank() } ?: return@mapNotNull null
@@ -638,41 +648,88 @@ internal class ExerciseExampleSuggestionPromptBuilder(
                 category = category,
                 forceType = forceType,
                 weightType = weightType,
-                experience = experience
+                experience = experience,
+                equipmentIds = context.equipmentIds
             )
         }
+
+        // intensity = volume / repetitions; fallback to stored intensity if reps==0
+        val volume = training.volume
+        val reps = training.repetitions
+        val intensityFromData = if (reps > 0) volume / reps.toFloat() else training.intensity
 
         return TrainingSummary(
             performedAt = performedAt,
             dayOfWeek = performedAt.date.dayOfWeek,
-            exercises = exercises
+            exercises = exSummaries,
+            totalVolume = volume,
+            totalRepetitions = reps,
+            avgIntensity = intensityFromData
         )
     }
 
-    private fun ExerciseExamplePack.toContextOrNull(): ExampleContext? {
+    private fun ExerciseExamplePack.toContextOrNullStrict(): ExampleContext? {
         val value = example.toDomain() ?: return null
         if (value.id.isBlank() || value.name.isBlank()) return null
 
-        val muscles = bundles
-            .mapNotNull { pack ->
-                val percentage = pack.bundle.percentage
-                val muscleId = pack.muscle.id
-                val muscleName = pack.muscle.name
-                val recoveryHours: Int? = pack.muscle.recoveryTimeHours
-                when {
-                    percentage <= 0 -> null
-                    muscleId.isBlank() -> null
-                    muscleName.isBlank() -> null
-                    else -> MuscleShare(
-                        id = muscleId,
-                        name = muscleName,
-                        percentage = percentage,
-                        recoveryTimeHours = recoveryHours
-                    )
+        // Collect raw shares first (no guessing, no fallbacks)
+        data class RawShare(
+            val id: String,
+            val name: String,
+            val percentage: Int,
+            val recoveryTimeHours: Int?
+        )
+        val rawShares = bundles.mapNotNull { pack ->
+            val pct = pack.bundle.percentage
+            val id = pack.muscle.id
+            val name = pack.muscle.name
+            val rh: Int? = pack.muscle.recoveryTimeHours
+            if (pct > 0 && id.isNotBlank() && name.isNotBlank()) {
+                RawShare(id, name, pct, rh)
+            } else null
+        }.sortedByDescending { it.percentage }
+
+        if (rawShares.isEmpty()) return null
+
+        // Require valid PRIMARY (top by percentage has recoveryTimeHours > 0)
+        val primary = rawShares.first()
+        val primaryRh = primary.recoveryTimeHours
+        if (primaryRh == null || primaryRh <= 0) return null
+
+        // Merge duplicates by muscleId, keep only entries with valid recoveryTimeHours > 0
+        val merged = buildMap<String, Pair<String, Int>> {
+            rawShares.forEach { s ->
+                val rh = s.recoveryTimeHours
+                if (rh != null && rh > 0) {
+                    val prev = this[s.id]
+                    val newPct = (prev?.second ?: 0) + s.percentage
+                    put(s.id, s.name to newPct)
                 }
             }
-            .sortedByDescending { it.percentage }
-            .take(MAX_MUSCLES_PER_EXERCISE)
+        }.entries
+            .map { (id, pair) -> Triple(id, pair.first, pair.second.coerceAtLeast(0)) }
+            .sortedByDescending { it.third }
+
+        if (merged.isEmpty()) return null
+
+        // Cap accumulated total to ≤100% by progressive fill; take top-N
+        var remaining = 100
+        val muscles = buildList {
+            for ((id, name, pctRaw) in merged) {
+                if (remaining <= 0) break
+                val pct = pctRaw.coerceAtMost(remaining)
+                remaining -= pct
+                add(
+                    MuscleShare(
+                        id = id,
+                        name = name,
+                        percentage = pct,
+                        recoveryTimeHours = if (id == primary.id) primaryRh else rawShares.firstOrNull { it.id == id }?.recoveryTimeHours
+                    )
+                )
+            }
+        }.take(MAX_MUSCLES_PER_EXERCISE)
+
         if (muscles.isEmpty()) return null
 
         val category = value.category.key.takeIf { it.isNotBlank() } ?: return null
@@ -727,7 +784,6 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         return CategoryStats(average = average, current = current)
     }
 
-    // PRIMARY-ONLY accounting for deficits
     private fun computeMuscleTargetsPrimaryOnly(
         trainings: List<TrainingSummary>,
         session: List<ExerciseSummary>
@@ -794,6 +850,70 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         return loads.values.sortedByDescending { it.total }.take(MAX_MUSCLE_SUMMARY)
     }
 
+    /**
+     * Residual fatigue per muscle using only user's data and robust normalization:
+     * - For each past training in the lookback window:
+     *   contribution = (percentage/100) * normIntensity * clamp01(1 - hoursSince/recoveryHours)
+     * - Sum contributions per muscle with per-muscle clamp to ≤1 (winsor).
+     * Data-only:
+     * - percentage: from bundles (>0)
+     * - recoveryHours: from muscle entity (>0); if absent -> ignore that share
+     * - intensity: training.intensity or (volume / repetitions) if repetitions > 0
+     * - normalization: robust Q10..Q90 over window with winsorization; if flat (Q90≈Q10), use 1.0 for all
+     */
+    private fun computeResidualFatigueByMuscle(
+        now: LocalDateTime,
+        trainings: List<TrainingSummary>
+    ): Map<String, Double> {
+        if (trainings.isEmpty()) return emptyMap()
+
+        // keep only strictly positive finite intensities
+        val rawIntensities = trainings.mapNotNull { tr ->
+            tr.avgIntensity.takeIf { it.isFinite() && it > 0f }?.toDouble()
+        }
+        if (rawIntensities.isEmpty()) return emptyMap()
+
+        val sorted = rawIntensities.sorted()
+        val q10 = quantileDouble(sorted, 0.10)
+        val q90 = quantileDouble(sorted, 0.90)
+
+        fun robustNorm(i: Double): Double {
+            if (!(q90 > q10)) return 1.0
+            // winsorize to [q10, q90] before scaling
+            val iWin = i.coerceIn(q10, q90)
+            return ((iWin - q10) / (q90 - q10)).coerceIn(0.0, 1.0)
+        }
+
+        val tz = USER_TIME_ZONE
+        val residual = mutableMapOf<String, Double>()
+
+        trainings.forEach { tr ->
+            val iRaw = tr.avgIntensity.toDouble()
+            if (!iRaw.isFinite() || iRaw <= 0.0) return@forEach
+            val iNorm = robustNorm(iRaw)
+            if (iNorm <= 0.0) return@forEach
+
+            val hoursSince = (now.toInstant(tz) - tr.performedAt.toInstant(tz)).inWholeHours
+            tr.exercises.forEach { ex ->
+                ex.muscles.forEach { share ->
+                    val rh = share.recoveryTimeHours ?: return@forEach
+                    if (rh <= 0) return@forEach
+
+                    val decay = 1.0 - (hoursSince.toDouble() / rh.toDouble())
+                    if (decay <= 0.0) return@forEach
+
+                    val pct = share.percentage.coerceAtLeast(0).toDouble() / 100.0
+                    val contrib = pct * iNorm * clamp01(decay)
+                    if (contrib <= 0.0) return@forEach
+
+                    // per-muscle clamp to ≤1 to avoid runaway sums
+                    residual[share.id] = ((residual[share.id] ?: 0.0) + contrib).coerceAtMost(1.0)
+                }
+            }
+        }
+        return residual
+    }
+
     private fun computeLastLoadDateTimeByMuscle(
         trainings: List<TrainingSummary>,
     ): Map<String, LocalDateTime> {
@@ -838,7 +958,6 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             if (intervals.size < PERIODIC_MIN_INTERVALS) return@forEach
 
             val median = medianInt(intervals).coerceAtLeast(1)
-
             val recent = intervals.takeLast(PERIODIC_RECENT_WINDOW)
             val recentMedian = medianInt(recent)
 
@@ -847,8 +966,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             val confidence = clamp01(1.0 - spread)
 
             val alpha = 0.5 * (1.0 - confidence)
-            val blended =
-                ((1 - alpha) * median + alpha * recentMedian).roundToInt().coerceAtLeast(1)
+            val blended = ((1 - alpha) * median + alpha * recentMedian).roundToInt().coerceAtLeast(1)
 
             val lastDate = dates.last()
             val nextDue = lastDate.plus(blended, DateTimeUnit.DAY)
@@ -880,7 +998,6 @@ internal class ExerciseExampleSuggestionPromptBuilder(
 
         val habits = mutableMapOf<String, SessionHabit>()
         indicesByMuscle.forEach { (muscleId, rawIdxs) ->
-            // Ensure ascending order by session index (0 == most recent)
             val idxsAsc = rawIdxs.sorted()
             if (idxsAsc.size < PERIODIC_MIN_EVENTS) return@forEach
             val intervals = idxsAsc.zipWithNext { a, b -> b - a }.filter { it > 0 }
@@ -912,7 +1029,9 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         nowDateTime: LocalDateTime,
         lastLoadByMuscleDateTime: Map<String, LocalDateTime>,
         periodicHabits: Map<String, PeriodicHabit>,
-        sessionHabits: Map<String, SessionHabit>
+        sessionHabits: Map<String, SessionHabit>,
+        usedEquipmentIds: Set<String>,
+        residualFatigueByMuscle: Map<String, Double>
     ): Comparator<ExampleContext> {
         return Comparator { left, right ->
             // 1) Primary-muscle deficit (larger deficit ranks first)
@@ -926,7 +1045,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             val deficitCmp = dR.compareTo(dL).takeIf { abs(dL - dR) >= DEFICIT_EPS } ?: 0
             if (deficitCmp != 0) return@Comparator deficitCmp
 
-            // 2) Cycle pressure (macro/micro): OVERDUE < DUE < NONE
+            // 2) Cycle priority (OVERDUE < DUE < NONE)
             fun cycleRank(ctx: ExampleContext): Int {
                 val pm = ctx.primaryMuscleId() ?: return 2
                 return when (combinedCycleState(pm, nowDateTime, periodicHabits, sessionHabits)) {
@@ -935,47 +1054,63 @@ internal class ExerciseExampleSuggestionPromptBuilder(
                     CycleState.NONE -> 2
                 }
             }
-
             val cL = cycleRank(left)
             val cR = cycleRank(right)
             val cycleCmp = cL.compareTo(cR)
             if (cycleCmp != 0) return@Comparator cycleCmp
 
-            // 3) Session-level category balance for the target muscle (~1:1 compound/isolation)
+            // 3) Equipment tiebreak (prefer no conflict with used equipment)
+            fun equipPenalty(ctx: ExampleContext): Int {
+                val conflict = ctx.equipmentIds.any { it in usedEquipmentIds }
+                return if (conflict) 1 else 0
+            }
+            val eL = equipPenalty(left)
+            val eR = equipPenalty(right)
+            val equipCmp = eL.compareTo(eR)
+            if (equipCmp != 0) return@Comparator equipCmp
+
+            // 4) Per-target category steering (~1:1 compound/isolation)
             fun prefMismatch(ctx: ExampleContext): Int {
                 val pm = ctx.primaryMuscleId()
                 val preferred = preferredCategoryForMuscleNext(pm, trainings, session)
                 return if (preferred != null && ctx.category != preferred) 1 else 0
             }
-
             val pmL = prefMismatch(left)
             val pmR = prefMismatch(right)
             val pmCmp = pmL.compareTo(pmR)
             if (pmCmp != 0) return@Comparator pmCmp
 
-            // 4) Global category policy alignment
+            // 5) Global category policy alignment
             val catCmp = categoryStats.priorityFor(left.category, stage)
                 .compareTo(categoryStats.priorityFor(right.category, stage))
             if (catCmp != 0) return@Comparator catCmp
 
-            // 5) Anti-monotony penalty (recent loads get nudged down)
-            fun mono(ctx: ExampleContext): Int =
-                antiMonotonyPenalty(ctx, nowDateTime, lastLoadByMuscleDateTime)
+            // 6) Anti-monotony (recent loads → small penalty). Dead-zone: if residual < threshold, no penalty.
+            fun mono(ctx: ExampleContext): Int {
+                val pm = ctx.primaryMuscleId() ?: return 0
+                val residual = (residualFatigueByMuscle[pm] ?: 0.0).coerceIn(0.0, 1.0)
+                if (residual < RESIDUAL_DEADZONE) return 0
+                return antiMonotonyPenalty(ctx, nowDateTime, lastLoadByMuscleDateTime)
+            }
 
             val mL = mono(left)
             val mR = mono(right)
             val monoCmp = mL.compareTo(mR)
             if (monoCmp != 0) return@Comparator monoCmp
 
-            // 6) Variety: lower usage count wins
+            // 7) Variety: lower usageCount wins
             val useCmp = left.usageCount.compareTo(right.usageCount)
             if (useCmp != 0) return@Comparator useCmp
 
-            // 7) Recency: older lastUsed ranks higher
+            // 8) Recency: older lastUsed ranks higher
             val lastUsedCmp = compareLastUsed(left.lastUsed, right.lastUsed)
             if (lastUsedCmp != 0) return@Comparator lastUsedCmp
 
-            // 8) On total tie, return 0 to preserve input order (stable sort).
+            // 9) Stable fallback by id (ensures deterministic tie-breaks)
+            val idCmp = left.id.compareTo(right.id)
+            if (idCmp != 0) return@Comparator idCmp
+
+            // 10) Preserve input order if still tied (stable sort)
             0
         }
     }
@@ -1038,13 +1173,13 @@ internal class ExerciseExampleSuggestionPromptBuilder(
     ): Int {
         val pm = ctx.primaryMuscleId() ?: return 0
         val last = lastLoadByMuscleDateTime[pm] ?: return 0
-        val tz = TimeZone.currentSystemDefault()
+        val tz = USER_TIME_ZONE
         val hours = (nowDateTime.toInstant(tz) - last.toInstant(tz)).inWholeHours
         return if (hours < ANTI_MONOTONY_HOURS.toLong()) 1 else 0
     }
 
     // ---------------------------
-    // Additional helpers
+    // Additional helpers (visibility-wide)
     // ---------------------------
     private fun preferredCategoryForMuscleNext(
         muscleId: String?,
@@ -1089,8 +1224,8 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             }
         }
 
-        val progCompound = curCompound / avgCompound
-        val progIsolation = curIsolation / avgIsolation
+        val progCompound = if (avgCompound > 0) curCompound / avgCompound else 1.0
+        val progIsolation = if (avgIsolation > 0) curIsolation / avgIsolation else 1.0
 
         return when {
             progCompound < progIsolation -> CategoryEnum.COMPOUND.key
@@ -1099,17 +1234,40 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         }
     }
 
+    // Extension helpers used in selection and rendering
+    private fun ExampleContext.unrecoveredWeightedShare(
+        residual: Map<String, Double>
+    ): Double {
+        if (muscles.isEmpty()) return 0.0
+        var acc = 0.0
+        for (m in muscles) {
+            val rf = (residual[m.id] ?: 0.0).coerceIn(0.0, 1.0)
+            if (rf > 0.0) {
+                acc += (m.percentage.coerceAtLeast(0)).toDouble() / 100.0 * rf
+            }
+        }
+        return acc.coerceIn(0.0, 1.0)
+    }
+
+    private fun ExampleContext.isPrimaryRecoveredByResidual(
+        residual: Map<String, Double>
+    ): Boolean {
+        val pm = primaryMuscleId() ?: return true
+        val rf = (residual[pm] ?: 0.0).coerceIn(0.0, 1.0)
+        return rf <= 0.0
+    }
+
     private fun compareLastUsed(left: LocalDateTime?, right: LocalDateTime?): Int {
         return when {
-            left == null && right == null -> 0           // both never used
-            left == null -> -1                           // "never" counts as the oldest => higher rank
+            left == null && right == null -> 0
+            left == null -> -1 // "never" counts as the oldest => higher rank
             right == null -> 1
-            else -> left.compareTo(right)                // older timestamps (smaller) go first
+            else -> left.compareTo(right) // older timestamps (smaller) go first
         }
     }
 
     // ---------------------------
-    // Misc formatters
+    // Misc formatters & math utils
     // ---------------------------
     private fun formatOneDecimal(value: Double): String {
         val scaled = (value * 10.0).roundToInt() / 10.0
@@ -1125,6 +1283,20 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             val lower = part.lowercase()
             lower.replaceFirstChar { ch -> if (ch.isLowerCase()) ch.titlecase() else ch.toString() }
         }
+    }
+
+    private fun quantileDouble(sortedValues: List<Double>, p: Double): Double {
+        if (sortedValues.isEmpty()) return 0.0
+        val clampedP = p.coerceIn(0.0, 1.0)
+        val rank = clampedP * (sortedValues.size - 1)
+        val lo = rank.toInt()
+        val hi = (lo + 1).coerceAtMost(sortedValues.lastIndex)
+        val frac = rank - lo
+        return sortedValues[lo] * (1 - frac) + sortedValues[hi] * frac
+    }
+
+    private fun quantileDouble(values: List<Double>, p: Double, alreadySorted: Boolean = false): Double {
+        return if (alreadySorted) quantileDouble(values, p) else quantileDouble(values.sorted(), p)
     }
 
     private fun sessionMuscleSummary(exercise: ExerciseSummary): String {
@@ -1161,8 +1333,10 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         val weightMix: Map<String, Int>,
         val experienceMix: Map<String, Int>,
         val lastLoadByMuscleDateTime: Map<String, LocalDateTime>,
+        val residualFatigueByMuscle: Map<String, Double>,
         val periodicHabits: Map<String, PeriodicHabit>,
-        val sessionHabits: Map<String, SessionHabit>
+        val sessionHabits: Map<String, SessionHabit>,
+        val usedEquipmentIds: Set<String>
     )
 
     private data class ExampleCatalog(
@@ -1173,7 +1347,10 @@ internal class ExerciseExampleSuggestionPromptBuilder(
     private data class TrainingSummary(
         val performedAt: LocalDateTime,
         val dayOfWeek: DayOfWeek,
-        val exercises: List<ExerciseSummary>
+        val exercises: List<ExerciseSummary>,
+        val totalVolume: Float,
+        val totalRepetitions: Int,
+        val avgIntensity: Float
     )
 
     private data class ExerciseSummary(
@@ -1183,7 +1360,8 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         val category: String,
         val forceType: String,
         val weightType: String,
-        val experience: String
+        val experience: String,
+        val equipmentIds: Set<String>
     )
 
     private data class MuscleLoad(
@@ -1220,13 +1398,11 @@ internal class ExerciseExampleSuggestionPromptBuilder(
                     deficit(compoundKey) > DEFICIT_EPS -> 0
                     else -> 1
                 }
-
                 isolationKey -> when {
                     stage < EARLY_STAGE_COMPOUND_LIMIT -> 1
                     deficit(isolationKey) > DEFICIT_EPS -> 0
                     else -> 1
                 }
-
                 else -> 1
             }
         }
@@ -1246,36 +1422,6 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         val value: ExerciseExampleValue
     ) {
         fun primaryMuscleId(): String? = muscles.firstOrNull()?.id
-
-        // Primary-only recovery: now - lastLoad >= recoveryHours
-        fun isPrimaryMuscleRecovered(
-            nowDateTime: LocalDateTime,
-            lastLoadByMuscleDateTime: Map<String, LocalDateTime>
-        ): Boolean {
-            val primary = muscles.firstOrNull() ?: return true
-            val recoveryHours: Int = primary.recoveryTimeHours ?: return true
-            val last = lastLoadByMuscleDateTime[primary.id] ?: return true
-            val tz = TimeZone.currentSystemDefault()
-            val hoursSince = (nowDateTime.toInstant(tz) - last.toInstant(tz)).inWholeHours
-            return hoursSince >= recoveryHours.toLong()
-        }
-
-        // Strict mode: accumulate shares for muscles still inside their recovery window
-        fun unrecoveredShare(
-            nowDateTime: LocalDateTime,
-            lastLoadByMuscleDateTime: Map<String, LocalDateTime>
-        ): Double {
-            if (muscles.isEmpty()) return 0.0
-            val tz = TimeZone.currentSystemDefault()
-            var sumUnrec = 0
-            for (m in muscles) {
-                val rh: Int = m.recoveryTimeHours ?: continue
-                val last = lastLoadByMuscleDateTime[m.id] ?: continue
-                val hoursSince = (nowDateTime.toInstant(tz) - last.toInstant(tz)).inWholeHours
-                if (hoursSince < rh.toLong()) sumUnrec += m.percentage
-            }
-            return (sumUnrec.coerceAtLeast(0)).toDouble() / 100.0
-        }
     }
 
     private data class MuscleShare(
@@ -1297,8 +1443,8 @@ internal class ExerciseExampleSuggestionPromptBuilder(
     private data class SessionHabit(
         val muscleId: String,
         val medianIntervalSessions: Int,
-        val lastSeenIdx: Int,    // 0 means the muscle appeared in the immediate previous session
-        val nextDueIdx: Int      // lastSeenIdx + medianInterval
+        val lastSeenIdx: Int,
+        val nextDueIdx: Int
     )
 
     // ---------------------------
@@ -1314,12 +1460,15 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         private const val MAX_MUSCLE_SUMMARY = 12
         private const val MAX_MUSCLE_TARGET_LINES = 8
         private const val MAX_PRIMARY_FOCUS = 3
-        private const val MAX_CANDIDATE_COUNT = 16
+        private const val MAX_CANDIDATE_COUNT = 20 // slightly increased
 
         private const val EARLY_STAGE_COMPOUND_LIMIT = 2
         private const val DEFICIT_EPS = 0.1
         private const val SIGNIFICANT_SHARE_THRESHOLD = 30 // %
-        private const val STRICT_UNRECOVERED_SHARE_LIMIT = 0.6 // 60%
+
+        // Strict limit and adaptive cap for Tier-A unrecovered-weighted share
+        private const val STRICT_UNREC_WEIGHTED_SHARE_LIMIT = 0.6 // 60%
+        private const val RESIDUAL_DEADZONE = 0.10 // anti-monotony dead-zone threshold
 
         private const val ANTI_MONOTONY_HOURS = 48
         private const val PERIODIC_GRACE_DAYS = 1
@@ -1329,23 +1478,32 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         private const val PERIODIC_RECENT_WINDOW = 3
         private const val MAX_PERIODIC_LINES = 8
 
+        // Use a single, consistent TZ. Replace with user's TZ if available in your environment.
+        private val USER_TIME_ZONE: TimeZone = TimeZone.currentSystemDefault()
+
         private val SYSTEM_PROMPT = """
             You are a strict workout planner.
             Choose EXACTLY ONE exercise from the "Candidates" list in the prompt.
+
             HARD CONSTRAINTS:
             - Return ONLY JSON: {"exerciseExampleId":"<id>","reason":"<=500 chars"} (no code block, no extra text).
             - "exerciseExampleId" MUST be one of the candidate IDs.
             - Do NOT select exercises already performed in the current session.
+
             DECISION RULES (in order):
             1) Maximize coverage of POSITIVE deficits for the PRIMARY muscle (primary-only accounting).
             2) Cycles priority: prefer candidates whose PRIMARY muscle is OVERDUE, then DUE (by macro days OR micro sessions, both with grace).
-            3) Per-target category steering toward ~1:1 compound/isolation in the current session (use history as reference).
-            4) Global category policy: compounds earlier; if a category has a positive deficit, prioritize it.
-            5) Mild anti-monotony: apply a small penalty if the same PRIMARY muscle had meaningful load recently (< ${ANTI_MONOTONY_HOURS}h), even if recovered.
-            6) Promote variety: lower usageCount, older lastUsed.
-            7) If still tied, pick the first candidate in the list.
+            3) Equipment tiebreak: when items are close by rules 1–2, prefer candidates whose equipmentIds DO NOT intersect with equipment used in the current session.
+            4) Per-target category steering toward ~1:1 compound/isolation in the current session (use history as reference).
+            5) Global category policy: compounds earlier; if a category has a positive deficit, prioritize it.
+            6) Mild anti-monotony: apply a small penalty if the same PRIMARY muscle had meaningful load recently (< 48h), even if recovered.
+            7) Promote variety: lower usageCount, older lastUsed.
+            8) If still tied, pick the first candidate in the list.
 
-            In "reason", justify briefly: primary deficit alignment, cycle status (due/overdue), recovery status, category rationale (local/global), and variety.
+            Write the "reason" in friendly, user-facing language:
+            - Avoid raw metrics, IDs, percentages, scores, or decimals.
+            - Briefly explain fit: target coverage, freshness/recovery, balance, and variety.
+            - Optionally include a simple session cue (e.g., "3x8 @ RIR2, rest 90s").
         """.trimIndent()
 
         private fun clamp01(v: Double) = when {
