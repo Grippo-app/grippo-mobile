@@ -61,14 +61,6 @@ internal fun resolveButtonColors(
                 icon = AppTokens.colors.button.contentPrimaryDisabled
             )
 
-            ButtonStyle.Warning -> ButtonColorTokens(
-                background1 = AppTokens.colors.button.backgroundPrimaryDisabled,
-                background2 = AppTokens.colors.button.backgroundPrimaryDisabled,
-                content = AppTokens.colors.button.contentPrimaryDisabled,
-                border = Color.Transparent,
-                icon = AppTokens.colors.button.contentPrimaryDisabled
-            )
-
             ButtonStyle.Magic -> ButtonColorTokens(
                 background1 = AppTokens.colors.button.backgroundPrimaryDisabled,
                 background2 = AppTokens.colors.button.backgroundPrimaryDisabled,
@@ -83,7 +75,7 @@ internal fun resolveButtonColors(
                 background1 = colors.backgroundPrimary1,
                 background2 = colors.backgroundPrimary2,
                 content = colors.textPrimary,
-                border = Color.Transparent,
+                border = colors.borderPrimary,
                 icon = colors.iconPrimary,
             )
 
@@ -117,14 +109,6 @@ internal fun resolveButtonColors(
                 icon = AppTokens.colors.button.iconPrimary,
                 content = AppTokens.colors.button.textPrimary,
                 border = AppTokens.colors.semantic.error,
-            )
-
-            ButtonStyle.Warning -> ButtonColorTokens(
-                background1 = AppTokens.colors.semantic.warning,
-                background2 = AppTokens.colors.semantic.warning,
-                icon = AppTokens.colors.button.iconPrimary,
-                content = AppTokens.colors.button.textPrimary,
-                border = AppTokens.colors.semantic.warning,
             )
 
             ButtonStyle.Magic -> ButtonColorTokens(

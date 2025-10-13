@@ -42,6 +42,7 @@ public interface AppColor {
     public interface ButtonColors {
         public val backgroundPrimary1: Color
         public val backgroundPrimary2: Color
+        public val borderPrimary: Color
         public val textPrimary: Color
         public val iconPrimary: Color
         public val backgroundPrimaryDisabled: Color

@@ -83,7 +83,6 @@ public sealed interface ButtonStyle {
 
     // Specific
     public data object Error : ButtonStyle
-    public data object Warning : ButtonStyle
     public data object Magic : ButtonStyle
 }
 
@@ -135,8 +134,6 @@ public fun Button(
     val iconPadding =
         if (style == ButtonStyle.Transparent) metrics.spaceTransparent else metrics.space
 
-    val border = if (style == ButtonStyle.Magic) 2.dp else 1.dp
-
     // Minimum side for square icon-only layout
     val minSide = metrics.height
 
@@ -150,7 +147,7 @@ public fun Button(
                 1f to colorTokens.background2,
             ), shape
         ).border(
-            border,
+            2.dp,
             colorTokens.border,
             shape
         )
@@ -637,56 +634,6 @@ private fun ButtonErrorPreview() {
         Button(
             content = ButtonContent.Icon(icon = Icons.Default.Check),
             style = ButtonStyle.Error,
-            state = ButtonState.Disabled,
-            size = ButtonSize.Small,
-            onClick = {}
-        )
-    }
-}
-
-@AppPreview
-@Composable
-private fun ButtonWarningPreview() {
-    PreviewContainer {
-        Button(
-            content = ButtonContent.Text(text = "Enabled", startIcon = Icons.Default.Check),
-            style = ButtonStyle.Warning,
-            state = ButtonState.Enabled,
-            size = ButtonSize.Medium,
-            onClick = {}
-        )
-        Button(
-            content = ButtonContent.Text(text = "Loading", startIcon = Icons.Default.Check),
-            style = ButtonStyle.Warning,
-            state = ButtonState.Loading,
-            size = ButtonSize.Medium,
-            onClick = {}
-        )
-        Button(
-            content = ButtonContent.Text(text = "Disabled", startIcon = Icons.Default.Check),
-            style = ButtonStyle.Warning,
-            state = ButtonState.Disabled,
-            size = ButtonSize.Medium,
-            onClick = {}
-        )
-
-        Button(
-            content = ButtonContent.Icon(icon = Icons.Default.Check),
-            style = ButtonStyle.Warning,
-            state = ButtonState.Enabled,
-            size = ButtonSize.Small,
-            onClick = {}
-        )
-        Button(
-            content = ButtonContent.Icon(icon = Icons.Default.Check),
-            style = ButtonStyle.Warning,
-            state = ButtonState.Loading,
-            size = ButtonSize.Small,
-            onClick = {}
-        )
-        Button(
-            content = ButtonContent.Icon(icon = Icons.Default.Check),
-            style = ButtonStyle.Warning,
             state = ButtonState.Disabled,
             size = ButtonSize.Small,
             onClick = {}
