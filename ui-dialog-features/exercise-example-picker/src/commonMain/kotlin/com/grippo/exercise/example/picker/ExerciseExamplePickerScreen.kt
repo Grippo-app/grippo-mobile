@@ -1,6 +1,7 @@
 package com.grippo.exercise.example.picker
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -136,28 +137,33 @@ internal fun ExerciseExamplePickerScreen(
             }
         }
 
-        if (state.suggestion == null) {
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+        AnimatedVisibility(
+            modifier = Modifier.fillMaxWidth(),
+            visible = state.suggestion == null
+        ){
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-            val buttonState = remember(loaders) {
-                when {
-                    loaders.contains(ExerciseExamplePickerLoader.SuggestExample) -> ButtonState.Loading
-                    else -> ButtonState.Enabled
+                val buttonState = remember(loaders) {
+                    when {
+                        loaders.contains(ExerciseExamplePickerLoader.SuggestExample) -> ButtonState.Loading
+                        else -> ButtonState.Enabled
+                    }
                 }
-            }
 
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                content = ButtonContent.Text(
-                    startIcon = AppTokens.icons.Magic,
-                    text = AppTokens.strings.res(Res.string.ai_suggestion_btn)
-                ),
-                state = buttonState,
-                style = ButtonStyle.Magic,
-                onClick = contract::onSuggestClick
-            )
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                    content = ButtonContent.Text(
+                        startIcon = AppTokens.icons.Magic,
+                        text = AppTokens.strings.res(Res.string.ai_suggestion_btn)
+                    ),
+                    state = buttonState,
+                    style = ButtonStyle.Magic,
+                    onClick = contract::onSuggestClick
+                )
+            }
         }
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
