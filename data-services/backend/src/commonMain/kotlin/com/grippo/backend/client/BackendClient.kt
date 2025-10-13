@@ -14,6 +14,9 @@ import io.ktor.http.URLProtocol
 import io.ktor.http.contentType
 import io.ktor.http.path
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import org.koin.core.annotation.Single
 
@@ -54,13 +57,15 @@ internal class BackendClient(
         body: Any? = null,
         queryParams: Map<String, String>? = null
     ): HttpResponse {
-        return clientProvider.request {
-            url {
-                path(path)
-                queryParams?.forEach { (key, value) -> parameters.append(key, value) }
-                body?.let { setBody(body) }
+        return withContext(Dispatchers.IO) {
+            clientProvider.request {
+                url {
+                    path(path)
+                    queryParams?.forEach { (key, value) -> parameters.append(key, value) }
+                    body?.let { setBody(body) }
+                }
+                this.method = method
             }
-            this.method = method
         }
     }
 }

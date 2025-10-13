@@ -8,6 +8,9 @@ import ai.koog.prompt.llm.LLMCapability
 import ai.koog.prompt.llm.LLMProvider
 import ai.koog.prompt.llm.LLModel
 import io.ktor.client.HttpClient
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.withContext
 import org.koin.core.annotation.Single
 
 @Single
@@ -34,11 +37,13 @@ internal class KoogClient(httpClient: HttpClient) {
         input: String,
         system: String
     ): String {
-        val agent = AIAgent.Companion(
-            promptExecutor = executor,
-            llmModel = model,
-            systemPrompt = system
-        )
-        return agent.run(input)
+        return withContext(Dispatchers.IO) {
+            val agent = AIAgent.Companion(
+                promptExecutor = executor,
+                llmModel = model,
+                systemPrompt = system
+            )
+            agent.run(input)
+        }
     }
 }

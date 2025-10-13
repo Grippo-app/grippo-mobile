@@ -16,6 +16,7 @@ import com.grippo.database.models.TrainingPack
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.entity.domain.equipment.toDomain
 import com.grippo.error.provider.AppError
+import com.grippo.platform.core.LocalAppLocale
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
@@ -41,10 +42,12 @@ internal class ExerciseExampleSuggestionPromptBuilder(
     private val exerciseExampleDao: ExerciseExampleDao,
     private val userDao: UserDao,
     private val userActiveDao: UserActiveDao,
-    private val json: Json
+    private val json: Json,
 ) {
 
     suspend fun suggest(now: LocalDateTime = DateTimeUtils.now()): Result<ExerciseExampleSuggestion?> {
+        val locale = LocalAppLocale.current()
+
         val catalog = loadExampleCatalog() ?: return Result.failure(
             AppError.Expected(
                 "Invalid example catalog",
@@ -60,7 +63,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             )
         )
 
-        val prompt = buildPrompt(now, signals, candidates)
+        val prompt = buildPrompt(now, signals, candidates, locale)
         val answer = aiAgent.ask(prompt, SYSTEM_PROMPT)
 
         return answer.map { a ->
@@ -266,7 +269,8 @@ internal class ExerciseExampleSuggestionPromptBuilder(
     private fun buildPrompt(
         now: LocalDateTime,
         signals: PredictionSignals,
-        candidates: List<ExampleContext>
+        candidates: List<ExampleContext>,
+        locale: String
     ): String {
         val positiveTargets = signals.muscleTargets
             .filter { it.deficit > DEFICIT_EPS }
@@ -276,14 +280,14 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         val dominantExperience = signals.experienceMix.dominantKey()?.let { formatTitleLabel(it) }
 
         return buildString {
-            renderIntro(now)
+            renderIntro(now, locale)
             renderSession(signals)
             renderCategoryBalance(signals.categoryStats)
             renderMuscleTargets(positiveTargets)
             renderMix("Force mix", signals.forceMix)
             renderMix("Weight mix", signals.weightMix)
             renderMix("Experience mix", signals.experienceMix)
-            renderGuidelines(dominantExperience)
+            renderGuidelines(dominantExperience, locale)
             renderRecentTrainings(signals.trainings)
             renderMuscleLoads(signals)
             renderResidualFatigue(signals)
@@ -383,10 +387,11 @@ internal class ExerciseExampleSuggestionPromptBuilder(
     // ---------------------------
     // Render helpers
     // ---------------------------
-    private fun StringBuilder.renderIntro(now: LocalDateTime) {
+    private fun StringBuilder.renderIntro(now: LocalDateTime, locale: String) {
         appendLine("Goal: select the best next exercise example for the user.")
         appendLine("""Reply ONLY with JSON {"exerciseExampleId":"id","reason":"<=500 chars"}.""")
         appendLine()
+        appendLine("Locale: $locale (write the reason in this language)")
         appendLine("Now: $now")
         appendLine(
             "Today: ${now.date} (${
@@ -465,7 +470,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         }
     }
 
-    private fun StringBuilder.renderGuidelines(dominantExperience: String?) {
+    private fun StringBuilder.renderGuidelines(dominantExperience: String?, locale: String) {
         appendLine()
         appendLine("Guidelines:")
         appendLine(" - Cover primary-muscle deficits first (primary-only accounting).")
@@ -481,6 +486,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         appendLine("   * No raw metrics, IDs, percentages, scores, or decimals.")
         appendLine("   * Explain simply why this exercise fits now (target, freshness, balance, variety).")
         appendLine("   * You may include a brief set/rep/rest cue (e.g., \"3x8 @ RIR2, rest 90s\").")
+        appendLine("   * Language: use '$locale' for the reason.")
     }
 
     private fun StringBuilder.renderRecentTrainings(trainings: List<TrainingSummary>) {
