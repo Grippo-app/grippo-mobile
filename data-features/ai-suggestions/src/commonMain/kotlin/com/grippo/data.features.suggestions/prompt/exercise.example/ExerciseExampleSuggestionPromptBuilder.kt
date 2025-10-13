@@ -10,11 +10,12 @@ import com.grippo.database.dao.ExerciseExampleDao
 import com.grippo.database.dao.TrainingDao
 import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.dao.UserDao
-import com.grippo.entity.domain.equipment.toDomain
 import com.grippo.database.models.DraftTrainingPack
 import com.grippo.database.models.ExerciseExamplePack
 import com.grippo.database.models.TrainingPack
 import com.grippo.date.utils.DateTimeUtils
+import com.grippo.entity.domain.equipment.toDomain
+import com.grippo.error.provider.AppError
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
@@ -43,23 +44,35 @@ internal class ExerciseExampleSuggestionPromptBuilder(
     private val json: Json
 ) {
 
-    suspend fun suggest(now: LocalDateTime = DateTimeUtils.now()): ExerciseExampleSuggestion? {
-        val catalog = loadExampleCatalog() ?: return null
+    suspend fun suggest(now: LocalDateTime = DateTimeUtils.now()): Result<ExerciseExampleSuggestion?> {
+        val catalog = loadExampleCatalog() ?: return Result.failure(
+            AppError.Expected(
+                "Invalid example catalog",
+                description = null
+            )
+        )
         val signals = buildPredictionSignals(now, catalog)
         val candidates = selectCandidateContexts(catalog, signals, now)
-        if (candidates.isEmpty()) return null
+        if (candidates.isEmpty()) return Result.failure(
+            AppError.Expected(
+                "Candidates are empty",
+                description = null
+            )
+        )
 
         val prompt = buildPrompt(now, signals, candidates)
         val answer = aiAgent.ask(prompt, SYSTEM_PROMPT)
 
-        // Guardrail: only allow the model to pick from pre-ranked candidates
-        val candidateMap = candidates.associateBy { it.id }
-        val allowed = candidateMap.keys
+        return answer.map { a ->
+            // Guardrail: only allow the model to pick from pre-ranked candidates
+            val candidateMap = candidates.associateBy { it.id }
+            val allowed = candidateMap.keys
 
-        val parsed = parseSuggestedExerciseId(answer, allowed) ?: return null
-        if (!candidateMap.containsKey(parsed.id)) return null
-
-        return normalizeSuggestionOrNull(parsed)
+            val parsed: ExerciseExampleSuggestion =
+                parseSuggestedExerciseId(a, allowed) ?: return@map null
+            if (!candidateMap.containsKey(parsed.id)) return@map null
+            normalizeSuggestionOrNull(parsed)
+        }
     }
 
     // ---------------------------
@@ -189,7 +202,8 @@ internal class ExerciseExampleSuggestionPromptBuilder(
     ): List<ExampleContext> {
 
         // Adaptive Tier-A threshold: min(staticLimit, Q75 of unrecoveredWeightedShare across catalog)
-        val allUnrecShares = catalog.contexts.map { it.unrecoveredWeightedShare(signals.residualFatigueByMuscle) }
+        val allUnrecShares =
+            catalog.contexts.map { it.unrecoveredWeightedShare(signals.residualFatigueByMuscle) }
         val q75Unrec = quantileDouble(allUnrecShares, 0.75).coerceIn(0.0, 1.0)
         val tierALimit = minOf(STRICT_UNREC_WEIGHTED_SHARE_LIMIT, q75Unrec)
 
@@ -209,7 +223,8 @@ internal class ExerciseExampleSuggestionPromptBuilder(
 
         fun isPreferred(ctx: ExampleContext): Boolean {
             val pm = ctx.primaryMuscleId() ?: return false
-            val st = combinedCycleState(pm, nowDateTime, signals.periodicHabits, signals.sessionHabits)
+            val st =
+                combinedCycleState(pm, nowDateTime, signals.periodicHabits, signals.sessionHabits)
             return st == CycleState.DUE || st == CycleState.OVERDUE
         }
 
@@ -302,6 +317,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
                     if (depth == 0) start = i
                     depth++
                 }
+
                 '}' -> {
                     if (depth > 0) {
                         depth--
@@ -480,7 +496,11 @@ internal class ExerciseExampleSuggestionPromptBuilder(
                 .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
             append(
                 " ${index + 1}. ${tr.performedAt} ($dow) " +
-                        "[vol ${formatOneDecimal(tr.totalVolume.toDouble())}, reps ${tr.totalRepetitions}, inten ${formatOneDecimal(tr.avgIntensity.toDouble())}]: "
+                        "[vol ${formatOneDecimal(tr.totalVolume.toDouble())}, reps ${tr.totalRepetitions}, inten ${
+                            formatOneDecimal(
+                                tr.avgIntensity.toDouble()
+                            )
+                        }]: "
             )
             append(
                 tr.exercises.take(MAX_TRAINING_EXERCISES)
@@ -531,7 +551,11 @@ internal class ExerciseExampleSuggestionPromptBuilder(
                     h.nextDue == today -> "due today"
                     else -> "in ${today.daysUntil(h.nextDue)}d"
                 }
-                " - ${h.muscleName}: every ~${h.medianIntervalDays}d (last ${h.lastDate}, next ${h.nextDue}, $status, conf ${formatOneDecimal(h.confidence)})"
+                " - ${h.muscleName}: every ~${h.medianIntervalDays}d (last ${h.lastDate}, next ${h.nextDue}, $status, conf ${
+                    formatOneDecimal(
+                        h.confidence
+                    )
+                })"
             }
         appendLine()
         appendLine("Periodic habits (per muscle):")
@@ -586,9 +610,12 @@ internal class ExerciseExampleSuggestionPromptBuilder(
                 }.orEmpty()
 
             val unrecWeighted = context.unrecoveredWeightedShare(residualFatigueByMuscle)
-            val unrecNote = if (unrecWeighted > 0.0) " [unrecW ${(unrecWeighted * 100).roundToInt()}%]" else ""
+            val unrecNote =
+                if (unrecWeighted > 0.0) " [unrecW ${(unrecWeighted * 100).roundToInt()}%]" else ""
 
-            val equip = if (context.equipmentIds.isNotEmpty()) " | equip ${context.equipmentIds.joinToString(",")}" else ""
+            val equip = if (context.equipmentIds.isNotEmpty()) " | equip ${
+                context.equipmentIds.joinToString(",")
+            }" else ""
 
             append(
                 " - ${context.id}: ${context.displayName}; muscles ${contextMuscleSummary(context)}; " +
@@ -606,7 +633,8 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         exampleContextMap: Map<String, ExampleContext>
     ): List<ExerciseSummary> {
         return exercises.mapNotNull { pack ->
-            val context = exampleContextMap[pack.exercise.exerciseExampleId] ?: return@mapNotNull null
+            val context =
+                exampleContextMap[pack.exercise.exerciseExampleId] ?: return@mapNotNull null
             if (context.id.isBlank() || context.displayName.isBlank() || context.muscles.isEmpty()) return@mapNotNull null
 
             val forceType = context.forceType.takeIf { it.isNotBlank() } ?: return@mapNotNull null
@@ -633,7 +661,8 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         val performedAt = DateTimeUtils.toLocalDateTime(training.createdAt)
 
         val exSummaries = exercises.mapNotNull { pack ->
-            val context = exampleContextMap[pack.exercise.exerciseExampleId] ?: return@mapNotNull null
+            val context =
+                exampleContextMap[pack.exercise.exerciseExampleId] ?: return@mapNotNull null
             if (context.id.isBlank() || context.displayName.isBlank() || context.muscles.isEmpty()) return@mapNotNull null
 
             val forceType = context.forceType.takeIf { it.isNotBlank() } ?: return@mapNotNull null
@@ -679,6 +708,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             val percentage: Int,
             val recoveryTimeHours: Int?
         )
+
         val rawShares = bundles.mapNotNull { pack ->
             val pct = pack.bundle.percentage
             val id = pack.muscle.id
@@ -966,7 +996,8 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             val confidence = clamp01(1.0 - spread)
 
             val alpha = 0.5 * (1.0 - confidence)
-            val blended = ((1 - alpha) * median + alpha * recentMedian).roundToInt().coerceAtLeast(1)
+            val blended =
+                ((1 - alpha) * median + alpha * recentMedian).roundToInt().coerceAtLeast(1)
 
             val lastDate = dates.last()
             val nextDue = lastDate.plus(blended, DateTimeUnit.DAY)
@@ -1054,6 +1085,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
                     CycleState.NONE -> 2
                 }
             }
+
             val cL = cycleRank(left)
             val cR = cycleRank(right)
             val cycleCmp = cL.compareTo(cR)
@@ -1064,6 +1096,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
                 val conflict = ctx.equipmentIds.any { it in usedEquipmentIds }
                 return if (conflict) 1 else 0
             }
+
             val eL = equipPenalty(left)
             val eR = equipPenalty(right)
             val equipCmp = eL.compareTo(eR)
@@ -1075,6 +1108,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
                 val preferred = preferredCategoryForMuscleNext(pm, trainings, session)
                 return if (preferred != null && ctx.category != preferred) 1 else 0
             }
+
             val pmL = prefMismatch(left)
             val pmR = prefMismatch(right)
             val pmCmp = pmL.compareTo(pmR)
@@ -1295,7 +1329,11 @@ internal class ExerciseExampleSuggestionPromptBuilder(
         return sortedValues[lo] * (1 - frac) + sortedValues[hi] * frac
     }
 
-    private fun quantileDouble(values: List<Double>, p: Double, alreadySorted: Boolean = false): Double {
+    private fun quantileDouble(
+        values: List<Double>,
+        p: Double,
+        alreadySorted: Boolean = false
+    ): Double {
         return if (alreadySorted) quantileDouble(values, p) else quantileDouble(values.sorted(), p)
     }
 
@@ -1398,11 +1436,13 @@ internal class ExerciseExampleSuggestionPromptBuilder(
                     deficit(compoundKey) > DEFICIT_EPS -> 0
                     else -> 1
                 }
+
                 isolationKey -> when {
                     stage < EARLY_STAGE_COMPOUND_LIMIT -> 1
                     deficit(isolationKey) > DEFICIT_EPS -> 0
                     else -> 1
                 }
+
                 else -> 1
             }
         }

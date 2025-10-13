@@ -11,8 +11,6 @@ internal class AiSuggestionsRepositoryImpl(
 ) : AiSuggestionsRepository {
 
     override suspend fun predictExerciseExample(): Result<ExerciseExampleSuggestion?> {
-        return runCatching { // todo migrate runCatching in ApiAgentClient
-            promptBuilder.suggest()
-        }
+        return promptBuilder.suggest()
     }
 }
