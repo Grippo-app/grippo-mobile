@@ -1,6 +1,7 @@
 package com.grippo.data.features.suggestions.prompt.exercise.example
 
 import com.grippo.ai.agent.AiAgentApi
+import com.grippo.core.error.provider.AppError
 import com.grippo.data.features.api.exercise.example.models.CategoryEnum
 import com.grippo.data.features.api.exercise.example.models.ExampleSortingEnum
 import com.grippo.data.features.api.exercise.example.models.ExerciseExampleValue
@@ -15,7 +16,6 @@ import com.grippo.database.models.ExerciseExamplePack
 import com.grippo.database.models.TrainingPack
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.entity.domain.equipment.toDomain
-import com.grippo.error.provider.AppError
 import com.grippo.platform.core.LocalAppLocale
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.DateTimeUnit

@@ -1,10 +1,10 @@
 package com.grippo.core.foundation
 
 import com.arkivanov.essenty.instancekeeper.InstanceKeeper
+import com.grippo.core.error.provider.ErrorProvider
 import com.grippo.core.foundation.internal.operation.OperationManager
 import com.grippo.core.foundation.models.BaseDirection
 import com.grippo.core.foundation.models.BaseLoader
-import com.grippo.error.provider.ErrorProvider
 import com.grippo.logger.AppLogger
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf

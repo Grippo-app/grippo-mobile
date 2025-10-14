@@ -62,6 +62,8 @@ include(":data-features:exercise-examples")
 
 include(":ui-core:foundation")
 include(":ui-core:state")
+include(":ui-core:error:error-provider-impl")
+include(":ui-core:error:error-provider")
 
 include(":ui-screen-features:screen-api")
 include(":ui-screen-features:authorization")
@@ -90,8 +92,6 @@ include(":common:logger")
 include(":common:calculation")
 include(":common:connectivity")
 include(":common:serialization")
-include(":common:error:error-provider-impl")
-include(":common:error:error-provider")
 include(":common:date-utils")
 include(":common:http-client")
 

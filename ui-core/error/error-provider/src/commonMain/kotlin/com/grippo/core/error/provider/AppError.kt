@@ -1,4 +1,4 @@
-package com.grippo.error.provider
+package com.grippo.core.error.provider
 
 public sealed class AppError(
     override val message: String?,

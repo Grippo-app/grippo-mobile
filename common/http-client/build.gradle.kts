@@ -11,7 +11,7 @@ kotlin {
             implementation(projects.common.platformCore)
             implementation(projects.common.logger)
             implementation(projects.common.serialization)
-            implementation(projects.common.error.errorProvider)
+            implementation(projects.uiCore.error.errorProvider)
 
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.logging)

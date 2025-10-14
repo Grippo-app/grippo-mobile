@@ -26,7 +26,7 @@ kotlin {
         implementation(projects.common.serialization)
         implementation(projects.common.httpClient)
         implementation(projects.common.dateUtils)
-        implementation(projects.common.error.errorProviderImpl)
+        implementation(projects.uiCore.error.errorProviderImpl)
 
         implementation(projects.dataServices.database)
         implementation(projects.dataServices.backend)

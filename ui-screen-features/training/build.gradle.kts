@@ -10,7 +10,7 @@ kotlin {
         implementation(projects.uiCore.foundation)
         implementation(projects.uiCore.state)
         implementation(projects.common.calculation)
-        implementation(projects.common.error.errorProvider)
+        implementation(projects.uiCore.error.errorProvider)
         implementation(projects.common.dateUtils)
         implementation(projects.designSystem.core)
         implementation(projects.designSystem.resources.provider)

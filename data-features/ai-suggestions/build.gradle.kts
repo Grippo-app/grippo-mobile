@@ -10,7 +10,7 @@ kotlin {
         implementation(projects.common.dateUtils)
         implementation(projects.common.serialization)
         implementation(projects.common.platformCore)
-        implementation(projects.common.error.errorProvider)
+        implementation(projects.uiCore.error.errorProvider)
 
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.dataServices.database)

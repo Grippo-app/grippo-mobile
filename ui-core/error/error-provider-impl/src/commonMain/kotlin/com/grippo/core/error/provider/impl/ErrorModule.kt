@@ -1,4 +1,4 @@
-package com.grippo.error.provider.impl
+package com.grippo.core.error.provider.impl
 
 import com.grippo.dialog.api.DialogModule
 import org.koin.core.annotation.ComponentScan

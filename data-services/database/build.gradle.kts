@@ -11,7 +11,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.common.platformCore)
             implementation(projects.common.logger)
-            implementation(projects.common.error.errorProvider)
+            implementation(projects.uiCore.error.errorProvider)
         }
     }
 }

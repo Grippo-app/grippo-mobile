@@ -7,7 +7,7 @@ plugins {
 kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.uiDialogFeatures.dialogApi)
-        implementation(projects.common.error.errorProvider)
+        implementation(projects.uiCore.error.errorProvider)
         implementation(projects.uiCore.state)
     }
 }

@@ -1,6 +1,6 @@
 package com.grippo.http.client.internal
 
-import com.grippo.error.provider.AppError
+import com.grippo.core.error.provider.AppError
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.plugins.HttpResponseValidator
