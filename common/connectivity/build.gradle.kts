@@ -8,6 +8,6 @@ plugins {
 kotlin {
     sourceSets.commonMain.dependencies {
         implementation(libs.kotlinx.coroutines.core)
-        implementation(projects.platformCore.context)
+        implementation(projects.toolkit.context)
     }
 }

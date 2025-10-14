@@ -9,7 +9,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.common.serialization)
-            implementation(projects.platformCore.httpClient)
+            implementation(projects.toolkit.httpClient)
             implementation(projects.common.logger)
             implementation(projects.dataServices.database)
 

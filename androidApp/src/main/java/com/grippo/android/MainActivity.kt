@@ -14,7 +14,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import com.arkivanov.decompose.retainedComponent
-import com.grippo.platform.theme.LocalAppTheme
+import com.grippo.toolkit.theme.LocalAppTheme
 import com.grippo.shared.root.RootComponent
 
 class MainActivity : ComponentActivity() {

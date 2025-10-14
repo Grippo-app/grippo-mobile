@@ -1,7 +1,7 @@
 package com.grippo.connectivity
 
 import com.grippo.connectivity.internal.DefaultConnectivity
-import com.grippo.platform.context.NativeContext
+import com.grippo.toolkit.context.NativeContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharedFlow

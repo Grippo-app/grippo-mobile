@@ -7,7 +7,7 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.platformCore.httpClient)
+            implementation(projects.toolkit.httpClient)
 
             implementation(libs.ktor.client.core)
 

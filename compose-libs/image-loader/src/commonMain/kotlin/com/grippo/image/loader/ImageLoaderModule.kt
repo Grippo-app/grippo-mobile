@@ -3,7 +3,7 @@ package com.grippo.image.loader
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
 import coil3.network.ktor3.KtorNetworkFetcherFactory
-import com.grippo.platform.http.client.HttpModule
+import com.grippo.toolkit.http.client.HttpModule
 import io.ktor.client.HttpClient
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module

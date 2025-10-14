@@ -9,7 +9,7 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.platformCore.context)
+            implementation(projects.toolkit.context)
             implementation(projects.common.logger)
             implementation(projects.uiCore.error.errorProvider)
         }

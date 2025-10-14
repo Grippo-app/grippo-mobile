@@ -16,7 +16,7 @@ import com.grippo.database.models.ExerciseExamplePack
 import com.grippo.database.models.TrainingPack
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.entity.domain.equipment.toDomain
-import com.grippo.platform.localization.LocalAppLocale
+import com.grippo.toolkit.localization.LocalAppLocale
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek

@@ -1,7 +1,7 @@
 package com.grippo.database
 
 import androidx.room.Room
-import com.grippo.platform.context.NativeContext
+import com.grippo.toolkit.context.NativeContext
 import kotlinx.coroutines.Dispatchers
 
 internal actual fun NativeContext.getDatabaseBuilder(): Database {

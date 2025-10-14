@@ -18,10 +18,10 @@ kotlin {
         implementation(projects.designSystem.resources.providerImpl)
         implementation(projects.designSystem.components)
 
-        implementation(projects.platformCore.context)
-        implementation(projects.platformCore.localization)
-        implementation(projects.platformCore.theme)
-        implementation(projects.platformCore.httpClient)
+        implementation(projects.toolkit.context)
+        implementation(projects.toolkit.localization)
+        implementation(projects.toolkit.theme)
+        implementation(projects.toolkit.httpClient)
 
         implementation(projects.common.logger)
         implementation(projects.common.connectivity)

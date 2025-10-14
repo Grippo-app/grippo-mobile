@@ -1,6 +1,6 @@
 package com.grippo.connectivity
 
-import com.grippo.platform.context.NativeContext
+import com.grippo.toolkit.context.NativeContext
 import kotlinx.coroutines.flow.Flow
 
 internal expect fun NativeContext.getConnectivityProvider(): ConnectivityProvider

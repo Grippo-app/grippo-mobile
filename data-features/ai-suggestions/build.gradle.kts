@@ -9,7 +9,7 @@ kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.common.dateUtils)
         implementation(projects.common.serialization)
-        implementation(projects.platformCore.localization)
+        implementation(projects.toolkit.localization)
         implementation(projects.uiCore.error.errorProvider)
 
         implementation(projects.dataFeatures.featureApi)

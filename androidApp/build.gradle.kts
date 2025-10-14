@@ -32,7 +32,7 @@ dependencies {
     implementation(projects.shared)
     implementation(projects.uiCore.foundation)
     implementation(projects.common.dateUtils)
-    implementation(projects.platformCore.theme)
+    implementation(projects.toolkit.theme)
     implementation(projects.designSystem.core)
 
     implementation(compose.foundation)
