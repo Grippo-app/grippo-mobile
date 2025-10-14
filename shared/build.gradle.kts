@@ -21,13 +21,15 @@ kotlin {
         implementation(projects.platformCore.context)
         implementation(projects.platformCore.localization)
         implementation(projects.platformCore.theme)
-        implementation(projects.uiCore.foundation)
-        implementation(projects.uiCore.state)
+        implementation(projects.platformCore.httpClient)
+
         implementation(projects.common.logger)
         implementation(projects.common.connectivity)
         implementation(projects.common.serialization)
-        implementation(projects.platformCore.httpClient)
         implementation(projects.common.dateUtils)
+
+        implementation(projects.uiCore.foundation)
+        implementation(projects.uiCore.state)
         implementation(projects.uiCore.error.errorProviderImpl)
 
         implementation(projects.dataServices.database)

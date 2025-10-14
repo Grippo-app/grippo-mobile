@@ -1,7 +1,7 @@
 plugins {
     id("android.library.convention")
     id("kotlin.multiplatform.convention")
-    id("compose.multiplatform.convention")
+//    id("compose.multiplatform.convention")
 }
 
 kotlin {
@@ -9,7 +9,7 @@ kotlin {
         implementation(projects.platformCore.httpClient)
 
 //        implementation(compose.foundation)
-        implementation(libs.coil.compose)
+//        implementation(libs.coil.compose)
         implementation(libs.coil.network.ktor)
     }
 }
