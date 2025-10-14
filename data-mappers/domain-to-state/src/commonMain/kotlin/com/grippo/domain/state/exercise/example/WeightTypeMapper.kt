@@ -1,7 +1,7 @@
 package com.grippo.domain.state.exercise.example
 
+import com.grippo.core.state.examples.WeightTypeEnumState
 import com.grippo.data.features.api.exercise.example.models.WeightTypeEnum
-import com.grippo.state.exercise.examples.WeightTypeEnumState
 
 public fun WeightTypeEnum.toState(): WeightTypeEnumState {
     return when (this) {

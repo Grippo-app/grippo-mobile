@@ -2,6 +2,13 @@ package com.grippo.training.recording
 
 import com.grippo.calculation.AnalyticsApi
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.formatters.IntensityFormatState
+import com.grippo.core.state.formatters.PercentageFormatState
+import com.grippo.core.state.formatters.RepetitionsFormatState
+import com.grippo.core.state.formatters.VolumeFormatState
+import com.grippo.core.state.stage.StageState
+import com.grippo.core.state.trainings.ExerciseState
+import com.grippo.core.state.trainings.TrainingMetrics
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.muscle.MuscleFeature
@@ -22,13 +29,6 @@ import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.muscles.toState
 import com.grippo.domain.state.training.toState
 import com.grippo.state.domain.training.toDomain
-import com.grippo.state.formatters.IntensityFormatState
-import com.grippo.state.formatters.PercentageFormatState
-import com.grippo.state.formatters.RepetitionsFormatState
-import com.grippo.state.formatters.VolumeFormatState
-import com.grippo.state.stage.StageState
-import com.grippo.state.trainings.ExerciseState
-import com.grippo.state.trainings.TrainingMetrics
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.FlowPreview

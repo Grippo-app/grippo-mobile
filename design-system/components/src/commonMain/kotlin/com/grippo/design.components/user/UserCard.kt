@@ -16,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.grippo.core.state.profile.UserState
+import com.grippo.core.state.profile.stubUser
 import com.grippo.date.utils.DateCompose
 import com.grippo.design.components.user.internal.OverviewCard
 import com.grippo.design.core.AppTokens
@@ -27,8 +29,6 @@ import com.grippo.design.resources.provider.icons.Gym
 import com.grippo.design.resources.provider.user_card_no_workouts_yet
 import com.grippo.design.resources.provider.user_card_value_in_a_row
 import com.grippo.design.resources.provider.user_card_value_workouts
-import com.grippo.state.profile.UserState
-import com.grippo.state.profile.stubUser
 
 @Immutable
 public sealed interface UserCardStyle {

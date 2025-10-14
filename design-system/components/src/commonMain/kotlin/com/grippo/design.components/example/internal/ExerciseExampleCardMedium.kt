@@ -20,6 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.grippo.core.state.examples.ExerciseExampleState
+import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.components.chip.Chip
@@ -38,8 +40,6 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.last_used_label
 import com.grippo.design.resources.provider.not_used_before
-import com.grippo.state.exercise.examples.ExerciseExampleState
-import com.grippo.state.exercise.examples.stubExerciseExample
 
 @Composable
 internal fun ExerciseExampleCardMedium(

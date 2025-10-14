@@ -1,6 +1,6 @@
 package com.grippo.authorization.registration
 
-import com.grippo.state.profile.ExperienceEnumState
+import com.grippo.core.state.profile.ExperienceEnumState
 
 internal interface RegistrationContract {
     fun toNameWithCredentials(email: String, password: String)

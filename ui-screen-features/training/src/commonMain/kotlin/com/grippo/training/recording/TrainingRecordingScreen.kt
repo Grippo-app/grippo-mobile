@@ -13,6 +13,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.examples.stubExerciseExample
+import com.grippo.core.state.formatters.UiText
+import com.grippo.core.state.muscles.stubMuscles
+import com.grippo.core.state.stage.StageState
+import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonSize
@@ -34,11 +39,6 @@ import com.grippo.design.resources.provider.edit_training_title
 import com.grippo.design.resources.provider.exercises
 import com.grippo.design.resources.provider.save_btn
 import com.grippo.design.resources.provider.statistics
-import com.grippo.state.exercise.examples.stubExerciseExample
-import com.grippo.state.formatters.UiText
-import com.grippo.state.muscles.stubMuscles
-import com.grippo.state.stage.StageState
-import com.grippo.state.trainings.stubTraining
 import com.grippo.training.recording.pages.ExercisesPage
 import com.grippo.training.recording.pages.StatisticsPage
 import kotlinx.collections.immutable.ImmutableSet

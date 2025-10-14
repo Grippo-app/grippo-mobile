@@ -18,6 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.formatters.EmailFormatState
+import com.grippo.core.state.formatters.PasswordFormatState
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonSize
@@ -37,8 +39,6 @@ import com.grippo.design.resources.provider.login_button_registration_label
 import com.grippo.design.resources.provider.login_description
 import com.grippo.design.resources.provider.login_title
 import com.grippo.design.resources.provider.or
-import com.grippo.state.formatters.EmailFormatState
-import com.grippo.state.formatters.PasswordFormatState
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 

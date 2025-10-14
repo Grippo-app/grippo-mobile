@@ -1,12 +1,12 @@
 package com.grippo.calculation.internal.training
 
-import com.grippo.state.formatters.IntensityFormatState
-import com.grippo.state.formatters.RepetitionsFormatState
-import com.grippo.state.formatters.VolumeFormatState
-import com.grippo.state.trainings.ExerciseState
-import com.grippo.state.trainings.IterationState
-import com.grippo.state.trainings.TrainingMetrics
-import com.grippo.state.trainings.TrainingState
+import com.grippo.core.state.formatters.IntensityFormatState
+import com.grippo.core.state.formatters.RepetitionsFormatState
+import com.grippo.core.state.formatters.VolumeFormatState
+import com.grippo.core.state.trainings.ExerciseState
+import com.grippo.core.state.trainings.IterationState
+import com.grippo.core.state.trainings.TrainingMetrics
+import com.grippo.core.state.trainings.TrainingState
 
 /**
  * Metrics aggregator for volume, repetitions, and intensity across sets, exercises, and sessions.

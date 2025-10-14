@@ -17,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.stage.StageState
+import com.grippo.core.state.trainings.stubExercises
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
@@ -33,8 +35,6 @@ import com.grippo.design.resources.provider.draft_training_alert_description_edi
 import com.grippo.design.resources.provider.draft_training_alert_title_add
 import com.grippo.design.resources.provider.draft_training_alert_title_edit
 import com.grippo.design.resources.provider.icons.QuestionMarkCircleOutline
-import com.grippo.state.stage.StageState
-import com.grippo.state.trainings.stubExercises
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 

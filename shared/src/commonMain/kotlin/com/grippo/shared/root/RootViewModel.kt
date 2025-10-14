@@ -2,9 +2,9 @@ package com.grippo.shared.root
 
 import com.grippo.connectivity.Connectivity
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.stage.StageState
 import com.grippo.data.features.api.authorization.AuthorizationFeature
 import com.grippo.design.components.connection.snackbar.ConnectionSnackbarState
-import com.grippo.state.stage.StageState
 import kotlinx.coroutines.flow.onEach
 
 public class RootViewModel(

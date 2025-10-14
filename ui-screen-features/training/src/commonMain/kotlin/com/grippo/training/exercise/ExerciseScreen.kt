@@ -16,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.examples.stubExerciseExample
+import com.grippo.core.state.trainings.stubExercise
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
@@ -36,8 +38,6 @@ import com.grippo.design.resources.provider.exercise_record
 import com.grippo.design.resources.provider.icons.Cancel
 import com.grippo.design.resources.provider.save_btn
 import com.grippo.design.resources.provider.sets_value
-import com.grippo.state.exercise.examples.stubExerciseExample
-import com.grippo.state.trainings.stubExercise
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 

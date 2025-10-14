@@ -2,6 +2,11 @@ package com.grippo.training.exercise
 
 import com.grippo.calculation.AnalyticsApi
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.formatters.RepetitionsFormatState
+import com.grippo.core.state.formatters.VolumeFormatState
+import com.grippo.core.state.trainings.ExerciseState
+import com.grippo.core.state.trainings.IterationFocus
+import com.grippo.core.state.trainings.IterationState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.design.resources.provider.providers.ColorProvider
@@ -9,11 +14,6 @@ import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
-import com.grippo.state.formatters.RepetitionsFormatState
-import com.grippo.state.formatters.VolumeFormatState
-import com.grippo.state.trainings.ExerciseState
-import com.grippo.state.trainings.IterationFocus
-import com.grippo.state.trainings.IterationState
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.onEach
 import kotlin.uuid.Uuid

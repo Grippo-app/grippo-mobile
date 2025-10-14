@@ -1,7 +1,7 @@
 package com.grippo.error.display
 
 import com.grippo.core.foundation.BaseViewModel
-import com.grippo.state.error.AppErrorState
+import com.grippo.core.state.error.AppErrorState
 
 public class ErrorDisplayViewModel(
     error: AppErrorState,

@@ -1,8 +1,8 @@
 package com.grippo.iteration.picker
 
 import androidx.compose.runtime.Immutable
-import com.grippo.state.trainings.IterationFocus
-import com.grippo.state.trainings.IterationState
+import com.grippo.core.state.trainings.IterationFocus
+import com.grippo.core.state.trainings.IterationState
 import kotlinx.collections.immutable.ImmutableList
 
 @Immutable

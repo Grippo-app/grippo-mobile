@@ -1,10 +1,10 @@
 package com.grippo.drart.training
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.stage.StageState
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.SetDraftTraining
 import com.grippo.domain.state.training.toState
-import com.grippo.state.stage.StageState
 import kotlinx.coroutines.flow.onEach
 
 public class DraftTrainingViewModel(

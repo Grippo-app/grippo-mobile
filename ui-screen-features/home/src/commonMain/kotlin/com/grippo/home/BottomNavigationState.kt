@@ -3,6 +3,7 @@ package com.grippo.home
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.grippo.core.state.formatters.UiText
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.Gym
@@ -12,7 +13,6 @@ import com.grippo.design.resources.provider.profile
 import com.grippo.design.resources.provider.statistics
 import com.grippo.design.resources.provider.trainings
 import com.grippo.screen.api.BottomNavigationRouter
-import com.grippo.state.formatters.UiText
 
 @Immutable
 public data class BottomNavigationState(

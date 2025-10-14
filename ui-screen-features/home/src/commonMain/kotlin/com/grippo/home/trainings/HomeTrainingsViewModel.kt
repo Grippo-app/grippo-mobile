@@ -1,6 +1,8 @@
 package com.grippo.home.trainings
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.formatters.DateFormatState
+import com.grippo.core.state.menu.MenuItemState
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.date.utils.DateRange
@@ -14,8 +16,6 @@ import com.grippo.domain.state.training.toState
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
 import com.grippo.home.trainings.HomeTrainingsDirection.Back
 import com.grippo.home.trainings.HomeTrainingsDirection.EditTraining
-import com.grippo.state.formatters.DateFormatState
-import com.grippo.state.menu.MenuItemState
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map

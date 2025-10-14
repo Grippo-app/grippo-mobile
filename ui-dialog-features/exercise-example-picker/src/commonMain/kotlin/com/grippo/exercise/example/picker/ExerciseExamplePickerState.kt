@@ -1,10 +1,10 @@
 package com.grippo.exercise.example.picker
 
 import androidx.compose.runtime.Immutable
-import com.grippo.state.exercise.examples.ExerciseExampleState
-import com.grippo.state.filters.FilterValue
-import com.grippo.state.muscles.MuscleGroupState
-import com.grippo.state.muscles.MuscleRepresentationState
+import com.grippo.core.state.examples.ExerciseExampleState
+import com.grippo.core.state.filters.FilterValue
+import com.grippo.core.state.muscles.MuscleGroupState
+import com.grippo.core.state.muscles.MuscleRepresentationState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 

@@ -1,6 +1,6 @@
 package com.grippo.shared.root
 
-import com.grippo.state.stage.StageState
+import com.grippo.core.state.stage.StageState
 
 public interface RootContract {
     public fun onClose()

@@ -4,15 +4,15 @@ import androidx.compose.ui.graphics.Color
 import com.grippo.calculation.models.DistributionBreakdown
 import com.grippo.calculation.models.DistributionSlice
 import com.grippo.calculation.models.DistributionWeighting
+import com.grippo.core.state.datetime.PeriodState
+import com.grippo.core.state.examples.CategoryEnumState
+import com.grippo.core.state.examples.ForceTypeEnumState
+import com.grippo.core.state.examples.WeightTypeEnumState
+import com.grippo.core.state.trainings.ExerciseState
+import com.grippo.core.state.trainings.TrainingState
 import com.grippo.date.utils.contains
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
-import com.grippo.state.datetime.PeriodState
-import com.grippo.state.exercise.examples.CategoryEnumState
-import com.grippo.state.exercise.examples.ForceTypeEnumState
-import com.grippo.state.exercise.examples.WeightTypeEnumState
-import com.grippo.state.trainings.ExerciseState
-import com.grippo.state.trainings.TrainingState
 
 internal class DistributionCalculator(
     private val stringProvider: StringProvider,

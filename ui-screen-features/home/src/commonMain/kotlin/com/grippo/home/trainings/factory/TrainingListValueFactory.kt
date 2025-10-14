@@ -1,8 +1,8 @@
 package com.grippo.home.trainings.factory
 
+import com.grippo.core.state.trainings.TrainingListValue
+import com.grippo.core.state.trainings.TrainingPosition
 import com.grippo.design.components.timeline.TimeLinePointStyle
-import com.grippo.state.trainings.TrainingListValue
-import com.grippo.state.trainings.TrainingPosition
 
 internal fun TrainingListValue.timelineStyle(): TimeLinePointStyle = when (this) {
     is TrainingListValue.DateTime -> when (position) {

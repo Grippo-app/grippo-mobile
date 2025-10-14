@@ -3,19 +3,19 @@ package com.grippo.calculation.internal.muscle
 import androidx.compose.ui.graphics.Color
 import com.grippo.calculation.models.MuscleLoadBreakdown
 import com.grippo.calculation.models.MuscleLoadEntry
+import com.grippo.core.state.datetime.PeriodState
+import com.grippo.core.state.examples.ExerciseExampleState
+import com.grippo.core.state.formatters.PercentageFormatState
+import com.grippo.core.state.formatters.UiText
+import com.grippo.core.state.muscles.MuscleEnumState
+import com.grippo.core.state.muscles.MuscleGroupEnumState
+import com.grippo.core.state.muscles.MuscleGroupState
+import com.grippo.core.state.muscles.MuscleRepresentationState
+import com.grippo.core.state.trainings.ExerciseState
+import com.grippo.core.state.trainings.TrainingState
 import com.grippo.date.utils.contains
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
-import com.grippo.state.datetime.PeriodState
-import com.grippo.state.exercise.examples.ExerciseExampleState
-import com.grippo.state.formatters.PercentageFormatState
-import com.grippo.state.formatters.UiText
-import com.grippo.state.muscles.MuscleEnumState
-import com.grippo.state.muscles.MuscleGroupEnumState
-import com.grippo.state.muscles.MuscleGroupState
-import com.grippo.state.muscles.MuscleRepresentationState
-import com.grippo.state.trainings.ExerciseState
-import com.grippo.state.trainings.TrainingState
 
 internal data class MuscleLoadBreakdowns(
     val perMuscle: MuscleLoadBreakdown,

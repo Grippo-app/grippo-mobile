@@ -15,6 +15,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
+import com.grippo.core.state.trainings.ExerciseState
+import com.grippo.core.state.trainings.stubExercise
 import com.grippo.design.components.chip.ChipSize
 import com.grippo.design.components.chip.IntensityChip
 import com.grippo.design.components.chip.IntensityChipStyle
@@ -32,8 +34,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.sets_label
-import com.grippo.state.trainings.ExerciseState
-import com.grippo.state.trainings.stubExercise
 
 @Composable
 internal fun ExerciseCardMedium(

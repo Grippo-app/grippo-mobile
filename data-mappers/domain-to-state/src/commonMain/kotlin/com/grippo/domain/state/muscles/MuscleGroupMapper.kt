@@ -1,8 +1,8 @@
 package com.grippo.domain.state.muscles
 
+import com.grippo.core.state.muscles.MuscleGroupState
+import com.grippo.core.state.muscles.MuscleRepresentationState
 import com.grippo.data.features.api.muscle.models.MuscleGroup
-import com.grippo.state.muscles.MuscleGroupState
-import com.grippo.state.muscles.MuscleRepresentationState
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 

@@ -1,8 +1,8 @@
 package com.grippo.domain.state.exercise.example
 
+import com.grippo.core.state.examples.ExerciseExampleValueState
 import com.grippo.data.features.api.exercise.example.models.ExerciseExampleValue
 import com.grippo.domain.state.user.toState
-import com.grippo.state.exercise.examples.ExerciseExampleValueState
 
 public fun ExerciseExampleValue.toState(): ExerciseExampleValueState {
     return ExerciseExampleValueState(

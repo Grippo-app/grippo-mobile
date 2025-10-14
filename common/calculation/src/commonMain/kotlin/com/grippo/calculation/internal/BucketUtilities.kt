@@ -2,9 +2,9 @@ package com.grippo.calculation.internal
 
 import com.grippo.calculation.models.Bucket
 import com.grippo.calculation.models.BucketScale
+import com.grippo.core.state.datetime.PeriodState
+import com.grippo.core.state.trainings.TrainingState
 import com.grippo.date.utils.DateRange
-import com.grippo.state.datetime.PeriodState
-import com.grippo.state.trainings.TrainingState
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime

@@ -16,11 +16,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import com.grippo.core.state.equipments.EquipmentState
+import com.grippo.core.state.equipments.stubEquipments
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.state.equipments.EquipmentState
-import com.grippo.state.equipments.stubEquipments
 
 @Composable
 public fun EquipmentCard(

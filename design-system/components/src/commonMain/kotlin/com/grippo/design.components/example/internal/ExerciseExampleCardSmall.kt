@@ -15,6 +15,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextOverflow
+import com.grippo.core.state.examples.ExerciseExampleState
+import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.design.components.chip.Chip
 import com.grippo.design.components.chip.ChipLabel
 import com.grippo.design.components.chip.ChipSize
@@ -28,8 +30,6 @@ import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.state.exercise.examples.ExerciseExampleState
-import com.grippo.state.exercise.examples.stubExerciseExample
 
 @Composable
 internal fun ExerciseExampleCardSmall(

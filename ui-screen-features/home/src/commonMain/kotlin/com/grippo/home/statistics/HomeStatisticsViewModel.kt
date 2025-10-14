@@ -2,6 +2,7 @@ package com.grippo.home.statistics
 
 import com.grippo.calculation.AnalyticsApi
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.datetime.PeriodState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.muscle.MuscleFeature
@@ -16,7 +17,6 @@ import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.muscles.toState
 import com.grippo.domain.state.training.toState
-import com.grippo.state.datetime.PeriodState
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged

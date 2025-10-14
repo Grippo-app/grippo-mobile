@@ -6,14 +6,14 @@ import com.grippo.calculation.internal.deriveScale
 import com.grippo.calculation.models.BucketScale
 import com.grippo.calculation.models.Metric
 import com.grippo.calculation.models.MuscleLoadMatrix
+import com.grippo.core.state.datetime.PeriodState
+import com.grippo.core.state.examples.ExerciseExampleState
+import com.grippo.core.state.muscles.MuscleEnumState
+import com.grippo.core.state.muscles.MuscleGroupState
+import com.grippo.core.state.muscles.MuscleRepresentationState
+import com.grippo.core.state.trainings.TrainingState
 import com.grippo.date.utils.contains
 import com.grippo.design.resources.provider.providers.StringProvider
-import com.grippo.state.datetime.PeriodState
-import com.grippo.state.exercise.examples.ExerciseExampleState
-import com.grippo.state.muscles.MuscleEnumState
-import com.grippo.state.muscles.MuscleGroupState
-import com.grippo.state.muscles.MuscleRepresentationState
-import com.grippo.state.trainings.TrainingState
 
 internal class TemporalHeatmapCalculator(
     private val stringProvider: StringProvider,

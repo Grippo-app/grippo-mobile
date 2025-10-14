@@ -1,7 +1,7 @@
 package com.grippo.exercise.example.picker
 
 import com.grippo.core.foundation.models.BaseDirection
-import com.grippo.state.exercise.examples.ExerciseExampleState
+import com.grippo.core.state.examples.ExerciseExampleState
 
 public sealed interface ExerciseExamplePickerDirection : BaseDirection {
     public data class BackWithResult(val value: ExerciseExampleState) :

@@ -1,7 +1,7 @@
 package com.grippo.state.domain.training
 
+import com.grippo.core.state.trainings.TrainingState
 import com.grippo.data.features.api.training.models.SetTraining
-import com.grippo.state.trainings.TrainingState
 import kotlinx.collections.immutable.toPersistentList
 
 public fun List<TrainingState>.toDomain(): List<SetTraining> {

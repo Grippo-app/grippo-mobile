@@ -61,6 +61,7 @@ include(":data-features:trainings")
 include(":data-features:exercise-examples")
 
 include(":ui-core:foundation")
+include(":ui-core:state")
 
 include(":ui-screen-features:screen-api")
 include(":ui-screen-features:authorization")
@@ -86,7 +87,6 @@ include(":ui-dialog-features:menu-picker")
 
 include(":common:platform-core")
 include(":common:logger")
-include(":common:state")
 include(":common:calculation")
 include(":common:connectivity")
 include(":common:serialization")

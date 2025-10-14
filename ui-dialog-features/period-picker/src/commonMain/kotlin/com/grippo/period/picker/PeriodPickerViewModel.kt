@@ -1,14 +1,14 @@
 package com.grippo.period.picker
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.datetime.PeriodState
+import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.design.resources.provider.select_end_date
 import com.grippo.design.resources.provider.select_start_date
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
-import com.grippo.state.datetime.PeriodState
-import com.grippo.state.formatters.DateFormatState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 

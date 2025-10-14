@@ -3,12 +3,12 @@ package com.grippo.design.components.training
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
+import com.grippo.core.state.trainings.IterationState
+import com.grippo.core.state.trainings.stubIteration
 import com.grippo.design.components.training.internal.IterationCardEditable
 import com.grippo.design.components.training.internal.IterationCardSmallView
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.state.trainings.IterationState
-import com.grippo.state.trainings.stubIteration
 
 @Immutable
 public sealed interface IterationCardStyle {

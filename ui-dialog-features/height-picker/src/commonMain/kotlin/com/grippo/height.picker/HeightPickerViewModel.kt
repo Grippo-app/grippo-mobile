@@ -1,7 +1,7 @@
 package com.grippo.height.picker
 
 import com.grippo.core.foundation.BaseViewModel
-import com.grippo.state.formatters.HeightFormatState
+import com.grippo.core.state.formatters.HeightFormatState
 
 public class HeightPickerViewModel(
     initial: HeightFormatState

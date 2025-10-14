@@ -2,6 +2,8 @@ package com.grippo.training.completed
 
 import com.grippo.calculation.AnalyticsApi
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.stage.StageState
+import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.SetTraining
@@ -14,8 +16,6 @@ import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState
 import com.grippo.domain.state.training.transformation.toTrainingListValues
 import com.grippo.state.domain.training.toDomain
-import com.grippo.state.stage.StageState
-import com.grippo.state.trainings.ExerciseState
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.LocalDateTime
 

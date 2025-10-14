@@ -1,16 +1,16 @@
 package com.grippo.dialog.api
 
+import com.grippo.core.state.datetime.PeriodState
+import com.grippo.core.state.error.AppErrorState
+import com.grippo.core.state.examples.ExerciseExampleState
+import com.grippo.core.state.filters.FilterValue
+import com.grippo.core.state.formatters.DateFormatState
+import com.grippo.core.state.formatters.HeightFormatState
+import com.grippo.core.state.formatters.WeightFormatState
+import com.grippo.core.state.menu.MenuItemState
+import com.grippo.core.state.trainings.IterationFocus
+import com.grippo.core.state.trainings.IterationState
 import com.grippo.date.utils.DateRange
-import com.grippo.state.datetime.PeriodState
-import com.grippo.state.error.AppErrorState
-import com.grippo.state.exercise.examples.ExerciseExampleState
-import com.grippo.state.filters.FilterValue
-import com.grippo.state.formatters.DateFormatState
-import com.grippo.state.formatters.HeightFormatState
-import com.grippo.state.formatters.WeightFormatState
-import com.grippo.state.menu.MenuItemState
-import com.grippo.state.trainings.IterationFocus
-import com.grippo.state.trainings.IterationState
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 

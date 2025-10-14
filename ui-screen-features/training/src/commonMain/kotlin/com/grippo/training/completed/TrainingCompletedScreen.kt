@@ -33,6 +33,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.trainings.TrainingListValue
+import com.grippo.core.state.trainings.TrainingListValue.Companion.exercise
+import com.grippo.core.state.trainings.TrainingListValue.Companion.shape
+import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
@@ -49,10 +53,6 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.complete
 import com.grippo.design.resources.provider.workout_saved
 import com.grippo.domain.state.training.transformation.toTrainingListValues
-import com.grippo.state.trainings.TrainingListValue
-import com.grippo.state.trainings.TrainingListValue.Companion.exercise
-import com.grippo.state.trainings.TrainingListValue.Companion.shape
-import com.grippo.state.trainings.stubTraining
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 

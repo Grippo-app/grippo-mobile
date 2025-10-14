@@ -1,6 +1,6 @@
 package com.grippo.filter.picker
 
-import com.grippo.state.filters.FilterValue
+import com.grippo.core.state.filters.FilterValue
 
 internal interface FilterPickerContract {
     fun onItemClick(value: FilterValue)

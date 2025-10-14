@@ -14,7 +14,7 @@ kotlin {
         implementation(projects.composeLibs.chart)
         implementation(projects.uiScreenFeatures.screenApi)
         implementation(projects.common.dateUtils)
-        implementation(projects.common.state)
+        implementation(projects.uiCore.state)
         implementation(projects.common.calculation)
 
         implementation(compose.foundation)

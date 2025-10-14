@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.grippo.core.state.formatters.UiText
 import com.grippo.design.components.tab.Tab
 import com.grippo.design.components.tab.TabItem
 import com.grippo.design.core.AppTokens
@@ -17,7 +18,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.icons.NavArrowDown
 import com.grippo.home.BottomBarMenu
-import com.grippo.state.formatters.UiText
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 

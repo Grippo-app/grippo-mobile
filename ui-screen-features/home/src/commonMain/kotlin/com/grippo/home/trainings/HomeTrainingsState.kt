@@ -1,6 +1,7 @@
 package com.grippo.home.trainings
 
 import androidx.compose.runtime.Immutable
+import com.grippo.core.state.trainings.TrainingListValue
 import com.grippo.date.utils.DateRange
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.resources.provider.Res
@@ -8,7 +9,6 @@ import com.grippo.design.resources.provider.delete_btn
 import com.grippo.design.resources.provider.edit_btn
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.design.resources.provider.selected
-import com.grippo.state.trainings.TrainingListValue
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 

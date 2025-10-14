@@ -6,8 +6,8 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
-import com.grippo.state.trainings.IterationFocus
-import com.grippo.state.trainings.IterationState
+import com.grippo.core.state.trainings.IterationFocus
+import com.grippo.core.state.trainings.IterationState
 
 public class IterationPickerComponent(
     componentContext: ComponentContext,

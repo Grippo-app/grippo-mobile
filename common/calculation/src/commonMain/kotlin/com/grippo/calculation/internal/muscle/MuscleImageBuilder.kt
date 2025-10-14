@@ -4,13 +4,13 @@ import androidx.compose.ui.graphics.Color
 import com.grippo.calculation.models.MuscleColorSource
 import com.grippo.calculation.models.MuscleImages
 import com.grippo.calculation.models.MuscleLoadBreakdown
+import com.grippo.core.state.muscles.MuscleEnumState
+import com.grippo.core.state.muscles.MuscleGroupState
+import com.grippo.core.state.muscles.MuscleRepresentationState
 import com.grippo.design.resources.provider.muscles.MuscleColorPreset
 import com.grippo.design.resources.provider.muscles.fullBack
 import com.grippo.design.resources.provider.muscles.fullFront
 import com.grippo.design.resources.provider.providers.ColorProvider
-import com.grippo.state.muscles.MuscleEnumState
-import com.grippo.state.muscles.MuscleGroupState
-import com.grippo.state.muscles.MuscleRepresentationState
 
 internal class MuscleImageBuilder(
     private val colorProvider: ColorProvider,

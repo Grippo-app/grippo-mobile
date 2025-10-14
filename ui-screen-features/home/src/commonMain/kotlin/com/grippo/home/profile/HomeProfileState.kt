@@ -3,6 +3,7 @@ package com.grippo.home.profile
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.grippo.core.state.profile.UserState
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.activity
@@ -13,7 +14,6 @@ import com.grippo.design.resources.provider.icons.Waist
 import com.grippo.design.resources.provider.profile_menu_excluded_muscles
 import com.grippo.design.resources.provider.profile_menu_missing_equipment
 import com.grippo.design.resources.provider.settings
-import com.grippo.state.profile.UserState
 
 @Immutable
 internal data class HomeProfileState(

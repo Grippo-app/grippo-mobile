@@ -21,13 +21,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
+import com.grippo.core.state.formatters.UiText
 import com.grippo.design.components.chip.internal.resolveChipStyle
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.icons.Weight
-import com.grippo.state.formatters.UiText
 
 @Stable
 public sealed interface ChipLabel {

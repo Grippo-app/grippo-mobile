@@ -1,8 +1,8 @@
 package com.grippo.height.picker
 
 import androidx.compose.runtime.Immutable
-import com.grippo.state.formatters.HeightFormatState
-import com.grippo.state.formatters.HeightFormatState.Companion.HeightLimitation
+import com.grippo.core.state.formatters.HeightFormatState
+import com.grippo.core.state.formatters.HeightFormatState.Companion.HeightLimitation
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 

@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.design.components.chart.MuscleLoadChart
 import com.grippo.design.components.chip.Chip
 import com.grippo.design.components.chip.ChipLabel
@@ -32,7 +33,6 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.muscles
 import com.grippo.design.resources.provider.required_equipment
-import com.grippo.state.exercise.examples.stubExerciseExample
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 

@@ -1,7 +1,7 @@
 package com.grippo.state.domain.training
 
+import com.grippo.core.state.trainings.IterationState
 import com.grippo.data.features.api.training.models.SetIteration
-import com.grippo.state.trainings.IterationState
 import kotlinx.collections.immutable.toPersistentList
 
 public fun List<IterationState>.toDomain(): List<SetIteration> {

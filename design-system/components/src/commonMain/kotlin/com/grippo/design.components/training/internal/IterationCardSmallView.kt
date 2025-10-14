@@ -9,11 +9,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.grippo.core.state.trainings.IterationState
+import com.grippo.core.state.trainings.stubIteration
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.state.trainings.IterationState
-import com.grippo.state.trainings.stubIteration
 
 @Composable
 internal fun IterationCardSmallView(

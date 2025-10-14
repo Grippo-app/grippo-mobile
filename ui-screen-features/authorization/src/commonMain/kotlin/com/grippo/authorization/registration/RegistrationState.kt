@@ -1,7 +1,7 @@
 package com.grippo.authorization.registration
 
 import androidx.compose.runtime.Immutable
-import com.grippo.state.profile.ExperienceEnumState
+import com.grippo.core.state.profile.ExperienceEnumState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 

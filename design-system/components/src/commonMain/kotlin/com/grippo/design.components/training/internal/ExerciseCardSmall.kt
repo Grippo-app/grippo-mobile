@@ -13,6 +13,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
+import com.grippo.core.state.trainings.ExerciseState
+import com.grippo.core.state.trainings.stubExercise
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
 import com.grippo.design.components.modifiers.scalableClick
@@ -21,8 +23,6 @@ import com.grippo.design.components.training.IterationCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.state.trainings.ExerciseState
-import com.grippo.state.trainings.stubExercise
 
 @Composable
 internal fun ExerciseCardSmall(

@@ -1,9 +1,9 @@
 package com.grippo.domain.state.exercise.example
 
+import com.grippo.core.state.examples.ExerciseExampleBundleState
+import com.grippo.core.state.formatters.PercentageFormatState
 import com.grippo.data.features.api.exercise.example.models.ExerciseExampleBundle
 import com.grippo.domain.state.muscles.toState
-import com.grippo.state.exercise.examples.ExerciseExampleBundleState
-import com.grippo.state.formatters.PercentageFormatState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 

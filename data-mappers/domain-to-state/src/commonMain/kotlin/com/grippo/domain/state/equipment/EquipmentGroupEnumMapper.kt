@@ -1,7 +1,7 @@
 package com.grippo.domain.state.equipment
 
+import com.grippo.core.state.equipments.EquipmentGroupEnumState
 import com.grippo.data.features.api.equipment.models.EquipmentGroupEnum
-import com.grippo.state.equipments.EquipmentGroupEnumState
 
 public fun EquipmentGroupEnum.toState(): EquipmentGroupEnumState {
     return when (this) {

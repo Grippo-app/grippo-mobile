@@ -1,6 +1,7 @@
 package com.grippo.exercise.example.picker
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.filters.FilterValue
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.UserExerciseExamplesUseCase
 import com.grippo.data.features.api.exercise.example.models.ExamplePage
@@ -14,7 +15,6 @@ import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.muscles.toState
 import com.grippo.state.domain.example.toDomain
-import com.grippo.state.filters.FilterValue
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull

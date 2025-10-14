@@ -1,7 +1,7 @@
 package com.grippo.menu.picker
 
 import androidx.compose.runtime.Immutable
-import com.grippo.state.menu.MenuItemState
+import com.grippo.core.state.menu.MenuItemState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 

@@ -7,7 +7,7 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.models.ResultKeys
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
-import com.grippo.state.trainings.ExerciseState
+import com.grippo.core.state.trainings.ExerciseState
 
 internal class ExerciseComponent(
     componentContext: ComponentContext,

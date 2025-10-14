@@ -1,8 +1,8 @@
 package com.grippo.screen.api
 
 import com.grippo.core.foundation.models.BaseRouter
-import com.grippo.state.stage.StageState
-import com.grippo.state.trainings.ExerciseState
+import com.grippo.core.state.stage.StageState
+import com.grippo.core.state.trainings.ExerciseState
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 

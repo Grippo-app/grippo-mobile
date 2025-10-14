@@ -6,12 +6,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.grippo.core.state.examples.ExerciseExampleState
+import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.design.components.example.internal.ExerciseExampleCardMedium
 import com.grippo.design.components.example.internal.ExerciseExampleCardSmall
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.state.exercise.examples.ExerciseExampleState
-import com.grippo.state.exercise.examples.stubExerciseExample
 
 @Immutable
 public sealed interface ExerciseExampleCardStyle {

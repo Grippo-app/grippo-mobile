@@ -4,14 +4,14 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.grippo.core.state.muscles.MuscleGroupEnumState
+import com.grippo.core.state.muscles.MuscleGroupState
+import com.grippo.core.state.muscles.MuscleRepresentationState
 import com.grippo.design.resources.provider.muscles.MuscleColorPreset
 import com.grippo.design.resources.provider.muscles.bodyBack
 import com.grippo.design.resources.provider.muscles.bodyFront
 import com.grippo.design.resources.provider.muscles.bodySplit
 import com.grippo.design.resources.provider.muscles.legsSplit
-import com.grippo.state.muscles.MuscleGroupEnumState
-import com.grippo.state.muscles.MuscleGroupState
-import com.grippo.state.muscles.MuscleRepresentationState
 
 @Composable
 public fun MusclesImage(

@@ -1,7 +1,7 @@
 package com.grippo.domain.state.user
 
+import com.grippo.core.state.profile.ExperienceEnumState
 import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
-import com.grippo.state.profile.ExperienceEnumState
 
 public fun ExperienceEnum.toState(): ExperienceEnumState {
     return when (this) {

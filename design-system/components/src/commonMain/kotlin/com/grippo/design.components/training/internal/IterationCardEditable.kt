@@ -14,12 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.grippo.core.state.trainings.IterationState
+import com.grippo.core.state.trainings.stubIteration
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.state.trainings.IterationState
-import com.grippo.state.trainings.stubIteration
 
 @Composable
 internal fun IterationCardEditable(

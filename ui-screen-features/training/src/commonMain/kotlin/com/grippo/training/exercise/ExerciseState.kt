@@ -1,8 +1,8 @@
 package com.grippo.training.exercise
 
 import androidx.compose.runtime.Immutable
-import com.grippo.state.exercise.examples.ExerciseExampleState
-import com.grippo.state.trainings.ExerciseState
+import com.grippo.core.state.examples.ExerciseExampleState
+import com.grippo.core.state.trainings.ExerciseState
 
 @Immutable
 internal data class ExerciseState(

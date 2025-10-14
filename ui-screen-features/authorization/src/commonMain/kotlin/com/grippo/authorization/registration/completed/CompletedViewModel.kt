@@ -1,13 +1,13 @@
 package com.grippo.authorization.registration.completed
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.profile.ExperienceEnumState
 import com.grippo.data.features.api.authorization.RegisterUseCase
 import com.grippo.data.features.api.authorization.models.SetRegistration
 import com.grippo.data.features.api.user.UserFeature
 import com.grippo.data.features.api.user.models.User
 import com.grippo.domain.state.user.toState
 import com.grippo.state.domain.user.toDomain
-import com.grippo.state.profile.ExperienceEnumState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.onEach
 

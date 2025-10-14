@@ -20,7 +20,7 @@ kotlin {
 
         implementation(projects.common.platformCore)
         implementation(projects.uiCore.foundation)
-        implementation(projects.common.state)
+        implementation(projects.uiCore.state)
         implementation(projects.common.logger)
         implementation(projects.common.connectivity)
         implementation(projects.common.serialization)

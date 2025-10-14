@@ -3,12 +3,12 @@ package com.grippo.design.components.training
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
+import com.grippo.core.state.trainings.ExerciseState
+import com.grippo.core.state.trainings.stubExercise
 import com.grippo.design.components.training.internal.ExerciseCardMedium
 import com.grippo.design.components.training.internal.ExerciseCardSmall
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.state.trainings.ExerciseState
-import com.grippo.state.trainings.stubExercise
 
 @Immutable
 public sealed interface ExerciseCardStyle {

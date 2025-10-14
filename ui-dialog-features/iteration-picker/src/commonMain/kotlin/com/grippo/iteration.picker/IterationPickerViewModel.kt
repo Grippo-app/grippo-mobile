@@ -1,10 +1,10 @@
 package com.grippo.iteration.picker
 
 import com.grippo.core.foundation.BaseViewModel
-import com.grippo.state.formatters.RepetitionsFormatState
-import com.grippo.state.formatters.VolumeFormatState
-import com.grippo.state.trainings.IterationFocus
-import com.grippo.state.trainings.IterationState
+import com.grippo.core.state.formatters.RepetitionsFormatState
+import com.grippo.core.state.formatters.VolumeFormatState
+import com.grippo.core.state.trainings.IterationFocus
+import com.grippo.core.state.trainings.IterationState
 import kotlinx.collections.immutable.toPersistentList
 
 public class IterationPickerViewModel(

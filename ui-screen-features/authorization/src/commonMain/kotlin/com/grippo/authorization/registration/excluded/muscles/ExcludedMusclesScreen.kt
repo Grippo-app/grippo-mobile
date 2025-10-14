@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.muscles.stubMuscles
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
@@ -32,7 +33,6 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.continue_btn
 import com.grippo.design.resources.provider.registration_muscles_description
 import com.grippo.design.resources.provider.registration_muscles_title
-import com.grippo.state.muscles.stubMuscles
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf

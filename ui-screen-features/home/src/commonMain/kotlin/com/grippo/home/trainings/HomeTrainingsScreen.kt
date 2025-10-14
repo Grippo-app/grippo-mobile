@@ -16,6 +16,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.trainings.TrainingListValue
+import com.grippo.core.state.trainings.TrainingListValue.Companion.exercise
+import com.grippo.core.state.trainings.TrainingListValue.Companion.shape
+import com.grippo.core.state.trainings.stubTraining
 import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.components.button.Button
@@ -36,10 +40,6 @@ import com.grippo.design.resources.provider.icons.Menu
 import com.grippo.design.resources.provider.trainings
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
 import com.grippo.home.trainings.factory.timelineStyle
-import com.grippo.state.trainings.TrainingListValue
-import com.grippo.state.trainings.TrainingListValue.Companion.exercise
-import com.grippo.state.trainings.TrainingListValue.Companion.shape
-import com.grippo.state.trainings.stubTraining
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf

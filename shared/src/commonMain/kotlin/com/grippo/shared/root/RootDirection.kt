@@ -1,7 +1,7 @@
 package com.grippo.shared.root
 
 import com.grippo.core.foundation.models.BaseDirection
-import com.grippo.state.stage.StageState
+import com.grippo.core.state.stage.StageState
 
 public sealed interface RootDirection : BaseDirection {
     public data object Login : RootDirection

@@ -1,8 +1,8 @@
 package com.grippo.weight.picker
 
 import androidx.compose.runtime.Immutable
-import com.grippo.state.formatters.WeightFormatState
-import com.grippo.state.formatters.WeightFormatState.Companion.WeightLimitation
+import com.grippo.core.state.formatters.WeightFormatState
+import com.grippo.core.state.formatters.WeightFormatState.Companion.WeightLimitation
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 

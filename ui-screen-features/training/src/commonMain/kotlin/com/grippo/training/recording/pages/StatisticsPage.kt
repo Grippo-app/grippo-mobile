@@ -15,6 +15,8 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.grippo.core.state.stage.StageState
+import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.chart.ChartCard
 import com.grippo.design.components.chart.DistributionPieChart
 import com.grippo.design.components.chart.MetricBarChart
@@ -34,8 +36,6 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.chart_title_exercise_volume
 import com.grippo.design.resources.provider.chart_title_muscle_load
 import com.grippo.design.resources.provider.no_data_yet
-import com.grippo.state.stage.StageState
-import com.grippo.state.trainings.stubTraining
 import com.grippo.training.recording.RecordingTab
 import com.grippo.training.recording.TrainingRecordingContract
 import com.grippo.training.recording.TrainingRecordingScreen

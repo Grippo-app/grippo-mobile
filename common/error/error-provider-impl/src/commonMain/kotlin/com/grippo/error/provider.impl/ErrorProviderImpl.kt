@@ -1,10 +1,10 @@
 package com.grippo.error.provider.impl
 
+import com.grippo.core.state.error.AppErrorState
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.error.provider.AppError
 import com.grippo.error.provider.ErrorProvider
-import com.grippo.state.error.AppErrorState
 import org.koin.core.annotation.Single
 
 @Single(binds = [ErrorProvider::class])

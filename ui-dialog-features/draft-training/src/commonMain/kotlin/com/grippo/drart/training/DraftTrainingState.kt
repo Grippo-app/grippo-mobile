@@ -1,8 +1,8 @@
 package com.grippo.drart.training
 
 import androidx.compose.runtime.Immutable
-import com.grippo.state.stage.StageState
-import com.grippo.state.trainings.ExerciseState
+import com.grippo.core.state.stage.StageState
+import com.grippo.core.state.trainings.ExerciseState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 

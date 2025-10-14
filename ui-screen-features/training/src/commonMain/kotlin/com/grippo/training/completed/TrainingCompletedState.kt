@@ -1,7 +1,7 @@
 package com.grippo.training.completed
 
 import androidx.compose.runtime.Immutable
-import com.grippo.state.trainings.TrainingListValue
+import com.grippo.core.state.trainings.TrainingListValue
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 

@@ -11,11 +11,11 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
+import com.grippo.core.state.stage.StageState
 import com.grippo.home.profile.HomeProfileComponent
 import com.grippo.home.statistics.HomeStatisticsComponent
 import com.grippo.home.trainings.HomeTrainingsComponent
 import com.grippo.screen.api.BottomNavigationRouter
-import com.grippo.state.stage.StageState
 
 public class BottomNavigationComponent(
     initial: BottomNavigationRouter,

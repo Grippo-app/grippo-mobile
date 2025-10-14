@@ -1,8 +1,8 @@
 package com.grippo.domain.state.training.transformation
 
-import com.grippo.state.trainings.TrainingListValue
-import com.grippo.state.trainings.TrainingPosition
-import com.grippo.state.trainings.TrainingState
+import com.grippo.core.state.trainings.TrainingListValue
+import com.grippo.core.state.trainings.TrainingPosition
+import com.grippo.core.state.trainings.TrainingState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList

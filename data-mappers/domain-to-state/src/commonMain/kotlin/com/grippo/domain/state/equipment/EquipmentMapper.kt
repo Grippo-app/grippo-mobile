@@ -1,7 +1,7 @@
 package com.grippo.domain.state.equipment
 
+import com.grippo.core.state.equipments.EquipmentState
 import com.grippo.data.features.api.equipment.models.Equipment
-import com.grippo.state.equipments.EquipmentState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 

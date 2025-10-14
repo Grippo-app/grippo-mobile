@@ -1,8 +1,8 @@
 package com.grippo.domain.state.exercise.example
 
+import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.domain.state.equipment.toState
-import com.grippo.state.exercise.examples.ExerciseExampleState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 

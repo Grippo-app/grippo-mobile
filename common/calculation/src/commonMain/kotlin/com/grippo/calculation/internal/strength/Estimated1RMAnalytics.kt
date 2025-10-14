@@ -6,14 +6,14 @@ import com.grippo.calculation.internal.label
 import com.grippo.calculation.models.BucketScale
 import com.grippo.calculation.models.MetricPoint
 import com.grippo.calculation.models.MetricSeries
+import com.grippo.core.state.datetime.PeriodState
+import com.grippo.core.state.trainings.ExerciseState
+import com.grippo.core.state.trainings.TrainingState
 import com.grippo.date.utils.contains
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.ex
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
-import com.grippo.state.datetime.PeriodState
-import com.grippo.state.trainings.ExerciseState
-import com.grippo.state.trainings.TrainingState
 
 internal class Estimated1RMAnalytics(
     private val colorProvider: ColorProvider,

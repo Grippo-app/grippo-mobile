@@ -13,17 +13,17 @@ import com.grippo.calculation.models.Metric
 import com.grippo.calculation.models.MetricSeries
 import com.grippo.calculation.models.MuscleLoadMatrix
 import com.grippo.calculation.models.MuscleLoadSummary
+import com.grippo.core.state.datetime.PeriodState
+import com.grippo.core.state.examples.ExerciseExampleState
+import com.grippo.core.state.muscles.MuscleGroupState
+import com.grippo.core.state.muscles.MuscleRepresentationState
+import com.grippo.core.state.trainings.ExerciseState
+import com.grippo.core.state.trainings.IterationState
+import com.grippo.core.state.trainings.TrainingMetrics
+import com.grippo.core.state.trainings.TrainingState
 import com.grippo.design.resources.provider.muscles.MuscleColorPreset
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
-import com.grippo.state.datetime.PeriodState
-import com.grippo.state.exercise.examples.ExerciseExampleState
-import com.grippo.state.muscles.MuscleGroupState
-import com.grippo.state.muscles.MuscleRepresentationState
-import com.grippo.state.trainings.ExerciseState
-import com.grippo.state.trainings.IterationState
-import com.grippo.state.trainings.TrainingMetrics
-import com.grippo.state.trainings.TrainingState
 
 /**
  * Facade that exposes the most common workout analytics in a single place.

@@ -9,7 +9,7 @@ plugins {
 kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.uiCore.foundation)
-        implementation(projects.common.state)
+        implementation(projects.uiCore.state)
         implementation(projects.common.dateUtils)
 
         implementation(libs.kotlinx.serialization.json)

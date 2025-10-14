@@ -4,12 +4,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import com.grippo.core.state.equipments.EquipmentState
+import com.grippo.core.state.equipments.stubEquipments
 import com.grippo.design.components.cards.selectable.ToggleSelectableCard
 import com.grippo.design.components.cards.selectable.ToggleSelectableCardStyle
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.state.equipments.EquipmentState
-import com.grippo.state.equipments.stubEquipments
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 

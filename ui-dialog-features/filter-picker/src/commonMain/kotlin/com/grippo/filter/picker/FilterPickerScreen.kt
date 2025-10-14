@@ -21,6 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.filters.FilterValue
+import com.grippo.core.state.filters.stubFilters
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
@@ -34,8 +36,6 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.filters
 import com.grippo.design.resources.provider.reset
 import com.grippo.design.resources.provider.submit_btn
-import com.grippo.state.filters.FilterValue
-import com.grippo.state.filters.stubFilters
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 

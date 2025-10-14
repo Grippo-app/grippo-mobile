@@ -1,8 +1,8 @@
 package com.grippo.training.recording
 
 import com.grippo.core.foundation.models.BaseDirection
-import com.grippo.state.stage.StageState
-import com.grippo.state.trainings.ExerciseState
+import com.grippo.core.state.stage.StageState
+import com.grippo.core.state.trainings.ExerciseState
 import kotlinx.datetime.LocalDateTime
 
 internal sealed interface TrainingRecordingDirection : BaseDirection {

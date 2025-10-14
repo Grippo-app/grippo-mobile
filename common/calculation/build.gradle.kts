@@ -7,7 +7,7 @@ plugins {
 
 kotlin {
     sourceSets.commonMain.dependencies {
-        implementation(projects.common.state)
+        implementation(projects.uiCore.state)
         implementation(projects.common.dateUtils)
         implementation(projects.designSystem.resources.provider)
         implementation(projects.designSystem.core)

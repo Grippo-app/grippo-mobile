@@ -10,8 +10,8 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.grippo.core.state.formatters.UiText
 import com.grippo.design.core.AppTokens
-import com.grippo.state.formatters.UiText
 import kotlinx.collections.immutable.ImmutableList
 
 @Immutable

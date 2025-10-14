@@ -3,9 +3,9 @@ package com.grippo.calculation.models
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.grippo.state.exercise.examples.ExerciseExampleBundleState
-import com.grippo.state.muscles.MuscleEnumState
-import com.grippo.state.muscles.MuscleGroupState
+import com.grippo.core.state.examples.ExerciseExampleBundleState
+import com.grippo.core.state.muscles.MuscleEnumState
+import com.grippo.core.state.muscles.MuscleGroupState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 
