@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+PROJECT_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 
 echo "🧹 Cleaning Gradle build..."
 (cd "$PROJECT_ROOT" && ./gradlew clean)
