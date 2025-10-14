@@ -9,8 +9,8 @@ import com.grippo.database.dao.TrainingDao
 import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.dao.UserDao
 import com.grippo.database.dao.WeightHistoryDao
-import com.grippo.platform.core.NativeContext
-import com.grippo.platform.core.PlatformModule
+import com.grippo.platform.context.NativeContext
+import com.grippo.platform.context.PlatformModule
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single

@@ -1,7 +1,7 @@
 package com.grippo.database
 
 import androidx.room.RoomDatabaseConstructor
-import com.grippo.platform.core.NativeContext
+import com.grippo.platform.context.NativeContext
 
 internal expect fun NativeContext.getDatabaseBuilder(): Database
 

@@ -2,7 +2,7 @@ package com.grippo.database
 
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import com.grippo.platform.core.NativeContext
+import com.grippo.platform.context.NativeContext
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO

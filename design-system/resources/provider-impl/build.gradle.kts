@@ -7,6 +7,6 @@ plugins {
 kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.designSystem.resources.provider)
-        implementation(projects.common.platformCore)
+        implementation(projects.platformCore.theme)
     }
 }

@@ -18,7 +18,9 @@ kotlin {
         implementation(projects.designSystem.resources.providerImpl)
         implementation(projects.designSystem.components)
 
-        implementation(projects.common.platformCore)
+        implementation(projects.platformCore.context)
+        implementation(projects.platformCore.localization)
+        implementation(projects.platformCore.theme)
         implementation(projects.uiCore.foundation)
         implementation(projects.uiCore.state)
         implementation(projects.common.logger)

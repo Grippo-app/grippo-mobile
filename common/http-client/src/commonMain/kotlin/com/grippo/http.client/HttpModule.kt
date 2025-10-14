@@ -3,8 +3,8 @@ package com.grippo.http.client
 import com.grippo.http.client.internal.ApiErrorParser
 import com.grippo.http.client.internal.ClientLogger
 import com.grippo.http.client.internal.responseValidator
-import com.grippo.platform.core.NativeContext
-import com.grippo.platform.core.PlatformModule
+import com.grippo.platform.context.NativeContext
+import com.grippo.platform.context.PlatformModule
 import com.grippo.serialization.SerializationModule
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.logging.LogLevel

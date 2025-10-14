@@ -20,8 +20,8 @@ import com.grippo.debug.DebugComponent
 import com.grippo.design.components.connection.snackbar.ConnectionSnackbar
 import com.grippo.design.core.AppTheme
 import com.grippo.home.BottomNavigationComponent
-import com.grippo.platform.core.LocalAppLocale
-import com.grippo.platform.core.LocalAppTheme
+import com.grippo.platform.localization.LocalAppLocale
+import com.grippo.platform.theme.LocalAppTheme
 import com.grippo.profile.ProfileComponent
 import com.grippo.screen.api.AuthRouter
 import com.grippo.screen.api.BottomNavigationRouter
