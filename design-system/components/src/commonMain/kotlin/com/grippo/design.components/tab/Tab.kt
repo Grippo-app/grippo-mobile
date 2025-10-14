@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.formatters.UiText
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
@@ -26,6 +27,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.icons.NavArrowDown
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlin.math.max
 
 @Immutable
 public data class TabItem(
@@ -79,6 +81,8 @@ public fun <KEY> Tab(
                         modifier = Modifier.padding(start = AppTokens.dp.contentPadding.text),
                         text = item.second.text.text(),
                         style = AppTokens.typography.b13Bold(),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         color = AppTokens.colors.segment.active,
                     )
                 }
