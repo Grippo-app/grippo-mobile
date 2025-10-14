@@ -20,6 +20,7 @@ import com.grippo.database.DatabaseModule
 import com.grippo.design.resources.provider.impl.ResourcesProviderModule
 import com.grippo.dialog.api.DialogModule
 import com.grippo.http.client.HttpModule
+import com.grippo.ml.translation.MlTranslationModule
 import com.grippo.platform.core.PlatformModule
 import com.grippo.serialization.SerializationModule
 import org.koin.core.KoinApplication
@@ -55,6 +56,7 @@ public object Koin {
             SerializationModule().module,
             HttpModule().module,
             AiAgentModule().module,
+            MlTranslationModule().module,
         )
     }
 }
