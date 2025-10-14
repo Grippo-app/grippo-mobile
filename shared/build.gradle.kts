@@ -26,7 +26,7 @@ kotlin {
         implementation(projects.common.logger)
         implementation(projects.common.connectivity)
         implementation(projects.common.serialization)
-        implementation(projects.common.httpClient)
+        implementation(projects.platformCore.httpClient)
         implementation(projects.common.dateUtils)
         implementation(projects.uiCore.error.errorProviderImpl)
 

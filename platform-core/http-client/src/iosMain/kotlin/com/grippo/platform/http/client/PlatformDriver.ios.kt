@@ -1,4 +1,4 @@
-package com.grippo.http.client
+package com.grippo.platform.http.client
 
 import com.grippo.platform.context.NativeContext
 import io.ktor.client.HttpClient

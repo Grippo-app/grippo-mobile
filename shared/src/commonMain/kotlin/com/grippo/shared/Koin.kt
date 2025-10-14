@@ -19,8 +19,8 @@ import com.grippo.data.features.weight.history.WeightHistoryFeatureModule
 import com.grippo.database.DatabaseModule
 import com.grippo.design.resources.provider.impl.ResourcesProviderModule
 import com.grippo.dialog.api.DialogModule
-import com.grippo.http.client.HttpModule
 import com.grippo.platform.context.PlatformModule
+import com.grippo.platform.http.client.HttpModule
 import com.grippo.serialization.SerializationModule
 import org.koin.core.KoinApplication
 import org.koin.dsl.KoinAppDeclaration

@@ -1,4 +1,4 @@
-package com.grippo.http.client.internal
+package com.grippo.platform.http.client.internal
 
 import com.grippo.core.error.provider.AppError
 import io.ktor.client.HttpClientConfig

@@ -1,4 +1,4 @@
-package com.grippo.http.client.internal
+package com.grippo.platform.http.client.internal
 
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
