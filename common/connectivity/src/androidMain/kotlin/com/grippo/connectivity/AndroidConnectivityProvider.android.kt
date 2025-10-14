@@ -59,13 +59,13 @@ internal class AndroidConnectivityProvider(private val context: Context) : Conne
             }
         } ?: Connectivity.Status.Disconnected
     }
-}
 
-private fun ConnectivityManager.status(
-    capabilities: NetworkCapabilities?,
-): Connectivity.Status.Connected {
-    val isWifi = capabilities?.hasTransport(TRANSPORT_WIFI) ?: false
-    val isCellular = capabilities?.hasTransport(TRANSPORT_CELLULAR) ?: false
-    val isMetered = !isWifi || isCellular || isActiveNetworkMetered
-    return Connectivity.Status.Connected(isMetered)
+    private fun ConnectivityManager.status(
+        capabilities: NetworkCapabilities?,
+    ): Connectivity.Status.Connected {
+        val isWifi = capabilities?.hasTransport(TRANSPORT_WIFI) ?: false
+        val isCellular = capabilities?.hasTransport(TRANSPORT_CELLULAR) ?: false
+        val isMetered = !isWifi || isCellular || isActiveNetworkMetered
+        return Connectivity.Status.Connected(isMetered)
+    }
 }

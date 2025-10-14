@@ -99,6 +99,7 @@ include(":compose-libs:wheel-picker")
 include(":compose-libs:segment-control")
 include(":compose-libs:konfetti")
 include(":compose-libs:chart")
+include(":compose-libs:image-loader")
 
 include(":data-mappers:entity-to-domain")
 include(":data-mappers:dto-to-entity")
