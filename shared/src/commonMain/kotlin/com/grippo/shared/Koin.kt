@@ -3,7 +3,7 @@ package com.grippo.shared
 import com.grippo.ai.agent.AiAgentModule
 import com.grippo.backend.BackendModule
 import com.grippo.connectivity.ConnectivityModule
-import com.grippo.core.CoreModule
+import com.grippo.core.foundation.CoreModule
 import com.grippo.data.features.api.FeatureApiModule
 import com.grippo.data.features.authorization.AuthorizationFeatureModule
 import com.grippo.data.features.equipment.EquipmentFeatureModule

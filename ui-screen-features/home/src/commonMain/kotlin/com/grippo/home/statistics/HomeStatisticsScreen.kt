@@ -12,8 +12,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.grippo.core.BaseComposeScreen
-import com.grippo.core.ScreenBackground
+import com.grippo.core.foundation.BaseComposeScreen
+import com.grippo.core.foundation.ScreenBackground
 import com.grippo.date.utils.DateFormat
 import com.grippo.design.components.chart.ChartCard
 import com.grippo.design.components.chart.DistributionPieChart

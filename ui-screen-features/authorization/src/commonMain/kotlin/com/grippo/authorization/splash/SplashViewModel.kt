@@ -1,6 +1,6 @@
 package com.grippo.authorization.splash
 
-import com.grippo.core.BaseViewModel
+import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.authorization.AuthorizationFeature
 import com.grippo.data.features.api.equipment.EquipmentFeature
 import com.grippo.data.features.api.muscle.MuscleFeature

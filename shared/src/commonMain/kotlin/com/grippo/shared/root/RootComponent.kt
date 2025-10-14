@@ -13,8 +13,8 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.authorization.AuthComponent
-import com.grippo.core.BaseComponent
-import com.grippo.core.platform.collectAsStateMultiplatform
+import com.grippo.core.foundation.BaseComponent
+import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.date.utils.DateFormatting
 import com.grippo.debug.DebugComponent
 import com.grippo.design.components.connection.snackbar.ConnectionSnackbar

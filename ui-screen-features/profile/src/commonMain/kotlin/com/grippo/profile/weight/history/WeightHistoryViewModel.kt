@@ -1,6 +1,6 @@
 package com.grippo.profile.weight.history
 
-import com.grippo.core.BaseViewModel
+import com.grippo.core.foundation.BaseViewModel
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 

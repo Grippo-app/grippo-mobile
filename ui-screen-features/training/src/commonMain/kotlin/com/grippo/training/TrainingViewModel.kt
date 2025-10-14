@@ -1,6 +1,6 @@
 package com.grippo.training
 
-import com.grippo.core.BaseViewModel
+import com.grippo.core.foundation.BaseViewModel
 import com.grippo.state.stage.StageState
 import com.grippo.state.trainings.ExerciseState
 import kotlinx.datetime.LocalDateTime

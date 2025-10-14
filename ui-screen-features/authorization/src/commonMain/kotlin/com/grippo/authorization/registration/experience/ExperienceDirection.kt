@@ -1,6 +1,6 @@
 package com.grippo.authorization.registration.experience
 
-import com.grippo.core.models.BaseDirection
+import com.grippo.core.foundation.models.BaseDirection
 import com.grippo.state.profile.ExperienceEnumState
 
 internal sealed interface ExperienceDirection : BaseDirection {

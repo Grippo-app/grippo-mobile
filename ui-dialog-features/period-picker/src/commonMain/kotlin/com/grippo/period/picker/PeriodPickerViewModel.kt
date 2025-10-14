@@ -1,6 +1,6 @@
 package com.grippo.period.picker
 
-import com.grippo.core.BaseViewModel
+import com.grippo.core.foundation.BaseViewModel
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.design.resources.provider.select_end_date

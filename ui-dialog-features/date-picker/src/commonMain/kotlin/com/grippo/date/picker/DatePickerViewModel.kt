@@ -1,6 +1,6 @@
 package com.grippo.date.picker
 
-import com.grippo.core.BaseViewModel
+import com.grippo.core.foundation.BaseViewModel
 import com.grippo.date.utils.DateRange
 import com.grippo.state.formatters.DateFormatState
 import kotlinx.datetime.LocalDateTime

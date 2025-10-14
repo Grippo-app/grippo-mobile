@@ -1,6 +1,6 @@
 package com.grippo.home
 
-import com.grippo.core.BaseViewModel
+import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.SetDraftTraining
 import com.grippo.dialog.api.DialogConfig

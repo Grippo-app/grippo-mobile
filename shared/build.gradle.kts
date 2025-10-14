@@ -19,7 +19,7 @@ kotlin {
         implementation(projects.designSystem.components)
 
         implementation(projects.common.platformCore)
-        implementation(projects.common.core)
+        implementation(projects.uiCore.foundation)
         implementation(projects.common.state)
         implementation(projects.common.logger)
         implementation(projects.common.connectivity)

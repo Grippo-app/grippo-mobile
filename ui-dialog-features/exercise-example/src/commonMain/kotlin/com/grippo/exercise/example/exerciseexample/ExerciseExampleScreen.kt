@@ -14,8 +14,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
-import com.grippo.core.BaseComposeScreen
-import com.grippo.core.ScreenBackground
+import com.grippo.core.foundation.BaseComposeScreen
+import com.grippo.core.foundation.ScreenBackground
 import com.grippo.design.components.chart.MuscleLoadChart
 import com.grippo.design.components.chip.Chip
 import com.grippo.design.components.chip.ChipLabel

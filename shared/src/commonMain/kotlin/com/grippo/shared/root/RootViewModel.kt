@@ -1,7 +1,7 @@
 package com.grippo.shared.root
 
 import com.grippo.connectivity.Connectivity
-import com.grippo.core.BaseViewModel
+import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.authorization.AuthorizationFeature
 import com.grippo.design.components.connection.snackbar.ConnectionSnackbarState
 import com.grippo.state.stage.StageState

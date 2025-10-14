@@ -1,6 +1,6 @@
 package com.grippo.authorization.registration.body
 
-import com.grippo.core.BaseViewModel
+import com.grippo.core.foundation.BaseViewModel
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.state.formatters.HeightFormatState

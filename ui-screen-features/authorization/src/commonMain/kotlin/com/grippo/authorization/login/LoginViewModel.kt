@@ -1,6 +1,6 @@
 package com.grippo.authorization.login
 
-import com.grippo.core.BaseViewModel
+import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.authorization.LoginUseCase
 import com.grippo.state.formatters.EmailFormatState
 import com.grippo.state.formatters.PasswordFormatState

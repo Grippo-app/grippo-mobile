@@ -1,6 +1,6 @@
 package com.grippo.authorization
 
-import com.grippo.core.models.BaseDirection
+import com.grippo.core.foundation.models.BaseDirection
 
 public sealed interface AuthDirection : BaseDirection {
     public data object AuthProcess : AuthDirection

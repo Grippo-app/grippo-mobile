@@ -1,7 +1,7 @@
 package com.grippo.authorization.registration.excluded.muscles
 
 import com.grippo.calculation.AnalyticsApi
-import com.grippo.core.BaseViewModel
+import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.design.resources.provider.providers.ColorProvider

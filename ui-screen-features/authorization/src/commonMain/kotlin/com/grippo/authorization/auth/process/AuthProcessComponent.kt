@@ -12,8 +12,8 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.authorization.login.LoginComponent
 import com.grippo.authorization.registration.RegistrationComponent
-import com.grippo.core.BaseComponent
-import com.grippo.core.platform.collectAsStateMultiplatform
+import com.grippo.core.foundation.BaseComponent
+import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.screen.api.AuthProcessRouter
 
 internal class AuthProcessComponent(

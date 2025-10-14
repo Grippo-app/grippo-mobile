@@ -14,8 +14,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.grippo.core.BaseComposeScreen
-import com.grippo.core.ScreenBackground
+import com.grippo.core.foundation.BaseComposeScreen
+import com.grippo.core.foundation.ScreenBackground
 import com.grippo.design.components.toolbar.BottomSheetToolbar
 import com.grippo.design.core.AppTokens
 import com.grippo.dialog.api.DialogConfig

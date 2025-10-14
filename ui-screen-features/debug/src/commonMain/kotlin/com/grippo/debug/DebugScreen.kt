@@ -7,8 +7,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.grippo.core.BaseComposeScreen
-import com.grippo.core.ScreenBackground
+import com.grippo.core.foundation.BaseComposeScreen
+import com.grippo.core.foundation.ScreenBackground
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.segment.SegmentWidth

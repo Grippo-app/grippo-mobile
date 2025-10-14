@@ -1,6 +1,6 @@
 package com.grippo.home.profile
 
-import com.grippo.core.BaseViewModel
+import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.authorization.AuthorizationFeature
 import com.grippo.data.features.api.user.UserFeature
 import com.grippo.data.features.api.user.models.User

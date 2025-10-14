@@ -1,6 +1,6 @@
 package com.grippo.filter.picker
 
-import com.grippo.core.BaseViewModel
+import com.grippo.core.foundation.BaseViewModel
 import com.grippo.state.filters.FilterValue
 import kotlinx.collections.immutable.toPersistentList
 

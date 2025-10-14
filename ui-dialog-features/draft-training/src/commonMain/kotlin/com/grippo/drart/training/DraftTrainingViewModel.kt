@@ -1,6 +1,6 @@
 package com.grippo.drart.training
 
-import com.grippo.core.BaseViewModel
+import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.SetDraftTraining
 import com.grippo.domain.state.training.toState

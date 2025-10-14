@@ -1,6 +1,6 @@
 package com.grippo.menu.picker
 
-import com.grippo.core.BaseViewModel
+import com.grippo.core.foundation.BaseViewModel
 import com.grippo.state.menu.MenuItemState
 import kotlinx.collections.immutable.toPersistentList
 

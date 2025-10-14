@@ -1,7 +1,7 @@
 package com.grippo.home.statistics
 
 import com.grippo.calculation.AnalyticsApi
-import com.grippo.core.BaseViewModel
+import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.muscle.MuscleFeature
@@ -95,7 +95,7 @@ internal class HomeStatisticsViewModel(
     }
 
     override fun onSelectPeriod() {
-        val custom = (state.value.period as? PeriodState.Custom) ?: PeriodState.Custom(
+        (state.value.period as? PeriodState.Custom) ?: PeriodState.Custom(
             range = DateTimeUtils.thisWeek(),
             limitations = DateTimeUtils.trailingYear()
         )

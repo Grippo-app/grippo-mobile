@@ -1,5 +1,6 @@
 package com.grippo.confirmation
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,8 +15,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.grippo.core.BaseComposeScreen
-import com.grippo.core.ScreenBackground
+import com.grippo.core.foundation.BaseComposeScreen
+import com.grippo.core.foundation.ScreenBackground
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
@@ -80,7 +81,7 @@ internal fun ConfirmationScreen(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(
+            horizontalArrangement = Arrangement.spacedBy(
                 AppTokens.dp.contentPadding.content
             )
         ) {

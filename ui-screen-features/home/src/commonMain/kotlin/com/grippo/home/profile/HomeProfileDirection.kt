@@ -1,6 +1,6 @@
 package com.grippo.home.profile
 
-import com.grippo.core.models.BaseDirection
+import com.grippo.core.foundation.models.BaseDirection
 
 internal sealed interface HomeProfileDirection : BaseDirection {
     data object ExcludedMuscles : HomeProfileDirection

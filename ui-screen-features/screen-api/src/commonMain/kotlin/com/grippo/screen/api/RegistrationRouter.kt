@@ -1,6 +1,6 @@
 package com.grippo.screen.api
 
-import com.grippo.core.models.BaseRouter
+import com.grippo.core.foundation.models.BaseRouter
 import kotlinx.serialization.Serializable
 
 @Serializable

@@ -1,6 +1,6 @@
 package com.grippo.authorization.registration
 
-import com.grippo.core.models.BaseDirection
+import com.grippo.core.foundation.models.BaseDirection
 
 internal sealed interface RegistrationDirection : BaseDirection {
     data object Close : RegistrationDirection

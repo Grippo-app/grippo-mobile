@@ -17,8 +17,8 @@ import com.grippo.authorization.registration.excluded.muscles.ExcludedMusclesCom
 import com.grippo.authorization.registration.experience.ExperienceComponent
 import com.grippo.authorization.registration.missing.equipments.MissingEquipmentsComponent
 import com.grippo.authorization.registration.name.NameComponent
-import com.grippo.core.BaseComponent
-import com.grippo.core.platform.collectAsStateMultiplatform
+import com.grippo.core.foundation.BaseComponent
+import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.screen.api.RegistrationRouter
 
 internal class RegistrationComponent(

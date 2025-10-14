@@ -1,6 +1,6 @@
 package com.grippo.shared.dialog
 
-import com.grippo.core.models.BaseDirection
+import com.grippo.core.foundation.models.BaseDirection
 import com.grippo.dialog.api.DialogConfig
 
 internal sealed interface DialogDirection : BaseDirection {

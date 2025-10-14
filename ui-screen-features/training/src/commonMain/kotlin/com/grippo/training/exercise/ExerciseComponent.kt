@@ -4,9 +4,9 @@ import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
-import com.grippo.core.BaseComponent
-import com.grippo.core.models.ResultKeys
-import com.grippo.core.platform.collectAsStateMultiplatform
+import com.grippo.core.foundation.BaseComponent
+import com.grippo.core.foundation.models.ResultKeys
+import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.state.trainings.ExerciseState
 
 internal class ExerciseComponent(

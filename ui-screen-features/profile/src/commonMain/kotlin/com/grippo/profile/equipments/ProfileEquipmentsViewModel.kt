@@ -1,6 +1,6 @@
 package com.grippo.profile.equipments
 
-import com.grippo.core.BaseViewModel
+import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.equipment.EquipmentFeature
 import com.grippo.data.features.api.equipment.models.Equipment
 import com.grippo.data.features.api.equipment.models.EquipmentGroup

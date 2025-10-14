@@ -1,6 +1,6 @@
 package com.grippo.authorization.registration.completed
 
-import com.grippo.core.BaseViewModel
+import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.authorization.RegisterUseCase
 import com.grippo.data.features.api.authorization.models.SetRegistration
 import com.grippo.data.features.api.user.UserFeature

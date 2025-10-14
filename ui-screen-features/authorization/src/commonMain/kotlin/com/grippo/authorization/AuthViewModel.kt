@@ -1,6 +1,6 @@
 package com.grippo.authorization
 
-import com.grippo.core.BaseViewModel
+import com.grippo.core.foundation.BaseViewModel
 
 public class AuthViewModel : BaseViewModel<AuthState, AuthDirection, AuthLoader>(AuthState),
     AuthContract {

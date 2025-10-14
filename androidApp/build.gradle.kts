@@ -30,7 +30,7 @@ android {
 
 dependencies {
     implementation(projects.shared)
-    implementation(projects.common.core)
+    implementation(projects.uiCore.foundation)
     implementation(projects.common.dateUtils)
     implementation(projects.common.platformCore)
     implementation(projects.designSystem.core)

@@ -1,6 +1,6 @@
 package com.grippo.authorization.auth.process
 
-import com.grippo.core.BaseViewModel
+import com.grippo.core.foundation.BaseViewModel
 
 internal class AuthProcessViewModel :
     BaseViewModel<AuthProcessState, AuthProcessDirection, AuthProcessLoader>(AuthProcessState),

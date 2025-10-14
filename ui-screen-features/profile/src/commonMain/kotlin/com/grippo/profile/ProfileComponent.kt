@@ -8,8 +8,8 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
-import com.grippo.core.BaseComponent
-import com.grippo.core.platform.collectAsStateMultiplatform
+import com.grippo.core.foundation.BaseComponent
+import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.profile.ProfileComponent.Child.Equipments
 import com.grippo.profile.ProfileComponent.Child.Muscles
 import com.grippo.profile.ProfileComponent.Child.WeightHistory

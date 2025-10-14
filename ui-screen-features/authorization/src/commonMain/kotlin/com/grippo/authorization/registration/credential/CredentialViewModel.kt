@@ -1,6 +1,6 @@
 package com.grippo.authorization.registration.credential
 
-import com.grippo.core.BaseViewModel
+import com.grippo.core.foundation.BaseViewModel
 import com.grippo.state.formatters.EmailFormatState
 import com.grippo.state.formatters.PasswordFormatState
 

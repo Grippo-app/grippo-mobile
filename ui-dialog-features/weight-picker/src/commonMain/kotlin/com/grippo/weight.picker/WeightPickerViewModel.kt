@@ -1,6 +1,6 @@
 package com.grippo.weight.picker
 
-import com.grippo.core.BaseViewModel
+import com.grippo.core.foundation.BaseViewModel
 import com.grippo.state.formatters.WeightFormatState
 
 public class WeightPickerViewModel(

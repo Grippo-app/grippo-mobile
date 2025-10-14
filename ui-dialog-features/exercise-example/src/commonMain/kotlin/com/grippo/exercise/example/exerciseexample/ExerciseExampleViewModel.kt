@@ -1,7 +1,7 @@
 package com.grippo.exercise.example.exerciseexample
 
 import com.grippo.calculation.AnalyticsApi
-import com.grippo.core.BaseViewModel
+import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.design.resources.provider.providers.ColorProvider

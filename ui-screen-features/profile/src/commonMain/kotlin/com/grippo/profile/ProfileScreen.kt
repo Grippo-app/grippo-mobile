@@ -3,9 +3,9 @@ package com.grippo.profile
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.grippo.core.BaseComposeScreen
-import com.grippo.core.ScreenBackground
-import com.grippo.core.platform.platformAnimation
+import com.grippo.core.foundation.BaseComposeScreen
+import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.foundation.platform.platformAnimation
 import com.grippo.design.core.AppTokens
 import kotlinx.collections.immutable.ImmutableSet
 import com.arkivanov.decompose.extensions.compose.experimental.stack.ChildStack as ChildStackCompose

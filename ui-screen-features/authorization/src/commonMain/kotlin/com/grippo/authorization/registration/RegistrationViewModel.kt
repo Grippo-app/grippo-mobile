@@ -1,6 +1,6 @@
 package com.grippo.authorization.registration
 
-import com.grippo.core.BaseViewModel
+import com.grippo.core.foundation.BaseViewModel
 import com.grippo.state.profile.ExperienceEnumState
 import kotlinx.collections.immutable.toPersistentList
 
