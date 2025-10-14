@@ -6,11 +6,10 @@ plugins {
 
 kotlin {
     sourceSets.commonMain.dependencies {
-        л implementation (projects.common.platformCore)
+        implementation(projects.common.platformCore)
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.dataServices.database)
         implementation(projects.dataServices.backend)
-        implementation(projects.dataServices.mlTranslation)
         implementation(projects.dataMappers.domainToState)
         implementation(projects.dataMappers.entityToDomain)
         implementation(projects.dataMappers.dtoToEntity)

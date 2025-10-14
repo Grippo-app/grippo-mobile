@@ -9,11 +9,9 @@ import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
 import com.grippo.data.features.api.exercise.example.models.UserExerciseExampleRules
 import com.grippo.data.features.exercise.examples.domain.ExerciseExampleRepository
 import com.grippo.database.dao.ExerciseExampleDao
-import com.grippo.database.entity.ExerciseExampleEntity
 import com.grippo.dto.entity.example.toEntities
 import com.grippo.dto.entity.example.toEntityOrNull
 import com.grippo.entity.domain.equipment.toDomain
-import com.grippo.ml.translation.TranslationService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
@@ -22,7 +20,6 @@ import org.koin.core.annotation.Single
 internal class ExerciseExampleRepositoryImpl(
     private val api: GrippoApi,
     private val exerciseExampleDao: ExerciseExampleDao,
-    private val translationService: TranslationService
 ) : ExerciseExampleRepository {
 
     override fun observeExerciseExamples(
@@ -65,7 +62,7 @@ internal class ExerciseExampleRepositoryImpl(
         response.onSuccess {
             it.forEach { r ->
                 val entity = r.entity ?: return@onSuccess
-                val example = r.toEntityOrNull()?.translate() ?: return@onSuccess
+                val example = r.toEntityOrNull() ?: return@onSuccess
                 val bundles = entity.exerciseExampleBundles.toEntities()
                 val equipments = entity.equipmentRefs.toEntities()
                 exerciseExampleDao.insertOrReplace(example, bundles, equipments)
@@ -80,27 +77,12 @@ internal class ExerciseExampleRepositoryImpl(
 
         response.onSuccess { r ->
             val entity = r.entity ?: return@onSuccess
-            val example = r.toEntityOrNull()?.translate() ?: return@onSuccess
+            val example = r.toEntityOrNull() ?: return@onSuccess
             val bundles = entity.exerciseExampleBundles.toEntities()
             val equipments = entity.equipmentRefs.toEntities()
             exerciseExampleDao.insertOrReplace(example, bundles, equipments)
         }
 
         return response.map { }
-    }
-
-    private suspend fun ExerciseExampleEntity.translate(): ExerciseExampleEntity {
-        return this.copy(
-            name = translationService.translate(
-                text = name,
-                sourceLang = "en",
-                targetLang = "uk",
-            ),
-            description = translationService.translate(
-                text = description,
-                sourceLang = "en",
-                targetLang = "uk",
-            ),
-        )
     }
 }

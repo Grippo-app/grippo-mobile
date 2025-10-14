@@ -47,7 +47,6 @@ include(":design-system:components")
 include(":data-services:backend")
 include(":data-services:database")
 include(":data-services:ai-agent")
-include(":data-services:ml-translation")
 
 include(":data-features:feature-api")
 include(":data-features:authorization")
