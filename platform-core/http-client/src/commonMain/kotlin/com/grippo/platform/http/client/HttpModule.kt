@@ -1,7 +1,7 @@
 package com.grippo.platform.http.client
 
+import com.grippo.platform.context.ContextModule
 import com.grippo.platform.context.NativeContext
-import com.grippo.platform.context.PlatformModule
 import com.grippo.platform.http.client.internal.ApiErrorParser
 import com.grippo.platform.http.client.internal.ClientLogger
 import com.grippo.platform.http.client.internal.responseValidator
@@ -13,7 +13,7 @@ import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
 
-@Module(includes = [PlatformModule::class, SerializationModule::class])
+@Module(includes = [ContextModule::class, SerializationModule::class])
 @ComponentScan
 public class HttpModule {
 

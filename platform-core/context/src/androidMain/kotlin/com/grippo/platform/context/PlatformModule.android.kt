@@ -8,7 +8,7 @@ import org.koin.core.scope.Scope
 
 @Module
 @ComponentScan
-public actual class PlatformModule actual constructor() {
+public actual class ContextModule actual constructor() {
 
     @Single
     internal actual fun providesNativeContext(scope: Scope): NativeContext {

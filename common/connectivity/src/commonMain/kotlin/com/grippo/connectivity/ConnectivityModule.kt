@@ -1,12 +1,12 @@
 package com.grippo.connectivity
 
+import com.grippo.platform.context.ContextModule
 import com.grippo.platform.context.NativeContext
-import com.grippo.platform.context.PlatformModule
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
 
-@Module(includes = [PlatformModule::class])
+@Module(includes = [ContextModule::class])
 @ComponentScan
 public class ConnectivityModule {
     @Single

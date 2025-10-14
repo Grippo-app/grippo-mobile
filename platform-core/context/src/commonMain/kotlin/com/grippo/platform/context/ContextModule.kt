@@ -7,7 +7,7 @@ import org.koin.core.scope.Scope
 
 @Module
 @ComponentScan
-public expect class PlatformModule() {
+public expect class ContextModule() {
 
     @Single
     internal fun providesNativeContext(scope: Scope): NativeContext

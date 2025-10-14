@@ -19,7 +19,7 @@ import com.grippo.data.features.weight.history.WeightHistoryFeatureModule
 import com.grippo.database.DatabaseModule
 import com.grippo.design.resources.provider.impl.ResourcesProviderModule
 import com.grippo.dialog.api.DialogModule
-import com.grippo.platform.context.PlatformModule
+import com.grippo.platform.context.ContextModule
 import com.grippo.platform.http.client.HttpModule
 import com.grippo.serialization.SerializationModule
 import org.koin.core.KoinApplication
@@ -33,7 +33,7 @@ public object Koin {
     ): KoinApplication = KoinPlatformTools.defaultContext().startKoin {
         appDeclaration()
         modules(
-            PlatformModule().module,
+            ContextModule().module,
             DatabaseModule().module,
             BackendModule().module,
             CoreModule().module,
