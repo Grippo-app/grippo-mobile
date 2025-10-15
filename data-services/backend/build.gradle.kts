@@ -8,9 +8,9 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.common.serialization)
+            implementation(projects.toolkit.serialization)
             implementation(projects.toolkit.httpClient)
-            implementation(projects.common.logger)
+            implementation(projects.toolkit.logger)
             implementation(projects.dataServices.database)
 
             implementation(libs.ktor.client.core)

@@ -19,9 +19,10 @@ import com.grippo.data.features.weight.history.WeightHistoryFeatureModule
 import com.grippo.database.DatabaseModule
 import com.grippo.design.resources.provider.impl.ResourcesProviderModule
 import com.grippo.dialog.api.DialogModule
+import com.grippo.image.loader.ImageLoaderModule
+import com.grippo.serialization.SerializationModule
 import com.grippo.toolkit.context.ContextModule
 import com.grippo.toolkit.http.client.HttpModule
-import com.grippo.serialization.SerializationModule
 import org.koin.core.KoinApplication
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.ksp.generated.module
@@ -55,6 +56,7 @@ public object Koin {
             SerializationModule().module,
             HttpModule().module,
             AiAgentModule().module,
+//            ImageLoaderModule().module,
         )
     }
 }

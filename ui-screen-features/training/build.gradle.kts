@@ -9,9 +9,9 @@ kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.uiCore.foundation)
         implementation(projects.uiCore.state)
-        implementation(projects.common.calculation)
+        implementation(projects.toolkit.calculation)
         implementation(projects.uiCore.error.errorProvider)
-        implementation(projects.common.dateUtils)
+        implementation(projects.toolkit.dateUtils)
         implementation(projects.designSystem.core)
         implementation(projects.designSystem.resources.provider)
         implementation(projects.designSystem.preview)

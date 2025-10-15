@@ -14,7 +14,7 @@ kotlin {
         implementation(projects.dataMappers.entityToDomain)
         implementation(projects.dataMappers.dtoToEntity)
         implementation(projects.dataMappers.domainToDto)
-        implementation(projects.common.dateUtils)
+        implementation(projects.toolkit.dateUtils)
 
         implementation(libs.kotlinx.coroutines.core)
         implementation(libs.datetime)

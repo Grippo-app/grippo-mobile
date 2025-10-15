@@ -10,7 +10,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.designSystem.resources.provider)
             implementation(projects.designSystem.core)
-            implementation(projects.common.logger)
+            implementation(projects.toolkit.logger)
 
             implementation(compose.foundation)
 

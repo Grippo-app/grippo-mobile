@@ -9,7 +9,7 @@ kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.uiCore.foundation)
         implementation(projects.uiCore.state)
-        implementation(projects.common.calculation)
+        implementation(projects.toolkit.calculation)
         implementation(projects.uiScreenFeatures.screenApi)
         implementation(projects.dataMappers.domainToState)
         implementation(projects.dataFeatures.featureApi)

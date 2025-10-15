@@ -13,9 +13,9 @@ kotlin {
         implementation(projects.composeLibs.konfetti)
         implementation(projects.composeLibs.chart)
         implementation(projects.uiScreenFeatures.screenApi)
-        implementation(projects.common.dateUtils)
+        implementation(projects.toolkit.dateUtils)
         implementation(projects.uiCore.state)
-        implementation(projects.common.calculation)
+        implementation(projects.toolkit.calculation)
 
         implementation(compose.foundation)
         implementation(compose.runtime)

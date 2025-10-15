@@ -9,8 +9,8 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.toolkit.context)
-            implementation(projects.common.logger)
-            implementation(projects.common.serialization)
+            implementation(projects.toolkit.logger)
+            implementation(projects.toolkit.serialization)
             implementation(projects.uiCore.error.errorProvider)
 
             implementation(libs.ktor.client.core)

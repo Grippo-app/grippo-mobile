@@ -7,6 +7,6 @@ kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.dataServices.database)
         implementation(projects.dataServices.backend)
-        implementation(projects.common.logger)
+        implementation(projects.toolkit.logger)
     }
 }

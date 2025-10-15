@@ -3,6 +3,7 @@ package com.grippo.image.loader
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
 import coil3.network.ktor3.KtorNetworkFetcherFactory
+import com.grippo.image.loader.internal.ImageLoaderInitializer
 import com.grippo.toolkit.http.client.HttpModule
 import io.ktor.client.HttpClient
 import org.koin.core.annotation.ComponentScan
@@ -19,9 +20,7 @@ public class ImageLoaderModule {
     ): SingletonImageLoader.Factory {
         return SingletonImageLoader.Factory { context ->
             ImageLoader.Builder(context)
-                .components {
-                    add(KtorNetworkFetcherFactory(httpClient))
-                }
+                .components { add(KtorNetworkFetcherFactory(httpClient)) }
                 .build()
         }
     }
@@ -30,12 +29,4 @@ public class ImageLoaderModule {
     internal fun imageLoaderInitializer(
         factory: SingletonImageLoader.Factory,
     ): ImageLoaderInitializer = ImageLoaderInitializer(factory)
-}
-
-internal class ImageLoaderInitializer(
-    factory: SingletonImageLoader.Factory,
-) {
-    init {
-        SingletonImageLoader.setSafe(factory)
-    }
 }

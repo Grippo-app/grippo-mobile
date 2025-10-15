@@ -10,7 +10,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.toolkit.context)
-            implementation(projects.common.logger)
+            implementation(projects.toolkit.logger)
             implementation(projects.uiCore.error.errorProvider)
         }
     }

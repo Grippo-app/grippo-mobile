@@ -7,8 +7,8 @@ plugins {
 
 kotlin {
     sourceSets.commonMain.dependencies {
-        implementation(projects.common.dateUtils)
-        implementation(projects.common.serialization)
+        implementation(projects.toolkit.dateUtils)
+        implementation(projects.toolkit.serialization)
         implementation(projects.toolkit.localization)
         implementation(projects.uiCore.error.errorProvider)
 

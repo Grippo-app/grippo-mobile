@@ -22,11 +22,11 @@ kotlin {
         implementation(projects.toolkit.localization)
         implementation(projects.toolkit.theme)
         implementation(projects.toolkit.httpClient)
-
-        implementation(projects.common.logger)
-        implementation(projects.common.connectivity)
-        implementation(projects.common.serialization)
-        implementation(projects.common.dateUtils)
+        implementation(projects.toolkit.logger)
+        implementation(projects.toolkit.connectivity)
+        implementation(projects.toolkit.serialization)
+        implementation(projects.toolkit.dateUtils)
+        implementation(projects.toolkit.imageLoader)
 
         implementation(projects.uiCore.foundation)
         implementation(projects.uiCore.state)

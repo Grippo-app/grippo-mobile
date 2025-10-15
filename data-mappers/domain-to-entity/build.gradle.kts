@@ -7,7 +7,7 @@ kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.dataServices.database)
-        implementation(projects.common.logger)
+        implementation(projects.toolkit.logger)
 
         implementation(libs.immutable.collections)
         implementation(libs.datetime)

@@ -8,7 +8,7 @@ plugins {
 kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.uiCore.foundation)
-        implementation(projects.common.dateUtils)
+        implementation(projects.toolkit.dateUtils)
         implementation(projects.uiCore.state)
         implementation(projects.dataMappers.domainToState)
         implementation(projects.uiDialogFeatures.dialogApi)

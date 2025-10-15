@@ -10,7 +10,7 @@ kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.uiCore.foundation)
         implementation(projects.uiCore.state)
-        implementation(projects.common.dateUtils)
+        implementation(projects.toolkit.dateUtils)
 
         implementation(libs.kotlinx.serialization.json)
         implementation(libs.datetime)

@@ -31,7 +31,7 @@ android {
 dependencies {
     implementation(projects.shared)
     implementation(projects.uiCore.foundation)
-    implementation(projects.common.dateUtils)
+    implementation(projects.toolkit.dateUtils)
     implementation(projects.toolkit.theme)
     implementation(projects.designSystem.core)
 
