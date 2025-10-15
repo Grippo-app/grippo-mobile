@@ -1,5 +1,7 @@
-package com.grippo.connectivity
+package com.grippo.toolkit.connectivity.internal
 
+import com.grippo.toolkit.connectivity.Connectivity
+import com.grippo.toolkit.connectivity.ConnectivityProvider
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -22,7 +24,7 @@ internal class AppleConnectivityProvider : ConnectivityProvider {
     override fun monitor(): Flow<Connectivity.Status> {
         val monitor = nw_path_monitor_create()
         val queue = dispatch_queue_create(
-            label = "com.grippo.connectivity.monitor",
+            label = "com.grippo.toolkit.connectivity.monitor",
             attr = DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL,
         )
 

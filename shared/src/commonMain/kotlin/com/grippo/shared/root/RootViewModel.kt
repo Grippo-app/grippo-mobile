@@ -1,6 +1,6 @@
 package com.grippo.shared.root
 
-import com.grippo.connectivity.Connectivity
+import com.grippo.toolkit.connectivity.Connectivity
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.stage.StageState
 import com.grippo.data.features.api.authorization.AuthorizationFeature

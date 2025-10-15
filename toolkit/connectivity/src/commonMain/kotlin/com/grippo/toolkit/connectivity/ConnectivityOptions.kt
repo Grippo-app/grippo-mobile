@@ -1,4 +1,4 @@
-package com.grippo.connectivity
+package com.grippo.toolkit.connectivity
 
 public open class ConnectivityOptions(
     public val autoStart: Boolean = DEFAULT_AUTO_START,

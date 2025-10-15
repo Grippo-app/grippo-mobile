@@ -1,9 +1,5 @@
-package com.grippo.connectivity
+package com.grippo.toolkit.connectivity
 
-import com.grippo.connectivity.internal.DefaultConnectivity
-import com.grippo.toolkit.context.NativeContext
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -32,12 +28,4 @@ public interface Connectivity {
         public data class Connected(public val metered: Boolean) : Status
         public data object Disconnected : Status
     }
-}
-
-internal fun NativeContext.Connectivity(
-    provider: ConnectivityProvider = getConnectivityProvider(),
-    options: ConnectivityOptions = ConnectivityOptions(autoStart = true),
-    scope: CoroutineScope = CoroutineScope(Dispatchers.Default),
-): Connectivity {
-    return DefaultConnectivity(scope, provider, options)
 }

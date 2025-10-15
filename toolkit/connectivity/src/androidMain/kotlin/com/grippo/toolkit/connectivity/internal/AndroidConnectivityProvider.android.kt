@@ -1,4 +1,4 @@
-package com.grippo.connectivity
+package com.grippo.toolkit.connectivity.internal
 
 import android.content.Context
 import android.net.ConnectivityManager
@@ -6,6 +6,8 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkCapabilities.TRANSPORT_CELLULAR
 import android.net.NetworkCapabilities.TRANSPORT_WIFI
+import com.grippo.toolkit.connectivity.Connectivity
+import com.grippo.toolkit.connectivity.ConnectivityProvider
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow

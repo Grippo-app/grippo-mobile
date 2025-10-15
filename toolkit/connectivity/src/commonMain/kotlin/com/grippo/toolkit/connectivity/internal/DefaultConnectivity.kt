@@ -1,8 +1,8 @@
-package com.grippo.connectivity.internal
+package com.grippo.toolkit.connectivity.internal
 
-import com.grippo.connectivity.Connectivity
-import com.grippo.connectivity.ConnectivityOptions
-import com.grippo.connectivity.ConnectivityProvider
+import com.grippo.toolkit.connectivity.Connectivity
+import com.grippo.toolkit.connectivity.ConnectivityOptions
+import com.grippo.toolkit.connectivity.ConnectivityProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
