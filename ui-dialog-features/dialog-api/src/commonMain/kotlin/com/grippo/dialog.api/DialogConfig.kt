@@ -54,7 +54,7 @@ public sealed class DialogConfig(
         @Transient val onResult: (iteration: IterationState) -> Unit = { },
     ) : DialogConfig(
         onDismiss = null,
-        dismissBySwipe = false
+        dismissBySwipe = true
     )
 
     @Serializable
