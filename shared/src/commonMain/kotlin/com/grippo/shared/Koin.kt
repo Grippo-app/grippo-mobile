@@ -21,6 +21,7 @@ import com.grippo.dialog.api.DialogModule
 import com.grippo.toolkit.connectivity.ConnectivityModule
 import com.grippo.toolkit.context.ContextModule
 import com.grippo.toolkit.http.client.HttpModule
+import com.grippo.toolkit.image.loader.ImageLoaderModule
 import com.grippo.toolkit.serialization.SerializationModule
 import org.koin.core.KoinApplication
 import org.koin.dsl.KoinAppDeclaration
@@ -55,7 +56,7 @@ public object Koin {
             SerializationModule().module,
             HttpModule().module,
             AiAgentModule().module,
-//            ImageLoaderModule().module,
+            ImageLoaderModule().module,
         )
     }
 }
