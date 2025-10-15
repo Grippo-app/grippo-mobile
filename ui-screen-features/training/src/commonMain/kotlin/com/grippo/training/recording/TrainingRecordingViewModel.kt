@@ -1,6 +1,5 @@
 package com.grippo.training.recording
 
-import com.grippo.toolkit.calculation.AnalyticsApi
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.PercentageFormatState
@@ -17,7 +16,6 @@ import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.SetDraftTraining
 import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.data.features.api.training.models.Training
-import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
@@ -29,6 +27,8 @@ import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.muscles.toState
 import com.grippo.domain.state.training.toState
 import com.grippo.state.domain.training.toDomain
+import com.grippo.toolkit.calculation.AnalyticsApi
+import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.FlowPreview

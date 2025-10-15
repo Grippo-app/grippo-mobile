@@ -2,7 +2,7 @@ package com.grippo.dto.entity.training
 
 import com.grippo.backend.dto.training.IterationResponse
 import com.grippo.database.entity.IterationEntity
-import com.grippo.logger.AppLogger
+import com.grippo.toolkit.logger.AppLogger
 
 public fun List<IterationResponse>.toEntities(): List<IterationEntity> {
     return mapNotNull { it.toEntityOrNull() }

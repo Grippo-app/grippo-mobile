@@ -2,7 +2,7 @@ package com.grippo.dto.entity.user
 
 import com.grippo.backend.dto.user.UserResponse
 import com.grippo.database.entity.UserEntity
-import com.grippo.logger.AppLogger
+import com.grippo.toolkit.logger.AppLogger
 
 public fun List<UserResponse>.toEntities(): List<UserEntity> {
     return mapNotNull { it.toEntityOrNull() }

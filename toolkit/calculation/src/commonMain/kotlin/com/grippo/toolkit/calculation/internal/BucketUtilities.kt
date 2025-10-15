@@ -1,10 +1,10 @@
 package com.grippo.toolkit.calculation.internal
 
-import com.grippo.toolkit.calculation.models.Bucket
-import com.grippo.toolkit.calculation.models.BucketScale
 import com.grippo.core.state.datetime.PeriodState
 import com.grippo.core.state.trainings.TrainingState
-import com.grippo.date.utils.DateRange
+import com.grippo.toolkit.calculation.models.Bucket
+import com.grippo.toolkit.calculation.models.BucketScale
+import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -21,7 +21,7 @@ internal fun groupTrainingsByBucket(
     return trainings.groupBy { t ->
         when (scale) {
             BucketScale.EXERCISE -> t.createdAt // not used
-            BucketScale.DAY -> com.grippo.date.utils.DateTimeUtils.startOfDay(t.createdAt)
+            BucketScale.DAY -> com.grippo.toolkit.date.utils.DateTimeUtils.startOfDay(t.createdAt)
             BucketScale.WEEK -> startOfWeek(t.createdAt)
             BucketScale.MONTH -> startOfMonth(t.createdAt)
         }

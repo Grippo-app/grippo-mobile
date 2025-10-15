@@ -9,12 +9,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.grippo.date.utils.DateCompose
-import com.grippo.date.utils.DateFormat
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.icons.ClockOutline
+import com.grippo.toolkit.date.utils.DateCompose
+import com.grippo.toolkit.date.utils.DateFormat
 import kotlinx.datetime.LocalDateTime
 
 @Composable

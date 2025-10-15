@@ -14,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
-import com.grippo.date.utils.DateFormat
 import com.grippo.design.components.chart.ChartCard
 import com.grippo.design.components.chart.DistributionPieChart
 import com.grippo.design.components.chart.MetricBarChart
@@ -38,6 +37,7 @@ import com.grippo.design.resources.provider.chart_title_exercise_volume
 import com.grippo.design.resources.provider.chart_title_muscle_heap
 import com.grippo.design.resources.provider.chart_title_muscle_load
 import com.grippo.design.resources.provider.statistics
+import com.grippo.toolkit.date.utils.DateFormat
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 

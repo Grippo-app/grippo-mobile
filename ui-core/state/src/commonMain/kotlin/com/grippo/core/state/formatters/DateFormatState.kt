@@ -1,8 +1,8 @@
 package com.grippo.core.state.formatters
 
 import androidx.compose.runtime.Immutable
-import com.grippo.date.utils.DateRange
-import com.grippo.date.utils.DateTimeUtils
+import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 

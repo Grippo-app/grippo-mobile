@@ -2,7 +2,7 @@ package com.grippo.date.picker
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateFormatState
-import com.grippo.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.datetime.LocalDateTime
 
 public class DatePickerViewModel(

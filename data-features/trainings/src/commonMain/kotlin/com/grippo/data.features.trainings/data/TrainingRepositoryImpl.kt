@@ -10,13 +10,13 @@ import com.grippo.data.features.trainings.domain.TrainingRepository
 import com.grippo.database.dao.DraftTrainingDao
 import com.grippo.database.dao.TrainingDao
 import com.grippo.database.dao.UserActiveDao
-import com.grippo.entity.domain.training.toDomain
-import com.grippo.entity.domain.training.toSetDomain
-import com.grippo.date.utils.DateTimeUtils
 import com.grippo.domain.dto.training.toBody
 import com.grippo.domain.entity.training.toEntity
 import com.grippo.dto.entity.training.toEntities
 import com.grippo.dto.entity.training.toEntityOrNull
+import com.grippo.entity.domain.training.toDomain
+import com.grippo.entity.domain.training.toSetDomain
+import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map

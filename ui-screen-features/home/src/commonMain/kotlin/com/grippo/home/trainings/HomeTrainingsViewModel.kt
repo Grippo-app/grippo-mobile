@@ -5,8 +5,6 @@ import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.menu.MenuItemState
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
-import com.grippo.date.utils.DateRange
-import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.date_picker_title
 import com.grippo.design.resources.provider.providers.StringProvider
@@ -16,6 +14,8 @@ import com.grippo.domain.state.training.toState
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
 import com.grippo.home.trainings.HomeTrainingsDirection.Back
 import com.grippo.home.trainings.HomeTrainingsDirection.EditTraining
+import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map

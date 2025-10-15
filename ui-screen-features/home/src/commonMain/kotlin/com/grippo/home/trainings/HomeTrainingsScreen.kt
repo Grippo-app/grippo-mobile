@@ -20,8 +20,6 @@ import com.grippo.core.state.trainings.TrainingListValue
 import com.grippo.core.state.trainings.TrainingListValue.Companion.exercise
 import com.grippo.core.state.trainings.TrainingListValue.Companion.shape
 import com.grippo.core.state.trainings.stubTraining
-import com.grippo.date.utils.DateFormat
-import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonSize
@@ -40,6 +38,8 @@ import com.grippo.design.resources.provider.icons.Menu
 import com.grippo.design.resources.provider.trainings
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
 import com.grippo.home.trainings.factory.timelineStyle
+import com.grippo.toolkit.date.utils.DateFormat
+import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf

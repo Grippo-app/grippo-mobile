@@ -2,7 +2,7 @@ package com.grippo.dto.entity.muscles
 
 import com.grippo.backend.dto.muscle.MuscleGroupResponse
 import com.grippo.database.entity.MuscleGroupEntity
-import com.grippo.logger.AppLogger
+import com.grippo.toolkit.logger.AppLogger
 
 public fun List<MuscleGroupResponse>.toEntities(): List<MuscleGroupEntity> {
     return mapNotNull { it.toEntityOrNull() }

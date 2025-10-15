@@ -1,7 +1,7 @@
 package com.grippo.core.state.profile
 
 import androidx.compose.runtime.Immutable
-import com.grippo.date.utils.DateTimeUtils
+import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.datetime.LocalDateTime
 import kotlin.random.Random
 import kotlin.uuid.Uuid

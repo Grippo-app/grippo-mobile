@@ -2,7 +2,7 @@ package com.grippo.dto.entity.example
 
 import com.grippo.backend.dto.exercise.example.GetExerciseExampleResponse
 import com.grippo.database.entity.ExerciseExampleEntity
-import com.grippo.logger.AppLogger
+import com.grippo.toolkit.logger.AppLogger
 
 public fun List<GetExerciseExampleResponse>.toEntities(): List<ExerciseExampleEntity> {
     return mapNotNull { it.toEntityOrNull() }

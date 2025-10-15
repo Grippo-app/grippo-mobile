@@ -1,7 +1,7 @@
 package com.grippo.core.state.trainings
 
 import androidx.compose.runtime.Immutable
-import com.grippo.date.utils.DateTimeUtils
+import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDateTime

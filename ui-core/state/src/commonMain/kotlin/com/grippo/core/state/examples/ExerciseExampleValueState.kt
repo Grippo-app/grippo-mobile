@@ -3,7 +3,7 @@ package com.grippo.core.state.examples
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.filters.FilterValue
 import com.grippo.core.state.profile.ExperienceEnumState
-import com.grippo.date.utils.DateTimeUtils
+import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDateTime

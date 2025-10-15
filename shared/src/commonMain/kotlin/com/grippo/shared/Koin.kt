@@ -2,7 +2,6 @@ package com.grippo.shared
 
 import com.grippo.ai.agent.AiAgentModule
 import com.grippo.backend.BackendModule
-import com.grippo.toolkit.connectivity.ConnectivityModule
 import com.grippo.core.error.provider.impl.ErrorModule
 import com.grippo.core.foundation.CoreModule
 import com.grippo.data.features.api.FeatureApiModule
@@ -19,10 +18,10 @@ import com.grippo.data.features.weight.history.WeightHistoryFeatureModule
 import com.grippo.database.DatabaseModule
 import com.grippo.design.resources.provider.impl.ResourcesProviderModule
 import com.grippo.dialog.api.DialogModule
-import com.grippo.image.loader.ImageLoaderModule
-import com.grippo.serialization.SerializationModule
+import com.grippo.toolkit.connectivity.ConnectivityModule
 import com.grippo.toolkit.context.ContextModule
 import com.grippo.toolkit.http.client.HttpModule
+import com.grippo.toolkit.serialization.SerializationModule
 import org.koin.core.KoinApplication
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.ksp.generated.module

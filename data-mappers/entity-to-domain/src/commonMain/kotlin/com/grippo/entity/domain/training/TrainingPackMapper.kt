@@ -5,7 +5,7 @@ import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.database.models.DraftTrainingPack
 import com.grippo.database.models.TrainingPack
-import com.grippo.date.utils.DateTimeUtils
+import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlin.time.Duration.Companion.minutes
 
 public fun List<TrainingPack>.toDomain(): List<Training> {

@@ -1,8 +1,6 @@
 package com.grippo.toolkit.calculation.internal.muscle
 
 import androidx.compose.ui.graphics.Color
-import com.grippo.toolkit.calculation.models.MuscleLoadBreakdown
-import com.grippo.toolkit.calculation.models.MuscleLoadEntry
 import com.grippo.core.state.datetime.PeriodState
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.formatters.PercentageFormatState
@@ -13,9 +11,11 @@ import com.grippo.core.state.muscles.MuscleGroupState
 import com.grippo.core.state.muscles.MuscleRepresentationState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.TrainingState
-import com.grippo.date.utils.contains
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
+import com.grippo.toolkit.calculation.models.MuscleLoadBreakdown
+import com.grippo.toolkit.calculation.models.MuscleLoadEntry
+import com.grippo.toolkit.date.utils.contains
 
 internal data class MuscleLoadBreakdowns(
     val perMuscle: MuscleLoadBreakdown,

@@ -10,7 +10,7 @@ import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.menu.MenuItemState
 import com.grippo.core.state.trainings.IterationFocus
 import com.grippo.core.state.trainings.IterationState
-import com.grippo.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 

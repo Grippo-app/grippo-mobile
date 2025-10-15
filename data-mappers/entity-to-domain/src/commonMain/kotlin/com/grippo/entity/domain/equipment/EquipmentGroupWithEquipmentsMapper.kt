@@ -3,7 +3,7 @@ package com.grippo.entity.domain.equipment
 import com.grippo.data.features.api.equipment.models.EquipmentGroup
 import com.grippo.data.features.api.equipment.models.EquipmentGroupEnum
 import com.grippo.database.models.EquipmentGroupWithEquipments
-import com.grippo.logger.AppLogger
+import com.grippo.toolkit.logger.AppLogger
 
 public fun List<EquipmentGroupWithEquipments>.toDomain(): List<EquipmentGroup> {
     return mapNotNull { it.toDomain() }

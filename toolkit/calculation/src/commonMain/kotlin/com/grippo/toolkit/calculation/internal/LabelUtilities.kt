@@ -1,12 +1,12 @@
 package com.grippo.toolkit.calculation.internal
 
-import com.grippo.toolkit.calculation.models.Bucket
-import com.grippo.toolkit.calculation.models.BucketScale
-import com.grippo.date.utils.DateFormat
-import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.design.resources.provider.w
+import com.grippo.toolkit.calculation.models.Bucket
+import com.grippo.toolkit.calculation.models.BucketScale
+import com.grippo.toolkit.date.utils.DateFormat
+import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.datetime.LocalDateTime
 
 // -------- Bucket labelers --------

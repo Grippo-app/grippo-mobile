@@ -7,7 +7,7 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.core.state.formatters.DateFormatState
-import com.grippo.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateRange
 
 public class DatePickerComponent(
     componentContext: ComponentContext,

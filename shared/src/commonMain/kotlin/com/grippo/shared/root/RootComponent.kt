@@ -15,13 +15,10 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.authorization.AuthComponent
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
-import com.grippo.date.utils.DateFormatting
 import com.grippo.debug.DebugComponent
 import com.grippo.design.components.connection.snackbar.ConnectionSnackbar
 import com.grippo.design.core.AppTheme
 import com.grippo.home.BottomNavigationComponent
-import com.grippo.toolkit.localization.LocalAppLocale
-import com.grippo.toolkit.theme.LocalAppTheme
 import com.grippo.profile.ProfileComponent
 import com.grippo.screen.api.AuthRouter
 import com.grippo.screen.api.BottomNavigationRouter
@@ -34,6 +31,9 @@ import com.grippo.shared.root.RootComponent.Child.Debug
 import com.grippo.shared.root.RootComponent.Child.Home
 import com.grippo.shared.root.RootComponent.Child.Profile
 import com.grippo.shared.root.RootComponent.Child.Training
+import com.grippo.toolkit.date.utils.DateFormatting
+import com.grippo.toolkit.localization.LocalAppLocale
+import com.grippo.toolkit.theme.LocalAppTheme
 import com.grippo.training.TrainingComponent
 
 public class RootComponent(

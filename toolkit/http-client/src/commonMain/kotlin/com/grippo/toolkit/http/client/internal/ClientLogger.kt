@@ -1,6 +1,6 @@
 package com.grippo.toolkit.http.client.internal
 
-import com.grippo.logger.AppLogger
+import com.grippo.toolkit.logger.AppLogger
 import io.ktor.client.plugins.logging.Logger
 import org.koin.core.annotation.Single
 

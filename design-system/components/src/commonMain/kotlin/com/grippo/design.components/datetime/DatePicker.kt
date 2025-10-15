@@ -8,10 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.grippo.date.utils.DateCompose
-import com.grippo.date.utils.DateFormat
-import com.grippo.date.utils.DateRange
-import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonSize
@@ -24,6 +20,10 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.icons.NavArrowDown
 import com.grippo.design.resources.provider.icons.NavArrowLeft
 import com.grippo.design.resources.provider.icons.NavArrowRight
+import com.grippo.toolkit.date.utils.DateCompose
+import com.grippo.toolkit.date.utils.DateFormat
+import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.datetime.LocalDateTime
 
 @Composable

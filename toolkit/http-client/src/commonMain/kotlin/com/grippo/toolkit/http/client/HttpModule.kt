@@ -5,7 +5,7 @@ import com.grippo.toolkit.context.NativeContext
 import com.grippo.toolkit.http.client.internal.ApiErrorParser
 import com.grippo.toolkit.http.client.internal.ClientLogger
 import com.grippo.toolkit.http.client.internal.responseValidator
-import com.grippo.serialization.SerializationModule
+import com.grippo.toolkit.serialization.SerializationModule
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging

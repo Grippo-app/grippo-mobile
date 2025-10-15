@@ -5,12 +5,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import com.grippo.date.utils.DateTimeUtils
-import com.grippo.date.utils.timerTextFlow
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.icons.Timer
+import com.grippo.toolkit.date.utils.DateTimeUtils
+import com.grippo.toolkit.date.utils.timerTextFlow
 import kotlinx.datetime.LocalDateTime
 
 @Composable

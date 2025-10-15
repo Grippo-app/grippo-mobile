@@ -5,7 +5,7 @@ import com.grippo.backend.dto.auth.TokenResponse
 import com.grippo.database.dao.TokenDao
 import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.entity.TokenEntity
-import com.grippo.logger.AppLogger
+import com.grippo.toolkit.logger.AppLogger
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.auth.AuthProvider

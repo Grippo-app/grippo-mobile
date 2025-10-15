@@ -3,7 +3,7 @@ package com.grippo.entity.domain.muscles
 import com.grippo.data.features.api.muscle.models.Muscle
 import com.grippo.data.features.api.muscle.models.MuscleEnum
 import com.grippo.database.entity.MuscleEntity
-import com.grippo.logger.AppLogger
+import com.grippo.toolkit.logger.AppLogger
 import kotlin.time.Duration
 
 public fun List<MuscleEntity>.toDomain(): List<Muscle> {
