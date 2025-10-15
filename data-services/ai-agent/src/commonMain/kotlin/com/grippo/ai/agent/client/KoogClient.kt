@@ -33,10 +33,7 @@ internal class KoogClient(httpClient: HttpClient) {
         SingleLLMPromptExecutor(client)
     }
 
-    suspend fun invoke(
-        input: String,
-        system: String
-    ): String {
+    suspend fun invoke(input: String, system: String): String {
         return withContext(Dispatchers.IO) {
             val agent = AIAgent.Companion(
                 promptExecutor = executor,
