@@ -1,6 +1,5 @@
-package com.grippo.toolkit.date.utils.internal.platform
+package com.grippo.toolkit.date.utils.internal
 
-import com.grippo.toolkit.date.utils.internal.DateFormatter
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime

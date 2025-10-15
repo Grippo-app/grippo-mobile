@@ -2,7 +2,7 @@ package com.grippo.toolkit.date.utils
 
 import com.grippo.toolkit.date.utils.internal.DateFormatter
 import com.grippo.toolkit.date.utils.internal.FixedLocaleDateFormatter
-import com.grippo.toolkit.date.utils.internal.platform.SystemDateFormatter
+import com.grippo.toolkit.date.utils.internal.SystemDateFormatter
 import com.grippo.toolkit.logger.AppLogger
 import kotlin.concurrent.Volatile
 

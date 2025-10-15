@@ -1,8 +1,8 @@
 package com.grippo.toolkit.logger
 
 import androidx.compose.runtime.Composable
-import com.grippo.toolkit.logger.internal.platform.PerformanceTracker
-import com.grippo.toolkit.logger.internal.platform.getCallerLocation
+import com.grippo.toolkit.logger.internal.PerformanceTracker
+import com.grippo.toolkit.logger.internal.getCallerLocation
 
 public object AppLogger {
 

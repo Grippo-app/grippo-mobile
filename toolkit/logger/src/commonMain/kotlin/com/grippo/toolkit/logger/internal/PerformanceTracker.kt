@@ -1,4 +1,4 @@
-package com.grippo.toolkit.logger.internal.platform
+package com.grippo.toolkit.logger.internal
 
 import androidx.compose.runtime.Composable
 
