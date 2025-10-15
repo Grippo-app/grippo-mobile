@@ -3,8 +3,8 @@ package com.grippo.design.components.chart
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.grippo.calculation.models.MetricPoint
-import com.grippo.calculation.models.MetricSeries
+import com.grippo.toolkit.calculation.models.MetricPoint
+import com.grippo.toolkit.calculation.models.MetricSeries
 import com.grippo.chart.bar.BarData
 import com.grippo.chart.bar.BarEntry
 import com.grippo.design.components.chart.internal.BarChart

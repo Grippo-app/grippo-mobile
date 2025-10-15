@@ -3,8 +3,8 @@ package com.grippo.design.components.chart
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.grippo.calculation.models.DistributionBreakdown
-import com.grippo.calculation.models.DistributionSlice
+import com.grippo.toolkit.calculation.models.DistributionBreakdown
+import com.grippo.toolkit.calculation.models.DistributionSlice
 import com.grippo.chart.pie.PieData
 import com.grippo.chart.pie.PieSlice
 import com.grippo.design.components.chart.internal.PieChart

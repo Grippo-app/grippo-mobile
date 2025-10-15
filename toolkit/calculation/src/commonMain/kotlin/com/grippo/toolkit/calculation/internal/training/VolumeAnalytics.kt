@@ -1,13 +1,13 @@
-package com.grippo.calculation.internal.training
+package com.grippo.toolkit.calculation.internal.training
 
 import androidx.compose.ui.graphics.Color
-import com.grippo.calculation.internal.buildBuckets
-import com.grippo.calculation.internal.defaultLabeler
-import com.grippo.calculation.internal.deriveScale
-import com.grippo.calculation.internal.groupTrainingsByBucket
-import com.grippo.calculation.models.BucketScale
-import com.grippo.calculation.models.MetricPoint
-import com.grippo.calculation.models.MetricSeries
+import com.grippo.toolkit.calculation.internal.buildBuckets
+import com.grippo.toolkit.calculation.internal.defaultLabeler
+import com.grippo.toolkit.calculation.internal.deriveScale
+import com.grippo.toolkit.calculation.internal.groupTrainingsByBucket
+import com.grippo.toolkit.calculation.models.BucketScale
+import com.grippo.toolkit.calculation.models.MetricPoint
+import com.grippo.toolkit.calculation.models.MetricSeries
 import com.grippo.core.state.datetime.PeriodState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.TrainingState

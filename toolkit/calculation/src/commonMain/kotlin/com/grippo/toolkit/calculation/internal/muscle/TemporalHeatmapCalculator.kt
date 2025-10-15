@@ -1,11 +1,11 @@
-package com.grippo.calculation.internal.muscle
+package com.grippo.toolkit.calculation.internal.muscle
 
-import com.grippo.calculation.internal.buildBuckets
-import com.grippo.calculation.internal.defaultTimeLabels
-import com.grippo.calculation.internal.deriveScale
-import com.grippo.calculation.models.BucketScale
-import com.grippo.calculation.models.Metric
-import com.grippo.calculation.models.MuscleLoadMatrix
+import com.grippo.toolkit.calculation.internal.buildBuckets
+import com.grippo.toolkit.calculation.internal.defaultTimeLabels
+import com.grippo.toolkit.calculation.internal.deriveScale
+import com.grippo.toolkit.calculation.models.BucketScale
+import com.grippo.toolkit.calculation.models.Metric
+import com.grippo.toolkit.calculation.models.MuscleLoadMatrix
 import com.grippo.core.state.datetime.PeriodState
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.muscles.MuscleEnumState

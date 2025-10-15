@@ -1,9 +1,9 @@
-package com.grippo.calculation.internal.muscle
+package com.grippo.toolkit.calculation.internal.muscle
 
 import androidx.compose.ui.graphics.Color
-import com.grippo.calculation.models.MuscleColorSource
-import com.grippo.calculation.models.MuscleImages
-import com.grippo.calculation.models.MuscleLoadBreakdown
+import com.grippo.toolkit.calculation.models.MuscleColorSource
+import com.grippo.toolkit.calculation.models.MuscleImages
+import com.grippo.toolkit.calculation.models.MuscleLoadBreakdown
 import com.grippo.core.state.muscles.MuscleEnumState
 import com.grippo.core.state.muscles.MuscleGroupState
 import com.grippo.core.state.muscles.MuscleRepresentationState

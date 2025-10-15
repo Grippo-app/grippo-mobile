@@ -1,10 +1,10 @@
 package com.grippo.home.statistics
 
 import androidx.compose.runtime.Immutable
-import com.grippo.calculation.models.DistributionBreakdown
-import com.grippo.calculation.models.MetricSeries
-import com.grippo.calculation.models.MuscleLoadMatrix
-import com.grippo.calculation.models.MuscleLoadSummary
+import com.grippo.toolkit.calculation.models.DistributionBreakdown
+import com.grippo.toolkit.calculation.models.MetricSeries
+import com.grippo.toolkit.calculation.models.MuscleLoadMatrix
+import com.grippo.toolkit.calculation.models.MuscleLoadSummary
 import com.grippo.core.state.datetime.PeriodState
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.muscles.MuscleGroupState

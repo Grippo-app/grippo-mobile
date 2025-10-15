@@ -1,6 +1,6 @@
 package com.grippo.profile.muscles
 
-import com.grippo.calculation.AnalyticsApi
+import com.grippo.toolkit.calculation.AnalyticsApi
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.muscles.MuscleGroupState
 import com.grippo.core.state.muscles.MuscleRepresentationState

@@ -3,7 +3,7 @@ package com.grippo.design.components.chart
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.grippo.calculation.models.MuscleLoadMatrix
+import com.grippo.toolkit.calculation.models.MuscleLoadMatrix
 import com.grippo.chart.heatmap.HeatmapData
 import com.grippo.chart.heatmap.Matrix01
 import com.grippo.design.components.chart.internal.HeatmapChart

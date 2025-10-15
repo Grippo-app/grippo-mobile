@@ -1,6 +1,6 @@
 package com.grippo.training.completed
 
-import com.grippo.calculation.AnalyticsApi
+import com.grippo.toolkit.calculation.AnalyticsApi
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.stage.StageState
 import com.grippo.core.state.trainings.ExerciseState

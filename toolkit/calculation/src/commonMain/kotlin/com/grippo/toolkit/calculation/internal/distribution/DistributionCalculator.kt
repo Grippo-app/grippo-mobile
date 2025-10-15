@@ -1,9 +1,9 @@
-package com.grippo.calculation.internal.distribution
+package com.grippo.toolkit.calculation.internal.distribution
 
 import androidx.compose.ui.graphics.Color
-import com.grippo.calculation.models.DistributionBreakdown
-import com.grippo.calculation.models.DistributionSlice
-import com.grippo.calculation.models.DistributionWeighting
+import com.grippo.toolkit.calculation.models.DistributionBreakdown
+import com.grippo.toolkit.calculation.models.DistributionSlice
+import com.grippo.toolkit.calculation.models.DistributionWeighting
 import com.grippo.core.state.datetime.PeriodState
 import com.grippo.core.state.examples.CategoryEnumState
 import com.grippo.core.state.examples.ForceTypeEnumState

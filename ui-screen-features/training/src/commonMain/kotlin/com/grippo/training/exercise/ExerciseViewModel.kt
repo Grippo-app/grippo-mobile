@@ -1,6 +1,6 @@
 package com.grippo.training.exercise
 
-import com.grippo.calculation.AnalyticsApi
+import com.grippo.toolkit.calculation.AnalyticsApi
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState

@@ -1,7 +1,7 @@
-package com.grippo.calculation.internal
+package com.grippo.toolkit.calculation.internal
 
-import com.grippo.calculation.models.Bucket
-import com.grippo.calculation.models.BucketScale
+import com.grippo.toolkit.calculation.models.Bucket
+import com.grippo.toolkit.calculation.models.BucketScale
 import com.grippo.date.utils.DateFormat
 import com.grippo.date.utils.DateTimeUtils
 import com.grippo.design.resources.provider.Res

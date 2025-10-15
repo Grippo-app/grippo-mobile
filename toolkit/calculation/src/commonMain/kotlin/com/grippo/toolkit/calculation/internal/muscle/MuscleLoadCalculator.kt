@@ -1,8 +1,8 @@
-package com.grippo.calculation.internal.muscle
+package com.grippo.toolkit.calculation.internal.muscle
 
 import androidx.compose.ui.graphics.Color
-import com.grippo.calculation.models.MuscleLoadBreakdown
-import com.grippo.calculation.models.MuscleLoadEntry
+import com.grippo.toolkit.calculation.models.MuscleLoadBreakdown
+import com.grippo.toolkit.calculation.models.MuscleLoadEntry
 import com.grippo.core.state.datetime.PeriodState
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.formatters.PercentageFormatState

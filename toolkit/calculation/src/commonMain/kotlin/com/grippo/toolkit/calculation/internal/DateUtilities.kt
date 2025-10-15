@@ -1,4 +1,4 @@
-package com.grippo.calculation.internal
+package com.grippo.toolkit.calculation.internal
 
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate

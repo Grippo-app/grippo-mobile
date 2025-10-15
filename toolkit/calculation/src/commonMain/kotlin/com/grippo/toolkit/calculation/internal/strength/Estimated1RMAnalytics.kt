@@ -1,11 +1,11 @@
-package com.grippo.calculation.internal.strength
+package com.grippo.toolkit.calculation.internal.strength
 
-import com.grippo.calculation.internal.deriveScale
-import com.grippo.calculation.internal.groupTrainingsByBucket
-import com.grippo.calculation.internal.label
-import com.grippo.calculation.models.BucketScale
-import com.grippo.calculation.models.MetricPoint
-import com.grippo.calculation.models.MetricSeries
+import com.grippo.toolkit.calculation.internal.deriveScale
+import com.grippo.toolkit.calculation.internal.groupTrainingsByBucket
+import com.grippo.toolkit.calculation.internal.label
+import com.grippo.toolkit.calculation.models.BucketScale
+import com.grippo.toolkit.calculation.models.MetricPoint
+import com.grippo.toolkit.calculation.models.MetricSeries
 import com.grippo.core.state.datetime.PeriodState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.TrainingState

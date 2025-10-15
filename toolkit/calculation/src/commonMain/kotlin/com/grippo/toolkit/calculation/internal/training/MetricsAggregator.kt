@@ -1,4 +1,4 @@
-package com.grippo.calculation.internal.training
+package com.grippo.toolkit.calculation.internal.training
 
 import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState

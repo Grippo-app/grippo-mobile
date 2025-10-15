@@ -1,7 +1,7 @@
-package com.grippo.calculation.internal
+package com.grippo.toolkit.calculation.internal
 
-import com.grippo.calculation.models.Bucket
-import com.grippo.calculation.models.BucketScale
+import com.grippo.toolkit.calculation.models.Bucket
+import com.grippo.toolkit.calculation.models.BucketScale
 import com.grippo.core.state.datetime.PeriodState
 import com.grippo.core.state.trainings.TrainingState
 import com.grippo.date.utils.DateRange

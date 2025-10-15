@@ -1,6 +1,6 @@
 package com.grippo.home.statistics
 
-import com.grippo.calculation.AnalyticsApi
+import com.grippo.toolkit.calculation.AnalyticsApi
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.datetime.PeriodState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature

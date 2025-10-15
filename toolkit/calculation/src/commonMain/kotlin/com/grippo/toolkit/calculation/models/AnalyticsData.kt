@@ -1,4 +1,4 @@
-package com.grippo.calculation.models
+package com.grippo.toolkit.calculation.models
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color

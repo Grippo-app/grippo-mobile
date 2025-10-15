@@ -1,6 +1,6 @@
 package com.grippo.training.recording
 
-import com.grippo.calculation.AnalyticsApi
+import com.grippo.toolkit.calculation.AnalyticsApi
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.PercentageFormatState
