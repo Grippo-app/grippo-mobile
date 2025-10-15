@@ -58,7 +58,6 @@ public data object AppDp {
     val informationCard: InformationCard = InformationCard
     val wheelPicker: WheelPicker = WheelPicker
     val userCard: UserCard = UserCard
-    val chartCard: ChartCard = ChartCard
     val bodyDetails: BodyDetails = BodyDetails
     val overviewCard: OverviewCard = OverviewCard
     val equipmentCard: EquipmentCard = EquipmentCard
@@ -158,12 +157,6 @@ public data object AppDp {
             val verticalPadding: Dp = padding.large
             val icon: Dp = AppDp.icon.medium
         }
-    }
-
-    public data object ChartCard {
-        val horizontalPadding: Dp = padding.large
-        val verticalPadding: Dp = padding.large
-        val radius: Dp = AppDp.radius.medium
     }
 
     public data object UserCard {

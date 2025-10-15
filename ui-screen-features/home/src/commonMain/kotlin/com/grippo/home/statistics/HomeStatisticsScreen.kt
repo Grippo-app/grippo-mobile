@@ -86,7 +86,7 @@ internal fun HomeStatisticsScreen(
             horizontal = AppTokens.dp.screen.horizontalPadding
         ),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block)
     ) {
 
         state

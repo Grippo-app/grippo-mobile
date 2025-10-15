@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -24,15 +22,8 @@ public fun ChartCard(
     title: String,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    val shape = RoundedCornerShape(AppTokens.dp.chartCard.radius)
-
     Column(
-        modifier = modifier
-            .background(AppTokens.colors.background.card, shape)
-            .padding(
-                horizontal = AppTokens.dp.chartCard.horizontalPadding,
-                vertical = AppTokens.dp.chartCard.verticalPadding
-            ),
+        modifier = modifier,
     ) {
         Text(
             modifier = Modifier.fillMaxWidth(),
