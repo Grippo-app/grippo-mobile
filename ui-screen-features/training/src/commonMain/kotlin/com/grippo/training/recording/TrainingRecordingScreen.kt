@@ -39,6 +39,7 @@ import com.grippo.design.resources.provider.edit_training_title
 import com.grippo.design.resources.provider.exercises
 import com.grippo.design.resources.provider.save_btn
 import com.grippo.design.resources.provider.statistics
+import com.grippo.design.resources.provider.training
 import com.grippo.training.recording.pages.ExercisesPage
 import com.grippo.training.recording.pages.StatisticsPage
 import kotlinx.collections.immutable.ImmutableSet
@@ -66,8 +67,8 @@ internal fun TrainingRecordingScreen(
         modifier = Modifier.fillMaxWidth(),
         style = ToolbarStyle.Transparent,
         title = when (state.stage) {
-            StageState.Add -> AppTokens.strings.res(Res.string.add_training_title)
-            StageState.Draft -> AppTokens.strings.res(Res.string.add_training_title)
+            StageState.Add -> AppTokens.strings.res(Res.string.training)
+            StageState.Draft -> AppTokens.strings.res(Res.string.training)
             is StageState.Edit -> AppTokens.strings.res(Res.string.edit_training_title)
         },
         onBack = contract::onBack,
