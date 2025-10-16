@@ -1,5 +1,16 @@
 package com.grippo.toolkit.calculation
 
+import com.grippo.core.state.datetime.PeriodState
+import com.grippo.core.state.examples.ExerciseExampleState
+import com.grippo.core.state.muscles.MuscleGroupState
+import com.grippo.core.state.muscles.MuscleRepresentationState
+import com.grippo.core.state.trainings.ExerciseState
+import com.grippo.core.state.trainings.IterationState
+import com.grippo.core.state.trainings.TrainingMetrics
+import com.grippo.core.state.trainings.TrainingState
+import com.grippo.design.resources.provider.muscles.MuscleColorPreset
+import com.grippo.design.resources.provider.providers.ColorProvider
+import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.toolkit.calculation.internal.distribution.DistributionCalculator
 import com.grippo.toolkit.calculation.internal.muscle.MuscleImageBuilder
 import com.grippo.toolkit.calculation.internal.muscle.MuscleLoadCalculator
@@ -13,17 +24,6 @@ import com.grippo.toolkit.calculation.models.Metric
 import com.grippo.toolkit.calculation.models.MetricSeries
 import com.grippo.toolkit.calculation.models.MuscleLoadMatrix
 import com.grippo.toolkit.calculation.models.MuscleLoadSummary
-import com.grippo.core.state.datetime.PeriodState
-import com.grippo.core.state.examples.ExerciseExampleState
-import com.grippo.core.state.muscles.MuscleGroupState
-import com.grippo.core.state.muscles.MuscleRepresentationState
-import com.grippo.core.state.trainings.ExerciseState
-import com.grippo.core.state.trainings.IterationState
-import com.grippo.core.state.trainings.TrainingMetrics
-import com.grippo.core.state.trainings.TrainingState
-import com.grippo.design.resources.provider.muscles.MuscleColorPreset
-import com.grippo.design.resources.provider.providers.ColorProvider
-import com.grippo.design.resources.provider.providers.StringProvider
 
 /**
  * Facade that exposes the most common workout analytics in a single place.
@@ -112,7 +112,7 @@ public class AnalyticsApi(
         val images = muscleImageBuilder.generateImagesFromBreakdown(breakdowns.perMuscle)
 
         return MuscleLoadSummary(
-            perGroup = breakdowns.perGroup,
+            perGroup = breakdowns.perMuscle,
             images = images,
         )
     }

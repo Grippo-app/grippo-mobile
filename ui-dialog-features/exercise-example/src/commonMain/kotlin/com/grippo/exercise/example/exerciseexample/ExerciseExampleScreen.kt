@@ -30,9 +30,6 @@ import com.grippo.design.components.text.DescriptionText
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.muscles
-import com.grippo.design.resources.provider.required_equipment
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -119,43 +116,25 @@ internal fun ExerciseExampleScreen(
             text = example.value.description,
         )
 
-        if (example.equipments.isNotEmpty()) {
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-            Text(
-                modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                text = AppTokens.strings.res(Res.string.required_equipment),
-                style = AppTokens.typography.h5(),
-                color = AppTokens.colors.text.primary
-            )
-
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
-            EquipmentsCard(
-                modifier = Modifier.fillMaxWidth(),
-                value = example.equipments,
-                contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
-            )
-        }
-
         state.muscleLoad?.let { summary ->
 
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-            Text(
-                modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                text = AppTokens.strings.res(Res.string.muscles),
-                style = AppTokens.typography.h5(),
-                color = AppTokens.colors.text.primary
-            )
-
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
             MuscleLoadChart(
                 modifier = Modifier
                     .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                     .fillMaxWidth(),
                 value = summary,
+            )
+        }
+
+        if (example.equipments.isNotEmpty()) {
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+            EquipmentsCard(
+                modifier = Modifier.fillMaxWidth(),
+                value = example.equipments,
+                contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
             )
         }
 

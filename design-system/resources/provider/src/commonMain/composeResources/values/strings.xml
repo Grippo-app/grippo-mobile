@@ -178,7 +178,8 @@
     <string name="draft_training_alert_description_add">You have an unfinished draft workout saved locally. Continue where you left off?</string>
     <string name="draft_training_alert_title_edit">Resume editing workout</string>
     <string name="draft_training_alert_description_edit">You were editing a saved workout and left some changes unfinished. Continue editing?</string>
-
+    <string name="not_found">Not found</string>
+    <string name="reset">Reset</string>
     <string name="menu">Menu</string>
 
     <string name="last_used_label">Last used:</string>
@@ -269,36 +270,34 @@
     <string name="equipment_group_benches_and_racks">Benches and Racks</string>
 
     <!-- MuscleEnumState -->
-    <string name="muscle_pectoralis_major_clavicular">Pectoralis Major (Clavicular)</string>
-    <string name="muscle_pectoralis_major_sternocostal">Pectoralis Major (Sternocostal)</string>
-    <string name="muscle_pectoralis_major_abdominal">Pectoralis Major (Abdominal)</string>
-    <string name="muscle_trapezius">Trapezius</string>
+    <string name="muscle_pectoralis_major_clavicular">Upper Chest (Pec)</string>
+    <string name="muscle_pectoralis_major_sternocostal">Mid Chest (Pec)</string>
+    <string name="muscle_pectoralis_major_abdominal">Lower Chest (Pec)</string>
+    <string name="muscle_trapezius">Trapezius Muscles</string>
     <string name="muscle_latissimus_dorsi">Latissimus Dorsi</string>
-    <string name="muscle_rhomboids">Rhomboids</string>
-    <string name="muscle_teres_major">Teres Major</string>
+    <string name="muscle_rhomboids">Rhomboid Muscles</string>
+    <string name="muscle_teres_major">Teres Major Muscle</string>
     <string name="muscle_rectus_abdominis">Rectus Abdominis</string>
-    <string name="muscle_obliques">Obliques</string>
-    <string name="muscle_calf">Calf</string>
-    <string name="muscle_gluteal">Gluteal</string>
-    <string name="muscle_hamstrings">Hamstrings</string>
-    <string name="muscle_quadriceps">Quadriceps</string>
-    <string name="muscle_adductors">Adductors</string>
-    <string name="muscle_abductors">Abductors</string>
+    <string name="muscle_obliques">Oblique Muscles</string>
+    <string name="muscle_calf">Calf Muscle Group</string>
+    <string name="muscle_gluteal">Gluteal Muscles</string>
+    <string name="muscle_hamstrings">Hamstring Muscles</string>
+    <string name="muscle_quadriceps">Quadriceps Group</string>
+    <string name="muscle_adductors">Adductor Muscles</string>
+    <string name="muscle_abductors">Abductor Muscles</string>
     <string name="muscle_anterior_deltoid">Anterior Deltoid</string>
-    <string name="muscle_lateral_deltoid">Lateral Deltoid</string>
+    <string name="muscle_lateral_deltoid">Lateral Deltoids</string>
     <string name="muscle_posterior_deltoid">Posterior Deltoid</string>
-    <string name="muscle_biceps">Biceps</string>
-    <string name="muscle_triceps">Triceps</string>
-    <string name="muscle_forearm">Forearm</string>
-    <string name="not_found">Not found</string>
-    <string name="reset">Reset</string>
+    <string name="muscle_biceps">Biceps Brachii</string>
+    <string name="muscle_triceps">Triceps Brachii</string>
+    <string name="muscle_forearm">Forearm Muscles</string>
 
     <!-- MuscleGroupEnumState -->
     <string name="muscle_group_chest_muscles">Chest</string>
     <string name="muscle_group_back_muscles">Back</string>
     <string name="muscle_group_abdominal_muscles">Abs</string>
     <string name="muscle_group_legs">Legs</string>
-    <string name="muscle_group_arms_and_forearms">Arms &amp; Forearms</string>
+    <string name="muscle_group_arms_and_forearms">Arms</string>
     <string name="muscle_group_shoulder_muscles">Shoulders</string>
 
     <!-- MuscleLoadEnumState -->
