@@ -1,12 +1,5 @@
 package com.grippo.toolkit.logger.internal
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onGloballyPositioned
 import platform.Foundation.NSDate
 import platform.Foundation.NSThread
 import platform.Foundation.timeIntervalSince1970
@@ -18,32 +11,19 @@ internal actual object PerformanceTracker {
     private var renderCount = 0
     private var peakThreadCount = 0
 
-    actual fun navigate(screen: String, onLogged: (durationMs: Long, summary: String) -> Unit) {
-        val now = currentTimeMillis()
-        val start = screenStarts.remove(screen)
-        if (start != null) {
-            val duration = now - start
-            record(duration)
-            val summary = buildSummary()
-            onLogged(duration, summary)
-        } else {
-            screenStarts[screen] = now
-        }
+    actual fun navigationStarted(screen: String) {
+        screenStarts[screen] = currentTimeMillis()
     }
 
-    @Composable
-    actual fun Track(screen: String, onOpened: () -> Unit) {
-        val tracked = remember { mutableStateOf(false) }
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .onGloballyPositioned {
-                    if (!tracked.value) {
-                        tracked.value = true
-                        onOpened()
-                    }
-                }
-        )
+    actual fun navigationFinished(
+        screen: String,
+        onLogged: (durationMs: Long, summary: String) -> Unit,
+    ) {
+        val start = screenStarts.remove(screen) ?: return
+        val duration = currentTimeMillis() - start
+        record(duration)
+        val summary = buildSummary()
+        onLogged(duration, summary)
     }
 
     private fun record(duration: Long) {

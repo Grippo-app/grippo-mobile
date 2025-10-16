@@ -9,6 +9,7 @@ kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.uiCore.foundation)
         implementation(projects.toolkit.dateUtils)
+        implementation(projects.toolkit.logger)
         implementation(projects.uiCore.state)
         implementation(projects.dataMappers.domainToState)
         implementation(projects.uiDialogFeatures.dialogApi)

@@ -1,15 +1,29 @@
 package com.grippo.toolkit.logger
 
-import androidx.compose.runtime.Composable
+import com.grippo.toolkit.logger.internal.FileLogDestination
+import com.grippo.toolkit.logger.internal.LogDispatcher
+import com.grippo.toolkit.logger.internal.LogFileReader
+import com.grippo.toolkit.logger.internal.LogFileWriter
 import com.grippo.toolkit.logger.internal.PerformanceTracker
 import com.grippo.toolkit.logger.internal.getCallerLocation
+import com.grippo.toolkit.logger.internal.models.LogCategory
 
 public object AppLogger {
 
-    private var logListener: ((LogCategory, String) -> Unit)? = null
+    private val fileDestination = FileLogDestination(LogFileWriter.create())
+    private val dispatcher = LogDispatcher(fileDestination)
+//
+//    init {
+//        configure()
+//    }
+//
+//    public fun configure(fileName: String = LogFileWriter.DEFAULT_FILE_NAME) {
+//        fileDestination.updateWriter(LogFileWriter.create(fileName))
+//    }
 
-    public fun setLogListener(listener: (LogCategory, String) -> Unit) {
-        logListener = listener
+    public fun logFileContents(): String {
+        val location = dispatcher.location ?: return ""
+        return LogFileReader.read(location)
     }
 
     public object General {
@@ -27,18 +41,13 @@ public object AppLogger {
     }
 
     public object Performance {
-        public fun navigate(screen: String) {
-            PerformanceTracker.navigate(screen) { duration, summary ->
-                present(LogCategory.PERFORMANCE, "🧭 [$screen] → ${duration}ms\n$summary")
-            }
+        public fun navigationStarted(screen: String) {
+            PerformanceTracker.navigationStarted(screen)
         }
 
-        @Composable
-        public fun Open(screen: String) {
-            PerformanceTracker.Track(screen) {
-                PerformanceTracker.navigate(screen) { duration, summary ->
-                    present(LogCategory.PERFORMANCE, "🧭 [$screen] → ${duration}ms\n$summary")
-                }
+        public fun navigationFinished(screen: String) {
+            PerformanceTracker.navigationFinished(screen) { duration, summary ->
+                present(LogCategory.PERFORMANCE, "🧭 [$screen] → ${duration}ms\n$summary")
             }
         }
     }
@@ -55,7 +64,7 @@ public object AppLogger {
     private fun present(category: LogCategory, msg: String) {
         onDebug {
             println(msg)
-            logListener?.invoke(category, msg)
+            dispatcher.dispatch(category, msg)
         }
     }
 

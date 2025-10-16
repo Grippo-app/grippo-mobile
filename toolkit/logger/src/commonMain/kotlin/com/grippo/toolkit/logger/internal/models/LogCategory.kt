@@ -1,6 +1,6 @@
-package com.grippo.toolkit.logger
+package com.grippo.toolkit.logger.internal.models
 
-public enum class LogCategory {
+internal enum class LogCategory {
     GENERAL,
     NETWORK,
     PROMPT,

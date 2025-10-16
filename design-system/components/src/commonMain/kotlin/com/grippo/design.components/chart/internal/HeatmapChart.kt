@@ -52,13 +52,7 @@ internal fun HeatmapChart(
             textStyle = AppTokens.typography.b10Reg().copy(color = AppTokens.colors.text.primary),
             minGapDp = 1.dp
         ),
-        legend = HeatmapStyle.Legend.Visible(
-            height = 8.dp,
-            labelStyle = AppTokens.typography.b10Reg()
-                .copy(color = AppTokens.colors.text.secondary),
-            minText = null,
-            maxText = null
-        ),
+        legend = HeatmapStyle.Legend.None,
         palette = HeatmapStyle.Palette(
             colorScale = discreteScale     // <- exact palette colors only
         )
