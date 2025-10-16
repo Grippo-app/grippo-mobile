@@ -1,29 +1,34 @@
 package com.grippo.toolkit.logger.internal
 
+import com.grippo.toolkit.logger.internal.models.PerformanceSession
 import platform.Foundation.NSDate
 import platform.Foundation.NSThread
 import platform.Foundation.timeIntervalSince1970
 
 internal actual object PerformanceTracker {
 
-    private val screenStarts = mutableMapOf<String, Long>()
+    private val sessionStarts = mutableMapOf<String, Long>()
     private var totalRenderTimeMs = 0L
     private var renderCount = 0
     private var peakThreadCount = 0
 
-    actual fun navigationStarted(screen: String) {
-        screenStarts[screen] = currentTimeMillis()
+    actual fun navigationStarted(session: PerformanceSession) {
+        sessionStarts[session.token] = currentTimeMillis()
     }
 
     actual fun navigationFinished(
-        screen: String,
+        session: PerformanceSession,
         onLogged: (durationMs: Long, summary: String) -> Unit,
     ) {
-        val start = screenStarts.remove(screen) ?: return
+        val start = sessionStarts.remove(session.token) ?: return
         val duration = currentTimeMillis() - start
         record(duration)
         val summary = buildSummary()
         onLogged(duration, summary)
+    }
+
+    actual fun navigationCancelled(session: PerformanceSession) {
+        sessionStarts.remove(session.token)
     }
 
     private fun record(duration: Long) {

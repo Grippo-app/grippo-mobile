@@ -4,7 +4,6 @@ import com.grippo.toolkit.logger.internal.FileLogDestination
 import com.grippo.toolkit.logger.internal.LogDispatcher
 import com.grippo.toolkit.logger.internal.LogFileReader
 import com.grippo.toolkit.logger.internal.LogFileWriter
-import com.grippo.toolkit.logger.internal.PerformanceTracker
 import com.grippo.toolkit.logger.internal.getCallerLocation
 import com.grippo.toolkit.logger.internal.models.LogCategory
 
@@ -12,11 +11,6 @@ public object AppLogger {
 
     private val fileDestination = FileLogDestination(LogFileWriter.create())
     private val dispatcher = LogDispatcher(fileDestination)
-
-    public fun logFileContents(): String {
-        val location = dispatcher.location ?: return ""
-        return LogFileReader.read(location)
-    }
 
     public fun logFileContentsByCategory(): Map<String, List<String>> {
         val location = dispatcher.location ?: return emptyMap()
@@ -36,18 +30,6 @@ public object AppLogger {
 
     public object Network {
         public fun log(msg: String): Unit = present(LogCategory.NETWORK, msg)
-    }
-
-    public object Performance {
-        public fun navigationStarted(screen: String) {
-            PerformanceTracker.navigationStarted(screen)
-        }
-
-        public fun navigationFinished(screen: String) {
-            PerformanceTracker.navigationFinished(screen) { duration, summary ->
-                present(LogCategory.PERFORMANCE, "🧭 [$screen] → ${duration}ms\n$summary")
-            }
-        }
     }
 
     public object Mapping {

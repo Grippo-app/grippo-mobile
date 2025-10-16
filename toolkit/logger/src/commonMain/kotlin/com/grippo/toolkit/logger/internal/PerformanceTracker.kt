@@ -1,6 +1,13 @@
 package com.grippo.toolkit.logger.internal
 
+import com.grippo.toolkit.logger.internal.models.PerformanceSession
+
 internal expect object PerformanceTracker {
-    fun navigationStarted(screen: String)
-    fun navigationFinished(screen: String, onLogged: (durationMs: Long, summary: String) -> Unit)
+    fun navigationStarted(session: PerformanceSession)
+    fun navigationFinished(
+        session: PerformanceSession,
+        onLogged: (durationMs: Long, summary: String) -> Unit,
+    )
+
+    fun navigationCancelled(session: PerformanceSession)
 }

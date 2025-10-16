@@ -7,5 +7,4 @@ internal enum class LogCategory {
     ANSWER,
     NAVIGATION,
     MAPPING,
-    PERFORMANCE,
 }
