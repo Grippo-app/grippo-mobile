@@ -12,18 +12,16 @@ public object AppLogger {
 
     private val fileDestination = FileLogDestination(LogFileWriter.create())
     private val dispatcher = LogDispatcher(fileDestination)
-//
-//    init {
-//        configure()
-//    }
-//
-//    public fun configure(fileName: String = LogFileWriter.DEFAULT_FILE_NAME) {
-//        fileDestination.updateWriter(LogFileWriter.create(fileName))
-//    }
 
     public fun logFileContents(): String {
         val location = dispatcher.location ?: return ""
         return LogFileReader.read(location)
+    }
+
+    public fun logFileContentsByCategory(): Map<String, List<String>> {
+        val location = dispatcher.location ?: return emptyMap()
+        return LogFileReader.readGrouped(location)
+            .mapKeys { (category, _) -> category.name }
     }
 
     public object General {

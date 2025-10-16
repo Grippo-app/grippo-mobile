@@ -4,13 +4,13 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.UiText
+import com.grippo.debug.components.LoggerPage
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.segment.SegmentWidth
@@ -20,7 +20,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.equipments
-import com.grippo.toolkit.logger.AppLogger
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
@@ -55,11 +54,19 @@ internal fun DebugScreen(
         }
     )
 
-    Text(
-        text = AppLogger.logFileContents(),
-        style = AppTokens.typography.b14Med(),
-        color = AppTokens.colors.text.primary
-    )
+    when (state.selected) {
+        DebugMenu.General -> {
+
+        }
+
+        DebugMenu.Logger -> {
+            LoggerPage(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
+        }
+    }
 }
 
 @AppPreview

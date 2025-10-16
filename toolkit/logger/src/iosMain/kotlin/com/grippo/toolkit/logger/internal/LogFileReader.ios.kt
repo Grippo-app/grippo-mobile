@@ -1,5 +1,6 @@
 package com.grippo.toolkit.logger.internal
 
+import com.grippo.toolkit.logger.internal.models.LogCategory
 import kotlinx.cinterop.ObjCObjectVar
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.memScoped
@@ -26,5 +27,10 @@ internal actual object LogFileReader {
             )
             content ?: ""
         }
+    }
+
+    actual fun readGrouped(location: String): Map<LogCategory, List<String>> {
+        val content = read(location)
+        return LogFileParser.groupByCategory(content)
     }
 }

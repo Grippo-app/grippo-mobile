@@ -1,5 +1,6 @@
 package com.grippo.toolkit.logger.internal
 
+import com.grippo.toolkit.logger.internal.models.LogCategory
 import java.io.File
 
 internal actual object LogFileReader {
@@ -11,5 +12,10 @@ internal actual object LogFileReader {
         }
         return runCatching { file.readText() }
             .getOrElse { "" }
+    }
+
+    actual fun readGrouped(location: String): Map<LogCategory, List<String>> {
+        val content = read(location)
+        return LogFileParser.groupByCategory(content)
     }
 }
