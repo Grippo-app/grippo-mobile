@@ -11,25 +11,14 @@ internal object LogFileParser {
 
         val result = LinkedHashMap<LogCategory, MutableList<String>>()
         var currentCategory: LogCategory? = null
-        var currentTimestamp: String? = null
         var currentMessage = StringBuilder()
         var continuationPrefix = ""
 
         fun flush() {
             val category = currentCategory ?: return
-            val timestamp = currentTimestamp
             val messageBody = currentMessage.toString()
-            val formatted = buildString {
-                if (!timestamp.isNullOrBlank()) {
-                    append('[').append(timestamp).append(']')
-                    if (messageBody.isNotEmpty()) append(' ')
-                }
-                append(messageBody)
-            }
-
-            result.getOrPut(category) { mutableListOf() }.add(formatted)
+            result.getOrPut(category) { mutableListOf() }.add(messageBody)
             currentCategory = null
-            currentTimestamp = null
             currentMessage = StringBuilder()
             continuationPrefix = ""
         }
@@ -43,9 +32,8 @@ internal object LogFileParser {
                     runCatching { LogCategory.valueOf(categoryName) }.getOrNull() ?: continue
 
                 currentCategory = category
-                currentTimestamp = match.groupValues.getOrNull(1)
                 val headerLength = buildString {
-                    append('[').append(currentTimestamp ?: "").append(']')
+                    append('[').append(match.groupValues.getOrNull(1).orEmpty()).append(']')
                     append('[').append(categoryName).append(']')
                 }.length
                 continuationPrefix = if (headerLength > 0) " ".repeat(headerLength + 1) else ""
