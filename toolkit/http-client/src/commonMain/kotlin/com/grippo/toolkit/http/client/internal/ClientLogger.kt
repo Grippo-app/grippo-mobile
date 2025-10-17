@@ -12,19 +12,19 @@ internal class ClientLogger : Logger {
         val emojiLine = if ((message.contains("RESPONSE: 200") || message.contains("RESPONSE: 201"))
             && message.contains("REQUEST").not()
         ) {
-            " \uD83D\uDFE9\uD83D\uDFE9\uD83D\uDFE9\uD83D\uDFE9\uD83D\uDFE9\uD83D\uDFE9\uD83D\uDFE9\uD83D\uDFE9\uD83D\uDFE9\uD83D\uDFE9\uD83D\uDFE9\uD83D\uDFE9"
+            "\uD83D\uDFE9\uD83D\uDFE9\uD83D\uDFE9\uD83D\uDFE9\uD83D\uDFE9\uD83D\uDFE9"
         } else if (message.contains("REQUEST").not()) {
-            " \uD83D\uDFE5\uD83D\uDFE5\uD83D\uDFE5\uD83D\uDFE5\uD83D\uDFE5\uD83D\uDFE5\uD83D\uDFE5\uD83D\uDFE5\uD83D\uDFE5\uD83D\uDFE5\uD83D\uDFE5\uD83D\uDFE5"
+            "\uD83D\uDFE5\uD83D\uDFE5\uD83D\uDFE5\uD83D\uDFE5\uD83D\uDFE5\uD83D\uDFE5"
         } else {
-            "────────────────────────────────────────"
+            "\uD83D\uDFE8\uD83D\uDFE8\uD83D\uDFE8\uD83D\uDFE8\uD83D\uDFE8\uD83D\uDFE8"
         }
 
         val formattedMessage = message
             .split("\n")
-            .joinToString("\n│ ")
+            .joinToString("\n")
 
         AppLogger.Network.log(
-            "┌$emojiLine HTTP LOG $emojiLine\n│ $formattedMessage\n└────────────────────────────────────────"
+            "$emojiLine HTTP LOG $emojiLine\n$formattedMessage"
         )
     }
 }

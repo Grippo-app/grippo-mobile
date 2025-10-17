@@ -19,7 +19,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.equipments
+import com.grippo.design.resources.provider.debug
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
@@ -37,7 +37,7 @@ internal fun DebugScreen(
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
-        title = AppTokens.strings.res(Res.string.equipments),
+        title = AppTokens.strings.res(Res.string.debug),
         onBack = contract::onBack,
         content = {
             Segment(
@@ -63,7 +63,9 @@ internal fun DebugScreen(
             LoggerPage(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
+                    .weight(1f),
+                state = state.logger,
+                contract = contract
             )
         }
     }
