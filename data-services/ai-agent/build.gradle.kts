@@ -13,12 +13,12 @@ kotlin {
 
             // Issue https://youtrack.jetbrains.com/issue/KG-303/Packaging-issue-with-netty
             val koogAgent = libs.koog.agent.get()
-            val openrouterClient = libs.openrouter.client.get()
+            val googleClient = libs.google.client.get()
 
             val koogAgentNotation =
                 "${koogAgent.module.group}:${koogAgent.module.name}:${koogAgent.versionConstraint.requiredVersion}"
             val koogPromptNotation =
-                "${openrouterClient.module.group}:${openrouterClient.module.name}:${openrouterClient.versionConstraint.requiredVersion}"
+                "${googleClient.module.group}:${googleClient.module.name}:${googleClient.versionConstraint.requiredVersion}"
 
             implementation(koogAgentNotation) {
                 exclude(group = "io.netty")

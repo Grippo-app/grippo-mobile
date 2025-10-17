@@ -1,7 +1,7 @@
 package com.grippo.ai.agent.client
 
 import ai.koog.agents.core.agent.AIAgent
-import ai.koog.prompt.executor.clients.openrouter.OpenRouterLLMClient
+import ai.koog.prompt.executor.clients.google.GoogleLLMClient
 import ai.koog.prompt.executor.llms.SingleLLMPromptExecutor
 import ai.koog.prompt.executor.model.PromptExecutor
 import ai.koog.prompt.llm.LLMCapability
@@ -19,18 +19,22 @@ internal class KoogClient(httpClient: HttpClient) {
     private val clientProvider = httpClient
 
     private val model: LLModel = LLModel(
-        provider = LLMProvider.OpenRouter,
-        id = "qwen/qwen-2.5-7b-instruct",
+        provider = LLMProvider.Google,
+        id = "gemini-2.0-flash-lite",
         capabilities = listOf(LLMCapability.Completion, LLMCapability.Tools),
-        contextLength = 65_536
+        contextLength = 1_048_576
     )
 
     private val executor: PromptExecutor by lazy {
-        val client = OpenRouterLLMClient(
-            apiKey = "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",
+        val client = GoogleLLMClient(
+            apiKey = GEMINI_API_KEY,
             baseClient = clientProvider
         )
         SingleLLMPromptExecutor(client)
+    }
+    
+    private companion object {
+        private const val GEMINI_API_KEY = ""
     }
 
     suspend fun invoke(input: String, system: String): String {

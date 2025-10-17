@@ -40,7 +40,7 @@ ksp-plugin-api = { module = "com.google.devtools.ksp:symbol-processing-gradle-pl
 
 #Koog
 koog-agent = { module = "ai.koog:koog-agents", version.ref = "koog" }
-openrouter-client = { module = "ai.koog:prompt-executor-openrouter-client", version.ref = "koog" }
+google-client = { module = "ai.koog:prompt-executor-google-client", version.ref = "koog" }
 google-mlkit-translate = { module = "com.google.mlkit:translate", version.ref = "mlkit-translate" }
 
 #Decompose
