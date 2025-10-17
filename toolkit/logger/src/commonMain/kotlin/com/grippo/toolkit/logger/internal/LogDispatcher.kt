@@ -8,9 +8,7 @@ internal interface LogDestination {
     fun write(entry: LogEntry)
 }
 
-internal class LogDispatcher(
-    private val destination: LogDestination,
-) {
+internal class LogDispatcher(private val destination: LogDestination) {
     var listener: ((LogCategory, String) -> Unit)? = null
 
     val location: String?

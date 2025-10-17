@@ -2,9 +2,7 @@ package com.grippo.toolkit.logger.internal
 
 import com.grippo.toolkit.logger.internal.models.LogEntry
 
-internal class FileLogDestination(
-    initialWriter: LogFileWriter,
-) : LogDestination {
+internal class FileLogDestination(initialWriter: LogFileWriter) : LogDestination {
 
     private var writer: LogFileWriter = initialWriter
 
