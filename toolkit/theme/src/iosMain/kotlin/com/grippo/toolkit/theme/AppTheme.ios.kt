@@ -8,7 +8,7 @@ import platform.UIKit.UIScreen
 import platform.UIKit.UIUserInterfaceStyle
 
 @OptIn(InternalComposeUiApi::class)
-public actual object LocalAppTheme {
+public actual object AppTheme {
     public actual val current: Boolean
         @Composable get() = LocalSystemTheme.current == SystemTheme.Dark
 

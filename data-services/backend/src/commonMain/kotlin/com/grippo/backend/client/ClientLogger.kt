@@ -1,4 +1,4 @@
-package com.grippo.toolkit.http.client.internal
+package com.grippo.backend.client
 
 import com.grippo.toolkit.logger.AppLogger
 import io.ktor.client.plugins.logging.Logger

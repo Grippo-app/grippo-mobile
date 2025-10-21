@@ -14,8 +14,8 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import com.arkivanov.decompose.retainedComponent
-import com.grippo.toolkit.theme.LocalAppTheme
 import com.grippo.shared.root.RootComponent
+import com.grippo.toolkit.theme.AppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
             )
         }
         setContent {
-            SystemBarsIcons(LocalAppTheme.current)
+            SystemBarsIcons(AppTheme.current)
             rootComponent.Render()
         }
     }

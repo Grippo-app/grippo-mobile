@@ -14,7 +14,6 @@ kotlin {
             implementation(projects.uiCore.error.errorProvider)
 
             implementation(libs.ktor.client.core)
-            implementation(libs.ktor.client.logging)
             implementation(libs.kotlinx.serialization.json)
         }
 

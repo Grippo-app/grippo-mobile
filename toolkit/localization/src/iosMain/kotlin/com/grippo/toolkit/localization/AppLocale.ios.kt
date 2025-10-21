@@ -12,7 +12,7 @@ import platform.Foundation.preferredLanguages
 import platform.UIKit.UIApplicationDidBecomeActiveNotification
 import platform.UIKit.UIApplicationWillEnterForegroundNotification
 
-public actual object LocalAppLocale {
+public actual object AppLocale {
 
     public actual val current: String
         @Composable get() {

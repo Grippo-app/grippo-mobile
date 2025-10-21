@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
 import java.util.Locale
 
-public actual object LocalAppLocale {
+public actual object AppLocale {
 
     public actual val current: String
         @Composable get() {

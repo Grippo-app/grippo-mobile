@@ -16,7 +16,7 @@ import com.grippo.database.models.ExerciseExamplePack
 import com.grippo.database.models.TrainingPack
 import com.grippo.entity.domain.equipment.toDomain
 import com.grippo.toolkit.date.utils.DateTimeUtils
-import com.grippo.toolkit.localization.LocalAppLocale
+import com.grippo.toolkit.localization.AppLocale
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
@@ -46,7 +46,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
 ) {
 
     suspend fun suggest(now: LocalDateTime = DateTimeUtils.now()): Result<ExerciseExampleSuggestion?> {
-        val locale = LocalAppLocale.current()
+        val locale = AppLocale.current()
 
         val catalog = loadExampleCatalog() ?: return Result.failure(
             AppError.Expected(
@@ -719,7 +719,7 @@ internal class ExerciseExampleSuggestionPromptBuilder(
             val pct = pack.bundle.percentage
             val id = pack.muscle.id
             val name = pack.muscle.name
-            val rh: Int? = pack.muscle.recoveryTimeHours
+            val rh: Int = pack.muscle.recoveryTimeHours
             if (pct > 0 && id.isNotBlank() && name.isNotBlank()) {
                 RawShare(id, name, pct, rh)
             } else null

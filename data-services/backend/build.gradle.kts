@@ -11,10 +11,12 @@ kotlin {
             implementation(projects.toolkit.serialization)
             implementation(projects.toolkit.httpClient)
             implementation(projects.toolkit.logger)
+            implementation(projects.toolkit.localization)
             implementation(projects.dataServices.database)
 
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.ktor.client.logging)
             implementation(libs.ktor.auth)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.ktor.client.content.negotiation)

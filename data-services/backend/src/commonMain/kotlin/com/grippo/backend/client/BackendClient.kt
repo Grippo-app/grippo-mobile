@@ -1,14 +1,19 @@
 package com.grippo.backend.client
 
+import com.grippo.toolkit.localization.AppLocale
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.request.header
 import io.ktor.client.request.request
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.URLProtocol
 import io.ktor.http.contentType
@@ -24,6 +29,7 @@ import org.koin.core.annotation.Single
 internal class BackendClient(
     httpClient: HttpClient,
     tokenProvider: TokenProvider,
+    clientLogger: ClientLogger,
     json: Json,
 ) {
     private val clientProvider = httpClient.config {
@@ -31,6 +37,11 @@ internal class BackendClient(
             requestTimeoutMillis = 10_000
             connectTimeoutMillis = 10_000
             socketTimeoutMillis = 10_000
+        }
+
+        install(Logging) {
+            level = LogLevel.ALL
+            logger = clientLogger
         }
 
         install(Auth) {
@@ -48,6 +59,7 @@ internal class BackendClient(
             host = "grippo-app.com"
             url { protocol = URLProtocol.HTTPS }
             contentType(ContentType.Application.Json)
+            header(HttpHeaders.AcceptLanguage, AppLocale.current())
         }
     }
 

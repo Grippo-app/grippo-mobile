@@ -32,8 +32,8 @@ import com.grippo.shared.root.RootComponent.Child.Home
 import com.grippo.shared.root.RootComponent.Child.Profile
 import com.grippo.shared.root.RootComponent.Child.Training
 import com.grippo.toolkit.date.utils.DateFormatting
-import com.grippo.toolkit.localization.LocalAppLocale
-import com.grippo.toolkit.theme.LocalAppTheme
+import com.grippo.toolkit.localization.AppLocale
+import com.grippo.toolkit.theme.AppTheme
 import com.grippo.training.TrainingComponent
 
 public class RootComponent(
@@ -159,8 +159,8 @@ public class RootComponent(
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
 
-        val systemIsDark = LocalAppTheme.current
-        val systemLocaleTag = LocalAppLocale.current
+        val systemIsDark = AppTheme.current
+        val systemLocaleTag = AppLocale.current
 
         LaunchedEffect(systemLocaleTag) {
             DateFormatting.install(systemLocaleTag)
