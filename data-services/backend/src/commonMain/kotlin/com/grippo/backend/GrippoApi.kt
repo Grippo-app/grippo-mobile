@@ -11,6 +11,7 @@ import com.grippo.backend.dto.equipment.EquipmentResponse
 import com.grippo.backend.dto.exercise.example.GetExerciseExampleResponse
 import com.grippo.backend.dto.muscle.MuscleGroupResponse
 import com.grippo.backend.dto.muscle.MuscleResponse
+import com.grippo.backend.dto.training.ExerciseResponse
 import com.grippo.backend.dto.training.TrainingBody
 import com.grippo.backend.dto.training.TrainingResponse
 import com.grippo.backend.dto.user.IdsBody
@@ -198,6 +199,13 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         return request(
             method = HttpMethod.Get,
             path = "/exercise-examples/$id"
+        )
+    }
+
+    public suspend fun getRecentExercisesByExampleId(id: String): Result<List<ExerciseResponse>> {
+        return request(
+            method = HttpMethod.Get,
+            path = "exercise-metrics/exercise-example/${id}/recent"
         )
     }
 

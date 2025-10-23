@@ -45,7 +45,7 @@ public fun GetExerciseExampleResponse.toEntityOrNull(): ExerciseExampleEntity? {
         "ExerciseExampleResponse.experience is null"
     } ?: return null
 
-    val usageCount = AppLogger.Mapping.log(usageCount) {
+    val entityUsageCount = AppLogger.Mapping.log(usageCount) {
         "ExerciseExampleResponse.usageCount is null"
     } ?: return null
 
@@ -60,7 +60,7 @@ public fun GetExerciseExampleResponse.toEntityOrNull(): ExerciseExampleEntity? {
         category = entityCategory,
         experience = entityExperience,
         imageUrl = entity?.imageUrl,
-        usageCount = usageCount,
+        usageCount = entityUsageCount,
         lastUsed = lastUsed
     )
 }

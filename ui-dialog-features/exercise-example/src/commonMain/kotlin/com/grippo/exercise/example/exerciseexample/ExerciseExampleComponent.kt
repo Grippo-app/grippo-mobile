@@ -19,6 +19,7 @@ public class ExerciseExampleComponent(
         ExerciseExampleViewModel(
             id = id,
             exerciseExampleFeature = getKoin().get(),
+            exerciseMetricsFeature = getKoin().get(),
             stringProvider = getKoin().get<StringProvider>(),
             colorProvider = getKoin().get<ColorProvider>(),
         )

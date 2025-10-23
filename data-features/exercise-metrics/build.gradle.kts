@@ -9,13 +9,10 @@ kotlin {
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.dataServices.database)
         implementation(projects.dataServices.backend)
-        implementation(projects.dataMappers.domainToEntity)
+        implementation(projects.dataMappers.dtoToDomain)
         implementation(projects.dataMappers.entityToDomain)
-        implementation(projects.dataMappers.dtoToEntity)
-        implementation(projects.dataMappers.domainToDto)
-        implementation(projects.toolkit.dateUtils)
+        implementation(projects.uiCore.error.errorProvider)
 
         implementation(libs.kotlinx.coroutines.core)
-        implementation(libs.datetime)
     }
 }

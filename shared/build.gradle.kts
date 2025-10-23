@@ -47,6 +47,7 @@ kotlin {
         implementation(projects.dataFeatures.trainings)
         implementation(projects.dataFeatures.exerciseExamples)
         implementation(projects.dataFeatures.aiSuggestions)
+        implementation(projects.dataFeatures.exerciseMetrics)
 
         implementation(projects.dataMappers.domainToState)
 

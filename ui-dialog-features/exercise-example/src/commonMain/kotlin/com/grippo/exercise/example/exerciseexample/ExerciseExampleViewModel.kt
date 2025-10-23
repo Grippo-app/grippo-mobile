@@ -1,17 +1,21 @@
 package com.grippo.exercise.example.exerciseexample
 
-import com.grippo.toolkit.calculation.AnalyticsApi
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
+import com.grippo.data.features.api.exercise.metrics.ExerciseMetricsFeature
+import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.domain.state.exercise.example.toState
+import com.grippo.domain.state.training.toState
+import com.grippo.toolkit.calculation.AnalyticsApi
 import kotlinx.coroutines.flow.onEach
 
 public class ExerciseExampleViewModel(
     id: String,
     private val exerciseExampleFeature: ExerciseExampleFeature,
+    private val exerciseMetricsFeature: ExerciseMetricsFeature,
     stringProvider: StringProvider,
     colorProvider: ColorProvider,
 ) : BaseViewModel<ExerciseExampleState, ExerciseExampleDirection, ExerciseExampleLoader>(
@@ -28,6 +32,16 @@ public class ExerciseExampleViewModel(
         safeLaunch {
             exerciseExampleFeature.getExerciseExampleById(id).getOrThrow()
         }
+
+        safeLaunch {
+            val exercises = exerciseMetricsFeature.getRecentExercisesByExampleId(id).getOrThrow()
+            provideRecentExercises(exercises)
+        }
+    }
+
+    private fun provideRecentExercises(value: List<Exercise>) {
+        val exercises = value.toState()
+        update { it.copy(recent = exercises) }
     }
 
     private suspend fun provideExerciseExample(value: ExerciseExample?) {
