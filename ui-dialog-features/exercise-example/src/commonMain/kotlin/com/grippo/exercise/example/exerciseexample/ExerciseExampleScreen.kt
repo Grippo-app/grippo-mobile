@@ -161,7 +161,7 @@ internal fun ExerciseExampleScreen(
                                 .fillMaxWidth()
                                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
                             value = item,
-                            style = ExerciseCardStyle.Small {},
+                            style = ExerciseCardStyle.Medium {},
                         )
                     }
 

@@ -100,7 +100,7 @@ internal fun DraftTrainingScreen(
                 ExerciseCard(
                     modifier = Modifier.fillMaxWidth(),
                     value = item,
-                    style = ExerciseCardStyle.Small {},
+                    style = ExerciseCardStyle.Medium {},
                 )
             }
         }

@@ -92,7 +92,7 @@ internal fun ExercisesPage(
                                 .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
                                 .fillMaxWidth(),
                             value = exercise,
-                            style = ExerciseCardStyle.Medium(
+                            style = ExerciseCardStyle.Large(
                                 onClick = editExerciseProvider
                             ),
                         )

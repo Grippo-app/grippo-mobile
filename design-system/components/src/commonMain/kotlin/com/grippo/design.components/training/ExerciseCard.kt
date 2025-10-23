@@ -5,20 +5,20 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.stubExercise
+import com.grippo.design.components.training.internal.ExerciseCardLarge
 import com.grippo.design.components.training.internal.ExerciseCardMedium
-import com.grippo.design.components.training.internal.ExerciseCardSmall
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
 @Immutable
 public sealed interface ExerciseCardStyle {
     @Immutable
-    public data class Medium(
+    public data class Large(
         val onClick: () -> Unit
     ) : ExerciseCardStyle
 
     @Immutable
-    public data class Small(
+    public data class Medium(
         val onClick: () -> Unit
     ) : ExerciseCardStyle
 }
@@ -31,13 +31,13 @@ public fun ExerciseCard(
 ) {
 
     when (style) {
-        is ExerciseCardStyle.Medium -> ExerciseCardMedium(
+        is ExerciseCardStyle.Large -> ExerciseCardLarge(
             modifier = modifier,
             value = value,
             onClick = style.onClick
         )
 
-        is ExerciseCardStyle.Small -> ExerciseCardSmall(
+        is ExerciseCardStyle.Medium -> ExerciseCardMedium(
             modifier = modifier,
             value = value,
             onClick = style.onClick
@@ -51,13 +51,13 @@ private fun ExerciseCardPreview() {
     PreviewContainer {
         ExerciseCard(
             value = stubExercise(),
-            style = ExerciseCardStyle.Small(
+            style = ExerciseCardStyle.Medium(
                 onClick = {}
             ),
         )
         ExerciseCard(
             value = stubExercise(),
-            style = ExerciseCardStyle.Medium(
+            style = ExerciseCardStyle.Large(
                 onClick = {}
             ),
         )

@@ -148,7 +148,7 @@ internal fun HomeTrainingsScreen(
                             .background(AppTokens.colors.background.card, shape)
                             .fillMaxWidth(),
                         value = exercise,
-                        style = ExerciseCardStyle.Small(clickProvider)
+                        style = ExerciseCardStyle.Medium(clickProvider)
                     )
                 }
             }
