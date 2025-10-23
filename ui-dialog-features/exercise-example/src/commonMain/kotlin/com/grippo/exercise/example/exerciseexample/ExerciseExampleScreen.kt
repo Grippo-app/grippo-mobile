@@ -145,15 +145,6 @@ internal fun ExerciseExampleScreen(
             if (state.recent.isNotEmpty()) {
                 Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-                Text(
-                    modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                    text = "Last used",
-                    style = AppTokens.typography.b14Semi(),
-                    color = AppTokens.colors.text.secondary
-                )
-
-                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
                 state.recent.forEachIndexed { index, item ->
                     key(item.id) {
                         ExerciseCard(
@@ -161,7 +152,7 @@ internal fun ExerciseExampleScreen(
                                 .fillMaxWidth()
                                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
                             value = item,
-                            style = ExerciseCardStyle.Medium {},
+                            style = ExerciseCardStyle.Small,
                         )
                     }
 
