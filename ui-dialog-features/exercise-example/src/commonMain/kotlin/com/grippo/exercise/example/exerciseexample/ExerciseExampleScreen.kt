@@ -12,11 +12,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.examples.stubExerciseExample
+import com.grippo.core.state.trainings.stubExercises
 import com.grippo.design.components.chart.MuscleLoadChart
 import com.grippo.design.components.chip.Chip
 import com.grippo.design.components.chip.ChipLabel
@@ -27,6 +29,8 @@ import com.grippo.design.components.equipment.EquipmentsCard
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
 import com.grippo.design.components.text.DescriptionText
+import com.grippo.design.components.training.ExerciseCard
+import com.grippo.design.components.training.ExerciseCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -129,13 +133,43 @@ internal fun ExerciseExampleScreen(
         }
 
         if (example.equipments.isNotEmpty()) {
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
             EquipmentsCard(
                 modifier = Modifier.fillMaxWidth(),
                 value = example.equipments,
                 contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
             )
+
+            if (state.recent.isNotEmpty()) {
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+                Text(
+                    modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                    text = "Last used",
+                    style = AppTokens.typography.b14Semi(),
+                    color = AppTokens.colors.text.secondary
+                )
+
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+                state.recent.forEachIndexed { index, item ->
+                    key(item.id) {
+                        ExerciseCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                            value = item,
+                            style = ExerciseCardStyle.Small {},
+                        )
+                    }
+
+                    if (index < state.recent.lastIndex) {
+                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+                    }
+                }
+            }
         }
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
@@ -149,9 +183,10 @@ private fun ScreenPreview1() {
         ExerciseExampleScreen(
             state = ExerciseExampleState(
                 example = stubExerciseExample(),
+                recent = stubExercises()
             ),
             contract = ExerciseExampleContract.Empty,
-            loaders = persistentSetOf()
+            loaders = persistentSetOf(),
         )
     }
 }
@@ -163,6 +198,7 @@ private fun ScreenPreview2() {
         ExerciseExampleScreen(
             state = ExerciseExampleState(
                 example = stubExerciseExample(),
+                recent = stubExercises()
             ),
             contract = ExerciseExampleContract.Empty,
             loaders = persistentSetOf()
