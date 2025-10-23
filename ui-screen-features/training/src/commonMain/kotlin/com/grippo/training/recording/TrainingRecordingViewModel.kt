@@ -126,21 +126,30 @@ internal class TrainingRecordingViewModel(
     }
 
     override fun onAddExercise() {
-        val lastExampleId = state.value.exercises
-            .lastOrNull()
-            ?.exerciseExample
-            ?.id
+        val lastTargetMuscleGroupId = run {
+            val exercises = state.value.exercises.reversed()
+            val examples = state.value.examples
+            val muscles = state.value.muscles
 
-        val lastTargetMuscleId = state.value.examples
-            .firstOrNull { it.value.id == lastExampleId }
-            ?.bundles
-            ?.maxByOrNull { (it.percentage as? PercentageFormatState.Valid)?.value ?: 0 }
-            ?.muscle
-            ?.id
+            for (exercise in exercises) {
+                val example = examples.firstOrNull { it.value.id == exercise.exerciseExample.id } ?: continue
 
-        val lastTargetMuscleGroupId = state.value.muscles
-            .find { it.muscles.any { a -> a.value.id == lastTargetMuscleId } }
-            ?.id
+                val muscleId = example.bundles
+                    .maxByOrNull { (it.percentage as? PercentageFormatState.Valid)?.value ?: 0 }
+                    ?.muscle
+                    ?.id ?: continue
+
+                val muscleGroupId = muscles
+                    .find { it.muscles.any { a -> a.value.id == muscleId } }
+                    ?.id
+
+                if (muscleGroupId != null) {
+                    return@run muscleGroupId
+                }
+            }
+
+            null
+        }
 
         val dialog = DialogConfig.ExerciseExamplePicker(
             targetMuscleGroupId = lastTargetMuscleGroupId,
