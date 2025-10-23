@@ -7,6 +7,7 @@ import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.stubExercise
 import com.grippo.design.components.training.internal.ExerciseCardLarge
 import com.grippo.design.components.training.internal.ExerciseCardMedium
+import com.grippo.design.components.training.internal.ExerciseCardSmall
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
@@ -21,6 +22,9 @@ public sealed interface ExerciseCardStyle {
     public data class Medium(
         val onClick: () -> Unit
     ) : ExerciseCardStyle
+
+    @Immutable
+    public data object Small : ExerciseCardStyle
 }
 
 @Composable
@@ -42,6 +46,11 @@ public fun ExerciseCard(
             value = value,
             onClick = style.onClick
         )
+
+        is ExerciseCardStyle.Small -> ExerciseCardSmall(
+            modifier = modifier,
+            value = value,
+        )
     }
 }
 
@@ -49,6 +58,10 @@ public fun ExerciseCard(
 @Composable
 private fun ExerciseCardPreview() {
     PreviewContainer {
+        ExerciseCard(
+            value = stubExercise(),
+            style = ExerciseCardStyle.Small
+        )
         ExerciseCard(
             value = stubExercise(),
             style = ExerciseCardStyle.Medium(
