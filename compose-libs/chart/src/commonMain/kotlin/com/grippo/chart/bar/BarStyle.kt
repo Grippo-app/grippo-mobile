@@ -35,6 +35,21 @@ public data class BarStyle(
     @Immutable
     public data class Layout(
         val labelPadding: Dp,
+        val chartPadding: ChartPadding = ChartPadding(),
+        val minBarHeight: Dp = 0.dp,
+        val yAxisLabelSpacing: Dp = labelPadding,
+        val valueLabelSpacing: Dp = labelPadding,
+        val baselineSpacing: Dp = 0.dp,
+        val barsAxisInsetStart: Dp = 0.dp,
+        val barsAxisInsetEnd: Dp = 0.dp,
+    )
+
+    @Immutable
+    public data class ChartPadding(
+        val start: Dp = 0.dp,
+        val top: Dp = 0.dp,
+        val end: Dp = 0.dp,
+        val bottom: Dp = 0.dp,
     )
 
     /** Grid config (horizontal lines). */
@@ -59,6 +74,7 @@ public data class BarStyle(
             val formatter: (Float, BarData) -> String,
             val tickMarkColor: Color,
             val tickMarkWidth: Dp,
+            val tickMarkLength: Dp = 4.dp,
         ) : YAxis
     }
 

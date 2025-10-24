@@ -12,7 +12,8 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.LayoutDirection
+import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.log10
@@ -52,7 +53,7 @@ public fun BarChart(
         var yMaxTarget = (rawMax + headroom)
 
         // Predict vertical space needed for Above labels and enlarge max if necessary
-        val valuePadPx = style.layout.labelPadding.toPx()
+        val valuePadPx = style.layout.valueLabelSpacing.toPx()
         val valueAboveMaxH = when (val vCfg = style.values) {
             is BarStyle.Values.Above -> data.items.maxOf {
                 val txt = vCfg.formatter(it.value, data)
@@ -108,7 +109,7 @@ public fun BarChart(
         val yTickCount = ((maxY - minY) / yStep).toInt().coerceAtLeast(1)
 
         // ----- Gutters (inside-only; no external paddings) -----
-        val labelPad = style.layout.labelPadding.toPx()
+        val yAxisLabelPad = style.layout.yAxisLabelSpacing.toPx()
 
         val yAxisSpecs = when (val yCfg = style.yAxis) {
             is BarStyle.YAxis.Labels -> (0..yTickCount).map { i ->
@@ -125,7 +126,7 @@ public fun BarChart(
                 val maxLabelW = yAxisSpecs.maxOf { (text, style) ->
                     measurer.measure(AnnotatedString(text), style).size.width
                 }
-                leftGutter = maxLabelW + labelPad
+                leftGutter = maxLabelW + yAxisLabelPad
             }
 
             is BarStyle.YAxis.None -> leftGutter = 0f
@@ -154,11 +155,33 @@ public fun BarChart(
         val topGutter = 0f // chart area goes to the very top; values clamp to y>=0
         val rightGutter = 0f
 
-        val chart =
-            Rect(leftGutter, topGutter, size.width - rightGutter, size.height - bottomGutter)
+        val layoutDir = layoutDirection
+        val padding = style.layout.chartPadding
+        val startPadding = when (layoutDir) {
+            LayoutDirection.Ltr -> padding.start.toPx()
+            LayoutDirection.Rtl -> padding.end.toPx()
+        }
+        val endPadding = when (layoutDir) {
+            LayoutDirection.Ltr -> padding.end.toPx()
+            LayoutDirection.Rtl -> padding.start.toPx()
+        }
+        val topPadding = padding.top.toPx()
+        val bottomPadding = padding.bottom.toPx()
+
+        val chart = Rect(
+            leftGutter + startPadding,
+            topGutter + topPadding,
+            size.width - rightGutter - endPadding,
+            size.height - bottomGutter - bottomPadding
+        )
         val chartW = chart.width.coerceAtLeast(0f)
         val chartH = chart.height.coerceAtLeast(0f)
         if (chartW <= 0f || chartH <= 0f) return@Canvas
+
+        val barsAreaLeft = chart.left + style.layout.barsAxisInsetStart.toPx()
+        val barsAreaRight = chart.right - style.layout.barsAxisInsetEnd.toPx()
+        val barsAreaWidth = (barsAreaRight - barsAreaLeft).coerceAtLeast(0f)
+        if (barsAreaWidth <= 0f) return@Canvas
 
         fun mapY(v: Float): Float = chart.bottom - (v - minY) / spanY * chartH
 
@@ -183,7 +206,7 @@ public fun BarChart(
                     val yVal = minY + i * yStep
                     val y = mapY(yVal)
                     val layout = layouts[i]
-                    val x = (chart.left - labelPad - layout.size.width)
+                    val x = (chart.left - yAxisLabelPad - layout.size.width)
                         .coerceAtLeast(0f)
                     val top = (y - layout.size.height / 2f)
                         .coerceIn(chart.top, chart.bottom - layout.size.height.toFloat())
@@ -197,7 +220,7 @@ public fun BarChart(
                     drawLine(
                         color = yCfg.tickMarkColor,
                         start = Offset(chart.left, y),
-                        end = Offset(chart.left + 4.dp.toPx(), y),
+                        end = Offset(chart.left + yCfg.tickMarkLength.toPx(), y),
                         strokeWidth = yCfg.tickMarkWidth.toPx()
                     )
                 }
@@ -239,7 +262,7 @@ public fun BarChart(
                 val ratio = if (nBars <= 1) {
                     0f
                 } else {
-                    val wEqual = chartW / (2f * nBars - 1f)
+                    val wEqual = barsAreaWidth / (2f * nBars - 1f)
                     val midPx = sizing.midThresholdDp.toPx()
                     val densePx = sizing.denseThresholdDp.toPx()
 
@@ -251,44 +274,48 @@ public fun BarChart(
                 }
 
                 val baseWidth = when {
-                    nBars <= 1 -> chartW
-                    ratio == 1f -> chartW / (2f * nBars - 1f)
-                    else -> chartW / (nBars + (nBars - 1) * ratio)
+                    nBars <= 1 -> barsAreaWidth
+                    ratio == 1f -> barsAreaWidth / (2f * nBars - 1f)
+                    else -> barsAreaWidth / (nBars + (nBars - 1) * ratio)
                 }
 
                 val width = baseWidth
                     .coerceAtLeast(0f)
-                    .coerceAtMost(maxWidthPx)
+                    .coerceAtMost(min(maxWidthPx, barsAreaWidth))
 
                 val gap = if (nBars <= 1) 0f else ratio * width
-                Triple(width, gap, chart.left)
+                val totalWidth = if (nBars <= 0) 0f else nBars * width + (nBars - 1) * gap
+                val startOffset = ((barsAreaWidth - totalWidth) / 2f).coerceAtLeast(0f)
+                Triple(width, gap, barsAreaLeft + startOffset)
             }
 
             is BarStyle.BarsSizing.FixedBarWidth -> {
                 val desired = sizing.width.toPx()
-                val fitted = if (nBars > 0) min(desired, chartW / nBars) else 0f
-                val gap = if (nBars > 1) (chartW - fitted * nBars) / (nBars - 1) else 0f
-                Triple(fitted, gap.coerceAtLeast(0f), chart.left)
+                val fitted = if (nBars > 0) min(desired, barsAreaWidth / nBars) else 0f
+                val gap = if (nBars > 1) (barsAreaWidth - fitted * nBars) / (nBars - 1) else 0f
+                Triple(fitted, gap.coerceAtLeast(0f), barsAreaLeft)
             }
 
             is BarStyle.BarsSizing.Explicit -> {
                 val bw0 = sizing.width.toPx()
                 val sp0 = sizing.spacing.toPx()
-                Triple(bw0, sp0, chart.left)
+                Triple(bw0, sp0, barsAreaLeft)
             }
 
             is BarStyle.BarsSizing.GapAsBarRatio -> {
                 // Gap = ratio * barWidth; solve bar width from chart width
                 val r = sizing.ratio.coerceAtLeast(0f)
-                val w = if (nBars == 0) 0f else chartW / (nBars + (nBars - 1) * r)
+                val w = if (nBars == 0) 0f else barsAreaWidth / (nBars + (nBars - 1) * r)
                 val g = r * w
-                Triple(w, g, chart.left)
+                Triple(w, g, barsAreaLeft)
             }
         }
 
         val rx = style.bars.corner.toPx()
         val strokeW = style.bars.strokeWidth.toPx()
         val baseY = mapY(0f)
+        val minBarHeightPx = style.layout.minBarHeight.toPx()
+        val baselineSpacingPx = style.layout.baselineSpacing.toPx()
 
         // Collect value labels to draw after bars (so they are never occluded by later bars)
         data class ValueLabel(val layout: TextLayoutResult, val x: Float, val y: Float)
@@ -298,8 +325,30 @@ public fun BarChart(
         data.items.forEachIndexed { i, e ->
             val left = startX + i * (bw + sp)
             val yVal = e.value
-            val top = if (yVal >= 0f) mapY(yVal) else baseY
-            val bottom = if (yVal >= 0f) baseY else mapY(yVal)
+            var top = if (yVal >= 0f) mapY(yVal) else baseY
+            var bottom = if (yVal >= 0f) baseY else mapY(yVal)
+
+            if (baselineSpacingPx > 0f && yVal != 0f) {
+                if (yVal > 0f) {
+                    bottom = (baseY - baselineSpacingPx).coerceAtMost(baseY)
+                    if (bottom < top) bottom = top
+                } else if (yVal < 0f) {
+                    top = (baseY + baselineSpacingPx).coerceAtLeast(baseY)
+                    if (bottom < top) top = bottom
+                }
+            }
+
+            if (minBarHeightPx > 0f && yVal != 0f) {
+                val height = abs(bottom - top)
+                if (height < minBarHeightPx) {
+                    if (yVal > 0f) {
+                        top = (bottom - minBarHeightPx).coerceAtLeast(chart.top)
+                    } else {
+                        bottom = (top + minBarHeightPx).coerceAtMost(chart.bottom)
+                    }
+                }
+            }
+
             val barRect = Rect(left, top, left + bw, bottom)
 
             // track shape is not typical for bars; draw only foreground
@@ -336,7 +385,7 @@ public fun BarChart(
                 is BarStyle.Values.Above -> {
                     val txt = vCfg.formatter(e.value, data)
                     val layout = measurer.measure(AnnotatedString(txt), vCfg.textStyle)
-                    val y = (top - style.layout.labelPadding.toPx() - layout.size.height)
+                    val y = (top - style.layout.valueLabelSpacing.toPx() - layout.size.height)
                         .coerceAtLeast(0f)
                     val x = left + (bw - layout.size.width) / 2f
                     deferredValueLabels += ValueLabel(layout, x, y)
