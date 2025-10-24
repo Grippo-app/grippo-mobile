@@ -33,25 +33,28 @@ public class DebugViewModel : BaseViewModel<DebugState, DebugDirection, DebugLoa
     }
 
     private fun loadLogs() {
-        val logsByCategory = AppLogger.logFileContentsByCategory()
+        safeLaunch(loader = DebugLoader.Logs) {
 
-        update { state ->
-            val categories = logsByCategory.keys.toPersistentList()
-            val persistentLogs = logsByCategory
-                .mapValues { (_, messages) -> messages.asReversed().toPersistentList() }
-                .toPersistentMap()
+            val logsByCategory = AppLogger.logFileContentsByCategory()
 
-            val selectedCategory = state.logger.selectedCategory
-                ?.takeIf { persistentLogs.containsKey(it) }
-                ?: categories.firstOrNull()
+            update { state ->
+                val categories = logsByCategory.keys.toPersistentList()
+                val persistentLogs = logsByCategory
+                    .mapValues { (_, messages) -> messages.asReversed().toPersistentList() }
+                    .toPersistentMap()
 
-            state.copy(
-                logger = state.logger.copy(
-                    categories = categories,
-                    selectedCategory = selectedCategory,
-                    logsByCategory = persistentLogs
+                val selectedCategory = state.logger.selectedCategory
+                    ?.takeIf { persistentLogs.containsKey(it) }
+                    ?: categories.firstOrNull()
+
+                state.copy(
+                    logger = state.logger.copy(
+                        categories = categories,
+                        selectedCategory = selectedCategory,
+                        logsByCategory = persistentLogs
+                    )
                 )
-            )
+            }
         }
     }
 }

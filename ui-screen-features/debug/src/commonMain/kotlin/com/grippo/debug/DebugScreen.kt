@@ -65,7 +65,8 @@ internal fun DebugScreen(
                     .fillMaxWidth()
                     .weight(1f),
                 state = state.logger,
-                contract = contract
+                contract = contract,
+                loaders = loaders
             )
         }
     }

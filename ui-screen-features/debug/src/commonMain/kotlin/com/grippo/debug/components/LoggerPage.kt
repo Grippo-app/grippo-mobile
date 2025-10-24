@@ -3,6 +3,7 @@ package com.grippo.debug.components
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,19 +16,28 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.formatters.UiText
 import com.grippo.debug.DebugContract
+import com.grippo.debug.DebugLoader
 import com.grippo.debug.LoggerState
+import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.segment.SegmentWidth
 import com.grippo.design.core.AppTokens
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun LoggerPage(
     modifier: Modifier = Modifier,
     state: LoggerState,
-    contract: DebugContract
+    contract: DebugContract,
+    loaders: ImmutableSet<DebugLoader>
 ) {
+    if (loaders.contains(DebugLoader.Logs)) {
+        Loader(modifier = Modifier.fillMaxSize())
+        return
+    }
+
     Column(modifier = modifier) {
         val logItems = remember(state.categories) {
             state.categories.map { it to UiText.Str(it) }.toPersistentList()

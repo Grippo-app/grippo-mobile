@@ -17,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -41,7 +40,10 @@ public fun Loader(modifier: Modifier = Modifier) {
 
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+        verticalArrangement = Arrangement.spacedBy(
+            AppTokens.dp.contentPadding.content,
+            Alignment.CenterVertically
+        ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
@@ -49,7 +51,7 @@ public fun Loader(modifier: Modifier = Modifier) {
                 .size(AppTokens.dp.loader.icon)
                 .rotate(rotation),
             imageVector = AppTokens.icons.SystemRestart,
-            tint = AppTokens.colors.background.card,
+            tint = AppTokens.colors.icon.secondary,
             contentDescription = null
         )
 
