@@ -38,6 +38,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.last_used_label
 import com.grippo.design.resources.provider.more
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -180,7 +181,7 @@ internal fun ExerciseExampleScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                text = "Last used",
+                text = AppTokens.strings.res(Res.string.last_used_label),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = AppTokens.typography.h6(),
