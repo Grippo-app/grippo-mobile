@@ -1,15 +1,15 @@
 package com.grippo.design.components.cards.selectable
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.components.cards.selectable.internal.ToggleSelectableCardMedium
 import com.grippo.design.components.cards.selectable.internal.ToggleSelectableCardSmall
+import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.icons.SystemRestart
 
 @Immutable
 public sealed class ToggleSelectableCardStyle(
@@ -58,7 +58,7 @@ private fun ToggleSelectableCardMediumPreview() {
         ToggleSelectableCardVariants(
             ToggleSelectableCardStyle.Medium(
                 title = "Test Title",
-                icon = Icons.Filled.Done
+                icon = AppTokens.icons.SystemRestart
             )
         )
     }

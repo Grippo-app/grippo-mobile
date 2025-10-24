@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -31,6 +29,7 @@ import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.icons.SystemRestart
 
 @Composable
 internal fun CheckSelectableCardLarge(
@@ -123,7 +122,7 @@ private fun CheckSelectableCardLargePreview() {
             CheckSelectableCardStyle.Large(
                 title = "Test Title",
                 description = "Test Description with big text for all cases and more options to do somethig!",
-                icon = Icons.Filled.Done,
+                icon = AppTokens.icons.SystemRestart,
                 subContent = {
                     Box(modifier = Modifier.size(40.dp).background(Color.Green))
                 }
@@ -134,7 +133,7 @@ private fun CheckSelectableCardLargePreview() {
             CheckSelectableCardStyle.Large(
                 title = "Test Title",
                 description = "Test Description with big text for all cases and more options to do somethig!",
-                icon = Icons.Filled.Done,
+                icon = AppTokens.icons.SystemRestart,
                 subContent = null
             )
         )

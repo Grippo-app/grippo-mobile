@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,6 +22,7 @@ import com.grippo.design.components.selectors.Toggle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.icons.SystemRestart
 
 @Composable
 internal fun ToggleSelectableCardMedium(
@@ -79,7 +78,7 @@ private fun ToggleSelectableCardMediumPreview() {
         ToggleSelectableCardVariants(
             ToggleSelectableCardStyle.Medium(
                 title = "Test Title",
-                icon = Icons.Filled.Done
+                icon = AppTokens.icons.SystemRestart
             )
         )
     }

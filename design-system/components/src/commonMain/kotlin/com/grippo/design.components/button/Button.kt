@@ -26,8 +26,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -396,21 +394,30 @@ private fun CollapsingLoaderSlot(
 private fun ButtonPrimaryPreview() {
     PreviewContainer {
         Button(
-            content = ButtonContent.Text(text = "Enabled", startIcon = Icons.Default.Check),
+            content = ButtonContent.Text(
+                text = "Enabled",
+                startIcon = AppTokens.icons.SystemRestart
+            ),
             style = ButtonStyle.Primary,
             state = ButtonState.Enabled,
             size = ButtonSize.Medium,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Text(text = "Loading", startIcon = Icons.Default.Check),
+            content = ButtonContent.Text(
+                text = "Loading",
+                startIcon = AppTokens.icons.SystemRestart
+            ),
             style = ButtonStyle.Primary,
             state = ButtonState.Loading,
             size = ButtonSize.Medium,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Text(text = "Disabled", startIcon = Icons.Default.Check),
+            content = ButtonContent.Text(
+                text = "Disabled",
+                startIcon = AppTokens.icons.SystemRestart
+            ),
             style = ButtonStyle.Primary,
             state = ButtonState.Disabled,
             size = ButtonSize.Medium,
@@ -418,21 +425,21 @@ private fun ButtonPrimaryPreview() {
         )
 
         Button(
-            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
             style = ButtonStyle.Primary,
             state = ButtonState.Enabled,
             size = ButtonSize.Small,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
             style = ButtonStyle.Primary,
             state = ButtonState.Loading,
             size = ButtonSize.Small,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
             style = ButtonStyle.Primary,
             state = ButtonState.Disabled,
             size = ButtonSize.Small,
@@ -446,21 +453,30 @@ private fun ButtonPrimaryPreview() {
 private fun ButtonSecondaryPreview() {
     PreviewContainer {
         Button(
-            content = ButtonContent.Text(text = "Enabled", startIcon = Icons.Default.Check),
+            content = ButtonContent.Text(
+                text = "Enabled",
+                startIcon = AppTokens.icons.SystemRestart
+            ),
             style = ButtonStyle.Secondary,
             state = ButtonState.Enabled,
             size = ButtonSize.Medium,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Text(text = "Loading", startIcon = Icons.Default.Check),
+            content = ButtonContent.Text(
+                text = "Loading",
+                startIcon = AppTokens.icons.SystemRestart
+            ),
             style = ButtonStyle.Secondary,
             state = ButtonState.Loading,
             size = ButtonSize.Medium,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Text(text = "Disabled", startIcon = Icons.Default.Check),
+            content = ButtonContent.Text(
+                text = "Disabled",
+                startIcon = AppTokens.icons.SystemRestart
+            ),
             style = ButtonStyle.Secondary,
             state = ButtonState.Disabled,
             size = ButtonSize.Medium,
@@ -468,21 +484,21 @@ private fun ButtonSecondaryPreview() {
         )
 
         Button(
-            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
             style = ButtonStyle.Secondary,
             state = ButtonState.Enabled,
             size = ButtonSize.Small,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
             style = ButtonStyle.Secondary,
             state = ButtonState.Loading,
             size = ButtonSize.Small,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
             style = ButtonStyle.Secondary,
             state = ButtonState.Disabled,
             size = ButtonSize.Small,
@@ -496,21 +512,30 @@ private fun ButtonSecondaryPreview() {
 private fun ButtonTransparentPreview() {
     PreviewContainer {
         Button(
-            content = ButtonContent.Text(text = "Enabled", startIcon = Icons.Default.Check),
+            content = ButtonContent.Text(
+                text = "Enabled",
+                startIcon = AppTokens.icons.SystemRestart
+            ),
             style = ButtonStyle.Transparent,
             state = ButtonState.Enabled,
             size = ButtonSize.Medium,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Text(text = "Loading", startIcon = Icons.Default.Check),
+            content = ButtonContent.Text(
+                text = "Loading",
+                startIcon = AppTokens.icons.SystemRestart
+            ),
             style = ButtonStyle.Transparent,
             state = ButtonState.Loading,
             size = ButtonSize.Medium,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Text(text = "Disabled", startIcon = Icons.Default.Check),
+            content = ButtonContent.Text(
+                text = "Disabled",
+                startIcon = AppTokens.icons.SystemRestart
+            ),
             style = ButtonStyle.Transparent,
             state = ButtonState.Disabled,
             size = ButtonSize.Medium,
@@ -518,21 +543,21 @@ private fun ButtonTransparentPreview() {
         )
 
         Button(
-            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
             style = ButtonStyle.Transparent,
             state = ButtonState.Enabled,
             size = ButtonSize.Small,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
             style = ButtonStyle.Transparent,
             state = ButtonState.Loading,
             size = ButtonSize.Small,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
             style = ButtonStyle.Transparent,
             state = ButtonState.Disabled,
             size = ButtonSize.Small,
@@ -546,21 +571,30 @@ private fun ButtonTransparentPreview() {
 private fun ButtonTertiaryPreview() {
     PreviewContainer {
         Button(
-            content = ButtonContent.Text(text = "Enabled", startIcon = Icons.Default.Check),
+            content = ButtonContent.Text(
+                text = "Enabled",
+                startIcon = AppTokens.icons.SystemRestart
+            ),
             style = ButtonStyle.Tertiary,
             state = ButtonState.Enabled,
             size = ButtonSize.Medium,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Text(text = "Loading", startIcon = Icons.Default.Check),
+            content = ButtonContent.Text(
+                text = "Loading",
+                startIcon = AppTokens.icons.SystemRestart
+            ),
             style = ButtonStyle.Tertiary,
             state = ButtonState.Loading,
             size = ButtonSize.Medium,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Text(text = "Disabled", startIcon = Icons.Default.Check),
+            content = ButtonContent.Text(
+                text = "Disabled",
+                startIcon = AppTokens.icons.SystemRestart
+            ),
             style = ButtonStyle.Tertiary,
             state = ButtonState.Disabled,
             size = ButtonSize.Medium,
@@ -568,21 +602,21 @@ private fun ButtonTertiaryPreview() {
         )
 
         Button(
-            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
             style = ButtonStyle.Tertiary,
             state = ButtonState.Enabled,
             size = ButtonSize.Small,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
             style = ButtonStyle.Tertiary,
             state = ButtonState.Loading,
             size = ButtonSize.Small,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
             style = ButtonStyle.Tertiary,
             state = ButtonState.Disabled,
             size = ButtonSize.Small,
@@ -596,21 +630,30 @@ private fun ButtonTertiaryPreview() {
 private fun ButtonErrorPreview() {
     PreviewContainer {
         Button(
-            content = ButtonContent.Text(text = "Enabled", startIcon = Icons.Default.Check),
+            content = ButtonContent.Text(
+                text = "Enabled",
+                startIcon = AppTokens.icons.SystemRestart
+            ),
             style = ButtonStyle.Error,
             state = ButtonState.Enabled,
             size = ButtonSize.Medium,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Text(text = "Loading", startIcon = Icons.Default.Check),
+            content = ButtonContent.Text(
+                text = "Loading",
+                startIcon = AppTokens.icons.SystemRestart
+            ),
             style = ButtonStyle.Error,
             state = ButtonState.Loading,
             size = ButtonSize.Medium,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Text(text = "Disabled", startIcon = Icons.Default.Check),
+            content = ButtonContent.Text(
+                text = "Disabled",
+                startIcon = AppTokens.icons.SystemRestart
+            ),
             style = ButtonStyle.Error,
             state = ButtonState.Disabled,
             size = ButtonSize.Medium,
@@ -618,21 +661,21 @@ private fun ButtonErrorPreview() {
         )
 
         Button(
-            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
             style = ButtonStyle.Error,
             state = ButtonState.Enabled,
             size = ButtonSize.Small,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
             style = ButtonStyle.Error,
             state = ButtonState.Loading,
             size = ButtonSize.Small,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Icon(icon = Icons.Default.Check),
+            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
             style = ButtonStyle.Error,
             state = ButtonState.Disabled,
             size = ButtonSize.Small,
