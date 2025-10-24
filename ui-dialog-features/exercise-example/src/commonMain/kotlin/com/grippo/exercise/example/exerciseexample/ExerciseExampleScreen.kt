@@ -38,6 +38,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.last_iterations
 import com.grippo.design.resources.provider.last_used_label
 import com.grippo.design.resources.provider.more
 import kotlinx.collections.immutable.ImmutableSet
@@ -140,7 +141,7 @@ internal fun ExerciseExampleScreen(
 
         if (example.equipments.isNotEmpty()) {
 
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
             EquipmentsCard(
                 modifier = Modifier.fillMaxWidth(),
@@ -181,7 +182,7 @@ internal fun ExerciseExampleScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                text = AppTokens.strings.res(Res.string.last_used_label),
+                text = AppTokens.strings.res(Res.string.last_iterations),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = AppTokens.typography.h6(),

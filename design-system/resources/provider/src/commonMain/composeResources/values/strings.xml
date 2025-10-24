@@ -49,6 +49,7 @@
     <string name="not_used_before">Not used before</string>
     <string name="ai_suggestion_btn">AI Suggestion</string>
     <string name="more">More</string>
+    <string name="last_iterations">Last iterations</string>
 
     <string name="time_ago_day">%d day</string>
     <string name="time_ago_days">%d days</string>
