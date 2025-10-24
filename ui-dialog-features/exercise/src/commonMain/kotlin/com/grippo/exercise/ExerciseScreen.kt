@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -37,6 +38,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.NavArrowRight
+import com.grippo.design.resources.provider.more
 import com.grippo.design.resources.provider.overview
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -53,13 +55,13 @@ internal fun ExerciseScreen(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
             .verticalScroll(rememberScrollState())
     ) {
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
         ExerciseExampleImage(
+            modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
             value = exercise.exerciseExample.imageUrl,
             style = ExerciseExampleImageStyle.LARGE
         )
@@ -67,7 +69,9 @@ internal fun ExerciseScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
         Text(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                .fillMaxWidth(),
             text = exercise.name,
             style = AppTokens.typography.h1(),
             color = AppTokens.colors.text.primary,
@@ -76,7 +80,9 @@ internal fun ExerciseScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
         ) {
             VolumeChip(
@@ -106,19 +112,47 @@ internal fun ExerciseScreen(
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
             IterationsCard(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                    .fillMaxWidth(),
                 value = exercise.iterations
             )
         }
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
+        ) {
+            HorizontalDivider(
+                modifier = Modifier.weight(1f),
+                color = AppTokens.colors.divider.default
+            )
+
+            Text(
+                text = AppTokens.strings.res(Res.string.more),
+                style = AppTokens.typography.b14Med(),
+                color = AppTokens.colors.text.tertiary,
+            )
+
+            HorizontalDivider(
+                modifier = Modifier.weight(1f),
+                color = AppTokens.colors.divider.default
+            )
+        }
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         val onExampleDetailsClick = remember {
             { contract.onExampleDetailsClick(exercise.exerciseExample.id) }
         }
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
         ) {
@@ -145,7 +179,9 @@ internal fun ExerciseScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
 
         Text(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                .fillMaxWidth(),
             text = exercise.exerciseExample.description,
             maxLines = 3,
             overflow = TextOverflow.Ellipsis,

@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -34,29 +33,19 @@ internal fun ExerciseCardSmall(
                 horizontal = AppTokens.dp.exerciseCard.small.horizontalPadding,
                 vertical = AppTokens.dp.exerciseCard.small.verticalPadding
             ),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
     ) {
-        Row(
+        FlowRow(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
         ) {
-
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
-            ) {
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-                ) {
-                    value.iterations.forEach { iteration ->
-                        key(iteration.id) {
-                            IterationCard(
-                                value = iteration,
-                                style = IterationCardStyle.SmallView
-                            )
-                        }
-                    }
+            value.iterations.forEach { iteration ->
+                key(iteration.id) {
+                    IterationCard(
+                        value = iteration,
+                        style = IterationCardStyle.SmallView
+                    )
                 }
             }
         }

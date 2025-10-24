@@ -9,5 +9,5 @@ public data class Exercise(
     val exerciseExample: ExerciseExampleValue,
     val volume: Float,
     val repetitions: Int,
-    val intensity: Float
+    val intensity: Float,
 )
