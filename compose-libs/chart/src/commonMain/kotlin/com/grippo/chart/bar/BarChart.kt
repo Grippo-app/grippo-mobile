@@ -229,29 +229,39 @@ public fun BarChart(
 
         val (bw, sp, startX) = when (sizing) {
             is BarStyle.BarsSizing.AutoEqualBarsAndGaps -> {
-                if (nBars == 1) {
-                    val w = chartW / 3f
-                    val sx = chart.left + (chartW - w) / 2f
-                    Triple(w, 0f, sx)
+                val maxWidthValue = sizing.maxBarWidth.value
+                val maxWidthPx = when {
+                    maxWidthValue.isNaN() -> Float.POSITIVE_INFINITY
+                    maxWidthValue.isInfinite() -> Float.POSITIVE_INFINITY
+                    else -> sizing.maxBarWidth.toPx()
+                }
+
+                val ratio = if (nBars <= 1) {
+                    0f
                 } else {
                     val wEqual = chartW / (2f * nBars - 1f)
                     val midPx = sizing.midThresholdDp.toPx()
                     val densePx = sizing.denseThresholdDp.toPx()
 
-                    val ratio = when {
+                    when {
                         wEqual < densePx -> sizing.denseRatio
                         wEqual < midPx -> sizing.midRatio
                         else -> 1f
                     }.coerceIn(0f, 1f)
-
-                    if (ratio == 1f) {
-                        Triple(wEqual, wEqual, chart.left)
-                    } else {
-                        val w = chartW / (nBars + (nBars - 1) * ratio)
-                        val gap = ratio * w
-                        Triple(w, gap, chart.left)
-                    }
                 }
+
+                val baseWidth = when {
+                    nBars <= 1 -> chartW
+                    ratio == 1f -> chartW / (2f * nBars - 1f)
+                    else -> chartW / (nBars + (nBars - 1) * ratio)
+                }
+
+                val width = baseWidth
+                    .coerceAtLeast(0f)
+                    .coerceAtMost(maxWidthPx)
+
+                val gap = if (nBars <= 1) 0f else ratio * width
+                Triple(width, gap, chart.left)
             }
 
             is BarStyle.BarsSizing.FixedBarWidth -> {
@@ -264,9 +274,7 @@ public fun BarChart(
             is BarStyle.BarsSizing.Explicit -> {
                 val bw0 = sizing.width.toPx()
                 val sp0 = sizing.spacing.toPx()
-                val totalW = nBars * bw0 + (nBars - 1) * sp0
-                val sx = chart.left + (chartW - totalW).coerceAtLeast(0f) / 2f
-                Triple(bw0, sp0, sx)
+                Triple(bw0, sp0, chart.left)
             }
 
             is BarStyle.BarsSizing.GapAsBarRatio -> {

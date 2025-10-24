@@ -114,7 +114,8 @@ public data class BarStyle(
             val midThresholdDp: Dp = 16.dp,    // if wEqual < this -> use midRatio
             val denseThresholdDp: Dp = 10.dp,  // if wEqual < this -> use denseRatio
             val midRatio: Float = 0.5f,       // gap = midRatio * bar
-            val denseRatio: Float = 0.3f      // gap = denseRatio * bar
+            val denseRatio: Float = 0.3f,     // gap = denseRatio * bar
+            val maxBarWidth: Dp = 40.dp       // cap individual bar width when space is abundant
         ) : BarsSizing
 
         /** Fixed bar width; gaps auto-fit to available width. */
