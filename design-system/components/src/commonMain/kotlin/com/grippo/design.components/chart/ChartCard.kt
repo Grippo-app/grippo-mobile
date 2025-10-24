@@ -28,7 +28,8 @@ public fun ChartCard(
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = title,
-            style = AppTokens.typography.b14Bold(),
+            maxLines = 1,
+            style = AppTokens.typography.h6(),
             color = AppTokens.colors.text.primary,
         )
 
