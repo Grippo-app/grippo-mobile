@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,6 +23,7 @@ import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.core.state.trainings.stubExercises
+import com.grippo.design.components.chart.MetricBarChart
 import com.grippo.design.components.chart.MuscleLoadChart
 import com.grippo.design.components.chip.Chip
 import com.grippo.design.components.chip.ChipLabel
@@ -39,7 +41,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.last_iterations
-import com.grippo.design.resources.provider.last_used_label
 import com.grippo.design.resources.provider.more
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -177,7 +178,6 @@ internal fun ExerciseExampleScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         if (state.recent.isNotEmpty()) {
-
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -206,6 +206,20 @@ internal fun ExerciseExampleScreen(
                     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
                 }
             }
+
+            state.exerciseVolume
+                ?.takeIf { it.points.isNotEmpty() }
+                ?.let { data ->
+                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+                    MetricBarChart(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                            .aspectRatio(1.4f),
+                        value = data,
+                    )
+                }
         }
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))

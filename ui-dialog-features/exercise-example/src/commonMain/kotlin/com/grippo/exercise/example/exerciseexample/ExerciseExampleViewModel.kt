@@ -39,9 +39,14 @@ public class ExerciseExampleViewModel(
         }
     }
 
-    private fun provideRecentExercises(value: List<Exercise>) {
+    private suspend fun provideRecentExercises(value: List<Exercise>) {
         val exercises = value.toState()
-        update { it.copy(recent = exercises) }
+
+        val exerciseVolume = analytics.volumeFromExercises(
+            exercises = exercises,
+        )
+
+        update { it.copy(recent = exercises, exerciseVolume = exerciseVolume) }
     }
 
     private suspend fun provideExerciseExample(value: ExerciseExample?) {
