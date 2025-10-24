@@ -18,7 +18,6 @@ import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.examples.stubExerciseExample
@@ -41,7 +40,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.last_iterations
-import com.grippo.design.resources.provider.more
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -164,7 +162,7 @@ internal fun ExerciseExampleScreen(
             )
 
             Text(
-                text = AppTokens.strings.res(Res.string.more),
+                text = AppTokens.strings.res(Res.string.last_iterations),
                 style = AppTokens.typography.b14Med(),
                 color = AppTokens.colors.text.tertiary,
             )
@@ -178,18 +176,20 @@ internal fun ExerciseExampleScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         if (state.recent.isNotEmpty()) {
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                text = AppTokens.strings.res(Res.string.last_iterations),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = AppTokens.typography.h6(),
-                color = AppTokens.colors.text.primary,
-            )
 
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+            state.exerciseVolume
+                ?.takeIf { it.points.isNotEmpty() }
+                ?.let { data ->
+                    MetricBarChart(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                            .aspectRatio(1.4f),
+                        value = data,
+                    )
+
+                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+                }
 
             state.recent.forEachIndexed { index, item ->
                 key(item.id) {
@@ -206,20 +206,6 @@ internal fun ExerciseExampleScreen(
                     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
                 }
             }
-
-            state.exerciseVolume
-                ?.takeIf { it.points.isNotEmpty() }
-                ?.let { data ->
-                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-                    MetricBarChart(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                            .aspectRatio(1.4f),
-                        value = data,
-                    )
-                }
         }
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))

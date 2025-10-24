@@ -35,7 +35,9 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.muscles
 import com.grippo.design.resources.provider.no_data_yet
+import com.grippo.design.resources.provider.trends
 import com.grippo.training.recording.RecordingTab
 import com.grippo.training.recording.TrainingRecordingContract
 import com.grippo.training.recording.TrainingRecordingScreen
@@ -142,7 +144,7 @@ internal fun StatisticsPage(
                         )
 
                         Text(
-                            text = "Trends",
+                            text = AppTokens.strings.res(Res.string.trends),
                             style = AppTokens.typography.b14Med(),
                             color = AppTokens.colors.text.tertiary,
                         )
@@ -207,7 +209,7 @@ internal fun StatisticsPage(
                         )
 
                         Text(
-                            text = "Muscles",
+                            text = AppTokens.strings.res(Res.string.muscles),
                             style = AppTokens.typography.b14Med(),
                             color = AppTokens.colors.text.tertiary,
                         )

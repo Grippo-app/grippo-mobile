@@ -32,7 +32,9 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.muscles
 import com.grippo.design.resources.provider.statistics
+import com.grippo.design.resources.provider.trends
 import com.grippo.toolkit.date.utils.DateFormat
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -153,7 +155,7 @@ internal fun HomeStatisticsScreen(
                 )
 
                 Text(
-                    text = "Trends",
+                    text = AppTokens.strings.res(Res.string.trends),
                     style = AppTokens.typography.b14Med(),
                     color = AppTokens.colors.text.tertiary,
                 )
@@ -218,7 +220,7 @@ internal fun HomeStatisticsScreen(
                 )
 
                 Text(
-                    text = "Muscles",
+                    text = AppTokens.strings.res(Res.string.muscles),
                     style = AppTokens.typography.b14Med(),
                     color = AppTokens.colors.text.tertiary,
                 )
