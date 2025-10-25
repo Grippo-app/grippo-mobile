@@ -1,5 +1,6 @@
 package com.grippo.exercise.example.exerciseexample
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -157,62 +158,70 @@ internal fun ExerciseExampleScreen(
             )
         }
 
-        if (state.recent.isNotEmpty()) {
+        AnimatedVisibility(
+            modifier = Modifier.fillMaxWidth(),
+            visible = state.recent.isNotEmpty(),
+        ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+                ContentSpliter(
+                    text = AppTokens.strings.res(Res.string.history)
+                )
 
-            ContentSpliter(
-                text = AppTokens.strings.res(Res.string.history)
-            )
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+                state.exerciseVolume
+                    ?.takeIf { it.points.isNotEmpty() }
+                    ?.let { data ->
+                        MetricBarChart(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                                .aspectRatio(1.4f),
+                            value = data,
+                        )
 
-            state.exerciseVolume
-                ?.takeIf { it.points.isNotEmpty() }
-                ?.let { data ->
-                    MetricBarChart(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                            .aspectRatio(1.4f),
-                        value = data,
-                    )
+                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+                    }
 
-                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-                }
+                state.recent.forEachIndexed { index, item ->
+                    key(item.id) {
+                        ExerciseCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                            value = item,
+                            style = ExerciseCardStyle.Small,
+                        )
+                    }
 
-            state.recent.forEachIndexed { index, item ->
-                key(item.id) {
-                    ExerciseCard(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                        value = item,
-                        style = ExerciseCardStyle.Small,
-                    )
-                }
-
-                if (index < state.recent.lastIndex) {
-                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+                    if (index < state.recent.lastIndex) {
+                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+                    }
                 }
             }
         }
 
-        if (state.achievements.isNotEmpty()) {
+        AnimatedVisibility(
+            modifier = Modifier.fillMaxWidth(),
+            visible = state.achievements.isNotEmpty(),
+        ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+                ContentSpliter(
+                    text = AppTokens.strings.res(Res.string.achievements)
+                )
 
-            ContentSpliter(
-                text = AppTokens.strings.res(Res.string.achievements)
-            )
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
-            AchievementsCard(
-                modifier = Modifier.fillMaxWidth(),
-                value = state.achievements,
-                contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
-            )
+                AchievementsCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = state.achievements,
+                    contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                )
+            }
         }
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
