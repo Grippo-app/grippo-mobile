@@ -2,8 +2,6 @@ package com.grippo.design.resources.provider.icons
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
@@ -21,53 +19,68 @@ public val AppIcon.Trophy: ImageVector
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
+
+            // Чаша, ножка, подставка
             path(
-                stroke = SolidColor(Color(0xFF0F172A)),
-                strokeLineWidth = 1.5f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
+                fill = SolidColor(Color(0xFF0F172A))
             ) {
-                moveTo(6.745f, 4f)
-                horizontalLineTo(17.313f)
-                curveTo(17.313f, 4f, 16.433f, 17.257f, 12.029f, 17.257f)
-                curveTo(9.878f, 17.257f, 8.568f, 14.094f, 7.79f, 10.857f)
-                curveTo(6.976f, 7.468f, 6.745f, 4f, 6.745f, 4f)
+                // Чаша трофея
+                moveTo(8f, 6f)
+                horizontalLineTo(16f)
+                curveTo(16f, 9f, 15f, 11.5f, 12f, 12.5f)
+                curveTo(9f, 11.5f, 8f, 9f, 8f, 6f)
+                close()
+
+                // Ножка (стебель)
+                moveTo(11f, 12.5f)
+                lineTo(11f, 15f)
+                lineTo(13f, 15f)
+                lineTo(13f, 12.5f)
+                close()
+
+                // Верхняя платформа
+                moveTo(9f, 15f)
+                lineTo(15f, 15f)
+                lineTo(15f, 16.5f)
+                lineTo(9f, 16.5f)
+                close()
+
+                // Нижняя база
+                moveTo(7f, 18f)
+                lineTo(17f, 18f)
+                lineTo(17f, 19.5f)
+                lineTo(7f, 19.5f)
                 close()
             }
+
+            // Левая ручка (заполненная)
             path(
-                stroke = SolidColor(Color(0xFF0F172A)),
-                strokeLineWidth = 1.5f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
+                fill = SolidColor(Color(0xFF0F172A))
             ) {
-                moveTo(17.313f, 4f)
-                curveTo(17.313f, 4f, 18.234f, 3.017f, 19f, 3f)
-                curveTo(20.5f, 2.966f, 20.777f, 4f, 20.777f, 4f)
-                curveTo(21.071f, 4.61f, 21.306f, 6.194f, 19.897f, 7.657f)
-                curveTo(18.487f, 9.12f, 16.91f, 10.4f, 16.268f, 10.857f)
+                // внешняя линия ручки
+                moveTo(8f, 7f)
+                curveTo(6.3f, 7f, 5f, 8.3f, 5f, 9.7f)
+                curveTo(5f, 11.3f, 6.4f, 12.7f, 8f, 12.7f)
+                lineTo(8.8f, 11.2f)
+                curveTo(7.9f, 11.2f, 7.1f, 10.5f, 7.1f, 9.7f)
+                curveTo(7.1f, 8.9f, 7.8f, 8.2f, 8.7f, 8.2f)
+                lineTo(8.7f, 7.8f)
+                curveTo(8.5f, 7.4f, 8.3f, 7f, 8f, 7f)
+                close()
             }
+
+            // Правая ручка (заполненная)
             path(
-                stroke = SolidColor(Color(0xFF0F172A)),
-                strokeLineWidth = 1.5f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
+                fill = SolidColor(Color(0xFF0F172A))
             ) {
-                moveTo(6.745f, 4f)
-                curveTo(6.745f, 4f, 5.786f, 3.006f, 5f, 3f)
-                curveTo(3.5f, 2.988f, 3.223f, 4f, 3.223f, 4f)
-                curveTo(2.929f, 4.61f, 2.694f, 6.194f, 4.103f, 7.657f)
-                curveTo(5.512f, 9.12f, 7.148f, 10.4f, 7.79f, 10.857f)
-            }
-            path(
-                stroke = SolidColor(Color(0xFF0F172A)),
-                strokeLineWidth = 1.5f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
-            ) {
-                moveTo(8.507f, 20f)
-                curveTo(8.507f, 18.171f, 12.029f, 17.257f, 12.029f, 17.257f)
-                curveTo(12.029f, 17.257f, 15.552f, 18.171f, 15.552f, 20f)
-                horizontalLineTo(8.507f)
+                moveTo(16f, 7f)
+                curveTo(17.7f, 7f, 19f, 8.3f, 19f, 9.7f)
+                curveTo(19f, 11.3f, 17.6f, 12.7f, 16f, 12.7f)
+                lineTo(15.2f, 11.2f)
+                curveTo(16.1f, 11.2f, 16.9f, 10.5f, 16.9f, 9.7f)
+                curveTo(16.9f, 8.9f, 16.2f, 8.2f, 15.3f, 8.2f)
+                lineTo(15.3f, 7.8f)
+                curveTo(15.5f, 7.4f, 15.7f, 7f, 16f, 7f)
                 close()
             }
         }.build()
@@ -77,3 +90,4 @@ public val AppIcon.Trophy: ImageVector
 
 @Suppress("ObjectPropertyName")
 private var _Trophy: ImageVector? = null
+

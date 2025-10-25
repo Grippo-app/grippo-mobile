@@ -81,7 +81,7 @@ public sealed class AchievementState(
     }
 
     @Composable
-    public fun icon(): ImageVector {
+    public fun value(): ImageVector {
         return AppTokens.icons.Calendar // todo remove it (use value instead of)
     }
 }
