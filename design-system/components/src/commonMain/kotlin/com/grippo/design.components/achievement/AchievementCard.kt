@@ -9,12 +9,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.achevements.AchievementState
@@ -32,9 +34,13 @@ public fun AchievementCard(
     Column(
         modifier = modifier
             .background(
-                color = AppTokens.colors.background.card,
+                brush = Brush.horizontalGradient(
+                    0f to value.color1().copy(alpha = 0.1f),
+                    1f to value.color2().copy(alpha = 0.1f),
+                ),
                 shape = RoundedCornerShape(AppTokens.dp.achievementCard.radius)
-            ).width(
+            )
+            .width(
                 intrinsicSize = IntrinsicSize.Max
             ).padding(
                 horizontal = AppTokens.dp.achievementCard.horizontalPadding,
@@ -43,9 +49,18 @@ public fun AchievementCard(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
-            modifier = Modifier.size(AppTokens.dp.achievementCard.icon),
+            modifier = Modifier
+                .background(
+                    brush = Brush.horizontalGradient(
+                        0f to value.color1(),
+                        1f to value.color2(),
+                    ),
+                    shape = CircleShape
+                )
+                .padding(AppTokens.dp.contentPadding.subContent)
+                .size(AppTokens.dp.achievementCard.icon),
             imageVector = AppTokens.icons.Trophy,
-            tint = AppTokens.colors.semantic.warning,
+            tint = AppTokens.colors.static.white,
             contentDescription = null
         )
 
@@ -65,7 +80,7 @@ public fun AchievementCard(
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = "5.000kg",
+            text = value.value(),
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,

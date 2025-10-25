@@ -2,13 +2,15 @@ package com.grippo.core.state.achevements
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.Color
+import com.grippo.core.state.formatters.IntensityFormatState
+import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.UiText
+import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.best_tonnage
 import com.grippo.design.resources.provider.best_weight
-import com.grippo.design.resources.provider.icons.Calendar
 import com.grippo.design.resources.provider.lifetime_volume
 import com.grippo.design.resources.provider.max_repetitions
 import com.grippo.design.resources.provider.peak_intensity
@@ -25,7 +27,7 @@ public sealed class AchievementState(
     public data class BestTonnage(
         override val exerciseExampleId: String,
         val exerciseId: String,
-        val tonnage: Int
+        val tonnage: VolumeFormatState
     ) : AchievementState(
         key = "best_tonnage",
         exerciseExampleId = exerciseExampleId,
@@ -35,7 +37,7 @@ public sealed class AchievementState(
         override val exerciseExampleId: String,
         val exerciseId: String,
         val iterationId: String,
-        val weight: Int
+        val weight: VolumeFormatState
     ) : AchievementState(
         key = "best_weight",
         exerciseExampleId = exerciseExampleId,
@@ -43,7 +45,7 @@ public sealed class AchievementState(
 
     public data class LifetimeVolume(
         override val exerciseExampleId: String,
-        val totalVolume: Int,
+        val totalVolume: VolumeFormatState,
         val sessionsCount: Int
     ) : AchievementState(
         key = "lifetime_volume",
@@ -54,8 +56,8 @@ public sealed class AchievementState(
         override val exerciseExampleId: String,
         val exerciseId: String,
         val iterationId: String,
-        val totalVolume: Int,
-        val repetitions: Int
+        val totalVolume: VolumeFormatState,
+        val repetitions: RepetitionsFormatState
     ) : AchievementState(
         key = "max_repetitions",
         exerciseExampleId = exerciseExampleId,
@@ -64,7 +66,7 @@ public sealed class AchievementState(
     public data class PeakIntensity(
         override val exerciseExampleId: String,
         val exerciseId: String,
-        val intensity: Double,
+        val intensity: IntensityFormatState,
     ) : AchievementState(
         key = "peak_intensity",
         exerciseExampleId = exerciseExampleId,
@@ -81,8 +83,36 @@ public sealed class AchievementState(
     }
 
     @Composable
-    public fun value(): ImageVector {
-        return AppTokens.icons.Calendar // todo remove it (use value instead of)
+    public fun color1(): Color {
+        return when (this) {
+            is BestTonnage -> AppTokens.colors.achievements.bestTonnage1
+            is BestWeight -> AppTokens.colors.achievements.bestWeight1
+            is LifetimeVolume -> AppTokens.colors.achievements.lifetimeVolume1
+            is MaxRepetitions -> AppTokens.colors.achievements.maxRepetitions1
+            is PeakIntensity -> AppTokens.colors.achievements.peakIntensity1
+        }
+    }
+
+    @Composable
+    public fun color2(): Color {
+        return when (this) {
+            is BestTonnage -> AppTokens.colors.achievements.bestTonnage2
+            is BestWeight -> AppTokens.colors.achievements.bestWeight2
+            is LifetimeVolume -> AppTokens.colors.achievements.lifetimeVolume2
+            is MaxRepetitions -> AppTokens.colors.achievements.maxRepetitions2
+            is PeakIntensity -> AppTokens.colors.achievements.peakIntensity2
+        }
+    }
+
+    @Composable
+    public fun value(): String {
+        return when (this) {
+            is BestTonnage -> this.tonnage.short()
+            is BestWeight -> this.weight.short()
+            is LifetimeVolume -> this.totalVolume.short()
+            is MaxRepetitions -> this.repetitions.short()
+            is PeakIntensity -> this.intensity.short()
+        }
     }
 }
 
@@ -108,7 +138,7 @@ private fun stubBestTonnageAchievement(): AchievementState.BestTonnage {
     return AchievementState.BestTonnage(
         exerciseExampleId = Uuid.random().toString(),
         exerciseId = Uuid.random().toString(),
-        tonnage = Random.nextInt(1_000, 12_000)
+        tonnage = VolumeFormatState.of(Random.nextInt(1_000, 12_000).toFloat())
     )
 }
 
@@ -117,14 +147,14 @@ private fun stubBestWeightAchievement(): AchievementState.BestWeight {
         exerciseExampleId = Uuid.random().toString(),
         exerciseId = Uuid.random().toString(),
         iterationId = Uuid.random().toString(),
-        weight = Random.nextInt(20, 280)
+        weight = VolumeFormatState.of(Random.nextInt(20, 280).toFloat())
     )
 }
 
 private fun stubLifetimeVolumeAchievement(): AchievementState.LifetimeVolume {
     return AchievementState.LifetimeVolume(
         exerciseExampleId = Uuid.random().toString(),
-        totalVolume = Random.nextInt(5_000, 50_000),
+        totalVolume = VolumeFormatState.of(Random.nextInt(5_000, 50_000).toFloat()),
         sessionsCount = Random.nextInt(10, 120)
     )
 }
@@ -134,8 +164,8 @@ private fun stubMaxRepetitionsAchievement(): AchievementState.MaxRepetitions {
         exerciseExampleId = Uuid.random().toString(),
         exerciseId = Uuid.random().toString(),
         iterationId = Uuid.random().toString(),
-        totalVolume = Random.nextInt(500, 10_000),
-        repetitions = Random.nextInt(3, 25)
+        totalVolume = VolumeFormatState.of(Random.nextInt(500, 10_000).toFloat()),
+        repetitions = RepetitionsFormatState.of(Random.nextInt(3, 25))
     )
 }
 
@@ -143,6 +173,6 @@ private fun stubPeakIntensityAchievement(): AchievementState.PeakIntensity {
     return AchievementState.PeakIntensity(
         exerciseExampleId = Uuid.random().toString(),
         exerciseId = Uuid.random().toString(),
-        intensity = Random.nextDouble(0.75, 2.5)
+        intensity = IntensityFormatState.of(Random.nextDouble(0.75, 2.5).toFloat())
     )
 }

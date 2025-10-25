@@ -22,7 +22,7 @@ public fun AchievementsCard(
 ) {
     LazyRow(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
         contentPadding = contentPadding
     ) {
         items(items = value, key = { it.key }) { item ->

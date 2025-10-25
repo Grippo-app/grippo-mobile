@@ -10,6 +10,19 @@ public object LightColor : AppColor {
         override val focus = AppPalette.Primary.P500
     }
 
+    override val achievements: AppColor.Achievements = object : AppColor.Achievements {
+        override val bestTonnage1: Color = AppPalette.Unique.Green
+        override val bestTonnage2: Color = AppPalette.Unique.Teal
+        override val bestWeight1: Color = AppPalette.Unique.Sky
+        override val bestWeight2: Color = AppPalette.Unique.Navy
+        override val lifetimeVolume1: Color = AppPalette.Unique.Purple
+        override val lifetimeVolume2: Color = AppPalette.Unique.Violet
+        override val maxRepetitions1: Color = AppPalette.Unique.Brown
+        override val maxRepetitions2: Color = AppPalette.Unique.Burgundy
+        override val peakIntensity1: Color = AppPalette.Unique.Cyan
+        override val peakIntensity2: Color = AppPalette.Unique.Indigo
+    }
+
     override val button: AppColor.ButtonColors = object : AppColor.ButtonColors {
         override val backgroundPrimary1 = AppPalette.Primary.P500
         override val backgroundPrimary2 = AppPalette.Primary.P600

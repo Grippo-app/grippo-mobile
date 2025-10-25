@@ -1,6 +1,9 @@
 package com.grippo.domain.state.achievements
 
 import com.grippo.core.state.achevements.AchievementState
+import com.grippo.core.state.formatters.IntensityFormatState
+import com.grippo.core.state.formatters.RepetitionsFormatState
+import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.data.features.api.achievements.Achievement
 
 public fun List<Achievement>.toState(): List<AchievementState> {
@@ -12,19 +15,19 @@ public fun Achievement.toState(): AchievementState {
         is Achievement.BestTonnage -> AchievementState.BestTonnage(
             exerciseExampleId = exerciseExampleId,
             exerciseId = exerciseId,
-            tonnage = tonnage
+            tonnage = VolumeFormatState.of(tonnage.toFloat()),
         )
 
         is Achievement.BestWeight -> AchievementState.BestWeight(
             exerciseExampleId = exerciseExampleId,
             exerciseId = exerciseId,
             iterationId = iterationId,
-            weight = weight
+            weight = VolumeFormatState.of(weight.toFloat()),
         )
 
         is Achievement.LifetimeVolume -> AchievementState.LifetimeVolume(
             exerciseExampleId = exerciseExampleId,
-            totalVolume = totalVolume,
+            totalVolume = VolumeFormatState.of(totalVolume.toFloat()),
             sessionsCount = sessionsCount
         )
 
@@ -32,14 +35,14 @@ public fun Achievement.toState(): AchievementState {
             exerciseExampleId = exerciseExampleId,
             exerciseId = exerciseId,
             iterationId = iterationId,
-            totalVolume = totalVolume,
-            repetitions = repetitions
+            totalVolume = VolumeFormatState.of(totalVolume.toFloat()),
+            repetitions = RepetitionsFormatState.of(repetitions)
         )
 
         is Achievement.PeakIntensity -> AchievementState.PeakIntensity(
             exerciseExampleId = exerciseExampleId,
             exerciseId = exerciseId,
-            intensity = intensity
+            intensity = IntensityFormatState.of(intensity.toFloat())
         )
     }
 }
