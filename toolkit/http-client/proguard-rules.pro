@@ -1,1 +1,0 @@
--keepclassmembers class io.ktor.** { volatile <fields>; }
