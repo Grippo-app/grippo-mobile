@@ -13,6 +13,7 @@ public data class ExerciseExampleState(
     val example: ExerciseExampleState? = null,
     val muscleLoad: MuscleLoadSummary? = null,
     val recent: ImmutableList<ExerciseState> = persistentListOf(),
+    val achievements: ImmutableList<ExerciseState> = persistentListOf(),
 
     // === Exercise volume (bar) ===
     val exerciseVolume: MetricSeries? = null,

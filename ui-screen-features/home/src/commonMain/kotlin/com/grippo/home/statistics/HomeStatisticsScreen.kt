@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +25,7 @@ import com.grippo.design.components.chip.VolumeChip
 import com.grippo.design.components.chip.VolumeChipStyle
 import com.grippo.design.components.datetime.PeriodPicker
 import com.grippo.design.components.loading.Loader
+import com.grippo.design.components.spliter.ContentSpliter
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -143,33 +142,16 @@ internal fun HomeStatisticsScreen(
                 }
             }
 
-        item(key = "trends_divider") {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
-            ) {
-                HorizontalDivider(
-                    modifier = Modifier.weight(1f),
-                    color = AppTokens.colors.divider.default
-                )
-
-                Text(
-                    text = AppTokens.strings.res(Res.string.trends),
-                    style = AppTokens.typography.b14Med(),
-                    color = AppTokens.colors.text.tertiary,
-                )
-
-                HorizontalDivider(
-                    modifier = Modifier.weight(1f),
-                    color = AppTokens.colors.divider.default
-                )
-            }
+        item(key = "trends_spliter") {
+            ContentSpliter(
+                text = AppTokens.strings.res(Res.string.trends)
+            )
         }
 
         item(key = "distribution") {
             Row(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
             ) {
@@ -208,28 +190,10 @@ internal fun HomeStatisticsScreen(
             }
         }
 
-        item(key = "muscles_divider") {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
-            ) {
-                HorizontalDivider(
-                    modifier = Modifier.weight(1f),
-                    color = AppTokens.colors.divider.default
-                )
-
-                Text(
-                    text = AppTokens.strings.res(Res.string.muscles),
-                    style = AppTokens.typography.b14Med(),
-                    color = AppTokens.colors.text.tertiary,
-                )
-
-                HorizontalDivider(
-                    modifier = Modifier.weight(1f),
-                    color = AppTokens.colors.divider.default
-                )
-            }
+        item(key = "muscles_spliter") {
+            ContentSpliter(
+                text = AppTokens.strings.res(Res.string.muscles)
+            )
         }
 
         state.muscleLoad

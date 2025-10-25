@@ -50,6 +50,8 @@
     <string name="ai_suggestion_btn">AI Suggestion</string>
     <string name="more">More</string>
     <string name="last_iterations">Last iterations</string>
+    <string name="history">History</string>
+    <string name="achievements">Achievements</string>
 
     <string name="time_ago_day">%d day</string>
     <string name="time_ago_days">%d days</string>

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -27,6 +26,7 @@ import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.inputs.InputEmail
 import com.grippo.design.components.inputs.InputPassword
+import com.grippo.design.components.spliter.ContentSpliter
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
@@ -123,27 +123,9 @@ internal fun LoginScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
-        ) {
-            HorizontalDivider(
-                modifier = Modifier.weight(1f),
-                color = AppTokens.colors.divider.default
-            )
-
-            Text(
-                text = AppTokens.strings.res(Res.string.or),
-                style = AppTokens.typography.b14Med(),
-                color = AppTokens.colors.text.tertiary,
-            )
-
-            HorizontalDivider(
-                modifier = Modifier.weight(1f),
-                color = AppTokens.colors.divider.default
-            )
-        }
+        ContentSpliter(
+            text = AppTokens.strings.res(Res.string.or)
+        )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
