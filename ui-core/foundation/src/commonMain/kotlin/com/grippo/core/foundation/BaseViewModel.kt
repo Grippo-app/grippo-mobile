@@ -143,11 +143,13 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
     private val errorProvider by inject<ErrorProvider>()
 
     private suspend fun sendError(exception: Throwable, onError: (() -> Unit)) {
-        AppLogger.General.error("┌───────── ViewModel error ─────────")
-        AppLogger.General.error("│ message: ${exception.message}")
-        AppLogger.General.error("│ cause: ${exception.cause?.message}")
-        AppLogger.General.error("│ stacktrace: ${exception.stackTraceToString()}")
-        AppLogger.General.error("└───────────────────────────────────")
+        val log = buildString {
+            append("─────── ViewModel error ──────\n")
+            append("│ message: ${exception.message}\n")
+            append("│ cause: ${exception.cause?.message}\n")
+            append("└──────────────────────────")
+        }
+        AppLogger.General.error(log)
         errorProvider.provide(exception, callback = onError)
     }
 
