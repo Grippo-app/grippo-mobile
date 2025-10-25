@@ -39,6 +39,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.achievements
+import com.grippo.design.resources.provider.equipments
 import com.grippo.design.resources.provider.history
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -140,7 +141,13 @@ internal fun ExerciseExampleScreen(
 
         if (example.equipments.isNotEmpty()) {
 
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+            ContentSpliter(
+                text = AppTokens.strings.res(Res.string.equipments)
+            )
+
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
             EquipmentsCard(
                 modifier = Modifier.fillMaxWidth(),

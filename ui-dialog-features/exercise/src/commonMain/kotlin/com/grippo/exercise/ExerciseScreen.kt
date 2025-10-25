@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -32,6 +31,7 @@ import com.grippo.design.components.chip.VolumeChip
 import com.grippo.design.components.chip.VolumeChipStyle
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
+import com.grippo.design.components.spliter.ContentSpliter
 import com.grippo.design.components.training.IterationsCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -121,27 +121,9 @@ internal fun ExerciseScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
-        ) {
-            HorizontalDivider(
-                modifier = Modifier.weight(1f),
-                color = AppTokens.colors.divider.default
-            )
-
-            Text(
-                text = AppTokens.strings.res(Res.string.more),
-                style = AppTokens.typography.b14Med(),
-                color = AppTokens.colors.text.tertiary,
-            )
-
-            HorizontalDivider(
-                modifier = Modifier.weight(1f),
-                color = AppTokens.colors.divider.default
-            )
-        }
+        ContentSpliter(
+            text = AppTokens.strings.res(Res.string.more),
+        )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
