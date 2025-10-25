@@ -6,7 +6,7 @@ internal class FileLogDestination(initialWriter: LogFileWriter) : LogDestination
 
     private var writer: LogFileWriter = initialWriter
 
-    override val location: String?
+    override val location: String
         get() = writer.location
 
     override fun write(entry: LogEntry) {

@@ -30,6 +30,15 @@ internal actual class LogFileWriter private constructor(private val file: File) 
             return LogFileWriter(file)
         }
 
+        actual fun deleteFile(path: String): Boolean {
+            val f = File(path)
+            return if (f.exists()) {
+                f.delete()
+            } else {
+                false
+            }
+        }
+
         private fun resolveBaseDirectory(): File {
             val home = System.getProperty("user.home")
             val tmp = System.getProperty("java.io.tmpdir")

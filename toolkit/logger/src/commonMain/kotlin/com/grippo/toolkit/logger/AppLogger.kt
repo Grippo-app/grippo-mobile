@@ -18,10 +18,24 @@ public object AppLogger {
             .mapKeys { (category, _) -> category.name }
     }
 
-    public object General {
-        public fun error(msg: String): Unit = present(LogCategory.GENERAL, "🔴 $msg")
+    public fun clearLogFile(): Boolean {
+        val path = dispatcher.location
+        val deleted = if (path != null) {
+            LogFileWriter.deleteFile(path)
+        } else {
+            false
+        }
 
-        public fun warning(msg: String): Unit = present(LogCategory.GENERAL, "⚠\uFE0F $msg")
+        // Switch logger to a fresh empty file after cleanup
+        fileDestination.updateWriter(LogFileWriter.create())
+
+        return deleted
+    }
+
+    public object General {
+        public fun error(msg: String): Unit = present(LogCategory.ERROR, "🔴 $msg")
+
+        public fun warning(msg: String): Unit = present(LogCategory.WARNING, "⚠\uFE0F $msg")
     }
 
     public object Navigation {

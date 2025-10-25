@@ -5,8 +5,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
@@ -18,11 +19,16 @@ import com.grippo.core.state.formatters.UiText
 import com.grippo.debug.DebugContract
 import com.grippo.debug.DebugLoader
 import com.grippo.debug.LoggerState
+import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.segment.SegmentWidth
 import com.grippo.design.core.AppTokens
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.clear_logs
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.toPersistentList
 
@@ -55,8 +61,6 @@ internal fun LoggerPage(
             style = SegmentStyle.Outline
         )
 
-        Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
-
         val logs = state.logs
 
         LazyColumn(modifier = Modifier.fillMaxWidth().weight(1f)) {
@@ -72,5 +76,20 @@ internal fun LoggerPage(
                 )
             }
         }
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+            content = ButtonContent.Text(AppTokens.strings.res(Res.string.clear_logs)),
+            style = ButtonStyle.Error,
+            onClick = contract::clearLogs
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+
+        Spacer(modifier = Modifier.navigationBarsPadding())
     }
 }

@@ -16,6 +16,13 @@ public class DebugViewModel : BaseViewModel<DebugState, DebugDirection, DebugLoa
         navigateTo(DebugDirection.Back)
     }
 
+    override fun clearLogs() {
+        safeLaunch {
+            AppLogger.clearLogFile()
+            loadLogs()
+        }
+    }
+
     override fun onSelect(value: DebugMenu) {
         update { it.copy(selected = value) }
         if (value == DebugMenu.Logger) {

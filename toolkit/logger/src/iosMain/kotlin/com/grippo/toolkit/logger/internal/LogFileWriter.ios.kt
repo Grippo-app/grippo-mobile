@@ -53,6 +53,12 @@ internal actual class LogFileWriter private constructor(
             return LogFileWriter(path)
         }
 
+        actual fun deleteFile(path: String): Boolean {
+            val manager = NSFileManager.defaultManager
+            // removeItemAtPath returns true if file was removed
+            return manager.removeItemAtPath(path, null)
+        }
+
         @OptIn(ExperimentalForeignApi::class)
         private fun resolveBaseDirectory(): String {
             val manager = NSFileManager.defaultManager

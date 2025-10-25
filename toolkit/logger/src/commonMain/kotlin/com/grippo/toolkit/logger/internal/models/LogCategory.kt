@@ -1,7 +1,8 @@
 package com.grippo.toolkit.logger.internal.models
 
 internal enum class LogCategory {
-    GENERAL,
+    ERROR,
+    WARNING,
     NETWORK,
     PROMPT,
     ANSWER,
