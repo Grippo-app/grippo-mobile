@@ -2,9 +2,11 @@ package com.grippo.data.features.exercise.metrics.data
 
 import com.grippo.backend.GrippoApi
 import com.grippo.core.error.provider.AppError
+import com.grippo.data.features.api.achievements.Achievement
 import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.data.features.exercise.metrics.domain.ExerciseMetricsRepository
 import com.grippo.database.dao.ExerciseExampleDao
+import com.grippo.dto.domain.achievement.toDomain
 import com.grippo.dto.domain.training.toDomain
 import com.grippo.entity.domain.equipment.toDomain
 import kotlinx.coroutines.flow.firstOrNull
@@ -28,5 +30,11 @@ internal class ExerciseMetricsRepositoryImpl(
             )
 
         return response.map { it.toDomain(example = example.value) }
+    }
+
+    override suspend fun getAchievementsByExampleId(id: String): Result<List<Achievement>> {
+        val response = api.getAchievementsByExampleId(id)
+
+        return response.map { it.toDomain() }
     }
 }

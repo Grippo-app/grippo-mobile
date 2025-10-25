@@ -188,6 +188,12 @@
     <string name="reset">Reset</string>
     <string name="menu">Menu</string>
 
+    <string name="best_tonnage">Best tonnage</string>
+    <string name="best_weight">Best weight</string>
+    <string name="lifetime_volume">Lifetime volume</string>
+    <string name="max_repetitions">Max repetitions</string>
+    <string name="peak_intensity">Peak intensity</string>
+
     <string name="last_used_label">Last used:</string>
 
     <string name="add_training_title">Add training</string>

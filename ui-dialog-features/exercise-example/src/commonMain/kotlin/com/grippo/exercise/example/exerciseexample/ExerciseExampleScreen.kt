@@ -20,6 +20,7 @@ import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.core.state.trainings.stubExercises
+import com.grippo.design.components.achievement.AchievementsCard
 import com.grippo.design.components.chart.MetricBarChart
 import com.grippo.design.components.chart.MuscleLoadChart
 import com.grippo.design.components.chip.Chip
@@ -207,9 +208,11 @@ internal fun ExerciseExampleScreen(
 
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-            Row {
-                // todo implement
-            }
+            AchievementsCard(
+                modifier = Modifier.fillMaxWidth(),
+                value = state.achievements,
+                contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
+            )
         }
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))

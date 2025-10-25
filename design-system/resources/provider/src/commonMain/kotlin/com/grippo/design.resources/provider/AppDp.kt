@@ -60,6 +60,7 @@ public data object AppDp {
     val userCard: UserCard = UserCard
     val bodyDetails: BodyDetails = BodyDetails
     val overviewCard: OverviewCard = OverviewCard
+    val achievementCard: AchievementCard = AchievementCard
     val equipmentCard: EquipmentCard = EquipmentCard
     val timeline: Timeline = Timeline
     val timeLabel: TimeLabel = TimeLabel
@@ -281,6 +282,13 @@ public data object AppDp {
     }
 
     public data object EquipmentCard {
+        val icon: Dp = size.xLarge
+        val horizontalPadding: Dp = padding.large
+        val verticalPadding: Dp = padding.medium
+        val radius: Dp = AppDp.radius.medium
+    }
+
+    public data object AchievementCard {
         val icon: Dp = size.xLarge
         val horizontalPadding: Dp = padding.large
         val verticalPadding: Dp = padding.medium

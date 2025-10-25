@@ -2,6 +2,7 @@ package com.grippo.backend
 
 import com.grippo.backend.client.BackendClient
 import com.grippo.backend.dto.IdResponse
+import com.grippo.backend.dto.achievements.AchievementResponse
 import com.grippo.backend.dto.auth.AuthBody
 import com.grippo.backend.dto.auth.RefreshBody
 import com.grippo.backend.dto.auth.RegisterBody
@@ -206,6 +207,13 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         return request(
             method = HttpMethod.Get,
             path = "exercise-metrics/exercise-example/${id}/recent"
+        )
+    }
+
+    public suspend fun getAchievementsByExampleId(id: String): Result<AchievementResponse> {
+        return request(
+            method = HttpMethod.Get,
+            path = "exercise-metrics/exercise-example/${id}/achievements"
         )
     }
 
