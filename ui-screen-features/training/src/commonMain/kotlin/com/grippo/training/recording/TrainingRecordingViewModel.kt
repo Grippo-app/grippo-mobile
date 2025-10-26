@@ -132,7 +132,8 @@ internal class TrainingRecordingViewModel(
             val muscles = state.value.muscles
 
             for (exercise in exercises) {
-                val example = examples.firstOrNull { it.value.id == exercise.exerciseExample.id } ?: continue
+                val example =
+                    examples.firstOrNull { it.value.id == exercise.exerciseExample.id } ?: continue
 
                 val muscleId = example.bundles
                     .maxByOrNull { (it.percentage as? PercentageFormatState.Valid)?.value ?: 0 }
@@ -159,6 +160,7 @@ internal class TrainingRecordingViewModel(
                     name = example.value.name,
                     iterations = persistentListOf(),
                     exerciseExample = example.value,
+                    createdAt = DateTimeUtils.now(),
                     metrics = TrainingMetrics(
                         volume = VolumeFormatState.of(0f),
                         repetitions = RepetitionsFormatState.of(0),

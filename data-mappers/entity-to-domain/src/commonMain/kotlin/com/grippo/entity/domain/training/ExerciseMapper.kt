@@ -2,9 +2,10 @@ package com.grippo.entity.domain.training
 
 import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.data.features.api.training.models.SetExercise
-import com.grippo.entity.domain.equipment.toDomain
 import com.grippo.database.models.DraftExercisePack
 import com.grippo.database.models.ExercisePack
+import com.grippo.entity.domain.equipment.toDomain
+import com.grippo.toolkit.date.utils.DateTimeUtils
 
 public fun List<ExercisePack>.toDomain(): List<Exercise> {
     return mapNotNull { it.toDomain() }
@@ -18,6 +19,7 @@ public fun ExercisePack.toDomain(): Exercise? {
         volume = exercise.volume,
         repetitions = exercise.repetitions,
         intensity = exercise.intensity,
+        createdAt = DateTimeUtils.toLocalDateTime(exercise.createdAt),
         exerciseExample = example?.toDomain() ?: return null
     )
 }
@@ -33,6 +35,7 @@ public fun DraftExercisePack.toSetDomain(): SetExercise? {
         volume = exercise.volume,
         repetitions = exercise.repetitions,
         intensity = exercise.intensity,
+        createdAt = DateTimeUtils.toLocalDateTime(exercise.createdAt),
         exerciseExample = example?.toDomain() ?: return null
     )
 }

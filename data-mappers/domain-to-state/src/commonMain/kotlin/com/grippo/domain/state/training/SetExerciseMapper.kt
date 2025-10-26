@@ -21,6 +21,7 @@ public fun SetExercise.toState(): ExerciseState {
         name = name,
         iterations = iterations.toState(),
         exerciseExample = exerciseExample.toState(),
+        createdAt = createdAt,
         metrics = TrainingMetrics(
             volume = VolumeFormatState.of(volume),
             repetitions = RepetitionsFormatState.of(repetitions),

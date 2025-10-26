@@ -3,6 +3,7 @@ package com.grippo.dto.domain.training
 import com.grippo.backend.dto.training.ExerciseResponse
 import com.grippo.data.features.api.exercise.example.models.ExerciseExampleValue
 import com.grippo.data.features.api.training.models.Exercise
+import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.toolkit.logger.AppLogger
 
 public fun List<ExerciseResponse>.toDomain(example: ExerciseExampleValue): List<Exercise> {
@@ -30,6 +31,10 @@ public fun ExerciseResponse.toDomainOrNull(example: ExerciseExampleValue): Exerc
         "ExerciseResponse.intensity is null"
     } ?: return null
 
+    val domainCreatedAt = AppLogger.Mapping.log(createdAt) {
+        "ExerciseResponse.createdAt is null"
+    } ?: return null
+
     return Exercise(
         id = domainId,
         name = domainName,
@@ -37,6 +42,7 @@ public fun ExerciseResponse.toDomainOrNull(example: ExerciseExampleValue): Exerc
         repetitions = domainRepetitions,
         intensity = domainIntensity,
         iterations = iterations.toDomain(),
-        exerciseExample = example
+        exerciseExample = example,
+        createdAt = DateTimeUtils.toLocalDateTime(domainCreatedAt)
     )
 }

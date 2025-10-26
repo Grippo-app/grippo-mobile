@@ -3,10 +3,12 @@ package com.grippo.core.state.trainings
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.examples.ExerciseExampleValueState
 import com.grippo.core.state.examples.stubExerciseExampleValueState
+import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 import kotlin.random.Random
 import kotlin.uuid.Uuid
@@ -18,6 +20,7 @@ public data class ExerciseState(
     val name: String,
     val iterations: ImmutableList<IterationState>,
     val exerciseExample: ExerciseExampleValueState,
+    val createdAt: LocalDateTime,
     val metrics: TrainingMetrics
 )
 
@@ -37,5 +40,6 @@ public fun stubExercise(): ExerciseState = ExerciseState(
         }
     }.toPersistentList(),
     metrics = stubMetrics(),
-    exerciseExample = stubExerciseExampleValueState()
+    exerciseExample = stubExerciseExampleValueState(),
+    createdAt = DateTimeUtils.now()
 )

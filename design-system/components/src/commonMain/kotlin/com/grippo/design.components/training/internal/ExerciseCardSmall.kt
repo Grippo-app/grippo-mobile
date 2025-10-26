@@ -7,9 +7,12 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.stubExercise
 import com.grippo.design.components.training.IterationCard
@@ -17,6 +20,8 @@ import com.grippo.design.components.training.IterationCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.toolkit.date.utils.DateFormat
+import com.grippo.toolkit.date.utils.DateTimeUtils
 
 @Composable
 internal fun ExerciseCardSmall(
@@ -35,6 +40,18 @@ internal fun ExerciseCardSmall(
             ),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
     ) {
+        val formattedDate = remember(value.createdAt) {
+            DateTimeUtils.format(value.createdAt, DateFormat.DATE_MMM_DD_YYYY)
+        }
+
+        Text(
+            text = formattedDate,
+            style = AppTokens.typography.h6(),
+            color = AppTokens.colors.text.primary,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+
         FlowRow(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
