@@ -124,7 +124,7 @@ internal fun StatisticsPage(
                                 modifier = Modifier
                                     .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
                                     .fillMaxWidth()
-                                    .aspectRatio(1.4f),
+                                    .aspectRatio(1.7f),
                                 value = data,
                             )
                         }

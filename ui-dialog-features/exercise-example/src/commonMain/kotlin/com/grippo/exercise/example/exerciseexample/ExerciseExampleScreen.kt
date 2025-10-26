@@ -178,7 +178,7 @@ internal fun ExerciseExampleScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                                .aspectRatio(1.4f),
+                                .aspectRatio(1.7f),
                             value = data,
                         )
 

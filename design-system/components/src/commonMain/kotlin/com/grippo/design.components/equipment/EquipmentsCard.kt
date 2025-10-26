@@ -23,7 +23,7 @@ public fun EquipmentsCard(
 ) {
     LazyRow(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block),
         contentPadding = contentPadding
     ) {
         items(items = value, key = { it.id }) { item ->

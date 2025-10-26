@@ -283,9 +283,6 @@ public data object AppDp {
 
     public data object EquipmentCard {
         val icon: Dp = size.xLarge
-        val horizontalPadding: Dp = padding.large
-        val verticalPadding: Dp = padding.medium
-        val radius: Dp = AppDp.radius.medium
     }
 
     public data object AchievementCard {

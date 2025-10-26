@@ -1,15 +1,12 @@
 package com.grippo.design.components.equipment
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,14 +26,8 @@ public fun EquipmentCard(
 ) {
     Column(
         modifier = modifier
-            .background(
-                color = AppTokens.colors.background.card,
-                shape = RoundedCornerShape(AppTokens.dp.equipmentCard.radius)
-            ).width(
+            .width(
                 intrinsicSize = IntrinsicSize.Max
-            ).padding(
-                horizontal = AppTokens.dp.equipmentCard.horizontalPadding,
-                vertical = AppTokens.dp.equipmentCard.verticalPadding
             ),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
