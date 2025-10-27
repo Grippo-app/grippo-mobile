@@ -119,13 +119,13 @@ internal fun ExerciseScreen(
             )
         }
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         ContentSpliter(
             text = AppTokens.strings.res(Res.string.more),
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         val onExampleDetailsClick = remember {
             { contract.onExampleDetailsClick(exercise.exerciseExample.id) }

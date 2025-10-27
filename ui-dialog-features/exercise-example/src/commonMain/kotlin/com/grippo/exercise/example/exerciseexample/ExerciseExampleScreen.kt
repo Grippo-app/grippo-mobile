@@ -143,13 +143,13 @@ internal fun ExerciseExampleScreen(
 
         if (example.equipments.isNotEmpty()) {
 
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
             ContentSpliter(
                 text = AppTokens.strings.res(Res.string.equipments)
             )
 
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
             EquipmentsCard(
                 modifier = Modifier.fillMaxWidth(),
@@ -163,13 +163,13 @@ internal fun ExerciseExampleScreen(
             visible = state.recent.isNotEmpty(),
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
-                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
                 ContentSpliter(
                     text = AppTokens.strings.res(Res.string.history)
                 )
 
-                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
                 state.exerciseVolume
                     ?.takeIf { it.points.isNotEmpty() }
@@ -208,13 +208,13 @@ internal fun ExerciseExampleScreen(
             visible = state.achievements.isNotEmpty(),
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
-                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
                 ContentSpliter(
                     text = AppTokens.strings.res(Res.string.achievements)
                 )
 
-                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
                 AchievementsCard(
                     modifier = Modifier.fillMaxWidth(),
