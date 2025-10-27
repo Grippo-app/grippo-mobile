@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
@@ -56,9 +55,7 @@ internal fun GeneralPage(
         ) {
             item(key = "generate_training_btn") {
                 Button(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+                    modifier = Modifier.fillMaxWidth(),
                     content = ButtonContent.Text(AppTokens.strings.res(Res.string.generate_training_btn)),
                     style = ButtonStyle.Magic,
                     state = buttonState,
