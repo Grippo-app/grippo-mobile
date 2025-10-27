@@ -17,6 +17,7 @@
     <string name="cm">см</string>
     <string name="next_btn">Далі</string>
     <string name="apply_btn">Застосувати</string>
+    <string name="generate_training_btn">Згенерувати тренування</string>
     <string name="got_it_btn">Зрозуміло</string>
     <string name="confirm_btn">Підтвердити</string>
     <string name="cancel_btn">Скасувати</string>

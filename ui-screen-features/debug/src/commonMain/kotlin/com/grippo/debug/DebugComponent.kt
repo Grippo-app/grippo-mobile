@@ -13,7 +13,10 @@ public class DebugComponent(
 ) : BaseComponent<DebugDirection>(componentContext) {
 
     override val viewModel: DebugViewModel = componentContext.retainedInstance {
-        DebugViewModel()
+        DebugViewModel(
+            trainingFeature = getKoin().get(),
+            exampleFeature = getKoin().get()
+        )
     }
 
     private val backCallback = BackCallback(onBack = viewModel::onBack)

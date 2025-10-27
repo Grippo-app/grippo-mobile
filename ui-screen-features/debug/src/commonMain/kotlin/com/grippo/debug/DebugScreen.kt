@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.UiText
+import com.grippo.debug.components.GeneralPage
 import com.grippo.debug.components.LoggerPage
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
@@ -56,7 +57,14 @@ internal fun DebugScreen(
 
     when (state.selected) {
         DebugMenu.General -> {
-
+            GeneralPage(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                state = state.logger,
+                contract = contract,
+                loaders = loaders
+            )
         }
 
         DebugMenu.Logger -> {

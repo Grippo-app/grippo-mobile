@@ -17,6 +17,7 @@
     <string name="cm">cm</string>
     <string name="next_btn">Next</string>
     <string name="apply_btn">Apply</string>
+    <string name="generate_training_btn">Generate Training</string>
     <string name="got_it_btn">Got it</string>
     <string name="confirm_btn">Confirm</string>
     <string name="no_data_yet">No data yet</string>
