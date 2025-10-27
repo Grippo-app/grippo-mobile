@@ -1,11 +1,17 @@
 package com.grippo.debug
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
+import com.grippo.data.features.api.training.TrainingFeature
+import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.toolkit.logger.AppLogger
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.collections.immutable.toPersistentMap
 
-public class DebugViewModel : BaseViewModel<DebugState, DebugDirection, DebugLoader>(DebugState()),
+public class DebugViewModel(
+    private val trainingFeature: TrainingFeature,
+    private val exampleFeature: ExerciseExampleFeature,
+) : BaseViewModel<DebugState, DebugDirection, DebugLoader>(DebugState()),
     DebugContract {
 
     init {
@@ -20,6 +26,12 @@ public class DebugViewModel : BaseViewModel<DebugState, DebugDirection, DebugLoa
         safeLaunch {
             AppLogger.clearLogFile()
             loadLogs()
+        }
+    }
+
+    override fun generateTraining() {
+        safeLaunch(loader = DebugLoader.GenerateTraining) {
+//            SetTraining()
         }
     }
 
