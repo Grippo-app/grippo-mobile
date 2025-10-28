@@ -14,8 +14,7 @@ Grippo Mobile is a modern fitness application built with Kotlin Multiplatform an
 
 | Android | iOS |
 |---|---|
-| <a href="YOUR_ANDROID_VIDEO_URL"><img src="https://via.placeholder.com/420x240?text=Android+Demo" alt="Android Demo"></a> | <a href="[YOUR_IOS_VIDEO_URL](https://github.com/user-attachments/assets/a8b188e3-6446-4cbe-9a34-f2614caa4e03
-)"><img src="https://via.placeholder.com/420x240?text=iOS+Demo" alt="iOS Demo"></a> |
+| <a href="YOUR_ANDROID_VIDEO_URL"><img src="https://via.placeholder.com/420x240?text=Android+Demo" alt="Android Demo"></a> | <a href="https://github.com/user-attachments/assets/a8b188e3-6446-4cbe-9a34-f2614caa4e03"><img src="https://via.placeholder.com/420x240?text=iOS+Demo" alt="iOS Demo"></a> |
 
 ### Stack & Highlights
 | Area | Tools / Summary |
