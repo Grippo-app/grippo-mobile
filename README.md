@@ -1,32 +1,41 @@
-# Grippo Mobile
-
 <div align="center">
-  <img src="https://img.shields.io/badge/KMM-Multiplatform-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white" alt="KMM">
+  <h2>Grippo Mobile · Kotlin Multiplatform Fitness</h2>
+  <p><b>One codebase · Two platforms · Modern architecture</b></p>
+  <img src="https://img.shields.io/badge/Kotlin_Multiplatform-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white" alt="KMP">
+  <img src="https://img.shields.io/badge/Compose_Multiplatform-3DDC84?style=for-the-badge&logo=jetpackcompose&logoColor=white" alt="Compose MPP">
   <img src="https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android">
-  <img src="https://img.shields.io/badge/iOS-000000?style=for-the-badge&logo=ios&logoColor=white" alt="iOS">
+  <img src="https://img.shields.io/badge/iOS-000000?style=for-the-badge&logo=apple&logoColor=white" alt="iOS">
 </div>
 
-<div align="center">
-  <h3>A modern fitness tracking application built with Kotlin Multiplatform Mobile</h3>
-</div>
+### Overview
+Grippo Mobile is a modern fitness application built with Kotlin Multiplatform and Compose Multiplatform, delivering a shared UI and business logic for Android and iOS with a clean, modular architecture.
 
-## 📱 Overview
+### Demos
+| Android | iOS |
+|---|---|
+| <a href="YOUR_ANDROID_VIDEO_URL"><img src="https://via.placeholder.com/420x240?text=Android+Demo" alt="Android Demo"></a> | <a href="YOUR_IOS_VIDEO_URL"><img src="https://via.placeholder.com/420x240?text=iOS+Demo" alt="iOS Demo"></a> |
 
-Grippo Mobile is a cutting-edge fitness tracking application that helps users monitor their
-workouts, track progress, and achieve their fitness goals. Built with Kotlin Multiplatform Mobile (
-KMM), the app delivers a native experience on both Android and iOS platforms while sharing business
-logic and UI components.
+### Stack & Highlights
+| Area | Tools / Summary |
+|---|---|
+| UI | Compose Multiplatform (shared UI for Android & iOS) |
+| Architecture | Modular by feature/layer; Clean-style boundaries; Decompose navigation |
+| DI | Koin (KSP) |
+| Networking | Ktor HTTP client (multiplatform) |
+| Persistence | Room (multiplatform) |
+| Toolkit | HTTP client, serialization, image loader, connectivity, date utils, logger |
+| Design System | Tokens, resources provider, reusable components |
+| AI | Dedicated AI agent service integrated in data layer |
 
-## 📬 Contact
+### Architecture at a glance
+- **App shells**: `androidApp`, `iosApp`
+- **Shared core**: `shared` (bootstraps DI, wires features)
+- **UI**: `ui-screen-features/*`, `ui-dialog-features/*`, `ui-core/*`, `design-system/*`, `compose-libs/*`
+- **Data**: `data-features/*`, `data-services/*` (backend, database, ai-agent), `data-mappers/*`
+- **Toolkit**: `toolkit/*` (http-client, serialization, logger, connectivity, date-utils, theme, localization)
+- **Build logic**: `build-logic/*`
 
-For questions, collaboration opportunities, or to discuss how I can contribute to your team:
-
-- **Email**: [voitenko.dev@gmail.com](mailto:your.email@example.com)
+### Contact
+- **Email**: [voitenko.dev@gmail.com](mailto:voitenko.dev@gmail.com)
 - **LinkedIn**: [Max Voitenko](https://www.linkedin.com/in/max-voitenko)
 - **GitHub**: [voitenkodev](https://github.com/voitenkodev)
-
----
-
-<div align="center">
-  <p>Built with ❤️ using Kotlin Multiplatform Mobile</p>
-</div>

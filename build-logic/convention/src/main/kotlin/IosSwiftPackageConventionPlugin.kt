@@ -54,10 +54,6 @@ class IosSwiftPackageConventionPlugin : Plugin<Project> {
                             }
                         }
                     }
-
-                // If you later adopt official SwiftPM DSL (like `swiftPackage { ... }`)
-                // and need to generate Package.swift automatically, that config would also live here.
-                // It's intentionally not added because the API is still in flux.
             }
         }
     }
