@@ -10,11 +10,20 @@
 ### Overview
 Grippo Mobile is a modern fitness application built with Kotlin Multiplatform and Compose Multiplatform, delivering a shared UI and business logic for Android and iOS with a clean, modular architecture.
 
-### Demos
-
-| Android | iOS |
-|---|---|
-| <a href="YOUR_ANDROID_VIDEO_URL"><img src="https://via.placeholder.com/420x240?text=Android+Demo" alt="Android Demo"></a> | <a href="https://github.com/user-attachments/assets/a8b188e3-6446-4cbe-9a34-f2614caa4e03"><img src="https://via.placeholder.com/420x240?text=iOS+Demo" alt="iOS Demo"></a> |
+### Screenshots
+<div align="center">
+  <h4>Android</h4>
+  <a href="docs/screenshots/android/1.png"><img src="docs/screenshots/android/1.png" alt="Android 1" width="180"></a>
+  <a href="docs/screenshots/android/2.png"><img src="docs/screenshots/android/2.png" alt="Android 2" width="180"></a>
+  <a href="docs/screenshots/android/3.png"><img src="docs/screenshots/android/3.png" alt="Android 3" width="180"></a>
+  <a href="docs/screenshots/android/4.png"><img src="docs/screenshots/android/4.png" alt="Android 4" width="180"></a>
+  <br/>
+  <h4>iOS</h4>
+  <a href="docs/screenshots/ios/1.png"><img src="docs/screenshots/ios/1.png" alt="iOS 1" width="180"></a>
+  <a href="docs/screenshots/ios/2.png"><img src="docs/screenshots/ios/2.png" alt="iOS 2" width="180"></a>
+  <a href="docs/screenshots/ios/3.png"><img src="docs/screenshots/ios/3.png" alt="iOS 3" width="180"></a>
+  <a href="docs/screenshots/ios/4.png"><img src="docs/screenshots/ios/4.png" alt="iOS 4" width="180"></a>
+</div>
 
 ### Stack & Highlights
 | Area | Tools / Summary |
