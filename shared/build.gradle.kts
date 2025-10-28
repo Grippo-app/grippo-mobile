@@ -1,7 +1,7 @@
 plugins {
     id("android.library.convention")
     id("kotlin.multiplatform.convention")
-    id("ios.cocoapods.convention")
+    id("ios.swiftpackage.convention")
     id("compose.multiplatform.convention")
     id("koin.annotation.convention")
 }

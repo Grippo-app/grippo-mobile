@@ -1,7 +1,7 @@
 package com.grippo.toolkit.logger.internal.models
 
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 internal data class LogEntry(
     val category: LogCategory,

@@ -54,7 +54,7 @@ private fun toLocalTime(
 // Formats from total seconds directly (no extra types).
 private fun formatFromSeconds(totalSeconds: Long): String {
     var negative = false
-    val time = toLocalTime(totalSeconds) { d, neg ->
+    val time = toLocalTime(totalSeconds) { _, neg ->
         negative = neg
     }
 

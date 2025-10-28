@@ -18,10 +18,6 @@ gradlePlugin {
             id = "android.application.convention"
             implementationClass = "AndroidApplicationConventionPlugin"
         }
-        register("ios.cocoapods.convention") {
-            id = "ios.cocoapods.convention"
-            implementationClass = "IosCocoapodsConventionPlugin"
-        }
         register("compose.multiplatform.convention") {
             id = "compose.multiplatform.convention"
             implementationClass = "ComposeMultiplatformConventionPlugin"
@@ -37,6 +33,10 @@ gradlePlugin {
         register("room.convention") {
             id = "room.convention"
             implementationClass = "RoomConventionPlugin"
+        }
+        register("ios.swiftpackage.convention") {
+            id = "ios.swiftpackage.convention"
+            implementationClass = "IosSwiftPackageConventionPlugin"
         }
     }
 }

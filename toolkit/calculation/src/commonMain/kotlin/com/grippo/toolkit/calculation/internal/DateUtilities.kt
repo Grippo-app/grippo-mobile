@@ -17,7 +17,7 @@ internal fun isoWeekNumber(weekStartMonday: LocalDateTime): Int {
 
 internal fun daysInclusive(from: LocalDate, to: LocalDate): Int {
     // O(1): inclusive day count
-    return (to.toEpochDays() - from.toEpochDays() + 1)
+    return (to.toEpochDays() - from.toEpochDays() + 1).toInt()
 }
 
 /** Inclusive month span count between two dates (month-granular). */

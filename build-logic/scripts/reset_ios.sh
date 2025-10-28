@@ -6,26 +6,18 @@ PROJECT_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 echo "🧹 Cleaning Gradle build..."
 (cd "$PROJECT_ROOT" && ./gradlew clean)
 
-echo "🗑 Removing iOS Pods, Podfile.lock, DerivedData..."
+echo "🗑 Removing legacy CocoaPods artifacts..."
 rm -rf "$PROJECT_ROOT/iosApp/Pods"
-rm -rf "$PROJECT_ROOT/iosApp/Podfile.lock"
+rm -f "$PROJECT_ROOT/iosApp/Podfile"
+rm -f "$PROJECT_ROOT/iosApp/Podfile.lock"
+rm -rf "$PROJECT_ROOT/iosApp/iosApp.xcworkspace"
+
+echo "🧽 Clearing iOS build outputs..."
 rm -rf "$PROJECT_ROOT/iosApp/build"
 rm -rf "$PROJECT_ROOT/shared/build"
 rm -rf ~/Library/Developer/Xcode/DerivedData
 
-echo "🧹 Deintegrating old CocoaPods..."
-(cd "$PROJECT_ROOT/iosApp" && pod deintegrate || true)
+echo "📦 Building XCFrameworks for Swift Package Manager (Debug + Release)..."
+(cd "$PROJECT_ROOT" && ./gradlew :shared:syncSharedDebugXCFrameworkForSPM :shared:syncSharedReleaseXCFrameworkForSPM)
 
-echo "📦 Generating dummy framework for CocoaPods..."
-(cd "$PROJECT_ROOT" && ./gradlew podinstall)
-
-echo "📦 Generating dummy framework for CocoaPods..."
-(cd "$PROJECT_ROOT" && ./gradlew :shared:generateDummyFramework)
-
-echo "🏗 Building XCFrameworks for CocoaPods (Debug)..."
-(cd "$PROJECT_ROOT" && ./gradlew :shared:podPublishDebugXCFramework)
-
-echo "📦 Installing CocoaPods..."
-(cd "$PROJECT_ROOT/iosApp" && pod install)
-
-echo "✅ iOS project reset + framework build complete!"
+echo "✅ iOS project reset + Swift package assets prepared!"
