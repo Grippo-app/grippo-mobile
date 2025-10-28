@@ -21,8 +21,8 @@ Grippo Mobile is a modern fitness application built with Kotlin Multiplatform an
   <br/>
   <h4>Android</h4>
   <a href="https://github.com/user-attachments/assets/2d29dfa6-08ad-4335-8700-9641b4b29d35"><img src="https://github.com/user-attachments/assets/2d29dfa6-08ad-4335-8700-9641b4b29d35" alt="Android 3" width="150"></a>
-  <a href="https://github.com/user-attachments/assets/50d2c598-a58b-4e85-9859-78ef8c5a491d"><img src="https://github.com/user-attachments/assets/50d2c598-a58b-4e85-9859-78ef8c5a491d" alt="Android 1" width="150"></a>
   <a href="https://github.com/user-attachments/assets/1d33863e-7faa-41fd-8b2c-83818e00475a"><img src="https://github.com/user-attachments/assets/1d33863e-7faa-41fd-8b2c-83818e00475a" alt="Android 5" width="150"></a>
+  <a href="https://github.com/user-attachments/assets/50d2c598-a58b-4e85-9859-78ef8c5a491d"><img src="https://github.com/user-attachments/assets/50d2c598-a58b-4e85-9859-78ef8c5a491d" alt="Android 1" width="150"></a>
   <a href="https://github.com/user-attachments/assets/e0d0544b-eb56-4339-8c0f-a1ac1aa53882"><img src="https://github.com/user-attachments/assets/e0d0544b-eb56-4339-8c0f-a1ac1aa53882" alt="Android 2" width="150"></a>
   <a href="https://github.com/user-attachments/assets/5fbcc87b-0dd7-4379-9437-a60032db982c"><img src="https://github.com/user-attachments/assets/5fbcc87b-0dd7-4379-9437-a60032db982c" alt="Android 4" width="150"></a>
 </div>
