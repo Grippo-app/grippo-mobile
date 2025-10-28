@@ -10,37 +10,27 @@
 ### Overview
 Grippo Mobile is a modern fitness application built with Kotlin Multiplatform and Compose Multiplatform, delivering a shared UI and business logic for Android and iOS with a clean, modular architecture.
 
-// ios
-![1](https://github.com/user-attachments/assets/6004f07c-9873-400d-a499-86561329c0f2)
-![2](https://github.com/user-attachments/assets/168fa3a0-e2a9-42a8-b9a2-9f8d2292646b)
-![4](https://github.com/user-attachments/assets/5ed0ce52-24d1-41f6-a769-c82ddb37d702)
-![3](https://github.com/user-attachments/assets/7093f392-1a1d-4e3a-9f54-adaf4a8c07b7)
-![6](https://github.com/user-attachments/assets/15f6e5d1-ffa4-4897-bc31-d3875f28a108)
-![5](https://github.com/user-attachments/assets/e14437ff-ce3c-413e-b10a-5c02030fa69e)
-
-// android
-<img width="1080" height="2424" alt="Screenshot_1761667717" src="https://github.com/user-attachments/assets/50d2c598-a58b-4e85-9859-78ef8c5a491d" />
-<img width="1080" height="2424" alt="Screenshot_1761667709" src="https://github.com/user-attachments/assets/e0d0544b-eb56-4339-8c0f-a1ac1aa53882" />
-<img width="1080" height="2424" alt="Screenshot_1761667663" src="https://github.com/user-attachments/assets/2d29dfa6-08ad-4335-8700-9641b4b29d35" />
-<img width="1080" height="2424" alt="Screenshot_1761667652" src="https://github.com/user-attachments/assets/5fbcc87b-0dd7-4379-9437-a60032db982c" />
-<img width="1080" height="2424" alt="Screenshot_1761667644" src="https://github.com/user-attachments/assets/1d33863e-7faa-41fd-8b2c-83818e00475a" />
-<img width="1080" height="2424" alt="Screenshot_1761667634" src="https://github.com/user-attachments/assets/d3175030-b5e2-4483-a0b6-64bc6507887a" />
-
-
 ### Screenshots
 <div align="center">
-  <h4>Android</h4>
-  <a href="docs/screenshots/android/1.png"><img src="docs/screenshots/android/1.png" alt="Android 1" width="180"></a>
-  <a href="docs/screenshots/android/2.png"><img src="docs/screenshots/android/2.png" alt="Android 2" width="180"></a>
-  <a href="docs/screenshots/android/3.png"><img src="docs/screenshots/android/3.png" alt="Android 3" width="180"></a>
-  <a href="docs/screenshots/android/4.png"><img src="docs/screenshots/android/4.png" alt="Android 4" width="180"></a>
-  <br/>
   <h4>iOS</h4>
-  <a href="docs/screenshots/ios/1.png"><img src="docs/screenshots/ios/1.png" alt="iOS 1" width="180"></a>
-  <a href="docs/screenshots/ios/2.png"><img src="docs/screenshots/ios/2.png" alt="iOS 2" width="180"></a>
-  <a href="docs/screenshots/ios/3.png"><img src="docs/screenshots/ios/3.png" alt="iOS 3" width="180"></a>
-  <a href="docs/screenshots/ios/4.png"><img src="docs/screenshots/ios/4.png" alt="iOS 4" width="180"></a>
+  <a href="https://github.com/user-attachments/assets/6004f07c-9873-400d-a499-86561329c0f2"><img src="https://github.com/user-attachments/assets/6004f07c-9873-400d-a499-86561329c0f2" alt="iOS 1" width="160"></a>
+  <a href="https://github.com/user-attachments/assets/168fa3a0-e2a9-42a8-b9a2-9f8d2292646b"><img src="https://github.com/user-attachments/assets/168fa3a0-e2a9-42a8-b9a2-9f8d2292646b" alt="iOS 2" width="160"></a>
+  <a href="https://github.com/user-attachments/assets/5ed0ce52-24d1-41f6-a769-c82ddb37d702"><img src="https://github.com/user-attachments/assets/5ed0ce52-24d1-41f6-a769-c82ddb37d702" alt="iOS 3" width="160"></a>
+  <a href="https://github.com/user-attachments/assets/7093f392-1a1d-4e3a-9f54-adaf4a8c07b7"><img src="https://github.com/user-attachments/assets/7093f392-1a1d-4e3a-9f54-adaf4a8c07b7" alt="iOS 4" width="160"></a>
+  <a href="https://github.com/user-attachments/assets/15f6e5d1-ffa4-4897-bc31-d3875f28a108"><img src="https://github.com/user-attachments/assets/15f6e5d1-ffa4-4897-bc31-d3875f28a108" alt="iOS 5" width="160"></a>
+  <a href="https://github.com/user-attachments/assets/e14437ff-ce3c-413e-b10a-5c02030fa69e"><img src="https://github.com/user-attachments/assets/e14437ff-ce3c-413e-b10a-5c02030fa69e" alt="iOS 6" width="160"></a>
+  <br/>
+  <h4>Android</h4>
+  <a href="https://github.com/user-attachments/assets/50d2c598-a58b-4e85-9859-78ef8c5a491d"><img src="https://github.com/user-attachments/assets/50d2c598-a58b-4e85-9859-78ef8c5a491d" alt="Android 1" width="160"></a>
+  <a href="https://github.com/user-attachments/assets/e0d0544b-eb56-4339-8c0f-a1ac1aa53882"><img src="https://github.com/user-attachments/assets/e0d0544b-eb56-4339-8c0f-a1ac1aa53882" alt="Android 2" width="160"></a>
+  <a href="https://github.com/user-attachments/assets/2d29dfa6-08ad-4335-8700-9641b4b29d35"><img src="https://github.com/user-attachments/assets/2d29dfa6-08ad-4335-8700-9641b4b29d35" alt="Android 3" width="160"></a>
+  <a href="https://github.com/user-attachments/assets/5fbcc87b-0dd7-4379-9437-a60032db982c"><img src="https://github.com/user-attachments/assets/5fbcc87b-0dd7-4379-9437-a60032db982c" alt="Android 4" width="160"></a>
+  <a href="https://github.com/user-attachments/assets/1d33863e-7faa-41fd-8b2c-83818e00475a"><img src="https://github.com/user-attachments/assets/1d33863e-7faa-41fd-8b2c-83818e00475a" alt="Android 5" width="160"></a>
+  <a href="https://github.com/user-attachments/assets/d3175030-b5e2-4483-a0b6-64bc6507887a"><img src="https://github.com/user-attachments/assets/d3175030-b5e2-4483-a0b6-64bc6507887a" alt="Android 6" width="160"></a>
 </div>
+
+
+ 
 
 ### Stack & Highlights
 | Area | Tools / Summary |
