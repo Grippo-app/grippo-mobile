@@ -18,17 +18,17 @@ Grippo Mobile is a modern fitness application built with Kotlin Multiplatform an
   <a href="https://github.com/user-attachments/assets/7093f392-1a1d-4e3a-9f54-adaf4a8c07b7"><img src="https://github.com/user-attachments/assets/7093f392-1a1d-4e3a-9f54-adaf4a8c07b7" alt="iOS 4" width="120"></a>
   <a href="https://github.com/user-attachments/assets/e14437ff-ce3c-413e-b10a-5c02030fa69e"><img src="https://github.com/user-attachments/assets/e14437ff-ce3c-413e-b10a-5c02030fa69e" alt="iOS 6" width="120"></a>
   <a href="https://github.com/user-attachments/assets/15f6e5d1-ffa4-4897-bc31-d3875f28a108"><img src="https://github.com/user-attachments/assets/15f6e5d1-ffa4-4897-bc31-d3875f28a108" alt="iOS 5" width="120"></a>
+  <a href="https://github.com/user-attachments/assets/9fa692fb-f4ff-4824-9a01-75423982cad3"><img src="https://github.com/user-attachments/assets/9fa692fb-f4ff-4824-9a01-75423982cad3" alt="iOS 5" width="120"></a>
   <br/>
   <h4>Android</h4>
   <a href="https://github.com/user-attachments/assets/2d29dfa6-08ad-4335-8700-9641b4b29d35"><img src="https://github.com/user-attachments/assets/2d29dfa6-08ad-4335-8700-9641b4b29d35" alt="Android 3" width="120"></a>
   <a href="https://github.com/user-attachments/assets/1d33863e-7faa-41fd-8b2c-83818e00475a"><img src="https://github.com/user-attachments/assets/1d33863e-7faa-41fd-8b2c-83818e00475a" alt="Android 5" width="120"></a>
-  <a href="https://github.com/user-attachments/assets/50d2c598-a58b-4e85-9859-78ef8c5a491d"><img src="https://github.com/user-attachments/assets/50d2c598-a58b-4e85-9859-78ef8c5a491d" alt="Android 1" width="120"></a>
+   <a href="https://github.com/user-attachments/assets/60d7869d-469c-4c59-b11a-ea7b6ff2b612"><img src="https://github.com/user-attachments/assets/60d7869d-469c-4c59-b11a-ea7b6ff2b612" alt="Android 4" width="120"></a>
   <a href="https://github.com/user-attachments/assets/e0d0544b-eb56-4339-8c0f-a1ac1aa53882"><img src="https://github.com/user-attachments/assets/e0d0544b-eb56-4339-8c0f-a1ac1aa53882" alt="Android 2" width="120"></a>
   <a href="https://github.com/user-attachments/assets/5fbcc87b-0dd7-4379-9437-a60032db982c"><img src="https://github.com/user-attachments/assets/5fbcc87b-0dd7-4379-9437-a60032db982c" alt="Android 4" width="120"></a>
+   <a href="https://github.com/user-attachments/assets/50d2c598-a58b-4e85-9859-78ef8c5a491d"><img src="https://github.com/user-attachments/assets/50d2c598-a58b-4e85-9859-78ef8c5a491d" alt="Android 1" width="120"></a>
 </div>
 
-
- 
 
 ### Stack & Highlights
 | Area | Tools / Summary |
