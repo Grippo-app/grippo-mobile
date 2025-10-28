@@ -1,23 +1,49 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 
-PROJECT_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+GRADLEW="$PROJECT_ROOT/gradlew"
 
-echo "🧹 Cleaning Gradle build..."
-(cd "$PROJECT_ROOT" && ./gradlew clean)
+log_step() {
+  printf "\n%s\n" "$1"
+}
 
-echo "🗑 Removing legacy CocoaPods artifacts..."
-rm -rf "$PROJECT_ROOT/iosApp/Pods"
-rm -f "$PROJECT_ROOT/iosApp/Podfile"
-rm -f "$PROJECT_ROOT/iosApp/Podfile.lock"
-rm -rf "$PROJECT_ROOT/iosApp/iosApp.xcworkspace"
+fail() {
+  printf "❌ %s\n" "$1" >&2
+  exit 1
+}
 
-echo "🧽 Clearing iOS build outputs..."
-rm -rf "$PROJECT_ROOT/iosApp/build"
-rm -rf "$PROJECT_ROOT/shared/build"
-rm -rf ~/Library/Developer/Xcode/DerivedData
+[[ -x "$GRADLEW" ]] || fail "Gradle wrapper not found at $GRADLEW"
 
-echo "📦 Building XCFrameworks for Swift Package Manager (Debug + Release)..."
-(cd "$PROJECT_ROOT" && ./gradlew :shared:syncSharedDebugXCFrameworkForSPM :shared:syncSharedReleaseXCFrameworkForSPM)
+log_step "🧹 Cleaning Gradle build outputs..."
+"$GRADLEW" -p "$PROJECT_ROOT" clean
 
-echo "✅ iOS project reset + Swift package assets prepared!"
+log_step "🧽 Clearing iOS caches & build artifacts..."
+declare -a CLEAN_TARGETS=(
+  "$PROJECT_ROOT/iosApp/build"
+  "$PROJECT_ROOT/shared/build"
+  "$HOME/Library/Developer/Xcode/DerivedData"
+)
+
+for target in "${CLEAN_TARGETS[@]}"; do
+  if [ -e "$target" ]; then
+    rm -rf "$target"
+    printf "  • removed %s\n" "$target"
+  fi
+done
+
+log_step "📦 Building shared.xcframework (Debug + Release)..."
+"$GRADLEW" -p "$PROJECT_ROOT" \
+  :shared:assembleSharedDebugXCFramework \
+  :shared:assembleSharedReleaseXCFramework
+
+declare -a EXPECTED_FRAMEWORKS=(
+  "$PROJECT_ROOT/shared/build/XCFrameworks/debug/shared.xcframework"
+  "$PROJECT_ROOT/shared/build/XCFrameworks/release/shared.xcframework"
+)
+
+for framework in "${EXPECTED_FRAMEWORKS[@]}"; do
+  [ -d "$framework" ] || fail "Expected framework not found at $framework"
+done
+
+log_step "✅ iOS project reset complete and XCFrameworks ready."

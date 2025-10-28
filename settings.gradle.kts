@@ -33,7 +33,7 @@ dependencyResolutionManagement.repositories {
     mavenCentral()
 }
 
-rootProject.name = "Grippo"
+rootProject.name = "grippo-mobile"
 
 include(":androidApp")
 include(":shared")
