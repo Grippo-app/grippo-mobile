@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -28,6 +29,7 @@ import com.grippo.design.components.datetime.DatePicker
 import com.grippo.design.components.timeline.TimeLabel
 import com.grippo.design.components.timeline.TimelineIndicator
 import com.grippo.design.components.toolbar.Toolbar
+import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
 import com.grippo.design.core.AppTokens
@@ -35,6 +37,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.Menu
+import com.grippo.design.resources.provider.icons.User
 import com.grippo.design.resources.provider.trainings
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
 import com.grippo.home.trainings.factory.timelineStyle
@@ -54,6 +57,15 @@ internal fun HomeTrainingsScreen(
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.trainings),
+        style = ToolbarStyle.Transparent,
+        trailing = {
+            Button(
+                content = ButtonContent.Icon(icon = AppTokens.icons.User),
+                style = ButtonStyle.Transparent,
+                size = ButtonSize.Small,
+                onClick = contract::onOpenProfile
+            )
+        },
         content = {
             Row(
                 modifier = Modifier
@@ -78,7 +90,7 @@ internal fun HomeTrainingsScreen(
     )
 
     LazyColumn(
-        modifier = Modifier.fillMaxWidth().weight(1f),
+        modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(
             start = AppTokens.dp.screen.horizontalPadding,
             end = AppTokens.dp.screen.horizontalPadding,

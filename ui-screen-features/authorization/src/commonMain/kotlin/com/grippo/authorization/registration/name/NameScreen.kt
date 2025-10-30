@@ -21,6 +21,7 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.inputs.InputName
+import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
@@ -42,7 +43,7 @@ internal fun NameScreen(
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
-        onBack = contract::onBack,
+        leading = Leading.Back(contract::onBack),
         style = ToolbarStyle.Transparent
     )
 

@@ -16,6 +16,7 @@ import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.design.components.inputs.InputWeight
+import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -35,7 +36,7 @@ internal fun WeightHistoryScreen(
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.weight_history),
-        onBack = contract::onBack
+        leading = Leading.Back(contract::onBack)
     )
 
     Column(

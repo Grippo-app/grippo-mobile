@@ -8,6 +8,7 @@ import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.formatters.HeightFormatState
 import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.menu.MenuItemState
+import com.grippo.core.state.profile.ProfileActivityMenu
 import com.grippo.core.state.trainings.IterationFocus
 import com.grippo.core.state.trainings.IterationState
 import com.grippo.toolkit.date.utils.DateRange
@@ -126,6 +127,14 @@ public sealed class DialogConfig(
     public data class MenuPicker(
         val items: List<MenuItemState>,
         @Transient val onResult: (id: String) -> Unit = {},
+    ) : DialogConfig(
+        onDismiss = null,
+        dismissBySwipe = true
+    )
+
+    @Serializable
+    public data class Profile(
+        @Transient val onResult: (ProfileActivityMenu) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true

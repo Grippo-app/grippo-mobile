@@ -2,6 +2,7 @@ package com.grippo.home.trainings
 
 internal interface HomeTrainingsContract {
     fun onExerciseClick(id: String)
+    fun onOpenProfile()
     fun onTrainingMenuClick(id: String)
     fun onSelectDate()
     fun onNextClick()
@@ -10,6 +11,7 @@ internal interface HomeTrainingsContract {
 
     companion object Empty : HomeTrainingsContract {
         override fun onExerciseClick(id: String) {}
+        override fun onOpenProfile() {}
         override fun onTrainingMenuClick(id: String) {}
         override fun onSelectDate() {}
         override fun onNextClick() {}

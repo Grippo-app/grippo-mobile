@@ -17,7 +17,6 @@ import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.icons.NavArrowDown
 import com.grippo.design.resources.provider.icons.NavArrowLeft
 import com.grippo.design.resources.provider.icons.NavArrowRight
 import com.grippo.toolkit.date.utils.DateCompose
@@ -58,7 +57,6 @@ public fun DatePicker(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-
         val previousState = remember(limitations, value) {
             if (value.date == limitations.from.date) {
                 ButtonState.Disabled
@@ -101,17 +99,6 @@ public fun DatePicker(
             text = text,
             style = AppTokens.typography.h6(),
             color = titleColor
-        )
-
-        Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
-
-        Button(
-            content = ButtonContent.Icon(
-                icon = AppTokens.icons.NavArrowDown
-            ),
-            size = ButtonSize.Small,
-            style = ButtonStyle.Transparent,
-            onClick = onClick
         )
     }
 }

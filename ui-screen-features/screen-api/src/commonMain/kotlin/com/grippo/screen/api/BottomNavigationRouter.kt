@@ -7,9 +7,6 @@ import kotlinx.serialization.Serializable
 public sealed class BottomNavigationRouter : BaseRouter {
 
     @Serializable
-    public data object Profile : BottomNavigationRouter()
-
-    @Serializable
     public data object Statistics : BottomNavigationRouter()
 
     @Serializable

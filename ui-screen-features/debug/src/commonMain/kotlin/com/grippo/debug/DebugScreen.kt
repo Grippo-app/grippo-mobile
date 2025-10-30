@@ -15,6 +15,7 @@ import com.grippo.debug.components.LoggerPage
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.segment.SegmentWidth
+import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -39,7 +40,7 @@ internal fun DebugScreen(
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.debug),
-        onBack = contract::onBack,
+        leading = Leading.Back(contract::onBack),
         content = {
             Segment(
                 modifier = Modifier

@@ -27,7 +27,6 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.icons.NavArrowDown
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlin.math.max
 
 @Immutable
 public data class TabItem(
@@ -78,7 +77,7 @@ public fun <KEY> Tab(
                     exit = fadeOut() + shrinkHorizontally(shrinkTowards = Alignment.Start),
                 ) {
                     Text(
-                        modifier = Modifier.padding(start = AppTokens.dp.contentPadding.text),
+                        modifier = Modifier.padding(start = AppTokens.dp.contentPadding.subContent),
                         text = item.second.text.text(),
                         style = AppTokens.typography.b13Bold(),
                         maxLines = 1,

@@ -87,6 +87,7 @@ include(":ui-dialog-features:filter-picker")
 include(":ui-dialog-features:iteration-picker")
 include(":ui-dialog-features:exercise-example-picker")
 include(":ui-dialog-features:menu-picker")
+include(":ui-dialog-features:profile")
 
 include(":toolkit:context")
 include(":toolkit:localization")

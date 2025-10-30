@@ -27,6 +27,7 @@ import com.grippo.design.components.datetime.PeriodPicker
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.spliter.ContentSpliter
 import com.grippo.design.components.toolbar.Toolbar
+import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -48,6 +49,7 @@ internal fun HomeStatisticsScreen(
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.statistics),
+        style = ToolbarStyle.Transparent,
         content = {
             Row(
                 modifier = Modifier

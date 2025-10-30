@@ -12,7 +12,6 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.core.state.stage.StageState
-import com.grippo.home.profile.HomeProfileComponent
 import com.grippo.home.statistics.HomeStatisticsComponent
 import com.grippo.home.trainings.HomeTrainingsComponent
 import com.grippo.screen.api.BottomNavigationRouter
@@ -46,7 +45,6 @@ public class BottomNavigationComponent(
         when (direction) {
             BottomNavigationDirection.Trainings -> navigation.replaceAll(BottomNavigationRouter.Trainings)
             BottomNavigationDirection.Statistics -> navigation.replaceAll(BottomNavigationRouter.Statistics)
-            BottomNavigationDirection.Profile -> navigation.replaceAll(BottomNavigationRouter.Profile)
             BottomNavigationDirection.Back -> close.invoke()
             BottomNavigationDirection.ToExcludedMuscles -> toExcludedMuscles.invoke()
             BottomNavigationDirection.ToMissingEquipment -> toMissingEquipment.invoke()
@@ -77,6 +75,11 @@ public class BottomNavigationComponent(
                 HomeTrainingsComponent(
                     componentContext = context,
                     toEditTraining = viewModel::toEditTraining,
+                    toExcludedMuscles = viewModel::toExcludedMuscles,
+                    toMissingEquipment = viewModel::toMissingEquipment,
+                    toWeightHistory = viewModel::toWeightHistory,
+                    toAddTraining = viewModel::toAddTraining,
+                    toDebug = viewModel::toDebug,
                     back = viewModel::onBack
                 ),
             )
@@ -84,18 +87,6 @@ public class BottomNavigationComponent(
             is BottomNavigationRouter.Statistics -> Child.Statistics(
                 HomeStatisticsComponent(
                     componentContext = context,
-                    back = viewModel::onBack
-                ),
-            )
-
-            BottomNavigationRouter.Profile -> Child.Profile(
-                HomeProfileComponent(
-                    componentContext = context,
-                    toExcludedMuscles = viewModel::toExcludedMuscles,
-                    toMissingEquipment = viewModel::toMissingEquipment,
-                    toWeightHistory = viewModel::toWeightHistory,
-                    toAddTraining = viewModel::toAddTraining,
-                    toDebug = viewModel::toDebug,
                     back = viewModel::onBack
                 ),
             )
@@ -110,7 +101,6 @@ public class BottomNavigationComponent(
     }
 
     internal sealed class Child(open val component: BaseComponent<*>) {
-        data class Profile(override val component: HomeProfileComponent) : Child(component)
         data class Trainings(override val component: HomeTrainingsComponent) : Child(component)
         data class Statistics(override val component: HomeStatisticsComponent) : Child(component)
     }

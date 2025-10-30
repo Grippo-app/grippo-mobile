@@ -13,6 +13,7 @@ import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.date.picker.DatePickerComponent
 import com.grippo.dialog.api.DialogConfig
+import com.grippo.dialog.profile.ProfileComponent
 import com.grippo.drart.training.DraftTrainingComponent
 import com.grippo.error.display.ErrorDisplayComponent
 import com.grippo.exercise.ExerciseComponent
@@ -170,6 +171,14 @@ internal class DialogContentComponent(
                 )
             )
 
+            is DialogConfig.Profile -> Child.Profile(
+                ProfileComponent(
+                    componentContext = context,
+                    onResult = { action -> viewModel.onBack { router.onResult.invoke(action) } },
+                    close = { viewModel.onBack(null) }
+                )
+            )
+
             is DialogConfig.Confirmation -> Child.Confirmation(
                 ConfirmationComponent(
                     componentContext = context,
@@ -194,6 +203,9 @@ internal class DialogContentComponent(
             Child(component)
 
         data class HeightPicker(override val component: HeightPickerComponent) :
+            Child(component)
+
+        data class Profile(override val component: ProfileComponent) :
             Child(component)
 
         data class ErrorDisplay(override val component: ErrorDisplayComponent) :

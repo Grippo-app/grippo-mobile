@@ -22,6 +22,7 @@ import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.muscle.MusclesColumn
 import com.grippo.design.components.muscle.MusclesImage
+import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
@@ -39,7 +40,7 @@ internal fun ProfileMusclesScreen(
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.muscles),
-        onBack = contract::onBack
+        leading = Leading.Back(contract::onBack),
     )
 
     LazyColumn(

@@ -25,6 +25,7 @@ import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.components.swipe.SwipeToReveal
+import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.components.training.IterationCard
@@ -50,7 +51,7 @@ internal fun ExerciseScreen(
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
-        onBack = contract::onBack,
+        leading = Leading.Back(contract::onBack),
         style = ToolbarStyle.Transparent,
         content = {
             state.exerciseExample?.let { example ->

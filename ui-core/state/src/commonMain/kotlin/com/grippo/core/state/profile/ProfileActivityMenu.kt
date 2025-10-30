@@ -1,9 +1,8 @@
-package com.grippo.home.profile
+package com.grippo.core.state.profile
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.grippo.core.state.profile.UserState
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.activity
@@ -13,63 +12,36 @@ import com.grippo.design.resources.provider.icons.Gym
 import com.grippo.design.resources.provider.icons.Waist
 import com.grippo.design.resources.provider.profile_menu_excluded_muscles
 import com.grippo.design.resources.provider.profile_menu_missing_equipment
-import com.grippo.design.resources.provider.settings
+import kotlinx.serialization.Serializable
 
 @Immutable
-internal data class HomeProfileState(
-    val user: UserState? = null
-)
-
-@Immutable
-internal enum class HomeProfileActivityMenu {
+@Serializable
+public enum class ProfileActivityMenu {
     ExcludedMuscles,
-    MissingEquipment;
+    MissingEquipment,
+    Debug;
 
-    companion object {
+    public companion object Companion {
         @Composable
-        fun title(): String {
+        public fun title(): String {
             return AppTokens.strings.res(Res.string.activity)
         }
     }
 
     @Composable
-    fun text(): String {
+    public fun text(): String {
         return when (this) {
             ExcludedMuscles -> AppTokens.strings.res(Res.string.profile_menu_excluded_muscles)
             MissingEquipment -> AppTokens.strings.res(Res.string.profile_menu_missing_equipment)
-        }
-    }
-
-    @Composable
-    fun icon(): ImageVector {
-        return when (this) {
-            ExcludedMuscles -> AppTokens.icons.Waist
-            MissingEquipment -> AppTokens.icons.Gym
-        }
-    }
-}
-
-@Immutable
-internal enum class HomeProfileSettingsMenu {
-    Debug;
-
-    companion object {
-        @Composable
-        fun title(): String {
-            return AppTokens.strings.res(Res.string.settings)
-        }
-    }
-
-    @Composable
-    fun text(): String {
-        return when (this) {
             Debug -> AppTokens.strings.res(Res.string.debug)
         }
     }
 
     @Composable
-    fun icon(): ImageVector {
+    public fun icon(): ImageVector {
         return when (this) {
+            ExcludedMuscles -> AppTokens.icons.Waist
+            MissingEquipment -> AppTokens.icons.Gym
             Debug -> AppTokens.icons.Flask
         }
     }

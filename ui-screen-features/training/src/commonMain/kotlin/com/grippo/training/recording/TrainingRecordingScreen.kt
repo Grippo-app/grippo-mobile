@@ -27,6 +27,7 @@ import com.grippo.design.components.chip.ChipSize
 import com.grippo.design.components.chip.TimerChip
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
+import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
@@ -34,7 +35,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.add_exercise_btn
-import com.grippo.design.resources.provider.add_training_title
 import com.grippo.design.resources.provider.edit_training_title
 import com.grippo.design.resources.provider.exercises
 import com.grippo.design.resources.provider.save_btn
@@ -71,7 +71,7 @@ internal fun TrainingRecordingScreen(
             StageState.Draft -> AppTokens.strings.res(Res.string.training)
             is StageState.Edit -> AppTokens.strings.res(Res.string.edit_training_title)
         },
-        onBack = contract::onBack,
+        leading = Leading.Back(contract::onBack),
         trailing = {
             val buttonState = remember(loaders, state.exercises) {
                 when {

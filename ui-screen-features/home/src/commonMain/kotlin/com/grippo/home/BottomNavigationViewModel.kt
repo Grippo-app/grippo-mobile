@@ -43,7 +43,6 @@ public class BottomNavigationViewModel(
         val direction = when (selected) {
             BottomBarMenu.Trainings -> BottomNavigationDirection.Trainings
             BottomBarMenu.Statistics -> BottomNavigationDirection.Statistics
-            BottomBarMenu.Profile -> BottomNavigationDirection.Profile
         }
 
         navigateTo(direction)

@@ -3,6 +3,7 @@ package com.grippo.home.trainings
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.menu.MenuItemState
+import com.grippo.core.state.profile.ProfileActivityMenu
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.design.resources.provider.Res
@@ -87,6 +88,20 @@ internal class HomeTrainingsViewModel(
     override fun onExerciseClick(id: String) {
         val dialog = DialogConfig.Exercise(
             id = id,
+        )
+
+        dialogController.show(dialog)
+    }
+
+    override fun onOpenProfile() {
+        val dialog = DialogConfig.Profile(
+            onResult = {
+                when (it) {
+                    ProfileActivityMenu.ExcludedMuscles -> navigateTo(HomeTrainingsDirection.ExcludedMuscles)
+                    ProfileActivityMenu.MissingEquipment -> navigateTo(HomeTrainingsDirection.MissingEquipment)
+                    ProfileActivityMenu.Debug -> navigateTo(HomeTrainingsDirection.Debug)
+                }
+            },
         )
 
         dialogController.show(dialog)
