@@ -5,20 +5,17 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonSize
-import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.icons.NavArrowLeft
-import com.grippo.design.resources.provider.icons.NavArrowRight
+import com.grippo.design.resources.provider.icons.NavArrowDown
 import com.grippo.toolkit.date.utils.DateCompose
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
@@ -33,8 +30,6 @@ public fun DatePicker(
     limitations: DateRange,
     enabled: Boolean = true,
     onClick: () -> Unit,
-    onNextClick: () -> Unit,
-    onPreviousClick: () -> Unit,
 ) {
     val text = DateCompose.rememberFormat(value.date, format)
 
@@ -57,39 +52,7 @@ public fun DatePicker(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val previousState = remember(limitations, value) {
-            if (value.date == limitations.from.date) {
-                ButtonState.Disabled
-            } else ButtonState.Enabled
-        }
-
-        Button(
-            content = ButtonContent.Icon(
-                icon = AppTokens.icons.NavArrowLeft
-            ),
-            size = ButtonSize.Small,
-            style = ButtonStyle.Transparent,
-            onClick = onPreviousClick,
-            state = previousState
-        )
-
-        val nextState = remember(limitations, value) {
-            if (value.date == limitations.to.date) {
-                ButtonState.Disabled
-            } else ButtonState.Enabled
-        }
-
-        Button(
-            content = ButtonContent.Icon(
-                icon = AppTokens.icons.NavArrowRight
-            ),
-            size = ButtonSize.Small,
-            style = ButtonStyle.Transparent,
-            onClick = onNextClick,
-            state = nextState
-        )
-
-        Spacer(Modifier.width(AppTokens.dp.contentPadding.content))
+        Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
 
         Text(
             modifier = Modifier.scalableClick(
@@ -99,6 +62,17 @@ public fun DatePicker(
             text = text,
             style = AppTokens.typography.h6(),
             color = titleColor
+        )
+
+        Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
+
+        Button(
+            content = ButtonContent.Icon(
+                icon = AppTokens.icons.NavArrowDown
+            ),
+            size = ButtonSize.Small,
+            style = ButtonStyle.Transparent,
+            onClick = onClick
         )
     }
 }
@@ -112,8 +86,6 @@ private fun DatePickerPreview() {
             format = DateFormat.DATE_MMM_DD_YYYY,
             enabled = true,
             onClick = {},
-            onNextClick = {},
-            onPreviousClick = {},
             limitations = DateTimeUtils.thisWeek()
         )
 
@@ -122,8 +94,6 @@ private fun DatePickerPreview() {
             format = DateFormat.DATE_MMM_DD_YYYY,
             enabled = false,
             onClick = {},
-            onNextClick = {},
-            onPreviousClick = {},
             limitations = DateTimeUtils.thisWeek()
         )
     }

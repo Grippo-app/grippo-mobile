@@ -77,11 +77,11 @@ internal class HomeTrainingsViewModel(
         }
     }
 
-    override fun onNextClick() {
+    private fun onNextClick() {
         update { it.copy(date = DateTimeUtils.shift(it.date, DatePeriod(days = +1))) }
     }
 
-    override fun onPreviousClick() {
+    private fun onPreviousClick() {
         update { it.copy(date = DateTimeUtils.shift(it.date, DatePeriod(days = -1))) }
     }
 

@@ -60,6 +60,7 @@ internal fun HomeTrainingsScreen(
         style = ToolbarStyle.Transparent,
         trailing = {
             Button(
+                modifier = Modifier.padding(end = AppTokens.dp.contentPadding.content),
                 content = ButtonContent.Icon(icon = AppTokens.icons.User),
                 style = ButtonStyle.Transparent,
                 size = ButtonSize.Small,
@@ -67,25 +68,19 @@ internal fun HomeTrainingsScreen(
             )
         },
         content = {
-            Row(
+            DatePicker(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
-                        bottom = AppTokens.dp.contentPadding.content,
                         start = AppTokens.dp.screen.horizontalPadding,
-                        end = AppTokens.dp.screen.horizontalPadding
+                        end = AppTokens.dp.screen.horizontalPadding,
+                        bottom = AppTokens.dp.contentPadding.content,
                     ),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                DatePicker(
-                    value = state.date.from,
-                    limitations = state.limitations,
-                    format = DateFormat.DATE_MMM_DD_YYYY,
-                    onClick = contract::onSelectDate,
-                    onPreviousClick = contract::onPreviousClick,
-                    onNextClick = contract::onNextClick
-                )
-            }
+                value = state.date.from,
+                limitations = state.limitations,
+                format = DateFormat.DATE_MMM_DD_YYYY,
+                onClick = contract::onSelectDate,
+            )
         }
     )
 

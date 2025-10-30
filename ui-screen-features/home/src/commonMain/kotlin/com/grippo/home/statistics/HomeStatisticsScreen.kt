@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
@@ -51,7 +50,7 @@ internal fun HomeStatisticsScreen(
         title = AppTokens.strings.res(Res.string.statistics),
         style = ToolbarStyle.Transparent,
         content = {
-            Row(
+            PeriodPicker(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
@@ -59,14 +58,10 @@ internal fun HomeStatisticsScreen(
                         start = AppTokens.dp.screen.horizontalPadding,
                         end = AppTokens.dp.screen.horizontalPadding
                     ),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                PeriodPicker(
-                    value = state.period,
-                    format = DateFormat.DATE_DD_DOT_MM,
-                    onClick = contract::onSelectPeriod
-                )
-            }
+                value = state.period,
+                format = DateFormat.DATE_DD_DOT_MM,
+                onClick = contract::onSelectPeriod
+            )
         }
     )
 
@@ -85,7 +80,8 @@ internal fun HomeStatisticsScreen(
 
         item(key = "summary_chips") {
             Row(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
             ) {

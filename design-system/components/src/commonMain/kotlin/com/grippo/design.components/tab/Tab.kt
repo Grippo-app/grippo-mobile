@@ -1,24 +1,17 @@
 package com.grippo.design.components.tab
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.expandHorizontally
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.formatters.UiText
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
@@ -70,21 +63,6 @@ public fun <KEY> Tab(
                     },
                     contentDescription = null
                 )
-
-                AnimatedVisibility(
-                    visible = item.first == selected,
-                    enter = fadeIn() + expandHorizontally(expandFrom = Alignment.Start),
-                    exit = fadeOut() + shrinkHorizontally(shrinkTowards = Alignment.Start),
-                ) {
-                    Text(
-                        modifier = Modifier.padding(start = AppTokens.dp.contentPadding.subContent),
-                        text = item.second.text.text(),
-                        style = AppTokens.typography.b13Bold(),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        color = AppTokens.colors.segment.active,
-                    )
-                }
             }
         }
     }

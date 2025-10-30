@@ -5,8 +5,6 @@ internal interface HomeTrainingsContract {
     fun onOpenProfile()
     fun onTrainingMenuClick(id: String)
     fun onSelectDate()
-    fun onNextClick()
-    fun onPreviousClick()
     fun onBack()
 
     companion object Empty : HomeTrainingsContract {
@@ -14,8 +12,6 @@ internal interface HomeTrainingsContract {
         override fun onOpenProfile() {}
         override fun onTrainingMenuClick(id: String) {}
         override fun onSelectDate() {}
-        override fun onNextClick() {}
-        override fun onPreviousClick() {}
         override fun onBack() {}
     }
 }

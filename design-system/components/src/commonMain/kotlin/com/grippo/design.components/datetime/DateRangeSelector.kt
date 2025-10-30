@@ -29,8 +29,6 @@ public fun DateRangeSelector(
             format = DateFormat.DATE_MMM_DD_YYYY,
             enabled = enabled,
             onClick = onFromClick,
-            onNextClick = {}, // TODO FIX
-            onPreviousClick = {}, // TODO FIX
             limitations = DateTimeUtils.thisWeek() // TODO FIX
         )
 
@@ -40,8 +38,6 @@ public fun DateRangeSelector(
             format = DateFormat.DATE_MMM_DD_YYYY,
             enabled = enabled,
             onClick = onToClick,
-            onNextClick = {}, // TODO FIX
-            onPreviousClick = {}, // TODO FIX
             limitations = DateTimeUtils.thisWeek() // TODO FIX
         )
     }
