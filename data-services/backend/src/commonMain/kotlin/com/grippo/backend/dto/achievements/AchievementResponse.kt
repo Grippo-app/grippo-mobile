@@ -26,7 +26,7 @@ public data class BestTonnage(
     @SerialName("exerciseId")
     val exerciseId: String? = null,
     @SerialName("tonnage")
-    val tonnage: Int? = null
+    val tonnage: Double? = null
 )
 
 @Serializable
@@ -54,7 +54,7 @@ public data class LifetimeVolume(
     @SerialName("sessionsCount")
     val sessionsCount: Int? = null,
     @SerialName("totalVolume")
-    val totalVolume: Int? = null
+    val totalVolume: Double? = null
 )
 
 @Serializable

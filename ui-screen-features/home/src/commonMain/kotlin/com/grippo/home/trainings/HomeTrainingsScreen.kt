@@ -60,7 +60,7 @@ internal fun HomeTrainingsScreen(
         style = ToolbarStyle.Transparent,
         trailing = {
             Button(
-                modifier = Modifier.padding(end = AppTokens.dp.contentPadding.content),
+                modifier = Modifier.padding(end = AppTokens.dp.contentPadding.subContent),
                 content = ButtonContent.Icon(icon = AppTokens.icons.User),
                 style = ButtonStyle.Transparent,
                 size = ButtonSize.Small,

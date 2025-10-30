@@ -35,7 +35,7 @@ private fun BestTonnage.toDomainOrNull(): Achievement.BestTonnage? {
     return Achievement.BestTonnage(
         exerciseExampleId = exampleId,
         exerciseId = exerciseId,
-        tonnage = tonnage
+        tonnage = tonnage.toInt()
     )
 }
 
@@ -79,7 +79,7 @@ private fun LifetimeVolume.toDomainOrNull(): Achievement.LifetimeVolume? {
 
     return Achievement.LifetimeVolume(
         exerciseExampleId = exampleId,
-        totalVolume = totalVolume,
+        totalVolume = totalVolume.toInt(),
         sessionsCount = sessionsCount
     )
 }
