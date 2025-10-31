@@ -34,6 +34,7 @@ internal fun BottomNavigationScreen(
         items = tabs,
         selected = state.selected.ordinal,
         onSelect = contract::selectTab,
+        onPrimaryButtonClick = contract::toAddTraining,
         content = {
             ChildStackCompose(
                 modifier = Modifier.fillMaxWidth().weight(1f),
@@ -55,6 +56,7 @@ private fun ScreenPreview() {
                 .toPersistentList(),
             selected = 0,
             onSelect = { },
+            onPrimaryButtonClick = {},
             content = {
                 Box(
                     modifier = Modifier

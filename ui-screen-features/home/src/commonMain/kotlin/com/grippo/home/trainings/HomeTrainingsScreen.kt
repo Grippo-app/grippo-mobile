@@ -98,7 +98,7 @@ internal fun HomeTrainingsScreen(
             contentType = { it::class }
         ) { value ->
             val radius = AppTokens.dp.menu.radius
-            val contentPadding = AppTokens.dp.contentPadding.content
+            val contentPadding = AppTokens.dp.contentPadding.subContent
             val style = remember(value) { value.timelineStyle() }
             val shape = remember(value) { value.shape(radius) }
             val exercise = remember(value) { value.exercise() }
@@ -120,6 +120,8 @@ internal fun HomeTrainingsScreen(
                             DateTimeUtils.minus(value.createAt, value.duration)
                         }
 
+                        Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
+
                         TimeLabel(
                             value = time
                         )
@@ -128,7 +130,7 @@ internal fun HomeTrainingsScreen(
 
                         Text(
                             text = "(${value.duration})",
-                            style = AppTokens.typography.b14Bold(),
+                            style = AppTokens.typography.h6(),
                             color = AppTokens.colors.text.tertiary
                         )
 
