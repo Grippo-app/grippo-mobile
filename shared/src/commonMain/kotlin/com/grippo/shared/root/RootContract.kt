@@ -1,7 +1,9 @@
 package com.grippo.shared.root
 
+import androidx.compose.runtime.Immutable
 import com.grippo.core.state.stage.StageState
 
+@Immutable
 public interface RootContract {
     public fun onClose()
     public fun toHome()
@@ -13,6 +15,7 @@ public interface RootContract {
     public fun toExcludedMuscles()
     public fun onBack()
 
+    @Immutable
     public companion object Empty : RootContract {
         override fun onClose() {}
         override fun toHome() {}

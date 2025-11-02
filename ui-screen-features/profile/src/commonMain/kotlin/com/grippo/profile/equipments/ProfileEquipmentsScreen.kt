@@ -27,6 +27,7 @@ import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.segment.SegmentWidth
 import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
+import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -42,8 +43,15 @@ internal fun ProfileEquipmentsScreen(
     state: ProfileEquipmentsState,
     loaders: ImmutableSet<ProfileEquipmentsLoader>,
     contract: ProfileEquipmentsContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
-
+) = BaseComposeScreen(
+    ScreenBackground.Color(
+        value = AppTokens.colors.background.screen,
+        spot = ScreenBackground.Spot(
+            top = AppTokens.colors.brand.color5,
+            bottom = AppTokens.colors.brand.color5
+        )
+    )
+) {
     val segmentItems = remember(state.suggestions) {
         state.suggestions.map { it.id to it.type.title() }.toPersistentList()
     }
@@ -51,6 +59,7 @@ internal fun ProfileEquipmentsScreen(
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.equipments),
+        style = ToolbarStyle.Transparent,
         leading = Leading.Back(contract::onBack),
         content = {
             Segment(

@@ -12,6 +12,7 @@ public interface AppColor {
     public val semantic: SemanticColors
     public val overlay: OverlayColors
     public val border: BorderColors
+    public val brand: BrandColors
     public val icon: IconColors
     public val toggle: ToggleColors
     public val muscle: MuscleColors
@@ -114,6 +115,21 @@ public interface AppColor {
         public val backgroundDisabled: Color
         public val textDisabled: Color
         public val placeholderDisabled: Color
+    }
+
+    public interface BrandColors {
+        public val color1: Color
+        public val color2: Color
+        public val color3: Color
+        public val color4: Color
+        public val color5: Color
+        public val color6: Color
+        public val color7: Color
+        public val color8: Color
+        public val color9: Color
+        public val color10: Color
+        public val color11: Color
+        public val color12: Color
     }
 
     public interface BackgroundColors {

@@ -1,5 +1,8 @@
 package com.grippo.exercise.example.picker
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 internal interface ExerciseExamplePickerContract {
     fun onExerciseExampleSelectClick(id: String)
     fun onSuggestClick()
@@ -9,6 +12,7 @@ internal interface ExerciseExamplePickerContract {
     fun onFiltersClick()
     fun onDismiss()
 
+    @Immutable
     companion object Empty : ExerciseExamplePickerContract {
         override fun onExerciseExampleSelectClick(id: String) {}
         override fun onMuscleGroupClick(id: String) {}

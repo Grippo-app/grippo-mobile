@@ -24,6 +24,7 @@ import com.grippo.design.components.muscle.MusclesColumn
 import com.grippo.design.components.muscle.MusclesImage
 import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
+import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.apply_btn
@@ -35,11 +36,19 @@ internal fun ProfileMusclesScreen(
     state: ProfileMusclesState,
     loaders: ImmutableSet<ProfileMusclesLoader>,
     contract: ProfileMusclesContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
-
+) = BaseComposeScreen(
+    ScreenBackground.Color(
+        value = AppTokens.colors.background.screen,
+        spot = ScreenBackground.Spot(
+            top = AppTokens.colors.brand.color5,
+            bottom = AppTokens.colors.brand.color5
+        )
+    )
+) {
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.muscles),
+        style = ToolbarStyle.Transparent,
         leading = Leading.Back(contract::onBack),
     )
 

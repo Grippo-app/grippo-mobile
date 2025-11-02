@@ -1,5 +1,8 @@
 package com.grippo.home
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 internal interface BottomNavigationContract {
     fun selectTab(origin: Int)
     fun onBack()
@@ -10,6 +13,7 @@ internal interface BottomNavigationContract {
     fun toEditTraining(id: String)
     fun toAddTraining()
 
+    @Immutable
     companion object Empty : BottomNavigationContract {
         override fun selectTab(origin: Int) {}
         override fun onBack() {}

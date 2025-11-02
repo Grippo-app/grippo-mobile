@@ -1,21 +1,18 @@
 package com.grippo.design.components.user
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import com.grippo.core.state.profile.UserState
 import com.grippo.core.state.profile.stubUser
 import com.grippo.design.components.user.internal.OverviewCard
@@ -48,9 +45,7 @@ public fun UserCard(
     style: UserCardStyle = UserCardStyle.Preview
 ) {
 
-    val shape = RoundedCornerShape(AppTokens.dp.userCard.radius)
-
-    val gradient = Brush.verticalGradient(
+    Brush.verticalGradient(
         colors = listOf(
             AppTokens.colors.background.dialog,
             AppTokens.colors.background.card,
@@ -58,13 +53,8 @@ public fun UserCard(
     )
 
     Column(
-        modifier = modifier
-            .background(gradient, shape)
-            .border(width = 2.dp, color = AppTokens.colors.background.card, shape = shape)
-            .padding(
-                horizontal = AppTokens.dp.userCard.horizontalPadding,
-                vertical = AppTokens.dp.userCard.verticalPadding
-            ),
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
         Text(
@@ -78,6 +68,7 @@ public fun UserCard(
             style = AppTokens.typography.h1(),
             color = AppTokens.colors.text.primary,
             maxLines = 1,
+            textAlign = TextAlign.Center,
             overflow = TextOverflow.Ellipsis,
         )
 

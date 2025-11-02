@@ -1,6 +1,5 @@
 package com.grippo.home.trainings
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -100,7 +99,7 @@ internal fun HomeTrainingsScreen(
             val radius = AppTokens.dp.menu.radius
             val contentPadding = AppTokens.dp.contentPadding.subContent
             val style = remember(value) { value.timelineStyle() }
-            val shape = remember(value) { value.shape(radius) }
+            remember(value) { value.shape(radius) }
             val exercise = remember(value) { value.exercise() }
 
             TimelineIndicator(
@@ -153,9 +152,7 @@ internal fun HomeTrainingsScreen(
                     }
 
                     ExerciseCard(
-                        modifier = Modifier
-                            .background(AppTokens.colors.background.card, shape)
-                            .fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                         value = exercise,
                         style = ExerciseCardStyle.Medium(clickProvider)
                     )

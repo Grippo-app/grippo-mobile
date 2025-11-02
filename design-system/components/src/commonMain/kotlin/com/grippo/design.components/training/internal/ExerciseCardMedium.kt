@@ -1,13 +1,11 @@
 package com.grippo.design.components.training.internal
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
@@ -33,10 +31,6 @@ internal fun ExerciseCardMedium(
     Column(
         modifier = modifier
             .scalableClick(onClick = onClick)
-            .background(
-                color = AppTokens.colors.background.card,
-                shape = RoundedCornerShape(AppTokens.dp.exerciseCard.medium.radius)
-            )
             .padding(
                 horizontal = AppTokens.dp.exerciseCard.medium.horizontalPadding,
                 vertical = AppTokens.dp.exerciseCard.medium.verticalPadding

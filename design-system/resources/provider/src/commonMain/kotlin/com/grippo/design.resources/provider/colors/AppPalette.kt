@@ -75,10 +75,10 @@ internal object AppPalette {
         // Purple / Magenta
         val Purple = Color(0xFF7E57C2)
         val Violet = Color(0xFF8E24AA)
-        val Magenta = Color(0xFFD81B60)
 
         // Brown / Warm
         val Brown = Color(0xFF6D4C41)
+        val Magenta = Color(0xFFD81B60)
         val Burgundy = Color(0xFF880E4F)
 
         // Extra

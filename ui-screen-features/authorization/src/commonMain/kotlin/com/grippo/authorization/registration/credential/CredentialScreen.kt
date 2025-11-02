@@ -41,7 +41,15 @@ internal fun CredentialScreen(
     state: CredentialState,
     loaders: ImmutableSet<CredentialLoader>,
     contract: CredentialContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
+) = BaseComposeScreen(
+    ScreenBackground.Color(
+        value = AppTokens.colors.background.screen,
+        spot = ScreenBackground.Spot(
+            top = AppTokens.colors.brand.color3,
+            bottom = AppTokens.colors.brand.color3
+        )
+    )
+) {
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),

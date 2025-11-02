@@ -1,6 +1,7 @@
 package com.grippo.shared.dialog
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.router.slot.SlotNavigation
@@ -17,6 +18,7 @@ import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.shared.dialog.content.DialogContentComponent
 
+@Immutable
 internal class DialogComponent(
     componentContext: ComponentContext,
 ) : BaseComponent<DialogDirection>(componentContext) {

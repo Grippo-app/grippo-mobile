@@ -1,9 +1,11 @@
 package com.grippo.training
 
+import androidx.compose.runtime.Immutable
 import com.grippo.core.state.stage.StageState
 import com.grippo.core.state.trainings.ExerciseState
 import kotlinx.datetime.LocalDateTime
 
+@Immutable
 internal interface TrainingContract {
     fun onClose()
     fun onBack()
@@ -11,6 +13,7 @@ internal interface TrainingContract {
     fun toExercise(exercise: ExerciseState)
     fun toCompleted(stage: StageState, exercises: List<ExerciseState>, startAt: LocalDateTime)
 
+    @Immutable
     companion object Empty : TrainingContract {
         override fun onClose() {}
         override fun onBack() {}

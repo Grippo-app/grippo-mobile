@@ -160,11 +160,7 @@ public data object AppDp {
         }
     }
 
-    public data object UserCard {
-        val horizontalPadding: Dp = padding.extraLarge
-        val verticalPadding: Dp = padding.extraLarge
-        val radius: Dp = AppDp.radius.medium
-    }
+    public data object UserCard
 
     public data object BodyDetails {
         val horizontalPadding: Dp = padding.extraSmall
@@ -229,13 +225,11 @@ public data object AppDp {
         val small: Small = Small
 
         public data object Large {
-            val radius: Dp = AppDp.radius.medium
             val horizontalPadding: Dp = padding.large
             val verticalPadding: Dp = padding.medium
         }
 
         public data object Medium {
-            val radius: Dp = AppDp.radius.medium
             val horizontalPadding: Dp = padding.medium
             val verticalPadding: Dp = padding.medium
             val spacing: Dp = padding.extraSmall
