@@ -20,14 +20,14 @@ internal class Estimated1RMAnalytics(
     private val stringProvider: StringProvider,
 ) {
     private fun brzycki(weight: Float, reps: Float): Float? {
-        if (reps < 1f || reps > 12f) return null
+        if (reps !in 1f..12f) return null
         val denom = 1.0278f - 0.0278f * reps
         if (denom <= 0f) return null
         return weight / denom
     }
 
     private fun epley(weight: Float, reps: Float): Float? {
-        if (reps < 1f || reps > 12f) return null
+        if (reps !in 1f..12f) return null
         return weight * (1f + reps / 30f)
     }
 
