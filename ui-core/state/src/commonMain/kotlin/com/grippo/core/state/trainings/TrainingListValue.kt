@@ -1,9 +1,6 @@
 package com.grippo.core.state.trainings
 
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import kotlinx.datetime.LocalDateTime
 import kotlin.time.Duration
 
@@ -69,27 +66,6 @@ public sealed class TrainingListValue(
     ) : TrainingListValue(key, position)
 
     public companion object {
-        public fun TrainingListValue.shape(radius: Dp): RoundedCornerShape = when (this) {
-            is FirstExercise -> RoundedCornerShape(
-                topStart = radius,
-                topEnd = radius
-            )
-
-            is SingleExercise -> RoundedCornerShape(
-                topStart = radius,
-                topEnd = radius,
-                bottomEnd = radius,
-                bottomStart = radius
-            )
-
-            is LastExercise -> RoundedCornerShape(
-                bottomStart = radius,
-                bottomEnd = radius
-            )
-
-            else -> RoundedCornerShape(0.dp)
-        }
-
         public fun TrainingListValue.index(): Int? = when (this) {
             is FirstExercise -> indexInTraining
             is LastExercise -> indexInTraining

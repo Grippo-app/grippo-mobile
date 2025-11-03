@@ -18,7 +18,6 @@ import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.trainings.TrainingListValue
 import com.grippo.core.state.trainings.TrainingListValue.Companion.exercise
-import com.grippo.core.state.trainings.TrainingListValue.Companion.shape
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
@@ -51,8 +50,15 @@ internal fun HomeTrainingsScreen(
     state: HomeTrainingsState,
     loaders: ImmutableSet<HomeTrainingsLoader>,
     contract: HomeTrainingsContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
-
+) = BaseComposeScreen(
+    ScreenBackground.Color(
+        value = AppTokens.colors.background.screen,
+        spot = ScreenBackground.Spot(
+            top = AppTokens.colors.brand.color5,
+            bottom = AppTokens.colors.brand.color5
+        )
+    )
+) {
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.trainings),
@@ -96,10 +102,7 @@ internal fun HomeTrainingsScreen(
             key = { it.key },
             contentType = { it::class }
         ) { value ->
-            val radius = AppTokens.dp.menu.radius
-            val contentPadding = AppTokens.dp.contentPadding.subContent
             val style = remember(value) { value.timelineStyle() }
-            remember(value) { value.shape(radius) }
             val exercise = remember(value) { value.exercise() }
 
             TimelineIndicator(
@@ -112,7 +115,7 @@ internal fun HomeTrainingsScreen(
                     }
 
                     Row(
-                        modifier = Modifier.padding(vertical = contentPadding),
+                        modifier = Modifier.padding(vertical = AppTokens.dp.contentPadding.subContent),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         val time = remember(value.createAt, value.duration) {
@@ -152,7 +155,9 @@ internal fun HomeTrainingsScreen(
                     }
 
                     ExerciseCard(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .padding(vertical = AppTokens.dp.contentPadding.subContent)
+                            .fillMaxWidth(),
                         value = exercise,
                         style = ExerciseCardStyle.Medium(clickProvider)
                     )

@@ -43,7 +43,9 @@ internal fun DraftTrainingScreen(
     state: DraftTrainingState,
     loaders: ImmutableSet<DraftTrainingLoader>,
     contract: DraftTrainingContract
-) = BaseComposeScreen(background = ScreenBackground.Color(AppTokens.colors.background.dialog)) {
+) = BaseComposeScreen(
+    background = ScreenBackground.Color(AppTokens.colors.background.dialog)
+) {
 
     Column(
         modifier = Modifier
@@ -92,13 +94,15 @@ internal fun DraftTrainingScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         if (state.exercises.isNotEmpty()) LazyColumn(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .weight(1f, false),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
         ) {
             items(state.exercises, key = { it.id }) { item ->
                 ExerciseCard(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .padding(vertical = AppTokens.dp.contentPadding.subContent)
+                        .fillMaxWidth(),
                     value = item,
                     style = ExerciseCardStyle.Medium {},
                 )
