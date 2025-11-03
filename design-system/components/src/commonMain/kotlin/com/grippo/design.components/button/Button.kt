@@ -25,7 +25,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -115,12 +115,7 @@ public fun Button(
         size = size
     )
 
-    val shape = RoundedCornerShape(
-        when (size) {
-            ButtonSize.Medium -> AppTokens.dp.button.medium.radius
-            ButtonSize.Small -> AppTokens.dp.button.small.radius
-        }
-    )
+    val shape = CircleShape
 
     val iconSize = metrics.icon
     val isLoading = state == ButtonState.Loading

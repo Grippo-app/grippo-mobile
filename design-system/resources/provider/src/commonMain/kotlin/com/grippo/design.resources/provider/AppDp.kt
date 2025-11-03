@@ -121,8 +121,7 @@ public data object AppDp {
 
     public data object Input {
         val height: Dp = size.medium
-        val horizontalPadding: Dp = padding.large
-        val radius: Dp = AppDp.radius.medium
+        val horizontalPadding: Dp = padding.extraLarge
         val icon: Dp = AppDp.icon.medium
     }
 
@@ -133,7 +132,6 @@ public data object AppDp {
         public data object Medium {
             val height: Dp = size.medium
             val horizontalPadding: Dp = padding.large
-            val radius: Dp = AppDp.radius.medium
             val icon: Dp = AppDp.icon.medium
             val space: Dp = padding.small
             val spaceTransparent: Dp = padding.tiny
@@ -142,7 +140,6 @@ public data object AppDp {
         public data object Small {
             val height: Dp = size.small
             val horizontalPadding: Dp = padding.medium
-            val radius: Dp = AppDp.radius.small
             val icon: Dp = AppDp.icon.medium
             val space: Dp = padding.small
             val spaceTransparent: Dp = padding.tiny
