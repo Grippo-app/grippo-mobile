@@ -9,6 +9,7 @@ internal interface ExperienceContract {
     fun onNextClick()
     fun onBack()
 
+    @Immutable
     companion object Empty : ExperienceContract {
         override fun onExperienceClick(value: ExperienceEnumState) {}
         override fun onNextClick() {}
