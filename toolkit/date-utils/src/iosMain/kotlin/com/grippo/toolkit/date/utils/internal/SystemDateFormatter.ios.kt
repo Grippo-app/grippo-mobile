@@ -3,6 +3,7 @@ package com.grippo.toolkit.date.utils.internal
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
+import kotlinx.datetime.number
 import platform.Foundation.NSCalendar
 import platform.Foundation.NSCalendarIdentifierGregorian
 import platform.Foundation.NSDate
@@ -58,8 +59,8 @@ private fun LocalDate.toNSDateAtNoon(): NSDate? {
     // Use noon to avoid DST edge cases when midnight may jump
     val comps = NSDateComponents().apply {
         year = this@toNSDateAtNoon.year.toLong()
-        month = this@toNSDateAtNoon.monthNumber.toLong()
-        day = this@toNSDateAtNoon.dayOfMonth.toLong()
+        month = this@toNSDateAtNoon.month.number.toLong()
+        day = this@toNSDateAtNoon.day.toLong()
         hour = 12
         minute = 0
         second = 0
@@ -85,8 +86,8 @@ private fun LocalTime.toNSDateOnReferenceDate(): NSDate? {
 private fun LocalDateTime.toNSDate(): NSDate? {
     val comps = NSDateComponents().apply {
         year = this@toNSDate.year.toLong()
-        month = this@toNSDate.monthNumber.toLong()
-        day = this@toNSDate.dayOfMonth.toLong()
+        month = this@toNSDate.month.number.toLong()
+        day = this@toNSDate.day.toLong()
         hour = this@toNSDate.hour.toLong()
         minute = this@toNSDate.minute.toLong()
         second = this@toNSDate.second.toLong()

@@ -38,7 +38,7 @@ public fun TimelineIndicator(
     style: TimeLinePointStyle,
     content: @Composable RowScope.() -> Unit
 ) {
-    val dotColor = AppTokens.colors.semantic.accent
+    val dotColor = AppTokens.colors.semantic.info
     val lineColor = AppTokens.colors.divider.default
     val lineWidth = 2.dp
 

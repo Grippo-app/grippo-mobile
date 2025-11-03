@@ -141,8 +141,7 @@ public object LightColor : AppColor {
         override val success = AppPalette.Unique.Green
         override val error = AppPalette.Unique.Red
         override val warning = AppPalette.Unique.Orange
-        override val info = AppPalette.Primary.P500
-        override val accent = AppPalette.Primary.P500
+        override val info = AppPalette.Common.White
     }
 
     override val overlay: AppColor.OverlayColors = object : AppColor.OverlayColors {

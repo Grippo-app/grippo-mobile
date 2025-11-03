@@ -10,6 +10,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.minus
+import kotlinx.datetime.number
 import kotlinx.datetime.plus
 
 private const val TARGET_BUCKETS: Int = 24
@@ -112,7 +113,7 @@ internal fun buildMonthBuckets(range: DateRange): List<Bucket> {
     var monthStart = startOfMonth(range.from)
 
     while (monthStart <= range.to) {
-        val firstOfNext = LocalDate(monthStart.year, monthStart.monthNumber, 1)
+        val firstOfNext = LocalDate(monthStart.year, monthStart.month.number, 1)
             .plus(DatePeriod(months = 1))
         val lastDay = firstOfNext.minus(DatePeriod(days = 1))
         val monthEnd = LocalDateTime(lastDay, LocalTime(23, 59, 59, 999_000_000))
