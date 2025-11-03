@@ -224,10 +224,7 @@ public data object AppDp {
         val medium: Medium = Medium
         val small: Small = Small
 
-        public data object Large {
-            val horizontalPadding: Dp = padding.large
-            val verticalPadding: Dp = padding.medium
-        }
+        public data object Large
 
         public data object Medium {
             val spacing: Dp = padding.extraSmall
