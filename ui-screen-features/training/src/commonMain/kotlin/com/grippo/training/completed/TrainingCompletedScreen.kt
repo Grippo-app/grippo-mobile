@@ -57,8 +57,15 @@ internal fun TrainingCompletedScreen(
     state: TrainingCompletedState,
     loaders: ImmutableSet<TrainingCompletedLoader>,
     contract: TrainingCompletedContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
-
+) = BaseComposeScreen(
+    ScreenBackground.Color(
+        value = AppTokens.colors.background.screen,
+        spot = ScreenBackground.Spot(
+            top = AppTokens.colors.brand.color5,
+            bottom = AppTokens.colors.brand.color1
+        )
+    )
+) {
     if (loaders.contains(TrainingCompletedLoader.SaveTraining)) {
         Loader(modifier = Modifier.fillMaxSize())
         return@BaseComposeScreen

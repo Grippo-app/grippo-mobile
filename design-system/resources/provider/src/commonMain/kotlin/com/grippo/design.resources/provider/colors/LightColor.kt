@@ -98,7 +98,7 @@ public object LightColor : AppColor {
     }
 
     override val brand: AppColor.BrandColors = object : AppColor.BrandColors {
-        override val color1: Color = AppPalette.Unique.Red
+        override val color1: Color = AppPalette.Unique.Magenta
         override val color2: Color = AppPalette.Unique.Coral
 
         override val color3: Color = AppPalette.Unique.Green
@@ -106,15 +106,6 @@ public object LightColor : AppColor {
 
         override val color5: Color = AppPalette.Unique.Sky
         override val color6: Color = AppPalette.Unique.Navy
-
-        override val color7: Color = AppPalette.Unique.Purple
-        override val color8: Color = AppPalette.Unique.Violet
-
-        override val color9: Color = AppPalette.Unique.Magenta
-        override val color10: Color = AppPalette.Unique.Burgundy
-
-        override val color11: Color = AppPalette.Unique.Cyan
-        override val color12: Color = AppPalette.Unique.Indigo
     }
 
     override val background: AppColor.BackgroundColors = object : AppColor.BackgroundColors {

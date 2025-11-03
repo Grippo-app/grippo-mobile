@@ -50,7 +50,15 @@ internal fun CompletedScreen(
     state: CompletedState,
     loaders: ImmutableSet<CompletedLoader>,
     contract: CompletedContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
+) = BaseComposeScreen(
+    ScreenBackground.Color(
+        value = AppTokens.colors.background.screen,
+        spot = ScreenBackground.Spot(
+            top = AppTokens.colors.brand.color5,
+            bottom = AppTokens.colors.brand.color1
+        )
+    )
+) {
 
     if (loaders.contains(CompletedLoader.Registration)) {
         Loader(modifier = Modifier.fillMaxSize())

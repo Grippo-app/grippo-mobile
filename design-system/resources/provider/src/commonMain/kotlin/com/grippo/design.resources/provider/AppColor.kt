@@ -124,12 +124,6 @@ public interface AppColor {
         public val color4: Color
         public val color5: Color
         public val color6: Color
-        public val color7: Color
-        public val color8: Color
-        public val color9: Color
-        public val color10: Color
-        public val color11: Color
-        public val color12: Color
     }
 
     public interface BackgroundColors {
