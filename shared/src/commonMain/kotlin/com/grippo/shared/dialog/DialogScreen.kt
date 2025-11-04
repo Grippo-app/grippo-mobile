@@ -1,6 +1,7 @@
 package com.grippo.shared.dialog
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -88,6 +89,7 @@ private fun BottomSheet(
         modifier = Modifier.statusBarsPadding(),
         onDismissRequest = { if (isSwipeRef.value) onDismiss() }, // latest flag
         sheetState = sheetState,
+        contentWindowInsets = { WindowInsets() },
         scrimColor = AppTokens.colors.dialog.scrim,
         properties = ModalBottomSheetProperties(
             shouldDismissOnBackPress = isSwipeDismissEnabled, // recomposes with new flag

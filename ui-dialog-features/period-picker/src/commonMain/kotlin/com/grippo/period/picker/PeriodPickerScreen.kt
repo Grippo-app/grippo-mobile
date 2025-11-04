@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -117,6 +118,8 @@ internal fun PeriodPickerScreen(
         }
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+
+        Spacer(modifier = Modifier.navigationBarsPadding())
     }
 }
 

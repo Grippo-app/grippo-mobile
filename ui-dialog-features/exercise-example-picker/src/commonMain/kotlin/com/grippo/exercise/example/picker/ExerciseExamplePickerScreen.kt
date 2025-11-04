@@ -157,7 +157,7 @@ internal fun ExerciseExamplePickerScreen(
                             onClick = contract::onSuggestClick
                         )
 
-                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+                        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
 
                         Spacer(modifier = Modifier.navigationBarsPadding())
                     }
