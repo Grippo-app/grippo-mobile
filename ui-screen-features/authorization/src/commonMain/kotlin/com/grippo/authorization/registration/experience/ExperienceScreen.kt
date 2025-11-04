@@ -2,13 +2,13 @@ package com.grippo.authorization.registration.experience
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +25,7 @@ import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
 import com.grippo.design.components.cards.selectable.SelectableCard
+import com.grippo.design.components.frames.BottomOverlayLazyColumn
 import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
@@ -60,18 +61,17 @@ internal fun ExperienceScreen(
 
     Column(
         modifier = Modifier
-            .navigationBarsPadding()
             .fillMaxWidth()
             .weight(1f)
-            .padding(
-                horizontal = AppTokens.dp.screen.horizontalPadding,
-                vertical = AppTokens.dp.contentPadding.content
-            ).imePadding(),
+            .imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Text(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                .fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.registration_experience_title),
             style = AppTokens.typography.h2(),
             color = AppTokens.colors.text.primary,
@@ -81,7 +81,9 @@ internal fun ExperienceScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
 
         Text(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                .fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.registration_experience_description),
             style = AppTokens.typography.b14Med(),
             color = AppTokens.colors.text.secondary,
@@ -90,51 +92,59 @@ internal fun ExperienceScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        LazyColumn(
+        BottomOverlayLazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-        ) {
+            contentPadding = PaddingValues(horizontal = AppTokens.dp.screen.horizontalPadding),
+            content = {
+                items(
+                    items = state.suggestions,
+                    key = { it.ordinal },
+                ) { item ->
+                    val selectProvider = remember(item) { { contract.onExperienceClick(item) } }
+                    val isSelected = remember(state.selected, item) { state.selected == item }
 
-            items(
-                items = state.suggestions,
-                key = { it.ordinal },
-            ) { item ->
-                val selectProvider = remember(item) { { contract.onExperienceClick(item) } }
-                val isSelected = remember(state.selected, item) { state.selected == item }
+                    SelectableCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        onSelect = selectProvider,
+                        isSelected = isSelected,
+                        style = CheckSelectableCardStyle.Large(
+                            title = item.title().text(),
+                            description = item.description().text(),
+                            icon = item.icon(),
+                            subContent = null,
+                        ),
+                    )
+                }
+            },
+            bottom = {
+                val buttonState = remember(loaders, state.selected) {
+                    when {
+                        state.selected == null -> ButtonState.Disabled
+                        else -> ButtonState.Enabled
+                    }
+                }
 
-                SelectableCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    onSelect = selectProvider,
-                    isSelected = isSelected,
-                    style = CheckSelectableCardStyle.Large(
-                        title = item.title().text(),
-                        description = item.description().text(),
-                        icon = item.icon(),
-                        subContent = null,
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+                Button(
+                    modifier = Modifier
+                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                        .fillMaxWidth(),
+                    content = ButtonContent.Text(
+                        text = AppTokens.strings.res(Res.string.continue_btn),
                     ),
+                    state = buttonState,
+                    style = ButtonStyle.Primary,
+                    onClick = contract::onNextClick
                 )
+
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+                Spacer(modifier = Modifier.navigationBarsPadding())
             }
-        }
-
-        val buttonState = remember(loaders, state.selected) {
-            when {
-                state.selected == null -> ButtonState.Disabled
-                else -> ButtonState.Enabled
-            }
-        }
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            content = ButtonContent.Text(
-                text = AppTokens.strings.res(Res.string.continue_btn),
-            ),
-            state = buttonState,
-            style = ButtonStyle.Primary,
-            onClick = contract::onNextClick
         )
     }
 }

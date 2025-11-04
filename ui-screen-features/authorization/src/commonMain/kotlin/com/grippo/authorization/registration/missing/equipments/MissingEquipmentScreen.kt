@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Text
@@ -26,6 +25,7 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.equipment.EquipmentRow
+import com.grippo.design.components.frames.BottomOverlayLazyColumn
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.segment.SegmentWidth
@@ -58,7 +58,6 @@ internal fun MissingEquipmentsScreen(
         )
     )
 ) {
-
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         leading = Leading.Back(contract::onBack),
@@ -67,13 +66,13 @@ internal fun MissingEquipmentsScreen(
 
     Column(
         modifier = Modifier
-            .navigationBarsPadding()
             .fillMaxWidth()
             .weight(1f)
-            .padding(vertical = AppTokens.dp.contentPadding.content)
             .imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
         Text(
             modifier = Modifier
                 .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
@@ -120,41 +119,48 @@ internal fun MissingEquipmentsScreen(
                 state.suggestions.find { it.id == state.selectedGroupId }?.equipments.orEmpty()
             }
 
-            LazyColumn(
+            BottomOverlayLazyColumn(
                 modifier = Modifier
-                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
                     .fillMaxWidth()
                     .weight(1f),
                 contentPadding = PaddingValues(
-                    top = AppTokens.dp.contentPadding.content
+                    top = AppTokens.dp.contentPadding.content,
+                    start = AppTokens.dp.screen.horizontalPadding,
+                    end = AppTokens.dp.screen.horizontalPadding
                 ),
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-            ) {
-                items(
-                    items = equipments,
-                    key = { it.id },
-                ) { equipment ->
-                    EquipmentRow(
-                        equipment = equipment,
-                        selectedEquipmentIds = state.selectedEquipmentIds,
-                        selectEquipment = contract::onEquipmentClick,
+                content = {
+                    items(
+                        items = equipments,
+                        key = { it.id },
+                    ) { equipment ->
+                        EquipmentRow(
+                            equipment = equipment,
+                            selectedEquipmentIds = state.selectedEquipmentIds,
+                            selectEquipment = contract::onEquipmentClick,
+                        )
+                    }
+                },
+                bottom = {
+                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+                    Button(
+                        modifier = Modifier
+                            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                            .fillMaxWidth(),
+                        content = ButtonContent.Text(
+                            text = AppTokens.strings.res(Res.string.continue_btn),
+                        ),
+                        style = ButtonStyle.Primary,
+                        onClick = contract::onNextClick
                     )
+
+                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+                    Spacer(modifier = Modifier.navigationBarsPadding())
                 }
-            }
+            )
         }
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-        Button(
-            modifier = Modifier
-                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                .fillMaxWidth(),
-            content = ButtonContent.Text(
-                text = AppTokens.strings.res(Res.string.continue_btn),
-            ),
-            style = ButtonStyle.Primary,
-            onClick = contract::onNextClick
-        )
     }
 }
 
