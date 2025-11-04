@@ -40,7 +40,7 @@ public data class BestWeight(
     @SerialName("iterationId")
     val iterationId: String? = null,
     @SerialName("weight")
-    val weight: Int? = null
+    val weight: Double? = null
 )
 
 @Serializable

@@ -128,9 +128,6 @@ public object DarkColor : AppColor {
     override val static: AppColor.Static = object : AppColor.Static {
         override val white: Color = AppPalette.Common.White
         override val black: Color = AppPalette.Common.Black
-        override val neutralDarkN150: Color = AppPalette.NeutralDark.N150
-        override val neutralDarkN800: Color = AppPalette.NeutralDark.N800
-        override val neutralLightN800: Color = AppPalette.NeutralLight.N800
     }
 
     override val text: AppColor.TextColors = object : AppColor.TextColors {

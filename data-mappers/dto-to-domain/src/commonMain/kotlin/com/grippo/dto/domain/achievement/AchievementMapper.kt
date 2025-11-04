@@ -60,7 +60,7 @@ private fun BestWeight.toDomainOrNull(): Achievement.BestWeight? {
         exerciseExampleId = exampleId,
         exerciseId = exerciseId,
         iterationId = iterationId,
-        weight = weight
+        weight = weight.toInt()
     )
 }
 

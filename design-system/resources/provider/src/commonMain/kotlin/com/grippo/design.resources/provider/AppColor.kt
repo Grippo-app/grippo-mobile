@@ -49,9 +49,6 @@ public interface AppColor {
     public interface Static {
         public val black: Color
         public val white: Color
-        public val neutralDarkN800: Color
-        public val neutralDarkN150: Color
-        public val neutralLightN800: Color
     }
 
     public interface ButtonColors {

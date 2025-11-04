@@ -20,17 +20,7 @@ internal object AppPalette {
     }
 
     object NeutralLight {
-        val N050 = Color(0xFFFAFBFC)
         val N100 = Color(0xFFEDEFF1)
-        val N150 = Color(0xFFE7E9ED)
-        val N200 = Color(0xFFD9DDE4)
-        val N250 = Color(0xFFCBD0D8)
-        val N300 = Color(0xFFADB3BF)
-        val N400 = Color(0xFF939AAA)
-        val N500 = Color(0xFF798292)
-        val N550 = Color(0xFF6B7484)
-        val N600 = Color(0xFF606A7B)
-        val N700 = Color(0xFF2F353F)
         val N800 = Color(0xFF15181F)
     }
 
