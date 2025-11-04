@@ -7,7 +7,7 @@ public object DarkColor : AppColor {
 
     override val border: AppColor.BorderColors = object : AppColor.BorderColors {
         override val default = AppPalette.NeutralDark.N250
-        override val focus = AppPalette.NeutralDark.N600
+        override val focus = AppPalette.NeutralDark.N500
     }
 
     override val button: AppColor.ButtonColors = object : AppColor.ButtonColors {
@@ -155,7 +155,7 @@ public object DarkColor : AppColor {
     override val segment: AppColor.SegmentColors = object : AppColor.SegmentColors {
         override val active = AppPalette.NeutralDark.N800
         override val inactive = AppPalette.NeutralDark.N500
-        override val selector = AppPalette.Primary.P500
+        override val selector = AppPalette.Common.White
     }
 
     override val konfetti: AppColor.Konfetti = object : AppColor.Konfetti {
