@@ -63,8 +63,8 @@ public object DarkColor : AppColor {
     }
 
     override val radio: AppColor.RadioColors = object : AppColor.RadioColors {
-        override val selectedThumb = AppPalette.Primary.P500
-        override val selectedTrack = AppPalette.Primary.P500
+        override val selectedThumb = AppPalette.Blue.P500
+        override val selectedTrack = AppPalette.Blue.P500
         override val unselectedTrack = AppPalette.NeutralDark.N300
         override val disabledSelectedThumb = AppPalette.NeutralDark.N300
         override val disabledUnselectedTrack = AppPalette.NeutralDark.N300
@@ -102,8 +102,7 @@ public object DarkColor : AppColor {
         override val screen = AppPalette.NeutralDark.N050
         override val dialog = AppPalette.NeutralDark.N150
         override val card = AppPalette.NeutralDark.N300.copy(0.45f)
-        override val accent = AppPalette.Primary.P500
-        override val inverted = AppPalette.NeutralLight.N100
+        override val accent = AppPalette.Blue.P500
     }
 
     override val brand: AppColor.BrandColors = object : AppColor.BrandColors {
@@ -156,10 +155,10 @@ public object DarkColor : AppColor {
         override val confettiColor1 = AppPalette.Unique.Green
         override val confettiColor2 = AppPalette.Unique.Orange
         override val confettiColor3 = AppPalette.Unique.Red
-        override val confettiColor4 = AppPalette.Primary.P400
-        override val confettiColor5 = AppPalette.Primary.P500
-        override val confettiColor6 = AppPalette.Primary.P600
-        override val confettiColor7 = AppPalette.Primary.P700
+        override val confettiColor4 = AppPalette.Blue.P400
+        override val confettiColor5 = AppPalette.Blue.P500
+        override val confettiColor6 = AppPalette.Blue.P600
+        override val confettiColor7 = AppPalette.Blue.P700
         override val confettiColor8 = AppPalette.NeutralDark.N500
         override val confettiColor9 = AppPalette.NeutralDark.N600
         override val confettiColor10 = AppPalette.NeutralDark.N700
@@ -169,8 +168,8 @@ public object DarkColor : AppColor {
         object : AppColor.SelectableCardColors {
             override val small: AppColor.SelectableCardColors.Small =
                 object : AppColor.SelectableCardColors.Small {
-                    override val selectedBackground1: Color = AppPalette.Primary.P600
-                    override val selectedBackground2: Color = AppPalette.Primary.P500
+                    override val selectedBackground1: Color = AppPalette.Blue.P600
+                    override val selectedBackground2: Color = AppPalette.Blue.P500
                 }
         }
 
@@ -240,16 +239,16 @@ public object DarkColor : AppColor {
 
     override val charts: AppColor.Charts = object : AppColor.Charts {
         override val sparkline = object : AppColor.Charts.SparklineColors {
-            override val lineA = AppPalette.Primary.P400
+            override val lineA = AppPalette.Blue.P400
             override val lineB = AppPalette.Unique.Green
-            override val fillBase = AppPalette.Primary.P400
-            override val dot = AppPalette.Primary.P400
+            override val fillBase = AppPalette.Blue.P400
+            override val dot = AppPalette.Blue.P400
             override val min = AppPalette.Unique.Green
             override val max = AppPalette.Unique.Green
         }
         override val area = object : AppColor.Charts.AreaColors {
             override val lineA = AppPalette.Unique.Green
-            override val lineB = AppPalette.Primary.P400
+            override val lineB = AppPalette.Blue.P400
             override val fillBase = AppPalette.Unique.Green
             override val glow = AppPalette.Unique.Green
             override val dot = AppPalette.Unique.Green
@@ -258,7 +257,7 @@ public object DarkColor : AppColor {
             override val missingCell = AppPalette.Common.White.copy(alpha = 0.08f)
         }
         override val radar = object : AppColor.Charts.RadarColors {
-            override val strokeFallback = AppPalette.Primary.P500
+            override val strokeFallback = AppPalette.Blue.P500
         }
         override val progress = object : AppColor.Charts.ProgressColors {
             override val track = AppPalette.Common.White.copy(alpha = 0.08f)

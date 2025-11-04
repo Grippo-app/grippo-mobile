@@ -9,21 +9,6 @@ internal object AppPalette {
         val Black = Color(0xFF121212)
     }
 
-    object Primary {
-        val P300 = Color(0xFF99B2FF)
-        val P400 = Color(0xFF7090FF)
-        val P500 = Color(0xFF3366FF)
-        val P600 = Color(0xFF2B57E6)
-        val P700 = Color(0xFF244ACC)
-        val P800 = Color(0xFF1C3DAF)
-        val P900 = Color(0xFF152F94)
-    }
-
-    object NeutralLight {
-        val N100 = Color(0xFFEDEFF1)
-        val N800 = Color(0xFF15181F)
-    }
-
     object NeutralDark {
         val N050 = Color(0xFF0F1115)
         val N100 = Color(0xFF181A1F)
@@ -37,6 +22,16 @@ internal object AppPalette {
         val N600 = Color(0xFFA1ADC3)
         val N700 = Color(0xFFBECADC)
         val N800 = Color(0xFFF4F7FA)
+    }
+
+    object Blue {
+        val P300 = Color(0xFF99B2FF)
+        val P400 = Color(0xFF7090FF)
+        val P500 = Color(0xFF3366FF)
+        val P600 = Color(0xFF2B57E6)
+        val P700 = Color(0xFF244ACC)
+        val P800 = Color(0xFF1C3DAF)
+        val P900 = Color(0xFF152F94)
     }
 
     object Unique {
@@ -74,28 +69,28 @@ internal object AppPalette {
 
     object Gradient {
         val Palette12BlueWave: List<Color> = listOf(
-            Primary.P300,
-            Primary.P400,
-            Primary.P500,
-            Primary.P600,
-            Primary.P700,
-            Primary.P800,
-            Primary.P900,
-            Primary.P800,
-            Primary.P700,
-            Primary.P600,
-            Primary.P500,
-            Primary.P400,
+            Blue.P300,
+            Blue.P400,
+            Blue.P500,
+            Blue.P600,
+            Blue.P700,
+            Blue.P800,
+            Blue.P900,
+            Blue.P800,
+            Blue.P700,
+            Blue.P600,
+            Blue.P500,
+            Blue.P400,
         )
 
         val Palette7BlueGrowth: List<Color> = listOf(
-            Primary.P300,
-            Primary.P400,
-            Primary.P500,
-            Primary.P600,
-            Primary.P700,
-            Primary.P800,
-            Primary.P900,
+            Blue.P300,
+            Blue.P400,
+            Blue.P500,
+            Blue.P600,
+            Blue.P700,
+            Blue.P800,
+            Blue.P900,
         )
 
         val Palette18ColorfulRandom: List<Color> = listOf(
@@ -116,7 +111,7 @@ internal object AppPalette {
             Unique.Olive,
             Unique.Cyan,
             Unique.Indigo,
-            Primary.P500,
+            Blue.P500,
         )
 
         val Palette5OrangeRedGrowth: List<Color> = listOf(
