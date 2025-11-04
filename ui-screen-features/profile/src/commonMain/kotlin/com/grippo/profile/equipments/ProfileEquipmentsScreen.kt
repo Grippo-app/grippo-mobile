@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
@@ -22,6 +21,7 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.equipment.EquipmentRow
+import com.grippo.design.components.frames.BottomOverlayLazyColumn
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.segment.SegmentWidth
@@ -80,7 +80,7 @@ internal fun ProfileEquipmentsScreen(
         state.suggestions.find { it.id == state.selectedGroupId }?.equipments.orEmpty()
     }
 
-    LazyColumn(
+    BottomOverlayLazyColumn(
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f),
@@ -89,40 +89,42 @@ internal fun ProfileEquipmentsScreen(
             vertical = AppTokens.dp.contentPadding.content,
         ),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-    ) {
-        items(items = equipments, key = { it.id }) { equipment ->
-            EquipmentRow(
-                equipment = equipment,
-                selectedEquipmentIds = state.selectedEquipmentIds,
-                selectEquipment = contract::onSelectEquipment,
+        content = {
+            items(items = equipments, key = { it.id }) { equipment ->
+                EquipmentRow(
+                    equipment = equipment,
+                    selectedEquipmentIds = state.selectedEquipmentIds,
+                    selectEquipment = contract::onSelectEquipment,
+                )
+            }
+        },
+        bottom = {
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+            val buttonState = remember(loaders) {
+                when {
+                    loaders.contains(ProfileEquipmentsLoader.ApplyButton) -> ButtonState.Loading
+                    else -> ButtonState.Enabled
+                }
+            }
+
+            Button(
+                modifier = Modifier
+                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                    .fillMaxWidth(),
+                content = ButtonContent.Text(
+                    text = AppTokens.strings.res(Res.string.apply_btn),
+                ),
+                style = ButtonStyle.Primary,
+                state = buttonState,
+                onClick = contract::onApply
             )
+
+            Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+
+            Spacer(modifier = Modifier.navigationBarsPadding())
         }
-    }
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-    val buttonState = remember(loaders) {
-        when {
-            loaders.contains(ProfileEquipmentsLoader.ApplyButton) -> ButtonState.Loading
-            else -> ButtonState.Enabled
-        }
-    }
-
-    Button(
-        modifier = Modifier
-            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-            .fillMaxWidth(),
-        content = ButtonContent.Text(
-            text = AppTokens.strings.res(Res.string.apply_btn),
-        ),
-        style = ButtonStyle.Primary,
-        state = buttonState,
-        onClick = contract::onApply
     )
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
-
-    Spacer(modifier = Modifier.navigationBarsPadding())
 }
 
 @AppPreview
