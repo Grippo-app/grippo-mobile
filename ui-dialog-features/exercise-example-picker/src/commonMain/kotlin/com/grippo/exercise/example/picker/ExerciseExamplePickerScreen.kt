@@ -1,7 +1,6 @@
 package com.grippo.exercise.example.picker
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -12,9 +11,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +30,7 @@ import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
+import com.grippo.design.components.frames.BottomOverlayLazyColumn
 import com.grippo.design.components.placeholder.ScreenPlaceholder
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -112,61 +112,58 @@ internal fun ExerciseExamplePickerScreen(
                     text = AppTokens.strings.res(Res.string.not_found),
                 )
 
-                false -> LazyColumn(
+                false -> BottomOverlayLazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
                     contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                ) {
-                    items(
-                        items = state.exerciseExamples,
-                        key = { k -> k.value.id },
-                    ) { item ->
-                        val selectClickProvider = remember(item.value.id) {
-                            { contract.onExerciseExampleSelectClick(item.value.id) }
+                    content = {
+                        items(
+                            items = state.exerciseExamples,
+                            key = { k -> k.value.id },
+                        ) { item ->
+                            val selectClickProvider = remember(item.value.id) {
+                                { contract.onExerciseExampleSelectClick(item.value.id) }
+                            }
+
+                            ExerciseExampleCard(
+                                modifier = Modifier.fillMaxWidth(),
+                                value = item,
+                                style = ExerciseExampleCardStyle.Medium(
+                                    onCardClick = selectClickProvider,
+                                ),
+                            )
+                        }
+                    },
+                    bottom = {
+                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+                        val buttonState = remember(loaders) {
+                            when {
+                                loaders.contains(ExerciseExamplePickerLoader.SuggestExample) -> ButtonState.Loading
+                                else -> ButtonState.Enabled
+                            }
                         }
 
-                        ExerciseExampleCard(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = item,
-                            style = ExerciseExampleCardStyle.Medium(
-                                onCardClick = selectClickProvider,
+                        Button(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                            content = ButtonContent.Text(
+                                startIcon = AppTokens.icons.Magic,
+                                text = AppTokens.strings.res(Res.string.ai_suggestion_btn)
                             ),
+                            state = buttonState,
+                            style = ButtonStyle.Magic,
+                            onClick = contract::onSuggestClick
                         )
+
+                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+                        Spacer(modifier = Modifier.navigationBarsPadding())
                     }
-                }
-            }
-        }
-
-        AnimatedVisibility(
-            modifier = Modifier.fillMaxWidth(),
-            visible = state.suggestion == null
-        ) {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-                val buttonState = remember(loaders) {
-                    when {
-                        loaders.contains(ExerciseExamplePickerLoader.SuggestExample) -> ButtonState.Loading
-                        else -> ButtonState.Enabled
-                    }
-                }
-
-                Button(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                    content = ButtonContent.Text(
-                        startIcon = AppTokens.icons.Magic,
-                        text = AppTokens.strings.res(Res.string.ai_suggestion_btn)
-                    ),
-                    state = buttonState,
-                    style = ButtonStyle.Magic,
-                    onClick = contract::onSuggestClick
                 )
             }
         }
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
     }
 }
 
