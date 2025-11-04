@@ -88,8 +88,8 @@ internal fun resolveButtonColors(
             )
 
             ButtonStyle.Tertiary -> ButtonColorTokens(
-                background1 = colors.backgroundTertiary1,
-                background2 = colors.backgroundTertiary2,
+                background1 = AppTokens.colors.background.card,
+                background2 = AppTokens.colors.background.card,
                 content = colors.textTertiary,
                 border = colors.borderTertiary,
                 icon = colors.iconTertiary,

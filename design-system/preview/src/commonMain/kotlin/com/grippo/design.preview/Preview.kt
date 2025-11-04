@@ -32,16 +32,6 @@ public fun PreviewContainer(
 
     CompositionLocalProvider(LocalAsyncImagePreviewHandler provides previewHandler) {
         Column {
-            AppTheme(darkTheme = false, localeTag = "ua") {
-                Column(
-                    modifier = Modifier
-                        .background(Color.White)
-                        .padding(12.dp),
-                    content = content,
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                )
-            }
-
             AppTheme(darkTheme = true, localeTag = "en") {
                 Column(
                     modifier = Modifier

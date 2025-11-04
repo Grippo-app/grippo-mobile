@@ -40,7 +40,7 @@ internal fun BodyItem(
         Icon(
             modifier = Modifier.padding(4.dp),
             imageVector = AppTokens.icons.Weight,
-            tint = AppTokens.colors.icon.accent,
+            tint = AppTokens.colors.icon.primary,
             contentDescription = null
         )
 
@@ -74,7 +74,7 @@ internal fun BodyItem(
         Icon(
             modifier = Modifier.padding(4.dp),
             imageVector = AppTokens.icons.ExpandLines,
-            tint = AppTokens.colors.icon.accent,
+            tint = AppTokens.colors.icon.primary,
             contentDescription = null
         )
 

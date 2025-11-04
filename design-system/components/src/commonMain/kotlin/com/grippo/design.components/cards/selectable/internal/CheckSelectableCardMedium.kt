@@ -40,7 +40,7 @@ internal fun CheckSelectableCardMedium(
     )
 
     val iconTint by animateColorAsState(
-        if (isSelected) AppTokens.colors.icon.accent else AppTokens.colors.icon.primary,
+        if (isSelected) AppTokens.colors.icon.primary else AppTokens.colors.icon.tertiary,
         label = "iconTint"
     )
 

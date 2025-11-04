@@ -68,8 +68,6 @@ public interface AppColor {
         public val backgroundSecondaryDisabled: Color
         public val contentSecondaryDisabled: Color
 
-        public val backgroundTertiary1: Color
-        public val backgroundTertiary2: Color
         public val textTertiary: Color
         public val iconTertiary: Color
         public val borderTertiary: Color
@@ -165,7 +163,6 @@ public interface AppColor {
         public val secondary: Color
         public val tertiary: Color
         public val disabled: Color
-        public val accent: Color
         public val inverted: Color
     }
 

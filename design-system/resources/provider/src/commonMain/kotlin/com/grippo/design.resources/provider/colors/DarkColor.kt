@@ -27,8 +27,6 @@ public object DarkColor : AppColor {
         override val backgroundSecondaryDisabled = AppPalette.NeutralDark.N300
         override val contentSecondaryDisabled = AppPalette.NeutralDark.N550
 
-        override val backgroundTertiary1: Color = AppPalette.NeutralDark.N150
-        override val backgroundTertiary2: Color = AppPalette.NeutralDark.N150
         override val textTertiary: Color = AppPalette.NeutralDark.N800
         override val borderTertiary: Color = Color.Transparent
         override val iconTertiary: Color = AppPalette.NeutralDark.N600
@@ -52,7 +50,6 @@ public object DarkColor : AppColor {
         override val secondary = AppPalette.NeutralDark.N600
         override val tertiary = AppPalette.NeutralDark.N500
         override val disabled = AppPalette.NeutralDark.N300
-        override val accent = AppPalette.Primary.P500
         override val inverted = AppPalette.Common.Black
     }
 
@@ -103,8 +100,8 @@ public object DarkColor : AppColor {
 
     override val background: AppColor.BackgroundColors = object : AppColor.BackgroundColors {
         override val screen = AppPalette.NeutralDark.N050
-        override val dialog = AppPalette.NeutralDark.N100
-        override val card = AppPalette.NeutralDark.N300.copy(0.5f)
+        override val dialog = AppPalette.NeutralDark.N150
+        override val card = AppPalette.NeutralDark.N300.copy(0.45f)
         override val accent = AppPalette.Primary.P500
         override val inverted = AppPalette.NeutralLight.N100
     }
@@ -236,9 +233,9 @@ public object DarkColor : AppColor {
 
     override val muscle: AppColor.MuscleColors = object : AppColor.MuscleColors {
         override val active = AppPalette.Unique.Coral
-        override val inactive = AppPalette.NeutralDark.N300.copy(0.5f)
-        override val background = AppPalette.NeutralDark.N300.copy(0.5f)
-        override val outline = AppPalette.NeutralDark.N300.copy(0.5f)
+        override val inactive = AppPalette.NeutralDark.N300.copy(0.45f)
+        override val background = AppPalette.NeutralDark.N300.copy(0.45f)
+        override val outline = AppPalette.NeutralDark.N300.copy(0.45f)
     }
 
     override val charts: AppColor.Charts = object : AppColor.Charts {
