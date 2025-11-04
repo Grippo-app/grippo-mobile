@@ -124,16 +124,16 @@ internal fun MissingEquipmentsScreen(
                     .fillMaxWidth()
                     .weight(1f),
                 contentPadding = PaddingValues(
-                    top = AppTokens.dp.contentPadding.content,
                     start = AppTokens.dp.screen.horizontalPadding,
-                    end = AppTokens.dp.screen.horizontalPadding
+                    end = AppTokens.dp.screen.horizontalPadding,
+                    top = AppTokens.dp.contentPadding.content
                 ),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                overlay = AppTokens.colors.background.screen,
+                verticalArrangement = Arrangement.spacedBy(
+                    AppTokens.dp.contentPadding.content
+                ),
                 content = {
-                    items(
-                        items = equipments,
-                        key = { it.id },
-                    ) { equipment ->
+                    items(items = equipments, key = { it.id }) { equipment ->
                         EquipmentRow(
                             equipment = equipment,
                             selectedEquipmentIds = state.selectedEquipmentIds,

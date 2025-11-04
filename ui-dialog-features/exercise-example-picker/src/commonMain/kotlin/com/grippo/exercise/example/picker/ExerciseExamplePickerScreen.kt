@@ -116,6 +116,7 @@ internal fun ExerciseExamplePickerScreen(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
                     contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                    overlay = AppTokens.colors.background.dialog,
                     content = {
                         items(
                             items = state.exerciseExamples,

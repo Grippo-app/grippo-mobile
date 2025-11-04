@@ -98,6 +98,7 @@ internal fun ExperienceScreen(
                 .weight(1f),
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
             contentPadding = PaddingValues(horizontal = AppTokens.dp.screen.horizontalPadding),
+            overlay = AppTokens.colors.background.screen,
             content = {
                 items(
                     items = state.suggestions,

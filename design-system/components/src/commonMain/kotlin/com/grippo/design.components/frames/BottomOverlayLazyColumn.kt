@@ -35,6 +35,7 @@ public fun BottomOverlayLazyColumn(
     flingBehavior: FlingBehavior = ScrollableDefaults.flingBehavior(),
     userScrollEnabled: Boolean = true,
     bottom: (@Composable ColumnScope.() -> Unit)? = null,
+    overlay: Color,
     content: LazyListScope.() -> Unit
 ) {
     SubcomposeLayout(modifier = modifier) { constraints ->
@@ -90,8 +91,8 @@ public fun BottomOverlayLazyColumn(
                             .background(
                                 Brush.verticalGradient(
                                     colors = listOf(
-                                        Color.Black.copy(alpha = 0f),  // top (towards list)
-                                        Color.Black.copy(alpha = 0.9f) // bottom (under button)
+                                        overlay.copy(alpha = 0f),
+                                        overlay.copy(alpha = 0.9f)
                                     )
                                 )
                             )

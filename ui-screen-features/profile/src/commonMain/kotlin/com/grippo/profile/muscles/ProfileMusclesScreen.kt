@@ -60,7 +60,10 @@ internal fun ProfileMusclesScreen(
             horizontal = AppTokens.dp.screen.horizontalPadding,
             vertical = AppTokens.dp.contentPadding.content
         ),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+        verticalArrangement = Arrangement.spacedBy(
+            AppTokens.dp.contentPadding.content
+        ),
+        overlay = AppTokens.colors.background.screen,
         content = {
             itemsIndexed(
                 state.suggestions,

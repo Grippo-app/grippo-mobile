@@ -85,10 +85,14 @@ internal fun ProfileEquipmentsScreen(
             .fillMaxWidth()
             .weight(1f),
         contentPadding = PaddingValues(
-            horizontal = AppTokens.dp.screen.horizontalPadding,
-            vertical = AppTokens.dp.contentPadding.content,
+            start = AppTokens.dp.screen.horizontalPadding,
+            end = AppTokens.dp.screen.horizontalPadding,
+            top = AppTokens.dp.contentPadding.content
         ),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+        verticalArrangement = Arrangement.spacedBy(
+            AppTokens.dp.contentPadding.content
+        ),
+        overlay = AppTokens.colors.background.screen,
         content = {
             items(items = equipments, key = { it.id }) { equipment ->
                 EquipmentRow(
