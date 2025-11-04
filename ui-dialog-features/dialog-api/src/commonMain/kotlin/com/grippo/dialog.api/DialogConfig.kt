@@ -64,7 +64,7 @@ public sealed class DialogConfig(
         @Transient val onResult: (value: WeightFormatState) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
-        dismissBySwipe = false
+        dismissBySwipe = true
     )
 
     @Serializable
@@ -73,7 +73,7 @@ public sealed class DialogConfig(
         @Transient val onResult: (value: HeightFormatState) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
-        dismissBySwipe = false
+        dismissBySwipe = true
     )
 
     @Serializable
@@ -84,7 +84,7 @@ public sealed class DialogConfig(
         @Transient val onResult: (value: DateFormatState) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
-        dismissBySwipe = false
+        dismissBySwipe = true
     )
 
     @Serializable
@@ -120,7 +120,7 @@ public sealed class DialogConfig(
         @Transient val onResult: (ExerciseExampleState) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
-        dismissBySwipe = false
+        dismissBySwipe = true
     )
 
     @Serializable
