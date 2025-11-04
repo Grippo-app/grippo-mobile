@@ -3,7 +3,7 @@ package com.grippo.date.picker.internal
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -168,7 +168,7 @@ internal fun DateWheelPicker(
             .fillMaxWidth()
             .height(AppTokens.dp.wheelPicker.height),
         selectorProperties = DefaultSelectorProperties(
-            shape = RoundedCornerShape(AppTokens.dp.wheelPicker.radius),
+            shape = CircleShape,
             color = AppTokens.colors.background.card,
         ),
         columns = listOf(dayColumn, monthColumn, yearColumn)

@@ -214,13 +214,10 @@ public interface AppColor {
     }
 
     public interface MuscleColors {
-        public val focused: Color
         public val active: Color
         public val inactive: Color
         public val background: Color
         public val outline: Color
-
-        public val text: Color
     }
 
     public interface SegmentColors {

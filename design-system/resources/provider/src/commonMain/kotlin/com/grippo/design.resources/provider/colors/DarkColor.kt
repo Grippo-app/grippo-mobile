@@ -58,8 +58,8 @@ public object DarkColor : AppColor {
 
     override val toggle: AppColor.ToggleColors = object : AppColor.ToggleColors {
         override val checkedThumb = AppPalette.Common.White
-        override val checkedTrack1 = AppPalette.Primary.P500
-        override val checkedTrack2 = AppPalette.Primary.P600
+        override val checkedTrack1 = AppPalette.Unique.Green
+        override val checkedTrack2 = AppPalette.Unique.Green
         override val uncheckedThumb = AppPalette.Common.White
         override val uncheckedTrack1 = AppPalette.NeutralDark.N200
         override val uncheckedTrack2 = AppPalette.NeutralDark.N300
@@ -238,12 +238,10 @@ public object DarkColor : AppColor {
     }
 
     override val muscle: AppColor.MuscleColors = object : AppColor.MuscleColors {
-        override val focused = AppPalette.Primary.P600
-        override val active = AppPalette.Primary.P500
-        override val inactive = AppPalette.NeutralDark.N400
-        override val background = AppPalette.NeutralDark.N300
-        override val outline = AppPalette.NeutralDark.N400
-        override val text = AppPalette.Common.White
+        override val active = AppPalette.Unique.Coral
+        override val inactive = AppPalette.NeutralDark.N300.copy(0.5f)
+        override val background = AppPalette.NeutralDark.N300.copy(0.5f)
+        override val outline = AppPalette.NeutralDark.N300.copy(0.5f)
     }
 
     override val charts: AppColor.Charts = object : AppColor.Charts {
