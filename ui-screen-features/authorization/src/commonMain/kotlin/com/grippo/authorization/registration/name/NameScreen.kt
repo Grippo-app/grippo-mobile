@@ -42,6 +42,10 @@ internal fun NameScreen(
 ) = BaseComposeScreen(
     ScreenBackground.Color(
         value = AppTokens.colors.background.screen,
+        spot = ScreenBackground.Spot(
+            top = AppTokens.colors.brand.color1,
+            bottom = AppTokens.colors.brand.color1
+        )
     )
 ) {
     Toolbar(

@@ -106,8 +106,8 @@ internal fun resolveButtonColors(
             ButtonStyle.Error -> ButtonColorTokens(
                 background1 = AppTokens.colors.semantic.error,
                 background2 = AppTokens.colors.semantic.error,
-                icon = AppTokens.colors.button.iconPrimary,
-                content = AppTokens.colors.button.textPrimary,
+                icon = AppTokens.colors.button.iconSecondary,
+                content = AppTokens.colors.button.textSecondary,
                 border = AppTokens.colors.semantic.error,
             )
 

@@ -47,9 +47,12 @@ internal fun ExcludedMusclesScreen(
 ) = BaseComposeScreen(
     ScreenBackground.Color(
         value = AppTokens.colors.background.screen,
+        spot = ScreenBackground.Spot(
+            top = AppTokens.colors.brand.color3,
+            bottom = AppTokens.colors.brand.color2
+        )
     )
 ) {
-
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         leading = Leading.Back(contract::onBack),

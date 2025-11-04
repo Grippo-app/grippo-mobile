@@ -42,6 +42,10 @@ internal fun BodyScreen(
 ) = BaseComposeScreen(
     ScreenBackground.Color(
         value = AppTokens.colors.background.screen,
+        spot = ScreenBackground.Spot(
+            top = AppTokens.colors.brand.color5,
+            bottom = AppTokens.colors.brand.color5
+        )
     )
 ) {
     Toolbar(
