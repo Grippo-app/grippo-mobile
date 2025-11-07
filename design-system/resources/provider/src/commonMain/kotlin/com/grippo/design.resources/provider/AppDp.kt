@@ -247,17 +247,9 @@ public data object AppDp {
         val small: Small = Small
         val medium: Medium = Medium
 
-        public data object Small {
-            val radius: Dp = AppDp.radius.medium
-            val horizontalPadding: Dp = padding.medium
-            val verticalPadding: Dp = padding.medium
-        }
+        public data object Small
 
-        public data object Medium {
-            val radius: Dp = AppDp.radius.medium
-            val horizontalPadding: Dp = padding.large
-            val verticalPadding: Dp = padding.medium
-        }
+        public data object Medium
     }
 
     public data object EquipmentCard {

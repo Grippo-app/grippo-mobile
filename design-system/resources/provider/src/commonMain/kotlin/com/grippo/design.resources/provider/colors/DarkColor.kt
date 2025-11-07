@@ -100,8 +100,8 @@ public object DarkColor : AppColor {
 
     override val background: AppColor.BackgroundColors = object : AppColor.BackgroundColors {
         override val screen = AppPalette.NeutralDark.N050
-        override val dialog = AppPalette.NeutralDark.N150
-        override val card = AppPalette.NeutralDark.N300.copy(0.45f)
+        override val dialog = AppPalette.NeutralDark.N100
+        override val card = AppPalette.NeutralDark.N250.copy(0.45f)
         override val accent = AppPalette.Blue.P500
     }
 
@@ -232,9 +232,9 @@ public object DarkColor : AppColor {
 
     override val muscle: AppColor.MuscleColors = object : AppColor.MuscleColors {
         override val active = AppPalette.Unique.Coral
-        override val inactive = AppPalette.NeutralDark.N300.copy(0.45f)
-        override val background = AppPalette.NeutralDark.N300.copy(0.45f)
-        override val outline = AppPalette.NeutralDark.N300.copy(0.45f)
+        override val inactive = AppPalette.NeutralDark.N250.copy(0.45f)
+        override val background = AppPalette.NeutralDark.N250.copy(0.45f)
+        override val outline = AppPalette.NeutralDark.N250.copy(0.45f)
     }
 
     override val charts: AppColor.Charts = object : AppColor.Charts {

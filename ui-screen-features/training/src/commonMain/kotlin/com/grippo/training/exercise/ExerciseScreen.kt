@@ -47,8 +47,15 @@ internal fun ExerciseScreen(
     state: ExerciseState,
     loaders: ImmutableSet<ExerciseLoader>,
     contract: ExerciseContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
-
+) = BaseComposeScreen(
+    ScreenBackground.Color(
+        value = AppTokens.colors.background.screen,
+        spot = ScreenBackground.Spot(
+            top = AppTokens.colors.brand.color3,
+            bottom = AppTokens.colors.brand.color3
+        )
+    )
+) {
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         leading = Leading.Back(contract::onBack),
@@ -61,7 +68,8 @@ internal fun ExerciseScreen(
                         .padding(
                             start = AppTokens.dp.screen.horizontalPadding,
                             end = AppTokens.dp.screen.horizontalPadding,
-                            bottom = AppTokens.dp.contentPadding.content,
+                            bottom = AppTokens.dp.contentPadding.block,
+                            top = AppTokens.dp.contentPadding.content,
                         ),
                     style = ExerciseExampleCardStyle.Small(
                         onCardClick = contract::onExampleClick,

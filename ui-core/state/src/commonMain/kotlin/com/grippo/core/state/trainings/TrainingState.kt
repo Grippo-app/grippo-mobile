@@ -25,5 +25,12 @@ public fun stubTraining(): TrainingState = TrainingState(
     duration = 10000L.minutes,
     createdAt = DateTimeUtils.thisDay().from,
     metrics = stubMetrics(),
-    exercises = listOf(stubExercise(), stubExercise(), stubExercise()).toPersistentList(),
+    exercises = listOf(
+        stubExercise(),
+        stubExercise(),
+        stubExercise(),
+        stubExercise(),
+        stubExercise(),
+        stubExercise()
+    ).toPersistentList(),
 )

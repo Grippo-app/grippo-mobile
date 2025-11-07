@@ -4,9 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
@@ -86,31 +84,27 @@ internal fun ExerciseCardLarge(
                         size = ChipSize.Small
                     )
                 }
-            }
-        }
 
-        if (value.iterations.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
+                if (value.iterations.isNotEmpty()) {
+                    Text(
+                        text = "${AppTokens.strings.res(Res.string.sets_label)} ${value.iterations.size}",
+                        style = AppTokens.typography.b14Med(),
+                        color = AppTokens.colors.text.tertiary
+                    )
 
-            Text(
-                text = "${AppTokens.strings.res(Res.string.sets_label)} ${value.iterations.size}",
-                style = AppTokens.typography.b14Med(),
-                color = AppTokens.colors.text.tertiary
-            )
-
-            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.text))
-
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-            ) {
-                value.iterations.forEach { iteration ->
-                    key(iteration.id) {
-                        IterationCard(
-                            value = iteration,
-                            style = IterationCardStyle.SmallView
-                        )
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+                        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+                    ) {
+                        value.iterations.forEach { iteration ->
+                            key(iteration.id) {
+                                IterationCard(
+                                    value = iteration,
+                                    style = IterationCardStyle.SmallView
+                                )
+                            }
+                        }
                     }
                 }
             }

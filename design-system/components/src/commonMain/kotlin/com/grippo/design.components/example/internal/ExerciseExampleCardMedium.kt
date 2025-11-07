@@ -1,6 +1,5 @@
 package com.grippo.design.components.example.internal
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -8,10 +7,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -47,17 +44,7 @@ internal fun ExerciseExampleCardMedium(
     value: ExerciseExampleState,
     onCardClick: () -> Unit,
 ) {
-    val shape = RoundedCornerShape(AppTokens.dp.exerciseExampleCard.medium.radius)
-
-    Column(
-        modifier = modifier
-            .scalableClick(onClick = onCardClick)
-            .background(AppTokens.colors.background.card, shape)
-            .padding(
-                horizontal = AppTokens.dp.exerciseExampleCard.medium.horizontalPadding,
-                vertical = AppTokens.dp.exerciseExampleCard.medium.verticalPadding
-            ),
-    ) {
+    Column(modifier = modifier.scalableClick(onClick = onCardClick)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)

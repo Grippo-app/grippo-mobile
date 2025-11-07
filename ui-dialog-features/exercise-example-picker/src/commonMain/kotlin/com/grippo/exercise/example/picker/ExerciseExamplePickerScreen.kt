@@ -115,7 +115,11 @@ internal fun ExerciseExamplePickerScreen(
                 false -> BottomOverlayLazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-                    contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                    contentPadding = PaddingValues(
+                        start = AppTokens.dp.dialog.horizontalPadding,
+                        end = AppTokens.dp.dialog.horizontalPadding,
+                        top = AppTokens.dp.contentPadding.content,
+                    ),
                     overlay = AppTokens.colors.background.dialog,
                     content = {
                         items(

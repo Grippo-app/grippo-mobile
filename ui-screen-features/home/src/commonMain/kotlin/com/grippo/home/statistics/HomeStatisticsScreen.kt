@@ -48,7 +48,7 @@ internal fun HomeStatisticsScreen(
         value = AppTokens.colors.background.screen,
         spot = ScreenBackground.Spot(
             top = AppTokens.colors.brand.color5,
-            bottom = AppTokens.colors.brand.color1
+            bottom = AppTokens.colors.brand.color2
         )
     )
 ) {

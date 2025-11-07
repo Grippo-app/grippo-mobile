@@ -93,17 +93,17 @@ internal fun ExerciseScreen(
                 size = ChipSize.Medium
             )
 
-            IntensityChip(
-                modifier = Modifier.weight(1f),
-                value = exercise.metrics.intensity,
-                style = IntensityChipStyle.SHORT,
-                size = ChipSize.Medium
-            )
-
             RepetitionsChip(
                 modifier = Modifier.weight(1f),
                 value = exercise.metrics.repetitions,
                 style = RepetitionsChipStyle.SHORT,
+                size = ChipSize.Medium
+            )
+
+            IntensityChip(
+                modifier = Modifier.weight(1f),
+                value = exercise.metrics.intensity,
+                style = IntensityChipStyle.SHORT,
                 size = ChipSize.Medium
             )
         }
