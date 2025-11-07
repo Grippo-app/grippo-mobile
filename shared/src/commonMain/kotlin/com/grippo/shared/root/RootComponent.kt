@@ -18,10 +18,10 @@ import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.debug.DebugComponent
 import com.grippo.design.components.connection.snackbar.ConnectionSnackbar
 import com.grippo.design.core.AppTheme
-import com.grippo.home.BottomNavigationComponent
+import com.grippo.home.HomeComponent
 import com.grippo.profile.ProfileComponent
 import com.grippo.screen.api.AuthRouter
-import com.grippo.screen.api.BottomNavigationRouter
+import com.grippo.screen.api.HomeRouter
 import com.grippo.screen.api.ProfileRouter
 import com.grippo.screen.api.RootRouter
 import com.grippo.screen.api.TrainingRouter
@@ -117,9 +117,9 @@ public class RootComponent(
             )
 
             RootRouter.Home -> Home(
-                BottomNavigationComponent(
+                HomeComponent(
                     componentContext = context,
-                    initial = BottomNavigationRouter.Trainings,
+                    initial = HomeRouter.Trainings,
                     toWeightHistory = viewModel::toWeightHistory,
                     toMissingEquipment = viewModel::toMissingEquipment,
                     toExcludedMuscles = viewModel::toExcludedMuscles,
@@ -177,7 +177,7 @@ public class RootComponent(
         public data class Authorization(override val component: AuthComponent) :
             Child(component)
 
-        public data class Home(override val component: BottomNavigationComponent) :
+        public data class Home(override val component: HomeComponent) :
             Child(component)
 
         public data class Profile(override val component: ProfileComponent) :

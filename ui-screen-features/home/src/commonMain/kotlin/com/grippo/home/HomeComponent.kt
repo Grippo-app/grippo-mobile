@@ -5,7 +5,6 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
-import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
@@ -14,10 +13,10 @@ import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.core.state.stage.StageState
 import com.grippo.home.statistics.HomeStatisticsComponent
 import com.grippo.home.trainings.HomeTrainingsComponent
-import com.grippo.screen.api.BottomNavigationRouter
+import com.grippo.screen.api.HomeRouter
 
-public class BottomNavigationComponent(
-    initial: BottomNavigationRouter,
+public class HomeComponent(
+    initial: HomeRouter,
     componentContext: ComponentContext,
     private val toExcludedMuscles: () -> Unit,
     private val toMissingEquipment: () -> Unit,
@@ -25,11 +24,10 @@ public class BottomNavigationComponent(
     private val toDebug: () -> Unit,
     private val toTraining: (stage: StageState) -> Unit,
     private val close: () -> Unit,
-) : BaseComponent<BottomNavigationDirection>(componentContext) {
+) : BaseComponent<HomeDirection>(componentContext) {
 
-    override val viewModel: BottomNavigationViewModel = componentContext.retainedInstance {
-        BottomNavigationViewModel(
-            initial = initial,
+    override val viewModel: HomeViewModel = componentContext.retainedInstance {
+        HomeViewModel(
             trainingFeature = getKoin().get(),
             dialogController = getKoin().get(),
         )
@@ -41,37 +39,39 @@ public class BottomNavigationComponent(
         backHandler.register(backCallback)
     }
 
-    override suspend fun eventListener(direction: BottomNavigationDirection) {
+    override suspend fun eventListener(direction: HomeDirection) {
         when (direction) {
-            BottomNavigationDirection.Trainings -> navigation.replaceAll(BottomNavigationRouter.Trainings)
-            BottomNavigationDirection.Statistics -> navigation.replaceAll(BottomNavigationRouter.Statistics)
-            BottomNavigationDirection.Back -> close.invoke()
-            BottomNavigationDirection.ToExcludedMuscles -> toExcludedMuscles.invoke()
-            BottomNavigationDirection.ToMissingEquipment -> toMissingEquipment.invoke()
-            BottomNavigationDirection.ToWeightHistory -> toWeightHistory.invoke()
-            BottomNavigationDirection.ToDebug -> toDebug.invoke()
-            BottomNavigationDirection.ToAddTraining -> toTraining.invoke(StageState.Add)
-            BottomNavigationDirection.ToDraftTraining -> toTraining.invoke(StageState.Draft)
-            is BottomNavigationDirection.ToEditTraining -> toTraining.invoke(
+            HomeDirection.Back -> close.invoke()
+            HomeDirection.ToExcludedMuscles -> toExcludedMuscles.invoke()
+            HomeDirection.ToMissingEquipment -> toMissingEquipment.invoke()
+            HomeDirection.ToWeightHistory -> toWeightHistory.invoke()
+            HomeDirection.ToDebug -> toDebug.invoke()
+            HomeDirection.ToAddTraining -> toTraining.invoke(StageState.Add)
+            HomeDirection.ToDraftTraining -> toTraining.invoke(StageState.Draft)
+            is HomeDirection.ToEditTraining -> toTraining.invoke(
                 StageState.Edit(direction.id)
             )
         }
     }
 
-    private val navigation = StackNavigation<BottomNavigationRouter>()
+    private val navigation = StackNavigation<HomeRouter>()
 
-    internal val childStack: Value<ChildStack<BottomNavigationRouter, Child>> = childStack(
-        source = navigation,
-        serializer = BottomNavigationRouter.serializer(),
-        initialStack = { listOf(initial) },
-        key = "BottomNavigationComponent",
-        handleBackButton = true,
-        childFactory = ::createChild,
-    )
+    internal val childStack: Value<ChildStack<HomeRouter, Child>> =
+        childStack(
+            source = navigation,
+            serializer = HomeRouter.serializer(),
+            initialStack = { listOf(initial) },
+            key = "HomeComponent",
+            handleBackButton = true,
+            childFactory = ::createChild,
+        )
 
-    private fun createChild(router: BottomNavigationRouter, context: ComponentContext): Child {
+    private fun createChild(
+        router: HomeRouter,
+        context: ComponentContext
+    ): Child {
         return when (router) {
-            is BottomNavigationRouter.Trainings -> Child.Trainings(
+            is HomeRouter.Trainings -> Child.Trainings(
                 HomeTrainingsComponent(
                     componentContext = context,
                     toEditTraining = viewModel::toEditTraining,
@@ -84,7 +84,7 @@ public class BottomNavigationComponent(
                 ),
             )
 
-            is BottomNavigationRouter.Statistics -> Child.Statistics(
+            is HomeRouter.Statistics -> Child.Statistics(
                 HomeStatisticsComponent(
                     componentContext = context,
                     back = viewModel::onBack
@@ -97,7 +97,7 @@ public class BottomNavigationComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        BottomNavigationScreen(this, state.value, loaders.value, viewModel)
+        HomeScreen(this, state.value, loaders.value, viewModel)
     }
 
     internal sealed class Child(open val component: BaseComponent<*>) {

@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 internal interface HomeTrainingsContract {
+    fun onAddTraining()
     fun onExerciseClick(id: String)
     fun onOpenProfile()
     fun onTrainingMenuClick(id: String)
@@ -12,6 +13,7 @@ internal interface HomeTrainingsContract {
 
     @Immutable
     companion object Empty : HomeTrainingsContract {
+        override fun onAddTraining() {}
         override fun onExerciseClick(id: String) {}
         override fun onOpenProfile() {}
         override fun onTrainingMenuClick(id: String) {}

@@ -3,8 +3,7 @@ package com.grippo.home
 import androidx.compose.runtime.Immutable
 
 @Immutable
-internal interface BottomNavigationContract {
-    fun selectTab(origin: Int)
+internal interface HomeContract {
     fun onBack()
     fun toExcludedMuscles()
     fun toMissingEquipment()
@@ -14,8 +13,7 @@ internal interface BottomNavigationContract {
     fun toAddTraining()
 
     @Immutable
-    companion object Empty : BottomNavigationContract {
-        override fun selectTab(origin: Int) {}
+    companion object Empty : HomeContract {
         override fun onBack() {}
         override fun toExcludedMuscles() {}
         override fun toMissingEquipment() {}

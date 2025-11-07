@@ -107,6 +107,10 @@ internal class HomeTrainingsViewModel(
         dialogController.show(dialog)
     }
 
+    override fun onAddTraining() {
+        navigateTo(HomeTrainingsDirection.AddTraining)
+    }
+
     override fun onSelectDate() {
         safeLaunch {
             val value = DateFormatState.of(state.value.date.from, state.value.limitations)
