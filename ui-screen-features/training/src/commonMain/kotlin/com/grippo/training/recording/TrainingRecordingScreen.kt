@@ -106,7 +106,7 @@ internal fun TrainingRecordingScreen(
                     items = segmentItems,
                     selected = state.tab,
                     onSelect = contract::onSelectTab,
-                    style = SegmentStyle.Fill
+                    style = SegmentStyle.Outline
                 )
 
                 Spacer(modifier = Modifier.weight(1f))

@@ -323,17 +323,10 @@ public data object AppDp {
 
     public data object Segment {
         val outline: Outline = Outline
-        val fill: Fill = Fill
 
         public data object Outline {
             val height: Dp = size.medium
             val horizontalPadding: Dp = padding.large
-        }
-
-        public data object Fill {
-            val height: Dp = size.small
-            val horizontalPadding: Dp = padding.large
-            val radius: Dp = AppDp.radius.medium
         }
     }
 
