@@ -1,4 +1,4 @@
-package com.grippo.home.statistics
+package com.grippo.statistics
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
@@ -6,18 +6,19 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
+import com.grippo.dialog.api.DialogConfig
 
-internal class HomeStatisticsComponent(
+public class StatisticsComponent(
+    config: DialogConfig.Statistics,
     componentContext: ComponentContext,
     private val back: () -> Unit
-) : BaseComponent<HomeStatisticsDirection>(componentContext) {
+) : BaseComponent<StatisticsDirection>(componentContext) {
 
-    override val viewModel = componentContext.retainedInstance {
-        HomeStatisticsViewModel(
-            trainingFeature = getKoin().get(),
+    override val viewModel: StatisticsViewModel = componentContext.retainedInstance {
+        StatisticsViewModel(
+            config = config,
             exerciseExampleFeature = getKoin().get(),
             muscleFeature = getKoin().get(),
-            dialogController = getKoin().get(),
             colorProvider = getKoin().get(),
             stringProvider = getKoin().get(),
         )
@@ -29,9 +30,9 @@ internal class HomeStatisticsComponent(
         backHandler.register(backCallback)
     }
 
-    override suspend fun eventListener(direction: HomeStatisticsDirection) {
+    override suspend fun eventListener(direction: StatisticsDirection) {
         when (direction) {
-            HomeStatisticsDirection.Back -> back.invoke()
+            StatisticsDirection.Back -> back.invoke()
         }
     }
 
@@ -39,6 +40,6 @@ internal class HomeStatisticsComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        HomeStatisticsScreen(state.value, loaders.value, viewModel)
+        StatisticsScreen(state.value, loaders.value, viewModel)
     }
 }

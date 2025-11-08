@@ -7,8 +7,5 @@ import kotlinx.serialization.Serializable
 public sealed class HomeRouter : BaseRouter {
 
     @Serializable
-    public data object Statistics : HomeRouter()
-
-    @Serializable
     public data object Trainings : HomeRouter()
 }

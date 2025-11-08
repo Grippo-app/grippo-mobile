@@ -8,12 +8,12 @@ plugins {
 kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.uiCore.foundation)
-        implementation(projects.toolkit.dateUtils)
         implementation(projects.uiCore.state)
+        implementation(projects.toolkit.calculation)
+        implementation(projects.toolkit.dateUtils)
         implementation(projects.dataMappers.domainToState)
-        implementation(projects.uiDialogFeatures.dialogApi)
-        implementation(projects.uiScreenFeatures.screenApi)
         implementation(projects.dataFeatures.featureApi)
+        implementation(projects.uiDialogFeatures.dialogApi)
         implementation(projects.designSystem.core)
         implementation(projects.designSystem.resources.provider)
         implementation(projects.designSystem.components)
@@ -22,7 +22,7 @@ kotlin {
         implementation(compose.foundation)
         implementation(compose.material3)
 
-        implementation(libs.immutable.collections)
         implementation(libs.datetime)
+        implementation(libs.immutable.collections)
     }
 }

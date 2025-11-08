@@ -11,7 +11,6 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.core.state.stage.StageState
-import com.grippo.home.statistics.HomeStatisticsComponent
 import com.grippo.home.trainings.HomeTrainingsComponent
 import com.grippo.screen.api.HomeRouter
 
@@ -83,13 +82,6 @@ public class HomeComponent(
                     back = viewModel::onBack
                 ),
             )
-
-            is HomeRouter.Statistics -> Child.Statistics(
-                HomeStatisticsComponent(
-                    componentContext = context,
-                    back = viewModel::onBack
-                ),
-            )
         }
     }
 
@@ -102,6 +94,5 @@ public class HomeComponent(
 
     internal sealed class Child(open val component: BaseComponent<*>) {
         data class Trainings(override val component: HomeTrainingsComponent) : Child(component)
-        data class Statistics(override val component: HomeStatisticsComponent) : Child(component)
     }
 }

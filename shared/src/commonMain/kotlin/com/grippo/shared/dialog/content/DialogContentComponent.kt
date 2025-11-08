@@ -24,6 +24,7 @@ import com.grippo.height.picker.HeightPickerComponent
 import com.grippo.iteration.picker.IterationPickerComponent
 import com.grippo.menu.picker.MenuPickerComponent
 import com.grippo.period.picker.PeriodPickerComponent
+import com.grippo.statistics.StatisticsComponent
 import com.grippo.weight.picker.WeightPickerComponent
 
 internal class DialogContentComponent(
@@ -188,6 +189,14 @@ internal class DialogContentComponent(
                     back = { viewModel.onBack(null) }
                 )
             )
+
+            is DialogConfig.Statistics -> Child.Statistics(
+                StatisticsComponent(
+                    config = router,
+                    componentContext = context,
+                    back = { viewModel.onBack(null) }
+                )
+            )
         }
     }
 
@@ -239,6 +248,9 @@ internal class DialogContentComponent(
             Child(component)
 
         data class MenuPicker(override val component: MenuPickerComponent) :
+            Child(component)
+
+        data class Statistics(override val component: StatisticsComponent) :
             Child(component)
     }
 }

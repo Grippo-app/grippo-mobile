@@ -5,6 +5,7 @@ import com.grippo.core.state.trainings.TrainingListValue
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.delete_btn
 import com.grippo.design.resources.provider.edit_btn
+import com.grippo.design.resources.provider.overview
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.design.resources.provider.selected
 import com.grippo.toolkit.date.utils.DateRange
@@ -22,7 +23,8 @@ internal data class HomeTrainingsState(
 @Immutable
 internal enum class TrainingMenu(val id: String) {
     Edit("edit"),
-    Delete("delete");
+    Delete("delete"),
+    Overview("overview");
 
     companion object {
         suspend fun title(stringProvider: StringProvider): String {
@@ -38,6 +40,7 @@ internal enum class TrainingMenu(val id: String) {
         return when (this) {
             Delete -> stringProvider.get(Res.string.delete_btn)
             Edit -> stringProvider.get(Res.string.edit_btn)
+            Overview -> stringProvider.get(Res.string.overview)
         }
     }
 }

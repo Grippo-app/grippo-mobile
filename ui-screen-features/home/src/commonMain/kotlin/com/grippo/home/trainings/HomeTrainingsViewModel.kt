@@ -18,6 +18,7 @@ import com.grippo.home.trainings.HomeTrainingsDirection.EditTraining
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -67,6 +68,17 @@ internal class HomeTrainingsViewModel(
                         when (TrainingMenu.of(it)) {
                             TrainingMenu.Delete -> trainingFeature.deleteTraining(id).getOrThrow()
                             TrainingMenu.Edit -> navigateTo(EditTraining(id))
+                            TrainingMenu.Overview -> {
+                                val training = trainingFeature.observeTraining(id).firstOrNull()
+                                    ?: return@safeLaunch
+
+                                val config = DialogConfig.Statistics.Exercises(
+                                    exercises = training.toState().exercises
+                                )
+
+                                dialogController.show(config)
+                            }
+
                             null -> {}
                         }
                     }
