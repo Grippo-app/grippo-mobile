@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,7 +26,7 @@ import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
 import com.grippo.design.components.cards.selectable.SelectableCard
-import com.grippo.design.components.frames.BottomOverlayLazyColumn
+import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
@@ -91,32 +92,41 @@ internal fun ExperienceScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        BottomOverlayLazyColumn(
+        val basePadding = PaddingValues(horizontal = AppTokens.dp.screen.horizontalPadding)
+
+        BottomOverlayContainer(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-            contentPadding = PaddingValues(horizontal = AppTokens.dp.screen.horizontalPadding),
+            contentPadding = basePadding,
             overlay = AppTokens.colors.background.screen,
-            content = {
-                items(
-                    items = state.suggestions,
-                    key = { it.ordinal },
-                ) { item ->
-                    val selectProvider = remember(item) { { contract.onExperienceClick(item) } }
-                    val isSelected = remember(state.selected, item) { state.selected == item }
+            content = { containerModifier, resolvedPadding ->
+                LazyColumn(
+                    modifier = containerModifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                    contentPadding = resolvedPadding
+                ) {
+                    items(
+                        items = state.suggestions,
+                        key = { it.ordinal },
+                    ) { item ->
+                        val selectProvider = remember(item) { { contract.onExperienceClick(item) } }
+                        val isSelected = remember(state.selected, item) { state.selected == item }
 
-                    SelectableCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        onSelect = selectProvider,
-                        isSelected = isSelected,
-                        style = CheckSelectableCardStyle.Large(
-                            title = item.title().text(),
-                            description = item.description().text(),
-                            icon = item.icon(),
-                            subContent = null,
-                        ),
-                    )
+                        SelectableCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            onSelect = selectProvider,
+                            isSelected = isSelected,
+                            style = CheckSelectableCardStyle.Large(
+                                title = item.title().text(),
+                                description = item.description().text(),
+                                icon = item.icon(),
+                                subContent = null,
+                            ),
+                        )
+                    }
                 }
             },
             bottom = {

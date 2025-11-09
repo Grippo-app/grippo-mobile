@@ -9,6 +9,7 @@ internal interface TrainingsContract {
     fun onOpenProfile()
     fun onTrainingMenuClick(id: String)
     fun onSelectDate()
+    fun onShiftDate(days: Int)
     fun onBack()
 
     @Immutable
@@ -18,6 +19,7 @@ internal interface TrainingsContract {
         override fun onOpenProfile() {}
         override fun onTrainingMenuClick(id: String) {}
         override fun onSelectDate() {}
+        override fun onShiftDate(days: Int) {}
         override fun onBack() {}
     }
 }

@@ -13,10 +13,10 @@ import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
-import com.grippo.trainings.TrainingsDirection.Back
-import com.grippo.trainings.TrainingsDirection.EditTraining
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
+import com.grippo.trainings.TrainingsDirection.Back
+import com.grippo.trainings.TrainingsDirection.EditTraining
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -89,14 +89,6 @@ internal class TrainingsViewModel(
         }
     }
 
-    private fun onNextClick() {
-        update { it.copy(date = DateTimeUtils.shift(it.date, DatePeriod(days = +1))) }
-    }
-
-    private fun onPreviousClick() {
-        update { it.copy(date = DateTimeUtils.shift(it.date, DatePeriod(days = -1))) }
-    }
-
     override fun onExerciseClick(id: String) {
         val dialog = DialogConfig.Exercise(
             id = id,
@@ -141,6 +133,19 @@ internal class TrainingsViewModel(
 
             dialogController.show(dialog)
         }
+    }
+
+    override fun onShiftDate(days: Int) {
+        if (days == 0) return
+
+        val currentState = state.value
+        val shifted = DateTimeUtils.shift(currentState.date, DatePeriod(days = days))
+
+        val limitations = currentState.limitations
+        val exceedsLimitations = shifted.from < limitations.from || shifted.to > limitations.to
+        if (exceedsLimitations) return
+
+        update { it.copy(date = shifted) }
     }
 
     override fun onBack() {

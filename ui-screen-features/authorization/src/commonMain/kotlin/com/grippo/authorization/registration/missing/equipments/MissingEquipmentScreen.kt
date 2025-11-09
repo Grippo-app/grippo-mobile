@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Text
@@ -25,7 +26,7 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.equipment.EquipmentRow
-import com.grippo.design.components.frames.BottomOverlayLazyColumn
+import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.segment.SegmentWidth
@@ -118,26 +119,33 @@ internal fun MissingEquipmentsScreen(
                 state.suggestions.find { it.id == state.selectedGroupId }?.equipments.orEmpty()
             }
 
-            BottomOverlayLazyColumn(
+            val basePadding = PaddingValues(
+                start = AppTokens.dp.screen.horizontalPadding,
+                end = AppTokens.dp.screen.horizontalPadding,
+                top = AppTokens.dp.contentPadding.content
+            )
+
+            BottomOverlayContainer(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                contentPadding = PaddingValues(
-                    start = AppTokens.dp.screen.horizontalPadding,
-                    end = AppTokens.dp.screen.horizontalPadding,
-                    top = AppTokens.dp.contentPadding.content
-                ),
+                contentPadding = basePadding,
                 overlay = AppTokens.colors.background.screen,
-                verticalArrangement = Arrangement.spacedBy(
-                    AppTokens.dp.contentPadding.content
-                ),
-                content = {
-                    items(items = equipments, key = { it.id }) { equipment ->
-                        EquipmentRow(
-                            equipment = equipment,
-                            selectedEquipmentIds = state.selectedEquipmentIds,
-                            selectEquipment = contract::onEquipmentClick,
-                        )
+                content = { containerModifier, resolvedPadding ->
+                    LazyColumn(
+                        modifier = containerModifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                        contentPadding = resolvedPadding
+                    ) {
+                        items(items = equipments, key = { it.id }) { equipment ->
+                            EquipmentRow(
+                                equipment = equipment,
+                                selectedEquipmentIds = state.selectedEquipmentIds,
+                                selectEquipment = contract::onEquipmentClick,
+                            )
+                        }
                     }
                 },
                 bottom = {

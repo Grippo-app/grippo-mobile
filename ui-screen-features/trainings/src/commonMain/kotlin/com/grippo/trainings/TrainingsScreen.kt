@@ -1,17 +1,21 @@
 package com.grippo.trainings
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,7 +29,7 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.datetime.DatePicker
-import com.grippo.design.components.frames.BottomOverlayLazyColumn
+import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.timeline.TimeLabel
 import com.grippo.design.components.timeline.TimelineIndicator
 import com.grippo.design.components.toolbar.Toolbar
@@ -49,6 +53,7 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun TrainingsScreen(
     state: TrainingsState,
@@ -62,6 +67,19 @@ internal fun TrainingsScreen(
         )
     )
 ) {
+    val listState = rememberLazyListState()
+    val pagerState = rememberPagerState(
+        initialPage = PagerCenterPage,
+        pageCount = { PagerPageCount }
+    )
+
+    LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
+        if (!pagerState.isScrollInProgress && pagerState.currentPage != PagerCenterPage) {
+            val delta = pagerState.currentPage - PagerCenterPage
+            contract.onShiftDate(delta)
+            pagerState.scrollToPage(PagerCenterPage)
+        }
+    }
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.trainings),
@@ -92,79 +110,92 @@ internal fun TrainingsScreen(
         }
     )
 
-    BottomOverlayLazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(
-            start = AppTokens.dp.screen.horizontalPadding,
-            end = AppTokens.dp.screen.horizontalPadding,
-            bottom = AppTokens.dp.contentPadding.content
-        ),
+    val basePadding = PaddingValues(
+        start = AppTokens.dp.screen.horizontalPadding,
+        end = AppTokens.dp.screen.horizontalPadding,
+        bottom = AppTokens.dp.contentPadding.content
+    )
+
+    BottomOverlayContainer(
+        modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f),
+        contentPadding = basePadding,
         overlay = AppTokens.colors.background.screen,
-        content = {
-            items(
-                items = state.trainings,
-                key = { it.key },
-                contentType = { it::class }
-            ) { value ->
-                val style = remember(value) { value.timelineStyle() }
-                val exercise = remember(value) { value.exercise() }
+        content = { containerModifier, resolvedPadding ->
 
-                TimelineIndicator(
-                    modifier = Modifier.animateItem(),
-                    style = style
-                ) {
-                    if (value is TrainingListValue.DateTime) {
-                        val clickProvider = remember(value.trainingId) {
-                            { contract.onTrainingMenuClick(value.trainingId) }
-                        }
+            LazyColumn(
+                modifier = containerModifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                state = listState,
+                contentPadding = resolvedPadding
+            ) {
+                items(
+                    items = state.trainings,
+                    key = { it.key },
+                    contentType = { it::class }
+                ) { value ->
+                    val style = remember(value) { value.timelineStyle() }
+                    val exercise = remember(value) { value.exercise() }
 
-                        Row(
-                            modifier = Modifier.padding(vertical = AppTokens.dp.contentPadding.subContent),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            val time = remember(value.createAt, value.duration) {
-                                DateTimeUtils.minus(value.createAt, value.duration)
+                    TimelineIndicator(
+                        modifier = Modifier.animateItem(),
+                        style = style
+                    ) {
+                        if (value is TrainingListValue.DateTime) {
+                            val clickProvider = remember(value.trainingId) {
+                                { contract.onTrainingMenuClick(value.trainingId) }
                             }
 
-                            Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
+                            Row(
+                                modifier = Modifier.padding(vertical = AppTokens.dp.contentPadding.subContent),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                val time = remember(value.createAt, value.duration) {
+                                    DateTimeUtils.minus(value.createAt, value.duration)
+                                }
 
-                            TimeLabel(
-                                value = time
-                            )
+                                Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
 
-                            Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
+                                TimeLabel(
+                                    value = time
+                                )
 
-                            Text(
-                                text = "(${value.duration})",
-                                style = AppTokens.typography.h6(),
-                                color = AppTokens.colors.text.tertiary
-                            )
+                                Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
 
-                            Spacer(Modifier.weight(1f))
+                                Text(
+                                    text = "(${value.duration})",
+                                    style = AppTokens.typography.h6(),
+                                    color = AppTokens.colors.text.tertiary
+                                )
 
-                            Button(
-                                content = ButtonContent.Icon(
-                                    icon = AppTokens.icons.Menu,
-                                ),
-                                style = ButtonStyle.Transparent,
-                                size = ButtonSize.Small,
-                                onClick = clickProvider
+                                Spacer(Modifier.weight(1f))
+
+                                Button(
+                                    content = ButtonContent.Icon(
+                                        icon = AppTokens.icons.Menu,
+                                    ),
+                                    style = ButtonStyle.Transparent,
+                                    size = ButtonSize.Small,
+                                    onClick = clickProvider
+                                )
+                            }
+                        }
+
+                        if (exercise != null) {
+                            val clickProvider = remember(exercise.id) {
+                                { contract.onExerciseClick(exercise.id) }
+                            }
+
+                            ExerciseCard(
+                                modifier = Modifier
+                                    .padding(vertical = AppTokens.dp.contentPadding.subContent)
+                                    .fillMaxWidth(),
+                                value = exercise,
+                                style = ExerciseCardStyle.Medium(clickProvider)
                             )
                         }
-                    }
-
-                    if (exercise != null) {
-                        val clickProvider = remember(exercise.id) {
-                            { contract.onExerciseClick(exercise.id) }
-                        }
-
-                        ExerciseCard(
-                            modifier = Modifier
-                                .padding(vertical = AppTokens.dp.contentPadding.subContent)
-                                .fillMaxWidth(),
-                            value = exercise,
-                            style = ExerciseCardStyle.Medium(clickProvider)
-                        )
                     }
                 }
             }
@@ -207,3 +238,6 @@ private fun ScreenPreview() {
         )
     }
 }
+
+private const val PagerCenterPage = 1
+private const val PagerPageCount = 3
