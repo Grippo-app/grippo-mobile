@@ -42,9 +42,9 @@ import com.grippo.design.resources.provider.icons.User
 import com.grippo.design.resources.provider.start_workout
 import com.grippo.design.resources.provider.trainings
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
-import com.grippo.trainings.factory.timelineStyle
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateTimeUtils
+import com.grippo.trainings.factory.timelineStyle
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -57,9 +57,8 @@ internal fun TrainingsScreen(
 ) = BaseComposeScreen(
     ScreenBackground.Color(
         value = AppTokens.colors.background.screen,
-        spot = ScreenBackground.Spot(
-            top = AppTokens.colors.brand.color5,
-            bottom = AppTokens.colors.brand.color5
+        ambient = ScreenBackground.Ambient(
+            color = AppTokens.colors.brand.color5,
         )
     )
 ) {

@@ -106,14 +106,14 @@ public object DarkColor : AppColor {
     }
 
     override val brand: AppColor.BrandColors = object : AppColor.BrandColors {
-        override val color1: Color = Color.Transparent
-        override val color2: Color = Color.Transparent
+        override val color1: Color = AppPalette.Unique.Magenta
+        override val color2: Color = AppPalette.Unique.Coral
 
-        override val color3: Color = Color.Transparent
-        override val color4: Color = Color.Transparent
+        override val color3: Color = AppPalette.Unique.Green
+        override val color4: Color = AppPalette.Unique.Teal
 
-        override val color5: Color = Color.Transparent
-        override val color6: Color = Color.Transparent
+        override val color5: Color = AppPalette.Unique.Sky
+        override val color6: Color = AppPalette.Unique.Navy
     }
 
     override val dialog: AppColor.DialogColors = object : AppColor.DialogColors {
@@ -197,7 +197,6 @@ public object DarkColor : AppColor {
     }
 
     public override val example: AppColor.ExampleColors = object : AppColor.ExampleColors {
-
         override val category: AppColor.ExampleColors.CategoryColors =
             object : AppColor.ExampleColors.CategoryColors {
                 override val compound: Color = AppPalette.Unique.Sky
@@ -231,10 +230,10 @@ public object DarkColor : AppColor {
     }
 
     override val muscle: AppColor.MuscleColors = object : AppColor.MuscleColors {
-        override val active = AppPalette.Unique.Coral
-        override val inactive = AppPalette.NeutralDark.N250.copy(0.45f)
-        override val background = AppPalette.NeutralDark.N250.copy(0.45f)
-        override val outline = AppPalette.NeutralDark.N250.copy(0.45f)
+        override val active = AppPalette.Unique.Orange
+        override val inactive = AppPalette.NeutralDark.N300.copy(alpha = 0.90f)
+        override val background = AppPalette.NeutralDark.N200
+        override val outline = AppPalette.NeutralDark.N150
     }
 
     override val charts: AppColor.Charts = object : AppColor.Charts {

@@ -1,6 +1,7 @@
 package com.grippo.core.foundation
 
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -20,12 +21,8 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.platform.LocalFocusManager
-import kotlin.math.PI
-import kotlin.math.cos
 import kotlin.math.max
-import kotlin.math.sin
 import androidx.compose.ui.graphics.Color as ComposeColor
 
 @Stable
@@ -33,13 +30,12 @@ public sealed interface ScreenBackground {
     @Immutable
     public data class Color(
         val value: ComposeColor,
-        val spot: Spot? = null
+        val ambient: Ambient? = null
     ) : ScreenBackground
 
     @Immutable
-    public data class Spot(
-        val top: ComposeColor,
-        val bottom: ComposeColor,
+    public data class Ambient(
+        val color: ComposeColor,
     )
 }
 
@@ -50,11 +46,10 @@ public fun BaseComposeScreen(
 ) {
     val focusManager = LocalFocusManager.current
 
-
     Column(
         modifier = Modifier
             .background(background.value)
-            .spots(background.spot)
+            .ambient(background.ambient)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
@@ -65,26 +60,20 @@ public fun BaseComposeScreen(
 }
 
 @Composable
-private fun Modifier.spots(spot: ScreenBackground.Spot?): Modifier {
-    if (spot == null) return this
+private fun Modifier.ambient(ambient: ScreenBackground.Ambient?): Modifier {
+    if (ambient == null) return this
 
-    // Subtle perpetual motion
-    val infinite = rememberInfiniteTransition(label = "bg-spots")
-    val phase1 by infinite.animateFloat(
-        initialValue = 0f,
-        targetValue = 2f * PI.toFloat(),
-        animationSpec = infiniteRepeatable(animation = tween(16000, easing = LinearEasing)),
-        label = "phase1"
+    // Very low-amplitude alpha breathing, not position drift.
+    val infinite = rememberInfiniteTransition(label = "bg-breath")
+    val pulse by infinite.animateFloat(
+        initialValue = 0.9f,
+        targetValue = 1.1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 6000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "bg-breath-alpha"
     )
-    val phase2 by infinite.animateFloat(
-        initialValue = 0f,
-        targetValue = 2f * PI.toFloat(),
-        animationSpec = infiniteRepeatable(animation = tween(22000, easing = LinearEasing)),
-        label = "phase2"
-    )
-
-    // Max drift relative to the shortest side (kept tiny to avoid nausea)
-    val drift = 0.035f
 
     return this.then(
         Modifier.drawBehind {
@@ -94,98 +83,58 @@ private fun Modifier.spots(spot: ScreenBackground.Spot?): Modifier {
             val h = size.height
             val dimension = max(w, h)
 
-            // Animated centers (base + drift)
-            val topCenter = GradientDefaults.topSpot.centerFraction +
-                    Offset(x = sin(phase1) * drift, y = cos(phase1 * 0.8f) * drift)
-            val bottomCenter = GradientDefaults.bottomSpot.centerFraction +
-                    Offset(x = cos(phase2) * drift, y = sin(phase2 * 0.7f) * drift)
-
-            // Spots — soft, multi-stop, large radii to remove “cheap” edges
-            drawSoftSpot(
-                color = spot.top,
-                centerFraction = topCenter,
-                radiusFraction = GradientDefaults.topSpot.radiusFraction
-            )
-            drawSoftSpot(
-                color = spot.bottom,
-                centerFraction = bottomCenter,
-                radiusFraction = GradientDefaults.bottomSpot.radiusFraction
-            )
-
-            // Diagonal wash for “brand depth”
-            drawRect(
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        spot.top.copy(alpha = 0.06f),
-                        Color.Transparent,
-                        spot.bottom.copy(alpha = 0.08f)
+            // 1) main ambient glow
+            run {
+                val center = Offset(x = w * 0.5f, y = h * 0.33f)
+                val radius = dimension * 0.9f
+                drawCircle(
+                    brush = Brush.radialGradient(
+                        colorStops = arrayOf(
+                            0.0f to ambient.color.copy(alpha = 0f),
+                            0.4f to ambient.color.copy(alpha = 0.08f * pulse),
+                            1.0f to Color.Transparent
+                        ),
+                        center = center,
+                        radius = radius
                     ),
-                    start = Offset(0f, 0f),
-                    end = Offset(w, h)
-                ),
-                size = size
-            )
+                    center = center,
+                    radius = radius
+                )
+            }
 
-            // Vignette to bind layers together
-            drawCircle(
-                brush = Brush.radialGradient(
-                    colorStops = arrayOf(
-                        0.0f to Color.Transparent,
-                        0.75f to Color.Transparent,
-                        1.0f to Color.Black.copy(alpha = 0.18f)
+            // 2) vertical depth wash (bottom darkening)
+            run {
+                drawRect(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Transparent,
+                            Color.Black.copy(alpha = 0.22f)
+                        ),
+                        startY = h * 0.4f,
+                        endY = h
                     ),
-                    center = Offset(w * 0.5f, h * 0.55f),
-                    radius = dimension * 0.9f
-                ),
-                center = Offset(w * 0.5f, h * 0.55f),
-                radius = dimension * 0.9f
-            )
+                    size = size
+                )
+            }
+
+            // 3) subtle edge vignette
+            run {
+                val vignetteRadius = dimension * 0.95f
+                val vignetteCenter = Offset(x = w * 0.5f, y = h * 0.5f)
+                drawCircle(
+                    brush = Brush.radialGradient(
+                        colorStops = arrayOf(
+                            0.0f to Color.Transparent,
+                            0.7f to Color.Transparent,
+                            1.0f to Color.Black.copy(alpha = 0.12f)
+                        ),
+                        center = vignetteCenter,
+                        radius = vignetteRadius
+                    ),
+                    center = vignetteCenter,
+                    radius = vignetteRadius
+                )
+            }
         }
-    )
-}
-
-private data class SpotDefinition(
-    val centerFraction: Offset,
-    val radiusFraction: Float
-)
-
-// Multi-stop radial with gentle falloff to avoid banding
-private fun DrawScope.drawSoftSpot(
-    color: Color,
-    centerFraction: Offset,
-    radiusFraction: Float
-) {
-    val dimension = max(size.width, size.height)
-    val center = Offset(size.width * centerFraction.x, size.height * centerFraction.y)
-    val radius = dimension * radiusFraction
-
-    // 4 stops: quick inner bloom, long soft tail, fully transparent edge
-    val stops = arrayOf(
-        0.0f to color.copy(alpha = color.alpha * 0.20f),
-        0.35f to color.copy(alpha = color.alpha * 0.10f),
-        0.75f to color.copy(alpha = color.alpha * 0.04f),
-        1.0f to Color.Transparent
-    )
-
-    drawCircle(
-        brush = Brush.radialGradient(
-            colorStops = stops,
-            center = center,
-            radius = radius
-        ),
-        center = center,
-        radius = radius
-    )
-}
-
-private object GradientDefaults {
-    // Slightly off-canvas to avoid hard outlines on corners
-    val topSpot: SpotDefinition = SpotDefinition(
-        centerFraction = Offset(-0.08f, 0.18f),
-        radiusFraction = 0.42f
-    )
-    val bottomSpot: SpotDefinition = SpotDefinition(
-        centerFraction = Offset(1.06f, 0.88f),
-        radiusFraction = 0.48f
     )
 }

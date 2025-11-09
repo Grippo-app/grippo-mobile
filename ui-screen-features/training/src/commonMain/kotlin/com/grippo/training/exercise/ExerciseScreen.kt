@@ -50,9 +50,8 @@ internal fun ExerciseScreen(
 ) = BaseComposeScreen(
     ScreenBackground.Color(
         value = AppTokens.colors.background.screen,
-        spot = ScreenBackground.Spot(
-            top = AppTokens.colors.brand.color3,
-            bottom = AppTokens.colors.brand.color3
+        ambient = ScreenBackground.Ambient(
+            color = AppTokens.colors.brand.color3,
         )
     )
 ) {
