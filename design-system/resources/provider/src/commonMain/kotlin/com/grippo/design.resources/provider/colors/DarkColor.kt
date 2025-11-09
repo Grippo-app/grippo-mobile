@@ -110,7 +110,7 @@ public object DarkColor : AppColor {
         override val color2: Color = Color.Transparent
 
         override val color3: Color = Color.Transparent
-        override val color4: Color = AppPalette.Unique.Teal
+        override val color4: Color = Color.Transparent
 
         override val color5: Color = Color.Transparent
         override val color6: Color = Color.Transparent
