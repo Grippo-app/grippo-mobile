@@ -65,7 +65,7 @@ internal fun StatisticsPage(
 
             false -> LazyColumn(
                 modifier = modifier,
-                contentPadding = PaddingValues(vertical = AppTokens.dp.contentPadding.content),
+                contentPadding = PaddingValues(vertical = AppTokens.dp.contentPadding.block),
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block)
             ) {
 

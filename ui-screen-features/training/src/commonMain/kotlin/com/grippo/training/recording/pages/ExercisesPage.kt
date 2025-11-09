@@ -87,7 +87,7 @@ internal fun ExercisesPage(
 
             false -> BottomOverlayLazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(top = AppTokens.dp.contentPadding.content),
+                contentPadding = PaddingValues(top = AppTokens.dp.contentPadding.block),
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block),
                 overlay = AppTokens.colors.background.screen,
                 content = {
