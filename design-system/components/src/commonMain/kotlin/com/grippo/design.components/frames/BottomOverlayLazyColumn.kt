@@ -3,14 +3,12 @@ package com.grippo.design.components.frames
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.gestures.ScrollableDefaults
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,16 +19,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.layout.SubcomposeLayout
+import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import kotlin.math.max
 
 @Composable
 public fun BottomOverlayLazyColumn(
     modifier: Modifier = Modifier,
     state: LazyListState = rememberLazyListState(),
     contentPadding: PaddingValues = PaddingValues(0.dp),
-    verticalArrangement: Arrangement.Vertical = Arrangement.Top,
+    verticalArrangement: androidx.compose.foundation.layout.Arrangement.Vertical = androidx.compose.foundation.layout.Arrangement.Top,
     reverseLayout: Boolean = false,
     flingBehavior: FlingBehavior = ScrollableDefaults.flingBehavior(),
     userScrollEnabled: Boolean = true,
@@ -39,32 +39,47 @@ public fun BottomOverlayLazyColumn(
     content: LazyListScope.() -> Unit
 ) {
     SubcomposeLayout(modifier = modifier) { constraints ->
-        // 1) measure bottom only if provided
-        val bottomPlaceables: List<Placeable>
+        // Measure bottom content (if provided)
+        val bottomPlaceables: List<androidx.compose.ui.layout.Placeable>
         val bottomHeight: Int
         if (bottom != null) {
             bottomPlaceables = subcompose("bottom") {
-                Column(modifier = Modifier.fillMaxWidth(), content = bottom)
-            }.map { it.measure(constraints.copy(minWidth = 0, minHeight = 0)) }
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .layoutId("bottom"), content = bottom
+                )
+            }.map { measurable ->
+                measurable.measure(
+                    constraints.copy(
+                        minWidth = 0,
+                        minHeight = 0
+                    )
+                )
+            }
             bottomHeight = bottomPlaceables.maxOfOrNull { it.height } ?: 0
         } else {
             bottomPlaceables = emptyList()
             bottomHeight = 0
         }
 
-        // 2) overlay height equals bottom height
+        // Overlay height equals bottom height
         val overlayHeightPx = bottomHeight
 
-        // 3) list paddings = original + bottom (no extra for overlay)
+        // Compute list paddings = original + bottom height (no extra for overlay)
+        val layoutDirection: LayoutDirection = this.layoutDirection
         val startPad = contentPadding.calculateStartPadding(layoutDirection)
         val endPad = contentPadding.calculateEndPadding(layoutDirection)
         val topPad = contentPadding.calculateTopPadding()
         val bottomPad = contentPadding.calculateBottomPadding()
-        val extraBottomPadDp = bottomHeight.toDp()
+        val extraBottomPadDp = with(this) { overlayHeightPx.toDp() }
 
+        // Measure list with "soft" height (do not force max height)
         val listPlaceables = subcompose("list") {
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .layoutId("list"),
                 state = state,
                 contentPadding = PaddingValues(
                     start = startPad,
@@ -78,28 +93,38 @@ public fun BottomOverlayLazyColumn(
                 userScrollEnabled = userScrollEnabled,
                 content = content
             )
-        }.map { it.measure(constraints) }
+        }.map { measurable ->
+            measurable.measure(
+                constraints.copy(
+                    minHeight = 0
+                )
+            )
+        }
 
-        // 4) overlay: pinned to container bottom (under bottom content), dark at bottom → transparent upward
-        val overlayPlaceables: List<Placeable> =
+        // Measure overlay box (pinned to container bottom, dark at bottom → transparent upward)
+        val overlayPlaceables: List<androidx.compose.ui.layout.Placeable> =
             if (overlayHeightPx > 0) {
                 subcompose("overlay") {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(overlayHeightPx.toDp())
+                            .height(with(this) { overlayHeightPx.toDp() })
                             .background(
                                 Brush.verticalGradient(
                                     colors = listOf(
-                                        overlay.copy(alpha = 0f),
-                                        overlay.copy(alpha = 0.9f)
+                                        overlay.copy(alpha = 0f),   // top (transparent)
+                                        overlay.copy(alpha = 0.9f)  // bottom (dark)
                                     )
                                 )
                             )
                     )
-                }.map {
-                    it.measure(
-                        constraints.copy(minWidth = 0, minHeight = 0, maxHeight = overlayHeightPx)
+                }.map { measurable ->
+                    measurable.measure(
+                        constraints.copy(
+                            minWidth = 0,
+                            minHeight = 0,
+                            maxHeight = overlayHeightPx
+                        )
                     )
                 }
             } else {
@@ -107,24 +132,28 @@ public fun BottomOverlayLazyColumn(
             }
 
         val width = constraints.maxWidth
-        val height = constraints.maxHeight
 
-        layout(width, height) {
-            // list (backmost)
+        // Desired layout height: at least what's needed by list or bottom, but respect parent's constraints.
+        val listHeight = listPlaceables.maxOfOrNull { it.height } ?: 0
+        val desiredHeight = max(listHeight, bottomHeight)
+        val layoutHeight = desiredHeight
+            .coerceAtLeast(constraints.minHeight)
+            .coerceAtMost(constraints.maxHeight)
+
+        layout(width, layoutHeight) {
+            // Place list at back
             listPlaceables.forEach { it.placeRelative(0, 0) }
 
-            // overlay at absolute bottom
+            // Place overlay at absolute bottom (under bottom content visually)
             if (overlayPlaceables.isNotEmpty()) {
-                overlayPlaceables.forEach {
-                    it.placeRelative(0, height - overlayHeightPx)
-                }
+                val overlayTop = (layoutHeight - overlayHeightPx).coerceAtLeast(0)
+                overlayPlaceables.forEach { it.placeRelative(0, overlayTop) }
             }
 
-            // bottom content on top
+            // Place bottom content on top
             if (bottomPlaceables.isNotEmpty()) {
-                bottomPlaceables.forEach {
-                    it.placeRelative(0, height - it.height)
-                }
+                val y = (layoutHeight - bottomHeight).coerceAtLeast(0)
+                bottomPlaceables.forEach { it.placeRelative(0, y) }
             }
         }
     }
