@@ -53,7 +53,7 @@ kotlin {
 
         implementation(projects.uiScreenFeatures.screenApi)
         implementation(projects.uiScreenFeatures.authorization)
-        implementation(projects.uiScreenFeatures.home)
+        implementation(projects.uiScreenFeatures.trainings)
         implementation(projects.uiScreenFeatures.profile)
         implementation(projects.uiScreenFeatures.debug)
         implementation(projects.uiScreenFeatures.training)

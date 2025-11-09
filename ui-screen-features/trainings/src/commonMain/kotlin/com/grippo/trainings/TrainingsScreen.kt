@@ -1,4 +1,4 @@
-package com.grippo.home.trainings
+package com.grippo.trainings
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -42,7 +42,7 @@ import com.grippo.design.resources.provider.icons.User
 import com.grippo.design.resources.provider.start_workout
 import com.grippo.design.resources.provider.trainings
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
-import com.grippo.home.trainings.factory.timelineStyle
+import com.grippo.trainings.factory.timelineStyle
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableSet
@@ -50,10 +50,10 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
-internal fun HomeTrainingsScreen(
-    state: HomeTrainingsState,
-    loaders: ImmutableSet<HomeTrainingsLoader>,
-    contract: HomeTrainingsContract
+internal fun TrainingsScreen(
+    state: TrainingsState,
+    loaders: ImmutableSet<TrainingsLoader>,
+    contract: TrainingsContract
 ) = BaseComposeScreen(
     ScreenBackground.Color(
         value = AppTokens.colors.background.screen,
@@ -196,15 +196,15 @@ internal fun HomeTrainingsScreen(
 @Composable
 private fun ScreenPreview() {
     PreviewContainer {
-        HomeTrainingsScreen(
-            state = HomeTrainingsState(
+        TrainingsScreen(
+            state = TrainingsState(
                 trainings = persistentListOf(
                     stubTraining(),
                     stubTraining()
                 ).transformToTrainingListValue(),
             ),
             loaders = persistentSetOf(),
-            contract = HomeTrainingsContract.Empty
+            contract = TrainingsContract.Empty
         )
     }
 }

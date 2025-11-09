@@ -1,4 +1,4 @@
-package com.grippo.home.trainings.factory
+package com.grippo.trainings.factory
 
 import com.grippo.core.state.trainings.TrainingListValue
 import com.grippo.core.state.trainings.TrainingPosition

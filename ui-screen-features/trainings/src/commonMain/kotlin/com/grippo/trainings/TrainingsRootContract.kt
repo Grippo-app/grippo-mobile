@@ -1,9 +1,9 @@
-package com.grippo.home
+package com.grippo.trainings
 
 import androidx.compose.runtime.Immutable
 
 @Immutable
-internal interface HomeContract {
+internal interface TrainingsRootContract {
     fun onBack()
     fun toExcludedMuscles()
     fun toMissingEquipment()
@@ -13,7 +13,7 @@ internal interface HomeContract {
     fun toAddTraining()
 
     @Immutable
-    companion object Empty : HomeContract {
+    companion object Empty : TrainingsRootContract {
         override fun onBack() {}
         override fun toExcludedMuscles() {}
         override fun toMissingEquipment() {}

@@ -1,4 +1,4 @@
-package com.grippo.home.trainings
+package com.grippo.trainings
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
@@ -7,7 +7,7 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 
-internal class HomeTrainingsComponent(
+internal class TrainingsComponent(
     componentContext: ComponentContext,
     private val back: () -> Unit,
     private val toEditTraining: (id: String) -> Unit,
@@ -16,10 +16,10 @@ internal class HomeTrainingsComponent(
     private val toWeightHistory: () -> Unit,
     private val toDebug: () -> Unit,
     private val toAddTraining: () -> Unit,
-) : BaseComponent<HomeTrainingsDirection>(componentContext) {
+) : BaseComponent<TrainingsDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        HomeTrainingsViewModel(
+        TrainingsViewModel(
             trainingFeature = getKoin().get(),
             dialogController = getKoin().get(),
             stringProvider = getKoin().get(),
@@ -32,15 +32,15 @@ internal class HomeTrainingsComponent(
         backHandler.register(backCallback)
     }
 
-    override suspend fun eventListener(direction: HomeTrainingsDirection) {
+    override suspend fun eventListener(direction: TrainingsDirection) {
         when (direction) {
-            HomeTrainingsDirection.Back -> back.invoke()
-            is HomeTrainingsDirection.EditTraining -> toEditTraining.invoke(direction.id)
-            HomeTrainingsDirection.AddTraining -> toAddTraining.invoke()
-            HomeTrainingsDirection.Debug -> toDebug.invoke()
-            HomeTrainingsDirection.ExcludedMuscles -> toExcludedMuscles.invoke()
-            HomeTrainingsDirection.MissingEquipment -> toMissingEquipment.invoke()
-            HomeTrainingsDirection.WeightHistory -> toWeightHistory.invoke()
+            TrainingsDirection.Back -> back.invoke()
+            is TrainingsDirection.EditTraining -> toEditTraining.invoke(direction.id)
+            TrainingsDirection.AddTraining -> toAddTraining.invoke()
+            TrainingsDirection.Debug -> toDebug.invoke()
+            TrainingsDirection.ExcludedMuscles -> toExcludedMuscles.invoke()
+            TrainingsDirection.MissingEquipment -> toMissingEquipment.invoke()
+            TrainingsDirection.WeightHistory -> toWeightHistory.invoke()
         }
     }
 
@@ -48,6 +48,6 @@ internal class HomeTrainingsComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        HomeTrainingsScreen(state.value, loaders.value, viewModel)
+        TrainingsScreen(state.value, loaders.value, viewModel)
     }
 }

@@ -1,7 +1,7 @@
-package com.grippo.home
+package com.grippo.trainings
 
 import androidx.compose.runtime.Immutable
 import com.grippo.core.foundation.models.BaseLoader
 
 @Immutable
-public sealed interface HomeLoader : BaseLoader
+public sealed interface TrainingsRootLoader : BaseLoader

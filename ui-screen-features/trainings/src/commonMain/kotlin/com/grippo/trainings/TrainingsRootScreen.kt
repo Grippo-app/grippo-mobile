@@ -1,4 +1,4 @@
-package com.grippo.home
+package com.grippo.trainings
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -12,11 +12,11 @@ import kotlinx.collections.immutable.ImmutableSet
 import com.arkivanov.decompose.extensions.compose.experimental.stack.ChildStack as ChildStackCompose
 
 @Composable
-internal fun HomeScreen(
-    component: HomeComponent,
-    state: HomeState,
-    loaders: ImmutableSet<HomeLoader>,
-    contract: HomeContract
+internal fun TrainingsRootScreen(
+    component: TrainingsRootComponent,
+    state: TrainingsRootState,
+    loaders: ImmutableSet<TrainingsRootLoader>,
+    contract: TrainingsRootContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
 
     ChildStackCompose(

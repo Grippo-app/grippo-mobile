@@ -1,4 +1,4 @@
-package com.grippo.home.trainings
+package com.grippo.trainings
 
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.trainings.TrainingListValue
@@ -14,7 +14,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
-internal data class HomeTrainingsState(
+internal data class TrainingsState(
     val date: DateRange = DateTimeUtils.thisDay(),
     val limitations: DateRange = DateTimeUtils.trailingYear(),
     val trainings: ImmutableList<TrainingListValue> = persistentListOf(),

@@ -4,8 +4,8 @@ import com.grippo.core.foundation.models.BaseRouter
 import kotlinx.serialization.Serializable
 
 @Serializable
-public sealed class HomeRouter : BaseRouter {
+public sealed class TrainingsRouter : BaseRouter {
 
     @Serializable
-    public data object Trainings : HomeRouter()
+    public data object Trainings : TrainingsRouter()
 }

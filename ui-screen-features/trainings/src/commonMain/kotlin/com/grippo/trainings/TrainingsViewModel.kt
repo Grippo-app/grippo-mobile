@@ -1,4 +1,4 @@
-package com.grippo.home.trainings
+package com.grippo.trainings
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateFormatState
@@ -13,8 +13,8 @@ import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
-import com.grippo.home.trainings.HomeTrainingsDirection.Back
-import com.grippo.home.trainings.HomeTrainingsDirection.EditTraining
+import com.grippo.trainings.TrainingsDirection.Back
+import com.grippo.trainings.TrainingsDirection.EditTraining
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -24,13 +24,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.datetime.DatePeriod
 
-internal class HomeTrainingsViewModel(
+internal class TrainingsViewModel(
     private val trainingFeature: TrainingFeature,
     private val dialogController: DialogController,
     private val stringProvider: StringProvider
-) : BaseViewModel<HomeTrainingsState, HomeTrainingsDirection, HomeTrainingsLoader>(
-    HomeTrainingsState()
-), HomeTrainingsContract {
+) : BaseViewModel<TrainingsState, TrainingsDirection, TrainingsLoader>(
+    TrainingsState()
+), TrainingsContract {
 
     init {
         state
@@ -109,9 +109,9 @@ internal class HomeTrainingsViewModel(
         val dialog = DialogConfig.Profile(
             onResult = {
                 when (it) {
-                    ProfileActivityMenu.ExcludedMuscles -> navigateTo(HomeTrainingsDirection.ExcludedMuscles)
-                    ProfileActivityMenu.MissingEquipment -> navigateTo(HomeTrainingsDirection.MissingEquipment)
-                    ProfileActivityMenu.Debug -> navigateTo(HomeTrainingsDirection.Debug)
+                    ProfileActivityMenu.ExcludedMuscles -> navigateTo(TrainingsDirection.ExcludedMuscles)
+                    ProfileActivityMenu.MissingEquipment -> navigateTo(TrainingsDirection.MissingEquipment)
+                    ProfileActivityMenu.Debug -> navigateTo(TrainingsDirection.Debug)
                 }
             },
         )
@@ -120,7 +120,7 @@ internal class HomeTrainingsViewModel(
     }
 
     override fun onAddTraining() {
-        navigateTo(HomeTrainingsDirection.AddTraining)
+        navigateTo(TrainingsDirection.AddTraining)
     }
 
     override fun onSelectDate() {

@@ -1,4 +1,4 @@
-package com.grippo.home
+package com.grippo.trainings
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
@@ -11,11 +11,10 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.core.state.stage.StageState
-import com.grippo.home.trainings.HomeTrainingsComponent
-import com.grippo.screen.api.HomeRouter
+import com.grippo.screen.api.TrainingsRouter
 
-public class HomeComponent(
-    initial: HomeRouter,
+public class TrainingsRootComponent(
+    initial: TrainingsRouter,
     componentContext: ComponentContext,
     private val toExcludedMuscles: () -> Unit,
     private val toMissingEquipment: () -> Unit,
@@ -23,10 +22,10 @@ public class HomeComponent(
     private val toDebug: () -> Unit,
     private val toTraining: (stage: StageState) -> Unit,
     private val close: () -> Unit,
-) : BaseComponent<HomeDirection>(componentContext) {
+) : BaseComponent<TrainingsRootDirection>(componentContext) {
 
-    override val viewModel: HomeViewModel = componentContext.retainedInstance {
-        HomeViewModel(
+    override val viewModel: TrainingsRootViewModel = componentContext.retainedInstance {
+        TrainingsRootViewModel(
             trainingFeature = getKoin().get(),
             dialogController = getKoin().get(),
         )
@@ -38,40 +37,40 @@ public class HomeComponent(
         backHandler.register(backCallback)
     }
 
-    override suspend fun eventListener(direction: HomeDirection) {
+    override suspend fun eventListener(direction: TrainingsRootDirection) {
         when (direction) {
-            HomeDirection.Back -> close.invoke()
-            HomeDirection.ToExcludedMuscles -> toExcludedMuscles.invoke()
-            HomeDirection.ToMissingEquipment -> toMissingEquipment.invoke()
-            HomeDirection.ToWeightHistory -> toWeightHistory.invoke()
-            HomeDirection.ToDebug -> toDebug.invoke()
-            HomeDirection.ToAddTraining -> toTraining.invoke(StageState.Add)
-            HomeDirection.ToDraftTraining -> toTraining.invoke(StageState.Draft)
-            is HomeDirection.ToEditTraining -> toTraining.invoke(
+            TrainingsRootDirection.Back -> close.invoke()
+            TrainingsRootDirection.ToExcludedMuscles -> toExcludedMuscles.invoke()
+            TrainingsRootDirection.ToMissingEquipment -> toMissingEquipment.invoke()
+            TrainingsRootDirection.ToWeightHistory -> toWeightHistory.invoke()
+            TrainingsRootDirection.ToDebug -> toDebug.invoke()
+            TrainingsRootDirection.ToAddTraining -> toTraining.invoke(StageState.Add)
+            TrainingsRootDirection.ToDraftTraining -> toTraining.invoke(StageState.Draft)
+            is TrainingsRootDirection.ToEditTraining -> toTraining.invoke(
                 StageState.Edit(direction.id)
             )
         }
     }
 
-    private val navigation = StackNavigation<HomeRouter>()
+    private val navigation = StackNavigation<TrainingsRouter>()
 
-    internal val childStack: Value<ChildStack<HomeRouter, Child>> =
+    internal val childStack: Value<ChildStack<TrainingsRouter, Child>> =
         childStack(
             source = navigation,
-            serializer = HomeRouter.serializer(),
+            serializer = TrainingsRouter.serializer(),
             initialStack = { listOf(initial) },
-            key = "HomeComponent",
+            key = "TrainingsRootComponent",
             handleBackButton = true,
             childFactory = ::createChild,
         )
 
     private fun createChild(
-        router: HomeRouter,
+        router: TrainingsRouter,
         context: ComponentContext
     ): Child {
         return when (router) {
-            is HomeRouter.Trainings -> Child.Trainings(
-                HomeTrainingsComponent(
+            is TrainingsRouter.Trainings -> Child.Trainings(
+                TrainingsComponent(
                     componentContext = context,
                     toEditTraining = viewModel::toEditTraining,
                     toExcludedMuscles = viewModel::toExcludedMuscles,
@@ -89,10 +88,10 @@ public class HomeComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        HomeScreen(this, state.value, loaders.value, viewModel)
+        TrainingsRootScreen(this, state.value, loaders.value, viewModel)
     }
 
     internal sealed class Child(open val component: BaseComponent<*>) {
-        data class Trainings(override val component: HomeTrainingsComponent) : Child(component)
+        data class Trainings(override val component: TrainingsComponent) : Child(component)
     }
 }

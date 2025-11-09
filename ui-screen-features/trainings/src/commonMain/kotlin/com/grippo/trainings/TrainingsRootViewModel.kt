@@ -1,4 +1,4 @@
-package com.grippo.home
+package com.grippo.trainings
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.training.TrainingFeature
@@ -7,10 +7,11 @@ import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import kotlinx.coroutines.flow.firstOrNull
 
-public class HomeViewModel(
+public class TrainingsRootViewModel(
     trainingFeature: TrainingFeature,
     private val dialogController: DialogController,
-) : BaseViewModel<HomeState, HomeDirection, HomeLoader>(HomeState), HomeContract {
+) : BaseViewModel<TrainingsRootState, TrainingsRootDirection, TrainingsRootLoader>(TrainingsRootState),
+    TrainingsRootContract {
 
     init {
         safeLaunch {
@@ -25,7 +26,7 @@ public class HomeViewModel(
         if (hasDraftTraining) {
             safeLaunch {
                 val config = DialogConfig.DraftTraining(
-                    onResult = { navigateTo(HomeDirection.ToDraftTraining) }
+                    onResult = { navigateTo(TrainingsRootDirection.ToDraftTraining) }
                 )
 
                 dialogController.show(config)
@@ -34,30 +35,30 @@ public class HomeViewModel(
     }
 
     override fun onBack() {
-        navigateTo(HomeDirection.Back)
+        navigateTo(TrainingsRootDirection.Back)
     }
 
     override fun toExcludedMuscles() {
-        navigateTo(HomeDirection.ToExcludedMuscles)
+        navigateTo(TrainingsRootDirection.ToExcludedMuscles)
     }
 
     override fun toMissingEquipment() {
-        navigateTo(HomeDirection.ToMissingEquipment)
+        navigateTo(TrainingsRootDirection.ToMissingEquipment)
     }
 
     override fun toWeightHistory() {
-        navigateTo(HomeDirection.ToWeightHistory)
+        navigateTo(TrainingsRootDirection.ToWeightHistory)
     }
 
     override fun toDebug() {
-        navigateTo(HomeDirection.ToDebug)
+        navigateTo(TrainingsRootDirection.ToDebug)
     }
 
     override fun toEditTraining(id: String) {
-        navigateTo(HomeDirection.ToEditTraining(id))
+        navigateTo(TrainingsRootDirection.ToEditTraining(id))
     }
 
     override fun toAddTraining() {
-        navigateTo(HomeDirection.ToAddTraining)
-    }
+        navigateTo(TrainingsRootDirection.ToAddTraining)
+}
 }
