@@ -69,10 +69,7 @@ internal fun StatisticsScreen(
                     .fillMaxWidth()
                     .weight(1f),
                 contentPadding = PaddingValues(
-                    start = AppTokens.dp.dialog.horizontalPadding,
-                    end = AppTokens.dp.dialog.horizontalPadding,
-                    top = AppTokens.dp.contentPadding.content,
-                    bottom = AppTokens.dp.contentPadding.block
+                    horizontal = AppTokens.dp.dialog.horizontalPadding,
                 ),
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block)
             ) {
@@ -223,8 +220,9 @@ private fun ScreenPreview() {
     PreviewContainer {
         StatisticsScreen(
             state = StatisticsState(
-                trainings = persistentListOf(stubTraining(), stubTraining(), stubTraining()),
-                exercises = stubTraining().exercises
+                mode = StatisticsMode.Trainings(
+                    trainings = persistentListOf(stubTraining(), stubTraining(), stubTraining())
+                )
             ),
             loaders = persistentSetOf(),
             contract = StatisticsContract.Empty

@@ -20,7 +20,6 @@ import com.grippo.toolkit.calculation.AnalyticsApi
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
@@ -40,10 +39,15 @@ public class StatisticsViewModel(
     private val exerciseExampleFeature: ExerciseExampleFeature,
 ) : BaseViewModel<StatisticsState, StatisticsDirection, StatisticsLoader>(
     StatisticsState(
-        trainings = (config as? DialogConfig.Statistics.Trainings)?.trainings
-            ?.toPersistentList() ?: persistentListOf(),
-        exercises = (config as? DialogConfig.Statistics.Exercises)?.exercises
-            ?.toPersistentList() ?: persistentListOf(),
+        mode = when (config) {
+            is DialogConfig.Statistics.Exercises -> StatisticsMode.Exercises(
+                exercises = config.exercises.toPersistentList()
+            )
+
+            is DialogConfig.Statistics.Trainings -> StatisticsMode.Trainings(
+                trainings = config.trainings.toPersistentList()
+            )
+        }
     )
 ), StatisticsContract {
 
@@ -55,7 +59,7 @@ public class StatisticsViewModel(
             .safeLaunch()
 
         state
-            .map { collectExampleIds(it.trainings, it.exercises) }
+            .map { collectExampleIds(it.mode) }
             .filter { it.isNotEmpty() }
             .distinctUntilChanged()
             .flatMapLatest(exerciseExampleFeature::observeExerciseExamples)
@@ -63,7 +67,7 @@ public class StatisticsViewModel(
             .safeLaunch()
 
         state
-            .map { s -> listOf(s.mode, s.trainings, s.exercises, s.examples, s.muscles) }
+            .map { s -> listOf(s.mode, s.examples, s.muscles) }
             .debounce(200)
             .distinctUntilChanged()
             .mapLatest { generateStatistics() }
@@ -83,24 +87,25 @@ public class StatisticsViewModel(
     }
 
     private suspend fun generateStatistics() {
-        val current = state.value
-        val muscles = current.muscles
-        val examples = current.examples
+        val currentState = state.value
+        val muscles = currentState.muscles
+        val examples = currentState.examples
 
-        when (current.mode) {
-            StatisticsMode.Trainings -> {
-                val period = current.trainings.detectPeriodState()
+        when (val mode = currentState.mode) {
+            is StatisticsMode.Trainings -> {
+                val trainings = mode.trainings
+                val period = trainings.detectPeriodState()
 
                 provideTrainingStatistics(
-                    trainings = current.trainings,
+                    trainings = trainings,
                     period = period,
                     muscles = muscles,
                     examples = examples
                 )
             }
 
-            StatisticsMode.Exercises -> provideExerciseStatistics(
-                exercises = current.exercises,
+            is StatisticsMode.Exercises -> provideExerciseStatistics(
+                exercises = mode.exercises,
                 muscles = muscles,
                 examples = examples
             )
@@ -179,12 +184,30 @@ public class StatisticsViewModel(
             return
         }
 
-        val totalMetrics = analytics.metricsFromExercises(exercises)
-        val categoryDistribution = analytics.categoryDistributionFromExercises(exercises)
-        val weightTypeDistribution = analytics.weightTypeDistributionFromExercises(exercises)
-        val forceTypeDistribution = analytics.forceTypeDistributionFromExercises(exercises)
-        val exerciseVolume = analytics.volumeFromExercises(exercises)
-        val muscleLoad = analytics.muscleLoadFromExercises(exercises, examples, muscles)
+        val totalMetrics = analytics.metricsFromExercises(
+            exercises = exercises
+        )
+
+        val categoryDistribution = analytics.categoryDistributionFromExercises(
+            exercises = exercises
+        )
+
+        val weightTypeDistribution = analytics.weightTypeDistributionFromExercises(
+            exercises = exercises
+        )
+
+        val forceTypeDistribution = analytics.forceTypeDistributionFromExercises(
+            exercises = exercises
+        )
+
+        val exerciseVolume = analytics.volumeFromExercises(
+            exercises = exercises
+        )
+        val muscleLoad = analytics.muscleLoadFromExercises(
+            exercises = exercises,
+            examples = examples,
+            groups = muscles
+        )
 
         update {
             it.copy(
@@ -213,29 +236,28 @@ public class StatisticsViewModel(
         }
     }
 
-    private fun collectExampleIds(
-        trainings: ImmutableList<TrainingState>,
-        exercises: ImmutableList<ExerciseState>
-    ): List<String> {
-        val trainingIds = trainings
+    private fun collectExampleIds(mode: StatisticsMode): List<String> = when (mode) {
+        is StatisticsMode.Trainings -> mode.trainings
             .flatMap { training -> training.exercises.map { it.exerciseExample.id } }
-        val exerciseIds = exercises.map { it.exerciseExample.id }
-        return (trainingIds + exerciseIds).distinct()
+            .distinct()
+
+        is StatisticsMode.Exercises -> mode.exercises
+            .map { it.exerciseExample.id }
+            .distinct()
     }
 
-}
+    private fun List<TrainingState>.detectPeriodState(): PeriodState {
+        if (isEmpty()) {
+            return PeriodState.ThisWeek
+        }
 
-internal fun List<TrainingState>.detectPeriodState(): PeriodState {
-    if (isEmpty()) {
-        return PeriodState.ThisWeek
+        val sorted = sortedBy { it.createdAt }
+        val start = DateTimeUtils.startOfDay(sorted.first().createdAt)
+        val end = DateTimeUtils.endOfDay(sorted.last().createdAt)
+
+        return PeriodState.Custom(
+            range = DateRange(from = start, to = end),
+            limitations = DateTimeUtils.trailingYear()
+        )
     }
-
-    val sorted = sortedBy { it.createdAt }
-    val start = DateTimeUtils.startOfDay(sorted.first().createdAt)
-    val end = DateTimeUtils.endOfDay(sorted.last().createdAt)
-
-    return PeriodState.Custom(
-        range = DateRange(from = start, to = end),
-        limitations = DateTimeUtils.trailingYear()
-    )
 }

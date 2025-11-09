@@ -16,11 +16,8 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 public data class StatisticsState(
-    val mode: StatisticsMode = StatisticsMode.Trainings,
-    val trainings: ImmutableList<TrainingState> = persistentListOf(),
-    val exercises: ImmutableList<ExerciseState> = persistentListOf(),
-    val sourceTrainings: ImmutableList<TrainingState> = persistentListOf(),
-    val sourceExercises: ImmutableList<ExerciseState> = persistentListOf(),
+    val mode: StatisticsMode,
+
     val examples: ImmutableList<ExerciseExampleState> = persistentListOf(),
     val muscles: ImmutableList<MuscleGroupState<MuscleRepresentationState.Plain>> = persistentListOf(),
 
@@ -43,7 +40,14 @@ public data class StatisticsState(
 )
 
 @Immutable
-public enum class StatisticsMode {
-    Trainings,
-    Exercises,
+public sealed interface StatisticsMode {
+    @Immutable
+    public data class Trainings(
+        val trainings: ImmutableList<TrainingState> = persistentListOf(),
+    ) : StatisticsMode
+
+    @Immutable
+    public data class Exercises(
+        val exercises: ImmutableList<ExerciseState> = persistentListOf(),
+    ) : StatisticsMode
 }
