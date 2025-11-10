@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.grippo.core.foundation.BaseComposeScreen
@@ -26,6 +27,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.shared.dialog.content.DialogContentComponent
 import kotlinx.collections.immutable.ImmutableSet
+import kotlin.coroutines.cancellation.CancellationException
 
 @Composable
 internal fun DialogScreen(
@@ -110,9 +112,20 @@ private fun BottomSheet(
 
     // If VM says PRESENT but the sheet is Hidden (e.g., new content after a prior hide),
     // explicitly open it. This does not affect in-sheet Push/Pop when already visible.
-    LaunchedEffect(phase) {
-        if (phase == SheetPhase.PRESENT && sheetState.currentValue == SheetValue.Hidden) {
-            sheetState.show()
+    LaunchedEffect(phase, config) {
+        if (phase == SheetPhase.PRESENT) {
+            withFrameNanos { /* next frame */ }
+
+            val animInProgress = sheetState.currentValue != sheetState.targetValue
+            val isHiddenNow = sheetState.currentValue == SheetValue.Hidden
+            val targetIsHidden = sheetState.targetValue == SheetValue.Hidden
+
+            if (!animInProgress && isHiddenNow && targetIsHidden) {
+                try {
+                    sheetState.show()
+                } catch (_: CancellationException) {
+                }
+            }
         }
     }
 
