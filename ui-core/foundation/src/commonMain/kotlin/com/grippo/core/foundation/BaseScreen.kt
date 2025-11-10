@@ -49,7 +49,7 @@ public fun BaseComposeScreen(
     Column(
         modifier = Modifier
             .background(background.value)
-            .ambient(background.ambient)
+            // .ambient(background.ambient)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
