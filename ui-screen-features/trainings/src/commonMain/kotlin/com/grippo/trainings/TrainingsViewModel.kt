@@ -66,8 +66,14 @@ internal class TrainingsViewModel(
                 onResult = {
                     safeLaunch {
                         when (TrainingMenu.of(it)) {
-                            TrainingMenu.Delete -> trainingFeature.deleteTraining(id).getOrThrow()
-                            TrainingMenu.Edit -> navigateTo(EditTraining(id))
+                            TrainingMenu.Delete -> {
+                                trainingFeature.deleteTraining(id).getOrThrow()
+                            }
+
+                            TrainingMenu.Edit -> {
+                                navigateTo(EditTraining(id))
+                            }
+
                             TrainingMenu.Overview -> {
                                 val training = trainingFeature.observeTraining(id).firstOrNull()
                                     ?: return@safeLaunch
