@@ -12,7 +12,11 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.grippo.core.foundation.BaseComposeScreen
@@ -69,6 +73,8 @@ private fun BottomSheet(
     val showBackButton = stack.size > 1
     val programmaticDismiss = phase == SheetPhase.DISMISSING
 
+    val programmaticDismissRef = rememberUpdatedState(programmaticDismiss)
+
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
         confirmValueChange = { target ->
@@ -78,10 +84,35 @@ private fun BottomSheet(
         },
     )
 
+    var dismissNotified by remember { mutableStateOf(false) }
+
     LaunchedEffect(phase) {
-        if (programmaticDismiss && sheetState.currentValue != SheetValue.Hidden) {
-            sheetState.hide()
-            onDismissCompleteRef.value()
+        if (programmaticDismiss) {
+            dismissNotified = false
+            if (sheetState.currentValue != SheetValue.Hidden) {
+                sheetState.hide() // suspends until the hide animation finishes
+            }
+            if (!dismissNotified) {
+                onDismissCompleteRef.value()
+                dismissNotified = true
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        snapshotFlow { sheetState.currentValue }.collect { value ->
+            if (value == SheetValue.Hidden && programmaticDismissRef.value && !dismissNotified) {
+                onDismissCompleteRef.value()
+                dismissNotified = true
+            }
+        }
+    }
+
+    // If VM says PRESENT but the sheet is Hidden (e.g., new content after a prior hide),
+    // explicitly open it. This does not affect in-sheet Push/Pop when already visible.
+    LaunchedEffect(phase) {
+        if (phase == SheetPhase.PRESENT && sheetState.currentValue == SheetValue.Hidden) {
+            sheetState.show()
         }
     }
 
