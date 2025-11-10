@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -54,14 +55,14 @@ internal fun ExerciseExampleScreen(
     contract: ExerciseExampleContract
 ) = BaseComposeScreen(background = ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
-    val example = state.example ?: return@BaseComposeScreen
-
     Column(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .weight(1f, fill = false)
             .verticalScroll(rememberScrollState()),
     ) {
+
+        val example = state.example ?: return@BaseComposeScreen
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
