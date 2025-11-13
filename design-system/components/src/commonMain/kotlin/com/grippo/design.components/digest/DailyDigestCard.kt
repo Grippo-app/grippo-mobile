@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,13 +20,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.digest.DailyDigestState
 import com.grippo.core.state.digest.stubDailyDigest
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonSize
+import com.grippo.design.components.chip.ChipSize
+import com.grippo.design.components.chip.VolumeChip
+import com.grippo.design.components.chip.VolumeChipStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -44,22 +47,15 @@ public fun DailyDigestCard(
     value: DailyDigestState,
     onViewStatsClick: () -> Unit
 ) {
-
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(AppTokens.dp.digest.daily.radius))
             .height(intrinsicSize = IntrinsicSize.Min)
             .background(
-                brush = Brush.horizontalGradient(
-                    colors = listOf(
-                        AppTokens.colors.brand.color1,
-                        AppTokens.colors.brand.color2
-                    )
-                ),
+                color = AppTokens.colors.background.card,
                 shape = RoundedCornerShape(AppTokens.dp.digest.daily.radius)
             )
     ) {
-
         Icon(
             modifier = Modifier
                 .padding(end = AppTokens.dp.contentPadding.content)
@@ -69,7 +65,7 @@ public fun DailyDigestCard(
                 .align(Alignment.CenterEnd),
             imageVector = AppTokens.icons.FireFlame,
             contentDescription = null,
-            tint = AppTokens.colors.brand.color1,
+            tint = AppTokens.colors.icon.secondary,
         )
 
         Column(
@@ -117,14 +113,25 @@ public fun DailyDigestCard(
 
             Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
 
-            Button(
-                modifier = Modifier.align(Alignment.End),
-                content = ButtonContent.Text(
-                    AppTokens.strings.res(Res.string.view_stats_btn)
-                ),
-                size = ButtonSize.Small,
-                onClick = onViewStatsClick
-            )
+            Row(modifier = Modifier.fillMaxWidth()) {
+                VolumeChip(
+                    modifier = Modifier,
+                    value = value.total,
+                    style = VolumeChipStyle.SHORT,
+                    size = ChipSize.Medium
+                )
+
+                Spacer(Modifier.weight(1f))
+
+                Button(
+                    content = ButtonContent.Text(
+                        AppTokens.strings.res(Res.string.view_stats_btn)
+                    ),
+                    size = ButtonSize.Small,
+                    onClick = onViewStatsClick
+                )
+            }
+
         }
     }
 }

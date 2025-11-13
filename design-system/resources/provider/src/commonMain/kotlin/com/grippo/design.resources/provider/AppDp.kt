@@ -114,7 +114,7 @@ public data object AppDp {
         val daily: Daily = Daily
 
         public data object Daily {
-            val radius: Dp = AppDp.radius.medium
+            val radius: Dp = AppDp.radius.large
             val icon: Dp = AppDp.icon.xxLarge
             val horizontalPadding: Dp = padding.large
             val verticalPadding: Dp = padding.large
