@@ -1,4 +1,4 @@
-package com.grippo.trainings
+package com.grippo.trainings.trainings
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.PaddingValues
@@ -29,6 +29,7 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.datetime.DatePicker
+import com.grippo.design.components.digest.DailyDigestCard
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.timeline.TimeLabel
 import com.grippo.design.components.timeline.TimelineIndicator
@@ -136,6 +137,15 @@ internal fun TrainingsScreen(
                     key = { it.key },
                     contentType = { it::class }
                 ) { value ->
+                    if (value is TrainingListValue.DailyDigest) {
+                        DailyDigestCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = value.state,
+                            onViewStatsClick = contract::onDailyDigestViewStats
+                        )
+                        return@items
+                    }
+
                     val style = remember(value) { value.timelineStyle() }
                     val exercise = remember(value) { value.exercise() }
 

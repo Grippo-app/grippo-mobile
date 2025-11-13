@@ -1,6 +1,7 @@
 package com.grippo.core.state.trainings
 
 import androidx.compose.runtime.Immutable
+import com.grippo.core.state.digest.DailyDigestState
 import kotlinx.datetime.LocalDateTime
 import kotlin.time.Duration
 
@@ -10,6 +11,7 @@ public enum class TrainingPosition {
     MIDDLE,
     LAST,
     SINGLE,
+    EMPTY,
 }
 
 @Immutable
@@ -17,6 +19,12 @@ public sealed class TrainingListValue(
     public open val key: String,
     public open val position: TrainingPosition,
 ) {
+
+    @Immutable
+    public data class DailyDigest(
+        val state: DailyDigestState,
+        override val key: String,
+    ) : TrainingListValue(key, position = TrainingPosition.EMPTY)
 
     @Immutable
     public data class FirstExercise(

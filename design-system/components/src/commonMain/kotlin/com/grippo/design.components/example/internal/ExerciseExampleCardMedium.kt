@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
@@ -35,8 +34,8 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.last_used_label
 import com.grippo.design.resources.provider.not_used_before
+import com.grippo.toolkit.date.utils.DateCompose
 import com.grippo.toolkit.date.utils.DateFormat
-import com.grippo.toolkit.date.utils.DateTimeUtils
 
 @Composable
 internal fun ExerciseExampleCardMedium(
@@ -111,10 +110,8 @@ internal fun ExerciseExampleCardMedium(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            val lastUsedDate = remember(value.value.lastUsed) {
-                value.value.lastUsed?.let { l ->
-                    DateTimeUtils.format(l, DateFormat.DATE_DD_MMM)
-                }
+            val lastUsedDate = value.value.lastUsed?.let { l ->
+                DateCompose.rememberFormat(l, DateFormat.DATE_DD_MMM)
             }
 
             lastUsedDate?.let {

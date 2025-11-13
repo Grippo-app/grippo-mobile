@@ -1,4 +1,4 @@
-package com.grippo.trainings
+package com.grippo.trainings.trainings
 
 import com.grippo.core.foundation.models.BaseDirection
 

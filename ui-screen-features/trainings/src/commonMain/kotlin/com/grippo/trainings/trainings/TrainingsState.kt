@@ -1,4 +1,4 @@
-package com.grippo.trainings
+package com.grippo.trainings.trainings
 
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.trainings.TrainingListValue
@@ -32,7 +32,7 @@ internal enum class TrainingMenu(val id: String) {
         }
 
         fun of(id: String): TrainingMenu? {
-            return TrainingMenu.entries.firstOrNull { it.id == id }
+            return entries.firstOrNull { it.id == id }
         }
     }
 

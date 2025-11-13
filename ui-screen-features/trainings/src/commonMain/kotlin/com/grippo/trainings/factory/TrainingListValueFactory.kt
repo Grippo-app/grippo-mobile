@@ -10,10 +10,12 @@ internal fun TrainingListValue.timelineStyle(): TimeLinePointStyle = when (this)
         TrainingPosition.MIDDLE -> TimeLinePointStyle.Middle
         TrainingPosition.LAST -> TimeLinePointStyle.End
         TrainingPosition.SINGLE -> TimeLinePointStyle.Single
+        TrainingPosition.EMPTY -> TimeLinePointStyle.Empty
     }
 
     else -> when (this.position) {
         TrainingPosition.FIRST, TrainingPosition.MIDDLE -> TimeLinePointStyle.Line
         TrainingPosition.LAST, TrainingPosition.SINGLE -> TimeLinePointStyle.Empty
+        TrainingPosition.EMPTY -> TimeLinePointStyle.Empty
     }
 }

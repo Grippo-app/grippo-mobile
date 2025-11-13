@@ -12,6 +12,7 @@ import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.core.state.stage.StageState
 import com.grippo.screen.api.TrainingsRouter
+import com.grippo.trainings.trainings.TrainingsComponent
 
 public class TrainingsRootComponent(
     initial: TrainingsRouter,

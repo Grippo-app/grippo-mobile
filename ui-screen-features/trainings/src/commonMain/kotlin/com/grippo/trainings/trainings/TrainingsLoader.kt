@@ -1,4 +1,4 @@
-package com.grippo.trainings
+package com.grippo.trainings.trainings
 
 import androidx.compose.runtime.Immutable
 import com.grippo.core.foundation.models.BaseLoader

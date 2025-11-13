@@ -1,4 +1,4 @@
-package com.grippo.trainings
+package com.grippo.trainings.trainings
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateFormatState
@@ -15,8 +15,8 @@ import com.grippo.domain.state.training.toState
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
-import com.grippo.trainings.TrainingsDirection.Back
-import com.grippo.trainings.TrainingsDirection.EditTraining
+import com.grippo.trainings.trainings.TrainingsDirection.Back
+import com.grippo.trainings.trainings.TrainingsDirection.EditTraining
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -101,6 +101,21 @@ internal class TrainingsViewModel(
         )
 
         dialogController.show(dialog)
+    }
+
+    override fun onDailyDigestViewStats() {
+        safeLaunch {
+            val training = trainingFeature
+                .observeTrainings(state.value.date.from, state.value.date.to)
+                .firstOrNull()
+                ?: return@safeLaunch
+
+            val config = DialogConfig.Statistics.Trainings(
+                trainings = training.toState()
+            )
+
+            dialogController.show(config)
+        }
     }
 
     override fun onOpenProfile() {

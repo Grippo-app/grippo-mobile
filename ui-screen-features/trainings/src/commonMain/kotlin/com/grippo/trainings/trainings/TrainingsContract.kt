@@ -1,10 +1,11 @@
-package com.grippo.trainings
+package com.grippo.trainings.trainings
 
 import androidx.compose.runtime.Immutable
 
 @Immutable
 internal interface TrainingsContract {
     fun onAddTraining()
+    fun onDailyDigestViewStats()
     fun onExerciseClick(id: String)
     fun onOpenProfile()
     fun onTrainingMenuClick(id: String)
@@ -15,6 +16,7 @@ internal interface TrainingsContract {
     @Immutable
     companion object Empty : TrainingsContract {
         override fun onAddTraining() {}
+        override fun onDailyDigestViewStats() {}
         override fun onExerciseClick(id: String) {}
         override fun onOpenProfile() {}
         override fun onTrainingMenuClick(id: String) {}

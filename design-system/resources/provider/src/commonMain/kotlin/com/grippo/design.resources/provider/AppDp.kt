@@ -64,6 +64,7 @@ public data object AppDp {
     val timeline: Timeline = Timeline
     val timeLabel: TimeLabel = TimeLabel
     val exerciseCard: ExerciseCard = ExerciseCard
+    val digest: Digest = Digest
     val exerciseExampleCard: ExerciseExampleCard = ExerciseExampleCard
     val exerciseExampleImage: ExerciseExampleImage = ExerciseExampleImage
     val iterationCard: IterationCard = IterationCard
@@ -107,6 +108,17 @@ public data object AppDp {
 
     public data object Badge {
         val size: Dp = icon.medium
+    }
+
+    public data object Digest {
+        val daily: Daily = Daily
+
+        public data object Daily {
+            val radius: Dp = AppDp.radius.medium
+            val horizontalPadding: Dp = padding.medium
+            val verticalPadding: Dp = padding.medium
+            val spacing: Dp = padding.extraSmall
+        }
     }
 
     public data object BottomSheet {
