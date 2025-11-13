@@ -78,7 +78,7 @@ public object DarkColor : AppColor {
         override val bestTonnage1: Color = AppPalette.Unique.Green
         override val bestTonnage2: Color = AppPalette.Unique.Teal
         override val bestWeight1: Color = AppPalette.Unique.Sky
-        override val bestWeight2: Color = AppPalette.Unique.Navy
+        override val bestWeight2: Color = AppPalette.Unique.Cyan
         override val lifetimeVolume1: Color = AppPalette.Unique.Purple
         override val lifetimeVolume2: Color = AppPalette.Unique.Violet
         override val maxRepetitions1: Color = AppPalette.Unique.Brown
@@ -113,7 +113,7 @@ public object DarkColor : AppColor {
         override val color4: Color = AppPalette.Unique.Teal
 
         override val color5: Color = AppPalette.Unique.Sky
-        override val color6: Color = AppPalette.Unique.Navy
+        override val color6: Color = AppPalette.Unique.Cyan
     }
 
     override val dialog: AppColor.DialogColors = object : AppColor.DialogColors {
@@ -199,22 +199,22 @@ public object DarkColor : AppColor {
     public override val example: AppColor.ExampleColors = object : AppColor.ExampleColors {
         override val category: AppColor.ExampleColors.CategoryColors =
             object : AppColor.ExampleColors.CategoryColors {
-                override val compound: Color = AppPalette.Unique.Sky
-                override val isolation: Color = AppPalette.Unique.Indigo
+                override val compound: Color = AppPalette.Unique.Red
+                override val isolation: Color = AppPalette.Unique.Orange
             }
 
         override val weightType: AppColor.ExampleColors.WeightTypeColors =
             object : AppColor.ExampleColors.WeightTypeColors {
-                override val free: Color = AppPalette.Unique.Coral
-                override val fixed: Color = AppPalette.Unique.Orange
-                override val bodyWeight: Color = AppPalette.Unique.Green
+                override val free: Color = AppPalette.Unique.Green
+                override val fixed: Color = AppPalette.Unique.Emerald
+                override val bodyWeight: Color = AppPalette.Unique.Teal
             }
 
         override val forceType: AppColor.ExampleColors.ForceTypeColors =
             object : AppColor.ExampleColors.ForceTypeColors {
-                override val pull: Color = AppPalette.Unique.Teal
-                override val push: Color = AppPalette.Unique.Red
-                override val hinge: Color = AppPalette.Unique.Purple
+                override val pull: Color = AppPalette.Unique.Sky
+                override val push: Color = AppPalette.Unique.Blue
+                override val hinge: Color = AppPalette.Unique.Indigo
             }
     }
 
@@ -222,10 +222,10 @@ public object DarkColor : AppColor {
 
         override val experience: AppColor.ProfileColors.ExperienceColors =
             object : AppColor.ProfileColors.ExperienceColors {
-                override val beginner: Color = AppPalette.Unique.Green
-                override val intermediate: Color = AppPalette.Unique.Orange
-                override val advanced: Color = AppPalette.Unique.Red
-                override val pro: Color = AppPalette.Unique.Navy
+                override val beginner: Color = AppPalette.Unique.Purple
+                override val intermediate: Color = AppPalette.Unique.Violet
+                override val advanced: Color = AppPalette.Unique.Magenta
+                override val pro: Color = AppPalette.Unique.Burgundy
             }
     }
 
@@ -268,8 +268,8 @@ public object DarkColor : AppColor {
             AppPalette.Gradient.Palette12BlueWave
         override val palette7BlueGrowth: List<Color> =
             AppPalette.Gradient.Palette7BlueGrowth
-        override val palette18ColorfulRandom: List<Color> =
-            AppPalette.Gradient.Palette18ColorfulRandom
+        override val palette20ColorfulRandom: List<Color> =
+            AppPalette.Gradient.Palette20ColorfulRandom
         override val palette5OrangeRedGrowth: List<Color> =
             AppPalette.Gradient.Palette5OrangeRedGrowth
     }

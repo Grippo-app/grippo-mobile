@@ -35,36 +35,35 @@ internal object AppPalette {
     }
 
     object Unique {
-        // Red / Orange
+        // Warm (Red / Orange / Amber)
         val Red = Color(0xFFFF4C4C)
         val Orange = Color(0xFFFF7A29)
         val Coral = Color(0xFFFF7F50)
+        val Amber = Color(0xFFF57F17)
 
-        // Yellow/Amber
-        val Amber = Color(0xFFFFA726)
-
-        // Green / Teal
+        // Green / Teal / Olive
         val Green = Color(0xFF43A047)
+        val Emerald = Color(0xFF2E7D32)
         val Teal = Color(0xFF00897B)
+        val Olive = Color(0xFF6B8E23)
 
-        // Blue
+        // Blue / Indigo / Cyan
         val Sky = Color(0xFF1E88E5)
         val Blue = Color(0xFF1565C0)
-        val Navy = Color(0xFF283593)
+        val Indigo = Color(0xFF3F51B5)
+        val Cyan = Color(0xFF0097A7)
 
         // Purple / Magenta
         val Purple = Color(0xFF7E57C2)
         val Violet = Color(0xFF8E24AA)
-
-        // Brown / Warm
-        val Brown = Color(0xFF6D4C41)
         val Magenta = Color(0xFFD81B60)
         val Burgundy = Color(0xFF880E4F)
 
-        // Extra
-        val Olive = Color(0xFF6B8E23)
-        val Cyan = Color(0xFF0097A7)
-        val Indigo = Color(0xFF3F51B5)
+        // Brown / Earth
+        val Brown = Color(0xFF6D4C41)
+        val Cocoa = Color(0xFF5D4037)
+        val Copper = Color(0xFF8D6E63)
+        val Clay = Color(0xFFA1887F)
     }
 
     object Gradient {
@@ -93,33 +92,35 @@ internal object AppPalette {
             Blue.P900,
         )
 
-        val Palette18ColorfulRandom: List<Color> = listOf(
+        val Palette20ColorfulRandom: List<Color> = listOf(
             Unique.Red,
             Unique.Orange,
             Unique.Coral,
             Unique.Amber,
             Unique.Green,
+            Unique.Emerald,
             Unique.Teal,
             Unique.Sky,
             Unique.Blue,
-            Unique.Navy,
+            Unique.Indigo,
             Unique.Purple,
             Unique.Violet,
             Unique.Magenta,
             Unique.Brown,
+            Unique.Cocoa,
+            Unique.Copper,
+            Unique.Clay,
             Unique.Burgundy,
             Unique.Olive,
             Unique.Cyan,
-            Unique.Indigo,
-            Blue.P500,
         )
 
         val Palette5OrangeRedGrowth: List<Color> = listOf(
-            Color(0xFFFFE08A),
-            Color(0xFFFFB24D),
-            Color(0xFFFF7A33),
-            Color(0xFFFF5A2A),
-            Unique.Red
+            Unique.Amber,     // light warm yellow-orange
+            Unique.Coral,     // soft orange-red
+            Unique.Orange,    // saturated orange
+            Unique.Red,       // bright red
+            Unique.Burgundy   // deep dark red
         )
     }
 }

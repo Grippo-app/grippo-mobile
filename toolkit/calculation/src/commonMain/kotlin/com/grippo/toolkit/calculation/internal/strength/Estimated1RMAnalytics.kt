@@ -87,7 +87,7 @@ internal class Estimated1RMAnalytics(
         exercises: List<ExerciseState>,
     ): MetricSeries {
         val colors = colorProvider.get()
-        val palette = colors.palette.palette18ColorfulRandom
+        val palette = colors.palette.palette20ColorfulRandom
         val exTxt = stringProvider.get(Res.string.ex)
 
         val points = exercises.mapIndexedNotNull { index, exercise ->
@@ -107,7 +107,7 @@ internal class Estimated1RMAnalytics(
         period: PeriodState,
     ): MetricSeries {
         val colors = colorProvider.get()
-        val palette = colors.palette.palette18ColorfulRandom
+        val palette = colors.palette.palette20ColorfulRandom
 
         val inRange = trainings.filter { it.createdAt in period.range }
         val scale = deriveScale(period)

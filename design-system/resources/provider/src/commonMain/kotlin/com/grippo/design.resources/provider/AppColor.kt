@@ -295,6 +295,6 @@ public interface AppColor {
         public val palette5OrangeRedGrowth: List<Color>
         public val palette12BlueWave: List<Color>
         public val palette7BlueGrowth: List<Color>
-        public val palette18ColorfulRandom: List<Color>
+        public val palette20ColorfulRandom: List<Color>
     }
 }
