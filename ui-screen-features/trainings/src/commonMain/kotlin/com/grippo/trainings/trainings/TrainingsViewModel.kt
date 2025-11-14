@@ -15,8 +15,12 @@ import com.grippo.domain.state.training.toState
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
+import com.grippo.toolkit.date.utils.contains
 import com.grippo.trainings.trainings.TrainingsDirection.Back
 import com.grippo.trainings.trainings.TrainingsDirection.EditTraining
+import com.grippo.trainings.trainings.utilities.pagerCombinedRange
+import com.grippo.trainings.trainings.utilities.pagerRanges
+import kotlinx.collections.immutable.toPersistentMap
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -36,20 +40,38 @@ internal class TrainingsViewModel(
         state
             .map { it.date }
             .distinctUntilChanged()
-            .flatMapLatest { trainingFeature.observeTrainings(start = it.from, end = it.to) }
-            .onEach(::provideTrainings)
+            .map { it.pagerCombinedRange() }
+            .flatMapLatest { date ->
+                trainingFeature
+                    .observeTrainings(start = date.from, end = date.to)
+                    .map { trainings -> date to trainings }
+            }
+            .onEach { (date, trainings) -> provideTrainings(date, trainings) }
             .safeLaunch()
 
         state
             .map { it.date }
             .distinctUntilChanged()
-            .onEach { trainingFeature.getTrainings(start = it.from, end = it.to).getOrThrow() }
+            .map { it.pagerCombinedRange() }
+            .onEach { date ->
+                trainingFeature.getTrainings(start = date.from, end = date.to).getOrThrow()
+            }
             .safeLaunch()
     }
 
-    private fun provideTrainings(list: List<Training>) {
-        val trainings = list.toState().transformToTrainingListValue()
-        update { it.copy(trainings = trainings) }
+    private fun provideTrainings(date: DateRange, list: List<Training>) {
+        val states = list.toState()
+        val pagerRanges = date.pagerRanges()
+
+        val trainingsByDate = pagerRanges.values
+            .associateWith { range ->
+                states
+                    .filter { training -> training.createdAt in range }
+                    .transformToTrainingListValue()
+            }
+            .toPersistentMap()
+
+        update { it.copy(trainings = trainingsByDate) }
     }
 
     override fun onTrainingMenuClick(id: String) {

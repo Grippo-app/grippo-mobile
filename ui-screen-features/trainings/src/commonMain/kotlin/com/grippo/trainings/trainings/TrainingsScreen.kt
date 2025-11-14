@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -50,8 +52,12 @@ import com.grippo.domain.state.training.transformation.transformToTrainingListVa
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.trainings.factory.timelineStyle
+import com.grippo.trainings.trainings.utilities.TrainingsPagerCenterPage
+import com.grippo.trainings.trainings.utilities.TrainingsPagerPageCount
+import com.grippo.trainings.trainings.utilities.shiftForPager
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.persistentSetOf
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -68,19 +74,19 @@ internal fun TrainingsScreen(
         )
     )
 ) {
-    val listState = rememberLazyListState()
     val pagerState = rememberPagerState(
-        initialPage = PagerCenterPage,
-        pageCount = { PagerPageCount }
+        initialPage = TrainingsPagerCenterPage,
+        pageCount = { TrainingsPagerPageCount }
     )
 
     LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
-        if (!pagerState.isScrollInProgress && pagerState.currentPage != PagerCenterPage) {
-            val delta = pagerState.currentPage - PagerCenterPage
+        if (!pagerState.isScrollInProgress && pagerState.currentPage != TrainingsPagerCenterPage) {
+            val delta = pagerState.currentPage - TrainingsPagerCenterPage
             contract.onShiftDate(delta)
-            pagerState.scrollToPage(PagerCenterPage)
+            pagerState.scrollToPage(TrainingsPagerCenterPage)
         }
     }
+
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.trainings),
@@ -125,86 +131,100 @@ internal fun TrainingsScreen(
         overlay = AppTokens.colors.background.screen,
         content = { containerModifier, resolvedPadding ->
 
-            LazyColumn(
+            HorizontalPager(
                 modifier = containerModifier
                     .fillMaxWidth()
                     .weight(1f),
-                state = listState,
-                contentPadding = resolvedPadding
-            ) {
-                items(
-                    items = state.trainings,
-                    key = { it.key },
-                    contentType = { it::class }
-                ) { value ->
-                    if (value is TrainingListValue.DailyDigest) {
-                        DailyDigestCard(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = value.state,
-                            onViewStatsClick = contract::onDailyDigestViewStats
-                        )
-                        return@items
-                    }
+                state = pagerState
+            ) { page ->
+                val listState = rememberLazyListState()
+                val pageOffset = page - TrainingsPagerCenterPage
+                val pageRange = remember(state.date, pageOffset) {
+                    state.date.shiftForPager(pageOffset)
+                }
+                val pageTrainings = remember(state.trainings, pageRange) {
+                    state.trainings[pageRange] ?: persistentListOf()
+                }
 
-                    val style = remember(value) { value.timelineStyle() }
-                    val exercise = remember(value) { value.exercise() }
-
-                    TimelineIndicator(
-                        modifier = Modifier.animateItem(),
-                        style = style
-                    ) {
-                        if (value is TrainingListValue.DateTime) {
-                            val clickProvider = remember(value.trainingId) {
-                                { contract.onTrainingMenuClick(value.trainingId) }
-                            }
-
-                            Row(
-                                modifier = Modifier.padding(vertical = AppTokens.dp.contentPadding.subContent),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                val time = remember(value.createAt, value.duration) {
-                                    DateTimeUtils.minus(value.createAt, value.duration)
-                                }
-
-                                Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
-
-                                TimeLabel(
-                                    value = time
-                                )
-
-                                Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
-
-                                Text(
-                                    text = "(${value.duration})",
-                                    style = AppTokens.typography.h6(),
-                                    color = AppTokens.colors.text.tertiary
-                                )
-
-                                Spacer(Modifier.weight(1f))
-
-                                Button(
-                                    content = ButtonContent.Icon(
-                                        icon = AppTokens.icons.Menu,
-                                    ),
-                                    style = ButtonStyle.Transparent,
-                                    size = ButtonSize.Small,
-                                    onClick = clickProvider
-                                )
-                            }
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    state = listState,
+                    contentPadding = resolvedPadding
+                ) {
+                    items(
+                        items = pageTrainings,
+                        key = { it.key },
+                        contentType = { it::class }
+                    ) { value ->
+                        if (value is TrainingListValue.DailyDigest) {
+                            DailyDigestCard(
+                                modifier = Modifier.fillMaxWidth(),
+                                value = value.state,
+                                onViewStatsClick = contract::onDailyDigestViewStats
+                            )
+                            return@items
                         }
 
-                        if (exercise != null) {
-                            val clickProvider = remember(exercise.id) {
-                                { contract.onExerciseClick(exercise.id) }
+                        val style = remember(value) { value.timelineStyle() }
+                        val exercise = remember(value) { value.exercise() }
+
+                        TimelineIndicator(
+                            modifier = Modifier.fillMaxWidth(),
+                            style = style
+                        ) {
+                            if (value is TrainingListValue.DateTime) {
+                                val clickProvider = remember(value.trainingId) {
+                                    { contract.onTrainingMenuClick(value.trainingId) }
+                                }
+
+                                Row(
+                                    modifier = Modifier.padding(vertical = AppTokens.dp.contentPadding.subContent),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    val time = remember(value.createAt, value.duration) {
+                                        DateTimeUtils.minus(value.createAt, value.duration)
+                                    }
+
+                                    Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
+
+                                    TimeLabel(
+                                        value = time
+                                    )
+
+                                    Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
+
+                                    Text(
+                                        text = "(${value.duration})",
+                                        style = AppTokens.typography.h6(),
+                                        color = AppTokens.colors.text.tertiary
+                                    )
+
+                                    Spacer(Modifier.weight(1f))
+
+                                    Button(
+                                        content = ButtonContent.Icon(
+                                            icon = AppTokens.icons.Menu,
+                                        ),
+                                        style = ButtonStyle.Transparent,
+                                        size = ButtonSize.Small,
+                                        onClick = clickProvider
+                                    )
+                                }
                             }
 
-                            ExerciseCard(
-                                modifier = Modifier
-                                    .padding(vertical = AppTokens.dp.contentPadding.subContent)
-                                    .fillMaxWidth(),
-                                value = exercise,
-                                style = ExerciseCardStyle.Medium(clickProvider)
-                            )
+                            if (exercise != null) {
+                                val clickProvider = remember(exercise.id) {
+                                    { contract.onExerciseClick(exercise.id) }
+                                }
+
+                                ExerciseCard(
+                                    modifier = Modifier
+                                        .padding(vertical = AppTokens.dp.contentPadding.subContent)
+                                        .fillMaxWidth(),
+                                    value = exercise,
+                                    style = ExerciseCardStyle.Medium(clickProvider)
+                                )
+                            }
                         }
                     }
                 }
@@ -236,18 +256,18 @@ internal fun TrainingsScreen(
 @Composable
 private fun ScreenPreview() {
     PreviewContainer {
+        val today = DateTimeUtils.thisDay()
         TrainingsScreen(
             state = TrainingsState(
-                trainings = persistentListOf(
-                    stubTraining(),
-                    stubTraining()
-                ).transformToTrainingListValue(),
+                trainings = persistentMapOf(
+                    today to persistentListOf(
+                        stubTraining(),
+                        stubTraining()
+                    ).transformToTrainingListValue()
+                ),
             ),
             loaders = persistentSetOf(),
             contract = TrainingsContract.Empty
         )
     }
 }
-
-private const val PagerCenterPage = 1
-private const val PagerPageCount = 3

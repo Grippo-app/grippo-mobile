@@ -11,13 +11,14 @@ import com.grippo.design.resources.provider.selected
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.persistentMapOf
 
 @Immutable
 internal data class TrainingsState(
     val date: DateRange = DateTimeUtils.thisDay(),
     val limitations: DateRange = DateTimeUtils.trailingYear(),
-    val trainings: ImmutableList<TrainingListValue> = persistentListOf(),
+    val trainings: ImmutableMap<DateRange, ImmutableList<TrainingListValue>> = persistentMapOf(),
 )
 
 @Immutable
