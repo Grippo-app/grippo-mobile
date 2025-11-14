@@ -39,7 +39,8 @@ internal fun ExerciseCardSmall(
             ),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
     ) {
-        val formattedDate = DateCompose.rememberFormat(value.createdAt, DateFormat.DATE_MMM_DD_YYYY)
+        val formattedDate = DateCompose
+            .rememberFormat(value.createdAt.date, DateFormat.DATE_MMM_DD_YYYY)
 
         Text(
             text = formattedDate,

@@ -1,6 +1,5 @@
 package com.grippo.trainings.trainings
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -143,6 +142,7 @@ internal fun TrainingsScreen(
         contentPadding = basePadding,
         overlay = AppTokens.colors.background.screen,
         content = { containerModifier, resolvedPadding ->
+            val listState = rememberLazyListState()
 
             HorizontalPager(
                 modifier = containerModifier
@@ -150,7 +150,6 @@ internal fun TrainingsScreen(
                     .weight(1f),
                 state = pagerState
             ) { page ->
-                val listState = rememberLazyListState()
                 val pageOffset = allowedOffsets.getOrNull(page) ?: 0
                 val pageTrainings = remember(state.trainings, pageOffset) {
                     state.trainings[pageOffset] ?: persistentListOf()
@@ -179,7 +178,7 @@ internal fun TrainingsScreen(
                         val exercise = remember(value) { value.exercise() }
 
                         TimelineIndicator(
-                            modifier = Modifier.animateItem(),
+                            modifier = Modifier.fillMaxWidth(),
                             style = style
                         ) {
                             if (value is TrainingListValue.DateTime) {

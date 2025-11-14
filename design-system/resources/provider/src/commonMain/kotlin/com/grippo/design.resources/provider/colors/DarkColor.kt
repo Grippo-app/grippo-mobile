@@ -75,16 +75,20 @@ public object DarkColor : AppColor {
     }
 
     override val achievements: AppColor.Achievements = object : AppColor.Achievements {
-        override val bestTonnage1: Color = AppPalette.Unique.Green
-        override val bestTonnage2: Color = AppPalette.Unique.Teal
-        override val bestWeight1: Color = AppPalette.Unique.Sky
-        override val bestWeight2: Color = AppPalette.Unique.Cyan
-        override val lifetimeVolume1: Color = AppPalette.Unique.Purple
-        override val lifetimeVolume2: Color = AppPalette.Unique.Violet
-        override val maxRepetitions1: Color = AppPalette.Unique.Brown
-        override val maxRepetitions2: Color = AppPalette.Unique.Burgundy
-        override val peakIntensity1: Color = AppPalette.Unique.Cyan
-        override val peakIntensity2: Color = AppPalette.Unique.Indigo
+        override val bestTonnage1: Color = AppPalette.Unique.Red
+        override val bestTonnage2: Color = AppPalette.Unique.Coral
+
+        override val bestWeight1: Color = AppPalette.Unique.Green
+        override val bestWeight2: Color = AppPalette.Unique.Teal
+
+        override val lifetimeVolume1: Color = AppPalette.Unique.Indigo
+        override val lifetimeVolume2: Color = AppPalette.Unique.Sky
+
+        override val maxRepetitions1: Color = AppPalette.Unique.Purple
+        override val maxRepetitions2: Color = AppPalette.Unique.Violet
+
+        override val peakIntensity1: Color = AppPalette.Unique.Brown
+        override val peakIntensity2: Color = AppPalette.Unique.Copper
     }
 
     override val input: AppColor.InputColors = object : AppColor.InputColors {
@@ -230,7 +234,7 @@ public object DarkColor : AppColor {
     }
 
     override val muscle: AppColor.MuscleColors = object : AppColor.MuscleColors {
-        override val active = AppPalette.Unique.Orange
+        override val active = AppPalette.Unique.Amber
         override val inactive = AppPalette.NeutralDark.N300.copy(alpha = 0.90f)
         override val background = AppPalette.NeutralDark.N200
         override val outline = AppPalette.NeutralDark.N150

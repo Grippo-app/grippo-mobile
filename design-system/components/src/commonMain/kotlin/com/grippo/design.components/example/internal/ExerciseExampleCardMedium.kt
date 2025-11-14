@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.design.components.chip.Chip
@@ -111,7 +109,7 @@ internal fun ExerciseExampleCardMedium(
         ) {
 
             val lastUsedDate = value.value.lastUsed?.let { l ->
-                DateCompose.rememberFormat(l, DateFormat.DATE_DD_MMM)
+                DateCompose.rememberFormat(l.date, DateFormat.DATE_DD_MMM)
             }
 
             lastUsedDate?.let {
@@ -142,7 +140,7 @@ internal fun ExerciseExampleCardMedium(
 private fun ExerciseExampleCardMediumPreview() {
     PreviewContainer {
         ExerciseExampleCard(
-            modifier = Modifier.size(250.dp),
+            modifier = Modifier.fillMaxWidth(),
             value = stubExerciseExample(),
             style = ExerciseExampleCardStyle.Medium({}),
         )
