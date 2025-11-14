@@ -105,6 +105,14 @@ public object DateTimeUtils {
         return value.date.atTime(DayTime.EndOfDay.localTime)
     }
 
+    public fun startOfDay(value: LocalDate): LocalDateTime {
+        return value.atTime(DayTime.StartOfDay.localTime)
+    }
+
+    public fun endOfDay(value: LocalDate): LocalDateTime {
+        return value.atTime(DayTime.EndOfDay.localTime)
+    }
+
     /* * * * * * * * * * *
      * Parsing via TimeZone
      * * * * * * * * * * */

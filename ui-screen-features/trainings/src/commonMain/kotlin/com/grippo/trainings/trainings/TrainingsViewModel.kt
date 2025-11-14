@@ -14,19 +14,18 @@ import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
 import com.grippo.toolkit.date.utils.DateRange
-import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.toolkit.date.utils.contains
 import com.grippo.trainings.trainings.TrainingsDirection.Back
 import com.grippo.trainings.trainings.TrainingsDirection.EditTraining
 import com.grippo.trainings.trainings.utilities.pagerCombinedRange
 import com.grippo.trainings.trainings.utilities.pagerRanges
+import com.grippo.trainings.trainings.utilities.shiftForPager
 import kotlinx.collections.immutable.toPersistentMap
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.datetime.DatePeriod
 
 internal class TrainingsViewModel(
     private val trainingFeature: TrainingFeature,
@@ -150,9 +149,9 @@ internal class TrainingsViewModel(
                 limitations = state.value.limitations,
                 onResult = { value ->
                     val date = value.value ?: return@DatePicker
-                    val from = DateTimeUtils.startOfDay(date)
-                    val to = DateTimeUtils.endOfDay(date)
-                    update { it.copy(date = DateRange(from, to)) }
+                    val period = state.value.period
+                    val range = period.rangeFor(date).coerceWithin(state.value.limitations)
+                    update { it.copy(date = range) }
                 }
             )
 
@@ -164,13 +163,21 @@ internal class TrainingsViewModel(
         if (days == 0) return
 
         val currentState = state.value
-        val shifted = DateTimeUtils.shift(currentState.date, DatePeriod(days = days))
+        val shifted = currentState.date.shiftForPager(days)
 
         val limitations = currentState.limitations
         val exceedsLimitations = shifted.from < limitations.from || shifted.to > limitations.to
         if (exceedsLimitations) return
 
         update { it.copy(date = shifted) }
+    }
+
+    override fun onSelectPeriod(period: TrainingsTimelinePeriod) {
+        val current = state.value
+        if (current.period == period) return
+
+        val alignedRange = period.rangeFor(current.date.from).coerceWithin(current.limitations)
+        update { it.copy(period = period, date = alignedRange) }
     }
 
     private fun openTrainingEdit(id: String) {
@@ -195,4 +202,10 @@ internal class TrainingsViewModel(
     override fun onBack() {
         navigateTo(Back)
     }
+}
+
+private fun DateRange.coerceWithin(limitations: DateRange): DateRange {
+    val start = if (from < limitations.from) limitations.from else from
+    val end = if (to > limitations.to) limitations.to else to
+    return if (end < start) DateRange(start, start) else DateRange(start, end)
 }

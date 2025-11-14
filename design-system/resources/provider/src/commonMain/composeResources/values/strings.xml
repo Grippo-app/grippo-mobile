@@ -122,6 +122,9 @@
     <string name="profile_menu_missing_equipment">Missing equipment</string>
 
     <string name="trainings">Trainings</string>
+    <string name="trainings_period_daily">Daily</string>
+    <string name="trainings_period_weekly">Weekly</string>
+    <string name="trainings_period_monthly">Monthly</string>
     <string name="training">Training</string>
     <string name="profile">Profile</string>
     <string name="statistics">Statistics</string>

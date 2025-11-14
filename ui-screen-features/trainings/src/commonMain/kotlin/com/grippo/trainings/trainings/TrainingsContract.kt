@@ -11,6 +11,7 @@ internal interface TrainingsContract {
     fun onTrainingMenuClick(id: String)
     fun onSelectDate()
     fun onShiftDate(days: Int)
+    fun onSelectPeriod(period: TrainingsTimelinePeriod)
     fun onBack()
 
     @Immutable
@@ -22,6 +23,7 @@ internal interface TrainingsContract {
         override fun onTrainingMenuClick(id: String) {}
         override fun onSelectDate() {}
         override fun onShiftDate(days: Int) {}
+        override fun onSelectPeriod(period: TrainingsTimelinePeriod) {}
         override fun onBack() {}
     }
 }

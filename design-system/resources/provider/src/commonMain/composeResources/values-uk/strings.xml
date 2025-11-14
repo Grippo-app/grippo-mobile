@@ -113,6 +113,9 @@
     <string name="profile_menu_missing_equipment">Відсутнє обладнання</string>
 
     <string name="trainings">Тренування</string>
+    <string name="trainings_period_daily">День</string>
+    <string name="trainings_period_weekly">Тиждень</string>
+    <string name="trainings_period_monthly">Місяць</string>
     <string name="training">Тренування</string>
     <string name="profile">Профіль</string>
     <string name="statistics">Статистика</string>
