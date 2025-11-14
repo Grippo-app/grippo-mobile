@@ -18,6 +18,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,9 +53,7 @@ import com.grippo.domain.state.training.transformation.transformToTrainingListVa
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.trainings.factory.timelineStyle
-import com.grippo.trainings.trainings.utilities.TrainingsPagerCenterPage
-import com.grippo.trainings.trainings.utilities.TrainingsPagerPageCount
-import com.grippo.trainings.trainings.utilities.shiftForPager
+import com.grippo.trainings.trainings.utilities.allowedPagerOffsets
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
@@ -74,16 +73,31 @@ internal fun TrainingsScreen(
         )
     )
 ) {
-    val pagerState = rememberPagerState(
-        initialPage = TrainingsPagerCenterPage,
-        pageCount = { TrainingsPagerPageCount }
-    )
+    val allowedOffsets = remember(state.date, state.limitations) {
+        state.date.allowedPagerOffsets(state.limitations)
+    }
 
-    LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
-        if (!pagerState.isScrollInProgress && pagerState.currentPage != TrainingsPagerCenterPage) {
-            val delta = pagerState.currentPage - TrainingsPagerCenterPage
+    val centerPageIndex = remember(allowedOffsets) {
+        allowedOffsets.indexOf(0).coerceAtLeast(0)
+    }
+
+    val pagerState = key(allowedOffsets) {
+        rememberPagerState(
+            initialPage = centerPageIndex,
+            pageCount = { allowedOffsets.size }
+        )
+    }
+
+    LaunchedEffect(
+        pagerState.currentPage,
+        pagerState.isScrollInProgress,
+        centerPageIndex,
+        allowedOffsets
+    ) {
+        if (!pagerState.isScrollInProgress && pagerState.currentPage != centerPageIndex) {
+            val delta = allowedOffsets.getOrNull(pagerState.currentPage) ?: 0
             contract.onShiftDate(delta)
-            pagerState.scrollToPage(TrainingsPagerCenterPage)
+            pagerState.scrollToPage(centerPageIndex)
         }
     }
 
@@ -138,12 +152,9 @@ internal fun TrainingsScreen(
                 state = pagerState
             ) { page ->
                 val listState = rememberLazyListState()
-                val pageOffset = page - TrainingsPagerCenterPage
-                val pageRange = remember(state.date, pageOffset) {
-                    state.date.shiftForPager(pageOffset)
-                }
-                val pageTrainings = remember(state.trainings, pageRange) {
-                    state.trainings[pageRange] ?: persistentListOf()
+                val pageOffset = allowedOffsets.getOrNull(page) ?: 0
+                val pageTrainings = remember(state.trainings, pageOffset) {
+                    state.trainings[pageOffset] ?: persistentListOf()
                 }
 
                 LazyColumn(
@@ -169,7 +180,7 @@ internal fun TrainingsScreen(
                         val exercise = remember(value) { value.exercise() }
 
                         TimelineIndicator(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.animateItem(),
                             style = style
                         ) {
                             if (value is TrainingListValue.DateTime) {
@@ -256,11 +267,10 @@ internal fun TrainingsScreen(
 @Composable
 private fun ScreenPreview() {
     PreviewContainer {
-        val today = DateTimeUtils.thisDay()
         TrainingsScreen(
             state = TrainingsState(
                 trainings = persistentMapOf(
-                    today to persistentListOf(
+                    0 to persistentListOf(
                         stubTraining(),
                         stubTraining()
                     ).transformToTrainingListValue()

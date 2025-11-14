@@ -38,40 +38,40 @@ internal class TrainingsViewModel(
 
     init {
         state
-            .map { it.date }
+            .map { it.date to it.limitations }
             .distinctUntilChanged()
-            .map { it.pagerCombinedRange() }
-            .flatMapLatest { date ->
+            .flatMapLatest { (date, limitations) ->
+                val range = date.pagerCombinedRange(limitations)
                 trainingFeature
-                    .observeTrainings(start = date.from, end = date.to)
-                    .map { trainings -> date to trainings }
+                    .observeTrainings(start = range.from, end = range.to)
+                    .map { trainings -> Triple(date, limitations, trainings) }
             }
-            .onEach { (date, trainings) -> provideTrainings(date, trainings) }
+            .onEach { (date, limitations, trainings) ->
+                provideTrainings(date, limitations, trainings)
+            }
             .safeLaunch()
 
         state
-            .map { it.date }
+            .map { it.date to it.limitations }
             .distinctUntilChanged()
-            .map { it.pagerCombinedRange() }
-            .onEach { date ->
-                trainingFeature.getTrainings(start = date.from, end = date.to).getOrThrow()
+            .onEach { (date, limitations) ->
+                val range = date.pagerCombinedRange(limitations)
+                trainingFeature.getTrainings(start = range.from, end = range.to).getOrThrow()
             }
             .safeLaunch()
     }
 
-    private fun provideTrainings(date: DateRange, list: List<Training>) {
+    private fun provideTrainings(date: DateRange, limitations: DateRange, list: List<Training>) {
         val states = list.toState()
-        val pagerRanges = date.pagerRanges()
+        val pagerRanges = date.pagerRanges(limitations)
 
-        val trainingsByDate = pagerRanges.values
-            .associateWith { range ->
-                states
-                    .filter { training -> training.createdAt in range }
-                    .transformToTrainingListValue()
-            }
-            .toPersistentMap()
+        val trainingsByOffset = pagerRanges.mapValues { (_, range) ->
+            states
+                .filter { training -> training.createdAt in range }
+                .transformToTrainingListValue()
+        }.toPersistentMap()
 
-        update { it.copy(trainings = trainingsByDate) }
+        update { it.copy(trainings = trainingsByOffset) }
     }
 
     override fun onTrainingMenuClick(id: String) {

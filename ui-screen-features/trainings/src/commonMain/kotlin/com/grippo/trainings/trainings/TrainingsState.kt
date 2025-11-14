@@ -18,7 +18,7 @@ import kotlinx.collections.immutable.persistentMapOf
 internal data class TrainingsState(
     val date: DateRange = DateTimeUtils.thisDay(),
     val limitations: DateRange = DateTimeUtils.trailingYear(),
-    val trainings: ImmutableMap<DateRange, ImmutableList<TrainingListValue>> = persistentMapOf(),
+    val trainings: ImmutableMap<Int, ImmutableList<TrainingListValue>> = persistentMapOf(),
 )
 
 @Immutable

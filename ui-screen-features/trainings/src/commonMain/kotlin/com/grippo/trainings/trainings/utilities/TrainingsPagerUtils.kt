@@ -6,9 +6,6 @@ import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.daysUntil
 import kotlin.math.max
 
-internal const val TrainingsPagerCenterPage = 1
-internal const val TrainingsPagerPageCount = 3
-
 internal val TrainingsPagerOffsets = listOf(-1, 0, 1)
 
 internal fun DateRange.shiftForPager(offset: Int): DateRange {
@@ -17,15 +14,28 @@ internal fun DateRange.shiftForPager(offset: Int): DateRange {
     return DateTimeUtils.shift(this, DatePeriod(days = span))
 }
 
-internal fun DateRange.pagerRanges(): Map<Int, DateRange> {
-    return TrainingsPagerOffsets.associateWith { shiftForPager(it) }
+internal fun DateRange.allowedPagerOffsets(limitations: DateRange): List<Int> {
+    val offsets = TrainingsPagerOffsets.filter { offset ->
+        val range = shiftForPager(offset)
+        range.isWithin(limitations)
+    }
+
+    return offsets.ifEmpty { listOf(0) }
 }
 
-internal fun DateRange.pagerCombinedRange(): DateRange {
-    val ranges = pagerRanges()
-    val first = ranges.getValue(TrainingsPagerOffsets.first())
-    val last = ranges.getValue(TrainingsPagerOffsets.last())
+internal fun DateRange.pagerRanges(limitations: DateRange): Map<Int, DateRange> {
+    return allowedPagerOffsets(limitations).associateWith { shiftForPager(it) }
+}
+
+internal fun DateRange.pagerCombinedRange(limitations: DateRange): DateRange {
+    val ranges = pagerRanges(limitations).values
+    val first = ranges.firstOrNull() ?: this
+    val last = ranges.lastOrNull() ?: this
     return DateRange(from = first.from, to = last.to)
+}
+
+private fun DateRange.isWithin(limitations: DateRange): Boolean {
+    return from >= limitations.from && to <= limitations.to
 }
 
 private fun DateRange.pagerSpanDays(): Int {
