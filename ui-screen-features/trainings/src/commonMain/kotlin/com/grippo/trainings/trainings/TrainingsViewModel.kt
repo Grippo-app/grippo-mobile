@@ -86,29 +86,11 @@ internal class TrainingsViewModel(
             val dialog = DialogConfig.MenuPicker(
                 items = list,
                 onResult = {
-                    safeLaunch {
-                        when (TrainingMenu.of(it)) {
-                            TrainingMenu.Delete -> {
-                                trainingFeature.deleteTraining(id).getOrThrow()
-                            }
-
-                            TrainingMenu.Edit -> {
-                                navigateTo(EditTraining(id))
-                            }
-
-                            TrainingMenu.Overview -> {
-                                val training = trainingFeature.observeTraining(id).firstOrNull()
-                                    ?: return@safeLaunch
-
-                                val config = DialogConfig.Statistics.Exercises(
-                                    exercises = training.toState().exercises
-                                )
-
-                                dialogController.show(config)
-                            }
-
-                            null -> {}
-                        }
+                    when (TrainingMenu.of(it)) {
+                        TrainingMenu.Delete -> deleteTraining(id)
+                        TrainingMenu.Edit -> openTrainingEdit(id)
+                        TrainingMenu.Overview -> openTrainingOverview(id)
+                        null -> {}
                     }
                 }
             )
@@ -189,6 +171,25 @@ internal class TrainingsViewModel(
         if (exceedsLimitations) return
 
         update { it.copy(date = shifted) }
+    }
+
+    private fun openTrainingEdit(id: String) {
+        navigateTo(EditTraining(id))
+    }
+
+    private fun openTrainingOverview(id: String) = safeLaunch {
+        val training = trainingFeature.observeTraining(id).firstOrNull()
+            ?: return@safeLaunch
+
+        val config = DialogConfig.Statistics.Exercises(
+            exercises = training.toState().exercises
+        )
+
+        dialogController.show(config)
+    }
+
+    private fun deleteTraining(id: String) = safeLaunch {
+        trainingFeature.deleteTraining(id).getOrThrow()
     }
 
     override fun onBack() {
