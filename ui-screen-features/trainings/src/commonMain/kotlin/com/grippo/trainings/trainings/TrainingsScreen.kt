@@ -59,7 +59,6 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.persistentSetOf
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun TrainingsScreen(
     state: TrainingsState,
