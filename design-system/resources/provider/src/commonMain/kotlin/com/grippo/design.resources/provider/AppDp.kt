@@ -105,11 +105,11 @@ public data object AppDp {
         val monthly: Monthly = Monthly
 
         public data object Weekly {
-            val radius: Dp = AppDp.radius.large
+            val radius: Dp = AppDp.radius.medium
         }
 
         public data object Monthly {
-            val radius: Dp = AppDp.radius.large
+            val radius: Dp = AppDp.radius.medium
         }
     }
 
