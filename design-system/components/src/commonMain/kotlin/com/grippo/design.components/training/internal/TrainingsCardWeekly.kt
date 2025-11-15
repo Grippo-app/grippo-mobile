@@ -37,7 +37,10 @@ internal fun TrainingsCardWeekly(
         modifier = modifier
             .clip(RoundedCornerShape(AppTokens.dp.trainingCard.weekly.radius))
             .background(AppTokens.colors.background.card)
-            .padding(AppTokens.dp.contentPadding.block)
+            .padding(
+                vertical = AppTokens.dp.trainingCard.weekly.verticalPadding,
+                horizontal = AppTokens.dp.trainingCard.weekly.horizontalPadding
+            )
     ) {
         val grouped = trainings
             .groupBy {

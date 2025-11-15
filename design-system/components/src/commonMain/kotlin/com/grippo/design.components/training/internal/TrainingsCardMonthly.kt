@@ -72,7 +72,10 @@ internal fun TrainingsCardMonthly(
         modifier = modifier
             .clip(RoundedCornerShape(AppTokens.dp.trainingCard.monthly.radius))
             .background(AppTokens.colors.background.card)
-            .padding(AppTokens.dp.contentPadding.block),
+            .padding(
+                vertical = AppTokens.dp.trainingCard.monthly.verticalPadding,
+                horizontal = AppTokens.dp.trainingCard.monthly.horizontalPadding
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
@@ -172,8 +175,9 @@ private fun MonthlyStatCell(
 
         Text(
             text = stat.value,
-            style = AppTokens.typography.h4(),
+            style = AppTokens.typography.h5(),
             color = AppTokens.colors.text.primary,
+            maxLines = 1,
             textAlign = TextAlign.Center
         )
     }
