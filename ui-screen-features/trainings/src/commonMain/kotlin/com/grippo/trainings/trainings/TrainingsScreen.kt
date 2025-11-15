@@ -145,21 +145,23 @@ internal fun TrainingsScreen(
                     TrainingsTimelinePeriod.Daily -> DailyTrainingsPage(
                         trainings = pageTrainings,
                         contentPadding = resolvedPadding,
-                        contract = contract
+                        onViewStatsClick = contract::onDailyDigestViewStats,
+                        onTrainingMenuClick = contract::onTrainingMenuClick,
+                        onExerciseClick = contract::onExerciseClick,
                     )
 
                     TrainingsTimelinePeriod.Weekly -> WeeklyTrainingsPage(
                         trainings = pageTrainings,
                         contentPadding = resolvedPadding,
                         onViewStatsClick = contract::onDailyDigestViewStats,
-                        onOpenDaily = contract::onOpenDaily
+                        onOpenDaily = contract::onOpenDaily,
                     )
 
                     TrainingsTimelinePeriod.Monthly -> MonthlyTrainingsPage(
                         trainings = pageTrainings,
                         contentPadding = resolvedPadding,
                         onViewStatsClick = contract::onDailyDigestViewStats,
-                        onOpenDaily = contract::onOpenDaily
+                        onOpenDaily = contract::onOpenDaily,
                     )
                 }
             }
@@ -188,16 +190,67 @@ internal fun TrainingsScreen(
 
 @AppPreview
 @Composable
-private fun ScreenPreview() {
+private fun DailyScreenPreview() {
     PreviewContainer {
         TrainingsScreen(
             state = TrainingsState(
+                period = TrainingsTimelinePeriod.Daily,
+                date = TrainingsTimelinePeriod.Daily.defaultRange(),
+                limitations = DateTimeUtils.thisYear(),
                 trainings = persistentMapOf(
                     0 to persistentListOf(
                         stubTraining(),
-                        stubTraining()
+                        stubTraining(),
                     ).transformToTrainingListValue(
-                        range = DateTimeUtils.thisDay()
+                        range = TrainingsTimelinePeriod.Daily.defaultRange()
+                    ),
+                ),
+            ),
+            loaders = persistentSetOf(),
+            contract = TrainingsContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun WeeklyScreenPreview() {
+    PreviewContainer {
+        TrainingsScreen(
+            state = TrainingsState(
+                period = TrainingsTimelinePeriod.Weekly,
+                date = TrainingsTimelinePeriod.Weekly.defaultRange(),
+                limitations = DateTimeUtils.thisYear(),
+                trainings = persistentMapOf(
+                    0 to persistentListOf(
+                        stubTraining(),
+                        stubTraining(),
+                    ).transformToTrainingListValue(
+                        range = TrainingsTimelinePeriod.Weekly.defaultRange()
+                    ),
+                ),
+            ),
+            loaders = persistentSetOf(),
+            contract = TrainingsContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun MonthlyScreenPreview() {
+    PreviewContainer {
+        TrainingsScreen(
+            state = TrainingsState(
+                period = TrainingsTimelinePeriod.Monthly,
+                date = TrainingsTimelinePeriod.Monthly.defaultRange(),
+                limitations = DateTimeUtils.thisYear(),
+                trainings = persistentMapOf(
+                    0 to persistentListOf(
+                        stubTraining(),
+                        stubTraining(),
+                    ).transformToTrainingListValue(
+                        range = TrainingsTimelinePeriod.Monthly.defaultRange()
                     ),
                 ),
             ),

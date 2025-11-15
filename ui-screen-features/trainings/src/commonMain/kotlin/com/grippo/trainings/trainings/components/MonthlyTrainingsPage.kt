@@ -102,7 +102,7 @@ private fun MonthlyTrainingsPagePreview() {
             ),
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
             onViewStatsClick = {},
-            onOpenDaily = { _ -> }
+            onOpenDaily = { _ -> },
         )
     }
 }

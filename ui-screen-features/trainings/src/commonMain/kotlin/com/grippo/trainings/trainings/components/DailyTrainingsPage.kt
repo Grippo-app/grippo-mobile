@@ -34,7 +34,6 @@ import com.grippo.design.resources.provider.icons.Menu
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.trainings.factory.timelineStyle
-import com.grippo.trainings.trainings.TrainingsContract
 import kotlinx.collections.immutable.ImmutableList
 
 @Composable
@@ -42,7 +41,9 @@ internal fun DailyTrainingsPage(
     modifier: Modifier = Modifier,
     trainings: ImmutableList<TrainingListValue>,
     contentPadding: PaddingValues,
-    contract: TrainingsContract,
+    onViewStatsClick: () -> Unit,
+    onTrainingMenuClick: (String) -> Unit,
+    onExerciseClick: (String) -> Unit,
 ) {
     val listState = rememberLazyListState()
 
@@ -71,7 +72,7 @@ internal fun DailyTrainingsPage(
                             .fillMaxWidth()
                             .padding(vertical = AppTokens.dp.contentPadding.block),
                         value = value.state,
-                        onViewStatsClick = contract::onDailyDigestViewStats
+                        onViewStatsClick = onViewStatsClick
                     )
                     return@items
                 }
@@ -85,7 +86,7 @@ internal fun DailyTrainingsPage(
                 ) {
                     if (value is TrainingListValue.DateTime) {
                         val clickProvider = remember(value.trainingId) {
-                            { contract.onTrainingMenuClick(value.trainingId) }
+                            { onTrainingMenuClick(value.trainingId) }
                         }
 
                         Row(
@@ -123,7 +124,7 @@ internal fun DailyTrainingsPage(
 
                     if (exercise != null) {
                         val clickProvider = remember(exercise.id) {
-                            { contract.onExerciseClick(exercise.id) }
+                            { onExerciseClick(exercise.id) }
                         }
 
                         ExerciseCard(
@@ -152,7 +153,9 @@ private fun DailyTrainingsPagePreview() {
                 range = DateTimeUtils.thisDay()
             ),
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
-            contract = TrainingsContract.Empty
+            onViewStatsClick = {},
+            onTrainingMenuClick = {},
+            onExerciseClick = {},
         )
     }
 }
