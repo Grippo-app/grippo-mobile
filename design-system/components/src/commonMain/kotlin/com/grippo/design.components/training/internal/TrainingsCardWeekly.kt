@@ -13,9 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import com.grippo.core.state.trainings.TrainingState
 import com.grippo.core.state.trainings.stubTraining
-import com.grippo.design.components.chip.ChipSize
-import com.grippo.design.components.chip.VolumeChip
-import com.grippo.design.components.chip.VolumeChipStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -129,14 +126,6 @@ private fun WeeklyTrainingStats(
         style = AppTokens.typography.b12Med(),
         color = AppTokens.colors.text.tertiary
     )
-
-    Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.subContent))
-
-    VolumeChip(
-        value = volume,
-        style = VolumeChipStyle.LONG,
-        size = ChipSize.Small
-    )
 }
 
 @AppPreview
@@ -144,7 +133,11 @@ private fun WeeklyTrainingStats(
 private fun TrainingsCardWeeklyPreview() {
     PreviewContainer {
         TrainingsCardWeekly(
-            trainings = persistentListOf(stubTraining())
+            trainings = persistentListOf(stubTraining()),
+        )
+
+        TrainingsCardWeekly(
+            trainings = persistentListOf(stubTraining(), stubTraining(), stubTraining()),
         )
     }
 }

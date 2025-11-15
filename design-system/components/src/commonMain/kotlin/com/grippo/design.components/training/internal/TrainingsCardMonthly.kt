@@ -34,7 +34,7 @@ internal fun TrainingsCardMonthly(
     if (trainings.isEmpty()) return
 
     val dateLabel = remember(trainings) {
-        val date = trainings.minByOrNull { it.createdAt }!!.createdAt.date
+        val date = trainings.minBy { it.createdAt }.createdAt.date
         DateTimeUtils.format(date, DateFormat.DATE_DD_MMM)
     }
 
@@ -94,7 +94,7 @@ internal fun TrainingsCardMonthly(
 private fun TrainingsCardMonthlyPreview() {
     PreviewContainer {
         TrainingsCardMonthly(
-            trainings = persistentListOf(stubTraining(), stubTraining())
+            trainings = persistentListOf(stubTraining(), stubTraining(), stubTraining()),
         )
     }
 }

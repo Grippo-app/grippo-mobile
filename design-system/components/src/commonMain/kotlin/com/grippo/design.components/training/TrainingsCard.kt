@@ -47,12 +47,12 @@ public fun TrainingsCard(
 private fun TrainingsCardPreview() {
     PreviewContainer {
         TrainingsCard(
-            trainings = persistentListOf(stubTraining()),
+            trainings = persistentListOf(stubTraining(), stubTraining(), stubTraining()),
             style = TrainingsCardStyle.Monthly
         )
 
         TrainingsCard(
-            trainings = persistentListOf(stubTraining()),
+            trainings = persistentListOf(stubTraining(), stubTraining(), stubTraining()),
             style = TrainingsCardStyle.Weekly
         )
     }
