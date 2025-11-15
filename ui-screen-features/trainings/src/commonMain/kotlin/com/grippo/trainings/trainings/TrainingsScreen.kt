@@ -1,6 +1,5 @@
 package com.grippo.trainings.trainings
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,7 +20,6 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.datetime.DatePicker
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
@@ -37,7 +35,7 @@ import com.grippo.design.resources.provider.icons.User
 import com.grippo.design.resources.provider.start_workout
 import com.grippo.design.resources.provider.trainings
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
-import com.grippo.toolkit.date.utils.DateFormat
+import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.trainings.trainings.components.DailyTrainingsPage
 import com.grippo.trainings.trainings.components.MonthlyTrainingsPage
 import com.grippo.trainings.trainings.components.WeeklyTrainingsPage
@@ -77,7 +75,7 @@ internal fun TrainingsScreen(
     }
 
     val periodSegmentItems = remember {
-        TrainingsTimelinePeriod.entries.map { it to it.label() }.toPersistentList()
+        TrainingsTimelinePeriod.entries.map { it to it.text }.toPersistentList()
     }
 
     LaunchedEffect(
@@ -107,41 +105,22 @@ internal fun TrainingsScreen(
             )
         },
         content = {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Segment(
-                    modifier = Modifier
-                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                        .fillMaxWidth(),
-                    items = periodSegmentItems,
-                    selected = state.period,
-                    onSelect = contract::onSelectPeriod,
-                    segmentWidth = SegmentWidth.EqualFill,
-                    style = SegmentStyle.Outline
-                )
-
-                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
-                DatePicker(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            start = AppTokens.dp.screen.horizontalPadding,
-                            end = AppTokens.dp.screen.horizontalPadding,
-                            bottom = AppTokens.dp.contentPadding.content,
-                        ),
-                    value = state.date.from,
-                    limitations = state.limitations,
-                    format = DateFormat.DATE_MMM_DD_YYYY,
-                    onClick = contract::onSelectDate,
-                )
-            }
+            Segment(
+                modifier = Modifier
+                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                    .fillMaxWidth(),
+                items = periodSegmentItems,
+                selected = state.period,
+                onSelect = contract::onSelectPeriod,
+                segmentWidth = SegmentWidth.EqualFill,
+                style = SegmentStyle.Outline
+            )
         }
     )
 
     val basePadding = PaddingValues(
-        start = AppTokens.dp.screen.horizontalPadding,
-        end = AppTokens.dp.screen.horizontalPadding,
-        bottom = AppTokens.dp.contentPadding.content
+        horizontal = AppTokens.dp.screen.horizontalPadding,
+        vertical = AppTokens.dp.contentPadding.content
     )
 
     BottomOverlayContainer(
@@ -177,7 +156,8 @@ internal fun TrainingsScreen(
 
                     TrainingsTimelinePeriod.Monthly -> MonthlyTrainingsPage(
                         trainings = pageTrainings,
-                        contentPadding = resolvedPadding
+                        contentPadding = resolvedPadding,
+                        onViewStatsClick = contract::onDailyDigestViewStats
                     )
                 }
             }
@@ -214,7 +194,9 @@ private fun ScreenPreview() {
                     0 to persistentListOf(
                         stubTraining(),
                         stubTraining()
-                    ).transformToTrainingListValue()
+                    ).transformToTrainingListValue(
+                        range = DateTimeUtils.thisDay()
+                    ),
                 ),
             ),
             loaders = persistentSetOf(),

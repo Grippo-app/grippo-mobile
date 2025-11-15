@@ -7,8 +7,8 @@ import kotlinx.datetime.LocalDate
 import kotlin.time.Duration
 
 @Immutable
-public data class DailyDigestState(
-    val date: LocalDate,
+public data class MonthlyDigestState(
+    val month: LocalDate,
     val exercisesCount: Int,
     val trainingsCount: Int,
     val duration: Duration,
@@ -16,11 +16,11 @@ public data class DailyDigestState(
     val totalSets: Int,
 )
 
-public fun stubDailyDigest(): DailyDigestState = DailyDigestState(
-    date = DateTimeUtils.now().date,
-    exercisesCount = 5,
-    duration = Duration.parse("2h"),
-    total = VolumeFormatState.of(123F),
-    totalSets = 5,
-    trainingsCount = 3
+public fun stubMonthlyDigest(): MonthlyDigestState = MonthlyDigestState(
+    month = DateTimeUtils.now().date,
+    exercisesCount = 112,
+    duration = Duration.parse("28h"),
+    total = VolumeFormatState.of(2_450F),
+    totalSets = 140,
+    trainingsCount = 18,
 )

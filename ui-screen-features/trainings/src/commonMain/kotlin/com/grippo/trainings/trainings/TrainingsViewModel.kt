@@ -67,7 +67,7 @@ internal class TrainingsViewModel(
         val trainingsByOffset = pagerRanges.mapValues { (_, range) ->
             states
                 .filter { training -> training.createdAt in range }
-                .transformToTrainingListValue()
+                .transformToTrainingListValue(range = range)
         }.toPersistentMap()
 
         update { it.copy(trainings = trainingsByOffset) }
@@ -202,10 +202,10 @@ internal class TrainingsViewModel(
     override fun onBack() {
         navigateTo(Back)
     }
-}
 
-private fun DateRange.coerceWithin(limitations: DateRange): DateRange {
-    val start = if (from < limitations.from) limitations.from else from
-    val end = if (to > limitations.to) limitations.to else to
-    return if (end < start) DateRange(start, start) else DateRange(start, end)
+    private fun DateRange.coerceWithin(limitations: DateRange): DateRange {
+        val start = if (from < limitations.from) limitations.from else from
+        val end = if (to > limitations.to) limitations.to else to
+        return if (end < start) DateRange(start, start) else DateRange(start, end)
+    }
 }

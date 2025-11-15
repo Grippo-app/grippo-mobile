@@ -125,7 +125,6 @@ public interface AppColor {
         public val screen: Color
         public val dialog: Color
         public val card: Color
-        public val accent: Color
     }
 
     public interface DialogColors {

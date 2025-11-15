@@ -76,6 +76,7 @@ public data object AppDp {
     val radio: Radio = Radio
     val badge: Badge = Badge
     val aiSuggestionCard: AiSuggestionCard = AiSuggestionCard
+    val trainingCard: TrainingCard = TrainingCard
 
     public data object Screen {
         val toolbar: Toolbar = Toolbar
@@ -99,6 +100,19 @@ public data object AppDp {
         val radius: Dp = AppDp.radius.medium
     }
 
+    public data object TrainingCard {
+        val weekly: Weekly = Weekly
+        val monthly: Monthly = Monthly
+
+        public data object Weekly {
+            val radius: Dp = AppDp.radius.large
+        }
+
+        public data object Monthly {
+            val radius: Dp = AppDp.radius.large
+        }
+    }
+
     public data object ContentPadding {
         val block: Dp = padding.extraLarge
         val content: Dp = padding.medium
@@ -112,12 +126,38 @@ public data object AppDp {
 
     public data object Digest {
         val daily: Daily = Daily
+        val weekly: Weekly = Weekly
+        val monthly: Monthly = Monthly
 
         public data object Daily {
             val radius: Dp = AppDp.radius.large
             val icon: Dp = AppDp.icon.xxLarge
             val horizontalPadding: Dp = padding.large
             val verticalPadding: Dp = padding.large
+        }
+
+        public data object Weekly {
+            val radius: Dp = AppDp.radius.large
+            val icon: Dp = AppDp.icon.xxLarge
+            val horizontalPadding: Dp = padding.large
+            val verticalPadding: Dp = padding.large
+            val stat: Stat = Stat
+
+            public data object Stat {
+                val radius: Dp = AppDp.radius.small
+            }
+        }
+
+        public data object Monthly {
+            val radius: Dp = AppDp.radius.large
+            val icon: Dp = AppDp.icon.xxLarge
+            val horizontalPadding: Dp = padding.large
+            val verticalPadding: Dp = padding.large
+            val stat: Stat = Stat
+
+            public data object Stat {
+                val radius: Dp = AppDp.radius.medium
+            }
         }
     }
 

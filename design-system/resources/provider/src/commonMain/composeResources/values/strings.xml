@@ -25,6 +25,9 @@
     <string name="no_data_yet">No data yet</string>
     <string name="no_exercises_yet">No exercises yet</string>
     <string name="daily_digest">Daily digest</string>
+    <string name="weekly_digest">Weekly digest</string>
+    <string name="monthly_digest">Monthly digest</string>
+    <string name="monthly_digest_template">%1$s digest</string>
     <string name="view_stats_btn">View stats</string>
     <string name="cancel_btn">Cancel</string>
     <string name="logout_btn">Logout</string>
@@ -126,6 +129,8 @@
     <string name="trainings_period_weekly">Weekly</string>
     <string name="trainings_period_monthly">Monthly</string>
     <string name="training">Training</string>
+    <string name="duration">Duration</string>
+    <string name="sets">Sets</string>
     <string name="profile">Profile</string>
     <string name="statistics">Statistics</string>
     <string name="trends">Trends</string>

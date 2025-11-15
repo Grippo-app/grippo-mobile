@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.trainings.TrainingListValue
 import com.grippo.core.state.trainings.TrainingListValue.Companion.exercise
+import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonSize
@@ -27,7 +28,10 @@ import com.grippo.design.components.timeline.TimelineIndicator
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.icons.Menu
+import com.grippo.domain.state.training.transformation.transformToTrainingListValue
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.trainings.factory.timelineStyle
 import com.grippo.trainings.trainings.TrainingsContract
@@ -131,5 +135,22 @@ internal fun DailyTrainingsPage(
                 }
             }
         }
+    }
+}
+
+@AppPreview
+@Composable
+private fun DailyTrainingsPagePreview() {
+    PreviewContainer {
+        DailyTrainingsPage(
+            trainings = listOf(
+                stubTraining(),
+                stubTraining(),
+            ).transformToTrainingListValue(
+                range = DateTimeUtils.thisDay()
+            ),
+            contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
+            contract = TrainingsContract.Empty
+        )
     }
 }

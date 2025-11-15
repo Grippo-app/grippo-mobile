@@ -7,6 +7,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.no_data_yet
 
@@ -23,5 +25,13 @@ internal fun TrainingsEmptyState(modifier: Modifier = Modifier) {
             color = AppTokens.colors.text.tertiary,
             textAlign = TextAlign.Center
         )
+    }
+}
+
+@AppPreview
+@Composable
+private fun TrainingsEmptyStatePreview() {
+    PreviewContainer {
+        TrainingsEmptyState()
     }
 }

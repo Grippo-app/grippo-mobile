@@ -15,5 +15,6 @@ public enum class DateFormat(internal val value: String) {
     DATE_DD_MMM("dd MMM"),
     DATE_TIME_DD_MMM_HH_MM("MMM dd, HH:mm"),
     MONTH_SHORT("MMM"),
-    WEEKDAY_SHORT("EEE")
+    WEEKDAY_SHORT("EEE"),
+    WEEKDAY_LONG("EEEE")
 }

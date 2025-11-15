@@ -67,20 +67,28 @@ public object DateCompose {
     }
 
     @Composable
-    public fun rememberFormat(value: LocalDate, format: DateFormat): String {
+    public fun rememberFormat(
+        value: LocalDate,
+        format: DateFormat,
+        contextual: Boolean = true
+    ): String {
         val today: String = AppTokens.strings.res(Res.string.today)
         val tomorrow: String = AppTokens.strings.res(Res.string.tomorrow)
         val yesterday: String = AppTokens.strings.res(Res.string.yesterday)
 
-        return remember(value, format) {
-            val contextual = when {
+        return remember(value, format, contextual) {
+
+            if (contextual.not()) {
+                return@remember DateTimeUtils.format(value, format)
+            }
+
+            val contextualResult = when {
                 DateTimeUtils.isToday(value) -> today
                 DateTimeUtils.isYesterday(value) -> yesterday
                 DateTimeUtils.isTomorrow(value) -> tomorrow
                 else -> null
             }
-
-            contextual ?: DateTimeUtils.format(value, format)
+            contextualResult ?: DateTimeUtils.format(value, format)
         }
     }
 }

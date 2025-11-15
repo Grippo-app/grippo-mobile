@@ -31,7 +31,7 @@ public fun Badge(
         modifier = modifier
             .offset(x = offset, y = -offset)
             .defaultMinSize(minWidth = AppDp.badge.size, minHeight = AppDp.badge.size)
-            .background(AppTokens.colors.background.accent, shape)
+            .background(AppTokens.colors.brand.color2, shape)
             .padding(AppTokens.dp.contentPadding.text),
         contentAlignment = Alignment.Center
     ) {

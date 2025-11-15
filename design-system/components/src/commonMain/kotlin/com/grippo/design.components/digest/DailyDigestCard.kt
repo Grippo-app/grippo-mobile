@@ -106,7 +106,7 @@ public fun DailyDigestCard(
             Text(
                 text = string,
                 style = AppTokens.typography.b13Med(),
-                color = AppTokens.colors.text.primary,
+                color = AppTokens.colors.text.secondary,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )

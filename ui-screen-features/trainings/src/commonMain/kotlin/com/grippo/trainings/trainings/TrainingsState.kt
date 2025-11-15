@@ -23,7 +23,6 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
-import org.jetbrains.compose.resources.StringResource
 
 @Immutable
 internal data class TrainingsState(
@@ -61,13 +60,11 @@ internal enum class TrainingMenu(val id: String) {
 @Immutable
 internal enum class TrainingsTimelinePeriod(
     val id: String,
-    val titleRes: StringResource,
+    val text: UiText,
 ) {
-    Daily(id = "daily", titleRes = Res.string.trainings_period_daily),
-    Weekly(id = "weekly", titleRes = Res.string.trainings_period_weekly),
-    Monthly(id = "monthly", titleRes = Res.string.trainings_period_monthly);
-
-    fun label(): UiText = UiText.Res(titleRes)
+    Daily(id = "daily", text = UiText.Res(Res.string.trainings_period_daily)),
+    Weekly(id = "weekly", text = UiText.Res(Res.string.trainings_period_weekly)),
+    Monthly(id = "monthly", text = UiText.Res(Res.string.trainings_period_monthly));
 
     fun defaultRange(): DateRange = when (this) {
         Daily -> DateTimeUtils.thisDay()
