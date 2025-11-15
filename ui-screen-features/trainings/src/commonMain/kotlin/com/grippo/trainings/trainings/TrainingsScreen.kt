@@ -175,7 +175,7 @@ internal fun TrainingsScreen(
                     text = AppTokens.strings.res(Res.string.start_workout),
                     startIcon = AppTokens.icons.Gym
                 ),
-                style = ButtonStyle.Primary,
+                style = ButtonStyle.Magic,
                 onClick = contract::onAddTraining
             )
 

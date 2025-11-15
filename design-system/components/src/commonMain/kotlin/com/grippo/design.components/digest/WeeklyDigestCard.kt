@@ -8,7 +8,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -29,6 +32,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.duration
 import com.grippo.design.resources.provider.exercises
+import com.grippo.design.resources.provider.icons.Trophy
 import com.grippo.design.resources.provider.sets
 import com.grippo.design.resources.provider.trainings
 import com.grippo.design.resources.provider.view_stats_btn
@@ -42,24 +46,34 @@ public fun WeeklyDigestCard(
     value: WeeklyDigestState,
     onViewStatsClick: () -> Unit,
 ) {
-    Column(
-        modifier = modifier
-            .background(
-                color = AppTokens.colors.background.card,
-                shape = RoundedCornerShape(AppTokens.dp.digest.weekly.radius)
-            ).padding(
-                horizontal = AppTokens.dp.digest.weekly.horizontalPadding,
-                vertical = AppTokens.dp.digest.weekly.verticalPadding
-            ),
-    ) {
+    Column(modifier = modifier) {
         val start = DateCompose.rememberFormat(value.weekStart, DateFormat.DATE_DD_MMM)
         val end = DateCompose.rememberFormat(value.weekEnd, DateFormat.DATE_DD_MMM)
 
-        Text(
-            text = AppTokens.strings.res(Res.string.weekly_digest),
-            style = AppTokens.typography.h2(),
-            color = AppTokens.colors.text.primary
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+        ) {
+            Icon(
+                modifier = Modifier
+                    .size(AppTokens.dp.digest.weekly.icon)
+                    .background(
+                        color = AppTokens.colors.brand.color1,
+                        shape = CircleShape
+                    ),
+                imageVector = AppTokens.icons.Trophy,
+                contentDescription = null,
+                tint = AppTokens.colors.icon.primary.copy(alpha = 0.7f)
+            )
+
+            Text(
+                modifier = Modifier.weight(1f),
+                text = AppTokens.strings.res(Res.string.weekly_digest),
+                style = AppTokens.typography.h2(),
+                color = AppTokens.colors.text.primary
+            )
+        }
 
         Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
 
@@ -99,9 +113,10 @@ public fun WeeklyDigestCard(
             )
         )
 
-        Spacer(Modifier.height(AppTokens.dp.contentPadding.block))
+        Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
 
         Row(
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             VolumeChip(

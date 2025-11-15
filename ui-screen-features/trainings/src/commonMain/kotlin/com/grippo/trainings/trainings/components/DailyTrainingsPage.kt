@@ -67,7 +67,9 @@ internal fun DailyTrainingsPage(
             ) { value ->
                 if (value is TrainingListValue.DailyDigest) {
                     DailyDigestCard(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = AppTokens.dp.contentPadding.block),
                         value = value.state,
                         onViewStatsClick = contract::onDailyDigestViewStats
                     )

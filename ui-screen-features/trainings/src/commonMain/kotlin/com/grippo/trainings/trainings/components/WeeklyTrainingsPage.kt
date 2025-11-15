@@ -60,7 +60,9 @@ internal fun WeeklyTrainingsPage(
         } else {
             items(summaries, key = { it.key }) { summary ->
                 WeeklyDigestCard(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = AppTokens.dp.contentPadding.block),
                     value = summary.summary,
                     onViewStatsClick = onViewStatsClick
                 )

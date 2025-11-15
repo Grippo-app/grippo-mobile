@@ -1,16 +1,15 @@
 package com.grippo.design.components.digest
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.core.state.digest.MonthlyDigestState
@@ -37,7 +35,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.duration
 import com.grippo.design.resources.provider.exercises
-import com.grippo.design.resources.provider.icons.Calendar
+import com.grippo.design.resources.provider.icons.Trophy
 import com.grippo.design.resources.provider.monthly_digest_template
 import com.grippo.design.resources.provider.sets
 import com.grippo.design.resources.provider.trainings
@@ -51,55 +49,36 @@ public fun MonthlyDigestCard(
     value: MonthlyDigestState,
     onViewStatsClick: () -> Unit,
 ) {
-    Column(
-        modifier = modifier
-            .background(
-                color = AppTokens.colors.background.card,
-                shape = RoundedCornerShape(AppTokens.dp.digest.monthly.radius)
-            ).padding(
-                horizontal = AppTokens.dp.digest.monthly.horizontalPadding,
-                vertical = AppTokens.dp.digest.monthly.verticalPadding
-            ),
-    ) {
-        Row(
-            modifier = Modifier.height(intrinsicSize = IntrinsicSize.Min),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .clip(CircleShape)
-                    .aspectRatio(1f)
-                    .background(AppTokens.colors.brand.color2),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = AppTokens.icons.Calendar,
-                    contentDescription = null,
-                    tint = AppTokens.colors.icon.primary.copy(alpha = 0.7f)
-                )
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            VolumeChip(
-                value = value.total,
-                style = VolumeChipStyle.SHORT,
-                size = ChipSize.Medium
-            )
-        }
-
-        Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+    Column(modifier = modifier) {
 
         val monthName = DateCompose.rememberFormat(value.month, DateFormat.MONTH_FULL, false)
 
         val digestTitle = AppTokens.strings.res(Res.string.monthly_digest_template, monthName)
 
-        Text(
-            text = digestTitle,
-            style = AppTokens.typography.h2(),
-            color = AppTokens.colors.text.primary
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+        ) {
+            Icon(
+                modifier = Modifier
+                    .size(AppTokens.dp.digest.weekly.icon)
+                    .background(
+                        color = AppTokens.colors.brand.color1,
+                        shape = CircleShape
+                    ),
+                imageVector = AppTokens.icons.Trophy,
+                contentDescription = null,
+                tint = AppTokens.colors.icon.primary.copy(alpha = 0.7f)
+            )
+
+            Text(
+                modifier = Modifier.weight(1f),
+                text = digestTitle,
+                style = AppTokens.typography.h2(),
+                color = AppTokens.colors.text.primary
+            )
+        }
 
         Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
 
@@ -126,14 +105,26 @@ public fun MonthlyDigestCard(
             )
         )
 
-        Spacer(Modifier.height(AppTokens.dp.contentPadding.block))
+        Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
 
-        Button(
+        Row(
             modifier = Modifier.fillMaxWidth(),
-            content = ButtonContent.Text(AppTokens.strings.res(Res.string.view_stats_btn)),
-            size = ButtonSize.Medium,
-            onClick = onViewStatsClick
-        )
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            VolumeChip(
+                value = value.total,
+                style = VolumeChipStyle.SHORT,
+                size = ChipSize.Medium
+            )
+
+            Spacer(Modifier.weight(1f))
+
+            Button(
+                content = ButtonContent.Text(AppTokens.strings.res(Res.string.view_stats_btn)),
+                size = ButtonSize.Small,
+                onClick = onViewStatsClick
+            )
+        }
     }
 }
 

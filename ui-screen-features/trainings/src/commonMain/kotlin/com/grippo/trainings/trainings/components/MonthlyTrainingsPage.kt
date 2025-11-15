@@ -36,6 +36,7 @@ internal fun MonthlyTrainingsPage(
     onOpenDaily: (LocalDate) -> Unit,
 ) {
     val gridState = rememberLazyGridState()
+
     val digest = remember(trainings) {
         trainings.filterIsInstance<TrainingListValue.MonthlyDigest>().firstOrNull()
     }
@@ -63,7 +64,9 @@ internal fun MonthlyTrainingsPage(
             digest?.let { value ->
                 item(span = { GridItemSpan(2) }, key = value.key) {
                     MonthlyDigestCard(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = AppTokens.dp.contentPadding.block),
                         value = value.summary,
                         onViewStatsClick = onViewStatsClick
                     )

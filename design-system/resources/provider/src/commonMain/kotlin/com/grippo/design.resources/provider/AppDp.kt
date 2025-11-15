@@ -130,17 +130,11 @@ public data object AppDp {
         val monthly: Monthly = Monthly
 
         public data object Daily {
-            val radius: Dp = AppDp.radius.large
-            val icon: Dp = AppDp.icon.xxLarge
-            val horizontalPadding: Dp = padding.large
-            val verticalPadding: Dp = padding.large
+            val icon: Dp = AppDp.icon.large
         }
 
         public data object Weekly {
-            val radius: Dp = AppDp.radius.large
-            val icon: Dp = AppDp.icon.xxLarge
-            val horizontalPadding: Dp = padding.large
-            val verticalPadding: Dp = padding.large
+            val icon: Dp = AppDp.icon.large
             val stat: Stat = Stat
 
             public data object Stat {
@@ -149,10 +143,7 @@ public data object AppDp {
         }
 
         public data object Monthly {
-            val radius: Dp = AppDp.radius.large
-            val icon: Dp = AppDp.icon.xxLarge
-            val horizontalPadding: Dp = padding.large
-            val verticalPadding: Dp = padding.large
+            val icon: Dp = AppDp.icon.large
             val stat: Stat = Stat
 
             public data object Stat {
