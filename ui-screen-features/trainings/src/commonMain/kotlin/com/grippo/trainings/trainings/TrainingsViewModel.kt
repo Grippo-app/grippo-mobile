@@ -14,6 +14,7 @@ import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
 import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.toolkit.date.utils.contains
 import com.grippo.trainings.trainings.TrainingsDirection.Back
 import com.grippo.trainings.trainings.TrainingsDirection.EditTraining
@@ -26,6 +27,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.datetime.LocalDate
 
 internal class TrainingsViewModel(
     private val trainingFeature: TrainingFeature,
@@ -176,8 +178,14 @@ internal class TrainingsViewModel(
         val current = state.value
         if (current.period == period) return
 
-        val alignedRange = period.rangeFor(current.date.from).coerceWithin(current.limitations)
+        val alignedRange = period.defaultRange().coerceWithin(current.limitations)
         update { it.copy(period = period, date = alignedRange) }
+    }
+
+    override fun onOpenDaily(date: LocalDate) {
+        val range = TrainingsTimelinePeriod.Daily.rangeFor(DateTimeUtils.startOfDay(date))
+        val aligned = range.coerceWithin(state.value.limitations)
+        update { it.copy(period = TrainingsTimelinePeriod.Daily, date = aligned) }
     }
 
     private fun openTrainingEdit(id: String) {

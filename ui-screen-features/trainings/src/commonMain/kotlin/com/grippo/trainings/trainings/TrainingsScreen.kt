@@ -151,13 +151,15 @@ internal fun TrainingsScreen(
                     TrainingsTimelinePeriod.Weekly -> WeeklyTrainingsPage(
                         trainings = pageTrainings,
                         contentPadding = resolvedPadding,
-                        onViewStatsClick = contract::onDailyDigestViewStats
+                        onViewStatsClick = contract::onDailyDigestViewStats,
+                        onOpenDaily = contract::onOpenDaily
                     )
 
                     TrainingsTimelinePeriod.Monthly -> MonthlyTrainingsPage(
                         trainings = pageTrainings,
                         contentPadding = resolvedPadding,
-                        onViewStatsClick = contract::onDailyDigestViewStats
+                        onViewStatsClick = contract::onDailyDigestViewStats,
+                        onOpenDaily = contract::onOpenDaily
                     )
                 }
             }

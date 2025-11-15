@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import com.grippo.core.state.trainings.TrainingListValue
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.digest.WeeklyDigestCard
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.training.TrainingsCard
 import com.grippo.design.components.training.TrainingsCardStyle
 import com.grippo.design.core.AppTokens
@@ -22,6 +23,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun WeeklyTrainingsPage(
@@ -29,6 +31,7 @@ internal fun WeeklyTrainingsPage(
     trainings: ImmutableList<TrainingListValue>,
     contentPadding: PaddingValues,
     onViewStatsClick: () -> Unit,
+    onOpenDaily: (LocalDate) -> Unit,
 ) {
     val listState = rememberLazyListState()
 
@@ -64,8 +67,14 @@ internal fun WeeklyTrainingsPage(
             }
 
             items(weeklyTrainings, key = { it.key }) { item ->
+                val clickProvider = remember(item.date) {
+                    { onOpenDaily(item.date) }
+                }
+
                 TrainingsCard(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .scalableClick(onClick = clickProvider),
                     trainings = item.trainings,
                     style = TrainingsCardStyle.Weekly
                 )
@@ -86,7 +95,8 @@ private fun WeeklyTrainingsPagePreview() {
                 range = DateTimeUtils.thisWeek()
             ),
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
-            onViewStatsClick = {}
+            onViewStatsClick = {},
+            onOpenDaily = { _ -> }
         )
     }
 }

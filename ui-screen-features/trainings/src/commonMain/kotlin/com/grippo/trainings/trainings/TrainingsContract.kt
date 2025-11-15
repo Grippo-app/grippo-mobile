@@ -1,6 +1,7 @@
 package com.grippo.trainings.trainings
 
 import androidx.compose.runtime.Immutable
+import kotlinx.datetime.LocalDate
 
 @Immutable
 internal interface TrainingsContract {
@@ -12,6 +13,7 @@ internal interface TrainingsContract {
     fun onSelectDate()
     fun onShiftDate(days: Int)
     fun onSelectPeriod(period: TrainingsTimelinePeriod)
+    fun onOpenDaily(date: LocalDate)
     fun onBack()
 
     @Immutable
@@ -24,6 +26,7 @@ internal interface TrainingsContract {
         override fun onSelectDate() {}
         override fun onShiftDate(days: Int) {}
         override fun onSelectPeriod(period: TrainingsTimelinePeriod) {}
+        override fun onOpenDaily(date: LocalDate) {}
         override fun onBack() {}
     }
 }
