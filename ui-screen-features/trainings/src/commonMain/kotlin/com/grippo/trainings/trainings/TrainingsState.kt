@@ -28,7 +28,13 @@ import kotlinx.datetime.plus
 internal data class TrainingsState(
     val period: TrainingsTimelinePeriod = TrainingsTimelinePeriod.Daily,
     val date: DateRange = TrainingsTimelinePeriod.Daily.defaultRange(),
-    val limitations: DateRange = DateTimeUtils.trailingYear(),
+    val limitations: DateRange = run {
+        val currentYear = DateTimeUtils.thisYear()
+        val previousYear = DateTimeUtils.shift(currentYear, DatePeriod(years = -1))
+        val nextYear = DateTimeUtils.shift(currentYear, DatePeriod(years = 1))
+
+        DateRange(from = previousYear.from, to = nextYear.to)
+    },
     val trainings: ImmutableMap<Int, ImmutableList<TrainingListValue>> = persistentMapOf(),
 )
 

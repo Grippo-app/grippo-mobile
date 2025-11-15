@@ -35,7 +35,6 @@ import com.grippo.design.resources.provider.icons.User
 import com.grippo.design.resources.provider.start_workout
 import com.grippo.design.resources.provider.trainings
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
-import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.trainings.trainings.components.DailyTrainingsPage
 import com.grippo.trainings.trainings.components.MonthlyTrainingsPage
 import com.grippo.trainings.trainings.components.WeeklyTrainingsPage
@@ -196,7 +195,6 @@ private fun DailyScreenPreview() {
             state = TrainingsState(
                 period = TrainingsTimelinePeriod.Daily,
                 date = TrainingsTimelinePeriod.Daily.defaultRange(),
-                limitations = DateTimeUtils.thisYear(),
                 trainings = persistentMapOf(
                     0 to persistentListOf(
                         stubTraining(),
@@ -220,7 +218,6 @@ private fun WeeklyScreenPreview() {
             state = TrainingsState(
                 period = TrainingsTimelinePeriod.Weekly,
                 date = TrainingsTimelinePeriod.Weekly.defaultRange(),
-                limitations = DateTimeUtils.thisYear(),
                 trainings = persistentMapOf(
                     0 to persistentListOf(
                         stubTraining(),
@@ -244,7 +241,6 @@ private fun MonthlyScreenPreview() {
             state = TrainingsState(
                 period = TrainingsTimelinePeriod.Monthly,
                 date = TrainingsTimelinePeriod.Monthly.defaultRange(),
-                limitations = DateTimeUtils.thisYear(),
                 trainings = persistentMapOf(
                     0 to persistentListOf(
                         stubTraining(),
