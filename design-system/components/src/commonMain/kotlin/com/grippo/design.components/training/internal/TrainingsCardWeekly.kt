@@ -53,6 +53,8 @@ internal fun TrainingsCardWeekly(
                 color = AppTokens.colors.text.primary
             )
 
+            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.subContent))
+
             entry.value.forEachIndexed { index, training ->
                 WeeklyTrainingRow(
                     training = training,

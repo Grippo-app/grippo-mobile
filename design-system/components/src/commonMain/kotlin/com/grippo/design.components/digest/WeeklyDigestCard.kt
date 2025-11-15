@@ -59,7 +59,7 @@ public fun WeeklyDigestCard(
                 modifier = Modifier
                     .size(AppTokens.dp.digest.weekly.icon)
                     .background(
-                        color = AppTokens.colors.brand.color1,
+                        color = AppTokens.colors.brand.color2,
                         shape = CircleShape
                     ),
                 imageVector = AppTokens.icons.Trophy,

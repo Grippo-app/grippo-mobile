@@ -13,6 +13,7 @@ public enum class DateFormat(internal val value: String) {
     DATE_MMM_DD_COMMA("MMM, dd"),
     DATE_DD_DOT_MM("dd.MM"),
     DATE_DD_MMM("dd MMM"),
+    DATE_DD_MMMM("dd MMMM"),
     DATE_TIME_DD_MMM_HH_MM("MMM dd, HH:mm"),
     MONTH_SHORT("MMM"),
     WEEKDAY_SHORT("EEE"),
