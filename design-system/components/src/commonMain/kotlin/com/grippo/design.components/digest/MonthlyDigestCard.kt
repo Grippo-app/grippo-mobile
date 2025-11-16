@@ -23,25 +23,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.core.state.digest.MonthlyDigestState
 import com.grippo.core.state.digest.stubMonthlyDigest
-import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonContent
-import com.grippo.design.components.button.ButtonSize
-import com.grippo.design.components.chip.ChipSize
-import com.grippo.design.components.chip.VolumeChip
-import com.grippo.design.components.chip.VolumeChipStyle
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.duration
 import com.grippo.design.resources.provider.exercises
+import com.grippo.design.resources.provider.icons.NavArrowRight
 import com.grippo.design.resources.provider.icons.Trophy
 import com.grippo.design.resources.provider.monthly_digest_template
 import com.grippo.design.resources.provider.sets
 import com.grippo.design.resources.provider.trainings
-import com.grippo.design.resources.provider.view_stats_btn
 import com.grippo.toolkit.date.utils.DateCompose
 import com.grippo.toolkit.date.utils.DateFormat
+import com.grippo.toolkit.date.utils.DateTimeUtils
 
 @Composable
 public fun MonthlyDigestCard(
@@ -49,7 +45,7 @@ public fun MonthlyDigestCard(
     value: MonthlyDigestState,
     onViewStatsClick: () -> Unit,
 ) {
-    Column(modifier = modifier) {
+    Column(modifier = modifier.scalableClick(onClick = onViewStatsClick)) {
 
         val monthName = DateCompose.rememberFormat(value.month, DateFormat.MONTH_FULL, false)
 
@@ -69,7 +65,7 @@ public fun MonthlyDigestCard(
                     ),
                 imageVector = AppTokens.icons.Trophy,
                 contentDescription = null,
-                tint = AppTokens.colors.icon.primary.copy(alpha = 0.7f)
+                tint = AppTokens.colors.icon.primary
             )
 
             Text(
@@ -77,6 +73,13 @@ public fun MonthlyDigestCard(
                 text = digestTitle,
                 style = AppTokens.typography.h2(),
                 color = AppTokens.colors.text.primary
+            )
+
+            Icon(
+                modifier = Modifier.size(AppTokens.dp.digest.monthly.icon),
+                imageVector = AppTokens.icons.NavArrowRight,
+                tint = AppTokens.colors.icon.primary,
+                contentDescription = null
             )
         }
 
@@ -100,31 +103,10 @@ public fun MonthlyDigestCard(
                 ),
                 MonthlyDigestStatValue(
                     label = AppTokens.strings.res(Res.string.duration),
-                    value = value.duration.toString()
+                    value = DateTimeUtils.format(value.duration)
                 )
             )
         )
-
-        Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            VolumeChip(
-                value = value.total,
-                style = VolumeChipStyle.SHORT,
-                size = ChipSize.Medium
-            )
-
-            Spacer(Modifier.weight(1f))
-
-            Button(
-                content = ButtonContent.Text(AppTokens.strings.res(Res.string.view_stats_btn)),
-                size = ButtonSize.Small,
-                onClick = onViewStatsClick
-            )
-        }
     }
 }
 

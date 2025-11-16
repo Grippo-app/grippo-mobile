@@ -106,14 +106,10 @@ public data object AppDp {
 
         public data object Weekly {
             val radius: Dp = AppDp.radius.medium
-            val horizontalPadding: Dp = padding.medium
-            val verticalPadding: Dp = padding.medium
         }
 
         public data object Monthly {
             val radius: Dp = AppDp.radius.medium
-            val horizontalPadding: Dp = padding.medium
-            val verticalPadding: Dp = padding.medium
         }
     }
 

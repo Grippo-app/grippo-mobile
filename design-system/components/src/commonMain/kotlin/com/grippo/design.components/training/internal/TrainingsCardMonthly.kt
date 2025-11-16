@@ -15,7 +15,6 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.trainings.TrainingState
@@ -32,7 +31,6 @@ import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
 
 @Composable
@@ -68,54 +66,51 @@ internal fun TrainingsCardMonthly(
         trainings.fold(ZERO) { acc, training -> acc + training.duration }
     }
 
-    Column(
-        modifier = modifier
-            .clip(RoundedCornerShape(AppTokens.dp.trainingCard.monthly.radius))
-            .background(AppTokens.colors.background.card)
-            .padding(
-                vertical = AppTokens.dp.trainingCard.monthly.verticalPadding,
-                horizontal = AppTokens.dp.trainingCard.monthly.horizontalPadding
-            ),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = weekDayName,
-            style = AppTokens.typography.h5(),
-            color = AppTokens.colors.text.primary
-        )
+    Column(modifier = modifier) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = weekDayName,
+                style = AppTokens.typography.h3(),
+                color = AppTokens.colors.text.primary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
 
-        Text(
-            text = dateLabel,
-            style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.secondary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
+            Text(
+                text = dateLabel,
+                style = AppTokens.typography.b14Med(),
+                color = AppTokens.colors.text.secondary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
 
-        Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
+        Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.subContent))
 
-        MonthlyStatGrid(
-            topRow = listOf(
-                MonthlyStat(
-                    label = AppTokens.strings.res(Res.string.trainings),
-                    value = trainingsCount.toString()
+        Column(modifier = Modifier.fillMaxWidth()) {
+            MonthlyStatGrid(
+                topRow = listOf(
+                    MonthlyStat(
+                        label = AppTokens.strings.res(Res.string.exercises),
+                        value = exercisesCount.toString()
+                    ),
+                    MonthlyStat(
+                        label = AppTokens.strings.res(Res.string.sets),
+                        value = setsCount.toString()
+                    )
                 ),
-                MonthlyStat(
-                    label = AppTokens.strings.res(Res.string.exercises),
-                    value = exercisesCount.toString()
-                )
-            ),
-            bottomRow = listOf(
-                MonthlyStat(
-                    label = AppTokens.strings.res(Res.string.sets),
-                    value = setsCount.toString()
-                ),
-                MonthlyStat(
-                    label = AppTokens.strings.res(Res.string.duration),
-                    value = formatDuration(totalDuration)
+                bottomRow = listOf(
+                    MonthlyStat(
+                        label = AppTokens.strings.res(Res.string.duration),
+                        value = DateTimeUtils.format(totalDuration)
+                    ),
+                    MonthlyStat(
+                        label = AppTokens.strings.res(Res.string.trainings),
+                        value = trainingsCount.toString()
+                    )
                 )
             )
-        )
+        }
     }
 }
 
@@ -144,7 +139,7 @@ private fun MonthlyStatGrid(
 private fun MonthlyStatRow(values: List<MonthlyStat>) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
     ) {
         values.forEach { stat ->
             MonthlyStatCell(
@@ -161,7 +156,15 @@ private fun MonthlyStatCell(
     stat: MonthlyStat,
 ) {
     Column(
-        modifier = modifier,
+        modifier = modifier
+            .background(
+                color = AppTokens.colors.background.card,
+                shape = RoundedCornerShape(AppTokens.dp.digest.monthly.stat.radius)
+            )
+            .padding(
+                horizontal = AppTokens.dp.contentPadding.subContent,
+                vertical = AppTokens.dp.contentPadding.text
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
@@ -175,23 +178,11 @@ private fun MonthlyStatCell(
 
         Text(
             text = stat.value,
-            style = AppTokens.typography.h5(),
+            style = AppTokens.typography.b13Med(),
             color = AppTokens.colors.text.primary,
             maxLines = 1,
             textAlign = TextAlign.Center
         )
-    }
-}
-
-private fun formatDuration(duration: Duration): String {
-    val totalMinutes = duration.inWholeMinutes
-    val hours = totalMinutes / 60
-    val minutes = (totalMinutes % 60).toInt()
-
-    return when {
-        hours > 0 && minutes > 0 -> "${hours}h ${minutes}m"
-        hours > 0 -> "${hours}h"
-        else -> "${minutes}m"
     }
 }
 

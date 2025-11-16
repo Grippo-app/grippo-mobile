@@ -18,23 +18,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.digest.DailyDigestState
 import com.grippo.core.state.digest.stubDailyDigest
-import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonContent
-import com.grippo.design.components.button.ButtonSize
-import com.grippo.design.components.chip.ChipSize
-import com.grippo.design.components.chip.VolumeChip
-import com.grippo.design.components.chip.VolumeChipStyle
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.daily_digest
+import com.grippo.design.resources.provider.daily_digest_template
+import com.grippo.design.resources.provider.icons.NavArrowRight
 import com.grippo.design.resources.provider.icons.Trophy
 import com.grippo.design.resources.provider.one_set
 import com.grippo.design.resources.provider.value_sets
-import com.grippo.design.resources.provider.view_stats_btn
 import com.grippo.toolkit.date.utils.DateCompose
 import com.grippo.toolkit.date.utils.DateFormat
+import com.grippo.toolkit.date.utils.DateTimeUtils
 
 @Composable
 public fun DailyDigestCard(
@@ -42,7 +38,7 @@ public fun DailyDigestCard(
     value: DailyDigestState,
     onViewStatsClick: () -> Unit
 ) {
-    Column(modifier = modifier) {
+    Column(modifier = modifier.scalableClick(onClick = onViewStatsClick)) {
         val formattedDate = DateCompose.rememberFormat(value.date, DateFormat.DATE_DD_MMM)
 
         val sets = if (value.totalSets == 1) {
@@ -50,6 +46,10 @@ public fun DailyDigestCard(
         } else {
             AppTokens.strings.res(Res.string.value_sets, value.totalSets)
         }
+
+        val weekDayName = DateCompose.rememberFormat(value.date, DateFormat.WEEKDAY_LONG, false)
+
+        val digestTitle = AppTokens.strings.res(Res.string.daily_digest_template, weekDayName)
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -65,16 +65,23 @@ public fun DailyDigestCard(
                     ),
                 imageVector = AppTokens.icons.Trophy,
                 contentDescription = null,
-                tint = AppTokens.colors.icon.primary.copy(alpha = 0.7f)
+                tint = AppTokens.colors.icon.primary
             )
 
             Text(
                 modifier = Modifier.weight(1f),
-                text = AppTokens.strings.res(Res.string.daily_digest),
+                text = digestTitle,
                 style = AppTokens.typography.h2(),
                 color = AppTokens.colors.text.primary,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
+            )
+
+            Icon(
+                modifier = Modifier.size(AppTokens.dp.digest.daily.icon),
+                imageVector = AppTokens.icons.NavArrowRight,
+                tint = AppTokens.colors.icon.primary,
+                contentDescription = null
             )
         }
 
@@ -84,7 +91,7 @@ public fun DailyDigestCard(
             buildString {
                 append(formattedDate)
                 append(" · ")
-                append(value.duration)
+                append(DateTimeUtils.format(value.duration))
                 append(" · ")
                 append(sets)
             }
@@ -97,27 +104,6 @@ public fun DailyDigestCard(
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
-
-        Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
-
-        Row(modifier = Modifier.fillMaxWidth()) {
-            VolumeChip(
-                modifier = Modifier,
-                value = value.total,
-                style = VolumeChipStyle.SHORT,
-                size = ChipSize.Medium
-            )
-
-            Spacer(Modifier.weight(1f))
-
-            Button(
-                content = ButtonContent.Text(
-                    AppTokens.strings.res(Res.string.view_stats_btn)
-                ),
-                size = ButtonSize.Small,
-                onClick = onViewStatsClick
-            )
-        }
     }
 }
 

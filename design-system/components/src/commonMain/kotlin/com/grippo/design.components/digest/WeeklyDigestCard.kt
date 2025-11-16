@@ -20,25 +20,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.state.digest.WeeklyDigestState
 import com.grippo.core.state.digest.stubWeeklyDigest
-import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonContent
-import com.grippo.design.components.button.ButtonSize
-import com.grippo.design.components.chip.ChipSize
-import com.grippo.design.components.chip.VolumeChip
-import com.grippo.design.components.chip.VolumeChipStyle
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.duration
 import com.grippo.design.resources.provider.exercises
+import com.grippo.design.resources.provider.icons.NavArrowRight
 import com.grippo.design.resources.provider.icons.Trophy
 import com.grippo.design.resources.provider.sets
 import com.grippo.design.resources.provider.trainings
-import com.grippo.design.resources.provider.view_stats_btn
 import com.grippo.design.resources.provider.weekly_digest
 import com.grippo.toolkit.date.utils.DateCompose
 import com.grippo.toolkit.date.utils.DateFormat
+import com.grippo.toolkit.date.utils.DateTimeUtils
 
 @Composable
 public fun WeeklyDigestCard(
@@ -46,7 +42,7 @@ public fun WeeklyDigestCard(
     value: WeeklyDigestState,
     onViewStatsClick: () -> Unit,
 ) {
-    Column(modifier = modifier) {
+    Column(modifier = modifier.scalableClick(onClick = onViewStatsClick)) {
         val start = DateCompose.rememberFormat(value.weekStart, DateFormat.DATE_DD_MMM)
         val end = DateCompose.rememberFormat(value.weekEnd, DateFormat.DATE_DD_MMM)
 
@@ -59,12 +55,12 @@ public fun WeeklyDigestCard(
                 modifier = Modifier
                     .size(AppTokens.dp.digest.weekly.icon)
                     .background(
-                        color = AppTokens.colors.brand.color2,
+                        color = AppTokens.colors.brand.color5,
                         shape = CircleShape
                     ),
                 imageVector = AppTokens.icons.Trophy,
                 contentDescription = null,
-                tint = AppTokens.colors.icon.primary.copy(alpha = 0.7f)
+                tint = AppTokens.colors.icon.primary
             )
 
             Text(
@@ -72,6 +68,13 @@ public fun WeeklyDigestCard(
                 text = AppTokens.strings.res(Res.string.weekly_digest),
                 style = AppTokens.typography.h2(),
                 color = AppTokens.colors.text.primary
+            )
+
+            Icon(
+                modifier = Modifier.size(AppTokens.dp.digest.weekly.icon),
+                imageVector = AppTokens.icons.NavArrowRight,
+                tint = AppTokens.colors.icon.primary,
+                contentDescription = null
             )
         }
 
@@ -104,7 +107,7 @@ public fun WeeklyDigestCard(
             values = listOf(
                 WeeklyDigestStatValue(
                     label = AppTokens.strings.res(Res.string.duration),
-                    value = value.duration.toString()
+                    value = DateTimeUtils.format(value.duration)
                 ),
                 WeeklyDigestStatValue(
                     label = AppTokens.strings.res(Res.string.sets),
@@ -112,27 +115,6 @@ public fun WeeklyDigestCard(
                 )
             )
         )
-
-        Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            VolumeChip(
-                value = value.total,
-                style = VolumeChipStyle.SHORT,
-                size = ChipSize.Medium
-            )
-
-            Spacer(Modifier.weight(1f))
-
-            Button(
-                content = ButtonContent.Text(AppTokens.strings.res(Res.string.view_stats_btn)),
-                size = ButtonSize.Small,
-                onClick = onViewStatsClick
-            )
-        }
     }
 }
 

@@ -47,12 +47,20 @@ internal fun DailyTrainingsPage(
 ) {
     val listState = rememberLazyListState()
 
+    val digests = remember(trainings) {
+        trainings.filterIsInstance<TrainingListValue.DailyDigest>()
+    }
+
+    val timelineItems = remember(trainings) {
+        trainings.filterIsInstance<TrainingListValue.Daily.Item>()
+    }
+
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         state = listState,
         contentPadding = contentPadding
     ) {
-        if (trainings.isEmpty()) {
+        if (digests.isEmpty() && timelineItems.isEmpty()) {
             item {
                 TrainingsEmptyState(
                     modifier = Modifier
@@ -61,82 +69,94 @@ internal fun DailyTrainingsPage(
                 )
             }
         } else {
+            items(digests, key = { it.key }) { digest ->
+                DailyDigestCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = AppTokens.dp.contentPadding.block),
+                    value = digest.state,
+                    onViewStatsClick = onViewStatsClick
+                )
+            }
+
             items(
-                items = trainings,
+                items = timelineItems,
                 key = { it.key },
                 contentType = { it::class }
             ) { value ->
-                if (value is TrainingListValue.DailyDigest) {
-                    DailyDigestCard(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = AppTokens.dp.contentPadding.block),
-                        value = value.state,
-                        onViewStatsClick = onViewStatsClick
-                    )
-                    return@items
-                }
-
-                val style = remember(value) { value.timelineStyle() }
-                val exercise = remember(value) { value.exercise() }
-
-                TimelineIndicator(
-                    modifier = Modifier.fillMaxWidth(),
-                    style = style
-                ) {
-                    if (value is TrainingListValue.DateTime) {
-                        val clickProvider = remember(value.trainingId) {
-                            { onTrainingMenuClick(value.trainingId) }
-                        }
-
-                        Row(
-                            modifier = Modifier.padding(vertical = AppTokens.dp.contentPadding.subContent),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            val time = remember(value.createAt, value.duration) {
-                                DateTimeUtils.minus(value.createAt, value.duration)
-                            }
-
-                            Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
-
-                            TimeLabel(value = time)
-
-                            Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
-
-                            Text(
-                                text = "(${value.duration})",
-                                style = AppTokens.typography.h6(),
-                                color = AppTokens.colors.text.tertiary
-                            )
-
-                            Spacer(Modifier.weight(1f))
-
-                            Button(
-                                content = ButtonContent.Icon(
-                                    icon = AppTokens.icons.Menu,
-                                ),
-                                style = ButtonStyle.Transparent,
-                                size = ButtonSize.Small,
-                                onClick = clickProvider
-                            )
-                        }
-                    }
-
-                    if (exercise != null) {
-                        val clickProvider = remember(exercise.id) {
-                            { onExerciseClick(exercise.id) }
-                        }
-
-                        ExerciseCard(
-                            modifier = Modifier
-                                .padding(vertical = AppTokens.dp.contentPadding.subContent)
-                                .fillMaxWidth(),
-                            value = exercise,
-                            style = ExerciseCardStyle.Medium(clickProvider)
-                        )
-                    }
-                }
+                DailyTimelineItem(
+                    value = value,
+                    onTrainingMenuClick = onTrainingMenuClick,
+                    onExerciseClick = onExerciseClick
+                )
             }
+        }
+    }
+}
+
+@Composable
+private fun DailyTimelineItem(
+    value: TrainingListValue.Daily.Item,
+    onTrainingMenuClick: (String) -> Unit,
+    onExerciseClick: (String) -> Unit,
+) {
+    val style = remember(value) { value.timelineStyle() }
+    val exercise = remember(value) { value.exercise() }
+
+    TimelineIndicator(
+        modifier = Modifier.fillMaxWidth(),
+        style = style
+    ) {
+        if (value is TrainingListValue.DateTime) {
+            val clickProvider = remember(value.trainingId) {
+                { onTrainingMenuClick(value.trainingId) }
+            }
+
+            Row(
+                modifier = Modifier.padding(vertical = AppTokens.dp.contentPadding.subContent),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                val time = remember(value.createAt, value.duration) {
+                    DateTimeUtils.minus(value.createAt, value.duration)
+                }
+
+                Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
+
+                TimeLabel(value = time)
+
+                Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
+
+                Text(
+                    text = "(${value.duration})",
+                    style = AppTokens.typography.h6(),
+                    color = AppTokens.colors.text.tertiary
+                )
+
+                Spacer(Modifier.weight(1f))
+
+                Button(
+                    content = ButtonContent.Icon(
+                        icon = AppTokens.icons.Menu,
+                    ),
+                    style = ButtonStyle.Transparent,
+                    size = ButtonSize.Small,
+                    onClick = clickProvider
+                )
+            }
+        }
+
+        if (exercise != null) {
+            val clickProvider = remember(exercise.id) {
+                { onExerciseClick(exercise.id) }
+            }
+
+            ExerciseCard(
+                modifier = Modifier
+                    .padding(vertical = AppTokens.dp.contentPadding.subContent)
+                    .fillMaxWidth(),
+                value = exercise,
+                style = ExerciseCardStyle.Medium(clickProvider)
+            )
         }
     }
 }

@@ -28,6 +28,7 @@
     <string name="weekly_digest">Weekly digest</string>
     <string name="monthly_digest">Monthly digest</string>
     <string name="monthly_digest_template">%1$s digest</string>
+    <string name="daily_digest_template">%1$s digest</string>
     <string name="view_stats_btn">View stats</string>
     <string name="cancel_btn">Cancel</string>
     <string name="logout_btn">Logout</string>
