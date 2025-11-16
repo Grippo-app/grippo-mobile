@@ -42,12 +42,12 @@ internal fun TrainingsCardMonthly(
 
     val weekDayName = remember(trainings) {
         val date = trainings.minBy { it.createdAt }.createdAt.date
-        DateTimeUtils.format(date, DateFormat.WEEKDAY_LONG)
+        DateTimeUtils.format(date, DateFormat.DateOnly.WeekdayLong)
     }
 
     val dateLabel = remember(trainings) {
         val start = trainings.minBy { it.createdAt }.createdAt.date
-        DateTimeUtils.format(start, DateFormat.DATE_DD_MMMM)
+        DateTimeUtils.format(start, DateFormat.DateOnly.DateDdMmmm)
     }
 
     val trainingsCount = remember(trainings) { trainings.size }

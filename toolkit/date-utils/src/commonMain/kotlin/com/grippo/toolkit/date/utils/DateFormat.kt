@@ -4,15 +4,70 @@ import androidx.compose.runtime.Immutable
 
 // https://kotlinlang.org/api/kotlinx-datetime/kotlinx-datetime/kotlinx.datetime.format/by-unicode-pattern.html
 @Immutable
-public enum class DateFormat(internal val value: String) {
-    MONTH_FULL("MMMM"),
-    TIME_24H_HH_MM("HH:mm"),
-    TIME_24H_H_MM("H:mm"),
-    DATE_MMM_DD_YYYY("MMM dd, yyyy"),
-    DATE_MMM_DD_COMMA("MMM, dd"),
-    DATE_DD_MMM("dd MMM"),
-    DATE_DD_MMMM("dd MMMM"),
-    MONTH_SHORT("MMM"),
-    WEEKDAY_SHORT("EEE"),
-    WEEKDAY_LONG("EEEE")
+public sealed interface DateFormat {
+    public val pattern: String
+
+    public sealed interface DateOnly : DateFormat {
+        @Immutable
+        public data object MonthFull : DateOnly {
+            override val pattern: String = "MMMM"
+        }
+
+        @Immutable
+        public data object MonthFullStandalone : DateOnly {
+            override val pattern: String = "LLLL"
+        }
+
+        @Immutable
+        public data object MonthShort : DateOnly {
+            override val pattern: String = "MMM"
+        }
+
+        @Immutable
+        public data object MonthShortStandalone : DateOnly {
+            override val pattern: String = "LLL"
+        }
+
+        @Immutable
+        public data object DateMmmDdYyyy : DateOnly {
+            override val pattern: String = "MMM dd, yyyy"
+        }
+
+        @Immutable
+        public data object DateMmmDdComma : DateOnly {
+            override val pattern: String = "MMM, dd"
+        }
+
+        @Immutable
+        public data object DateDdMmm : DateOnly {
+            override val pattern: String = "dd MMM"
+        }
+
+        @Immutable
+        public data object DateDdMmmm : DateOnly {
+            override val pattern: String = "dd MMMM"
+        }
+
+        @Immutable
+        public data object WeekdayShort : DateOnly {
+            override val pattern: String = "EEE"
+        }
+
+        @Immutable
+        public data object WeekdayLong : DateOnly {
+            override val pattern: String = "EEEE"
+        }
+    }
+
+    public sealed interface TimeOnly : DateFormat {
+        @Immutable
+        public data object Time24hHhMm : TimeOnly {
+            override val pattern: String = "HH:mm"
+        }
+
+        @Immutable
+        public data object Time24hHm : TimeOnly {
+            override val pattern: String = "H:mm"
+        }
+    }
 }

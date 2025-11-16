@@ -41,7 +41,7 @@ internal fun ExerciseCardSmall(
     ) {
         val formattedDate = DateCompose.rememberFormat(
             value.createdAt.date,
-            DateFormat.DATE_MMM_DD_YYYY
+            DateFormat.DateOnly.DateMmmDdYyyy
         )
 
         Text(

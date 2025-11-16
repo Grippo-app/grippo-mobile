@@ -337,4 +337,34 @@
     <string name="chart_title_muscle_load">Навантаження м'язів (%)</string>
     <string name="chart_title_muscle_heap">Теплова мапа навантаження</string>
 
+    <string name="no_data_yet">Поки що немає даних</string>
+    <string name="no_exercises_yet">Поки що немає вправ</string>
+
+    <string name="daily_digest">Щоденний дайджест</string>
+    <string name="weekly_digest">Щотижневий дайджест</string>
+    <string name="monthly_digest">Щомісячний дайджест</string>
+
+    <string name="monthly_digest_template">%1$s дайджест</string>
+    <string name="daily_digest_template">%1$s дайджест</string>
+
+    <string name="view_stats_btn">Переглянути статистику</string>
+
+    <string name="value_sets">%1$s підходів</string>
+    <string name="one_set">1 підхід</string>
+
+    <string name="history">Історія</string>
+    <string name="achievements">Досягнення</string>
+
+    <string name="duration">Тривалість</string>
+    <string name="sets">Підходи</string>
+
+    <string name="clear_logs">Очистити логи</string>
+
+    <string name="best_tonnage">Найкращий тоннаж</string>
+    <string name="best_weight">Найбільша вага</string>
+    <string name="lifetime_volume">Загальний обсяг</string>
+    <string name="max_repetitions">Максимальна кількість повторень</string>
+    <string name="peak_intensity">Пікова інтенсивність</string>
+
+    <string name="text_picker_title">Оберіть варіант</string>
 </resources>

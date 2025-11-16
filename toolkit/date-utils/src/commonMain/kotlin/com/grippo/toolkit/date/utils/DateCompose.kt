@@ -24,7 +24,7 @@ public object DateCompose {
     @Composable
     public fun rememberFormat(
         value: LocalDate,
-        format: DateFormat,
+        format: DateFormat.DateOnly,
         contextual: Boolean = true
     ): String {
         val today: String = AppTokens.strings.res(Res.string.today)

@@ -39,7 +39,7 @@ internal fun TrainingsCardWeekly(
 
     Column(modifier = modifier) {
         val grouped = trainings
-            .groupBy { DateTimeUtils.format(it.createdAt, DateFormat.WEEKDAY_LONG) }
+            .groupBy { DateTimeUtils.format(it.createdAt, DateFormat.DateOnly.WeekdayLong) }
             .entries
             .sortedByDescending { it.value.first().createdAt }
 
@@ -94,11 +94,11 @@ private fun WeeklyTrainingRow(
 ) {
     val startLabel = remember(training.createdAt, training.duration) {
         val minus = DateTimeUtils.minus(training.createdAt, training.duration)
-        DateTimeUtils.format(minus, DateFormat.TIME_24H_H_MM)
+        DateTimeUtils.format(minus, DateFormat.TimeOnly.Time24hHm)
     }
 
     val endLabel = remember(training.createdAt) {
-        DateTimeUtils.format(training.createdAt, DateFormat.TIME_24H_H_MM)
+        DateTimeUtils.format(training.createdAt, DateFormat.TimeOnly.Time24hHm)
     }
     val exercisesCount = remember(training.exercises) {
         training.exercises.size

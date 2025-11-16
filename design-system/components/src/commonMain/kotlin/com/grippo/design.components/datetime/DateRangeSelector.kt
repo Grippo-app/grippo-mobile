@@ -26,7 +26,7 @@ public fun DateRangeSelector(
         DatePicker(
             modifier = Modifier.weight(1f),
             value = value.from,
-            format = DateFormat.DATE_MMM_DD_YYYY,
+            format = DateFormat.DateOnly.DateMmmDdYyyy,
             enabled = enabled,
             onClick = onFromClick,
             limitations = DateTimeUtils.thisWeek() // TODO FIX
@@ -35,7 +35,7 @@ public fun DateRangeSelector(
         DatePicker(
             modifier = Modifier.weight(1f),
             value = value.to,
-            format = DateFormat.DATE_MMM_DD_YYYY,
+            format = DateFormat.DateOnly.DateMmmDdYyyy,
             enabled = enabled,
             onClick = onToClick,
             limitations = DateTimeUtils.thisWeek() // TODO FIX

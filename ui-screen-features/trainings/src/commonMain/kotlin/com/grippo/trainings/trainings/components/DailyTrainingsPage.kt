@@ -118,12 +118,12 @@ private fun DailyTimelineItem(
             ) {
                 val startLabel = remember(value.createAt, value.duration) {
                     val v = DateTimeUtils.minus(value.createAt, value.duration)
-                    DateTimeUtils.format(v, DateFormat.TIME_24H_H_MM)
+                    DateTimeUtils.format(v, DateFormat.TimeOnly.Time24hHm)
                 }
 
                 val endLabel = remember(value.createAt) {
                     val v = value.createAt
-                    DateTimeUtils.format(v, DateFormat.TIME_24H_H_MM)
+                    DateTimeUtils.format(v, DateFormat.TimeOnly.Time24hHm)
                 }
 
                 Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))

@@ -145,7 +145,7 @@ internal fun DateWheelPicker(
             val template = remember(m) {
                 LocalDateTime(selectedYear, m.ordinal + 1, 1, 0, 0)
             }
-            val monthName = rememberFormat(value = template, format = DateFormat.MONTH_FULL)
+            val monthName = rememberFormat(value = template, format = DateFormat.DateOnly.MonthFull)
             WheelItem(text = monthName, isValid = valid)
         },
         listState = monthState

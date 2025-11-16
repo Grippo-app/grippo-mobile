@@ -63,11 +63,11 @@ public sealed interface PeriodState {
         is Custom -> {
             val sameDay = remember(range.from, range.to) { range.from.date == range.to.date }
 
-            val from = DateCompose.rememberFormat(range.from, DateFormat.DATE_DD_MMM)
+            val from = DateCompose.rememberFormat(range.from, DateFormat.DateOnly.DateDdMmm)
             if (sameDay) {
                 from
             } else {
-                val to = DateCompose.rememberFormat(range.to, DateFormat.DATE_DD_MMM)
+                val to = DateCompose.rememberFormat(range.to, DateFormat.DateOnly.DateDdMmm)
                 "$from - $to"
             }
         }

@@ -26,7 +26,7 @@ import kotlinx.datetime.LocalDateTime
 public fun DatePicker(
     modifier: Modifier = Modifier,
     value: LocalDateTime,
-    format: DateFormat,
+    format: DateFormat.DateOnly,
     limitations: DateRange,
     enabled: Boolean = true,
     onClick: () -> Unit,
@@ -83,7 +83,7 @@ private fun DatePickerPreview() {
     PreviewContainer {
         DatePicker(
             value = DateTimeUtils.now(),
-            format = DateFormat.DATE_MMM_DD_YYYY,
+            format = DateFormat.DateOnly.DateMmmDdYyyy,
             enabled = true,
             onClick = {},
             limitations = DateTimeUtils.thisWeek()
@@ -91,7 +91,7 @@ private fun DatePickerPreview() {
 
         DatePicker(
             value = DateTimeUtils.now(),
-            format = DateFormat.DATE_MMM_DD_YYYY,
+            format = DateFormat.DateOnly.DateMmmDdYyyy,
             enabled = false,
             onClick = {},
             limitations = DateTimeUtils.thisWeek()

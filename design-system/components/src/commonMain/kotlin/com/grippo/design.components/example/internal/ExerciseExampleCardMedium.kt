@@ -109,7 +109,7 @@ internal fun ExerciseExampleCardMedium(
         ) {
 
             val lastUsedDate = value.value.lastUsed?.let { l ->
-                DateCompose.rememberFormat(l.date, DateFormat.DATE_DD_MMM)
+                DateCompose.rememberFormat(l.date, DateFormat.DateOnly.DateDdMmm)
             }
 
             lastUsedDate?.let {

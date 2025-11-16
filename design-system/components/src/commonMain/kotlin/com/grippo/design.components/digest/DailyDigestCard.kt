@@ -39,7 +39,7 @@ public fun DailyDigestCard(
     onViewStatsClick: () -> Unit
 ) {
     Column(modifier = modifier.scalableClick(onClick = onViewStatsClick)) {
-        val formattedDate = DateCompose.rememberFormat(value.date, DateFormat.DATE_DD_MMM)
+        val formattedDate = DateCompose.rememberFormat(value.date, DateFormat.DateOnly.DateDdMmm)
 
         val sets = if (value.totalSets == 1) {
             AppTokens.strings.res(Res.string.one_set)
@@ -47,7 +47,11 @@ public fun DailyDigestCard(
             AppTokens.strings.res(Res.string.value_sets, value.totalSets)
         }
 
-        val weekDayName = DateCompose.rememberFormat(value.date, DateFormat.WEEKDAY_LONG, false)
+        val weekDayName = DateCompose.rememberFormat(
+            value.date,
+            DateFormat.DateOnly.WeekdayLong,
+            false
+        )
 
         val digestTitle = AppTokens.strings.res(Res.string.daily_digest_template, weekDayName)
 

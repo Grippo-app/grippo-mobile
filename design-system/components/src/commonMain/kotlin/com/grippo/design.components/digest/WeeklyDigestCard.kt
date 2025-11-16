@@ -43,8 +43,8 @@ public fun WeeklyDigestCard(
     onViewStatsClick: () -> Unit,
 ) {
     Column(modifier = modifier.scalableClick(onClick = onViewStatsClick)) {
-        val start = DateCompose.rememberFormat(value.weekStart, DateFormat.DATE_DD_MMM)
-        val end = DateCompose.rememberFormat(value.weekEnd, DateFormat.DATE_DD_MMM)
+        val start = DateCompose.rememberFormat(value.weekStart, DateFormat.DateOnly.DateDdMmm)
+        val end = DateCompose.rememberFormat(value.weekEnd, DateFormat.DateOnly.DateDdMmm)
 
         Row(
             modifier = Modifier.fillMaxWidth(),

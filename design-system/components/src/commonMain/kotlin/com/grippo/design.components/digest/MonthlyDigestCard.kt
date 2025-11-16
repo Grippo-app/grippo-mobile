@@ -47,7 +47,8 @@ public fun MonthlyDigestCard(
 ) {
     Column(modifier = modifier.scalableClick(onClick = onViewStatsClick)) {
 
-        val monthName = DateCompose.rememberFormat(value.month, DateFormat.MONTH_FULL, false)
+        val monthName =
+            DateCompose.rememberFormat(value.month, DateFormat.DateOnly.MonthFullStandalone, false)
 
         val digestTitle = AppTokens.strings.res(Res.string.monthly_digest_template, monthName)
 

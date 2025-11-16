@@ -133,17 +133,17 @@ public object DateTimeUtils {
 
     @OptIn(FormatStringsInDatetimeFormats::class)
     public fun format(value: LocalDateTime, format: DateFormat): String {
-        return DateFormatting.current.format(value, format.value, null) ?: "-"
+        return DateFormatting.current.format(value, format.pattern, null) ?: "-"
     }
 
     @OptIn(FormatStringsInDatetimeFormats::class)
-    public fun format(value: LocalTime, format: DateFormat): String {
-        return DateFormatting.current.format(value, format.value, null) ?: "-"
+    public fun format(value: LocalTime, format: DateFormat.TimeOnly): String {
+        return DateFormatting.current.format(value, format.pattern, null) ?: "-"
     }
 
     @OptIn(FormatStringsInDatetimeFormats::class)
-    public fun format(value: LocalDate, format: DateFormat): String {
-        return DateFormatting.current.format(value, format.value, null) ?: "-"
+    public fun format(value: LocalDate, format: DateFormat.DateOnly): String {
+        return DateFormatting.current.format(value, format.pattern, null) ?: "-"
     }
 
     public fun format(duration: Duration): String {
