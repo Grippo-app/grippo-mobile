@@ -3,6 +3,7 @@ package com.grippo.toolkit.date.utils.internal
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
+import kotlin.time.Duration
 
 internal class FixedLocaleDateFormatter(
     private val base: DateFormatter,
@@ -18,5 +19,9 @@ internal class FixedLocaleDateFormatter(
 
     override fun format(value: LocalTime, pattern: String, localeTag: String?): String? {
         return base.format(value, pattern, fixedTag ?: localeTag)
+    }
+
+    override fun format(duration: Duration, localeTag: String?): String? {
+        return base.format(duration, fixedTag ?: localeTag)
     }
 }

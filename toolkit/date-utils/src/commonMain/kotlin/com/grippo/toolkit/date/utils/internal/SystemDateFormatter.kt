@@ -3,6 +3,7 @@ package com.grippo.toolkit.date.utils.internal
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
+import kotlin.time.Duration
 
 internal expect class SystemDateFormatter() : DateFormatter {
     override fun format(
@@ -20,6 +21,11 @@ internal expect class SystemDateFormatter() : DateFormatter {
     override fun format(
         value: LocalTime,
         pattern: String,
+        localeTag: String?
+    ): String?
+
+    override fun format(
+        duration: Duration,
         localeTag: String?
     ): String?
 }

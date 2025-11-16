@@ -146,6 +146,9 @@ public object DateTimeUtils {
         return DateFormatting.current.format(value, format.value, null) ?: "-"
     }
 
+    public fun format(duration: Duration): String {
+        return DateFormatting.current.format(duration) ?: "-"
+    }
     /* * * * * * * * * * *
      * Calculation
      * * * * * * * * * * */

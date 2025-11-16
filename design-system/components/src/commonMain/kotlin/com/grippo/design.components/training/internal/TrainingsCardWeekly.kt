@@ -118,15 +118,13 @@ private fun WeeklyTrainingRow(
             Row(
                 modifier = Modifier.weight(1f),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
             ) {
                 Text(
                     text = "$startLabel - $endLabel",
                     style = AppTokens.typography.h6(),
                     color = AppTokens.colors.text.primary
                 )
-
-                Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.text))
 
                 val durationText = remember(training.duration) {
                     DateTimeUtils.format(training.duration)

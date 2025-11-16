@@ -23,7 +23,6 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.digest.DailyDigestCard
-import com.grippo.design.components.timeline.TimeLabel
 import com.grippo.design.components.timeline.TimelineIndicator
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
@@ -32,6 +31,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.icons.Menu
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
+import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.trainings.factory.timelineStyle
 import kotlinx.collections.immutable.ImmutableList
@@ -116,19 +116,29 @@ private fun DailyTimelineItem(
                 modifier = Modifier.padding(vertical = AppTokens.dp.contentPadding.subContent),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                val time = remember(value.createAt, value.duration) {
-                    DateTimeUtils.minus(value.createAt, value.duration)
+                val startLabel = remember(value.createAt, value.duration) {
+                    val v = DateTimeUtils.minus(value.createAt, value.duration)
+                    DateTimeUtils.format(v, DateFormat.TIME_24H_H_MM)
+                }
+
+                val endLabel = remember(value.createAt) {
+                    val v = value.createAt
+                    DateTimeUtils.format(v, DateFormat.TIME_24H_H_MM)
                 }
 
                 Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
 
-                TimeLabel(value = time)
+                Text(
+                    text = "$startLabel - $endLabel",
+                    style = AppTokens.typography.h6(),
+                    color = AppTokens.colors.text.primary
+                )
 
-                Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
+                Spacer(Modifier.width(AppTokens.dp.contentPadding.content))
 
                 Text(
-                    text = "(${value.duration})",
-                    style = AppTokens.typography.h6(),
+                    text = DateTimeUtils.format(value.duration),
+                    style = AppTokens.typography.b14Med(),
                     color = AppTokens.colors.text.tertiary
                 )
 

@@ -6,13 +6,19 @@ import kotlinx.datetime.LocalTime
 import kotlinx.datetime.number
 import platform.Foundation.NSCalendar
 import platform.Foundation.NSCalendarIdentifierGregorian
+import platform.Foundation.NSCalendarUnitHour
+import platform.Foundation.NSCalendarUnitMinute
 import platform.Foundation.NSDate
 import platform.Foundation.NSDateComponents
+import platform.Foundation.NSDateComponentsFormatter
+import platform.Foundation.NSDateComponentsFormatterUnitsStyleShort
+import platform.Foundation.NSDateComponentsFormatterZeroFormattingBehaviorDropAll
 import platform.Foundation.NSDateFormatter
 import platform.Foundation.NSLocale
 import platform.Foundation.NSTimeZone
 import platform.Foundation.currentLocale
 import platform.Foundation.localTimeZone
+import kotlin.time.Duration
 
 internal actual class SystemDateFormatter actual constructor() : DateFormatter {
     actual override fun format(value: LocalDateTime, pattern: String, localeTag: String?): String? {
@@ -52,6 +58,27 @@ internal actual class SystemDateFormatter actual constructor() : DateFormatter {
             dateFormat = normalizeApplePattern(pattern)
         }
         return value.toNSDateOnReferenceDate()?.let { formatter.stringFromDate(it) }
+    }
+
+    actual override fun format(duration: Duration, localeTag: String?): String? {
+        val isNegative = duration.isNegative()
+        val absoluteSeconds = duration.absoluteValue.inWholeSeconds
+        val localeValue =
+            localeTag?.let { NSLocale(localeIdentifier = it) } ?: NSLocale.currentLocale
+
+        val formatter = NSDateComponentsFormatter().apply {
+            allowedUnits = NSCalendarUnitHour or NSCalendarUnitMinute
+            unitsStyle = NSDateComponentsFormatterUnitsStyleShort
+            zeroFormattingBehavior = NSDateComponentsFormatterZeroFormattingBehaviorDropAll
+            val localCalendar = NSCalendar.calendarWithIdentifier(NSCalendarIdentifierGregorian)
+                ?: NSCalendar.currentCalendar
+            localCalendar.locale = localeValue
+            localCalendar.timeZone = NSTimeZone.localTimeZone
+            calendar = localCalendar
+        }
+
+        val formatted = formatter.stringFromTimeInterval(absoluteSeconds.toDouble()) ?: return null
+        return if (isNegative) "-$formatted" else formatted
     }
 }
 
