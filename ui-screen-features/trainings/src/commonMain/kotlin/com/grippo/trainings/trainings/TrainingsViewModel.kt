@@ -21,6 +21,7 @@ import com.grippo.trainings.trainings.TrainingsDirection.EditTraining
 import com.grippo.trainings.trainings.utilities.pagerCombinedRange
 import com.grippo.trainings.trainings.utilities.pagerRanges
 import com.grippo.trainings.trainings.utilities.shiftForPager
+import com.grippo.trainings.trainings.utilities.coerceWithin
 import kotlinx.collections.immutable.toPersistentMap
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
@@ -165,11 +166,10 @@ internal class TrainingsViewModel(
         if (days == 0) return
 
         val currentState = state.value
-        val shifted = currentState.date.shiftForPager(days)
-
         val limitations = currentState.limitations
-        val exceedsLimitations = shifted.from < limitations.from || shifted.to > limitations.to
-        if (exceedsLimitations) return
+        val shifted = currentState.date.shiftForPager(days).coerceWithin(limitations)
+
+        if (shifted == currentState.date) return
 
         update { it.copy(date = shifted) }
     }
@@ -209,11 +209,5 @@ internal class TrainingsViewModel(
 
     override fun onBack() {
         navigateTo(Back)
-    }
-
-    private fun DateRange.coerceWithin(limitations: DateRange): DateRange {
-        val start = if (from < limitations.from) limitations.from else from
-        val end = if (to > limitations.to) limitations.to else to
-        return if (end < start) DateRange(start, start) else DateRange(start, end)
     }
 }

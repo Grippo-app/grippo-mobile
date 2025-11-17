@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
@@ -44,12 +45,17 @@ import com.grippo.domain.state.training.transformation.transformToTrainingListVa
 import com.grippo.trainings.trainings.components.DailyTrainingsPage
 import com.grippo.trainings.trainings.components.MonthlyTrainingsPage
 import com.grippo.trainings.trainings.components.WeeklyTrainingsPage
-import com.grippo.trainings.trainings.utilities.allowedPagerOffsets
+import com.grippo.trainings.trainings.utilities.TrainingsPagerOffsets
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
+import com.grippo.trainings.trainings.utilities.TrainingsPagerOffsets
 
 @Composable
 internal fun TrainingsScreen(
@@ -64,37 +70,31 @@ internal fun TrainingsScreen(
         )
     )
 ) {
-    val allowedOffsets = remember(state.date, state.limitations) {
-        state.date.allowedPagerOffsets(state.limitations)
-    }
+    val allowedOffsets = remember { TrainingsPagerOffsets }
 
-    val centerPageIndex = remember(allowedOffsets) {
-        allowedOffsets.indexOf(0).coerceAtLeast(0)
-    }
+    val centerPageIndex = remember(allowedOffsets) { allowedOffsets.indexOf(0).coerceAtLeast(0) }
 
-    val pagerState = key(state.period, state.date, allowedOffsets) {
-        // recreate pager whenever visible range changes so it never gets stuck at stale boundaries
-        rememberPagerState(
-            initialPage = centerPageIndex,
-            pageCount = { allowedOffsets.size }
-        )
-    }
+    val pagerState = rememberPagerState(
+        initialPage = centerPageIndex,
+        pageCount = { allowedOffsets.size }
+    )
 
     val periodSegmentItems = remember {
         TrainingsTimelinePeriod.entries.map { it to it.text }.toPersistentList()
     }
 
-    LaunchedEffect(
-        pagerState.currentPage,
-        pagerState.isScrollInProgress,
-        centerPageIndex,
-        allowedOffsets
-    ) {
-        if (!pagerState.isScrollInProgress && pagerState.currentPage != centerPageIndex) {
-            val delta = allowedOffsets.getOrNull(pagerState.currentPage) ?: 0
-            contract.onShiftDate(delta)
-            pagerState.scrollToPage(centerPageIndex)
-        }
+    LaunchedEffect(centerPageIndex, allowedOffsets) {
+        snapshotFlow { pagerState.isScrollInProgress to pagerState.currentPage }
+            .filter { (inProgress, _) -> !inProgress }
+            .map { (_, page) -> page }
+            .distinctUntilChanged()
+            .collectLatest { page ->
+                if (page != centerPageIndex) {
+                    val delta = allowedOffsets.getOrNull(page) ?: 0
+                    contract.onShiftDate(delta)
+                    pagerState.scrollToPage(centerPageIndex)
+                }
+            }
     }
 
     Toolbar(

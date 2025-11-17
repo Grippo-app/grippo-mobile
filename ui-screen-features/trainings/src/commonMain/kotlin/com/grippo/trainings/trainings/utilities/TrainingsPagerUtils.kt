@@ -14,17 +14,15 @@ internal fun DateRange.shiftForPager(offset: Int): DateRange {
     return DateTimeUtils.shift(this, DatePeriod(days = span))
 }
 
-internal fun DateRange.allowedPagerOffsets(limitations: DateRange): List<Int> {
-    val offsets = TrainingsPagerOffsets.filter { offset ->
-        val range = shiftForPager(offset)
-        range.isWithin(limitations)
+internal fun DateRange.pagerRanges(limitations: DateRange): Map<Int, DateRange> {
+    return allowedPagerOffsets(limitations).associateWith { offset ->
+        shiftForPager(offset).coerceWithin(limitations)
     }
-
-    return offsets.ifEmpty { listOf(0) }
 }
 
-internal fun DateRange.pagerRanges(limitations: DateRange): Map<Int, DateRange> {
-    return allowedPagerOffsets(limitations).associateWith { shiftForPager(it) }
+private fun DateRange.allowedPagerOffsets(limitations: DateRange): List<Int> {
+    if (TrainingsPagerOffsets.isEmpty()) return listOf(0)
+    return TrainingsPagerOffsets
 }
 
 internal fun DateRange.pagerCombinedRange(limitations: DateRange): DateRange {
@@ -34,8 +32,10 @@ internal fun DateRange.pagerCombinedRange(limitations: DateRange): DateRange {
     return DateRange(from = first.from, to = last.to)
 }
 
-private fun DateRange.isWithin(limitations: DateRange): Boolean {
-    return from >= limitations.from && to <= limitations.to
+internal fun DateRange.coerceWithin(limitations: DateRange): DateRange {
+    val start = if (from < limitations.from) limitations.from else from
+    val end = if (to > limitations.to) limitations.to else to
+    return if (end < start) DateRange(start, start) else DateRange(start, end)
 }
 
 private fun DateRange.pagerSpanDays(): Int {
