@@ -72,7 +72,8 @@ internal fun TrainingsScreen(
         allowedOffsets.indexOf(0).coerceAtLeast(0)
     }
 
-    val pagerState = key(allowedOffsets) {
+    val pagerState = key(state.period, state.date, allowedOffsets) {
+        // recreate pager whenever visible range changes so it never gets stuck at stale boundaries
         rememberPagerState(
             initialPage = centerPageIndex,
             pageCount = { allowedOffsets.size }
@@ -146,36 +147,38 @@ internal fun TrainingsScreen(
                     state.trainings[pageOffset] ?: persistentListOf()
                 }
 
-                AnimatedContent(
-                    modifier = Modifier.fillMaxSize(),
-                    targetState = state.period,
-                    transitionSpec = {
-                        fadeIn(animationSpec = tween(220, delayMillis = 90))
-                            .togetherWith(fadeOut(animationSpec = tween(90)))
-                    },
-                ) { period ->
-                    when (period) {
-                        TrainingsTimelinePeriod.Daily -> DailyTrainingsPage(
-                            trainings = pageTrainings,
-                            contentPadding = resolvedPadding,
-                            onViewStatsClick = contract::onDailyDigestViewStats,
-                            onTrainingMenuClick = contract::onTrainingMenuClick,
-                            onExerciseClick = contract::onExerciseClick,
-                        )
+                key(state.period, state.date, pageOffset) {
+                    AnimatedContent(
+                        modifier = Modifier.fillMaxSize(),
+                        targetState = state.period,
+                        transitionSpec = {
+                            fadeIn(animationSpec = tween(220, delayMillis = 90))
+                                .togetherWith(fadeOut(animationSpec = tween(90)))
+                        },
+                    ) { period ->
+                        when (period) {
+                            TrainingsTimelinePeriod.Daily -> DailyTrainingsPage(
+                                trainings = pageTrainings,
+                                contentPadding = resolvedPadding,
+                                onViewStatsClick = contract::onDailyDigestViewStats,
+                                onTrainingMenuClick = contract::onTrainingMenuClick,
+                                onExerciseClick = contract::onExerciseClick,
+                            )
 
-                        TrainingsTimelinePeriod.Weekly -> WeeklyTrainingsPage(
-                            trainings = pageTrainings,
-                            contentPadding = resolvedPadding,
-                            onViewStatsClick = contract::onDailyDigestViewStats,
-                            onOpenDaily = contract::onOpenDaily,
-                        )
+                            TrainingsTimelinePeriod.Weekly -> WeeklyTrainingsPage(
+                                trainings = pageTrainings,
+                                contentPadding = resolvedPadding,
+                                onViewStatsClick = contract::onDailyDigestViewStats,
+                                onOpenDaily = contract::onOpenDaily,
+                            )
 
-                        TrainingsTimelinePeriod.Monthly -> MonthlyTrainingsPage(
-                            trainings = pageTrainings,
-                            contentPadding = resolvedPadding,
-                            onViewStatsClick = contract::onDailyDigestViewStats,
-                            onOpenDaily = contract::onOpenDaily,
-                        )
+                            TrainingsTimelinePeriod.Monthly -> MonthlyTrainingsPage(
+                                trainings = pageTrainings,
+                                contentPadding = resolvedPadding,
+                                onViewStatsClick = contract::onDailyDigestViewStats,
+                                onOpenDaily = contract::onOpenDaily,
+                            )
+                        }
                     }
                 }
             }
