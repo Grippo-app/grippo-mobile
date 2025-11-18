@@ -45,7 +45,8 @@ public class StatisticsViewModel(
             )
 
             is DialogConfig.Statistics.Trainings -> StatisticsMode.Trainings(
-                trainings = config.trainings.toPersistentList()
+                trainings = config.trainings.toPersistentList(),
+                range = config.range
             )
         }
     )

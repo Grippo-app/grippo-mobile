@@ -38,6 +38,8 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.muscles
 import com.grippo.design.resources.provider.statistics
 import com.grippo.design.resources.provider.trends
+import com.grippo.design.resources.provider.value_statistics
+import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -55,11 +57,38 @@ internal fun StatisticsScreen(
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.statistics),
+            text = when (val mode = state.mode) {
+                is StatisticsMode.Exercises -> AppTokens.strings.res(
+                    Res.string.statistics
+                )
+
+                is StatisticsMode.Trainings -> AppTokens.strings.res(
+                    Res.string.value_statistics,
+                    mode.range.label()
+                )
+            },
             style = AppTokens.typography.h3(),
             color = AppTokens.colors.text.primary,
             textAlign = TextAlign.Center
         )
+
+        when (val mode = state.mode) {
+            is StatisticsMode.Exercises -> {
+
+            }
+
+            is StatisticsMode.Trainings -> {
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
+
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = mode.range.range(),
+                    style = AppTokens.typography.b14Semi(),
+                    color = AppTokens.colors.text.secondary,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
@@ -223,7 +252,8 @@ private fun ScreenPreview() {
         StatisticsScreen(
             state = StatisticsState(
                 mode = StatisticsMode.Trainings(
-                    trainings = persistentListOf(stubTraining(), stubTraining(), stubTraining())
+                    trainings = persistentListOf(stubTraining(), stubTraining(), stubTraining()),
+                    range = DateTimeUtils.thisWeek()
                 )
             ),
             loaders = persistentSetOf(),

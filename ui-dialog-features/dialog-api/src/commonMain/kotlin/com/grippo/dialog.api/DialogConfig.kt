@@ -161,6 +161,7 @@ public sealed class DialogConfig(
         @Serializable
         public data class Trainings(
             public val trainings: List<TrainingState>,
+            public val range: DateRange,
         ) : Statistics()
 
         @Serializable

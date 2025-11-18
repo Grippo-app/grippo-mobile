@@ -1,13 +1,10 @@
 package com.grippo.trainings.trainings
 
 import com.grippo.core.foundation.BaseViewModel
-import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.menu.MenuItemState
 import com.grippo.core.state.profile.ProfileActivityMenu
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
-import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.date_picker_title
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
@@ -18,10 +15,10 @@ import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.toolkit.date.utils.contains
 import com.grippo.trainings.trainings.TrainingsDirection.Back
 import com.grippo.trainings.trainings.TrainingsDirection.EditTraining
+import com.grippo.trainings.trainings.utilities.coerceWithin
 import com.grippo.trainings.trainings.utilities.pagerCombinedRange
 import com.grippo.trainings.trainings.utilities.pagerRanges
 import com.grippo.trainings.trainings.utilities.shiftForPager
-import com.grippo.trainings.trainings.utilities.coerceWithin
 import kotlinx.collections.immutable.toPersistentMap
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
@@ -117,7 +114,8 @@ internal class TrainingsViewModel(
                 ?: return@safeLaunch
 
             val config = DialogConfig.Statistics.Trainings(
-                trainings = training.toState()
+                trainings = training.toState(),
+                range = state.value.date
             )
 
             dialogController.show(config)

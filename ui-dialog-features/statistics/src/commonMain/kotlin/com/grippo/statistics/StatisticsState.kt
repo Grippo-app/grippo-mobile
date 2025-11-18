@@ -11,6 +11,7 @@ import com.grippo.toolkit.calculation.models.DistributionBreakdown
 import com.grippo.toolkit.calculation.models.MetricSeries
 import com.grippo.toolkit.calculation.models.MuscleLoadMatrix
 import com.grippo.toolkit.calculation.models.MuscleLoadSummary
+import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -44,6 +45,7 @@ public sealed interface StatisticsMode {
     @Immutable
     public data class Trainings(
         val trainings: ImmutableList<TrainingState> = persistentListOf(),
+        val range: DateRange
     ) : StatisticsMode
 
     @Immutable

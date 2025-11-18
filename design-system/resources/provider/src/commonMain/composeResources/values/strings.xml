@@ -25,8 +25,13 @@
     <string name="no_data_yet">No data yet</string>
     <string name="no_exercises_yet">No exercises yet</string>
     <string name="daily_digest">Daily digest</string>
+    <string name="daily">Daily</string>
+    <string name="yearly">Yearly</string>
+    <string name="custom">Custom</string>
     <string name="weekly_digest">Weekly digest</string>
+    <string name="weekly">Weekly</string>
     <string name="monthly_digest">Monthly digest</string>
+    <string name="monthly">Monthly</string>
     <string name="monthly_digest_template">%1$s digest</string>
     <string name="daily_digest_template">%1$s digest</string>
     <string name="view_stats_btn">View stats</string>
@@ -134,6 +139,7 @@
     <string name="sets">Sets</string>
     <string name="profile">Profile</string>
     <string name="statistics">Statistics</string>
+    <string name="value_statistics">%1$s statistics</string>
     <string name="trends">Trends</string>
     <string name="equipments">Equipments</string>
     <string name="muscles">Muscles</string>
