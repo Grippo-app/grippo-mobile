@@ -81,7 +81,6 @@ public sealed interface ButtonStyle {
 
     // Specific
     public data object Error : ButtonStyle
-    public data object Magic : ButtonStyle
 }
 
 @Immutable

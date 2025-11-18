@@ -11,38 +11,27 @@ public object DarkColor : AppColor {
     }
 
     override val button: AppColor.ButtonColors = object : AppColor.ButtonColors {
-        override val backgroundPrimary1 = AppPalette.Common.White
-        override val backgroundPrimary2 = AppPalette.Common.White
-        override val borderPrimary = AppPalette.Common.White
-        override val textPrimary = AppPalette.Common.Black
-        override val iconPrimary = AppPalette.Common.Black
-        override val backgroundPrimaryDisabled = AppPalette.NeutralDark.N300
-        override val contentPrimaryDisabled = AppPalette.NeutralDark.N550
+        override val backgroundPrimary1 = AppPalette.Unique.Orange
+        override val backgroundPrimary2 = AppPalette.Unique.Red
+        override val borderPrimary = AppPalette.Unique.Coral
+        override val textPrimary = AppPalette.Common.White
+        override val iconPrimary = AppPalette.Common.White
 
-        override val backgroundSecondary1 = Color.Transparent
-        override val backgroundSecondary2 = Color.Transparent
-        override val textSecondary = AppPalette.Common.White
-        override val iconSecondary = AppPalette.Common.White
+        override val backgroundSecondary1 = AppPalette.Common.White
+        override val backgroundSecondary2 = AppPalette.Common.White
         override val borderSecondary = AppPalette.Common.White
-        override val backgroundSecondaryDisabled = AppPalette.NeutralDark.N300
-        override val contentSecondaryDisabled = AppPalette.NeutralDark.N550
+        override val textSecondary = AppPalette.Common.Black
+        override val iconSecondary = AppPalette.Common.Black
 
         override val textTertiary: Color = AppPalette.NeutralDark.N800
         override val borderTertiary: Color = Color.Transparent
         override val iconTertiary: Color = AppPalette.NeutralDark.N600
-        override val backgroundTertiaryDisabled: Color = AppPalette.NeutralDark.N300
-        override val contentTertiaryDisabled: Color = AppPalette.NeutralDark.N500
 
         override val textTransparent = AppPalette.Common.White
         override val iconTransparent = AppPalette.Common.White
-        override val contentTransparentDisabled = AppPalette.NeutralDark.N550
-    }
 
-    override val aiSuggestion: AppColor.AiSuggestion = object : AppColor.AiSuggestion {
-        override val background1: Color = AppPalette.Unique.Orange
-        override val background2: Color = AppPalette.Unique.Red
-        override val border: Color = AppPalette.Unique.Coral
-        override val content: Color = AppPalette.Common.White
+        override val backgroundDisabled = AppPalette.NeutralDark.N300
+        override val contentDisabled = AppPalette.NeutralDark.N550
     }
 
     override val icon: AppColor.IconColors = object : AppColor.IconColors {

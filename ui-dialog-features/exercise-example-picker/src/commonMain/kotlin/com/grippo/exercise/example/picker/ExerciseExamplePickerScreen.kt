@@ -173,7 +173,7 @@ internal fun ExerciseExamplePickerScreen(
                                     text = AppTokens.strings.res(Res.string.ai_suggestion_btn)
                                 ),
                                 state = buttonState,
-                                style = ButtonStyle.Magic,
+                                style = ButtonStyle.Primary,
                                 onClick = contract::onSuggestClick
                             )
 
