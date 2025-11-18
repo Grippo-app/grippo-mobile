@@ -55,7 +55,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
-import com.grippo.trainings.trainings.utilities.TrainingsPagerOffsets
 
 @Composable
 internal fun TrainingsScreen(
@@ -70,9 +69,9 @@ internal fun TrainingsScreen(
         )
     )
 ) {
-    val allowedOffsets = remember { TrainingsPagerOffsets }
+    val allowedOffsets = TrainingsPagerOffsets
 
-    val centerPageIndex = remember(allowedOffsets) { allowedOffsets.indexOf(0).coerceAtLeast(0) }
+    val centerPageIndex = allowedOffsets.indexOf(0).coerceAtLeast(0)
 
     val pagerState = rememberPagerState(
         initialPage = centerPageIndex,

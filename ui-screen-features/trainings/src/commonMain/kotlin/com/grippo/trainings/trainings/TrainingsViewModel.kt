@@ -142,26 +142,6 @@ internal class TrainingsViewModel(
         navigateTo(TrainingsDirection.AddTraining)
     }
 
-    override fun onSelectDate() {
-        safeLaunch {
-            val value = DateFormatState.of(state.value.date.from, state.value.limitations)
-
-            val dialog = DialogConfig.DatePicker(
-                title = stringProvider.get(Res.string.date_picker_title),
-                initial = value,
-                limitations = state.value.limitations,
-                onResult = { value ->
-                    val date = value.value ?: return@DatePicker
-                    val period = state.value.period
-                    val range = period.rangeFor(date).coerceWithin(state.value.limitations)
-                    update { it.copy(date = range) }
-                }
-            )
-
-            dialogController.show(dialog)
-        }
-    }
-
     override fun onShiftDate(days: Int) {
         if (days == 0) return
 
