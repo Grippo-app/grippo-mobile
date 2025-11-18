@@ -167,8 +167,8 @@ public object DarkColor : AppColor {
 
     override val chip: AppColor.ChipColors = object : AppColor.ChipColors {
         override val intensity = object : AppColor.ChipColors.GradientColors {
-            override val startColor = AppPalette.Unique.Red
-            override val endColor = AppPalette.Unique.Orange
+            override val startColor = AppPalette.Unique.Green
+            override val endColor = AppPalette.Unique.Teal
             override val contentColor = AppPalette.Common.White
         }
         override val volume = object : AppColor.ChipColors.GradientColors {
@@ -182,8 +182,8 @@ public object DarkColor : AppColor {
             override val contentColor = AppPalette.Common.White
         }
         override val timer = object : AppColor.ChipColors.GradientColors {
-            override val startColor = AppPalette.Unique.Olive
-            override val endColor = AppPalette.Unique.Cyan
+            override val startColor = AppPalette.Unique.Cocoa
+            override val endColor = AppPalette.Unique.Brown
             override val contentColor = AppPalette.Common.White
         }
     }
