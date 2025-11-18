@@ -35,6 +35,7 @@ import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.trainings.factory.timelineStyle
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun DailyTrainingsPage(
@@ -54,42 +55,36 @@ internal fun DailyTrainingsPage(
     val timelineItems = remember(trainings) {
         trainings.filterIsInstance<TrainingListValue.Daily.Item>()
     }
+    if (digests.isEmpty() && timelineItems.isEmpty()) {
+        TrainingsEmptyState(modifier = modifier.fillMaxSize())
+        return
+    }
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         state = listState,
         contentPadding = contentPadding
     ) {
-        if (digests.isEmpty() && timelineItems.isEmpty()) {
-            item {
-                TrainingsEmptyState(
-                    modifier = Modifier
-                        .fillParentMaxWidth()
-                        .padding(vertical = AppTokens.dp.contentPadding.block)
-                )
-            }
-        } else {
-            items(digests, key = { it.key }) { digest ->
-                DailyDigestCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = AppTokens.dp.contentPadding.block),
-                    value = digest.state,
-                    onViewStatsClick = onViewStatsClick
-                )
-            }
+        items(digests, key = { it.key }) { digest ->
+            DailyDigestCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = AppTokens.dp.contentPadding.block),
+                value = digest.state,
+                onViewStatsClick = onViewStatsClick
+            )
+        }
 
-            items(
-                items = timelineItems,
-                key = { it.key },
-                contentType = { it::class }
-            ) { value ->
-                DailyTimelineItem(
-                    value = value,
-                    onTrainingMenuClick = onTrainingMenuClick,
-                    onExerciseClick = onExerciseClick
-                )
-            }
+        items(
+            items = timelineItems,
+            key = { it.key },
+            contentType = { it::class }
+        ) { value ->
+            DailyTimelineItem(
+                value = value,
+                onTrainingMenuClick = onTrainingMenuClick,
+                onExerciseClick = onExerciseClick
+            )
         }
     }
 }
@@ -182,6 +177,20 @@ private fun DailyTrainingsPagePreview() {
             ).transformToTrainingListValue(
                 range = DateTimeUtils.thisDay()
             ),
+            contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
+            onViewStatsClick = {},
+            onTrainingMenuClick = {},
+            onExerciseClick = {},
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun DailyTrainingsEmptyPagePreview() {
+    PreviewContainer {
+        DailyTrainingsPage(
+            trainings = persistentListOf(),
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
             onViewStatsClick = {},
             onTrainingMenuClick = {},

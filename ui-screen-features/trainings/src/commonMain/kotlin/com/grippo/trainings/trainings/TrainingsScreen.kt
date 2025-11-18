@@ -1,13 +1,7 @@
 package com.grippo.trainings.trainings
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -147,37 +141,28 @@ internal fun TrainingsScreen(
                 }
 
                 key(state.period, state.date, pageOffset) {
-                    AnimatedContent(
-                        modifier = Modifier.fillMaxSize(),
-                        targetState = state.period,
-                        transitionSpec = {
-                            fadeIn(animationSpec = tween(220, delayMillis = 90))
-                                .togetherWith(fadeOut(animationSpec = tween(90)))
-                        },
-                    ) { period ->
-                        when (period) {
-                            TrainingsTimelinePeriod.Daily -> DailyTrainingsPage(
-                                trainings = pageTrainings,
-                                contentPadding = resolvedPadding,
-                                onViewStatsClick = contract::onDailyDigestViewStats,
-                                onTrainingMenuClick = contract::onTrainingMenuClick,
-                                onExerciseClick = contract::onExerciseClick,
-                            )
+                    when (state.period) {
+                        TrainingsTimelinePeriod.Daily -> DailyTrainingsPage(
+                            trainings = pageTrainings,
+                            contentPadding = resolvedPadding,
+                            onViewStatsClick = contract::onDailyDigestViewStats,
+                            onTrainingMenuClick = contract::onTrainingMenuClick,
+                            onExerciseClick = contract::onExerciseClick,
+                        )
 
-                            TrainingsTimelinePeriod.Weekly -> WeeklyTrainingsPage(
-                                trainings = pageTrainings,
-                                contentPadding = resolvedPadding,
-                                onViewStatsClick = contract::onDailyDigestViewStats,
-                                onOpenDaily = contract::onOpenDaily,
-                            )
+                        TrainingsTimelinePeriod.Weekly -> WeeklyTrainingsPage(
+                            trainings = pageTrainings,
+                            contentPadding = resolvedPadding,
+                            onViewStatsClick = contract::onDailyDigestViewStats,
+                            onOpenDaily = contract::onOpenDaily,
+                        )
 
-                            TrainingsTimelinePeriod.Monthly -> MonthlyTrainingsPage(
-                                trainings = pageTrainings,
-                                contentPadding = resolvedPadding,
-                                onViewStatsClick = contract::onDailyDigestViewStats,
-                                onOpenDaily = contract::onOpenDaily,
-                            )
-                        }
+                        TrainingsTimelinePeriod.Monthly -> MonthlyTrainingsPage(
+                            trainings = pageTrainings,
+                            contentPadding = resolvedPadding,
+                            onViewStatsClick = contract::onDailyDigestViewStats,
+                            onOpenDaily = contract::onOpenDaily,
+                        )
                     }
                 }
             }

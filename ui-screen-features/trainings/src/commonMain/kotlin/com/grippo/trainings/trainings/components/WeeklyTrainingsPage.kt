@@ -23,6 +23,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 
 @Composable
@@ -43,44 +44,39 @@ internal fun WeeklyTrainingsPage(
         trainings.filterIsInstance<TrainingListValue.WeeklyTrainingsDay>()
     }
 
+    if (summaries.isEmpty() && weeklyTrainings.isEmpty()) {
+        TrainingsEmptyState(modifier = Modifier.fillMaxSize())
+        return
+    }
+
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         state = listState,
         contentPadding = contentPadding,
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
-        if (summaries.isEmpty() && weeklyTrainings.isEmpty()) {
-            item {
-                TrainingsEmptyState(
-                    modifier = Modifier
-                        .fillParentMaxWidth()
-                        .padding(vertical = AppTokens.dp.contentPadding.block)
-                )
-            }
-        } else {
-            items(summaries, key = { it.key }) { summary ->
-                WeeklyDigestCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = AppTokens.dp.contentPadding.block),
-                    value = summary.summary,
-                    onViewStatsClick = onViewStatsClick
-                )
+        items(summaries, key = { it.key }) { summary ->
+            WeeklyDigestCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = AppTokens.dp.contentPadding.block),
+                value = summary.summary,
+                onViewStatsClick = onViewStatsClick
+            )
+        }
+
+        items(weeklyTrainings, key = { it.key }) { item ->
+            val clickProvider = remember(item.date) {
+                { onOpenDaily(item.date) }
             }
 
-            items(weeklyTrainings, key = { it.key }) { item ->
-                val clickProvider = remember(item.date) {
-                    { onOpenDaily(item.date) }
-                }
-
-                TrainingsCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .scalableClick(onClick = clickProvider),
-                    trainings = item.trainings,
-                    style = TrainingsCardStyle.Weekly
-                )
-            }
+            TrainingsCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .scalableClick(onClick = clickProvider),
+                trainings = item.trainings,
+                style = TrainingsCardStyle.Weekly
+            )
         }
     }
 }
@@ -96,6 +92,19 @@ private fun WeeklyTrainingsPagePreview() {
             ).transformToTrainingListValue(
                 range = DateTimeUtils.thisWeek()
             ),
+            contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
+            onViewStatsClick = {},
+            onOpenDaily = { _ -> },
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun WeeklyTrainingsEmptyPagePreview() {
+    PreviewContainer {
+        WeeklyTrainingsPage(
+            trainings = persistentListOf(),
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
             onViewStatsClick = {},
             onOpenDaily = { _ -> },

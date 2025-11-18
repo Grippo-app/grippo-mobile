@@ -25,6 +25,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 
 @Composable
@@ -43,6 +44,10 @@ internal fun MonthlyTrainingsPage(
     val days = remember(trainings) {
         trainings.filterIsInstance<TrainingListValue.MonthlyTrainingsDay>()
     }
+    if (digest == null && days.isEmpty()) {
+        TrainingsEmptyState(modifier = modifier.fillMaxSize())
+        return
+    }
 
     LazyVerticalGrid(
         modifier = modifier.fillMaxSize(),
@@ -52,39 +57,29 @@ internal fun MonthlyTrainingsPage(
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
-        if (digest == null && days.isEmpty()) {
-            item(span = { GridItemSpan(2) }) {
-                TrainingsEmptyState(
+        digest?.let { value ->
+            item(span = { GridItemSpan(2) }, key = value.key) {
+                MonthlyDigestCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = AppTokens.dp.contentPadding.block)
+                        .padding(vertical = AppTokens.dp.contentPadding.block),
+                    value = value.summary,
+                    onViewStatsClick = onViewStatsClick
                 )
             }
-        } else {
-            digest?.let { value ->
-                item(span = { GridItemSpan(2) }, key = value.key) {
-                    MonthlyDigestCard(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = AppTokens.dp.contentPadding.block),
-                        value = value.summary,
-                        onViewStatsClick = onViewStatsClick
-                    )
-                }
-            }
+        }
 
-            items(days, key = { it.key }) { day ->
-                val clickProvider = remember(day.date) {
-                    { onOpenDaily(day.date) }
-                }
-                TrainingsCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .scalableClick(onClick = clickProvider),
-                    trainings = day.trainings,
-                    style = TrainingsCardStyle.Monthly
-                )
+        items(days, key = { it.key }) { day ->
+            val clickProvider = remember(day.date) {
+                { onOpenDaily(day.date) }
             }
+            TrainingsCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .scalableClick(onClick = clickProvider),
+                trainings = day.trainings,
+                style = TrainingsCardStyle.Monthly
+            )
         }
     }
 }
@@ -100,6 +95,19 @@ private fun MonthlyTrainingsPagePreview() {
             ).transformToTrainingListValue(
                 range = DateTimeUtils.thisMonth()
             ),
+            contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
+            onViewStatsClick = {},
+            onOpenDaily = { _ -> },
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun MonthlyTrainingsEmptyPagePreview() {
+    PreviewContainer {
+        MonthlyTrainingsPage(
+            trainings = persistentListOf(),
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
             onViewStatsClick = {},
             onOpenDaily = { _ -> },
