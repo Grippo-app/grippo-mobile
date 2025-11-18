@@ -1,6 +1,5 @@
 package com.grippo.toolkit.calculation.internal.strength
 
-import com.grippo.core.state.datetime.PeriodState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.TrainingState
 import com.grippo.design.resources.provider.Res
@@ -13,6 +12,7 @@ import com.grippo.toolkit.calculation.internal.label
 import com.grippo.toolkit.calculation.models.BucketScale
 import com.grippo.toolkit.calculation.models.MetricPoint
 import com.grippo.toolkit.calculation.models.MetricSeries
+import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.contains
 
 internal class Estimated1RMAnalytics(
@@ -104,13 +104,13 @@ internal class Estimated1RMAnalytics(
 
     suspend fun computeEstimated1RmFromTrainings(
         trainings: List<TrainingState>,
-        period: PeriodState,
+        range: DateRange,
     ): MetricSeries {
         val colors = colorProvider.get()
         val palette = colors.palette.palette20ColorfulRandom
 
-        val inRange = trainings.filter { it.createdAt in period.range }
-        val scale = deriveScale(period)
+        val inRange = trainings.filter { it.createdAt in range }
+        val scale = deriveScale(range)
 
         return if (scale == BucketScale.EXERCISE) {
             val exercises = inRange.flatMap { it.exercises }

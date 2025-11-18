@@ -1,7 +1,6 @@
 package com.grippo.toolkit.calculation.internal.training
 
 import androidx.compose.ui.graphics.Color
-import com.grippo.core.state.datetime.PeriodState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.TrainingState
 import com.grippo.design.resources.provider.Res
@@ -15,6 +14,7 @@ import com.grippo.toolkit.calculation.internal.groupTrainingsByBucket
 import com.grippo.toolkit.calculation.models.BucketScale
 import com.grippo.toolkit.calculation.models.MetricPoint
 import com.grippo.toolkit.calculation.models.MetricSeries
+import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.contains
 
 internal class VolumeAnalytics(
@@ -105,22 +105,20 @@ internal class VolumeAnalytics(
 
     suspend fun computeVolumeSeriesFromTrainings(
         trainings: List<TrainingState>,
-        period: PeriodState,
+        range: DateRange,
     ): MetricSeries {
         val colors = colorProvider.get()
         val palette = colors.palette.palette7BlueGrowth
 
-        val inRange = trainings.filter { it.createdAt in period.range }
-        val scale = deriveScale(period)
-
-        return when (scale) {
+        val inRange = trainings.filter { it.createdAt in range }
+        return when (val scale = deriveScale(range)) {
             BucketScale.EXERCISE -> {
                 val exercises = inRange.flatMap { it.exercises }
                 computeVolumeSeriesFromExercises(exercises)
             }
 
             else -> {
-                val buckets = buildBuckets(period.range, scale)
+                val buckets = buildBuckets(range, scale)
                 val labeler = defaultLabeler(scale, stringProvider)
                 val grouped = groupTrainingsByBucket(inRange, scale)
 

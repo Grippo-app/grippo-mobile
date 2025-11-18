@@ -1,7 +1,6 @@
 package com.grippo.statistics
 
 import com.grippo.core.foundation.BaseViewModel
-import com.grippo.core.state.datetime.PeriodState
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.muscles.MuscleGroupState
 import com.grippo.core.state.muscles.MuscleRepresentationState
@@ -18,7 +17,6 @@ import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.muscles.toState
 import com.grippo.toolkit.calculation.AnalyticsApi
 import com.grippo.toolkit.date.utils.DateRange
-import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.FlowPreview
@@ -95,11 +93,11 @@ public class StatisticsViewModel(
         when (val mode = currentState.mode) {
             is StatisticsMode.Trainings -> {
                 val trainings = mode.trainings
-                val period = trainings.detectPeriodState()
+                val range = mode.range
 
                 provideTrainingStatistics(
                     trainings = trainings,
-                    period = period,
+                    range = range,
                     muscles = muscles,
                     examples = examples
                 )
@@ -115,7 +113,7 @@ public class StatisticsViewModel(
 
     private suspend fun provideTrainingStatistics(
         trainings: ImmutableList<TrainingState>,
-        period: PeriodState,
+        range: DateRange,
         muscles: ImmutableList<MuscleGroupState<MuscleRepresentationState.Plain>>,
         examples: ImmutableList<ExerciseExampleState>,
     ) {
@@ -130,34 +128,34 @@ public class StatisticsViewModel(
 
         val categoryDistribution = analytics.categoryDistributionFromTrainings(
             trainings = trainings,
-            period = period
+            range = range
         )
 
         val weightTypeDistribution = analytics.weightTypeDistributionFromTrainings(
             trainings = trainings,
-            period = period
+            range = range
         )
 
         val forceTypeDistribution = analytics.forceTypeDistributionFromTrainings(
             trainings = trainings,
-            period = period
+            range = range
         )
 
         val exerciseVolume = analytics.volumeFromTrainings(
             trainings = trainings,
-            period = period
+            range = range
         )
 
         val muscleLoad = analytics.muscleLoadFromTrainings(
             trainings = trainings,
-            period = period,
+            range = range,
             examples = examples,
             groups = muscles
         )
 
         val heatmap = analytics.heatmapFromTrainings(
             trainings = trainings,
-            period = period,
+            range = range,
             examples = examples,
             groups = muscles
         )
@@ -245,20 +243,5 @@ public class StatisticsViewModel(
         is StatisticsMode.Exercises -> mode.exercises
             .map { it.exerciseExample.id }
             .distinct()
-    }
-
-    private fun List<TrainingState>.detectPeriodState(): PeriodState {
-        if (isEmpty()) {
-            return PeriodState.ThisWeek
-        }
-
-        val sorted = sortedBy { it.createdAt }
-        val start = DateTimeUtils.startOfDay(sorted.first().createdAt)
-        val end = DateTimeUtils.endOfDay(sorted.last().createdAt)
-
-        return PeriodState.Custom(
-            range = DateRange(from = start, to = end),
-            limitations = DateTimeUtils.trailingYear()
-        )
     }
 }

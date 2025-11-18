@@ -21,48 +21,67 @@ public data class DateRange(
     val from: LocalDateTime,
     val to: LocalDateTime,
 ) {
-    @Composable
-    public fun label(): String {
+
+    @Serializable
+    @Immutable
+    public enum class Range {
+        DAILY,
+        WEEKLY,
+        MONTHLY,
+        YEARLY,
+        CUSTOM,
+    }
+
+    public fun range(): Range {
         val days = max(0, from.date.daysUntil(to.date) + 1)
 
         return when (days) {
-            1 -> AppTokens.strings.res(Res.string.daily)
-            7 -> AppTokens.strings.res(Res.string.weekly)
-            in 28..31 -> AppTokens.strings.res(Res.string.monthly)
-            in 365..366 -> AppTokens.strings.res(Res.string.yearly)
-            else -> AppTokens.strings.res(Res.string.custom)
+            1 -> Range.DAILY
+            7 -> Range.WEEKLY
+            in 28..31 -> Range.MONTHLY
+            in 365..366 -> Range.YEARLY
+            else -> Range.CUSTOM
         }
     }
 
     @Composable
-    public fun range(): String {
-        val days = max(0, from.date.daysUntil(to.date) + 1)
+    public fun label(): String {
+        return when (range()) {
+            Range.DAILY -> AppTokens.strings.res(Res.string.daily)
+            Range.WEEKLY -> AppTokens.strings.res(Res.string.weekly)
+            Range.MONTHLY -> AppTokens.strings.res(Res.string.monthly)
+            Range.YEARLY -> AppTokens.strings.res(Res.string.yearly)
+            Range.CUSTOM -> AppTokens.strings.res(Res.string.custom)
+        }
+    }
 
-        when (days) {
-            1 -> {
+    @Composable
+    public fun formatted(): String {
+        when (range()) {
+            Range.DAILY -> {
                 val from = DateCompose.rememberFormat(this.from, DateFormat.DateOnly.DateDdMmmm)
                 return from
             }
 
-            7 -> {
+            Range.WEEKLY -> {
                 val from = DateCompose.rememberFormat(this.from, DateFormat.DateOnly.DateDdMmm)
                 val to = DateCompose.rememberFormat(this.to, DateFormat.DateOnly.DateDdMmm)
                 return "$from - $to"
             }
 
-            in 28..31 -> {
+            Range.MONTHLY -> {
                 val from = DateCompose.rememberFormat(this.from, DateFormat.DateOnly.DateDdMmm)
                 val to = DateCompose.rememberFormat(this.to, DateFormat.DateOnly.DateDdMmm)
                 return "$from - $to"
             }
 
-            in 365..366 -> {
+            Range.YEARLY -> {
                 val from = DateCompose.rememberFormat(this.from, DateFormat.DateOnly.DateMmmDdYyyy)
                 val to = DateCompose.rememberFormat(this.to, DateFormat.DateOnly.DateMmmDdYyyy)
                 return "$from - $to"
             }
 
-            else -> {
+            Range.CUSTOM -> {
                 val sameDay = remember(this.from, this.to) { this.from.date == this.to.date }
 
                 val from = DateCompose.rememberFormat(this.from, DateFormat.DateOnly.DateMmmDdYyyy)

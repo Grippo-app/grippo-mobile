@@ -1,6 +1,5 @@
 package com.grippo.toolkit.calculation.internal
 
-import com.grippo.core.state.datetime.PeriodState
 import com.grippo.core.state.trainings.TrainingState
 import com.grippo.toolkit.calculation.models.Bucket
 import com.grippo.toolkit.calculation.models.BucketScale
@@ -29,12 +28,12 @@ internal fun groupTrainingsByBucket(
     }
 }
 
-internal fun deriveScale(period: PeriodState): BucketScale = when (period) {
-    is PeriodState.ThisDay -> BucketScale.EXERCISE
-    is PeriodState.ThisWeek -> BucketScale.DAY
-    is PeriodState.ThisMonth -> BucketScale.WEEK
-    is PeriodState.ThisYear -> BucketScale.MONTH
-    is PeriodState.Custom -> deriveCustomScale(period.range)
+internal fun deriveScale(range: DateRange): BucketScale = when (range.range()) {
+    DateRange.Range.DAILY -> BucketScale.EXERCISE
+    DateRange.Range.WEEKLY -> BucketScale.DAY
+    DateRange.Range.MONTHLY -> BucketScale.WEEK
+    DateRange.Range.YEARLY -> BucketScale.MONTH
+    DateRange.Range.CUSTOM -> deriveCustomScale(range)
 }
 
 private fun deriveCustomScale(range: DateRange): BucketScale {

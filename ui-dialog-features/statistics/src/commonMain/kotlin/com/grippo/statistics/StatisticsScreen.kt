@@ -82,7 +82,7 @@ internal fun StatisticsScreen(
 
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = mode.range.range(),
+                    text = mode.range.formatted(),
                     style = AppTokens.typography.b14Semi(),
                     color = AppTokens.colors.text.secondary,
                     textAlign = TextAlign.Center
