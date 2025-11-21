@@ -18,19 +18,19 @@ import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.debug.DebugComponent
 import com.grippo.design.components.connection.snackbar.ConnectionSnackbar
 import com.grippo.design.core.AppTheme
-import com.grippo.home.BottomNavigationComponent
+import com.grippo.trainings.TrainingsRootComponent
 import com.grippo.profile.ProfileComponent
 import com.grippo.screen.api.AuthRouter
-import com.grippo.screen.api.BottomNavigationRouter
 import com.grippo.screen.api.ProfileRouter
 import com.grippo.screen.api.RootRouter
 import com.grippo.screen.api.TrainingRouter
+import com.grippo.screen.api.TrainingsRouter
 import com.grippo.shared.dialog.DialogComponent
 import com.grippo.shared.root.RootComponent.Child.Authorization
 import com.grippo.shared.root.RootComponent.Child.Debug
-import com.grippo.shared.root.RootComponent.Child.Home
 import com.grippo.shared.root.RootComponent.Child.Profile
 import com.grippo.shared.root.RootComponent.Child.Training
+import com.grippo.shared.root.RootComponent.Child.Trainings
 import com.grippo.toolkit.date.utils.DateFormatting
 import com.grippo.toolkit.localization.AppLocale
 import com.grippo.toolkit.theme.AppTheme
@@ -116,10 +116,10 @@ public class RootComponent(
                 ),
             )
 
-            RootRouter.Home -> Home(
-                BottomNavigationComponent(
+            RootRouter.Home -> Trainings(
+                TrainingsRootComponent(
                     componentContext = context,
-                    initial = BottomNavigationRouter.Trainings,
+                    initial = TrainingsRouter.Trainings,
                     toWeightHistory = viewModel::toWeightHistory,
                     toMissingEquipment = viewModel::toMissingEquipment,
                     toExcludedMuscles = viewModel::toExcludedMuscles,
@@ -177,7 +177,7 @@ public class RootComponent(
         public data class Authorization(override val component: AuthComponent) :
             Child(component)
 
-        public data class Home(override val component: BottomNavigationComponent) :
+        public data class Trainings(override val component: TrainingsRootComponent) :
             Child(component)
 
         public data class Profile(override val component: ProfileComponent) :

@@ -57,7 +57,7 @@ internal fun GeneralPage(
                 Button(
                     modifier = Modifier.fillMaxWidth(),
                     content = ButtonContent.Text(AppTokens.strings.res(Res.string.generate_training_btn)),
-                    style = ButtonStyle.Magic,
+                    style = ButtonStyle.Primary,
                     state = buttonState,
                     onClick = contract::generateTraining
                 )

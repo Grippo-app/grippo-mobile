@@ -35,10 +35,9 @@ public fun ExerciseCard(
 ) {
 
     when (style) {
-        is ExerciseCardStyle.Large -> ExerciseCardLarge(
+        is ExerciseCardStyle.Small -> ExerciseCardSmall(
             modifier = modifier,
             value = value,
-            onClick = style.onClick
         )
 
         is ExerciseCardStyle.Medium -> ExerciseCardMedium(
@@ -47,9 +46,10 @@ public fun ExerciseCard(
             onClick = style.onClick
         )
 
-        is ExerciseCardStyle.Small -> ExerciseCardSmall(
+        is ExerciseCardStyle.Large -> ExerciseCardLarge(
             modifier = modifier,
             value = value,
+            onClick = style.onClick
         )
     }
 }

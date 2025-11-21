@@ -4,7 +4,6 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,9 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
-import com.grippo.core.state.trainings.TrainingListValue
 import com.grippo.core.state.trainings.TrainingListValue.Companion.exercise
-import com.grippo.core.state.trainings.TrainingListValue.Companion.shape
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
@@ -61,8 +57,14 @@ internal fun TrainingCompletedScreen(
     state: TrainingCompletedState,
     loaders: ImmutableSet<TrainingCompletedLoader>,
     contract: TrainingCompletedContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
-
+) = BaseComposeScreen(
+    ScreenBackground.Color(
+        value = AppTokens.colors.background.screen,
+        ambient = ScreenBackground.Ambient(
+            color = AppTokens.colors.brand.color3,
+        )
+    )
+) {
     if (loaders.contains(TrainingCompletedLoader.SaveTraining)) {
         Loader(modifier = Modifier.fillMaxSize())
         return@BaseComposeScreen
@@ -136,8 +138,6 @@ internal fun TrainingCompletedScreen(
                         key = { it.key },
                         contentType = { it::class }
                     ) { value ->
-                        val radius = AppTokens.dp.menu.radius
-                        val shape = remember(value.key) { value.shape(radius) }
                         val exercise = remember(value.key) { value.exercise() }
 
                         if (exercise != null) {
@@ -147,20 +147,10 @@ internal fun TrainingCompletedScreen(
 
                             ExerciseCard(
                                 modifier = Modifier
-                                    .background(AppTokens.colors.background.card, shape)
+                                    .padding(vertical = AppTokens.dp.contentPadding.subContent)
                                     .fillMaxWidth(),
                                 value = exercise,
                                 style = ExerciseCardStyle.Medium(clickProvider)
-                            )
-                        }
-
-                        if (value is TrainingListValue.BetweenExercises) {
-                            HorizontalDivider(
-                                modifier = Modifier
-                                    .background(AppTokens.colors.background.card, shape)
-                                    .padding(horizontal = AppTokens.dp.menu.item.horizontalPadding)
-                                    .fillMaxWidth(),
-                                color = AppTokens.colors.divider.default
                             )
                         }
                     }

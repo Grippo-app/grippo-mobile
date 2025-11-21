@@ -59,12 +59,12 @@ public data object AppDp {
     val wheelPicker: WheelPicker = WheelPicker
     val userCard: UserCard = UserCard
     val bodyDetails: BodyDetails = BodyDetails
-    val overviewCard: OverviewCard = OverviewCard
     val achievementCard: AchievementCard = AchievementCard
     val equipmentCard: EquipmentCard = EquipmentCard
     val timeline: Timeline = Timeline
     val timeLabel: TimeLabel = TimeLabel
     val exerciseCard: ExerciseCard = ExerciseCard
+    val digest: Digest = Digest
     val exerciseExampleCard: ExerciseExampleCard = ExerciseExampleCard
     val exerciseExampleImage: ExerciseExampleImage = ExerciseExampleImage
     val iterationCard: IterationCard = IterationCard
@@ -76,6 +76,7 @@ public data object AppDp {
     val radio: Radio = Radio
     val badge: Badge = Badge
     val aiSuggestionCard: AiSuggestionCard = AiSuggestionCard
+    val trainingCard: TrainingCard = TrainingCard
 
     public data object Screen {
         val toolbar: Toolbar = Toolbar
@@ -99,6 +100,19 @@ public data object AppDp {
         val radius: Dp = AppDp.radius.medium
     }
 
+    public data object TrainingCard {
+        val weekly: Weekly = Weekly
+        val monthly: Monthly = Monthly
+
+        public data object Weekly {
+            val radius: Dp = AppDp.radius.medium
+        }
+
+        public data object Monthly {
+            val radius: Dp = AppDp.radius.medium
+        }
+    }
+
     public data object ContentPadding {
         val block: Dp = padding.extraLarge
         val content: Dp = padding.medium
@@ -108,6 +122,34 @@ public data object AppDp {
 
     public data object Badge {
         val size: Dp = icon.medium
+    }
+
+    public data object Digest {
+        val daily: Daily = Daily
+        val weekly: Weekly = Weekly
+        val monthly: Monthly = Monthly
+
+        public data object Daily {
+            val icon: Dp = AppDp.icon.large
+        }
+
+        public data object Weekly {
+            val icon: Dp = AppDp.icon.large
+            val stat: Stat = Stat
+
+            public data object Stat {
+                val radius: Dp = AppDp.radius.small
+            }
+        }
+
+        public data object Monthly {
+            val icon: Dp = AppDp.icon.large
+            val stat: Stat = Stat
+
+            public data object Stat {
+                val radius: Dp = AppDp.radius.medium
+            }
+        }
     }
 
     public data object BottomSheet {
@@ -121,8 +163,7 @@ public data object AppDp {
 
     public data object Input {
         val height: Dp = size.medium
-        val horizontalPadding: Dp = padding.large
-        val radius: Dp = AppDp.radius.medium
+        val horizontalPadding: Dp = padding.extraLarge
         val icon: Dp = AppDp.icon.medium
     }
 
@@ -133,7 +174,6 @@ public data object AppDp {
         public data object Medium {
             val height: Dp = size.medium
             val horizontalPadding: Dp = padding.large
-            val radius: Dp = AppDp.radius.medium
             val icon: Dp = AppDp.icon.medium
             val space: Dp = padding.small
             val spaceTransparent: Dp = padding.tiny
@@ -142,7 +182,6 @@ public data object AppDp {
         public data object Small {
             val height: Dp = size.small
             val horizontalPadding: Dp = padding.medium
-            val radius: Dp = AppDp.radius.small
             val icon: Dp = AppDp.icon.medium
             val space: Dp = padding.small
             val spaceTransparent: Dp = padding.tiny
@@ -160,21 +199,11 @@ public data object AppDp {
         }
     }
 
-    public data object UserCard {
-        val horizontalPadding: Dp = padding.extraLarge
-        val verticalPadding: Dp = padding.extraLarge
-        val radius: Dp = AppDp.radius.medium
-    }
+    public data object UserCard
 
     public data object BodyDetails {
         val horizontalPadding: Dp = padding.extraSmall
         val verticalPadding: Dp = padding.extraSmall
-    }
-
-    public data object OverviewCard {
-        val horizontalPadding: Dp = padding.small
-        val verticalPadding: Dp = padding.small
-        val icon: Dp = AppDp.icon.small
     }
 
     public data object TimeLabel {
@@ -228,16 +257,9 @@ public data object AppDp {
         val medium: Medium = Medium
         val small: Small = Small
 
-        public data object Large {
-            val radius: Dp = AppDp.radius.medium
-            val horizontalPadding: Dp = padding.large
-            val verticalPadding: Dp = padding.medium
-        }
+        public data object Large
 
         public data object Medium {
-            val radius: Dp = AppDp.radius.medium
-            val horizontalPadding: Dp = padding.medium
-            val verticalPadding: Dp = padding.medium
             val spacing: Dp = padding.extraSmall
         }
 
@@ -268,17 +290,9 @@ public data object AppDp {
         val small: Small = Small
         val medium: Medium = Medium
 
-        public data object Small {
-            val radius: Dp = AppDp.radius.medium
-            val horizontalPadding: Dp = padding.medium
-            val verticalPadding: Dp = padding.medium
-        }
+        public data object Small
 
-        public data object Medium {
-            val radius: Dp = AppDp.radius.medium
-            val horizontalPadding: Dp = padding.large
-            val verticalPadding: Dp = padding.medium
-        }
+        public data object Medium
     }
 
     public data object EquipmentCard {
@@ -352,17 +366,10 @@ public data object AppDp {
 
     public data object Segment {
         val outline: Outline = Outline
-        val fill: Fill = Fill
 
         public data object Outline {
             val height: Dp = size.medium
             val horizontalPadding: Dp = padding.large
-        }
-
-        public data object Fill {
-            val height: Dp = size.small
-            val horizontalPadding: Dp = padding.large
-            val radius: Dp = AppDp.radius.medium
         }
     }
 
@@ -381,7 +388,6 @@ public data object AppDp {
 
     public data object WheelPicker {
         val height: Dp = size.medium * 3
-        val radius: Dp = AppDp.radius.medium
     }
 
     public data object Chip {

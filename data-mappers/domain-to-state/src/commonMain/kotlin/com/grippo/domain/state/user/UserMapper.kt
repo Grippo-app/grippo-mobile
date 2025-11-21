@@ -11,6 +11,5 @@ public fun User.toState(): UserState {
         height = height,
         createdAt = createAt,
         experience = experience.toState(),
-        trainingsCount = 0 // TODO: Add from backend
     )
 }

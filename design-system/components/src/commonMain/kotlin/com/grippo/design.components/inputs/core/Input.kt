@@ -17,7 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -85,7 +85,7 @@ internal fun Input(
     controller: InputController = rememberInputController(),
 ) {
     val colors = AppTokens.colors
-    val shape = RoundedCornerShape(AppTokens.dp.input.radius)
+    val shape = CircleShape
     val height = AppTokens.dp.input.height
 
     val hasFocus = remember { mutableStateOf(false) }

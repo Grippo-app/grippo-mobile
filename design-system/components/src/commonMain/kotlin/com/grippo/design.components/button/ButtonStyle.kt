@@ -22,61 +22,53 @@ internal fun resolveButtonColors(
     return when (state) {
         ButtonState.Disabled -> when (style) {
             ButtonStyle.Primary -> ButtonColorTokens(
-                background1 = colors.backgroundPrimaryDisabled,
-                background2 = colors.backgroundPrimaryDisabled,
-                content = colors.contentPrimaryDisabled,
+                background1 = AppTokens.colors.button.backgroundDisabled,
+                background2 = AppTokens.colors.button.backgroundDisabled,
+                content = AppTokens.colors.button.contentDisabled,
                 border = Color.Transparent,
-                icon = colors.contentPrimaryDisabled
+                icon = AppTokens.colors.button.contentDisabled
             )
 
             ButtonStyle.Secondary -> ButtonColorTokens(
-                background1 = colors.backgroundSecondaryDisabled,
-                background2 = colors.backgroundSecondaryDisabled,
-                content = colors.contentSecondaryDisabled,
+                background1 = colors.backgroundDisabled,
+                background2 = colors.backgroundDisabled,
+                content = colors.contentDisabled,
                 border = Color.Transparent,
-                icon = colors.contentSecondaryDisabled
+                icon = colors.contentDisabled
             )
 
             ButtonStyle.Tertiary -> ButtonColorTokens(
-                background1 = colors.backgroundTertiaryDisabled,
-                background2 = colors.backgroundTertiaryDisabled,
-                content = colors.contentTertiaryDisabled,
+                background1 = colors.backgroundDisabled,
+                background2 = colors.backgroundDisabled,
+                content = colors.contentDisabled,
                 border = Color.Transparent,
-                icon = colors.contentTertiaryDisabled
+                icon = colors.contentDisabled
             )
 
             ButtonStyle.Transparent -> ButtonColorTokens(
                 background1 = Color.Transparent,
                 background2 = Color.Transparent,
-                content = colors.contentTransparentDisabled,
+                content = colors.contentDisabled,
                 border = Color.Transparent,
-                icon = colors.contentTransparentDisabled
+                icon = colors.contentDisabled
             )
 
             ButtonStyle.Error -> ButtonColorTokens(
-                background1 = AppTokens.colors.button.backgroundPrimaryDisabled,
-                background2 = AppTokens.colors.button.backgroundPrimaryDisabled,
-                content = AppTokens.colors.button.contentPrimaryDisabled,
+                background1 = AppTokens.colors.button.backgroundDisabled,
+                background2 = AppTokens.colors.button.backgroundDisabled,
+                content = AppTokens.colors.button.contentDisabled,
                 border = Color.Transparent,
-                icon = AppTokens.colors.button.contentPrimaryDisabled
-            )
-
-            ButtonStyle.Magic -> ButtonColorTokens(
-                background1 = AppTokens.colors.button.backgroundPrimaryDisabled,
-                background2 = AppTokens.colors.button.backgroundPrimaryDisabled,
-                content = AppTokens.colors.button.contentPrimaryDisabled,
-                border = Color.Transparent,
-                icon = AppTokens.colors.button.contentPrimaryDisabled
+                icon = AppTokens.colors.button.contentDisabled
             )
         }
 
         else -> when (style) {
             ButtonStyle.Primary -> ButtonColorTokens(
-                background1 = colors.backgroundPrimary1,
-                background2 = colors.backgroundPrimary2,
-                content = colors.textPrimary,
-                border = colors.borderPrimary,
-                icon = colors.iconPrimary,
+                background1 = AppTokens.colors.button.backgroundPrimary1,
+                background2 = AppTokens.colors.button.backgroundPrimary2,
+                icon = AppTokens.colors.button.iconPrimary,
+                content = AppTokens.colors.button.textPrimary,
+                border = AppTokens.colors.button.borderPrimary,
             )
 
             ButtonStyle.Secondary -> ButtonColorTokens(
@@ -88,8 +80,8 @@ internal fun resolveButtonColors(
             )
 
             ButtonStyle.Tertiary -> ButtonColorTokens(
-                background1 = colors.backgroundTertiary1,
-                background2 = colors.backgroundTertiary2,
+                background1 = AppTokens.colors.background.card,
+                background2 = AppTokens.colors.background.card,
                 content = colors.textTertiary,
                 border = colors.borderTertiary,
                 icon = colors.iconTertiary,
@@ -109,14 +101,6 @@ internal fun resolveButtonColors(
                 icon = AppTokens.colors.button.iconPrimary,
                 content = AppTokens.colors.button.textPrimary,
                 border = AppTokens.colors.semantic.error,
-            )
-
-            ButtonStyle.Magic -> ButtonColorTokens(
-                background1 = AppTokens.colors.aiSuggestion.background1,
-                background2 = AppTokens.colors.aiSuggestion.background2,
-                icon = AppTokens.colors.aiSuggestion.content,
-                content = AppTokens.colors.aiSuggestion.content,
-                border = AppTokens.colors.aiSuggestion.border,
             )
         }
     }

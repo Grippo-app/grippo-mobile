@@ -18,7 +18,18 @@ import coil3.compose.LocalAsyncImagePreviewHandler
 import com.grippo.design.core.AppTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-@Preview()
+@Preview(
+    name = "Phone • UK • Small",
+    group = "📱 Phone",
+    widthDp = 360, heightDp = 800,
+    locale = "uk"
+)
+@Preview(
+    name = "Phone • EN • Big",
+    group = "📱 Phone",
+    widthDp = 412, heightDp = 915,
+    locale = "en"
+)
 public annotation class AppPreview
 
 @OptIn(ExperimentalCoilApi::class)
@@ -32,16 +43,6 @@ public fun PreviewContainer(
 
     CompositionLocalProvider(LocalAsyncImagePreviewHandler provides previewHandler) {
         Column {
-            AppTheme(darkTheme = false, localeTag = "ua") {
-                Column(
-                    modifier = Modifier
-                        .background(Color.White)
-                        .padding(12.dp),
-                    content = content,
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                )
-            }
-
             AppTheme(darkTheme = true, localeTag = "en") {
                 Column(
                     modifier = Modifier

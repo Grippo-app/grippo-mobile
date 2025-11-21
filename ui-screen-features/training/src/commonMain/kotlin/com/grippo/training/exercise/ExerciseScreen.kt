@@ -25,6 +25,7 @@ import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.components.swipe.SwipeToReveal
+import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.components.training.IterationCard
@@ -46,11 +47,17 @@ internal fun ExerciseScreen(
     state: ExerciseState,
     loaders: ImmutableSet<ExerciseLoader>,
     contract: ExerciseContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
-
+) = BaseComposeScreen(
+    ScreenBackground.Color(
+        value = AppTokens.colors.background.screen,
+        ambient = ScreenBackground.Ambient(
+            color = AppTokens.colors.brand.color3,
+        )
+    )
+) {
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
-        onBack = contract::onBack,
+        leading = Leading.Back(contract::onBack),
         style = ToolbarStyle.Transparent,
         content = {
             state.exerciseExample?.let { example ->
@@ -60,7 +67,8 @@ internal fun ExerciseScreen(
                         .padding(
                             start = AppTokens.dp.screen.horizontalPadding,
                             end = AppTokens.dp.screen.horizontalPadding,
-                            bottom = AppTokens.dp.contentPadding.content,
+                            bottom = AppTokens.dp.contentPadding.block,
+                            top = AppTokens.dp.contentPadding.content,
                         ),
                     style = ExerciseExampleCardStyle.Small(
                         onCardClick = contract::onExampleClick,

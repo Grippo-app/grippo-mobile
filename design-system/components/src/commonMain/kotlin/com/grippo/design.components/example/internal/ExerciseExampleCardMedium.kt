@@ -1,6 +1,5 @@
 package com.grippo.design.components.example.internal
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -8,18 +7,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.design.components.chip.Chip
@@ -38,8 +32,8 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.last_used_label
 import com.grippo.design.resources.provider.not_used_before
+import com.grippo.toolkit.date.utils.DateCompose
 import com.grippo.toolkit.date.utils.DateFormat
-import com.grippo.toolkit.date.utils.DateTimeUtils
 
 @Composable
 internal fun ExerciseExampleCardMedium(
@@ -47,17 +41,7 @@ internal fun ExerciseExampleCardMedium(
     value: ExerciseExampleState,
     onCardClick: () -> Unit,
 ) {
-    val shape = RoundedCornerShape(AppTokens.dp.exerciseExampleCard.medium.radius)
-
-    Column(
-        modifier = modifier
-            .scalableClick(onClick = onCardClick)
-            .background(AppTokens.colors.background.card, shape)
-            .padding(
-                horizontal = AppTokens.dp.exerciseExampleCard.medium.horizontalPadding,
-                vertical = AppTokens.dp.exerciseExampleCard.medium.verticalPadding
-            ),
-    ) {
+    Column(modifier = modifier.scalableClick(onClick = onCardClick)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
@@ -124,10 +108,8 @@ internal fun ExerciseExampleCardMedium(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            val lastUsedDate = remember(value.value.lastUsed) {
-                value.value.lastUsed?.let { l ->
-                    DateTimeUtils.format(l, DateFormat.DATE_DD_MMM)
-                }
+            val lastUsedDate = value.value.lastUsed?.let { l ->
+                DateCompose.rememberFormat(l.date, DateFormat.DateOnly.DateDdMmm)
             }
 
             lastUsedDate?.let {
@@ -158,7 +140,7 @@ internal fun ExerciseExampleCardMedium(
 private fun ExerciseExampleCardMediumPreview() {
     PreviewContainer {
         ExerciseExampleCard(
-            modifier = Modifier.size(250.dp),
+            modifier = Modifier.fillMaxWidth(),
             value = stubExerciseExample(),
             style = ExerciseExampleCardStyle.Medium({}),
         )

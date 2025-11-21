@@ -2,9 +2,11 @@ package com.grippo.drart.training
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.stage.StageState
@@ -22,6 +25,7 @@ import com.grippo.core.state.trainings.stubExercises
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
 import com.grippo.design.core.AppTokens
@@ -43,7 +47,9 @@ internal fun DraftTrainingScreen(
     state: DraftTrainingState,
     loaders: ImmutableSet<DraftTrainingLoader>,
     contract: DraftTrainingContract
-) = BaseComposeScreen(background = ScreenBackground.Color(AppTokens.colors.background.dialog)) {
+) = BaseComposeScreen(
+    background = ScreenBackground.Color(AppTokens.colors.background.dialog)
+) {
 
     Column(
         modifier = Modifier
@@ -91,48 +97,63 @@ internal fun DraftTrainingScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        if (state.exercises.isNotEmpty()) LazyColumn(
-            modifier = Modifier.fillMaxWidth()
+        if (state.exercises.isNotEmpty()) BottomOverlayContainer(
+            modifier = Modifier
+                .fillMaxWidth()
                 .weight(1f, false),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-        ) {
-            items(state.exercises, key = { it.id }) { item ->
-                ExerciseCard(
+            contentPadding = PaddingValues(0.dp),
+            overlay = AppTokens.colors.background.screen,
+            content = { containerModifier, resolvedPadding ->
+                LazyColumn(
+                    modifier = containerModifier
+                        .fillMaxWidth()
+                        .weight(1f, false),
+                    contentPadding = resolvedPadding
+                ) {
+                    items(state.exercises, key = { it.id }) { item ->
+                        ExerciseCard(
+                            modifier = Modifier
+                                .padding(vertical = AppTokens.dp.contentPadding.subContent)
+                                .fillMaxWidth(),
+                            value = item,
+                            style = ExerciseCardStyle.Medium {},
+                        )
+                    }
+                }
+            },
+            bottom = {
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    value = item,
-                    style = ExerciseCardStyle.Medium {},
-                )
+                    horizontalArrangement = Arrangement.spacedBy(
+                        AppTokens.dp.contentPadding.content
+                    )
+                ) {
+                    Button(
+                        modifier = Modifier.weight(1f),
+                        content = ButtonContent.Text(
+                            text = AppTokens.strings.res(Res.string.clear_btn),
+                        ),
+                        style = ButtonStyle.Error,
+                        onClick = contract::onDelete
+                    )
+
+                    Button(
+                        modifier = Modifier.weight(1f),
+                        content = ButtonContent.Text(
+                            text = AppTokens.strings.res(Res.string.continue_btn),
+                        ),
+                        style = ButtonStyle.Primary,
+                        onClick = contract::onContinue
+                    )
+                }
+
+                Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+
+                Spacer(modifier = Modifier.navigationBarsPadding())
             }
-        }
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(
-                AppTokens.dp.contentPadding.content
-            )
-        ) {
-            Button(
-                modifier = Modifier.weight(1f),
-                content = ButtonContent.Text(
-                    text = AppTokens.strings.res(Res.string.clear_btn),
-                ),
-                style = ButtonStyle.Error,
-                onClick = contract::onDelete
-            )
-
-            Button(
-                modifier = Modifier.weight(1f),
-                content = ButtonContent.Text(
-                    text = AppTokens.strings.res(Res.string.continue_btn),
-                ),
-                style = ButtonStyle.Primary,
-                onClick = contract::onContinue
-            )
-        }
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+        )
     }
 }
 

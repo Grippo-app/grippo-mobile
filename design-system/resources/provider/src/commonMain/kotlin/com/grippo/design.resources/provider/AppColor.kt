@@ -12,6 +12,7 @@ public interface AppColor {
     public val semantic: SemanticColors
     public val overlay: OverlayColors
     public val border: BorderColors
+    public val brand: BrandColors
     public val icon: IconColors
     public val toggle: ToggleColors
     public val muscle: MuscleColors
@@ -26,7 +27,6 @@ public interface AppColor {
     public val static: Static
     public val achievements: Achievements
     public val selectableCardColors: SelectableCardColors
-    public val aiSuggestion: AiSuggestion
 
     public interface DividerColors {
         public val default: Color
@@ -48,9 +48,6 @@ public interface AppColor {
     public interface Static {
         public val black: Color
         public val white: Color
-        public val neutralDarkN800: Color
-        public val neutralDarkN150: Color
-        public val neutralLightN800: Color
     }
 
     public interface ButtonColors {
@@ -59,28 +56,22 @@ public interface AppColor {
         public val borderPrimary: Color
         public val textPrimary: Color
         public val iconPrimary: Color
-        public val backgroundPrimaryDisabled: Color
-        public val contentPrimaryDisabled: Color
 
         public val backgroundSecondary1: Color
         public val backgroundSecondary2: Color
+        public val borderSecondary: Color
         public val textSecondary: Color
         public val iconSecondary: Color
-        public val borderSecondary: Color
-        public val backgroundSecondaryDisabled: Color
-        public val contentSecondaryDisabled: Color
 
-        public val backgroundTertiary1: Color
-        public val backgroundTertiary2: Color
         public val textTertiary: Color
         public val iconTertiary: Color
         public val borderTertiary: Color
-        public val backgroundTertiaryDisabled: Color
-        public val contentTertiaryDisabled: Color
 
-        public val contentTransparentDisabled: Color
         public val textTransparent: Color
         public val iconTransparent: Color
+
+        public val backgroundDisabled: Color
+        public val contentDisabled: Color
     }
 
     public interface ToggleColors {
@@ -116,12 +107,19 @@ public interface AppColor {
         public val placeholderDisabled: Color
     }
 
+    public interface BrandColors {
+        public val color1: Color
+        public val color2: Color
+        public val color3: Color
+        public val color4: Color
+        public val color5: Color
+        public val color6: Color
+    }
+
     public interface BackgroundColors {
         public val screen: Color
         public val dialog: Color
         public val card: Color
-        public val accent: Color
-        public val inverted: Color
     }
 
     public interface DialogColors {
@@ -142,7 +140,6 @@ public interface AppColor {
         public val error: Color
         public val warning: Color
         public val info: Color
-        public val accent: Color
     }
 
     public interface OverlayColors {
@@ -159,15 +156,7 @@ public interface AppColor {
         public val secondary: Color
         public val tertiary: Color
         public val disabled: Color
-        public val accent: Color
         public val inverted: Color
-    }
-
-    public interface AiSuggestion {
-        public val background1: Color
-        public val background2: Color
-        public val border: Color
-        public val content: Color
     }
 
     public interface ProfileColors {
@@ -205,13 +194,10 @@ public interface AppColor {
     }
 
     public interface MuscleColors {
-        public val focused: Color
         public val active: Color
         public val inactive: Color
         public val background: Color
         public val outline: Color
-
-        public val text: Color
     }
 
     public interface SegmentColors {
@@ -296,6 +282,6 @@ public interface AppColor {
         public val palette5OrangeRedGrowth: List<Color>
         public val palette12BlueWave: List<Color>
         public val palette7BlueGrowth: List<Color>
-        public val palette18ColorfulRandom: List<Color>
+        public val palette20ColorfulRandom: List<Color>
     }
 }

@@ -1,6 +1,7 @@
 package com.grippo.shared.dialog
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,7 +12,12 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.grippo.core.foundation.BaseComposeScreen
@@ -21,6 +27,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.shared.dialog.content.DialogContentComponent
 import kotlinx.collections.immutable.ImmutableSet
+import kotlin.coroutines.cancellation.CancellationException
 
 @Composable
 internal fun DialogScreen(
@@ -68,6 +75,8 @@ private fun BottomSheet(
     val showBackButton = stack.size > 1
     val programmaticDismiss = phase == SheetPhase.DISMISSING
 
+    val programmaticDismissRef = rememberUpdatedState(programmaticDismiss)
+
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
         confirmValueChange = { target ->
@@ -77,10 +86,46 @@ private fun BottomSheet(
         },
     )
 
+    var dismissNotified by remember { mutableStateOf(false) }
+
     LaunchedEffect(phase) {
-        if (programmaticDismiss && sheetState.currentValue != SheetValue.Hidden) {
-            sheetState.hide()
-            onDismissCompleteRef.value()
+        if (programmaticDismiss) {
+            dismissNotified = false
+            if (sheetState.currentValue != SheetValue.Hidden) {
+                sheetState.hide() // suspends until the hide animation finishes
+            }
+            if (!dismissNotified) {
+                onDismissCompleteRef.value()
+                dismissNotified = true
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        snapshotFlow { sheetState.currentValue }.collect { value ->
+            if (value == SheetValue.Hidden && programmaticDismissRef.value && !dismissNotified) {
+                onDismissCompleteRef.value()
+                dismissNotified = true
+            }
+        }
+    }
+
+    // If VM says PRESENT but the sheet is Hidden (e.g., new content after a prior hide),
+    // explicitly open it. This does not affect in-sheet Push/Pop when already visible.
+    LaunchedEffect(phase, config) {
+        if (phase == SheetPhase.PRESENT) {
+            withFrameNanos { /* next frame */ }
+
+            val animInProgress = sheetState.currentValue != sheetState.targetValue
+            val isHiddenNow = sheetState.currentValue == SheetValue.Hidden
+            val targetIsHidden = sheetState.targetValue == SheetValue.Hidden
+
+            if (!animInProgress && isHiddenNow && targetIsHidden) {
+                try {
+                    sheetState.show()
+                } catch (_: CancellationException) {
+                }
+            }
         }
     }
 
@@ -88,6 +133,7 @@ private fun BottomSheet(
         modifier = Modifier.statusBarsPadding(),
         onDismissRequest = { if (isSwipeRef.value) onDismiss() }, // latest flag
         sheetState = sheetState,
+        contentWindowInsets = { WindowInsets() },
         scrimColor = AppTokens.colors.dialog.scrim,
         properties = ModalBottomSheetProperties(
             shouldDismissOnBackPress = isSwipeDismissEnabled, // recomposes with new flag

@@ -3,7 +3,7 @@ package com.grippo.height.picker.internal
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.grippo.design.components.wheel.WheelItem
@@ -45,7 +45,7 @@ internal fun HeightWheelPicker(
             .fillMaxWidth()
             .height(AppTokens.dp.wheelPicker.height),
         selectorProperties = DefaultSelectorProperties(
-            shape = RoundedCornerShape(AppTokens.dp.wheelPicker.radius),
+            shape = CircleShape,
             color = AppTokens.colors.background.card,
         ),
         columns = listOf(heighColumn)

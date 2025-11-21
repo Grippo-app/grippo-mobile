@@ -1,7 +1,9 @@
 package com.grippo.authorization.registration
 
+import androidx.compose.runtime.Immutable
 import com.grippo.core.state.profile.ExperienceEnumState
 
+@Immutable
 internal interface RegistrationContract {
     fun toNameWithCredentials(email: String, password: String)
     fun toBodyWithName(name: String)
@@ -13,6 +15,7 @@ internal interface RegistrationContract {
     fun onBack()
     fun onClose()
 
+    @Immutable
     companion object Empty : RegistrationContract {
         override fun toNameWithCredentials(email: String, password: String) {}
         override fun toBodyWithName(name: String) {}

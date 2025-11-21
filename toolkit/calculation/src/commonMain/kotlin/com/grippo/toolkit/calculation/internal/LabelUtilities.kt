@@ -18,17 +18,17 @@ internal suspend fun defaultLabeler(
     val w = stringProvider.get(Res.string.w)
     return when (scale) {
         BucketScale.DAY -> { b ->
-            DateTimeUtils.format(b.start, DateFormat.WEEKDAY_SHORT)
+            DateTimeUtils.format(b.start, DateFormat.DateOnly.WeekdayShort)
         }
 
         BucketScale.WEEK -> { b ->
             "$w${isoWeekNumber(b.start)}-${
-                DateTimeUtils.format(b.start, DateFormat.MONTH_SHORT)
+                DateTimeUtils.format(b.start, DateFormat.DateOnly.MonthShort)
             }"
         }
 
         BucketScale.MONTH -> { b ->
-            DateTimeUtils.format(b.start, DateFormat.MONTH_SHORT)
+            DateTimeUtils.format(b.start, DateFormat.DateOnly.MonthShort)
         }
 
         BucketScale.EXERCISE -> { _ -> "" }
@@ -42,17 +42,17 @@ internal suspend fun LocalDateTime.label(
     val w = stringProvider.get(Res.string.w)
     return when (scale) {
         BucketScale.DAY, BucketScale.EXERCISE -> {
-            DateTimeUtils.format(this, DateFormat.DATE_DD_MMM) // e.g., "02 Sep"
+            DateTimeUtils.format(this, DateFormat.DateOnly.DateDdMmm) // e.g., "02 Sep"
         }
 
         BucketScale.WEEK -> {
             "$w${isoWeekNumber(this)}-${
-                DateTimeUtils.format(this, DateFormat.MONTH_SHORT)
+                DateTimeUtils.format(this, DateFormat.DateOnly.MonthShort)
             }"
         }
 
         BucketScale.MONTH -> {
-            DateTimeUtils.format(this, DateFormat.MONTH_SHORT)
+            DateTimeUtils.format(this, DateFormat.DateOnly.MonthShort)
         }
     }
 }
@@ -67,21 +67,21 @@ internal suspend fun defaultTimeLabels(
     val w = stringProvider.get(Res.string.w)
     return when (scale) {
         BucketScale.DAY -> buckets.map {
-            DateTimeUtils.format(it.start, DateFormat.DATE_DD_MMM) // e.g., "02 Sep"
+            DateTimeUtils.format(it.start, DateFormat.DateOnly.DateDdMmm) // e.g., "02 Sep"
         }
 
         BucketScale.WEEK -> buckets.map {
             "$w${isoWeekNumber(it.start)}-${
-                DateTimeUtils.format(it.start, DateFormat.MONTH_SHORT)
+                DateTimeUtils.format(it.start, DateFormat.DateOnly.MonthShort)
             }" // e.g., "W36-Sep"
         }
 
         BucketScale.MONTH -> buckets.map {
-            DateTimeUtils.format(it.start, DateFormat.MONTH_SHORT) // e.g., "Sep"
+            DateTimeUtils.format(it.start, DateFormat.DateOnly.MonthShort) // e.g., "Sep"
         }
 
         BucketScale.EXERCISE -> buckets.map {
-            DateTimeUtils.format(it.start, DateFormat.DATE_DD_MMM)
+            DateTimeUtils.format(it.start, DateFormat.DateOnly.DateDdMmm)
         }
     }
 }

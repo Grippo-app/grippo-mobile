@@ -105,6 +105,14 @@ public object DateTimeUtils {
         return value.date.atTime(DayTime.EndOfDay.localTime)
     }
 
+    public fun startOfDay(value: LocalDate): LocalDateTime {
+        return value.atTime(DayTime.StartOfDay.localTime)
+    }
+
+    public fun endOfDay(value: LocalDate): LocalDateTime {
+        return value.atTime(DayTime.EndOfDay.localTime)
+    }
+
     /* * * * * * * * * * *
      * Parsing via TimeZone
      * * * * * * * * * * */
@@ -125,19 +133,22 @@ public object DateTimeUtils {
 
     @OptIn(FormatStringsInDatetimeFormats::class)
     public fun format(value: LocalDateTime, format: DateFormat): String {
-        return DateFormatting.current.format(value, format.value, null) ?: "-"
+        return DateFormatting.current.format(value, format.pattern, null) ?: "-"
     }
 
     @OptIn(FormatStringsInDatetimeFormats::class)
-    public fun format(value: LocalTime, format: DateFormat): String {
-        return DateFormatting.current.format(value, format.value, null) ?: "-"
+    public fun format(value: LocalTime, format: DateFormat.TimeOnly): String {
+        return DateFormatting.current.format(value, format.pattern, null) ?: "-"
     }
 
     @OptIn(FormatStringsInDatetimeFormats::class)
-    public fun format(value: LocalDate, format: DateFormat): String {
-        return DateFormatting.current.format(value, format.value, null) ?: "-"
+    public fun format(value: LocalDate, format: DateFormat.DateOnly): String {
+        return DateFormatting.current.format(value, format.pattern, null) ?: "-"
     }
 
+    public fun format(duration: Duration): String {
+        return DateFormatting.current.format(duration) ?: "-"
+    }
     /* * * * * * * * * * *
      * Calculation
      * * * * * * * * * * */

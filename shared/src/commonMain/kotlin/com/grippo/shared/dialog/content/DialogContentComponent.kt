@@ -13,6 +13,7 @@ import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.date.picker.DatePickerComponent
 import com.grippo.dialog.api.DialogConfig
+import com.grippo.dialog.profile.ProfileComponent
 import com.grippo.drart.training.DraftTrainingComponent
 import com.grippo.error.display.ErrorDisplayComponent
 import com.grippo.exercise.ExerciseComponent
@@ -23,6 +24,7 @@ import com.grippo.height.picker.HeightPickerComponent
 import com.grippo.iteration.picker.IterationPickerComponent
 import com.grippo.menu.picker.MenuPickerComponent
 import com.grippo.period.picker.PeriodPickerComponent
+import com.grippo.statistics.StatisticsComponent
 import com.grippo.weight.picker.WeightPickerComponent
 
 internal class DialogContentComponent(
@@ -170,12 +172,28 @@ internal class DialogContentComponent(
                 )
             )
 
+            is DialogConfig.Profile -> Child.Profile(
+                ProfileComponent(
+                    componentContext = context,
+                    onResult = { action -> viewModel.onBack { router.onResult.invoke(action) } },
+                    close = { viewModel.onBack(null) }
+                )
+            )
+
             is DialogConfig.Confirmation -> Child.Confirmation(
                 ConfirmationComponent(
                     componentContext = context,
                     title = router.title,
                     description = router.description,
                     onResult = { viewModel.onBack { router.onResult.invoke() } },
+                    back = { viewModel.onBack(null) }
+                )
+            )
+
+            is DialogConfig.Statistics -> Child.Statistics(
+                StatisticsComponent(
+                    config = router,
+                    componentContext = context,
                     back = { viewModel.onBack(null) }
                 )
             )
@@ -194,6 +212,9 @@ internal class DialogContentComponent(
             Child(component)
 
         data class HeightPicker(override val component: HeightPickerComponent) :
+            Child(component)
+
+        data class Profile(override val component: ProfileComponent) :
             Child(component)
 
         data class ErrorDisplay(override val component: ErrorDisplayComponent) :
@@ -227,6 +248,9 @@ internal class DialogContentComponent(
             Child(component)
 
         data class MenuPicker(override val component: MenuPickerComponent) :
+            Child(component)
+
+        data class Statistics(override val component: StatisticsComponent) :
             Child(component)
     }
 }

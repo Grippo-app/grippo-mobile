@@ -8,6 +8,8 @@
     <string name="search_placeholder">Search..</string>
     <string name="set_value">Set #%1$s</string>
     <string name="sets_value">Sets (%1$s)</string>
+    <string name="value_sets">%1$s sets</string>
+    <string name="one_set">1 set</string>
     <string name="percent">%</string>
     <string name="complete">Complete</string>
     <string name="suggestions">Suggestions</string>
@@ -22,6 +24,17 @@
     <string name="confirm_btn">Confirm</string>
     <string name="no_data_yet">No data yet</string>
     <string name="no_exercises_yet">No exercises yet</string>
+    <string name="daily_digest">Daily digest</string>
+    <string name="daily">Daily</string>
+    <string name="yearly">Yearly</string>
+    <string name="custom">Custom</string>
+    <string name="weekly_digest">Weekly digest</string>
+    <string name="weekly">Weekly</string>
+    <string name="monthly_digest">Monthly digest</string>
+    <string name="monthly">Monthly</string>
+    <string name="monthly_digest_template">%1$s digest</string>
+    <string name="daily_digest_template">%1$s digest</string>
+    <string name="view_stats_btn">View stats</string>
     <string name="cancel_btn">Cancel</string>
     <string name="logout_btn">Logout</string>
     <string name="loading">Loading..</string>
@@ -118,9 +131,15 @@
     <string name="profile_menu_missing_equipment">Missing equipment</string>
 
     <string name="trainings">Trainings</string>
+    <string name="trainings_period_daily">Daily</string>
+    <string name="trainings_period_weekly">Weekly</string>
+    <string name="trainings_period_monthly">Monthly</string>
     <string name="training">Training</string>
+    <string name="duration">Duration</string>
+    <string name="sets">Sets</string>
     <string name="profile">Profile</string>
     <string name="statistics">Statistics</string>
+    <string name="value_statistics">%1$s statistics</string>
     <string name="trends">Trends</string>
     <string name="equipments">Equipments</string>
     <string name="muscles">Muscles</string>

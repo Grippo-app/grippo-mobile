@@ -1,5 +1,8 @@
 package com.grippo.iteration.picker
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 internal interface IterationPickerContract {
     fun onVolumeChange(value: String)
     fun onRepetitionsChange(value: String)
@@ -7,6 +10,7 @@ internal interface IterationPickerContract {
     fun onSubmit()
     fun onBack()
 
+    @Immutable
     companion object Empty : IterationPickerContract {
         override fun onVolumeChange(value: String) {}
         override fun onRepetitionsChange(value: String) {}

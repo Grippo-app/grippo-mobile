@@ -3,6 +3,7 @@ package com.grippo.height.picker
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
@@ -82,6 +83,8 @@ internal fun HeightPickerScreen(
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+
+        Spacer(modifier = Modifier.navigationBarsPadding())
     }
 }
 

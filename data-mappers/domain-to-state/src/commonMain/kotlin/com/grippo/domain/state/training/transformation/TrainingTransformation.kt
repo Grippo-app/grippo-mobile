@@ -51,7 +51,7 @@ public fun TrainingState.toTrainingListValues(
         else -> {
             val first = exercises.first()
             val last = exercises.last()
-            val middle = exercises.subList(1, exercises.lastIndex) // 1..size-2
+            val middle = exercises.subList(1, exercises.lastIndex)
 
             result += TrainingListValue.FirstExercise(
                 exerciseState = first,
@@ -67,7 +67,7 @@ public fun TrainingState.toTrainingListValues(
             )
 
             middle.forEachIndexed { i, ex ->
-                val indexInTraining = i + 2 // 2..(n-1)
+                val indexInTraining = i + 2
 
                 result += TrainingListValue.MiddleExercise(
                     exerciseState = ex,

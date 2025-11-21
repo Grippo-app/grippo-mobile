@@ -1,7 +1,6 @@
 package com.grippo.toolkit.calculation.internal.distribution
 
 import androidx.compose.ui.graphics.Color
-import com.grippo.core.state.datetime.PeriodState
 import com.grippo.core.state.examples.CategoryEnumState
 import com.grippo.core.state.examples.ForceTypeEnumState
 import com.grippo.core.state.examples.WeightTypeEnumState
@@ -12,6 +11,7 @@ import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.toolkit.calculation.models.DistributionBreakdown
 import com.grippo.toolkit.calculation.models.DistributionSlice
 import com.grippo.toolkit.calculation.models.DistributionWeighting
+import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.contains
 
 internal class DistributionCalculator(
@@ -50,10 +50,10 @@ internal class DistributionCalculator(
 
     suspend fun calculateCategoryDistributionFromTrainings(
         trainings: List<TrainingState>,
-        period: PeriodState,
+        range: DateRange,
         weighting: DistributionWeighting = DistributionWeighting.Count,
     ): DistributionBreakdown {
-        val inRange = trainings.filter { it.createdAt in period.range }
+        val inRange = trainings.filter { it.createdAt in range }
         return calculateCategoryDistributionFromExercises(
             inRange.flatMap { it.exercises },
             weighting
@@ -88,10 +88,10 @@ internal class DistributionCalculator(
 
     suspend fun calculateWeightTypeDistributionFromTrainings(
         trainings: List<TrainingState>,
-        period: PeriodState,
+        range: DateRange,
         weighting: DistributionWeighting = DistributionWeighting.Count,
     ): DistributionBreakdown {
-        val inRange = trainings.filter { it.createdAt in period.range }
+        val inRange = trainings.filter { it.createdAt in range }
         return calculateWeightTypeDistributionFromExercises(
             inRange.flatMap { it.exercises },
             weighting
@@ -126,10 +126,10 @@ internal class DistributionCalculator(
 
     suspend fun calculateForceTypeDistributionFromTrainings(
         trainings: List<TrainingState>,
-        period: PeriodState,
+        range: DateRange,
         weighting: DistributionWeighting = DistributionWeighting.Count,
     ): DistributionBreakdown {
-        val inRange = trainings.filter { it.createdAt in period.range }
+        val inRange = trainings.filter { it.createdAt in range }
         return calculateForceTypeDistributionFromExercises(
             inRange.flatMap { it.exercises },
             weighting

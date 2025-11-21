@@ -1,0 +1,247 @@
+package com.grippo.statistics
+
+import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.examples.ExerciseExampleState
+import com.grippo.core.state.muscles.MuscleGroupState
+import com.grippo.core.state.muscles.MuscleRepresentationState
+import com.grippo.core.state.trainings.ExerciseState
+import com.grippo.core.state.trainings.TrainingState
+import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
+import com.grippo.data.features.api.exercise.example.models.ExerciseExample
+import com.grippo.data.features.api.muscle.MuscleFeature
+import com.grippo.data.features.api.muscle.models.MuscleGroup
+import com.grippo.design.resources.provider.providers.ColorProvider
+import com.grippo.design.resources.provider.providers.StringProvider
+import com.grippo.dialog.api.DialogConfig
+import com.grippo.domain.state.exercise.example.toState
+import com.grippo.domain.state.muscles.toState
+import com.grippo.toolkit.calculation.AnalyticsApi
+import com.grippo.toolkit.date.utils.DateRange
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onEach
+
+@OptIn(FlowPreview::class)
+public class StatisticsViewModel(
+    config: DialogConfig.Statistics,
+    muscleFeature: MuscleFeature,
+    colorProvider: ColorProvider,
+    stringProvider: StringProvider,
+    private val exerciseExampleFeature: ExerciseExampleFeature,
+) : BaseViewModel<StatisticsState, StatisticsDirection, StatisticsLoader>(
+    StatisticsState(
+        mode = when (config) {
+            is DialogConfig.Statistics.Exercises -> StatisticsMode.Exercises(
+                exercises = config.exercises.toPersistentList()
+            )
+
+            is DialogConfig.Statistics.Trainings -> StatisticsMode.Trainings(
+                trainings = config.trainings.toPersistentList(),
+                range = config.range
+            )
+        }
+    )
+), StatisticsContract {
+
+    private val analytics = AnalyticsApi(stringProvider, colorProvider)
+
+    init {
+        muscleFeature.observeMuscles()
+            .onEach(::provideMuscles)
+            .safeLaunch()
+
+        state
+            .map { collectExampleIds(it.mode) }
+            .filter { it.isNotEmpty() }
+            .distinctUntilChanged()
+            .flatMapLatest(exerciseExampleFeature::observeExerciseExamples)
+            .onEach(::provideExerciseExamples)
+            .safeLaunch()
+
+        state
+            .map { s -> listOf(s.mode, s.examples, s.muscles) }
+            .debounce(200)
+            .distinctUntilChanged()
+            .mapLatest { generateStatistics() }
+            .safeLaunch(loader = StatisticsLoader.Charts)
+    }
+
+    private fun provideMuscles(list: List<MuscleGroup>) {
+        update { it.copy(muscles = list.toState()) }
+    }
+
+    private fun provideExerciseExamples(list: List<ExerciseExample>) {
+        update { it.copy(examples = list.toState()) }
+    }
+
+    override fun onBack() {
+        navigateTo(StatisticsDirection.Back)
+    }
+
+    private suspend fun generateStatistics() {
+        val currentState = state.value
+        val muscles = currentState.muscles
+        val examples = currentState.examples
+
+        when (val mode = currentState.mode) {
+            is StatisticsMode.Trainings -> {
+                val trainings = mode.trainings
+                val range = mode.range
+
+                provideTrainingStatistics(
+                    trainings = trainings,
+                    range = range,
+                    muscles = muscles,
+                    examples = examples
+                )
+            }
+
+            is StatisticsMode.Exercises -> provideExerciseStatistics(
+                exercises = mode.exercises,
+                muscles = muscles,
+                examples = examples
+            )
+        }
+    }
+
+    private suspend fun provideTrainingStatistics(
+        trainings: ImmutableList<TrainingState>,
+        range: DateRange,
+        muscles: ImmutableList<MuscleGroupState<MuscleRepresentationState.Plain>>,
+        examples: ImmutableList<ExerciseExampleState>,
+    ) {
+        if (trainings.isEmpty()) {
+            clearStatistics()
+            return
+        }
+
+        val totalMetrics = analytics.metricsFromTrainings(
+            trainings = trainings
+        )
+
+        val categoryDistribution = analytics.categoryDistributionFromTrainings(
+            trainings = trainings,
+            range = range
+        )
+
+        val weightTypeDistribution = analytics.weightTypeDistributionFromTrainings(
+            trainings = trainings,
+            range = range
+        )
+
+        val forceTypeDistribution = analytics.forceTypeDistributionFromTrainings(
+            trainings = trainings,
+            range = range
+        )
+
+        val exerciseVolume = analytics.volumeFromTrainings(
+            trainings = trainings,
+            range = range
+        )
+
+        val muscleLoad = analytics.muscleLoadFromTrainings(
+            trainings = trainings,
+            range = range,
+            examples = examples,
+            groups = muscles
+        )
+
+        val heatmap = analytics.heatmapFromTrainings(
+            trainings = trainings,
+            range = range,
+            examples = examples,
+            groups = muscles
+        )
+
+        update {
+            it.copy(
+                totalMetrics = totalMetrics,
+                exerciseVolume = exerciseVolume,
+                categoryDistribution = categoryDistribution,
+                weightTypeDistribution = weightTypeDistribution,
+                forceTypeDistribution = forceTypeDistribution,
+                muscleLoad = muscleLoad,
+                temporalHeatmap = heatmap,
+            )
+        }
+    }
+
+    private suspend fun provideExerciseStatistics(
+        exercises: ImmutableList<ExerciseState>,
+        muscles: ImmutableList<MuscleGroupState<MuscleRepresentationState.Plain>>,
+        examples: ImmutableList<ExerciseExampleState>,
+    ) {
+        if (exercises.isEmpty()) {
+            clearStatistics()
+            return
+        }
+
+        val totalMetrics = analytics.metricsFromExercises(
+            exercises = exercises
+        )
+
+        val categoryDistribution = analytics.categoryDistributionFromExercises(
+            exercises = exercises
+        )
+
+        val weightTypeDistribution = analytics.weightTypeDistributionFromExercises(
+            exercises = exercises
+        )
+
+        val forceTypeDistribution = analytics.forceTypeDistributionFromExercises(
+            exercises = exercises
+        )
+
+        val exerciseVolume = analytics.volumeFromExercises(
+            exercises = exercises
+        )
+        val muscleLoad = analytics.muscleLoadFromExercises(
+            exercises = exercises,
+            examples = examples,
+            groups = muscles
+        )
+
+        update {
+            it.copy(
+                totalMetrics = totalMetrics,
+                exerciseVolume = exerciseVolume,
+                categoryDistribution = categoryDistribution,
+                weightTypeDistribution = weightTypeDistribution,
+                forceTypeDistribution = forceTypeDistribution,
+                muscleLoad = muscleLoad,
+                temporalHeatmap = null,
+            )
+        }
+    }
+
+    private fun clearStatistics() {
+        update {
+            it.copy(
+                totalMetrics = null,
+                exerciseVolume = null,
+                categoryDistribution = null,
+                weightTypeDistribution = null,
+                forceTypeDistribution = null,
+                muscleLoad = null,
+                temporalHeatmap = null,
+            )
+        }
+    }
+
+    private fun collectExampleIds(mode: StatisticsMode): List<String> = when (mode) {
+        is StatisticsMode.Trainings -> mode.trainings
+            .flatMap { training -> training.exercises.map { it.exerciseExample.id } }
+            .distinct()
+
+        is StatisticsMode.Exercises -> mode.exercises
+            .map { it.exerciseExample.id }
+            .distinct()
+    }
+}

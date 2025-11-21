@@ -26,9 +26,11 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.equipment.EquipmentRow
+import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.segment.SegmentWidth
+import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
@@ -48,23 +50,29 @@ internal fun MissingEquipmentsScreen(
     state: MissingEquipmentsState,
     loaders: ImmutableSet<MissingEquipmentsLoader>,
     contract: MissingEquipmentsContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
-
+) = BaseComposeScreen(
+    ScreenBackground.Color(
+        value = AppTokens.colors.background.screen,
+        ambient = ScreenBackground.Ambient(
+            color = AppTokens.colors.brand.color3,
+        )
+    )
+) {
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
-        onBack = contract::onBack,
+        leading = Leading.Back(contract::onBack),
         style = ToolbarStyle.Transparent
     )
 
     Column(
         modifier = Modifier
-            .navigationBarsPadding()
             .fillMaxWidth()
             .weight(1f)
-            .padding(vertical = AppTokens.dp.contentPadding.content)
             .imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
         Text(
             modifier = Modifier
                 .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
@@ -111,41 +119,55 @@ internal fun MissingEquipmentsScreen(
                 state.suggestions.find { it.id == state.selectedGroupId }?.equipments.orEmpty()
             }
 
-            LazyColumn(
+            val basePadding = PaddingValues(
+                start = AppTokens.dp.screen.horizontalPadding,
+                end = AppTokens.dp.screen.horizontalPadding,
+                top = AppTokens.dp.contentPadding.content
+            )
+
+            BottomOverlayContainer(
                 modifier = Modifier
-                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
                     .fillMaxWidth()
                     .weight(1f),
-                contentPadding = PaddingValues(
-                    top = AppTokens.dp.contentPadding.content
-                ),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-            ) {
-                items(
-                    items = equipments,
-                    key = { it.id },
-                ) { equipment ->
-                    EquipmentRow(
-                        equipment = equipment,
-                        selectedEquipmentIds = state.selectedEquipmentIds,
-                        selectEquipment = contract::onEquipmentClick,
+                contentPadding = basePadding,
+                overlay = AppTokens.colors.background.screen,
+                content = { containerModifier, resolvedPadding ->
+                    LazyColumn(
+                        modifier = containerModifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                        contentPadding = resolvedPadding
+                    ) {
+                        items(items = equipments, key = { it.id }) { equipment ->
+                            EquipmentRow(
+                                equipment = equipment,
+                                selectedEquipmentIds = state.selectedEquipmentIds,
+                                selectEquipment = contract::onEquipmentClick,
+                            )
+                        }
+                    }
+                },
+                bottom = {
+                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+                    Button(
+                        modifier = Modifier
+                            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                            .fillMaxWidth(),
+                        content = ButtonContent.Text(
+                            text = AppTokens.strings.res(Res.string.continue_btn),
+                        ),
+                        style = ButtonStyle.Primary,
+                        onClick = contract::onNextClick
                     )
+
+                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+                    Spacer(modifier = Modifier.navigationBarsPadding())
                 }
-            }
+            )
         }
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-        Button(
-            modifier = Modifier
-                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                .fillMaxWidth(),
-            content = ButtonContent.Text(
-                text = AppTokens.strings.res(Res.string.continue_btn),
-            ),
-            style = ButtonStyle.Primary,
-            onClick = contract::onNextClick
-        )
     }
 }
 

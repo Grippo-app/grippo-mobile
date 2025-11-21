@@ -1,5 +1,8 @@
 package com.grippo.training.recording
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 internal interface TrainingRecordingContract {
     fun onAddExercise()
     fun onEditExercise(id: String)
@@ -8,6 +11,7 @@ internal interface TrainingRecordingContract {
     fun onSave()
     fun onBack()
 
+    @Immutable
     companion object Empty : TrainingRecordingContract {
         override fun onAddExercise() {}
         override fun onEditExercise(id: String) {}

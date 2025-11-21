@@ -1,5 +1,8 @@
 package com.grippo.training.exercise
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 internal interface ExerciseContract {
     fun onAddIteration()
     fun onExampleClick()
@@ -10,6 +13,7 @@ internal interface ExerciseContract {
     fun onSave()
     fun onBack()
 
+    @Immutable
     companion object Empty : ExerciseContract {
         override fun onExampleClick() {}
         override fun onAddIteration() {}

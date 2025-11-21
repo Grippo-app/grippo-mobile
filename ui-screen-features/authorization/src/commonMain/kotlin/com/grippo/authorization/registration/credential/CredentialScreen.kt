@@ -23,6 +23,7 @@ import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.inputs.InputEmail
 import com.grippo.design.components.inputs.InputPassword
+import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
@@ -40,11 +41,18 @@ internal fun CredentialScreen(
     state: CredentialState,
     loaders: ImmutableSet<CredentialLoader>,
     contract: CredentialContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
+) = BaseComposeScreen(
+    ScreenBackground.Color(
+        value = AppTokens.colors.background.screen,
+        ambient = ScreenBackground.Ambient(
+            color = AppTokens.colors.brand.color3,
+        )
+    )
+) {
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
-        onBack = contract::onBack,
+        leading = Leading.Back(contract::onBack),
         style = ToolbarStyle.Transparent
     )
 

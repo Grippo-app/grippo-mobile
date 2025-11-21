@@ -1,6 +1,5 @@
 package com.grippo.toolkit.calculation
 
-import com.grippo.core.state.datetime.PeriodState
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.muscles.MuscleGroupState
 import com.grippo.core.state.muscles.MuscleRepresentationState
@@ -24,6 +23,7 @@ import com.grippo.toolkit.calculation.models.Metric
 import com.grippo.toolkit.calculation.models.MetricSeries
 import com.grippo.toolkit.calculation.models.MuscleLoadMatrix
 import com.grippo.toolkit.calculation.models.MuscleLoadSummary
+import com.grippo.toolkit.date.utils.DateRange
 
 /**
  * Facade that exposes the most common workout analytics in a single place.
@@ -52,14 +52,14 @@ public class AnalyticsApi(
         .computeVolumeSeriesFromExercises(exercises)
 
     /**
-     * Builds a volume series for trainings filtered by [period].
+     * Builds a volume series for trainings filtered by [range].
      * The underlying calculator automatically selects the optimal bucket scale.
      */
     public suspend fun volumeFromTrainings(
         trainings: List<TrainingState>,
-        period: PeriodState,
+        range: DateRange,
     ): MetricSeries = volumeAnalytics
-        .computeVolumeSeriesFromTrainings(trainings, period)
+        .computeVolumeSeriesFromTrainings(trainings, range)
 
     /**
      * Aggregates muscle load for the provided [exercises] and returns the group breakdown together with
@@ -81,17 +81,17 @@ public class AnalyticsApi(
     }
 
     /**
-     * Aggregates muscle load across [trainings] filtered by [period].
+     * Aggregates muscle load across [trainings] filtered by [range].
      * The result contains the group breakdown and ready-to-render images colored by intensity.
      */
     public suspend fun muscleLoadFromTrainings(
         trainings: List<TrainingState>,
-        period: PeriodState,
+        range: DateRange,
         examples: List<ExerciseExampleState>,
         groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
     ): MuscleLoadSummary {
         val breakdowns = muscleLoadCalculator
-            .computeMuscleLoadBreakdownsFromTrainings(trainings, period, examples, groups)
+            .computeMuscleLoadBreakdownsFromTrainings(trainings, range, examples, groups)
         val images = muscleImageBuilder.generateImagesFromBreakdown(breakdowns.perMuscle)
 
         return MuscleLoadSummary(
@@ -124,12 +124,12 @@ public class AnalyticsApi(
      */
     public suspend fun heatmapFromTrainings(
         trainings: List<TrainingState>,
-        period: PeriodState,
+        range: DateRange,
         examples: List<ExerciseExampleState>,
         groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
         metric: Metric = Metric.REPS,
     ): MuscleLoadMatrix = heatmapCalculator
-        .computeMuscleGroupHeatmap(trainings, period, examples, groups, metric)
+        .computeMuscleGroupHeatmap(trainings, range, examples, groups, metric)
 
     /**
      * Produces an estimated 1RM series for the supplied [exercises].
@@ -145,9 +145,9 @@ public class AnalyticsApi(
      */
     public suspend fun estimated1RmFromTrainings(
         trainings: List<TrainingState>,
-        period: PeriodState,
+        range: DateRange,
     ): MetricSeries = estimated1RMAnalytics
-        .computeEstimated1RmFromTrainings(trainings, period)
+        .computeEstimated1RmFromTrainings(trainings, range)
 
     /**
      * Returns a distribution of exercise categories for the provided [exercises].
@@ -159,14 +159,14 @@ public class AnalyticsApi(
         .calculateCategoryDistributionFromExercises(exercises, weighting)
 
     /**
-     * Returns a distribution of exercise categories drawn from [trainings] limited by [period].
+     * Returns a distribution of exercise categories drawn from [trainings] limited by [range].
      */
     public suspend fun categoryDistributionFromTrainings(
         trainings: List<TrainingState>,
-        period: PeriodState,
+        range: DateRange,
         weighting: DistributionWeighting = DistributionWeighting.Count,
     ): DistributionBreakdown = distributionCalculator
-        .calculateCategoryDistributionFromTrainings(trainings, period, weighting)
+        .calculateCategoryDistributionFromTrainings(trainings, range, weighting)
 
     /**
      * Returns a distribution of weight types for the provided [exercises].
@@ -178,14 +178,14 @@ public class AnalyticsApi(
         .calculateWeightTypeDistributionFromExercises(exercises, weighting)
 
     /**
-     * Returns a distribution of weight types collected from [trainings] within [period].
+     * Returns a distribution of weight types collected from [trainings] within [range].
      */
     public suspend fun weightTypeDistributionFromTrainings(
         trainings: List<TrainingState>,
-        period: PeriodState,
+        range: DateRange,
         weighting: DistributionWeighting = DistributionWeighting.Count,
     ): DistributionBreakdown = distributionCalculator
-        .calculateWeightTypeDistributionFromTrainings(trainings, period, weighting)
+        .calculateWeightTypeDistributionFromTrainings(trainings, range, weighting)
 
     /**
      * Returns a distribution of force types for the provided [exercises].
@@ -197,14 +197,14 @@ public class AnalyticsApi(
         .calculateForceTypeDistributionFromExercises(exercises, weighting)
 
     /**
-     * Returns a distribution of force types gathered from [trainings] within [period].
+     * Returns a distribution of force types gathered from [trainings] within [range].
      */
     public suspend fun forceTypeDistributionFromTrainings(
         trainings: List<TrainingState>,
-        period: PeriodState,
+        range: DateRange,
         weighting: DistributionWeighting = DistributionWeighting.Count,
     ): DistributionBreakdown = distributionCalculator
-        .calculateForceTypeDistributionFromTrainings(trainings, period, weighting)
+        .calculateForceTypeDistributionFromTrainings(trainings, range, weighting)
 
     /**
      * Aggregates training metrics from a list of iterations.

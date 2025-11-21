@@ -53,7 +53,7 @@ kotlin {
 
         implementation(projects.uiScreenFeatures.screenApi)
         implementation(projects.uiScreenFeatures.authorization)
-        implementation(projects.uiScreenFeatures.home)
+        implementation(projects.uiScreenFeatures.trainings)
         implementation(projects.uiScreenFeatures.profile)
         implementation(projects.uiScreenFeatures.debug)
         implementation(projects.uiScreenFeatures.training)
@@ -64,6 +64,7 @@ kotlin {
         implementation(projects.uiDialogFeatures.datePicker)
         implementation(projects.uiDialogFeatures.periodPicker)
         implementation(projects.uiDialogFeatures.draftTraining)
+        implementation(projects.uiDialogFeatures.profile)
         implementation(projects.uiDialogFeatures.errorDisplay)
         implementation(projects.uiDialogFeatures.confirmation)
         implementation(projects.uiDialogFeatures.exerciseExample)
@@ -72,6 +73,7 @@ kotlin {
         implementation(projects.uiDialogFeatures.filterPicker)
         implementation(projects.uiDialogFeatures.exerciseExamplePicker)
         implementation(projects.uiDialogFeatures.menuPicker)
+        implementation(projects.uiDialogFeatures.statistics)
 
         implementation(libs.datetime)
         implementation(libs.immutable.collections)

@@ -1,6 +1,5 @@
 package com.grippo.toolkit.calculation.internal.muscle
 
-import com.grippo.core.state.datetime.PeriodState
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.muscles.MuscleEnumState
 import com.grippo.core.state.muscles.MuscleGroupState
@@ -13,6 +12,7 @@ import com.grippo.toolkit.calculation.internal.deriveScale
 import com.grippo.toolkit.calculation.models.BucketScale
 import com.grippo.toolkit.calculation.models.Metric
 import com.grippo.toolkit.calculation.models.MuscleLoadMatrix
+import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.contains
 
 internal class TemporalHeatmapCalculator(
@@ -26,15 +26,15 @@ internal class TemporalHeatmapCalculator(
 
     suspend fun computeMuscleGroupHeatmap(
         trainings: List<TrainingState>,
-        period: PeriodState,
+        range: DateRange,
         examples: List<ExerciseExampleState>,
         groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
         metric: Metric,
     ): MuscleLoadMatrix {
-        val inRange = trainings.filter { it.createdAt in period.range }
-        val scale = deriveScale(period)
+        val inRange = trainings.filter { it.createdAt in range }
+        val scale = deriveScale(range)
 
-        val builtBuckets = buildBuckets(period.range, scale).sortedBy { it.start }
+        val builtBuckets = buildBuckets(range, scale).sortedBy { it.start }
         val cols = builtBuckets.size
         val colLabels: List<String> = defaultTimeLabels(builtBuckets, scale, stringProvider)
 
@@ -102,8 +102,7 @@ internal class TemporalHeatmapCalculator(
             }
         }
 
-        val normMode = chooseNormalizationFor(scale)
-        val normalized = when (normMode) {
+        val normalized = when (val normMode = chooseNormalizationFor(scale)) {
             is Normalization.Percentile -> normalizeByPercentile(raw, normMode.p)
             is Normalization.PerColMax -> normalizePerColMax(raw, rows, cols)
         }

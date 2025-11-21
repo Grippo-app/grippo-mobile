@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -92,17 +93,17 @@ internal fun ExerciseScreen(
                 size = ChipSize.Medium
             )
 
-            IntensityChip(
-                modifier = Modifier.weight(1f),
-                value = exercise.metrics.intensity,
-                style = IntensityChipStyle.SHORT,
-                size = ChipSize.Medium
-            )
-
             RepetitionsChip(
                 modifier = Modifier.weight(1f),
                 value = exercise.metrics.repetitions,
                 style = RepetitionsChipStyle.SHORT,
+                size = ChipSize.Medium
+            )
+
+            IntensityChip(
+                modifier = Modifier.weight(1f),
+                value = exercise.metrics.intensity,
+                style = IntensityChipStyle.SHORT,
                 size = ChipSize.Medium
             )
         }
@@ -172,6 +173,8 @@ internal fun ExerciseScreen(
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+
+        Spacer(modifier = Modifier.navigationBarsPadding())
     }
 }
 

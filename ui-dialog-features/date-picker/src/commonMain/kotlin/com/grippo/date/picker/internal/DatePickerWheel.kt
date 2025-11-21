@@ -3,7 +3,7 @@ package com.grippo.date.picker.internal
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -50,7 +50,7 @@ internal fun DateWheelPicker(
 
     var selectedYear by remember { mutableStateOf(value.year) }
     var selectedMonth by remember { mutableStateOf(value.month) }
-    var selectedDay by remember { mutableStateOf(value.dayOfMonth) }
+    var selectedDay by remember { mutableStateOf(value.day) }
 
     val years = remember(limitations) {
         (limitations.from.year..limitations.to.year).toList()
@@ -101,7 +101,7 @@ internal fun DateWheelPicker(
             LocalDateTime(
                 year = selectedYear,
                 month = selectedMonth,
-                dayOfMonth = safeDay,
+                day = safeDay,
                 hour = baseHour,
                 minute = baseMinute
             )
@@ -145,7 +145,7 @@ internal fun DateWheelPicker(
             val template = remember(m) {
                 LocalDateTime(selectedYear, m.ordinal + 1, 1, 0, 0)
             }
-            val monthName = rememberFormat(value = template, format = DateFormat.MONTH_FULL)
+            val monthName = rememberFormat(value = template, format = DateFormat.DateOnly.MonthFull)
             WheelItem(text = monthName, isValid = valid)
         },
         listState = monthState
@@ -168,7 +168,7 @@ internal fun DateWheelPicker(
             .fillMaxWidth()
             .height(AppTokens.dp.wheelPicker.height),
         selectorProperties = DefaultSelectorProperties(
-            shape = RoundedCornerShape(AppTokens.dp.wheelPicker.radius),
+            shape = CircleShape,
             color = AppTokens.colors.background.card,
         ),
         columns = listOf(dayColumn, monthColumn, yearColumn)
@@ -197,9 +197,9 @@ private fun clampMonthToBounds(year: Int, month: Month, limits: DateRange): Mont
 private fun validDayRange(year: Int, month: Month, limits: DateRange): IntRange {
     val maxDays = DateTimeUtils.getDaysInMonth(year, month)
     val minDay = if (year == limits.from.year && month == limits.from.month)
-        limits.from.dayOfMonth else 1
+        limits.from.day else 1
     val maxDay = if (year == limits.to.year && month == limits.to.month)
-        minOf(limits.to.dayOfMonth, maxDays) else maxDays
+        minOf(limits.to.day, maxDays) else maxDays
     return minDay.coerceAtMost(maxDay)..maxDay
 }
 

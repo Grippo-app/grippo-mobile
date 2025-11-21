@@ -8,8 +8,11 @@ import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.formatters.HeightFormatState
 import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.menu.MenuItemState
+import com.grippo.core.state.profile.ProfileActivityMenu
+import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.IterationFocus
 import com.grippo.core.state.trainings.IterationState
+import com.grippo.core.state.trainings.TrainingState
 import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -63,7 +66,7 @@ public sealed class DialogConfig(
         @Transient val onResult: (value: WeightFormatState) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
-        dismissBySwipe = false
+        dismissBySwipe = true
     )
 
     @Serializable
@@ -72,7 +75,7 @@ public sealed class DialogConfig(
         @Transient val onResult: (value: HeightFormatState) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
-        dismissBySwipe = false
+        dismissBySwipe = true
     )
 
     @Serializable
@@ -83,7 +86,7 @@ public sealed class DialogConfig(
         @Transient val onResult: (value: DateFormatState) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
-        dismissBySwipe = false
+        dismissBySwipe = true
     )
 
     @Serializable
@@ -119,13 +122,21 @@ public sealed class DialogConfig(
         @Transient val onResult: (ExerciseExampleState) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
-        dismissBySwipe = false
+        dismissBySwipe = true
     )
 
     @Serializable
     public data class MenuPicker(
         val items: List<MenuItemState>,
         @Transient val onResult: (id: String) -> Unit = {},
+    ) : DialogConfig(
+        onDismiss = null,
+        dismissBySwipe = true
+    )
+
+    @Serializable
+    public data class Profile(
+        @Transient val onResult: (ProfileActivityMenu) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
@@ -140,4 +151,22 @@ public sealed class DialogConfig(
         onDismiss = null,
         dismissBySwipe = true
     )
+
+    @Serializable
+    public sealed class Statistics : DialogConfig(
+        onDismiss = null,
+        dismissBySwipe = true
+    ) {
+
+        @Serializable
+        public data class Trainings(
+            public val trainings: List<TrainingState>,
+            public val range: DateRange,
+        ) : Statistics()
+
+        @Serializable
+        public data class Exercises(
+            public val exercises: List<ExerciseState>,
+        ) : Statistics()
+    }
 }

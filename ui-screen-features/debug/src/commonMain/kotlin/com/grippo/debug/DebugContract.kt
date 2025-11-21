@@ -1,5 +1,8 @@
 package com.grippo.debug
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 internal interface DebugContract {
     fun onBack()
     fun clearLogs()
@@ -7,6 +10,7 @@ internal interface DebugContract {
     fun onSelect(value: DebugMenu)
     fun onSelectLogCategory(value: String)
 
+    @Immutable
     companion object Empty : DebugContract {
         override fun onBack() {}
         override fun clearLogs() {}

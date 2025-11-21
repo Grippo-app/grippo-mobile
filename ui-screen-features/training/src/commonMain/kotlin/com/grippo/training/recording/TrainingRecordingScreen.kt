@@ -4,9 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -27,14 +25,13 @@ import com.grippo.design.components.chip.ChipSize
 import com.grippo.design.components.chip.TimerChip
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
+import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.add_exercise_btn
-import com.grippo.design.resources.provider.add_training_title
 import com.grippo.design.resources.provider.edit_training_title
 import com.grippo.design.resources.provider.exercises
 import com.grippo.design.resources.provider.save_btn
@@ -51,8 +48,14 @@ internal fun TrainingRecordingScreen(
     state: TrainingRecordingState,
     loaders: ImmutableSet<TrainingRecordingLoader>,
     contract: TrainingRecordingContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
-
+) = BaseComposeScreen(
+    ScreenBackground.Color(
+        value = AppTokens.colors.background.screen,
+        ambient = ScreenBackground.Ambient(
+            color = AppTokens.colors.brand.color3,
+        )
+    )
+) {
     val exercisesTxt = AppTokens.strings.res(Res.string.exercises)
     val statisticsTxt = AppTokens.strings.res(Res.string.statistics)
 
@@ -71,7 +74,7 @@ internal fun TrainingRecordingScreen(
             StageState.Draft -> AppTokens.strings.res(Res.string.training)
             is StageState.Edit -> AppTokens.strings.res(Res.string.edit_training_title)
         },
-        onBack = contract::onBack,
+        leading = Leading.Back(contract::onBack),
         trailing = {
             val buttonState = remember(loaders, state.exercises) {
                 when {
@@ -92,11 +95,7 @@ internal fun TrainingRecordingScreen(
         content = {
             Row(
                 modifier = Modifier
-                    .padding(
-                        start = AppTokens.dp.screen.horizontalPadding,
-                        end = AppTokens.dp.screen.horizontalPadding,
-                        bottom = AppTokens.dp.contentPadding.content,
-                    )
+                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
@@ -105,7 +104,7 @@ internal fun TrainingRecordingScreen(
                     items = segmentItems,
                     selected = state.tab,
                     onSelect = contract::onSelectTab,
-                    style = SegmentStyle.Fill
+                    style = SegmentStyle.Outline
                 )
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -135,23 +134,6 @@ internal fun TrainingRecordingScreen(
             contract = contract
         )
     }
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-    Button(
-        modifier = Modifier
-            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-            .fillMaxWidth(1f),
-        content = ButtonContent.Text(
-            text = AppTokens.strings.res(Res.string.add_exercise_btn),
-        ),
-        style = ButtonStyle.Primary,
-        onClick = contract::onAddExercise
-    )
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
-
-    Spacer(modifier = Modifier.navigationBarsPadding())
 }
 
 @AppPreview

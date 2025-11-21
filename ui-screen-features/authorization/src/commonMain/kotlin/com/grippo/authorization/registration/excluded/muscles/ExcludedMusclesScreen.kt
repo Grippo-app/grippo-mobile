@@ -2,10 +2,10 @@ package com.grippo.authorization.registration.excluded.muscles
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,8 +22,10 @@ import com.grippo.core.state.muscles.stubMuscles
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.muscle.MusclesColumn
 import com.grippo.design.components.muscle.MusclesImage
+import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
@@ -43,27 +45,32 @@ internal fun ExcludedMusclesScreen(
     state: ExcludedMusclesState,
     loaders: ImmutableSet<ExcludedMusclesLoader>,
     contract: ExcludedMusclesContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
-
+) = BaseComposeScreen(
+    ScreenBackground.Color(
+        value = AppTokens.colors.background.screen,
+        ambient = ScreenBackground.Ambient(
+            color = AppTokens.colors.brand.color3,
+        )
+    )
+) {
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
-        onBack = contract::onBack,
+        leading = Leading.Back(contract::onBack),
         style = ToolbarStyle.Transparent
     )
 
     Column(
         modifier = Modifier
-            .navigationBarsPadding()
             .fillMaxWidth()
-            .weight(1f)
-            .padding(
-                horizontal = AppTokens.dp.screen.horizontalPadding,
-                vertical = AppTokens.dp.contentPadding.content
-            ).imePadding(),
+            .weight(1f),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
         Text(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                .fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.registration_muscles_title),
             style = AppTokens.typography.h2(),
             color = AppTokens.colors.text.primary,
@@ -73,7 +80,9 @@ internal fun ExcludedMusclesScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
 
         Text(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                .fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.registration_muscles_description),
             style = AppTokens.typography.b14Med(),
             color = AppTokens.colors.text.secondary,
@@ -82,62 +91,81 @@ internal fun ExcludedMusclesScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        LazyColumn(
+        val basePadding = PaddingValues(horizontal = AppTokens.dp.screen.horizontalPadding)
+
+        BottomOverlayContainer(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-        ) {
-            itemsIndexed(
-                state.suggestions,
-                key = { _, item -> item.id },
-            ) { index, group ->
-                val isEven = index % 2 == 0
-                val preset = state.musclePresets[group.id] ?: return@itemsIndexed
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-                    verticalAlignment = Alignment.CenterVertically
+            contentPadding = basePadding,
+            overlay = AppTokens.colors.background.screen,
+            content = { containerModifier, resolvedPadding ->
+                LazyColumn(
+                    modifier = containerModifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                    contentPadding = resolvedPadding
                 ) {
-                    if (isEven) {
-                        MusclesColumn(
-                            modifier = Modifier.weight(1f),
-                            item = group,
-                            selectedIds = state.selectedMuscleIds,
-                            onSelect = contract::onSelect
-                        )
-                        MusclesImage(
-                            modifier = Modifier.weight(1f),
-                            item = group,
-                            preset = preset
-                        )
-                    } else {
-                        MusclesImage(
-                            modifier = Modifier.weight(1f),
-                            item = group,
-                            preset = preset
-                        )
-                        MusclesColumn(
-                            modifier = Modifier.weight(1f),
-                            item = group,
-                            selectedIds = state.selectedMuscleIds,
-                            onSelect = contract::onSelect
-                        )
+                    itemsIndexed(
+                        state.suggestions,
+                        key = { _, item -> item.id },
+                    ) { index, group ->
+                        val isEven = index % 2 == 0
+                        val preset = state.musclePresets[group.id] ?: return@itemsIndexed
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            if (isEven) {
+                                MusclesColumn(
+                                    modifier = Modifier.weight(1f),
+                                    item = group,
+                                    selectedIds = state.selectedMuscleIds,
+                                    onSelect = contract::onSelect
+                                )
+                                MusclesImage(
+                                    modifier = Modifier.weight(1f),
+                                    item = group,
+                                    preset = preset
+                                )
+                            } else {
+                                MusclesImage(
+                                    modifier = Modifier.weight(1f),
+                                    item = group,
+                                    preset = preset
+                                )
+                                MusclesColumn(
+                                    modifier = Modifier.weight(1f),
+                                    item = group,
+                                    selectedIds = state.selectedMuscleIds,
+                                    onSelect = contract::onSelect
+                                )
+                            }
+                        }
                     }
                 }
+            },
+            bottom = {
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+                Button(
+                    modifier = Modifier
+                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                        .fillMaxWidth(),
+                    content = ButtonContent.Text(
+                        text = AppTokens.strings.res(Res.string.continue_btn),
+                    ),
+                    style = ButtonStyle.Primary,
+                    onClick = contract::onNextClick
+                )
+
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+                Spacer(modifier = Modifier.navigationBarsPadding())
             }
-        }
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            content = ButtonContent.Text(
-                text = AppTokens.strings.res(Res.string.continue_btn),
-            ),
-            style = ButtonStyle.Primary,
-            onClick = contract::onNextClick
         )
     }
 }

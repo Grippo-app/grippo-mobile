@@ -22,10 +22,13 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.equipment.EquipmentRow
+import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.segment.SegmentWidth
+import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
+import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -41,8 +44,14 @@ internal fun ProfileEquipmentsScreen(
     state: ProfileEquipmentsState,
     loaders: ImmutableSet<ProfileEquipmentsLoader>,
     contract: ProfileEquipmentsContract
-) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
-
+) = BaseComposeScreen(
+    ScreenBackground.Color(
+        value = AppTokens.colors.background.screen,
+        ambient = ScreenBackground.Ambient(
+            color = AppTokens.colors.brand.color3,
+        )
+    )
+) {
     val segmentItems = remember(state.suggestions) {
         state.suggestions.map { it.id to it.type.title() }.toPersistentList()
     }
@@ -50,7 +59,8 @@ internal fun ProfileEquipmentsScreen(
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.equipments),
-        onBack = contract::onBack,
+        style = ToolbarStyle.Transparent,
+        leading = Leading.Back(contract::onBack),
         content = {
             Segment(
                 modifier = Modifier
@@ -70,49 +80,62 @@ internal fun ProfileEquipmentsScreen(
         state.suggestions.find { it.id == state.selectedGroupId }?.equipments.orEmpty()
     }
 
-    LazyColumn(
+    val basePadding = PaddingValues(
+        start = AppTokens.dp.screen.horizontalPadding,
+        end = AppTokens.dp.screen.horizontalPadding,
+        top = AppTokens.dp.contentPadding.content
+    )
+
+    BottomOverlayContainer(
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f),
-        contentPadding = PaddingValues(
-            horizontal = AppTokens.dp.screen.horizontalPadding,
-            vertical = AppTokens.dp.contentPadding.content,
-        ),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-    ) {
-        items(items = equipments, key = { it.id }) { equipment ->
-            EquipmentRow(
-                equipment = equipment,
-                selectedEquipmentIds = state.selectedEquipmentIds,
-                selectEquipment = contract::onSelectEquipment,
+        contentPadding = basePadding,
+        overlay = AppTokens.colors.background.screen,
+        content = { containerModifier, resolvedPadding ->
+            LazyColumn(
+                modifier = containerModifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                contentPadding = resolvedPadding
+            ) {
+                items(items = equipments, key = { it.id }) { equipment ->
+                    EquipmentRow(
+                        equipment = equipment,
+                        selectedEquipmentIds = state.selectedEquipmentIds,
+                        selectEquipment = contract::onSelectEquipment,
+                    )
+                }
+            }
+        },
+        bottom = {
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+            val buttonState = remember(loaders) {
+                when {
+                    loaders.contains(ProfileEquipmentsLoader.ApplyButton) -> ButtonState.Loading
+                    else -> ButtonState.Enabled
+                }
+            }
+
+            Button(
+                modifier = Modifier
+                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                    .fillMaxWidth(),
+                content = ButtonContent.Text(
+                    text = AppTokens.strings.res(Res.string.apply_btn),
+                ),
+                style = ButtonStyle.Primary,
+                state = buttonState,
+                onClick = contract::onApply
             )
+
+            Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+
+            Spacer(modifier = Modifier.navigationBarsPadding())
         }
-    }
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-    val buttonState = remember(loaders) {
-        when {
-            loaders.contains(ProfileEquipmentsLoader.ApplyButton) -> ButtonState.Loading
-            else -> ButtonState.Enabled
-        }
-    }
-
-    Button(
-        modifier = Modifier
-            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-            .fillMaxWidth(),
-        content = ButtonContent.Text(
-            text = AppTokens.strings.res(Res.string.apply_btn),
-        ),
-        style = ButtonStyle.Primary,
-        state = buttonState,
-        onClick = contract::onApply
     )
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
-
-    Spacer(modifier = Modifier.navigationBarsPadding())
 }
 
 @AppPreview

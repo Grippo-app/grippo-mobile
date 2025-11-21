@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -78,7 +79,7 @@ internal fun PeriodPickerScreen(
                     onSelect = clickProvider,
                     style = CheckSelectableCardStyle.Large(
                         title = item.title(),
-                        description = item.range(DateFormat.DATE_MMM_DD_YYYY),
+                        description = item.range(DateFormat.DateOnly.DateMmmDdYyyy),
                         icon = item.icon(),
                         subContent = if (item is PeriodState.Custom) {
                             {
@@ -117,6 +118,8 @@ internal fun PeriodPickerScreen(
         }
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+
+        Spacer(modifier = Modifier.navigationBarsPadding())
     }
 }
 
