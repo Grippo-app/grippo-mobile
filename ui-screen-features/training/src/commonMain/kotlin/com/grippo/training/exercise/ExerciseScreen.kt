@@ -1,7 +1,6 @@
 package com.grippo.training.exercise
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -20,6 +19,7 @@ import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.core.state.trainings.stubExercise
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.example.ExerciseExampleCard
@@ -76,6 +76,24 @@ internal fun ExerciseScreen(
                     value = example
                 )
             }
+        },
+        trailing = {
+            val buttonState = remember(loaders, state.exercise.iterations) {
+                when {
+                    state.exercise.iterations.isEmpty() -> ButtonState.Disabled
+                    else -> ButtonState.Enabled
+                }
+            }
+
+            Button(
+                content = ButtonContent.Text(
+                    text = AppTokens.strings.res(Res.string.save_btn),
+                ),
+                style = ButtonStyle.Primary,
+                state = buttonState,
+                size = ButtonSize.Small,
+                onClick = contract::onSave
+            )
         },
         title = AppTokens.strings.res(Res.string.exercise_record),
     )
@@ -148,38 +166,16 @@ internal fun ExerciseScreen(
 
     Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
 
-    Row(
+    Button(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-    ) {
-        Button(
-            modifier = Modifier.weight(1f),
-            content = ButtonContent.Text(
-                text = AppTokens.strings.res(Res.string.add_set_btn),
-            ),
-            style = ButtonStyle.Secondary,
-            onClick = contract::onAddIteration
-        )
-
-        val buttonState = remember(loaders, state.exercise.iterations) {
-            when {
-                state.exercise.iterations.isEmpty() -> ButtonState.Disabled
-                else -> ButtonState.Enabled
-            }
-        }
-
-        Button(
-            modifier = Modifier.weight(1f),
-            content = ButtonContent.Text(
-                text = AppTokens.strings.res(Res.string.save_btn),
-            ),
-            style = ButtonStyle.Primary,
-            state = buttonState,
-            onClick = contract::onSave
-        )
-    }
+        content = ButtonContent.Text(
+            text = AppTokens.strings.res(Res.string.add_set_btn),
+        ),
+        style = ButtonStyle.Secondary,
+        onClick = contract::onAddIteration
+    )
 
     Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
 

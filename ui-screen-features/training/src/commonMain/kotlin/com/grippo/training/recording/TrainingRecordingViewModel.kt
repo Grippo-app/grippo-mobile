@@ -198,10 +198,6 @@ internal class TrainingRecordingViewModel(
         saveDraftTraining()
     }
 
-    override fun onSelectTab(tab: RecordingTab) {
-        update { it.copy(tab = tab) }
-    }
-
     override fun onDeleteExercise(id: String) {
         update { s ->
             val exercises = s.exercises

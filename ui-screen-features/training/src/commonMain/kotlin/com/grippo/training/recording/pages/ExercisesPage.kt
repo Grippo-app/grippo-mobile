@@ -36,7 +36,6 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.add_exercise_btn
 import com.grippo.design.resources.provider.icons.Cancel
 import com.grippo.design.resources.provider.no_exercises_yet
-import com.grippo.training.recording.RecordingTab
 import com.grippo.training.recording.TrainingRecordingContract
 import com.grippo.training.recording.TrainingRecordingScreen
 import com.grippo.training.recording.TrainingRecordingState
@@ -82,7 +81,7 @@ internal fun ColumnScope.ExercisesPage(
                         content = ButtonContent.Text(
                             text = AppTokens.strings.res(Res.string.add_exercise_btn),
                         ),
-                        style = ButtonStyle.Primary,
+                        style = ButtonStyle.Secondary,
                         onClick = contract::onAddExercise
                     )
 
@@ -157,7 +156,7 @@ internal fun ColumnScope.ExercisesPage(
                             content = ButtonContent.Text(
                                 text = AppTokens.strings.res(Res.string.add_exercise_btn),
                             ),
-                            style = ButtonStyle.Primary,
+                            style = ButtonStyle.Secondary,
                             onClick = contract::onAddExercise
                         )
 
@@ -179,7 +178,6 @@ private fun ExercisesPagePreview() {
             state = TrainingRecordingState(
                 stage = StageState.Add,
                 exercises = stubTraining().exercises,
-                tab = RecordingTab.Exercises
             ),
             loaders = persistentSetOf(),
             contract = TrainingRecordingContract.Empty
@@ -195,7 +193,6 @@ private fun ExercisesPageEmptyPreview() {
             state = TrainingRecordingState(
                 stage = StageState.Add,
                 exercises = persistentListOf(),
-                tab = RecordingTab.Exercises
             ),
             loaders = persistentSetOf(),
             contract = TrainingRecordingContract.Empty
