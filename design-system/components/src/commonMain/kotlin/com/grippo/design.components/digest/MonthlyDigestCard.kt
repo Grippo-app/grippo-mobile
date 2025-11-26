@@ -20,6 +20,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.grippo.core.state.digest.MonthlyDigestState
 import com.grippo.core.state.digest.stubMonthlyDigest
@@ -73,6 +74,8 @@ public fun MonthlyDigestCard(
                 modifier = Modifier.weight(1f),
                 text = digestTitle,
                 style = AppTokens.typography.h2(),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 color = AppTokens.colors.text.primary
             )
 

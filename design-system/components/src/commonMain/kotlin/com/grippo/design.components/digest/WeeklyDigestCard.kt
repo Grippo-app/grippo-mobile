@@ -18,6 +18,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.digest.WeeklyDigestState
 import com.grippo.core.state.digest.stubWeeklyDigest
 import com.grippo.design.components.modifiers.scalableClick
@@ -67,6 +68,8 @@ public fun WeeklyDigestCard(
                 modifier = Modifier.weight(1f),
                 text = AppTokens.strings.res(Res.string.weekly_digest),
                 style = AppTokens.typography.h2(),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 color = AppTokens.colors.text.primary
             )
 

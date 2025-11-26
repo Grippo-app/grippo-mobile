@@ -77,7 +77,7 @@ public fun DailyDigestCard(
                 text = digestTitle,
                 style = AppTokens.typography.h2(),
                 color = AppTokens.colors.text.primary,
-                maxLines = 2,
+                maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
 
