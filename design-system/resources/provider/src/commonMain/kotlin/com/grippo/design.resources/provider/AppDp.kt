@@ -95,7 +95,7 @@ public data object AppDp {
     }
 
     public data object AiSuggestionCard {
-        val horizontalPadding: Dp = padding.medium
+        val horizontalPadding: Dp = padding.large
         val verticalPadding: Dp = padding.large
         val radius: Dp = AppDp.radius.medium
     }

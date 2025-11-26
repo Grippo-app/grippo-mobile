@@ -53,10 +53,6 @@ public fun AiSuggestionCard(
             .background(
                 AppTokens.colors.background.card,
                 shape = RoundedCornerShape(AppTokens.dp.aiSuggestionCard.radius)
-            ).border(
-                width = 2.dp,
-                shape = RoundedCornerShape(AppTokens.dp.aiSuggestionCard.radius),
-                color = AppTokens.colors.semantic.success
             ).padding(
                 vertical = AppTokens.dp.aiSuggestionCard.verticalPadding,
                 horizontal = AppTokens.dp.aiSuggestionCard.horizontalPadding
