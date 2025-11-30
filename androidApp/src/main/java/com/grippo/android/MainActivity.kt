@@ -32,6 +32,7 @@ class MainActivity : ComponentActivity() {
                 close = ::finishAffinity
             )
         }
+
         setContent {
             SystemBarsIcons(AppTheme.current)
             rootComponent.Render()

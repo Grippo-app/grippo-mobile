@@ -217,7 +217,7 @@ public object DarkColor : AppColor {
     }
 
     override val muscle: AppColor.MuscleColors = object : AppColor.MuscleColors {
-        override val active = AppPalette.Unique.Amber
+        override val active = AppPalette.Unique.Green
         override val inactive = AppPalette.NeutralDark.N300.copy(alpha = 0.90f)
         override val background = AppPalette.NeutralDark.N200
         override val outline = AppPalette.NeutralDark.N150
