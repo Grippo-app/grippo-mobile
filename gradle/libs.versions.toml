@@ -19,6 +19,7 @@ appcompat = "1.7.1"
 coil = "3.3.0"
 koog = "0.5.0" # resoure packaging error 0.5.1
 mlkit-translate = "17.0.3"
+core-splashscreen = "1.0.1"
 
 [libraries]
 datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
@@ -31,6 +32,7 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 #AndroidX
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "core-splashscreen" }
 
 #Gradle
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }

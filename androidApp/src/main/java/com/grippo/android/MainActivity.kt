@@ -13,17 +13,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.arkivanov.decompose.retainedComponent
 import com.grippo.shared.root.RootComponent
-import com.grippo.toolkit.theme.AppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT),
-            navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT),
+            statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
         )
 
         val rootComponent: RootComponent = retainedComponent("RootComponentContext") {
@@ -34,14 +35,14 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            SystemBarsIcons(AppTheme.current)
+            SystemBarsIcons()
             rootComponent.Render()
         }
     }
 }
 
 @Composable
-fun SystemBarsIcons(isDark: Boolean) {
+private fun SystemBarsIcons() {
     val view = LocalView.current
 
     // Local helper inlined inside the composable (no top-level function)
@@ -54,16 +55,14 @@ fun SystemBarsIcons(isDark: Boolean) {
     val activity = view.context.findActivity() ?: return
     val window = activity.window
     val controller = WindowCompat.getInsetsController(window, view)
-    val wantDarkIcons = !isDark
-
-    DisposableEffect(wantDarkIcons) {
+    DisposableEffect(Unit) {
         // Save previous icon modes
         val prevStatus = controller.isAppearanceLightStatusBars
         val prevNav = controller.isAppearanceLightNavigationBars
 
-        // Apply
-        controller.isAppearanceLightStatusBars = wantDarkIcons
-        controller.isAppearanceLightNavigationBars = wantDarkIcons
+        // Apply white icons for both bars
+        controller.isAppearanceLightStatusBars = false
+        controller.isAppearanceLightNavigationBars = false
 
         onDispose {
             // Restore on exit
