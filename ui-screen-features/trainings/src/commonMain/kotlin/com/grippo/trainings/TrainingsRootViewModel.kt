@@ -10,8 +10,9 @@ import kotlinx.coroutines.flow.firstOrNull
 public class TrainingsRootViewModel(
     trainingFeature: TrainingFeature,
     private val dialogController: DialogController,
-) : BaseViewModel<TrainingsRootState, TrainingsRootDirection, TrainingsRootLoader>(TrainingsRootState),
-    TrainingsRootContract {
+) : BaseViewModel<TrainingsRootState, TrainingsRootDirection, TrainingsRootLoader>(
+    TrainingsRootState
+), TrainingsRootContract {
 
     init {
         safeLaunch {
@@ -60,5 +61,5 @@ public class TrainingsRootViewModel(
 
     override fun toAddTraining() {
         navigateTo(TrainingsRootDirection.ToAddTraining)
-}
+    }
 }
