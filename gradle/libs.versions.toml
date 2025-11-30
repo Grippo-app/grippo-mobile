@@ -12,14 +12,14 @@ decompose = "3.4.0"
 decompose-essently = "2.5.0"
 room = "2.8.4"
 ksp = "2.3.0"
-ktor = "3.3.2"
+ktor = "3.3.3"
 immutable-collections = "0.4.0"
 sqlite = "2.6.2"
 appcompat = "1.7.1"
 coil = "3.3.0"
 koog = "0.5.0" # resoure packaging error 0.5.1
 mlkit-translate = "17.0.3"
-core-splashscreen = "1.0.1"
+core-splashscreen = "1.2.0"
 
 [libraries]
 datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
