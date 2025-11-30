@@ -1,6 +1,6 @@
 package com.grippo.data.features.suggestions.prompt.exercise.example.sections
 
-import com.grippo.data.features.suggestions.prompt.exercise.example.sections.utils.ExercisePromptSection
+import com.grippo.data.features.suggestions.prompt.exercise.example.utils.ExercisePromptSection
 import kotlinx.datetime.LocalDateTime
 
 /**

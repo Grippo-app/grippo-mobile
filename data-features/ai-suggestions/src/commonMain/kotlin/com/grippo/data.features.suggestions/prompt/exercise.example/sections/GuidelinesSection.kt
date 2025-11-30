@@ -1,9 +1,9 @@
 package com.grippo.data.features.suggestions.prompt.exercise.example.sections
 
-import com.grippo.data.features.suggestions.prompt.exercise.example.PromptGuidelineConfig
-import com.grippo.data.features.suggestions.prompt.exercise.example.sections.utils.ExercisePromptSection
-import com.grippo.data.features.suggestions.prompt.exercise.example.sections.utils.dominantKey
-import com.grippo.data.features.suggestions.prompt.exercise.example.sections.utils.formatTitleLabel
+import com.grippo.data.features.suggestions.prompt.exercise.example.config.PromptGuidelineConfig
+import com.grippo.data.features.suggestions.prompt.exercise.example.utils.ExercisePromptSection
+import com.grippo.data.features.suggestions.prompt.exercise.example.utils.dominantKey
+import com.grippo.data.features.suggestions.prompt.exercise.example.utils.formatTitleLabel
 
 /**
  * Example output:

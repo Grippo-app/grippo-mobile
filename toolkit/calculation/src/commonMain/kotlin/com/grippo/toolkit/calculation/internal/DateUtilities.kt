@@ -7,7 +7,6 @@ import kotlinx.datetime.LocalTime
 import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.minus
 import kotlinx.datetime.number
-import kotlinx.datetime.plus
 
 internal fun isoWeekNumber(weekStartMonday: LocalDateTime): Int {
     val date = weekStartMonday.date
@@ -19,19 +18,6 @@ internal fun isoWeekNumber(weekStartMonday: LocalDateTime): Int {
 internal fun daysInclusive(from: LocalDate, to: LocalDate): Int {
     // O(1): inclusive day count
     return (to.toEpochDays() - from.toEpochDays() + 1).toInt()
-}
-
-/** Inclusive month span count between two dates (month-granular). */
-internal fun monthsInclusive(from: LocalDate, to: LocalDate): Int {
-    // Normalize to month starts, then count hops by months
-    var cur = LocalDate(from.year, from.month.number, 1)
-    val end = LocalDate(to.year, to.month.number, 1)
-    var cnt = 0
-    while (cur <= end) {
-        cnt++
-        cur = cur.plus(DatePeriod(months = 1))
-    }
-    return cnt
 }
 
 internal fun startOfMonth(dateTime: LocalDateTime): LocalDateTime {

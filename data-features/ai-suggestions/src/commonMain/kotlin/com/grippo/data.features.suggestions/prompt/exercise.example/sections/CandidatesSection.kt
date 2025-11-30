@@ -1,18 +1,17 @@
 package com.grippo.data.features.suggestions.prompt.exercise.example.sections
 
-import com.grippo.data.features.suggestions.prompt.exercise.example.ExerciseExampleSuggestionPromptBuilder.ExampleContext
-import com.grippo.data.features.suggestions.prompt.exercise.example.ExerciseExampleSuggestionPromptBuilder.MuscleTarget
-import com.grippo.data.features.suggestions.prompt.exercise.example.ExerciseExampleSuggestionPromptBuilder.PredictionSignals
-import com.grippo.data.features.suggestions.prompt.exercise.example.HabitCycleConfig
-import com.grippo.data.features.suggestions.prompt.exercise.example.PromptGuidelineConfig
-import com.grippo.data.features.suggestions.prompt.exercise.example.SuggestionMath
-import com.grippo.data.features.suggestions.prompt.exercise.example.USER_TIME_ZONE
-import com.grippo.data.features.suggestions.prompt.exercise.example.sections.utils.ExercisePromptSection
-import com.grippo.data.features.suggestions.prompt.exercise.example.sections.utils.formatOneDecimal
-import com.grippo.data.features.suggestions.prompt.exercise.example.unrecoveredWeightedShare
+import com.grippo.data.features.suggestions.prompt.exercise.example.config.HabitCycleConfig
+import com.grippo.data.features.suggestions.prompt.exercise.example.config.PromptGuidelineConfig
+import com.grippo.data.features.suggestions.prompt.exercise.example.config.SuggestionMath
+import com.grippo.data.features.suggestions.prompt.exercise.example.model.ExampleContext
+import com.grippo.data.features.suggestions.prompt.exercise.example.model.MuscleTarget
+import com.grippo.data.features.suggestions.prompt.exercise.example.model.PredictionSignals
+import com.grippo.data.features.suggestions.prompt.exercise.example.utils.ExercisePromptSection
+import com.grippo.data.features.suggestions.prompt.exercise.example.utils.formatOneDecimal
+import com.grippo.data.features.suggestions.prompt.exercise.example.utils.unrecoveredWeightedShare
+import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.daysUntil
-import kotlinx.datetime.toInstant
 import kotlin.math.roundToInt
 
 /**
@@ -40,7 +39,7 @@ internal class CandidatesSection(
     private val candidates: List<ExampleContext>
 ) : ExercisePromptSection {
 
-    companion object {
+    private companion object {
         private const val MAX_MUSCLES_PER_EXERCISE = 4
     }
 
@@ -50,7 +49,6 @@ internal class CandidatesSection(
     override fun render(into: StringBuilder) {
         into.appendLine()
         into.appendLine("Candidates:")
-        val tz = USER_TIME_ZONE
         candidates.forEach { context ->
             val tags = listOf(
                 context.category,
@@ -72,7 +70,8 @@ internal class CandidatesSection(
                 ?.let { pm ->
                     val last = signals.lastLoadByMuscleDateTime[pm]
                     if (last == null) "" else {
-                        val hours = (now.toInstant(tz) - last.toInstant(tz)).inWholeHours
+                        val hours =
+                            (DateTimeUtils.asInstant(now) - DateTimeUtils.asInstant(last)).inWholeHours
                         if (hours in 0..PromptGuidelineConfig.ANTI_MONOTONY_HOURS.toLong()) {
                             " [recent<${PromptGuidelineConfig.ANTI_MONOTONY_HOURS}h]"
                         } else ""

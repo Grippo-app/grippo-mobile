@@ -1,8 +1,8 @@
 package com.grippo.data.features.suggestions.prompt.exercise.example.sections
 
-import com.grippo.data.features.suggestions.prompt.exercise.example.ExerciseExampleSuggestionPromptBuilder
-import com.grippo.data.features.suggestions.prompt.exercise.example.sections.utils.ExercisePromptSection
-import com.grippo.data.features.suggestions.prompt.exercise.example.sections.utils.formatOneDecimal
+import com.grippo.data.features.suggestions.prompt.exercise.example.model.MuscleTarget
+import com.grippo.data.features.suggestions.prompt.exercise.example.utils.ExercisePromptSection
+import com.grippo.data.features.suggestions.prompt.exercise.example.utils.formatOneDecimal
 
 /**
  * Example output:
@@ -21,8 +21,12 @@ import com.grippo.data.features.suggestions.prompt.exercise.example.sections.uti
  */
 internal class ResidualFatigueSection(
     private val residuals: Map<String, Double>,
-    private val muscleTargets: List<ExerciseExampleSuggestionPromptBuilder.MuscleTarget>
+    private val muscleTargets: List<MuscleTarget>
 ) : ExercisePromptSection {
+
+    private companion object {
+        private const val MAX_MUSCLE_SUMMARY = 12
+    }
 
     override val id: String = "residual_fatigue"
     override val description: String = "Residual fatigue snapshot"
@@ -40,5 +44,3 @@ internal class ResidualFatigueSection(
             }
     }
 }
-
-private const val MAX_MUSCLE_SUMMARY = 12

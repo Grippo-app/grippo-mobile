@@ -1,10 +1,10 @@
 package com.grippo.data.features.suggestions.prompt.exercise.example.sections
 
-import com.grippo.data.features.suggestions.prompt.exercise.example.ExerciseExampleSuggestionPromptBuilder.CategoryStats
-import com.grippo.data.features.suggestions.prompt.exercise.example.SuggestionMath
-import com.grippo.data.features.suggestions.prompt.exercise.example.sections.utils.ExercisePromptSection
-import com.grippo.data.features.suggestions.prompt.exercise.example.sections.utils.formatOneDecimal
-import com.grippo.data.features.suggestions.prompt.exercise.example.sections.utils.formatTitleLabel
+import com.grippo.data.features.suggestions.prompt.exercise.example.config.SuggestionMath
+import com.grippo.data.features.suggestions.prompt.exercise.example.model.CategoryStats
+import com.grippo.data.features.suggestions.prompt.exercise.example.utils.ExercisePromptSection
+import com.grippo.data.features.suggestions.prompt.exercise.example.utils.formatOneDecimal
+import com.grippo.data.features.suggestions.prompt.exercise.example.utils.formatTitleLabel
 
 /**
  * Example output:

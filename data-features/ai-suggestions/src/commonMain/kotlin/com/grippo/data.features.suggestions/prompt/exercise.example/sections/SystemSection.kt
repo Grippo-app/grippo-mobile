@@ -1,9 +1,10 @@
 package com.grippo.data.features.suggestions.prompt.exercise.example.sections
 
-import com.grippo.data.features.suggestions.prompt.exercise.example.sections.utils.formatOneDecimal
-import com.grippo.data.features.suggestions.prompt.exercise.example.sections.utils.formatTitleLabel
+import com.grippo.data.features.suggestions.prompt.exercise.example.utils.formatOneDecimal
+import com.grippo.data.features.suggestions.prompt.exercise.example.utils.formatTitleLabel
 import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.dao.UserDao
+import com.grippo.database.entity.UserEntity
 import kotlinx.coroutines.flow.firstOrNull
 import org.koin.core.annotation.Single
 
@@ -30,18 +31,13 @@ internal class SystemSection(
         }
     }
 
-    private suspend fun loadUserProfile(): ExerciseUserProfile? {
+    private suspend fun loadUserProfile(): UserEntity? {
         val userId = userActiveDao.get().firstOrNull() ?: return null
         val user = userDao.getById(userId).firstOrNull() ?: return null
-        return ExerciseUserProfile(
-            name = user.name,
-            weight = user.weight,
-            height = user.height,
-            experience = user.experience
-        )
+        return user
     }
 
-    companion object Companion {
+    companion object {
         private val BASE_PROMPT = """
             You are a strict workout planner.
             Choose EXACTLY ONE exercise from the "Candidates" list in the prompt.
@@ -68,10 +64,3 @@ internal class SystemSection(
         """.trimIndent()
     }
 }
-
-internal data class ExerciseUserProfile(
-    val name: String,
-    val weight: Float,
-    val height: Int,
-    val experience: String
-)

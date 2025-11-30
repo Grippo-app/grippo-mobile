@@ -1,10 +1,9 @@
 package com.grippo.data.features.suggestions.prompt.exercise.example
 
-import com.grippo.data.features.suggestions.prompt.exercise.example.ExerciseExampleSuggestionPromptBuilder.ExampleContext
-import com.grippo.data.features.suggestions.prompt.exercise.example.ExerciseExampleSuggestionPromptBuilder.PredictionSignals
+import com.grippo.data.features.suggestions.prompt.exercise.example.model.ExampleContext
+import com.grippo.data.features.suggestions.prompt.exercise.example.model.PredictionSignals
 import com.grippo.data.features.suggestions.prompt.exercise.example.sections.CandidatesSection
 import com.grippo.data.features.suggestions.prompt.exercise.example.sections.CategoryBalanceSection
-import com.grippo.data.features.suggestions.prompt.exercise.example.sections.utils.ExercisePromptSection
 import com.grippo.data.features.suggestions.prompt.exercise.example.sections.ExperienceMixSection
 import com.grippo.data.features.suggestions.prompt.exercise.example.sections.ForceMixSection
 import com.grippo.data.features.suggestions.prompt.exercise.example.sections.GuidelinesSection
@@ -16,6 +15,7 @@ import com.grippo.data.features.suggestions.prompt.exercise.example.sections.Rec
 import com.grippo.data.features.suggestions.prompt.exercise.example.sections.ResidualFatigueSection
 import com.grippo.data.features.suggestions.prompt.exercise.example.sections.SessionSection
 import com.grippo.data.features.suggestions.prompt.exercise.example.sections.WeightMixSection
+import com.grippo.data.features.suggestions.prompt.exercise.example.utils.ExercisePromptSection
 import kotlinx.datetime.LocalDateTime
 
 internal class ExerciseExamplePromptComposer(
@@ -24,7 +24,6 @@ internal class ExerciseExamplePromptComposer(
     candidates: List<ExampleContext>,
     locale: String
 ) {
-
     private val sections: List<ExercisePromptSection> = listOf(
         IntroSection(now, locale),
         SessionSection(signals.session),

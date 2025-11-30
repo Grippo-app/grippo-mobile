@@ -1,7 +1,7 @@
 package com.grippo.data.features.suggestions.prompt.exercise.example.sections
 
-import com.grippo.data.features.suggestions.prompt.exercise.example.ExerciseExampleSuggestionPromptBuilder
-import com.grippo.data.features.suggestions.prompt.exercise.example.sections.utils.ExercisePromptSection
+import com.grippo.data.features.suggestions.prompt.exercise.example.model.ExerciseSummary
+import com.grippo.data.features.suggestions.prompt.exercise.example.utils.ExercisePromptSection
 
 /**
  * Example output:
@@ -26,8 +26,13 @@ import com.grippo.data.features.suggestions.prompt.exercise.example.sections.uti
  * ```
  */
 internal class SessionSection(
-    private val session: List<ExerciseExampleSuggestionPromptBuilder.ExerciseSummary>
+    private val session: List<ExerciseSummary>
 ) : ExercisePromptSection {
+
+    private companion object {
+        private const val MAX_SESSION_EXERCISES = 12
+        private const val MAX_MUSCLES_PER_EXERCISE = 4
+    }
 
     override val id: String = "session"
     override val description: String = "Current session summary"
@@ -57,13 +62,10 @@ internal class SessionSection(
         }
     }
 
-    private fun ExerciseExampleSuggestionPromptBuilder.ExerciseSummary.muscleSummary(): String {
+    private fun ExerciseSummary.muscleSummary(): String {
         if (muscles.isEmpty()) return ""
         val dominant = muscles.take(MAX_MUSCLES_PER_EXERCISE)
             .joinToString { "${it.name}(${it.percentage})" }
         return " [$dominant]"
     }
 }
-
-private const val MAX_SESSION_EXERCISES = 12
-private const val MAX_MUSCLES_PER_EXERCISE = 4

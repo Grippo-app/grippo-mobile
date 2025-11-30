@@ -1,9 +1,9 @@
 package com.grippo.data.features.suggestions.prompt.exercise.example.sections
 
-import com.grippo.data.features.suggestions.prompt.exercise.example.ExerciseExampleSuggestionPromptBuilder.MuscleTarget
-import com.grippo.data.features.suggestions.prompt.exercise.example.SuggestionMath
-import com.grippo.data.features.suggestions.prompt.exercise.example.sections.utils.ExercisePromptSection
-import com.grippo.data.features.suggestions.prompt.exercise.example.sections.utils.formatOneDecimal
+import com.grippo.data.features.suggestions.prompt.exercise.example.config.SuggestionMath
+import com.grippo.data.features.suggestions.prompt.exercise.example.model.MuscleTarget
+import com.grippo.data.features.suggestions.prompt.exercise.example.utils.ExercisePromptSection
+import com.grippo.data.features.suggestions.prompt.exercise.example.utils.formatOneDecimal
 
 /**
  * Example output:
@@ -27,6 +27,11 @@ internal class MuscleTargetsSection(
     private val targets: List<MuscleTarget>
 ) : ExercisePromptSection {
 
+    private companion object {
+        private const val MAX_PRIMARY_FOCUS = 3
+        private const val MAX_MUSCLE_TARGET_LINES = 8
+    }
+
     override val id: String = "muscle_targets"
     override val description: String = "Primary muscle deficits"
 
@@ -48,6 +53,3 @@ internal class MuscleTargetsSection(
         into.appendLine("Primary focus: $focusNames")
     }
 }
-
-private const val MAX_PRIMARY_FOCUS = 3
-private const val MAX_MUSCLE_TARGET_LINES = 8

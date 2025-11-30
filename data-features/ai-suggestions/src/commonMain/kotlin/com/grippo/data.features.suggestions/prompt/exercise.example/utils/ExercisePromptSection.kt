@@ -1,4 +1,4 @@
-package com.grippo.data.features.suggestions.prompt.exercise.example.sections.utils
+package com.grippo.data.features.suggestions.prompt.exercise.example.utils
 
 internal interface ExercisePromptSection {
     val id: String

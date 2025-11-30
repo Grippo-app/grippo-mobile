@@ -1,4 +1,4 @@
-package com.grippo.data.features.suggestions.prompt.exercise.example.sections.utils
+package com.grippo.data.features.suggestions.prompt.exercise.example.utils
 
 import kotlin.math.abs
 import kotlin.math.roundToInt

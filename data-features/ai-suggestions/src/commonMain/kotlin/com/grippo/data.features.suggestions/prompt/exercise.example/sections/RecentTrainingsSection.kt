@@ -1,9 +1,9 @@
 package com.grippo.data.features.suggestions.prompt.exercise.example.sections
 
-import com.grippo.data.features.suggestions.prompt.exercise.example.ExerciseExampleSuggestionPromptBuilder
-import com.grippo.data.features.suggestions.prompt.exercise.example.ExerciseExampleSuggestionPromptBuilder.TrainingSummary
-import com.grippo.data.features.suggestions.prompt.exercise.example.sections.utils.ExercisePromptSection
-import com.grippo.data.features.suggestions.prompt.exercise.example.sections.utils.formatOneDecimal
+import com.grippo.data.features.suggestions.prompt.exercise.example.model.MuscleShare
+import com.grippo.data.features.suggestions.prompt.exercise.example.model.TrainingSummary
+import com.grippo.data.features.suggestions.prompt.exercise.example.utils.ExercisePromptSection
+import com.grippo.data.features.suggestions.prompt.exercise.example.utils.formatOneDecimal
 
 /**
  * Example output:
@@ -26,6 +26,11 @@ import com.grippo.data.features.suggestions.prompt.exercise.example.sections.uti
 internal class RecentTrainingsSection(
     private val trainings: List<TrainingSummary>
 ) : ExercisePromptSection {
+
+    private companion object {
+        private const val MAX_TRAINING_EXERCISES = 16
+        private const val MAX_MUSCLES_PER_EXERCISE = 4
+    }
 
     override val id: String = "recent_trainings"
     override val description: String = "Recent training recap"
@@ -55,13 +60,10 @@ internal class RecentTrainingsSection(
         }
     }
 
-    private fun summarizeMuscles(muscles: List<ExerciseExampleSuggestionPromptBuilder.MuscleShare>): String {
+    private fun summarizeMuscles(muscles: List<MuscleShare>): String {
         if (muscles.isEmpty()) return ""
         val dominant = muscles.take(MAX_MUSCLES_PER_EXERCISE)
             .joinToString { "${it.name}(${it.percentage})" }
         return " [$dominant]"
     }
 }
-
-private const val MAX_TRAINING_EXERCISES = 16
-private const val MAX_MUSCLES_PER_EXERCISE = 4

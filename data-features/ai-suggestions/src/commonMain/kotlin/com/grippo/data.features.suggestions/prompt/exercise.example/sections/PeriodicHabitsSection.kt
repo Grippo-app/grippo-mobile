@@ -1,8 +1,8 @@
 package com.grippo.data.features.suggestions.prompt.exercise.example.sections
 
-import com.grippo.data.features.suggestions.prompt.exercise.example.ExerciseExampleSuggestionPromptBuilder.PeriodicHabit
-import com.grippo.data.features.suggestions.prompt.exercise.example.sections.utils.ExercisePromptSection
-import com.grippo.data.features.suggestions.prompt.exercise.example.sections.utils.formatOneDecimal
+import com.grippo.data.features.suggestions.prompt.exercise.example.model.PeriodicHabit
+import com.grippo.data.features.suggestions.prompt.exercise.example.utils.ExercisePromptSection
+import com.grippo.data.features.suggestions.prompt.exercise.example.utils.formatOneDecimal
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.daysUntil
 
@@ -25,6 +25,10 @@ internal class PeriodicHabitsSection(
     private val now: LocalDateTime,
     private val habits: Map<String, PeriodicHabit>
 ) : ExercisePromptSection {
+
+    private companion object {
+        private const val MAX_PERIODIC_LINES = 8
+    }
 
     override val id: String = "periodic_habits"
     override val description: String = "Habit cadence reminders"
@@ -50,5 +54,3 @@ internal class PeriodicHabitsSection(
         into.appendLine(lines)
     }
 }
-
-private const val MAX_PERIODIC_LINES = 8
