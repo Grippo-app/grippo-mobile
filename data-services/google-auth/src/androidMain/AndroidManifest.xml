@@ -1,0 +1,8 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <meta-data
+            android:name="com.grippo.google.SERVER_CLIENT_ID"
+            android:value="${GOOGLE_SERVER_CLIENT_ID}" />
+    </application>
+</manifest>
