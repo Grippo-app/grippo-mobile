@@ -22,10 +22,10 @@ internal class ExcludedMusclesRepositoryImpl(
 ) : ExcludedMusclesRepository {
 
     override fun observeExcludedMuscles(): Flow<List<Muscle>> {
-        return userActiveDao.get()
-            .flatMapLatest { userId ->
-                if (userId.isNullOrEmpty()) flowOf(emptyList())
-                else userDao.getExcludedMuscles(userId).map { it.toDomain() }
+        return observeActiveProfileId()
+            .flatMapLatest { profileId ->
+                if (profileId.isNullOrEmpty()) flowOf(emptyList())
+                else userDao.getExcludedMuscles(profileId).map { it.toDomain() }
             }
     }
 
@@ -33,13 +33,11 @@ internal class ExcludedMusclesRepositoryImpl(
         val response = api.getExcludedMuscles()
 
         response.onSuccess {
-            val userId = userActiveDao.get()
-                .firstOrNull()
-                ?: return@onSuccess
+            val profileId = getActiveProfileId() ?: return@onSuccess
 
             val ids = it.mapNotNull { m -> m.id }
 
-            userDao.insertOrReplaceExcludedMuscles(userId, ids)
+            userDao.insertOrReplaceExcludedMuscles(profileId, ids)
         }
 
         return response.map { }
@@ -49,18 +47,29 @@ internal class ExcludedMusclesRepositoryImpl(
         val response = api.postExcludedMuscles(IdsBody(ids))
 
         response.onSuccess {
-            val userId = userActiveDao.get()
-                .firstOrNull()
-                ?: return@onSuccess
+            val profileId = getActiveProfileId() ?: return@onSuccess
 
             val ids = api.getExcludedMuscles()
                 .getOrNull()
                 ?.mapNotNull { it.id }
                 ?: return@onSuccess
 
-            userDao.insertOrReplaceExcludedMuscles(userId, ids)
+            userDao.insertOrReplaceExcludedMuscles(profileId, ids)
         }
 
         return response.map { }
+    }
+
+    private fun observeActiveProfileId(): Flow<String?> {
+        return userActiveDao.get()
+            .flatMapLatest { userId ->
+                if (userId.isNullOrEmpty()) flowOf(null)
+                else userDao.getById(userId).map { it?.profileId }
+            }
+    }
+
+    private suspend fun getActiveProfileId(): String? {
+        val userId = userActiveDao.get().firstOrNull() ?: return null
+        return userDao.getById(userId).firstOrNull()?.profileId
     }
 }

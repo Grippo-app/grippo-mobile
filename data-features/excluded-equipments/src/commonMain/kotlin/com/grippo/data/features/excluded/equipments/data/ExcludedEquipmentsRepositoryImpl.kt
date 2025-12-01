@@ -22,10 +22,10 @@ internal class ExcludedEquipmentsRepositoryImpl(
 ) : ExcludedEquipmentsRepository {
 
     override fun observeExcludedEquipments(): Flow<List<Equipment>> {
-        return userActiveDao.get()
-            .flatMapLatest { userId ->
-                if (userId.isNullOrEmpty()) flowOf(emptyList())
-                else userDao.getExcludedEquipments(userId).map { it.toDomain() }
+        return observeActiveProfileId()
+            .flatMapLatest { profileId ->
+                if (profileId.isNullOrEmpty()) flowOf(emptyList())
+                else userDao.getExcludedEquipments(profileId).map { it.toDomain() }
             }
     }
 
@@ -33,13 +33,11 @@ internal class ExcludedEquipmentsRepositoryImpl(
         val response = api.getExcludedEquipments()
 
         response.onSuccess {
-            val userId = userActiveDao.get()
-                .firstOrNull()
-                ?: return@onSuccess
+            val profileId = getActiveProfileId() ?: return@onSuccess
 
             val ids = it.mapNotNull { m -> m.id }
 
-            userDao.insertOrReplaceExcludedEquipments(userId, ids)
+            userDao.insertOrReplaceExcludedEquipments(profileId, ids)
         }
 
         return response.map { }
@@ -49,18 +47,29 @@ internal class ExcludedEquipmentsRepositoryImpl(
         val response = api.postExcludedEquipments(IdsBody(ids))
 
         response.onSuccess {
-            val userId = userActiveDao.get()
-                .firstOrNull()
-                ?: return@onSuccess
+            val profileId = getActiveProfileId() ?: return@onSuccess
 
             val ids = api.getExcludedEquipments()
                 .getOrNull()
                 ?.mapNotNull { it.id }
                 ?: return@onSuccess
 
-            userDao.insertOrReplaceExcludedEquipments(userId, ids)
+            userDao.insertOrReplaceExcludedEquipments(profileId, ids)
         }
 
         return response.map { }
+    }
+
+    private fun observeActiveProfileId(): Flow<String?> {
+        return userActiveDao.get()
+            .flatMapLatest { userId ->
+                if (userId.isNullOrEmpty()) flowOf(null)
+                else userDao.getById(userId).map { it?.profileId }
+            }
+    }
+
+    private suspend fun getActiveProfileId(): String? {
+        val userId = userActiveDao.get().firstOrNull() ?: return null
+        return userDao.getById(userId).firstOrNull()?.profileId
     }
 }

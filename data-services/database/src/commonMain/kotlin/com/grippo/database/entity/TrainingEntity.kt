@@ -2,22 +2,24 @@ package com.grippo.database.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "training",
+    indices = [Index(value = ["profileId"])],
     foreignKeys = [
         ForeignKey(
             entity = UserEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["userId"],
+            parentColumns = ["profileId"],
+            childColumns = ["profileId"],
             onDelete = ForeignKey.CASCADE
         )
     ],
 )
 public data class TrainingEntity(
     @PrimaryKey val id: String,
-    val userId: String,
+    val profileId: String,
     val duration: Long,
     val createdAt: String,
     val volume: Float,

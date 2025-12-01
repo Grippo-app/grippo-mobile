@@ -25,15 +25,15 @@ internal class ExampleCatalogLoader(
 ) {
 
     suspend fun load(): ExampleCatalog? {
-        val userId = userActiveDao.get().firstOrNull() ?: return null
+        val profileId = getActiveProfileId() ?: return null
 
-        val excludedMuscleIds = userDao.getExcludedMuscles(userId)
+        val excludedMuscleIds = userDao.getExcludedMuscles(profileId)
             .firstOrNull()
             ?.map { it.id }
             ?.toSet()
             ?: emptySet()
 
-        val excludedEquipmentIds = userDao.getExcludedEquipments(userId)
+        val excludedEquipmentIds = userDao.getExcludedEquipments(profileId)
             .firstOrNull()
             ?.map { it.id }
             ?.toSet()
@@ -142,6 +142,11 @@ internal class ExampleCatalogLoader(
             equipmentIds = equipmentIds,
             value = value
         )
+    }
+
+    private suspend fun getActiveProfileId(): String? {
+        val userId = userActiveDao.get().firstOrNull() ?: return null
+        return userDao.getById(userId).firstOrNull()?.profileId
     }
 
     private companion object {

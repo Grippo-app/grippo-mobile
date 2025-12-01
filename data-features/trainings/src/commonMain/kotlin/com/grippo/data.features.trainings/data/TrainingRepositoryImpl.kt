@@ -10,6 +10,7 @@ import com.grippo.data.features.trainings.domain.TrainingRepository
 import com.grippo.database.dao.DraftTrainingDao
 import com.grippo.database.dao.TrainingDao
 import com.grippo.database.dao.UserActiveDao
+import com.grippo.database.dao.UserDao
 import com.grippo.domain.dto.training.toBody
 import com.grippo.domain.entity.training.toEntity
 import com.grippo.dto.entity.training.toEntities
@@ -29,6 +30,7 @@ internal class TrainingRepositoryImpl(
     private val trainingDao: TrainingDao,
     private val draftTrainingDao: DraftTrainingDao,
     private val userActiveDao: UserActiveDao,
+    private val userDao: UserDao,
 ) : TrainingRepository {
 
     override fun observeTraining(id: String): Flow<Training?> {
@@ -114,9 +116,12 @@ internal class TrainingRepositoryImpl(
     }
 
     override suspend fun setDraftTraining(training: SetDraftTraining): Result<Unit> {
-        val activeId = userActiveDao.get().firstOrNull() ?: return Result.success(Unit)
+        val profileId = userActiveDao.get()
+            .firstOrNull()
+            ?.let { userDao.getById(it).firstOrNull()?.profileId }
+            ?: return Result.success(Unit)
 
-        val pack = training.toEntity(activeId)
+        val pack = training.toEntity(profileId)
 
         val training = pack.training
         val exercises = pack.exercises.map { it.exercise }

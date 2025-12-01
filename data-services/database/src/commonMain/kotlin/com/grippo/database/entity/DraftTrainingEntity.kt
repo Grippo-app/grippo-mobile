@@ -9,8 +9,8 @@ import androidx.room.PrimaryKey
     foreignKeys = [
         ForeignKey(
             entity = UserEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["userId"],
+            parentColumns = ["profileId"],
+            childColumns = ["profileId"],
             onDelete = ForeignKey.CASCADE
         )
     ],
@@ -18,7 +18,7 @@ import androidx.room.PrimaryKey
 public data class DraftTrainingEntity(
     @PrimaryKey val id: String,
     val trainingId: String?, // [null for "Add"] [nonNull for "Edit"]
-    val userId: String,
+    val profileId: String,
     val duration: Long,
     val volume: Float,
     val repetitions: Int,

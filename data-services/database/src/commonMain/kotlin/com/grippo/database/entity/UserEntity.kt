@@ -15,15 +15,22 @@ import androidx.room.PrimaryKey
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index(value = ["id"])]
+    indices = [
+        Index(value = ["id"], unique = true),
+        Index(value = ["profileId"], unique = true)
+    ]
 )
 public data class UserEntity(
+    // Account
     @PrimaryKey val id: String,
-    val weight: Float,
-    val height: Int,
     val email: String,
-    val experience: String,
-    val name: String,
     val createdAt: String,
     val updatedAt: String,
+
+    // Profile
+    val profileId: String,
+    val weight: Float,
+    val height: Int,
+    val experience: String,
+    val name: String,
 )

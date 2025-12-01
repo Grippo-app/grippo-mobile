@@ -6,12 +6,12 @@ import androidx.room.Index
 
 @Entity(
     tableName = "user_excluded_equipment",
-    primaryKeys = ["userId", "equipmentId"],
+    primaryKeys = ["profileId", "equipmentId"],
     foreignKeys = [
         ForeignKey(
             entity = UserEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["userId"],
+            parentColumns = ["profileId"],
+            childColumns = ["profileId"],
             onDelete = ForeignKey.CASCADE
         ),
         ForeignKey(
@@ -22,11 +22,11 @@ import androidx.room.Index
         )
     ],
     indices = [
-        Index("userId"),
+        Index("profileId"),
         Index("equipmentId")
     ]
 )
 public data class UserExcludedEquipmentEntity(
-    val userId: String,
+    val profileId: String,
     val equipmentId: String,
 )

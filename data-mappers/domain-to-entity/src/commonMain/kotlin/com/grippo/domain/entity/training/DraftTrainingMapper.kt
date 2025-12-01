@@ -6,14 +6,14 @@ import com.grippo.database.models.DraftTrainingPack
 import kotlin.uuid.Uuid
 
 public fun SetDraftTraining.toEntity(
-    userId: String
+    profileId: String
 ): DraftTrainingPack {
 
     val id = Uuid.random().toString()
 
     val training = DraftTrainingEntity(
         id = id,
-        userId = userId,
+        profileId = profileId,
         trainingId = trainingId,
         duration = training.duration.inWholeMinutes,
         volume = training.volume,

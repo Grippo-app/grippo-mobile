@@ -21,19 +21,19 @@ public interface UserDao {
         """
         SELECT m.* FROM muscle AS m
         INNER JOIN user_excluded_muscle AS uem ON m.id = uem.muscleId
-        WHERE uem.userId = :userId
+        WHERE uem.profileId = :profileId
     """
     )
-    public fun getExcludedMuscles(userId: String): Flow<List<MuscleEntity>>
+    public fun getExcludedMuscles(profileId: String): Flow<List<MuscleEntity>>
 
     @Query(
         """
         SELECT e.* FROM equipment AS e
         INNER JOIN user_excluded_equipment AS uee ON e.id = uee.equipmentId
-        WHERE uee.userId = :userId
+        WHERE uee.profileId = :profileId
     """
     )
-    public fun getExcludedEquipments(userId: String): Flow<List<EquipmentEntity>>
+    public fun getExcludedEquipments(profileId: String): Flow<List<EquipmentEntity>>
 
     @Query("SELECT * FROM user WHERE id = :id LIMIT 1")
     public fun getById(id: String): Flow<UserEntity?>
@@ -42,23 +42,23 @@ public interface UserDao {
 
     @Transaction
     public suspend fun insertOrReplaceExcludedEquipments(
-        userId: String,
+        profileId: String,
         equipmentIds: List<String>
     ) {
-        clearExcludedEquipments(userId)
+        clearExcludedEquipments(profileId)
 
         if (equipmentIds.isNotEmpty()) {
-            val entities = equipmentIds.map { UserExcludedEquipmentEntity(userId, it) }
+            val entities = equipmentIds.map { UserExcludedEquipmentEntity(profileId, it) }
             insertExcludedEquipments(entities)
         }
     }
 
     @Transaction
-    public suspend fun insertOrReplaceExcludedMuscles(userId: String, muscleIds: List<String>) {
-        clearExcludedMuscles(userId)
+    public suspend fun insertOrReplaceExcludedMuscles(profileId: String, muscleIds: List<String>) {
+        clearExcludedMuscles(profileId)
 
         if (muscleIds.isNotEmpty()) {
-            val entities = muscleIds.map { UserExcludedMuscleEntity(userId, it) }
+            val entities = muscleIds.map { UserExcludedMuscleEntity(profileId, it) }
             insertExcludedMuscles(entities)
         }
     }
@@ -88,9 +88,9 @@ public interface UserDao {
 
     // ────────────── DELETE ──────────────
 
-    @Query("DELETE FROM user_excluded_equipment WHERE userId = :userId")
-    public suspend fun clearExcludedEquipments(userId: String)
+    @Query("DELETE FROM user_excluded_equipment WHERE profileId = :profileId")
+    public suspend fun clearExcludedEquipments(profileId: String)
 
-    @Query("DELETE FROM user_excluded_muscle WHERE userId = :userId")
-    public suspend fun clearExcludedMuscles(userId: String)
+    @Query("DELETE FROM user_excluded_muscle WHERE profileId = :profileId")
+    public suspend fun clearExcludedMuscles(profileId: String)
 }

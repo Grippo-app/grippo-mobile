@@ -22,6 +22,8 @@ public data class TrainingResponse(
     val volume: Float? = null,
     @SerialName("updatedAt")
     val updatedAt: String? = null,
+    @SerialName("profileId")
+    val profileId: String? = null,
     @SerialName("userId")
     val userId: String? = null
 )
