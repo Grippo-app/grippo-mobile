@@ -25,8 +25,10 @@ public class ProfileViewModel(
     }
 
     override fun onLogoutClick() {
-        safeLaunch { authorizationFeature.logout() }
-        navigateTo(ProfileDirection.Back)
+        safeLaunch {
+            authorizationFeature.logout()
+            navigateTo(ProfileDirection.Back)
+        }
     }
 
     override fun onActivityMenuClick(menu: ProfileActivityMenu) {

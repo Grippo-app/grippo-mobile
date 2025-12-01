@@ -14,4 +14,5 @@ internal sealed interface ProfileCreationDirection : BaseDirection {
     data class ToCompletedWithEquipment(val ids: List<String>) : ProfileCreationDirection
     data object ToHome : ProfileCreationDirection
     data object Back : ProfileCreationDirection
+    data object ToLogin : ProfileCreationDirection
 }

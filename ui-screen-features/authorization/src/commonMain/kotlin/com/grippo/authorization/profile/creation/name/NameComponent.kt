@@ -14,7 +14,9 @@ internal class NameComponent(
 ) : BaseComponent<NameDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        NameViewModel()
+        NameViewModel(
+            authorizationFeature = getKoin().get()
+        )
     }
 
     private val backCallback = BackCallback(onBack = viewModel::onBack)

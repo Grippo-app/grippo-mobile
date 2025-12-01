@@ -46,4 +46,8 @@ internal class ProfileCreationViewModel :
     override fun onBack() {
         navigateTo(ProfileCreationDirection.Back)
     }
+
+    override fun toLogin() {
+        navigateTo(ProfileCreationDirection.ToLogin)
+    }
 }

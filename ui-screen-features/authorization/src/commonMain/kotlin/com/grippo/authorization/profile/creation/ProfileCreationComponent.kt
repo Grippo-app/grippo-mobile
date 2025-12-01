@@ -23,6 +23,7 @@ import com.grippo.screen.api.ProfileCreationRouter
 internal class ProfileCreationComponent(
     componentContext: ComponentContext,
     private val toHome: () -> Unit,
+    private val toLogin: () -> Unit,
     private val close: () -> Unit,
 ) : BaseComponent<ProfileCreationDirection>(componentContext) {
 
@@ -55,6 +56,7 @@ internal class ProfileCreationComponent(
             ProfileCreationDirection.ToHome -> toHome.invoke()
             ProfileCreationDirection.Close -> close.invoke()
             ProfileCreationDirection.Back -> navigation.pop()
+            ProfileCreationDirection.ToLogin -> toLogin.invoke()
         }
     }
 
@@ -81,7 +83,7 @@ internal class ProfileCreationComponent(
                 NameComponent(
                     componentContext = context,
                     toBody = viewModel::toBodyWithName,
-                    back = viewModel::onBack
+                    back = viewModel::toLogin
                 ),
             )
 

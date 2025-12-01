@@ -12,6 +12,7 @@ internal interface ProfileCreationContract {
     fun toCompletedWithEquipment(ids: List<String>)
     fun toHome()
     fun onBack()
+    fun toLogin()
     fun onClose()
 
     @Immutable
@@ -23,6 +24,7 @@ internal interface ProfileCreationContract {
         override fun toCompletedWithEquipment(ids: List<String>) {}
         override fun toHome() {}
         override fun onBack() {}
+        override fun toLogin() {}
         override fun onClose() {}
     }
 }

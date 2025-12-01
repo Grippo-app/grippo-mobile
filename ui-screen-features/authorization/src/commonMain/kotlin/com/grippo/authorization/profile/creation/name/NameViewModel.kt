@@ -2,8 +2,11 @@ package com.grippo.authorization.profile.creation.name
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.NameFormatState
+import com.grippo.data.features.api.authorization.AuthorizationFeature
 
-internal class NameViewModel : BaseViewModel<NameState, NameDirection, NameLoader>(NameState()),
+internal class NameViewModel(
+    private val authorizationFeature: AuthorizationFeature
+) : BaseViewModel<NameState, NameDirection, NameLoader>(NameState()),
     NameContract {
 
     override fun onNameChange(value: String) {
@@ -20,6 +23,9 @@ internal class NameViewModel : BaseViewModel<NameState, NameDirection, NameLoade
     }
 
     override fun onBack() {
-        navigateTo(NameDirection.Back)
+        safeLaunch {
+            authorizationFeature.logout()
+            navigateTo(NameDirection.Back)
+        }
     }
 }
