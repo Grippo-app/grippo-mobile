@@ -104,6 +104,7 @@ internal fun CredentialScreen(
 
         val buttonState = remember(loaders, state.email, state.password) {
             when {
+                loaders.contains(CredentialLoader.RegisterButton) -> ButtonState.Loading
                 state.email is EmailFormatState.Invalid -> ButtonState.Disabled
                 state.email is EmailFormatState.Empty -> ButtonState.Disabled
                 state.password is PasswordFormatState.Empty -> ButtonState.Disabled

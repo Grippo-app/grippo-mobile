@@ -1,7 +1,6 @@
 package com.grippo.data.features.authorization.domain
 
 import com.grippo.data.features.api.authorization.AuthorizationFeature
-import com.grippo.data.features.api.authorization.models.SetRegistration
 import kotlinx.coroutines.flow.Flow
 import org.koin.core.annotation.Single
 
@@ -14,8 +13,8 @@ internal class AuthorizationFeatureImpl(
         return repository.login(email, password)
     }
 
-    override suspend fun register(registration: SetRegistration): Result<Unit> {
-        return repository.register(registration)
+    override suspend fun register(email: String, password: String): Result<Unit> {
+        return repository.register(email, password)
     }
 
     override fun getToken(): Flow<String?> {

@@ -12,6 +12,7 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.authorization.AuthComponent.Child.AuthProcess
 import com.grippo.authorization.AuthComponent.Child.Splash
 import com.grippo.authorization.auth.process.AuthProcessComponent
+import com.grippo.authorization.profile.creation.ProfileCreationComponent
 import com.grippo.authorization.splash.SplashComponent
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
@@ -39,6 +40,7 @@ public class AuthComponent(
             AuthDirection.AuthProcess -> navigation.push(AuthRouter.AuthProcess)
             AuthDirection.Back -> close.invoke()
             AuthDirection.ToHome -> toHome.invoke()
+            AuthDirection.ToProfileCreation -> navigation.push(AuthRouter.ProfileCreation)
         }
     }
 
@@ -60,6 +62,7 @@ public class AuthComponent(
                     componentContext = context,
                     toAuthProcess = viewModel::toAuthProcess,
                     toHome = viewModel::toHome,
+                    toProfileCreation = viewModel::toProfileCreation,
                     back = viewModel::onBack
                 ),
             )
@@ -68,8 +71,17 @@ public class AuthComponent(
                 AuthProcessComponent(
                     componentContext = context,
                     toHome = viewModel::toHome,
+                    toProfileCreation = viewModel::toProfileCreation,
                     close = viewModel::onBack
                 ),
+            )
+
+            AuthRouter.ProfileCreation -> Child.ProfileCreation(
+                ProfileCreationComponent(
+                    componentContext = context,
+                    toHome = viewModel::toHome,
+                    close = viewModel::onBack
+                )
             )
         }
     }
@@ -84,5 +96,7 @@ public class AuthComponent(
     internal sealed class Child(open val component: BaseComponent<*>) {
         data class Splash(override val component: SplashComponent) : Child(component)
         data class AuthProcess(override val component: AuthProcessComponent) : Child(component)
+        data class ProfileCreation(override val component: ProfileCreationComponent) :
+            Child(component)
     }
 }

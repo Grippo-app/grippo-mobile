@@ -13,24 +13,28 @@ public fun UserResponse.toEntityOrNull(): UserEntity? {
         "UserResponse.id is null"
     } ?: return null
 
-    val entityWeight = AppLogger.Mapping.log(weight) {
-        "UserResponse.weight is null"
+    val profile = AppLogger.Mapping.log(profile) {
+        "UserResponse.profile is null"
     } ?: return null
 
-    val entityHeight = AppLogger.Mapping.log(height) {
-        "UserResponse.height is null"
+    val entityWeight = AppLogger.Mapping.log(profile.weight) {
+        "UserProfileResponse.weight is null"
+    } ?: return null
+
+    val entityHeight = AppLogger.Mapping.log(profile.height) {
+        "UserProfileResponse.height is null"
     } ?: return null
 
     val entityEmail = AppLogger.Mapping.log(email) {
         "UserResponse.email is null"
     } ?: return null
 
-    val entityExperience = AppLogger.Mapping.log(experience) {
-        "UserResponse.experience is null"
+    val entityExperience = AppLogger.Mapping.log(profile.experience) {
+        "UserProfileResponse.experience is null"
     } ?: return null
 
-    val entityName = AppLogger.Mapping.log(name) {
-        "UserResponse.name is null"
+    val entityName = AppLogger.Mapping.log(profile.name) {
+        "UserProfileResponse.name is null"
     } ?: return null
 
     val entityCreatedAt = AppLogger.Mapping.log(createdAt) {

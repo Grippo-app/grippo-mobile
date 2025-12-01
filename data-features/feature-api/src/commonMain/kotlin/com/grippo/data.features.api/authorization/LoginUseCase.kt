@@ -12,15 +12,17 @@ public class LoginUseCase(
     private val excludedEquipmentsFeature: ExcludedEquipmentsFeature,
     private val exerciseExampleFeature: ExerciseExampleFeature
 ) {
-    public suspend fun execute(email: String, password: String) {
+    public suspend fun execute(email: String, password: String): Boolean {
         authorizationFeature.login(email, password).getOrThrow()
 
-        // User details
-        userFeature.getUser().getOrThrow()
-        excludedMusclesFeature.getExcludedMuscles().getOrThrow()
-        excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
+        val hasProfile = userFeature.getUser().getOrThrow()
 
-        // Exercises
-        exerciseExampleFeature.getExerciseExamples().getOrThrow()
+        if (hasProfile) {
+            excludedMusclesFeature.getExcludedMuscles().getOrThrow()
+            excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
+            exerciseExampleFeature.getExerciseExamples().getOrThrow()
+        }
+
+        return hasProfile
     }
 }

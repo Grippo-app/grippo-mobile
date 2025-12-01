@@ -18,6 +18,10 @@ internal class AuthProcessViewModel :
         navigateTo(AuthProcessDirection.ToHome)
     }
 
+    override fun toProfileCreation() {
+        navigateTo(AuthProcessDirection.ToProfileCreation)
+    }
+
     override fun onBack() {
         navigateTo(AuthProcessDirection.Back)
     }

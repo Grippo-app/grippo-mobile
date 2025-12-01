@@ -2,12 +2,11 @@ package com.grippo.data.features.authorization.data
 
 import com.grippo.backend.GrippoApi
 import com.grippo.backend.dto.auth.AuthBody
-import com.grippo.data.features.api.authorization.models.SetRegistration
+import com.grippo.backend.dto.auth.RegisterBody
 import com.grippo.data.features.authorization.domain.AuthorizationRepository
 import com.grippo.database.dao.TokenDao
 import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.entity.UserActiveEntity
-import com.grippo.domain.dto.user.toBody
 import com.grippo.dto.entity.user.toEntityOrNull
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
@@ -35,8 +34,8 @@ internal class AuthorizationRepositoryImpl(
         return response.map { }
     }
 
-    override suspend fun register(registration: SetRegistration): Result<Unit> {
-        val response = api.register(registration.toBody())
+    override suspend fun register(email: String, password: String): Result<Unit> {
+        val response = api.register(RegisterBody(email = email, password = password))
 
         response.onSuccess { r ->
             val entity = r.toEntityOrNull() ?: return@onSuccess

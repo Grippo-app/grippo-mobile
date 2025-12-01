@@ -1,6 +1,5 @@
 package com.grippo.data.features.api.authorization
 
-import com.grippo.data.features.api.authorization.models.SetRegistration
 import com.grippo.data.features.api.excluded.equipments.ExcludedEquipmentsFeature
 import com.grippo.data.features.api.excluded.muscles.ExcludedMusclesFeature
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
@@ -13,15 +12,17 @@ public class RegisterUseCase(
     private val excludedEquipmentsFeature: ExcludedEquipmentsFeature,
     private val exerciseExampleFeature: ExerciseExampleFeature
 ) {
-    public suspend fun execute(registration: SetRegistration) {
-        authorizationFeature.register(registration).getOrThrow()
+    public suspend fun execute(email: String, password: String): Boolean {
+        authorizationFeature.register(email, password).getOrThrow()
 
-        // User details
-        userFeature.getUser().getOrThrow()
-        excludedMusclesFeature.getExcludedMuscles().getOrThrow()
-        excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
+        val hasProfile = userFeature.getUser().getOrThrow()
 
-        // Exercises
-        exerciseExampleFeature.getExerciseExamples().getOrThrow()
+        if (hasProfile) {
+            excludedMusclesFeature.getExcludedMuscles().getOrThrow()
+            excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
+            exerciseExampleFeature.getExerciseExamples().getOrThrow()
+        }
+
+        return hasProfile
     }
 }

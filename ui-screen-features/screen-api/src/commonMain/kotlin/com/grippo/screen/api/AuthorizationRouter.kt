@@ -11,4 +11,7 @@ public sealed class AuthRouter : BaseRouter {
 
     @Serializable
     public data object AuthProcess : AuthRouter()
+
+    @Serializable
+    public data object ProfileCreation : AuthRouter()
 }

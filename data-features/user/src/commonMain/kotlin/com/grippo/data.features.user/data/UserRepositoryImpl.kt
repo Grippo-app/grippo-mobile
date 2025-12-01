@@ -1,12 +1,14 @@
 package com.grippo.data.features.user.data
 
 import com.grippo.backend.GrippoApi
+import com.grippo.data.features.api.user.models.CreateUserProfile
 import com.grippo.data.features.api.user.models.User
 import com.grippo.data.features.user.domain.UserRepository
 import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.dao.UserDao
-import com.grippo.entity.domain.user.toDomain
+import com.grippo.domain.dto.user.toBody
 import com.grippo.dto.entity.user.toEntityOrNull
+import com.grippo.entity.domain.user.toDomain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -28,14 +30,23 @@ internal class UserRepositoryImpl(
             }.map { it?.toDomain() }
     }
 
-    override suspend fun getUser(): Result<Unit> {
+    override suspend fun getUser(): Result<Boolean> {
         val response = api.getUser()
 
-        response.onSuccess {
-            val user = it.toEntityOrNull() ?: return@onSuccess
+        return response.map { dto ->
+            val user = dto.toEntityOrNull() ?: return@map false
             userDao.insertOrUpdate(user)
+            true
         }
+    }
 
-        return response.map { }
+    override suspend fun createProfile(profile: CreateUserProfile): Result<Boolean> {
+        val response = api.createProfile(profile.toBody())
+
+        return response.map { dto ->
+            val user = dto.toEntityOrNull() ?: return@map false
+            userDao.insertOrUpdate(user)
+            true
+        }
     }
 }

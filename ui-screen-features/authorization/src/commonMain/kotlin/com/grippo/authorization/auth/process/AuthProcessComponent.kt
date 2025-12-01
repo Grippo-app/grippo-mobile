@@ -11,7 +11,7 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.authorization.login.LoginComponent
-import com.grippo.authorization.registration.RegistrationComponent
+import com.grippo.authorization.registration.credential.CredentialComponent
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.screen.api.AuthProcessRouter
@@ -19,6 +19,7 @@ import com.grippo.screen.api.AuthProcessRouter
 internal class AuthProcessComponent(
     componentContext: ComponentContext,
     private val toHome: () -> Unit,
+    private val toProfileCreation: () -> Unit,
     private val close: () -> Unit
 ) : BaseComponent<AuthProcessDirection>(componentContext) {
 
@@ -37,6 +38,7 @@ internal class AuthProcessComponent(
             AuthProcessDirection.Close -> close.invoke()
             AuthProcessDirection.ToRegistration -> navigation.push(AuthProcessRouter.Registration)
             AuthProcessDirection.ToHome -> toHome.invoke()
+            AuthProcessDirection.ToProfileCreation -> toProfileCreation.invoke()
             AuthProcessDirection.Back -> navigation.pop()
         }
     }
@@ -59,15 +61,17 @@ internal class AuthProcessComponent(
                     componentContext = context,
                     toRegistration = viewModel::toRegistration,
                     toHome = viewModel::toHome,
+                    toCreateProfile = viewModel::toProfileCreation,
                     back = viewModel::onClose
                 )
             )
 
             AuthProcessRouter.Registration -> Child.Registration(
-                RegistrationComponent(
+                CredentialComponent(
                     componentContext = context,
+                    toCreateProfile = viewModel::toProfileCreation,
                     toHome = viewModel::toHome,
-                    close = viewModel::onBack
+                    back = viewModel::onBack
                 )
             )
         }
@@ -82,6 +86,6 @@ internal class AuthProcessComponent(
 
     internal sealed class Child(open val component: BaseComponent<*>) {
         data class Login(override val component: LoginComponent) : Child(component)
-        data class Registration(override val component: RegistrationComponent) : Child(component)
+        data class Registration(override val component: CredentialComponent) : Child(component)
     }
 }

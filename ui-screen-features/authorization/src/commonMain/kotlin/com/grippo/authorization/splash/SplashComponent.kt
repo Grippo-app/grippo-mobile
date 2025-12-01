@@ -11,6 +11,7 @@ internal class SplashComponent(
     componentContext: ComponentContext,
     private val toAuthProcess: () -> Unit,
     private val toHome: () -> Unit,
+    private val toProfileCreation: () -> Unit,
     private val back: () -> Unit
 ) : BaseComponent<SplashDirection>(componentContext) {
 
@@ -18,7 +19,8 @@ internal class SplashComponent(
         SplashViewModel(
             equipmentFeature = getKoin().get(),
             muscleFeature = getKoin().get(),
-            authorizationFeature = getKoin().get()
+            authorizationFeature = getKoin().get(),
+            userFeature = getKoin().get()
         )
     }
 
@@ -32,6 +34,7 @@ internal class SplashComponent(
         when (direction) {
             SplashDirection.AuthProcess -> toAuthProcess.invoke()
             SplashDirection.Home -> toHome.invoke()
+            SplashDirection.CreateProfile -> toProfileCreation.invoke()
             SplashDirection.Back -> back.invoke()
         }
     }

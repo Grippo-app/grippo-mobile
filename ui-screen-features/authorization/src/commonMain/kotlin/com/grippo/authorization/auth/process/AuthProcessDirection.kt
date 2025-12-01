@@ -6,5 +6,6 @@ internal sealed interface AuthProcessDirection : BaseDirection {
     data object Close : AuthProcessDirection
     data object ToRegistration : AuthProcessDirection
     data object ToHome : AuthProcessDirection
+    data object ToProfileCreation : AuthProcessDirection
     data object Back : AuthProcessDirection
 }

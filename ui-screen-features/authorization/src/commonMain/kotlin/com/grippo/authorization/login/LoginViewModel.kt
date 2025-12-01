@@ -20,12 +20,16 @@ internal class LoginViewModel(
 
     override fun onLoginClick() {
         safeLaunch(loader = LoginLoader.LoginButton) {
-            loginUseCase.execute(
+            val hasProfile = loginUseCase.execute(
                 email = state.value.email.value ?: "",
                 password = state.value.password.value ?: ""
             )
 
-            navigateTo(LoginDirection.Home)
+            if (hasProfile) {
+                navigateTo(LoginDirection.Home)
+            } else {
+                navigateTo(LoginDirection.CreateProfile)
+            }
         }
     }
 

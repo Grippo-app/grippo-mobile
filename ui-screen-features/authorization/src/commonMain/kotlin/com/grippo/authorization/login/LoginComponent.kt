@@ -11,6 +11,7 @@ internal class LoginComponent(
     componentContext: ComponentContext,
     private val toRegistration: () -> Unit,
     private val toHome: () -> Unit,
+    private val toCreateProfile: () -> Unit,
     private val back: () -> Unit,
 ) : BaseComponent<LoginDirection>(componentContext) {
 
@@ -30,6 +31,7 @@ internal class LoginComponent(
         when (direction) {
             LoginDirection.Registration -> toRegistration.invoke()
             LoginDirection.Home -> toHome.invoke()
+            LoginDirection.CreateProfile -> toCreateProfile.invoke()
             LoginDirection.Back -> back.invoke()
         }
     }

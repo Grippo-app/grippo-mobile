@@ -7,6 +7,7 @@ internal interface AuthProcessContract {
     fun onClose()
     fun toRegistration()
     fun toHome()
+    fun toProfileCreation()
     fun onBack()
 
     @Immutable
@@ -14,6 +15,7 @@ internal interface AuthProcessContract {
         override fun onClose() {}
         override fun toRegistration() {}
         override fun toHome() {}
+        override fun toProfileCreation() {}
         override fun onBack() {}
     }
 }
