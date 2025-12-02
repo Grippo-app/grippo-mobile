@@ -6,7 +6,8 @@ import androidx.compose.runtime.Immutable
 internal interface LoginContract {
     fun onEmailChange(value: String)
     fun onPasswordChange(value: String)
-    fun onLoginClick()
+    fun onLoginByEmailClick()
+    fun onLoginByGoogleClick()
     fun onRegisterClick()
     fun onBack()
 
@@ -14,7 +15,8 @@ internal interface LoginContract {
     companion object Empty : LoginContract {
         override fun onEmailChange(value: String) {}
         override fun onPasswordChange(value: String) {}
-        override fun onLoginClick() {}
+        override fun onLoginByEmailClick() {}
+        override fun onLoginByGoogleClick() {}
         override fun onRegisterClick() {}
         override fun onBack() {}
     }

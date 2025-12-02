@@ -4,6 +4,7 @@ import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.EmailFormatState
 import com.grippo.core.state.formatters.PasswordFormatState
 import com.grippo.data.features.api.authorization.LoginUseCase
+import kotlinx.coroutines.delay
 
 internal class LoginViewModel(
     private val loginUseCase: LoginUseCase
@@ -18,8 +19,8 @@ internal class LoginViewModel(
         update { it.copy(password = PasswordFormatState.of(value)) }
     }
 
-    override fun onLoginClick() {
-        safeLaunch(loader = LoginLoader.LoginButton) {
+    override fun onLoginByEmailClick() {
+        safeLaunch(loader = LoginLoader.LoginByEmailButton) {
             val hasProfile = loginUseCase.execute(
                 email = state.value.email.value ?: "",
                 password = state.value.password.value ?: ""
@@ -30,6 +31,12 @@ internal class LoginViewModel(
             } else {
                 navigateTo(LoginDirection.CreateProfile)
             }
+        }
+    }
+
+    override fun onLoginByGoogleClick() {
+        safeLaunch(loader = LoginLoader.LoginByGoogleButton) {
+            delay(1000)
         }
     }
 

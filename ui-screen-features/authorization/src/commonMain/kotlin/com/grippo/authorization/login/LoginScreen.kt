@@ -33,6 +33,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.icons.Google
 import com.grippo.design.resources.provider.login_button_login
 import com.grippo.design.resources.provider.login_button_registration
 import com.grippo.design.resources.provider.login_button_registration_label
@@ -107,9 +108,29 @@ internal fun LoginScreen(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        val buttonState = remember(loaders, state.email, state.password) {
+        val buttonLoginByGoogleState = remember(loaders, state.email, state.password) {
             when {
-                loaders.contains(LoginLoader.LoginButton) -> ButtonState.Loading
+                loaders.contains(LoginLoader.LoginByGoogleButton) -> ButtonState.Loading
+                else -> ButtonState.Enabled
+            }
+        }
+
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            content = ButtonContent.Text(
+                text = AppTokens.strings.res(Res.string.login_button_login),
+                startIcon = AppTokens.icons.Google
+            ),
+            state = buttonLoginByGoogleState,
+            style = ButtonStyle.Secondary,
+            onClick = contract::onLoginByGoogleClick
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+        val buttonLoginByEmailState = remember(loaders, state.email, state.password) {
+            when {
+                loaders.contains(LoginLoader.LoginByEmailButton) -> ButtonState.Loading
                 state.email is EmailFormatState.Invalid -> ButtonState.Disabled
                 state.email is EmailFormatState.Empty -> ButtonState.Disabled
                 state.password is PasswordFormatState.Empty -> ButtonState.Disabled
@@ -123,12 +144,12 @@ internal fun LoginScreen(
             content = ButtonContent.Text(
                 text = AppTokens.strings.res(Res.string.login_button_login),
             ),
-            state = buttonState,
+            state = buttonLoginByEmailState,
             style = ButtonStyle.Primary,
-            onClick = contract::onLoginClick
+            onClick = contract::onLoginByEmailClick
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         ContentSpliter(
             text = AppTokens.strings.res(Res.string.or)
@@ -171,7 +192,7 @@ private fun ScreenPreviewEmpty() {
                 email = EmailFormatState.of(""),
                 password = PasswordFormatState.of("")
             ),
-            loaders = persistentSetOf(LoginLoader.LoginButton),
+            loaders = persistentSetOf(LoginLoader.LoginByEmailButton),
             contract = LoginContract.Empty
         )
     }
@@ -201,7 +222,7 @@ private fun ScreenPreviewLoading() {
                 email = EmailFormatState.of("user@email.com"),
                 password = PasswordFormatState.of("qwerty123")
             ),
-            loaders = persistentSetOf(LoginLoader.LoginButton),
+            loaders = persistentSetOf(LoginLoader.LoginByEmailButton),
             contract = LoginContract.Empty
         )
     }
