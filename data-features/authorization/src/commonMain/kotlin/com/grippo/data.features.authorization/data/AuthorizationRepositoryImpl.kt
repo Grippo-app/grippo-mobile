@@ -22,7 +22,7 @@ internal class AuthorizationRepositoryImpl(
     private val userActiveDao: UserActiveDao,
 ) : AuthorizationRepository {
 
-    override suspend fun login(email: String, password: String): Result<Unit> {
+    override suspend fun loginByEmail(email: String, password: String): Result<Unit> {
         val response = api.login(AuthBody(email, password))
 
         response.onSuccess { r ->
@@ -32,6 +32,10 @@ internal class AuthorizationRepositoryImpl(
         }
 
         return response.map { }
+    }
+
+    override suspend fun loginByGoogle(token: String): Result<Unit> {
+        TODO()
     }
 
     override suspend fun register(email: String, password: String): Result<Unit> {
