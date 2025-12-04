@@ -1,13 +1,14 @@
 package com.grippo.authorization.login
 
 import androidx.compose.runtime.Immutable
+import com.grippo.services.google.auth.GoogleAuthUiContext
 
 @Immutable
 internal interface LoginContract {
     fun onEmailChange(value: String)
     fun onPasswordChange(value: String)
     fun onLoginByEmailClick()
-    fun onLoginByGoogleClick()
+    fun onLoginByGoogleClick(context: GoogleAuthUiContext)
     fun onRegisterClick()
     fun onBack()
 
@@ -16,7 +17,7 @@ internal interface LoginContract {
         override fun onEmailChange(value: String) {}
         override fun onPasswordChange(value: String) {}
         override fun onLoginByEmailClick() {}
-        override fun onLoginByGoogleClick() {}
+        override fun onLoginByGoogleClick(context: GoogleAuthUiContext) {}
         override fun onRegisterClick() {}
         override fun onBack() {}
     }

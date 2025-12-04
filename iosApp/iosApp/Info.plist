@@ -51,5 +51,26 @@
             <string>UIInterfaceOrientationLandscapeLeft</string>
             <string>UIInterfaceOrientationLandscapeRight</string>
         </array>
+        <key>GIDClientID</key>
+        <string>28935847922-pubg212r7pr5pkr2ju2la6dqhslp3vhg.apps.googleusercontent.com</string>
+        <key>GIDServerClientID</key>
+        <string>28935847922-s0ebsvd1u368v68kdvi28s079q7b9vnt.apps.googleusercontent.com</string>
+        <key>GIDRedirectURI</key>
+        <string>
+            com.googleusercontent.apps.28935847922-pubg212r7pr5pkr2ju2la6dqhslp3vhg:/oauthredirect
+        </string>
+        <key>CFBundleURLTypes</key>
+        <array>
+            <dict>
+                <key>CFBundleTypeRole</key>
+                <string>Editor</string>
+                <key>CFBundleURLSchemes</key>
+                <array>
+                    <string>
+                        com.googleusercontent.apps.28935847922-pubg212r7pr5pkr2ju2la6dqhslp3vhg
+                    </string>
+                </array>
+            </dict>
+        </array>
     </dict>
 </plist>

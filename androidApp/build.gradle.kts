@@ -8,6 +8,8 @@ android {
     defaultConfig {
         applicationId = "com.grippo"
         multiDexEnabled = true
+        manifestPlaceholders["GOOGLE_SERVER_CLIENT_ID"] =
+            "28935847922-s0ebsvd1u368v68kdvi28s079q7b9vnt.apps.googleusercontent.com"
     }
 
     signingConfigs.create("release") {

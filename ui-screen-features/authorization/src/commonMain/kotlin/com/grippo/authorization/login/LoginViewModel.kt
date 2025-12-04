@@ -4,10 +4,15 @@ import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.EmailFormatState
 import com.grippo.core.state.formatters.PasswordFormatState
 import com.grippo.data.features.api.authorization.LoginUseCase
+import com.grippo.services.google.auth.GoogleAuthProvider
+import com.grippo.services.google.auth.GoogleAuthUiContext
 
 internal class LoginViewModel(
-    private val loginUseCase: LoginUseCase
-) : BaseViewModel<LoginState, LoginDirection, LoginLoader>(LoginState()),
+    private val loginUseCase: LoginUseCase,
+    private val googleAuthProvider: GoogleAuthProvider,
+) : BaseViewModel<LoginState, LoginDirection, LoginLoader>(
+    LoginState(isGoogleLoginAvailable = googleAuthProvider.isSupported)
+),
     LoginContract {
 
     override fun onEmailChange(value: String) {
@@ -20,32 +25,29 @@ internal class LoginViewModel(
 
     override fun onLoginByEmailClick() {
         safeLaunch(loader = LoginLoader.LoginByEmailButton) {
+            val loginState = state.value
             val hasProfile = loginUseCase.execute(
-                email = state.value.email.value ?: "",
-                password = state.value.password.value ?: ""
+                email = loginState.email.value.orEmpty(),
+                password = loginState.password.value.orEmpty()
             )
 
-            if (hasProfile) {
-                navigateTo(LoginDirection.Home)
-            } else {
-                navigateTo(LoginDirection.CreateProfile)
-            }
+            navigatePostLogin(hasProfile)
         }
     }
 
-    override fun onLoginByGoogleClick() {
+    override fun onLoginByGoogleClick(context: GoogleAuthUiContext) {
+        if (!googleAuthProvider.isSupported) return
         safeLaunch(loader = LoginLoader.LoginByGoogleButton) {
-            val googleToken = "" // TODO GET TOKEN
+            val googleAccount = googleAuthProvider
+                .getUiProvider(context)
+                .signIn()
+                ?: return@safeLaunch
 
             val hasProfile = loginUseCase.execute(
-                token = googleToken,
+                token = googleAccount.token,
             )
 
-            if (hasProfile) {
-                navigateTo(LoginDirection.Home)
-            } else {
-                navigateTo(LoginDirection.CreateProfile)
-            }
+            navigatePostLogin(hasProfile)
         }
     }
 
@@ -55,5 +57,13 @@ internal class LoginViewModel(
 
     override fun onBack() {
         navigateTo(LoginDirection.Back)
+    }
+
+    private fun navigatePostLogin(hasProfile: Boolean) {
+        if (hasProfile) {
+            navigateTo(LoginDirection.Home)
+        } else {
+            navigateTo(LoginDirection.CreateProfile)
+        }
     }
 }
