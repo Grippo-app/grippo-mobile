@@ -58,7 +58,7 @@ public actual class GoogleAuthUiProvider internal constructor(
     private var currentSession: ASWebAuthenticationSession? = null
 
     @OptIn(ExperimentalForeignApi::class)
-    public actual suspend fun signIn(): GoogleAccount? {
+    public actual suspend fun signIn(): GoogleAccount {
         val pkce = GooglePkce.create()
         val state = randomState()
         val authUrl = authorizationUrl(configuration, pkce, state)
@@ -118,9 +118,8 @@ public actual class GoogleAuthProvider actual constructor(
         get() = configuration != null
 
     public actual fun getUiProvider(context: GoogleAuthUiContext): GoogleAuthUiProvider {
-        val config = requireNotNull(configuration) {
-            "Google auth is not configured on iOS"
-        }
+        val config =
+            configuration ?: throw GoogleAuthException("Google auth is not configured on iOS")
         return GoogleAuthUiProvider(config, httpClient, json)
     }
 

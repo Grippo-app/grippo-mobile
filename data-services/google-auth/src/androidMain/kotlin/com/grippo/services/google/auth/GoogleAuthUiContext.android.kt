@@ -13,5 +13,5 @@ public fun googleAuthUiContext(activity: Activity): GoogleAuthUiContext {
 
 internal fun GoogleAuthUiContext.asAndroidContext(): Context {
     return (this as? AndroidGoogleAuthUiContext)?.activity
-        ?: error("GoogleAuthUiContext must be created with an Android Activity context")
+        ?: throw GoogleAuthException("GoogleAuthUiContext must be created with an Android Activity context")
 }

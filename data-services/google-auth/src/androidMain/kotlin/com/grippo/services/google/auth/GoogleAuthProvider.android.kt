@@ -26,10 +26,8 @@ public actual class GoogleAuthProvider actual constructor(
 
     public actual fun getUiProvider(context: GoogleAuthUiContext): GoogleAuthUiProvider {
         val activityContext = context.asAndroidContext()
-        val clientId = serverClientId
-        require(!clientId.isNullOrBlank()) {
-            "Google server client id is missing"
-        }
+        val clientId = serverClientId?.takeIf { it.isNotBlank() }
+            ?: throw GoogleAuthException("Google server client id is missing")
         return AndroidGoogleAuthUiProvider(activityContext, credentialManager, clientId)
     }
 
@@ -37,6 +35,8 @@ public actual class GoogleAuthProvider actual constructor(
         if (!isSupported) return
         runCatching {
             credentialManager.clearCredentialState(ClearCredentialStateRequest())
+        }.getOrElse {
+            throw GoogleAuthException("Failed to clear Google credential state", it)
         }
     }
 

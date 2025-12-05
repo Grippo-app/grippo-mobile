@@ -17,7 +17,7 @@ public class AndroidGoogleAuthUiProvider(
     private val credentialManager: CredentialManager,
     private val serverClientId: String,
 ) {
-    public suspend fun signIn(): GoogleAccount? {
+    public suspend fun signIn(): GoogleAccount {
         return runCatching {
             val response = credentialManager.getCredential(
                 context = activityContext,
