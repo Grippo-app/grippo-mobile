@@ -6,10 +6,10 @@ plugins {
 
 android {
     defaultConfig {
-        applicationId = "com.grippo"
+        applicationId = "com.grippo.android"
         multiDexEnabled = true
         manifestPlaceholders["GOOGLE_SERVER_CLIENT_ID"] =
-            "28935847922-s0ebsvd1u368v68kdvi28s079q7b9vnt.apps.googleusercontent.com"
+            "197674600409-shsnuo1iek72hf55d0dj68qqhbuvlhc5.apps.googleusercontent.com"
     }
 
     signingConfigs.create("release") {

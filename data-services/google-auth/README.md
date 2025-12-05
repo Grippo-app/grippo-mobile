@@ -43,7 +43,7 @@ expects the **app** module to provide the value. Add the placeholder in the appl
 android {
     defaultConfig {
         manifestPlaceholders["GOOGLE_SERVER_CLIENT_ID"] =
-            "28935847922-s0ebsvd1u368v68kdvi28s079q7b9vnt.apps.googleusercontent.com"
+            "191840600409-shgudl1iek72hf38d0dj68qyhbuvlhw5.apps.googleusercontent.com"
     }
 }
 ```
@@ -63,17 +63,17 @@ Add the Google identifiers to `Info.plist`:
 
 ```xml
 <key>GIDClientID</key>
-<string>28935847922-pubg212r7pr5pkr2ju2la6dqhslp3vhg.apps.googleusercontent.com</string>
+<string>197674600409-a4vk6v5pngj9djjac2e6imvia56jcims.apps.googleusercontent.com</string>
 <key>GIDServerClientID</key>
-<string>28935847922-s0ebsvd1u368v68kdvi28s079q7b9vnt.apps.googleusercontent.com</string>
+<string>197674600409-shsnuo1iek72hf55d0dj68qqhbuvlhc5.apps.googleusercontent.com</string>
 <key>GIDRedirectURI</key>
-<string>com.googleusercontent.apps.28935847922-pubg212r7pr5pkr2ju2la6dqhslp3vhg:/oauthredirect</string>
+<string>com.googleusercontent.apps.197482600409-a4vk6v5pngj9djjac2e6imvia56jcims:/oauthredirect</string>
 <key>CFBundleURLTypes</key>
 <array>
     <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-            <string>com.googleusercontent.apps.28935847922-pubg212r7pr5pkr2ju2la6dqhslp3vhg</string>
+            <string>com.googleusercontent.apps.197482600409-a4vk6v5pngj9djjac2e6imvia56jcims</string>
         </array>
     </dict>
 </array>
