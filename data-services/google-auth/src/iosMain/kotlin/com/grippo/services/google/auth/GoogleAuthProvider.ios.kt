@@ -61,9 +61,12 @@ public actual class GoogleAuthUiProvider internal constructor(
     public actual suspend fun signIn(): GoogleAccount? {
         val pkce = GooglePkce.create()
         val state = randomState()
-        val authUrl = authorizationUrl(configuration, pkce, state) ?: return null
-        val callback = beginSession(authUrl) ?: return null
-        val authorizationCode = callback.extractAuthorizationCode(state) ?: return null
+        val authUrl = authorizationUrl(configuration, pkce, state)
+            ?: throw GoogleAuthException("Failed to build Google OAuth URL")
+        val callback = beginSession(authUrl)
+            ?: throw GoogleAuthException("Google sign-in session finished without callback URL")
+        val authorizationCode = callback.extractAuthorizationCode(state)
+            ?: throw GoogleAuthException("Missing authorization code in Google OAuth callback")
         return tokenClient.exchange(authorizationCode, pkce.verifier, configuration)
     }
 
@@ -154,7 +157,7 @@ private class GoogleTokenClient(
         authorizationCode: String,
         codeVerifier: String,
         configuration: GoogleAuthConfiguration,
-    ): GoogleAccount? {
+    ): GoogleAccount {
         val parameters = Parameters.build {
             append("grant_type", "authorization_code")
             append("code", authorizationCode)
@@ -168,11 +171,15 @@ private class GoogleTokenClient(
                 contentType(ContentType.Application.FormUrlEncoded)
                 setBody(FormDataContent(parameters))
             }.bodyAsText()
-        }.getOrNull() ?: return null
+        }.getOrElse {
+            throw GoogleAuthException("Failed to exchange Google authorization code", it)
+        }
 
-        val payload = runCatching { json.parseToJsonElement(responseText).jsonObject }.getOrNull()
-            ?: return null
-        val idToken = payload["id_token"]?.jsonPrimitive?.contentOrNull ?: return null
+        val payload = runCatching { json.parseToJsonElement(responseText).jsonObject }.getOrElse {
+            throw GoogleAuthException("Google token endpoint returned unexpected payload", it)
+        }
+        val idToken = payload["id_token"]?.jsonPrimitive?.contentOrNull
+            ?: throw GoogleAuthException("Google token response is missing id_token")
         val profile = decodeProfile(json, idToken)
         return GoogleAccount(
             token = idToken,

@@ -4,6 +4,7 @@ import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.EmailFormatState
 import com.grippo.core.state.formatters.PasswordFormatState
 import com.grippo.data.features.api.authorization.LoginUseCase
+import com.grippo.services.google.auth.GoogleAuthException
 import com.grippo.services.google.auth.GoogleAuthProvider
 import com.grippo.services.google.auth.GoogleAuthUiContext
 
@@ -41,7 +42,7 @@ internal class LoginViewModel(
             val googleAccount = googleAuthProvider
                 .getUiProvider(context)
                 .signIn()
-                ?: return@safeLaunch
+                ?: throw GoogleAuthException("Google sign-in returned no account data")
 
             val hasProfile = loginUseCase.execute(
                 token = googleAccount.token,

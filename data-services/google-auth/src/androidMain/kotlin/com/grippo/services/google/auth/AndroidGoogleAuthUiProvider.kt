@@ -18,16 +18,18 @@ public class AndroidGoogleAuthUiProvider(
     private val serverClientId: String,
 ) {
     public suspend fun signIn(): GoogleAccount? {
-        return try {
+        return runCatching {
             val response = credentialManager.getCredential(
                 context = activityContext,
                 request = credentialRequest(),
             )
             handleCredential(response.credential)
-        } catch (_: GetCredentialException) {
-            null
-        } catch (_: Exception) {
-            null
+        }.getOrElse {
+            if (it is GetCredentialException) {
+                throw GoogleAuthException("Unable to retrieve Google credential", it)
+            } else {
+                throw GoogleAuthException("Google sign-in failed", it)
+            }
         }
     }
 
@@ -42,16 +44,16 @@ public class AndroidGoogleAuthUiProvider(
             .build()
     }
 
-    private fun handleCredential(credential: Credential): GoogleAccount? {
+    private fun handleCredential(credential: Credential): GoogleAccount {
         if (credential is CustomCredential &&
             credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
         ) {
             return parseGoogleCredential(credential)
         }
-        return null
+        throw GoogleAuthException("Unsupported credential type ${credential::class.simpleName}")
     }
 
-    private fun parseGoogleCredential(credential: CustomCredential): GoogleAccount? {
+    private fun parseGoogleCredential(credential: CustomCredential): GoogleAccount {
         return try {
             val tokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
             GoogleAccount(
@@ -59,8 +61,8 @@ public class AndroidGoogleAuthUiProvider(
                 displayName = tokenCredential.displayName.orEmpty(),
                 profileImageUrl = tokenCredential.profilePictureUri?.toString(),
             )
-        } catch (_: GoogleIdTokenParsingException) {
-            null
+        } catch (error: GoogleIdTokenParsingException) {
+            throw GoogleAuthException("Unable to parse Google token credential", error)
         }
     }
 }
