@@ -58,16 +58,18 @@ public actual class GoogleAuthUiProvider internal constructor(
     private var currentSession: ASWebAuthenticationSession? = null
 
     @OptIn(ExperimentalForeignApi::class)
-    public actual suspend fun signIn(): GoogleAccount {
-        val pkce = GooglePkce.create()
-        val state = randomState()
-        val authUrl = authorizationUrl(configuration, pkce, state)
-            ?: throw GoogleAuthException("Failed to build Google OAuth URL")
-        val callback = beginSession(authUrl)
-            ?: throw GoogleAuthException("Google sign-in session finished without callback URL")
-        val authorizationCode = callback.extractAuthorizationCode(state)
-            ?: throw GoogleAuthException("Missing authorization code in Google OAuth callback")
-        return tokenClient.exchange(authorizationCode, pkce.verifier, configuration)
+    public actual suspend fun signIn(): Result<GoogleAccount> {
+        return runCatching {
+            val pkce = GooglePkce.create()
+            val state = randomState()
+            val authUrl = authorizationUrl(configuration, pkce, state)
+                ?: throw GoogleAuthException("Failed to build Google OAuth URL")
+            val callback = beginSession(authUrl)
+                ?: throw GoogleAuthException("Google sign-in session finished without callback URL")
+            val authorizationCode = callback.extractAuthorizationCode(state)
+                ?: throw GoogleAuthException("Missing authorization code in Google OAuth callback")
+            tokenClient.exchange(authorizationCode, pkce.verifier, configuration)
+        }
     }
 
     @OptIn(ExperimentalForeignApi::class)

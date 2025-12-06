@@ -40,6 +40,7 @@ internal class LoginViewModel(
             val googleAccount = googleAuthProvider
                 .getUiProvider(context)
                 .signIn()
+                .getOrThrow()
 
             val hasProfile = loginUseCase.execute(
                 token = googleAccount.token,

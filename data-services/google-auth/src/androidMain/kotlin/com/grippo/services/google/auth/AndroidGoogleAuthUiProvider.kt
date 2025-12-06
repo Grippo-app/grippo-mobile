@@ -17,19 +17,26 @@ public class AndroidGoogleAuthUiProvider(
     private val credentialManager: CredentialManager,
     private val serverClientId: String,
 ) {
-    public suspend fun signIn(): GoogleAccount {
+    public suspend fun signIn(): Result<GoogleAccount> {
         return runCatching {
             val response = credentialManager.getCredential(
                 context = activityContext,
                 request = credentialRequest(),
             )
             handleCredential(response.credential)
-        }.getOrElse {
-            if (it is GetCredentialException) {
-                throw GoogleAuthException("Unable to retrieve Google credential", it)
-            } else {
-                throw GoogleAuthException("Google sign-in failed", it)
-            }
+        }.fold(
+            onSuccess = { Result.success(it) },
+            onFailure = { error -> Result.failure(error.asGoogleAuthException()) },
+        )
+    }
+
+    private fun Throwable.asGoogleAuthException(): GoogleAuthException {
+        if (this is GoogleAuthException) return this
+        return when (this) {
+            is GetCredentialException ->
+                GoogleAuthException("Unable to retrieve Google credential", this)
+
+            else -> GoogleAuthException("Google sign-in failed", this)
         }
     }
 
