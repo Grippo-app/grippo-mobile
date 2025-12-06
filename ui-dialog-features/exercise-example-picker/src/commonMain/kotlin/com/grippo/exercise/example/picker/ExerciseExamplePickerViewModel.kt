@@ -48,38 +48,27 @@ public class ExerciseExamplePickerViewModel(
                     else -> suggestion.name
                 }
 
-                val weightType = if (suggestion == null) {
-                    manual.filters
-                        .filterIsInstance<FilterValue.WeightType>()
-                        .firstOrNull()
-                        ?.value?.toDomain()
-                } else {
-                    null
-                }
+                val weightType = if (suggestion == null) manual.filters
+                    .filterIsInstance<FilterValue.WeightType>()
+                    .firstOrNull()
+                    ?.value?.toDomain()
+                else null
 
-                val forceType = if (suggestion == null) {
-                    manual.filters
-                        .filterIsInstance<FilterValue.ForceType>()
-                        .firstOrNull()
-                        ?.value?.toDomain()
-                } else {
-                    null
-                }
+                val forceType = if (suggestion == null) manual.filters
+                    .filterIsInstance<FilterValue.ForceType>()
+                    .firstOrNull()
+                    ?.value?.toDomain()
+                else null
 
-                val category = if (suggestion == null) {
-                    manual.filters
-                        .filterIsInstance<FilterValue.Category>()
-                        .firstOrNull()
-                        ?.value?.toDomain()
-                } else {
-                    null
-                }
 
-                val muscleGroupId = if (suggestion == null) {
-                    manual.selectedMuscleGroupId
-                } else {
-                    null
-                }
+                val category = if (suggestion == null) manual.filters
+                    .filterIsInstance<FilterValue.Category>()
+                    .firstOrNull()
+                    ?.value?.toDomain()
+                else null
+
+                val muscleGroupId = if (suggestion == null) manual.selectedMuscleGroupId
+                else null
 
                 ExampleQueries(
                     name = name,
