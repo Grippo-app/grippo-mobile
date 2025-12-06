@@ -1,7 +1,8 @@
 package com.grippo.data.features.authorization.data
 
 import com.grippo.backend.GrippoApi
-import com.grippo.backend.dto.auth.AuthBody
+import com.grippo.backend.dto.auth.EmailAuthBody
+import com.grippo.backend.dto.auth.GoogleBody
 import com.grippo.backend.dto.auth.RegisterBody
 import com.grippo.data.features.authorization.domain.AuthorizationRepository
 import com.grippo.database.dao.TokenDao
@@ -22,8 +23,8 @@ internal class AuthorizationRepositoryImpl(
     private val userActiveDao: UserActiveDao,
 ) : AuthorizationRepository {
 
-    override suspend fun loginByEmail(email: String, password: String): Result<Unit> {
-        val response = api.login(AuthBody(email, password))
+    override suspend fun login(email: String, password: String): Result<Unit> {
+        val response = api.login(EmailAuthBody(email, password))
 
         response.onSuccess { r ->
             val entity = r.toEntityOrNull() ?: return@onSuccess
@@ -34,8 +35,16 @@ internal class AuthorizationRepositoryImpl(
         return response.map { }
     }
 
-    override suspend fun loginByGoogle(token: String): Result<Unit> {
-        TODO()
+    override suspend fun google(token: String): Result<Unit> {
+        val response = api.google(GoogleBody(idToken = token))
+
+        response.onSuccess { r ->
+            val entity = r.toEntityOrNull() ?: return@onSuccess
+            tokenDao.insertOrUpdate(entity)
+            userActiveDao.insertOrReplace(UserActiveEntity(userId = entity.id))
+        }
+
+        return response.map { }
     }
 
     override suspend fun register(email: String, password: String): Result<Unit> {

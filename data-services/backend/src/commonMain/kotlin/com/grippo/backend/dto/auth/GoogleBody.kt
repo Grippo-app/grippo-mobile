@@ -4,9 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class AuthBody(
-    @SerialName("email")
-    val email: String,
-    @SerialName("password")
-    val password: String
+public data class GoogleBody(
+    @SerialName("idToken")
+    val idToken: String,
 )

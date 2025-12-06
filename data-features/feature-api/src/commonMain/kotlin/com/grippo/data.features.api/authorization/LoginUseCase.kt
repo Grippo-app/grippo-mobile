@@ -13,7 +13,7 @@ public class LoginUseCase(
     private val exerciseExampleFeature: ExerciseExampleFeature
 ) {
     public suspend fun execute(email: String, password: String): Boolean {
-        authorizationFeature.loginByEmail(email, password).getOrThrow()
+        authorizationFeature.login(email, password).getOrThrow()
 
         val hasProfile = userFeature.getUser().getOrThrow()
 
@@ -27,7 +27,7 @@ public class LoginUseCase(
     }
 
     public suspend fun execute(token: String): Boolean {
-        authorizationFeature.loginByGoogle(token).getOrThrow()
+        authorizationFeature.google(token).getOrThrow()
 
         val hasProfile = userFeature.getUser().getOrThrow()
 

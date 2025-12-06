@@ -9,12 +9,12 @@ internal class AuthorizationFeatureImpl(
     private val repository: AuthorizationRepository
 ) : AuthorizationFeature {
 
-    override suspend fun loginByEmail(email: String, password: String): Result<Unit> {
-        return repository.loginByEmail(email, password)
+    override suspend fun login(email: String, password: String): Result<Unit> {
+        return repository.login(email, password)
     }
 
-    override suspend fun loginByGoogle(token: String): Result<Unit> {
-        return repository.loginByGoogle(token)
+    override suspend fun google(token: String): Result<Unit> {
+        return repository.google(token)
     }
 
     override suspend fun register(email: String, password: String): Result<Unit> {
