@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
@@ -51,7 +52,7 @@ public fun BottomSheetToolbar(
         ) {
             Button(
                 content = ButtonContent.Icon(
-                    icon = AppTokens.icons.NavArrowLeft,
+                    icon = ButtonIcon.Icon(AppTokens.icons.NavArrowLeft),
                 ),
                 style = ButtonStyle.Transparent,
                 size = ButtonSize.Small,
@@ -63,7 +64,7 @@ public fun BottomSheetToolbar(
 
         Button(
             content = ButtonContent.Icon(
-                icon = AppTokens.icons.Cancel,
+                icon = ButtonIcon.Icon(AppTokens.icons.Cancel),
             ),
             style = ButtonStyle.Transparent,
             size = ButtonSize.Small,

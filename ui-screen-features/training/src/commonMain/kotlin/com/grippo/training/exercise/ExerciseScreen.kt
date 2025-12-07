@@ -19,6 +19,7 @@ import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.core.state.trainings.stubExercise
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
@@ -142,7 +143,7 @@ internal fun ExerciseScreen(
                     Button(
                         modifier = Modifier.padding(end = AppTokens.dp.screen.horizontalPadding),
                         content = ButtonContent.Icon(
-                            icon = AppTokens.icons.Cancel
+                            icon = ButtonIcon.Icon(AppTokens.icons.Cancel)
                         ),
                         style = ButtonStyle.Error,
                         onClick = deleteIterationProvider

@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
@@ -80,7 +81,7 @@ public fun Toolbar(
                 is Leading.Back -> Button(
                     modifier = Modifier,
                     content = ButtonContent.Icon(
-                        icon = AppTokens.icons.NavArrowLeft
+                        icon = ButtonIcon.Icon(AppTokens.icons.NavArrowLeft)
                     ),
                     style = ButtonStyle.Transparent,
                     size = ButtonSize.Small,
@@ -90,7 +91,7 @@ public fun Toolbar(
                 is Leading.Profile -> Button(
                     modifier = Modifier,
                     content = ButtonContent.Icon(
-                        icon = AppTokens.icons.User
+                        icon = ButtonIcon.Icon(AppTokens.icons.User)
                     ),
                     style = ButtonStyle.Transparent,
                     size = ButtonSize.Small,

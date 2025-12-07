@@ -30,6 +30,7 @@ import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.example.ExerciseExampleCard
@@ -192,7 +193,7 @@ internal fun ExerciseExamplePickerScreen(
                                     .fillMaxWidth()
                                     .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
                                 content = ButtonContent.Text(
-                                    startIcon = AppTokens.icons.Magic,
+                                    startIcon = ButtonIcon.Icon(AppTokens.icons.Magic),
                                     text = AppTokens.strings.res(Res.string.ai_suggestion_btn)
                                 ),
                                 state = buttonState,

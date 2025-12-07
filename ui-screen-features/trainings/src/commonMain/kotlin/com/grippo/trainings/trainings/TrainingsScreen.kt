@@ -19,6 +19,7 @@ import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
@@ -97,7 +98,7 @@ internal fun TrainingsScreen(
         trailing = {
             Button(
                 modifier = Modifier.padding(end = AppTokens.dp.contentPadding.subContent),
-                content = ButtonContent.Icon(icon = AppTokens.icons.User),
+                content = ButtonContent.Icon(icon = ButtonIcon.Icon(AppTokens.icons.User)),
                 style = ButtonStyle.Transparent,
                 size = ButtonSize.Small,
                 onClick = contract::onOpenProfile
@@ -176,7 +177,7 @@ internal fun TrainingsScreen(
                     .fillMaxWidth(1f),
                 content = ButtonContent.Text(
                     text = AppTokens.strings.res(Res.string.start_workout),
-                    startIcon = AppTokens.icons.Gym
+                    startIcon = ButtonIcon.Icon(AppTokens.icons.Gym)
                 ),
                 style = ButtonStyle.Primary,
                 onClick = contract::onAddTraining

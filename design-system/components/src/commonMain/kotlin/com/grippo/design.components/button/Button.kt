@@ -15,6 +15,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -52,14 +53,29 @@ public sealed interface ButtonContent {
     @Immutable
     public data class Text(
         val text: String,
-        val startIcon: ImageVector? = null,
-        val endIcon: ImageVector? = null,
+        val startIcon: ButtonIcon? = null,
+        val endIcon: ButtonIcon? = null,
     ) : ButtonContent
 
     @Immutable
     public data class Icon(
-        val icon: ImageVector,
+        val icon: ButtonIcon,
     ) : ButtonContent
+}
+
+@Immutable
+public sealed class ButtonIcon(
+    public open val value: ImageVector
+) {
+    @Immutable
+    public data class Icon(
+        public override val value: ImageVector
+    ) : ButtonIcon(value)
+
+    @Immutable
+    public data class Image(
+        public override val value: ImageVector
+    ) : ButtonIcon(value)
 }
 
 @Immutable
@@ -189,11 +205,10 @@ public fun Button(
 
                 if (content.endIcon != null) {
                     Spacer(modifier = Modifier.width(iconPadding))
-                    Icon(
+                    ButtonIconContent(
                         modifier = Modifier.size(iconSize),
-                        imageVector = content.endIcon,
-                        tint = colorTokens.icon,
-                        contentDescription = null
+                        icon = content.endIcon,
+                        tint = colorTokens.icon
                     )
                 }
             }
@@ -229,11 +244,10 @@ public fun Button(
                             contentDescription = null
                         )
                     } else {
-                        Icon(
+                        ButtonIconContent(
                             modifier = Modifier.size(iconSize),
-                            imageVector = content.icon,
-                            tint = colorTokens.icon,
-                            contentDescription = null
+                            icon = content.icon,
+                            tint = colorTokens.icon
                         )
                     }
                 }
@@ -245,7 +259,7 @@ public fun Button(
 @Composable
 private fun StartIconOrLoader(
     isLoading: Boolean,
-    icon: ImageVector,
+    icon: ButtonIcon,
     size: Dp,
     tint: Color,
     label: String
@@ -289,13 +303,12 @@ private fun StartIconOrLoader(
     // Stack loader and icon; width is constant (the Row's spacer handles gap)
     Box(modifier = Modifier.size(size), contentAlignment = Alignment.Center) {
         // Icon layer
-        Icon(
+        ButtonIconContent(
             modifier = Modifier
                 .matchParentSize()
                 .graphicsLayer { alpha = iconAlpha },
-            imageVector = icon,
-            tint = tint,
-            contentDescription = null
+            icon = icon,
+            tint = tint
         )
         // Loader layer
         Icon(
@@ -309,6 +322,32 @@ private fun StartIconOrLoader(
             tint = tint,
             contentDescription = null
         )
+    }
+}
+
+@Composable
+private fun ButtonIconContent(
+    modifier: Modifier = Modifier,
+    icon: ButtonIcon,
+    tint: Color,
+) {
+    when (icon) {
+        is ButtonIcon.Icon -> {
+            Icon(
+                modifier = modifier,
+                imageVector = icon.value,
+                tint = tint,
+                contentDescription = null
+            )
+        }
+
+        is ButtonIcon.Image -> {
+            Image(
+                modifier = modifier,
+                imageVector = icon.value,
+                contentDescription = null
+            )
+        }
     }
 }
 
@@ -390,7 +429,7 @@ private fun ButtonPrimaryPreview() {
         Button(
             content = ButtonContent.Text(
                 text = "Enabled",
-                startIcon = AppTokens.icons.SystemRestart
+                startIcon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)
             ),
             style = ButtonStyle.Primary,
             state = ButtonState.Enabled,
@@ -400,7 +439,7 @@ private fun ButtonPrimaryPreview() {
         Button(
             content = ButtonContent.Text(
                 text = "Loading",
-                startIcon = AppTokens.icons.SystemRestart
+                startIcon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)
             ),
             style = ButtonStyle.Primary,
             state = ButtonState.Loading,
@@ -410,7 +449,7 @@ private fun ButtonPrimaryPreview() {
         Button(
             content = ButtonContent.Text(
                 text = "Disabled",
-                startIcon = AppTokens.icons.SystemRestart
+                startIcon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)
             ),
             style = ButtonStyle.Primary,
             state = ButtonState.Disabled,
@@ -419,21 +458,21 @@ private fun ButtonPrimaryPreview() {
         )
 
         Button(
-            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
+            content = ButtonContent.Icon(icon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)),
             style = ButtonStyle.Primary,
             state = ButtonState.Enabled,
             size = ButtonSize.Small,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
+            content = ButtonContent.Icon(icon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)),
             style = ButtonStyle.Primary,
             state = ButtonState.Loading,
             size = ButtonSize.Small,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
+            content = ButtonContent.Icon(icon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)),
             style = ButtonStyle.Primary,
             state = ButtonState.Disabled,
             size = ButtonSize.Small,
@@ -449,7 +488,7 @@ private fun ButtonSecondaryPreview() {
         Button(
             content = ButtonContent.Text(
                 text = "Enabled",
-                startIcon = AppTokens.icons.SystemRestart
+                startIcon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)
             ),
             style = ButtonStyle.Secondary,
             state = ButtonState.Enabled,
@@ -459,7 +498,7 @@ private fun ButtonSecondaryPreview() {
         Button(
             content = ButtonContent.Text(
                 text = "Loading",
-                startIcon = AppTokens.icons.SystemRestart
+                startIcon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)
             ),
             style = ButtonStyle.Secondary,
             state = ButtonState.Loading,
@@ -469,7 +508,7 @@ private fun ButtonSecondaryPreview() {
         Button(
             content = ButtonContent.Text(
                 text = "Disabled",
-                startIcon = AppTokens.icons.SystemRestart
+                startIcon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)
             ),
             style = ButtonStyle.Secondary,
             state = ButtonState.Disabled,
@@ -478,21 +517,21 @@ private fun ButtonSecondaryPreview() {
         )
 
         Button(
-            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
+            content = ButtonContent.Icon(icon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)),
             style = ButtonStyle.Secondary,
             state = ButtonState.Enabled,
             size = ButtonSize.Small,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
+            content = ButtonContent.Icon(icon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)),
             style = ButtonStyle.Secondary,
             state = ButtonState.Loading,
             size = ButtonSize.Small,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
+            content = ButtonContent.Icon(icon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)),
             style = ButtonStyle.Secondary,
             state = ButtonState.Disabled,
             size = ButtonSize.Small,
@@ -508,7 +547,7 @@ private fun ButtonTransparentPreview() {
         Button(
             content = ButtonContent.Text(
                 text = "Enabled",
-                startIcon = AppTokens.icons.SystemRestart
+                startIcon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)
             ),
             style = ButtonStyle.Transparent,
             state = ButtonState.Enabled,
@@ -518,7 +557,7 @@ private fun ButtonTransparentPreview() {
         Button(
             content = ButtonContent.Text(
                 text = "Loading",
-                startIcon = AppTokens.icons.SystemRestart
+                startIcon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)
             ),
             style = ButtonStyle.Transparent,
             state = ButtonState.Loading,
@@ -528,7 +567,7 @@ private fun ButtonTransparentPreview() {
         Button(
             content = ButtonContent.Text(
                 text = "Disabled",
-                startIcon = AppTokens.icons.SystemRestart
+                startIcon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)
             ),
             style = ButtonStyle.Transparent,
             state = ButtonState.Disabled,
@@ -537,21 +576,21 @@ private fun ButtonTransparentPreview() {
         )
 
         Button(
-            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
+            content = ButtonContent.Icon(icon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)),
             style = ButtonStyle.Transparent,
             state = ButtonState.Enabled,
             size = ButtonSize.Small,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
+            content = ButtonContent.Icon(icon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)),
             style = ButtonStyle.Transparent,
             state = ButtonState.Loading,
             size = ButtonSize.Small,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
+            content = ButtonContent.Icon(icon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)),
             style = ButtonStyle.Transparent,
             state = ButtonState.Disabled,
             size = ButtonSize.Small,
@@ -567,7 +606,7 @@ private fun ButtonTertiaryPreview() {
         Button(
             content = ButtonContent.Text(
                 text = "Enabled",
-                startIcon = AppTokens.icons.SystemRestart
+                startIcon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)
             ),
             style = ButtonStyle.Tertiary,
             state = ButtonState.Enabled,
@@ -577,7 +616,7 @@ private fun ButtonTertiaryPreview() {
         Button(
             content = ButtonContent.Text(
                 text = "Loading",
-                startIcon = AppTokens.icons.SystemRestart
+                startIcon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)
             ),
             style = ButtonStyle.Tertiary,
             state = ButtonState.Loading,
@@ -587,7 +626,7 @@ private fun ButtonTertiaryPreview() {
         Button(
             content = ButtonContent.Text(
                 text = "Disabled",
-                startIcon = AppTokens.icons.SystemRestart
+                startIcon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)
             ),
             style = ButtonStyle.Tertiary,
             state = ButtonState.Disabled,
@@ -596,21 +635,21 @@ private fun ButtonTertiaryPreview() {
         )
 
         Button(
-            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
+            content = ButtonContent.Icon(icon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)),
             style = ButtonStyle.Tertiary,
             state = ButtonState.Enabled,
             size = ButtonSize.Small,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
+            content = ButtonContent.Icon(icon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)),
             style = ButtonStyle.Tertiary,
             state = ButtonState.Loading,
             size = ButtonSize.Small,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
+            content = ButtonContent.Icon(icon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)),
             style = ButtonStyle.Tertiary,
             state = ButtonState.Disabled,
             size = ButtonSize.Small,
@@ -626,7 +665,7 @@ private fun ButtonErrorPreview() {
         Button(
             content = ButtonContent.Text(
                 text = "Enabled",
-                startIcon = AppTokens.icons.SystemRestart
+                startIcon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)
             ),
             style = ButtonStyle.Error,
             state = ButtonState.Enabled,
@@ -636,7 +675,7 @@ private fun ButtonErrorPreview() {
         Button(
             content = ButtonContent.Text(
                 text = "Loading",
-                startIcon = AppTokens.icons.SystemRestart
+                startIcon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)
             ),
             style = ButtonStyle.Error,
             state = ButtonState.Loading,
@@ -646,7 +685,7 @@ private fun ButtonErrorPreview() {
         Button(
             content = ButtonContent.Text(
                 text = "Disabled",
-                startIcon = AppTokens.icons.SystemRestart
+                startIcon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)
             ),
             style = ButtonStyle.Error,
             state = ButtonState.Disabled,
@@ -655,21 +694,21 @@ private fun ButtonErrorPreview() {
         )
 
         Button(
-            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
+            content = ButtonContent.Icon(icon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)),
             style = ButtonStyle.Error,
             state = ButtonState.Enabled,
             size = ButtonSize.Small,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
+            content = ButtonContent.Icon(icon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)),
             style = ButtonStyle.Error,
             state = ButtonState.Loading,
             size = ButtonSize.Small,
             onClick = {}
         )
         Button(
-            content = ButtonContent.Icon(icon = AppTokens.icons.SystemRestart),
+            content = ButtonContent.Icon(icon = ButtonIcon.Icon(AppTokens.icons.SystemRestart)),
             style = ButtonStyle.Error,
             state = ButtonState.Disabled,
             size = ButtonSize.Small,

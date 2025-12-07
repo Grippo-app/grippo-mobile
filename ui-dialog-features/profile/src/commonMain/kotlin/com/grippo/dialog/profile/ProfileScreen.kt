@@ -16,6 +16,7 @@ import com.grippo.core.state.profile.ProfileActivityMenu
 import com.grippo.core.state.profile.stubUser
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.menu.Menu
 import com.grippo.design.components.menu.MenuItem
@@ -69,7 +70,7 @@ internal fun ProfileScreen(
             modifier = Modifier.fillMaxWidth(),
             style = ButtonStyle.Error,
             content = ButtonContent.Text(
-                startIcon = AppTokens.icons.LogOut,
+                startIcon = ButtonIcon.Icon(AppTokens.icons.LogOut),
                 text = AppTokens.strings.res(Res.string.logout_btn),
             ),
             onClick = contract::onLogoutClick

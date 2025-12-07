@@ -23,6 +23,7 @@ import com.grippo.core.state.stage.StageState
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.placeholder.ScreenPlaceholder
@@ -126,7 +127,7 @@ internal fun ColumnScope.ExercisesPage(
                                         Button(
                                             modifier = Modifier.padding(end = AppTokens.dp.screen.horizontalPadding),
                                             content = ButtonContent.Icon(
-                                                icon = AppTokens.icons.Cancel
+                                                icon = ButtonIcon.Icon(AppTokens.icons.Cancel)
                                             ),
                                             style = ButtonStyle.Error,
                                             onClick = deleteExerciseProvider

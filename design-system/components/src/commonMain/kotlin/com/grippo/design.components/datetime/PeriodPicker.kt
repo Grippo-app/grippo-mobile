@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import com.grippo.core.state.datetime.PeriodState
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.modifiers.scalableClick
@@ -63,7 +64,7 @@ public fun PeriodPicker(
 
         Button(
             content = ButtonContent.Icon(
-                icon = AppTokens.icons.NavArrowDown
+                icon = ButtonIcon.Icon(AppTokens.icons.NavArrowDown)
             ),
             size = ButtonSize.Small,
             style = ButtonStyle.Transparent,

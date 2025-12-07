@@ -21,6 +21,7 @@ import com.grippo.core.state.formatters.EmailFormatState
 import com.grippo.core.state.formatters.PasswordFormatState
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
@@ -33,6 +34,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.continue_with_google
 import com.grippo.design.resources.provider.icons.Google
 import com.grippo.design.resources.provider.login_button_login
 import com.grippo.design.resources.provider.login_button_registration
@@ -150,8 +152,8 @@ internal fun LoginScreen(
             Button(
                 modifier = Modifier.fillMaxWidth(),
                 content = ButtonContent.Text(
-                    text = AppTokens.strings.res(Res.string.login_button_login),
-                    startIcon = AppTokens.icons.Google
+                    text = AppTokens.strings.res(Res.string.continue_with_google),
+                    startIcon = ButtonIcon.Image(AppTokens.icons.Google)
                 ),
                 state = buttonLoginByGoogleState,
                 style = ButtonStyle.Secondary,

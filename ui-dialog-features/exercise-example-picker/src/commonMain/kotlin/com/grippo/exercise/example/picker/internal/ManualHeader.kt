@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import com.grippo.design.components.badge.Badge
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
 import com.grippo.design.components.cards.selectable.SelectableCard
@@ -52,7 +53,7 @@ internal fun ManualHeader(
             Box {
                 Button(
                     content = ButtonContent.Icon(
-                        icon = AppTokens.icons.Filter
+                        icon = ButtonIcon.Icon(AppTokens.icons.Filter)
                     ),
                     style = ButtonStyle.Tertiary,
                     onClick = contract::onFiltersClick

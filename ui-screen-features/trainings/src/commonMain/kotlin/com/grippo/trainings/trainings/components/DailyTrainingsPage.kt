@@ -20,6 +20,7 @@ import com.grippo.core.state.trainings.TrainingListValue.Companion.exercise
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.digest.DailyDigestCard
@@ -141,7 +142,7 @@ private fun DailyTimelineItem(
 
                 Button(
                     content = ButtonContent.Icon(
-                        icon = AppTokens.icons.Menu,
+                        icon = ButtonIcon.Icon(AppTokens.icons.Menu),
                     ),
                     style = ButtonStyle.Transparent,
                     size = ButtonSize.Small,
