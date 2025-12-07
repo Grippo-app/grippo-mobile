@@ -60,7 +60,7 @@ public object DarkColor : AppColor {
     }
 
     override val divider: AppColor.DividerColors = object : AppColor.DividerColors {
-        override val default = AppPalette.NeutralDark.N200
+        override val default = AppPalette.NeutralDark.N250
     }
 
     override val achievements: AppColor.Achievements = object : AppColor.Achievements {

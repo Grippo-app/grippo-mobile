@@ -59,7 +59,6 @@ internal fun LoginScreen(
         )
     ),
 ) {
-
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         style = ToolbarStyle.Transparent
@@ -136,6 +135,15 @@ internal fun LoginScreen(
 
         if (state.isGoogleLoginAvailable) {
 
+            ContentSpliter(
+                text = AppTokens.strings.res(Res.string.or)
+            )
+
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+        }
+
+        if (state.isGoogleLoginAvailable) {
+
             val googleAuthUiContext = rememberGoogleAuthUiContext()
 
             val buttonLoginByGoogleState = remember(
@@ -161,12 +169,7 @@ internal fun LoginScreen(
             )
 
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
         }
-
-        ContentSpliter(
-            text = AppTokens.strings.res(Res.string.or)
-        )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
