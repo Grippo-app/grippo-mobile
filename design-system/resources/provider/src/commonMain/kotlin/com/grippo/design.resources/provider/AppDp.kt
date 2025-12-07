@@ -58,7 +58,6 @@ public data object AppDp {
     val informationCard: InformationCard = InformationCard
     val wheelPicker: WheelPicker = WheelPicker
     val userCard: UserCard = UserCard
-    val bodyDetails: BodyDetails = BodyDetails
     val achievementCard: AchievementCard = AchievementCard
     val equipmentCard: EquipmentCard = EquipmentCard
     val timeline: Timeline = Timeline
@@ -200,12 +199,6 @@ public data object AppDp {
     }
 
     public data object UserCard
-
-    public data object BodyDetails {
-        val icon: Dp = AppDp.icon.small
-        val horizontalPadding: Dp = padding.extraSmall
-        val verticalPadding: Dp = padding.extraSmall
-    }
 
     public data object TimeLabel {
         val icon: Dp = AppDp.icon.medium
