@@ -5,12 +5,14 @@ import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.filters.FilterValue
 import com.grippo.core.state.muscles.MuscleGroupState
 import com.grippo.core.state.muscles.MuscleRepresentationState
+import com.grippo.data.features.api.exercise.example.models.ExamplePage
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 public data class ExerciseExamplePickerState(
     val exerciseExamples: ImmutableList<ExerciseExampleState> = persistentListOf(),
+    val pagination: PaginationState = PaginationState.Next(),
 
     // Keep both sub-states in one state holder
     val manual: ManualQueries = ManualQueries(),
@@ -31,3 +33,27 @@ public data class AiSuggestionQueries(
     val name: String,
     val reason: String,
 )
+
+@Immutable
+public sealed class PaginationState {
+    public abstract val page: Int
+    public abstract val limit: Int
+    public abstract val isLoadingNextPage: Boolean
+    public abstract val isEndReached: Boolean
+
+    @Immutable
+    public data class Next(
+        override val page: Int = ExamplePage.Chunk.number,
+        override val limit: Int = ExamplePage.Chunk.limits,
+        override val isLoadingNextPage: Boolean = false,
+        override val isEndReached: Boolean = false,
+    ) : PaginationState()
+
+    @Immutable
+    public data class Restartable(
+        override val page: Int = ExamplePage.Chunk.number,
+        override val limit: Int = ExamplePage.Chunk.limits,
+        override val isLoadingNextPage: Boolean = false,
+        override val isEndReached: Boolean = false,
+    ) : PaginationState()
+}

@@ -2,8 +2,7 @@ package com.grippo.data.features.api.exercise.example
 
 import com.grippo.data.features.api.excluded.equipments.ExcludedEquipmentsFeature
 import com.grippo.data.features.api.excluded.muscles.ExcludedMusclesFeature
-import com.grippo.data.features.api.exercise.example.models.ExamplePage
-import com.grippo.data.features.api.exercise.example.models.ExampleQueries
+import com.grippo.data.features.api.exercise.example.models.ExampleParams
 import com.grippo.data.features.api.exercise.example.models.ExampleSortingEnum
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.exercise.example.models.UserExerciseExampleRules
@@ -21,10 +20,8 @@ public class UserExerciseExamplesUseCase(
     private val exerciseExampleFeature: ExerciseExampleFeature,
     private val userFeature: UserFeature
 ) {
-    public fun execute(
-        queries: ExampleQueries,
-        page: ExamplePage
-    ): Flow<List<ExerciseExample>> {
+
+    public fun execute(params: ExampleParams): Flow<List<ExerciseExample>> {
         return combine(
             flow = excludedEquipmentsFeature
                 .observeExcludedEquipments()
@@ -46,10 +43,10 @@ public class UserExerciseExamplesUseCase(
             .distinctUntilChanged()
             .flatMapLatest { rules ->
                 exerciseExampleFeature.observeExerciseExamples(
-                    queries = queries,
+                    queries = params.queries,
                     sorting = ExampleSortingEnum.RecentlyUsed,
                     rules = rules,
-                    page = page,
+                    page = params.page,
                     experience = rules.experience
                 )
             }

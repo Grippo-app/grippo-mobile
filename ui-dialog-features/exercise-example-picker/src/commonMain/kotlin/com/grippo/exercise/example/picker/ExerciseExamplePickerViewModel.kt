@@ -5,6 +5,7 @@ import com.grippo.core.state.filters.FilterValue
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.UserExerciseExamplesUseCase
 import com.grippo.data.features.api.exercise.example.models.ExamplePage
+import com.grippo.data.features.api.exercise.example.models.ExampleParams
 import com.grippo.data.features.api.exercise.example.models.ExampleQueries
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.muscle.MuscleFeature
@@ -39,52 +40,38 @@ public class ExerciseExamplePickerViewModel(
             .safeLaunch()
 
         state
-            .map { state ->
-                val manual = state.manual
-                val suggestion = state.suggestion
+            .map { current ->
+                val manual = current.manual
+                val suggestion = current.suggestion
 
-                val name = when (suggestion) {
-                    null -> manual.name.trim()
-                    else -> suggestion.name
-                }
+                val manualFilters = manual.filters
+                val isManual = suggestion == null
 
-                val weightType = if (suggestion == null) manual.filters
-                    .filterIsInstance<FilterValue.WeightType>()
-                    .firstOrNull()
-                    ?.value?.toDomain()
-                else null
-
-                val forceType = if (suggestion == null) manual.filters
-                    .filterIsInstance<FilterValue.ForceType>()
-                    .firstOrNull()
-                    ?.value?.toDomain()
-                else null
-
-
-                val category = if (suggestion == null) manual.filters
-                    .filterIsInstance<FilterValue.Category>()
-                    .firstOrNull()
-                    ?.value?.toDomain()
-                else null
-
-                val muscleGroupId = if (suggestion == null) manual.selectedMuscleGroupId
-                else null
-
-                ExampleQueries(
-                    name = name,
-                    weightType = weightType,
-                    forceType = forceType,
-                    category = category,
-                    muscleGroupId = muscleGroupId
+                ExampleParams(
+                    queries = ExampleQueries(
+                        name = suggestion?.name ?: manual.name.trim(),
+                        weightType = if (isManual) manualFilters
+                            .filterIsInstance<FilterValue.WeightType>()
+                            .firstOrNull()
+                            ?.value?.toDomain() else null,
+                        forceType = if (isManual) manualFilters
+                            .filterIsInstance<FilterValue.ForceType>()
+                            .firstOrNull()
+                            ?.value?.toDomain() else null,
+                        category = if (isManual) manualFilters
+                            .filterIsInstance<FilterValue.Category>()
+                            .firstOrNull()
+                            ?.value?.toDomain() else null,
+                        muscleGroupId = if (isManual) manual.selectedMuscleGroupId else null
+                    ),
+                    page = ExamplePage(
+                        limits = current.pagination.limit,
+                        number = current.pagination.page
+                    )
                 )
             }
             .distinctUntilChanged()
-            .flatMapLatest { queries ->
-                userExerciseExamplesUseCase.execute(
-                    queries = queries,
-                    page = ExamplePage.First15
-                )
-            }
+            .flatMapLatest(userExerciseExamplesUseCase::execute)
             .onEach(::provideExerciseExamples)
             .safeLaunch()
     }
@@ -95,12 +82,34 @@ public class ExerciseExamplePickerViewModel(
     }
 
     private fun provideExerciseExamples(value: List<ExerciseExample>) {
-        val list = value.toState()
-        update { it.copy(exerciseExamples = list) }
+        val incoming = value.toState()
+
+        update { current ->
+            val pagination = current.pagination
+            val shouldReplace = pagination is PaginationState.Restartable ||
+                    pagination.page == ExamplePage.Chunk.number
+            val examples = if (shouldReplace) {
+                incoming
+            } else {
+                (current.exerciseExamples + incoming)
+                    .distinctBy { it.value.id }
+                    .toPersistentList()
+            }
+
+            current.copy(
+                exerciseExamples = examples,
+                pagination = PaginationState.Next(
+                    page = pagination.page,
+                    limit = pagination.limit,
+                    isLoadingNextPage = false,
+                    isEndReached = value.size < pagination.limit
+                )
+            )
+        }
     }
 
     override fun onQueryChange(value: String) {
-        update {
+        updateWithPaginationReset {
             it.copy(
                 manual = it.manual.copy(name = value),
                 suggestion = null
@@ -112,7 +121,7 @@ public class ExerciseExamplePickerViewModel(
         val dialog = DialogConfig.FilterPicker(
             initial = state.value.manual.filters,
             onResult = { value ->
-                update {
+                updateWithPaginationReset {
                     it.copy(
                         manual = it.manual.copy(filters = value.toPersistentList()),
                         suggestion = null
@@ -125,11 +134,11 @@ public class ExerciseExamplePickerViewModel(
     }
 
     override fun onClearSuggestion() {
-        update { it.copy(suggestion = null) }
+        updateWithPaginationReset { it.copy(suggestion = null) }
     }
 
     override fun onMuscleGroupClick(id: String) {
-        update {
+        updateWithPaginationReset {
             val value = if (it.manual.selectedMuscleGroupId == id) null else id
             it.copy(
                 manual = it.manual.copy(selectedMuscleGroupId = value),
@@ -148,13 +157,36 @@ public class ExerciseExamplePickerViewModel(
                 .observeExerciseExample(result.id)
                 .firstOrNull()?.value?.name ?: return@safeLaunch
 
-            update {
+            updateWithPaginationReset {
                 it.copy(
                     suggestion = AiSuggestionQueries(
                         id = result.id,
                         name = name,
                         reason = result.reason
                     )
+                )
+            }
+        }
+    }
+
+    override fun onLoadNextPage() {
+        update { current ->
+            val pagination = current.pagination
+            when {
+                pagination.isEndReached -> current
+                pagination.isLoadingNextPage -> current
+                else -> current.copy(
+                    pagination = when (pagination) {
+                        is PaginationState.Next -> pagination.copy(
+                            page = pagination.page + 1,
+                            isLoadingNextPage = true
+                        )
+
+                        is PaginationState.Restartable -> pagination.copy(
+                            page = pagination.page + 1,
+                            isLoadingNextPage = true
+                        )
+                    }
                 )
             }
         }
@@ -167,5 +199,22 @@ public class ExerciseExamplePickerViewModel(
 
     override fun onDismiss() {
         navigateTo(ExerciseExamplePickerDirection.Back)
+    }
+
+    private fun updateWithPaginationReset(
+        transform: (ExerciseExamplePickerState) -> ExerciseExamplePickerState
+    ) {
+        update { current ->
+            val state = transform(current)
+            val pagination = state.pagination
+            state.copy(
+                pagination = PaginationState.Restartable(
+                    page = ExamplePage.Chunk.number,
+                    limit = pagination.limit,
+                    isLoadingNextPage = false,
+                    isEndReached = false
+                )
+            )
+        }
     }
 }

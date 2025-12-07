@@ -10,6 +10,7 @@ internal interface ExerciseExamplePickerContract {
     fun onMuscleGroupClick(id: String)
     fun onQueryChange(value: String)
     fun onFiltersClick()
+    fun onLoadNextPage()
     fun onDismiss()
 
     @Immutable
@@ -19,6 +20,7 @@ internal interface ExerciseExamplePickerContract {
         override fun onQueryChange(value: String) {}
         override fun onClearSuggestion() {}
         override fun onFiltersClick() {}
+        override fun onLoadNextPage() {}
         override fun onSuggestClick() {}
         override fun onDismiss() {}
     }

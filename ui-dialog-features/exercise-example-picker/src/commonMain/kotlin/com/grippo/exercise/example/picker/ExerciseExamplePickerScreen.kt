@@ -16,9 +16,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -46,6 +49,7 @@ import com.grippo.exercise.example.picker.internal.ManualHeader
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
 internal fun ExerciseExamplePickerScreen(
@@ -129,10 +133,29 @@ internal fun ExerciseExamplePickerScreen(
                         contentPadding = basePadding,
                         overlay = AppTokens.colors.background.dialog,
                         content = { containerModifier, resolvedPadding ->
+                            val listState = rememberLazyListState()
+                            val canLoadMore =
+                                !state.pagination.isEndReached && !state.pagination.isLoadingNextPage
+
+                            LaunchedEffect(listState, canLoadMore, state.exerciseExamples.size) {
+                                if (!canLoadMore) return@LaunchedEffect
+                                snapshotFlow {
+                                    val layoutInfo = listState.layoutInfo
+                                    val totalItems = layoutInfo.totalItemsCount
+                                    if (totalItems == 0) return@snapshotFlow false
+                                    val lastItemIndex = layoutInfo.visibleItemsInfo
+                                        .lastOrNull()?.index ?: return@snapshotFlow false
+                                    lastItemIndex >= totalItems - 1
+                                }
+                                    .distinctUntilChanged()
+                                    .collect { isAtEnd -> if (isAtEnd) contract.onLoadNextPage() }
+                            }
+
                             LazyColumn(
                                 modifier = containerModifier
                                     .fillMaxWidth()
                                     .weight(1f),
+                                state = listState,
                                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
                                 contentPadding = resolvedPadding
                             ) {
