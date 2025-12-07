@@ -109,6 +109,29 @@ internal fun LoginScreen(
 
         Spacer(modifier = Modifier.weight(1f))
 
+        val buttonLoginByEmailState = remember(loaders, state.email, state.password) {
+            when {
+                loaders.contains(LoginLoader.LoginByEmailButton) -> ButtonState.Loading
+                state.email is EmailFormatState.Invalid -> ButtonState.Disabled
+                state.email is EmailFormatState.Empty -> ButtonState.Disabled
+                state.password is PasswordFormatState.Empty -> ButtonState.Disabled
+                state.password is PasswordFormatState.Invalid -> ButtonState.Disabled
+                else -> ButtonState.Enabled
+            }
+        }
+
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            content = ButtonContent.Text(
+                text = AppTokens.strings.res(Res.string.login_button_login),
+            ),
+            state = buttonLoginByEmailState,
+            style = ButtonStyle.Primary,
+            onClick = contract::onLoginByEmailClick
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
         if (state.isGoogleLoginAvailable) {
 
             val googleAuthUiContext = rememberGoogleAuthUiContext()
@@ -138,29 +161,6 @@ internal fun LoginScreen(
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         }
-
-        val buttonLoginByEmailState = remember(loaders, state.email, state.password) {
-            when {
-                loaders.contains(LoginLoader.LoginByEmailButton) -> ButtonState.Loading
-                state.email is EmailFormatState.Invalid -> ButtonState.Disabled
-                state.email is EmailFormatState.Empty -> ButtonState.Disabled
-                state.password is PasswordFormatState.Empty -> ButtonState.Disabled
-                state.password is PasswordFormatState.Invalid -> ButtonState.Disabled
-                else -> ButtonState.Enabled
-            }
-        }
-
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            content = ButtonContent.Text(
-                text = AppTokens.strings.res(Res.string.login_button_login),
-            ),
-            state = buttonLoginByEmailState,
-            style = ButtonStyle.Primary,
-            onClick = contract::onLoginByEmailClick
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         ContentSpliter(
             text = AppTokens.strings.res(Res.string.or)
