@@ -244,7 +244,7 @@ public fun Button(
                             modifier = Modifier
                                 .size(iconSize)
                                 .graphicsLayer { rotationZ = angle },
-                            imageVector = AppTokens.icons.Google,
+                            imageVector = AppTokens.icons.SystemRestart,
                             tint = colorTokens.icon,
                             contentDescription = null
                         )
@@ -422,7 +422,7 @@ private fun CollapsingLoaderSlot(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = AppTokens.icons.Google,
+                    imageVector = AppTokens.icons.SystemRestart,
                     tint = tint,
                     contentDescription = null
                 )
