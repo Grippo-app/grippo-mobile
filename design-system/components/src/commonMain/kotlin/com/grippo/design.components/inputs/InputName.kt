@@ -28,6 +28,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.Cancel
+import com.grippo.design.resources.provider.icons.User
 import com.grippo.design.resources.provider.name_placeholder
 
 @Composable
@@ -46,6 +47,14 @@ public fun InputName(
         inputStyle = InputStyle.Default(
             onValueChange = onValueChange,
         ),
+        leading = { color ->
+            Icon(
+                modifier = Modifier.size(AppTokens.dp.input.icon),
+                imageVector = AppTokens.icons.User,
+                tint = color,
+                contentDescription = null
+            )
+        },
         trailing = { color ->
             Box {
                 AnimatedVisibility(

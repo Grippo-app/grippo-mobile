@@ -49,8 +49,7 @@ public fun InputSearch(
         ),
         leading = { color ->
             Icon(
-                modifier = Modifier
-                    .size(AppTokens.dp.input.icon),
+                modifier = Modifier.size(AppTokens.dp.input.icon),
                 imageVector = AppTokens.icons.Search,
                 tint = color,
                 contentDescription = null

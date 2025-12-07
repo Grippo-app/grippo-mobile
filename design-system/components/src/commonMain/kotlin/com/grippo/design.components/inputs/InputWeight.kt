@@ -1,8 +1,10 @@
 package com.grippo.design.components.inputs
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,6 +21,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.icons.Weight
 import com.grippo.design.resources.provider.kg
 import com.grippo.design.resources.provider.weight_placeholder
 
@@ -38,6 +41,14 @@ public fun InputWeight(
         inputStyle = InputStyle.Clickable(
             onClick = onClick
         ),
+        leading = { color ->
+            Icon(
+                modifier = Modifier.size(AppTokens.dp.input.icon),
+                imageVector = AppTokens.icons.Weight,
+                tint = color,
+                contentDescription = null
+            )
+        },
         trailing = { color ->
             Text(
                 modifier = Modifier.padding(end = 8.dp),

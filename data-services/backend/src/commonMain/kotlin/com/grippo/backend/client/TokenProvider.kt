@@ -8,13 +8,16 @@ import com.grippo.database.entity.TokenEntity
 import com.grippo.toolkit.logger.AppLogger
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.plugins.auth.AuthCircuitBreaker
 import io.ktor.client.plugins.auth.AuthProvider
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.forms.submitForm
 import io.ktor.client.request.headers
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.auth.AuthScheme
 import io.ktor.http.auth.HttpAuthHeader
 import io.ktor.http.path
@@ -168,14 +171,26 @@ internal class TokenProvider(
         logDebug { "Requesting token refresh..." }
 
         return client.submitForm {
+            attributes.put(AuthCircuitBreaker, Unit)
             url {
-                method = HttpMethod.Companion.Post
+                method = HttpMethod.Post
                 path("/auth/refresh")
                 setBody(RefreshBody(refreshToken = refreshToken))
             }
         }.also {
             logDebug { "Refresh response received: ${it.status.value}" }
-        }.body()
+        }.let { response ->
+            if (response.status == HttpStatusCode.Unauthorized) {
+                val errorBody = runCatching { response.bodyAsText() }.getOrNull()
+                logWarn {
+                    val suffix = errorBody?.takeIf { it.isNotBlank() }?.let { ": $it" } ?: ""
+                    "🚫 Refresh rejected with HTTP 401$suffix"
+                }
+                throw RefreshUnauthorizedException("Refresh token was rejected by backend")
+            }
+
+            response.body()
+        }
     }
 
     private suspend fun handleRefreshFailure(e: Throwable): Nothing {
@@ -237,6 +252,7 @@ internal class TokenProvider(
             try {
                 return block()
             } catch (e: Throwable) {
+                if (e is RefreshUnauthorizedException) throw e
                 logWarn { "Retry $attempt failed: ${e.message}" }
             }
             delay(currentDelay)
@@ -244,6 +260,8 @@ internal class TokenProvider(
         }
         return block()
     }
+
+    private class RefreshUnauthorizedException(message: String) : IllegalStateException(message)
 
     private inline fun logInfo(message: () -> String) {
         AppLogger.Network.log("ℹ️ [TokenProvider] ${message()}")

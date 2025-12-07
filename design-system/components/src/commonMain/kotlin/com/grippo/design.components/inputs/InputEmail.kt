@@ -30,6 +30,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.email_placeholder
 import com.grippo.design.resources.provider.icons.Cancel
+import com.grippo.design.resources.provider.icons.Mail
 
 @Composable
 public fun InputEmail(
@@ -47,6 +48,14 @@ public fun InputEmail(
         inputStyle = InputStyle.Default(
             onValueChange = onValueChange,
         ),
+        leading = { color ->
+            Icon(
+                modifier = Modifier.size(AppTokens.dp.input.icon),
+                imageVector = AppTokens.icons.Mail,
+                tint = color,
+                contentDescription = null
+            )
+        },
         trailing = { color ->
             Box {
                 AnimatedVisibility(

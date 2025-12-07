@@ -35,6 +35,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.EyeEmpty
 import com.grippo.design.resources.provider.icons.EyeOff
+import com.grippo.design.resources.provider.icons.Lock
 import com.grippo.design.resources.provider.password_placeholder
 
 @Composable
@@ -60,6 +61,14 @@ public fun InputPassword(
         ),
         keyboardActions = KeyboardActions {
             focusManager.clearFocus(force = true)
+        },
+        leading = { color ->
+            Icon(
+                modifier = Modifier.size(AppTokens.dp.input.icon),
+                imageVector = AppTokens.icons.Lock,
+                tint = color,
+                contentDescription = null
+            )
         },
         trailing = { color ->
             if (value.isEmpty()) return@Input
