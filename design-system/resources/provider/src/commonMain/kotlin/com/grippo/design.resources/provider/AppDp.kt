@@ -202,6 +202,7 @@ public data object AppDp {
     public data object UserCard
 
     public data object BodyDetails {
+        val icon: Dp = AppDp.icon.small
         val horizontalPadding: Dp = padding.extraSmall
         val verticalPadding: Dp = padding.extraSmall
     }

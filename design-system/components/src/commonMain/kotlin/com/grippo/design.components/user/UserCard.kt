@@ -40,11 +40,6 @@ public fun UserCard(
     ) {
 
         Text(
-            text = "\uD83D\uDE0E",
-            style = AppTokens.typography.h1(),
-        )
-
-        Text(
             modifier = Modifier.fillMaxWidth(),
             text = value.name,
             style = AppTokens.typography.h1(),
@@ -54,11 +49,16 @@ public fun UserCard(
             overflow = TextOverflow.Ellipsis,
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
 
-        BodyItem(
-            weight = value.weight,
-            height = value.height
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = value.email,
+            style = AppTokens.typography.b14Med(),
+            color = AppTokens.colors.text.tertiary,
+            maxLines = 1,
+            textAlign = TextAlign.Center,
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }

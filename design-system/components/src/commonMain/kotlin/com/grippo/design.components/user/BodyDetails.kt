@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -14,8 +15,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
+import com.grippo.core.state.formatters.HeightFormatState
+import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.cm
 import com.grippo.design.resources.provider.icons.ExpandLines
@@ -25,8 +29,8 @@ import com.grippo.design.resources.provider.kg
 @Composable
 internal fun BodyItem(
     modifier: Modifier = Modifier,
-    weight: Float,
-    height: Int,
+    weight: WeightFormatState,
+    height: HeightFormatState,
 ) {
     Row(
         modifier = modifier
@@ -38,22 +42,22 @@ internal fun BodyItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            modifier = Modifier.padding(4.dp),
+            modifier = Modifier.size(AppTokens.dp.bodyDetails.icon),
             imageVector = AppTokens.icons.Weight,
-            tint = AppTokens.colors.icon.primary,
+            tint = AppTokens.colors.icon.secondary,
             contentDescription = null
         )
 
-        Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
+        Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
 
         Text(
-            text = weight.toString(),
+            text = weight.display,
             style = AppTokens.typography.b14Bold(),
             color = AppTokens.colors.text.secondary,
             textAlign = TextAlign.Center
         )
 
-        Spacer(Modifier.width(4.dp))
+        Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
 
         Text(
             text = AppTokens.strings.res(Res.string.kg),
@@ -62,32 +66,32 @@ internal fun BodyItem(
             textAlign = TextAlign.Center
         )
 
-        Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
+        Spacer(Modifier.width(AppTokens.dp.contentPadding.content))
 
         VerticalDivider(
             modifier = Modifier.fillMaxHeight(),
             color = AppTokens.colors.divider.default
         )
 
-        Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
+        Spacer(Modifier.width(AppTokens.dp.contentPadding.content))
 
         Icon(
-            modifier = Modifier.padding(4.dp),
+            modifier = Modifier.size(AppTokens.dp.bodyDetails.icon),
             imageVector = AppTokens.icons.ExpandLines,
-            tint = AppTokens.colors.icon.primary,
+            tint = AppTokens.colors.icon.secondary,
             contentDescription = null
         )
 
-        Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
+        Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
 
         Text(
-            text = height.toString(),
+            text = height.display,
             style = AppTokens.typography.b14Bold(),
             color = AppTokens.colors.text.secondary,
             textAlign = TextAlign.Center
         )
 
-        Spacer(Modifier.width(4.dp))
+        Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
 
         Text(
             text = AppTokens.strings.res(Res.string.cm),
@@ -95,7 +99,16 @@ internal fun BodyItem(
             color = AppTokens.colors.text.secondary,
             textAlign = TextAlign.Center
         )
+    }
+}
 
-        Spacer(modifier = Modifier.width(8.dp))
+@AppPreview
+@Composable
+private fun BodyItemPreview() {
+    PreviewContainer {
+        BodyItem(
+            weight = WeightFormatState.of(100.0f),
+            height = HeightFormatState.of(182)
+        )
     }
 }
