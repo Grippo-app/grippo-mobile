@@ -14,7 +14,7 @@ import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.date.picker.DatePickerComponent
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.profile.ProfileComponent
-import com.grippo.drart.training.DraftTrainingComponent
+import com.grippo.draft.training.DraftTrainingComponent
 import com.grippo.error.display.ErrorDisplayComponent
 import com.grippo.exercise.ExerciseComponent
 import com.grippo.exercise.example.exerciseexample.ExerciseExampleComponent

@@ -1,4 +1,4 @@
-package com.grippo.drart.training
+package com.grippo.draft.training
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.stage.StageState

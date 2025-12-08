@@ -1,9 +1,11 @@
 package com.grippo.authorization.login
 
+import com.grippo.core.error.provider.AppError
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.EmailFormatState
 import com.grippo.core.state.formatters.PasswordFormatState
 import com.grippo.data.features.api.authorization.LoginUseCase
+import com.grippo.services.google.auth.GoogleAuthException
 import com.grippo.services.google.auth.GoogleAuthProvider
 import com.grippo.services.google.auth.GoogleAuthUiContext
 
@@ -40,6 +42,10 @@ internal class LoginViewModel(
             val googleAccount = googleAuthProvider
                 .getUiProvider(context)
                 .signIn()
+                .onFailure {
+                    val msg = (it as? GoogleAuthException)?.message ?: throw it
+                    throw AppError.Expected(msg, description = null)
+                }
                 .getOrThrow()
 
             val hasProfile = loginUseCase.execute(

@@ -10,6 +10,7 @@ kotlin {
         implementation(projects.uiCore.foundation)
         implementation(projects.toolkit.dateUtils)
         implementation(projects.uiCore.state)
+        implementation(projects.uiCore.error.errorProvider)
         implementation(projects.toolkit.calculation)
         implementation(projects.dataMappers.domainToState)
         implementation(projects.dataMappers.stateToDomain)

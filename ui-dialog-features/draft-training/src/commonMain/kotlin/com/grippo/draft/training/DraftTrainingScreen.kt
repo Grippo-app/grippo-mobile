@@ -1,4 +1,4 @@
-package com.grippo.drart.training
+package com.grippo.draft.training
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
