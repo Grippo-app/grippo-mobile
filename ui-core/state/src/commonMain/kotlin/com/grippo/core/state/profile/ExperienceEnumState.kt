@@ -15,10 +15,10 @@ import com.grippo.design.resources.provider.experience_intermediate_description
 import com.grippo.design.resources.provider.experience_intermediate_title
 import com.grippo.design.resources.provider.experience_pro_description
 import com.grippo.design.resources.provider.experience_pro_title
-import com.grippo.design.resources.provider.icons.Emoji
-import com.grippo.design.resources.provider.icons.EmojiLookTop
-import com.grippo.design.resources.provider.icons.EmojiSatisfied
-import com.grippo.design.resources.provider.icons.EmojiTalkingHappy
+import com.grippo.design.resources.provider.icons.Intermediate
+import com.grippo.design.resources.provider.icons.Beginner
+import com.grippo.design.resources.provider.icons.Advanced
+import com.grippo.design.resources.provider.icons.Pro
 
 @Immutable
 public enum class ExperienceEnumState {
@@ -58,10 +58,10 @@ public enum class ExperienceEnumState {
     @Composable
     public fun icon(): ImageVector {
         return when (this) {
-            BEGINNER -> AppTokens.icons.EmojiLookTop
-            INTERMEDIATE -> AppTokens.icons.Emoji
-            ADVANCED -> AppTokens.icons.EmojiSatisfied
-            PRO -> AppTokens.icons.EmojiTalkingHappy
+            BEGINNER -> AppTokens.icons.Beginner
+            INTERMEDIATE -> AppTokens.icons.Intermediate
+            ADVANCED -> AppTokens.icons.Advanced
+            PRO -> AppTokens.icons.Pro
         }
     }
 }

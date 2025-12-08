@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 import com.grippo.design.resources.provider.AppIcon
 
-public val AppIcon.EmojiLookTop: ImageVector
+public val AppIcon.Beginner: ImageVector
     get() {
         if (_EmojiLookTop != null) {
             return _EmojiLookTop!!

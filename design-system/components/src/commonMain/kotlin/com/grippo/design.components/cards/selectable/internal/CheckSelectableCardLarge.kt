@@ -124,7 +124,11 @@ private fun CheckSelectableCardLargePreview() {
                 description = "Test Description with big text for all cases and more options to do somethig!",
                 icon = AppTokens.icons.SystemRestart,
                 subContent = {
-                    Box(modifier = Modifier.size(40.dp).background(Color.Green))
+                    Box(
+                        modifier = Modifier
+                            .height(40.dp)
+                            .fillMaxWidth().background(Color.DarkGray)
+                    )
                 }
             )
         )

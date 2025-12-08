@@ -15,32 +15,29 @@ public val AppIcon.Cancel: ImageVector
             return _Cancel!!
         }
         _Cancel = ImageVector.Builder(
-            name = "Cancel",
+            name = "CloseRound",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
             path(
-                stroke = SolidColor(Color(0xFF0F172A)),
-                strokeLineWidth = 1.5f,
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(12.001f, 12f)
-                lineTo(17.243f, 17.243f)
-                moveTo(6.758f, 17.243f)
-                lineTo(12.001f, 12f)
-                lineTo(6.758f, 17.243f)
-                close()
-                moveTo(17.243f, 6.757f)
-                lineTo(12.001f, 12f)
-                lineTo(17.243f, 6.757f)
-                close()
-                moveTo(12.001f, 12f)
-                lineTo(6.758f, 6.757f)
-                lineTo(12.001f, 12f)
-                close()
+                moveTo(18f, 6f)
+                lineTo(6f, 18f)
+            }
+            path(
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round
+            ) {
+                moveTo(6f, 6f)
+                lineTo(18f, 18f)
             }
         }.build()
 

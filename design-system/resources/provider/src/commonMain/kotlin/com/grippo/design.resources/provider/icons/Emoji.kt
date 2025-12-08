@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 import com.grippo.design.resources.provider.AppIcon
 
-public val AppIcon.Emoji: ImageVector
+public val AppIcon.Intermediate: ImageVector
     get() {
         if (_Emoji != null) {
             return _Emoji!!
