@@ -2,7 +2,6 @@ package com.grippo.design.resources.provider.icons
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
@@ -20,66 +19,21 @@ public val AppIcon.Height: ImageVector
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
-            path(
-                stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round
-            ) {
-                moveTo(8f, 3f)
-                verticalLineTo(6f)
-            }
-            path(
-                stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round
-            ) {
-                moveTo(8f, 14f)
-                verticalLineTo(17f)
-            }
-            path(
-                stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 2f
-            ) {
-                moveTo(6.8f, 6f)
-                lineTo(9.2f, 6f)
-                arcTo(0.8f, 0.8f, 0f, isMoreThanHalf = false, isPositiveArc = true, 10f, 6.8f)
-                lineTo(10f, 13.2f)
-                arcTo(0.8f, 0.8f, 0f, isMoreThanHalf = false, isPositiveArc = true, 9.2f, 14f)
-                lineTo(6.8f, 14f)
-                arcTo(0.8f, 0.8f, 0f, isMoreThanHalf = false, isPositiveArc = true, 6f, 13.2f)
-                lineTo(6f, 6.8f)
-                arcTo(0.8f, 0.8f, 0f, isMoreThanHalf = false, isPositiveArc = true, 6.8f, 6f)
-                close()
-            }
-            path(
-                stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round
-            ) {
-                moveTo(16f, 7f)
-                verticalLineTo(12f)
-            }
-            path(
-                stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round
-            ) {
-                moveTo(16f, 17f)
-                verticalLineTo(20f)
-            }
-            path(
-                stroke = SolidColor(Color(0xFF33363F)),
-                strokeLineWidth = 2f
-            ) {
-                moveTo(14.8f, 12f)
-                lineTo(17.2f, 12f)
-                arcTo(0.8f, 0.8f, 0f, isMoreThanHalf = false, isPositiveArc = true, 18f, 12.8f)
-                lineTo(18f, 16.2f)
-                arcTo(0.8f, 0.8f, 0f, isMoreThanHalf = false, isPositiveArc = true, 17.2f, 17f)
-                lineTo(14.8f, 17f)
-                arcTo(0.8f, 0.8f, 0f, isMoreThanHalf = false, isPositiveArc = true, 14f, 16.2f)
-                lineTo(14f, 12.8f)
-                arcTo(0.8f, 0.8f, 0f, isMoreThanHalf = false, isPositiveArc = true, 14.8f, 12f)
+            path(fill = SolidColor(Color(0xFF222222))) {
+                moveTo(10.247f, 17.002f)
+                lineTo(11.008f, 16.567f)
+                curveTo(11.492f, 16.29f, 11.734f, 16.152f, 12f, 16.152f)
+                curveTo(12.266f, 16.152f, 12.508f, 16.29f, 12.992f, 16.567f)
+                lineTo(12.992f, 16.567f)
+                lineTo(13.753f, 17.002f)
+                curveTo(15.92f, 18.24f, 17.004f, 18.859f, 17.541f, 18.376f)
+                curveTo(18.079f, 17.894f, 17.578f, 16.75f, 16.578f, 14.464f)
+                lineTo(13.832f, 8.188f)
+                curveTo(13.047f, 6.393f, 12.654f, 5.495f, 12f, 5.495f)
+                curveTo(11.346f, 5.495f, 10.953f, 6.393f, 10.168f, 8.188f)
+                lineTo(7.422f, 14.464f)
+                curveTo(6.422f, 16.75f, 5.922f, 17.894f, 6.459f, 18.376f)
+                curveTo(6.996f, 18.859f, 8.08f, 18.24f, 10.247f, 17.002f)
                 close()
             }
         }.build()
