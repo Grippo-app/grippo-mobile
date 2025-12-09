@@ -26,7 +26,7 @@ import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.icons.NavArrowLeft
+import com.grippo.design.resources.provider.icons.ArrowLeft
 import com.grippo.design.resources.provider.icons.User
 
 @Immutable
@@ -81,7 +81,7 @@ public fun Toolbar(
                 is Leading.Back -> Button(
                     modifier = Modifier,
                     content = ButtonContent.Icon(
-                        icon = ButtonIcon.Icon(AppTokens.icons.NavArrowLeft)
+                        icon = ButtonIcon.Icon(AppTokens.icons.ArrowLeft)
                     ),
                     style = ButtonStyle.Transparent,
                     size = ButtonSize.Small,

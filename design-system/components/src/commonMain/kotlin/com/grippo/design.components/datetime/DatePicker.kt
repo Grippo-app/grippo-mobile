@@ -16,7 +16,7 @@ import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.icons.NavArrowDown
+import com.grippo.design.resources.provider.icons.ArrowDown
 import com.grippo.toolkit.date.utils.DateCompose
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
@@ -69,7 +69,7 @@ public fun DatePicker(
 
         Button(
             content = ButtonContent.Icon(
-                icon = ButtonIcon.Icon(AppTokens.icons.NavArrowDown)
+                icon = ButtonIcon.Icon(AppTokens.icons.ArrowDown)
             ),
             size = ButtonSize.Small,
             style = ButtonStyle.Transparent,

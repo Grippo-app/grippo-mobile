@@ -31,7 +31,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.duration
 import com.grippo.design.resources.provider.exercises
-import com.grippo.design.resources.provider.icons.NavArrowRight
+import com.grippo.design.resources.provider.icons.ArrowRight
 import com.grippo.design.resources.provider.icons.Trophy
 import com.grippo.design.resources.provider.monthly_digest_template
 import com.grippo.design.resources.provider.sets
@@ -81,7 +81,7 @@ public fun MonthlyDigestCard(
 
             Icon(
                 modifier = Modifier.size(AppTokens.dp.digest.monthly.icon),
-                imageVector = AppTokens.icons.NavArrowRight,
+                imageVector = AppTokens.icons.ArrowRight,
                 tint = AppTokens.colors.icon.primary,
                 contentDescription = null
             )

@@ -39,7 +39,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.icons.NavArrowRight
+import com.grippo.design.resources.provider.icons.ArrowRight
 import com.grippo.design.resources.provider.more
 import com.grippo.design.resources.provider.overview
 import kotlinx.collections.immutable.ImmutableSet
@@ -155,7 +155,7 @@ internal fun ExerciseScreen(
                 size = ButtonSize.Small,
                 content = ButtonContent.Text(
                     text = AppTokens.strings.res(Res.string.overview),
-                    endIcon = ButtonIcon.Icon(AppTokens.icons.NavArrowRight)
+                    endIcon = ButtonIcon.Icon(AppTokens.icons.ArrowRight)
                 ),
             )
         }

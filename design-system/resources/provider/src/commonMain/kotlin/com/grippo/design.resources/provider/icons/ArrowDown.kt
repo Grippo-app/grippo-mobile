@@ -2,39 +2,36 @@ package com.grippo.design.resources.provider.icons
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 import com.grippo.design.resources.provider.AppIcon
 
-public val AppIcon.NavArrowDown: ImageVector
+public val AppIcon.ArrowDown: ImageVector
     get() {
-        if (_NavArrowDown != null) {
-            return _NavArrowDown!!
+        if (_ArrowDown != null) {
+            return _ArrowDown!!
         }
-        _NavArrowDown = ImageVector.Builder(
-            name = "NavArrowDown",
+        _ArrowDown = ImageVector.Builder(
+            name = "ArrowDown",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
             path(
-                stroke = SolidColor(Color(0xFF0F172A)),
-                strokeLineWidth = 1.5f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f
             ) {
-                moveTo(6f, 9f)
+                moveTo(18f, 9f)
                 lineTo(12f, 15f)
-                lineTo(18f, 9f)
+                lineTo(6f, 9f)
             }
         }.build()
 
-        return _NavArrowDown!!
+        return _ArrowDown!!
     }
 
 @Suppress("ObjectPropertyName")
-private var _NavArrowDown: ImageVector? = null
+private var _ArrowDown: ImageVector? = null
+

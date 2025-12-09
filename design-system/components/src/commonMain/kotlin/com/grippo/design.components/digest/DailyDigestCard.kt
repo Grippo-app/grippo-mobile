@@ -24,7 +24,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.daily_digest_template
-import com.grippo.design.resources.provider.icons.NavArrowRight
+import com.grippo.design.resources.provider.icons.ArrowRight
 import com.grippo.design.resources.provider.icons.Trophy
 import com.grippo.design.resources.provider.one_set
 import com.grippo.design.resources.provider.value_sets
@@ -83,7 +83,7 @@ public fun DailyDigestCard(
 
             Icon(
                 modifier = Modifier.size(AppTokens.dp.digest.daily.icon),
-                imageVector = AppTokens.icons.NavArrowRight,
+                imageVector = AppTokens.icons.ArrowRight,
                 tint = AppTokens.colors.icon.primary,
                 contentDescription = null
             )

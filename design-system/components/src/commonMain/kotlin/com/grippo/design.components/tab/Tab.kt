@@ -13,7 +13,7 @@ import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.icons.NavArrowDown
+import com.grippo.design.resources.provider.icons.ArrowDown
 
 @Immutable
 public data class TabItem(
@@ -55,7 +55,7 @@ private fun SegmentPreview() {
         Tab(
             item = "Box" to TabItem(
                 text = UiText.Str("Box"),
-                icon = AppTokens.icons.NavArrowDown
+                icon = AppTokens.icons.ArrowDown
             ),
             isSelected = true,
             onSelect = {}
