@@ -32,6 +32,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.icons.ArrowRight
 import com.grippo.design.resources.provider.icons.Gym
 import com.grippo.design.resources.provider.icons.User
 import com.grippo.design.resources.provider.start_workout
@@ -177,7 +178,7 @@ internal fun TrainingsScreen(
                     .fillMaxWidth(1f),
                 content = ButtonContent.Text(
                     text = AppTokens.strings.res(Res.string.start_workout),
-                    startIcon = ButtonIcon.Icon(AppTokens.icons.Gym)
+                    endIcon = ButtonIcon.Icon(AppTokens.icons.ArrowRight)
                 ),
                 style = ButtonStyle.Primary,
                 onClick = contract::onAddTraining
