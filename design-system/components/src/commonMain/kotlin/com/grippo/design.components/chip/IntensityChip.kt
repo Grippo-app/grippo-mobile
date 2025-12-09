@@ -10,7 +10,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.icons.FireFlame
+import com.grippo.design.resources.provider.icons.Intensity
 import com.grippo.design.resources.provider.intensity_chip
 
 @Immutable
@@ -34,8 +34,8 @@ public fun IntensityChip(
     }
 
     val trailing = when (style) {
-        IntensityChipStyle.SHORT -> ChipTrailing.Icon(AppTokens.icons.FireFlame)
-        IntensityChipStyle.LONG -> ChipTrailing.Icon(AppTokens.icons.FireFlame)
+        IntensityChipStyle.SHORT -> ChipTrailing.Icon(AppTokens.icons.Intensity)
+        IntensityChipStyle.LONG -> ChipTrailing.Icon(AppTokens.icons.Intensity)
     }
 
     Chip(

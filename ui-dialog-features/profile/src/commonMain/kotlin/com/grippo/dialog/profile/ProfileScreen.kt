@@ -25,7 +25,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.icons.LogOut
+import com.grippo.design.resources.provider.icons.Logout
 import com.grippo.design.resources.provider.logout_btn
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -70,7 +70,7 @@ internal fun ProfileScreen(
             modifier = Modifier.fillMaxWidth(),
             style = ButtonStyle.Error,
             content = ButtonContent.Text(
-                startIcon = ButtonIcon.Icon(AppTokens.icons.LogOut),
+                startIcon = ButtonIcon.Icon(AppTokens.icons.Logout),
                 text = AppTokens.strings.res(Res.string.logout_btn),
             ),
             onClick = contract::onLogoutClick

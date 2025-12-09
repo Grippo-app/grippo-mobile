@@ -10,6 +10,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.icons.Volume
 import com.grippo.design.resources.provider.icons.Weight
 import com.grippo.design.resources.provider.tonnage_chip
 
@@ -34,8 +35,8 @@ public fun VolumeChip(
     }
 
     val trailing = when (style) {
-        VolumeChipStyle.SHORT -> ChipTrailing.Icon(AppTokens.icons.Weight)
-        VolumeChipStyle.LONG -> ChipTrailing.Icon(AppTokens.icons.Weight)
+        VolumeChipStyle.SHORT -> ChipTrailing.Icon(AppTokens.icons.Volume)
+        VolumeChipStyle.LONG -> ChipTrailing.Icon(AppTokens.icons.Volume)
     }
 
     Chip(
