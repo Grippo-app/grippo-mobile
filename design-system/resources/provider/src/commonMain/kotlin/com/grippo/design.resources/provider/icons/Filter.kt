@@ -3,7 +3,6 @@ package com.grippo.design.resources.provider.icons
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
@@ -22,31 +21,56 @@ public val AppIcon.Filter: ImageVector
             viewportHeight = 24f
         ).apply {
             path(
-                stroke = SolidColor(Color(0xFF0F172A)),
-                strokeLineWidth = 1.5f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round
             ) {
-                moveTo(4f, 6f)
-                horizontalLineTo(20f)
+                moveTo(12f, 7f)
+                lineTo(20f, 7f)
             }
             path(
-                stroke = SolidColor(Color(0xFF0F172A)),
-                strokeLineWidth = 1.5f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round
             ) {
-                moveTo(4f, 12f)
-                horizontalLineTo(20f)
+                moveTo(4f, 7f)
+                lineTo(8f, 7f)
             }
             path(
-                stroke = SolidColor(Color(0xFF0F172A)),
-                strokeLineWidth = 1.5f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round
             ) {
-                moveTo(4f, 18f)
-                horizontalLineTo(20f)
+                moveTo(17f, 17f)
+                lineTo(20f, 17f)
+            }
+            path(
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round
+            ) {
+                moveTo(4f, 17f)
+                lineTo(12f, 17f)
+            }
+            path(
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round
+            ) {
+                moveTo(10f, 7f)
+                moveToRelative(-0f, -2f)
+                arcToRelative(2f, 2f, 0f, isMoreThanHalf = true, isPositiveArc = true, -0f, 4f)
+                arcToRelative(2f, 2f, 0f, isMoreThanHalf = true, isPositiveArc = true, -0f, -4f)
+            }
+            path(
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round
+            ) {
+                moveTo(15f, 17f)
+                moveToRelative(-0f, -2f)
+                arcToRelative(2f, 2f, 0f, isMoreThanHalf = true, isPositiveArc = true, -0f, 4f)
+                arcToRelative(2f, 2f, 0f, isMoreThanHalf = true, isPositiveArc = true, -0f, -4f)
             }
         }.build()
 
