@@ -61,7 +61,7 @@
     <string name="height_placeholder">Enter your height</string>
     <string name="exercise_record">Exercise record</string>
     <string name="not_used_before">Not used before</string>
-    <string name="ai_suggestion_btn">AI Suggestion</string>
+    <string name="ai_suggestion_btn">Suggest</string>
     <string name="more">More</string>
     <string name="last_iterations">Last iterations</string>
     <string name="history">History</string>

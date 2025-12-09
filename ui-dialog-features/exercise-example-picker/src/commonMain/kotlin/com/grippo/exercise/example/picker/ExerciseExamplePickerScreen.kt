@@ -42,7 +42,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.ai_suggestion_btn
-import com.grippo.design.resources.provider.icons.Magic
+import com.grippo.design.resources.provider.icons.Molecule
 import com.grippo.design.resources.provider.not_found
 import com.grippo.design.resources.provider.select_exercise
 import com.grippo.exercise.example.picker.internal.AiSuggestionHeader
@@ -193,7 +193,7 @@ internal fun ExerciseExamplePickerScreen(
                                     .fillMaxWidth()
                                     .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
                                 content = ButtonContent.Text(
-                                    startIcon = ButtonIcon.Icon(AppTokens.icons.Magic),
+                                    startIcon = ButtonIcon.Icon(AppTokens.icons.Molecule),
                                     text = AppTokens.strings.res(Res.string.ai_suggestion_btn)
                                 ),
                                 state = buttonState,
