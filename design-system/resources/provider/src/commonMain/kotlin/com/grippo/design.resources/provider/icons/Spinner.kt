@@ -9,94 +9,95 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 import com.grippo.design.resources.provider.AppIcon
 
-public val AppIcon.SystemRestart: ImageVector
+public val AppIcon.Spinner: ImageVector
     get() {
-        if (_SystemRestart != null) {
-            return _SystemRestart!!
+        if (_Spinner != null) {
+            return _Spinner!!
         }
-        _SystemRestart = ImageVector.Builder(
-            name = "SystemRestart",
+        _Spinner = ImageVector.Builder(
+            name = "Spinner",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
             path(
-                stroke = SolidColor(Color(0xFF0F172A)),
-                strokeLineWidth = 1.5f,
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(12f, 2f)
-                verticalLineTo(6f)
+                moveTo(12f, 6f)
+                lineTo(12f, 3f)
             }
             path(
-                stroke = SolidColor(Color(0xFF0F172A)),
-                strokeLineWidth = 1.5f,
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(12f, 18f)
-                verticalLineTo(22f)
+                moveTo(12f, 21f)
+                lineTo(12f, 19f)
             }
             path(
-                stroke = SolidColor(Color(0xFF0F172A)),
-                strokeLineWidth = 1.5f,
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(22f, 12f)
-                horizontalLineTo(18f)
+                moveTo(19f, 12f)
+                lineTo(21f, 12f)
             }
             path(
-                stroke = SolidColor(Color(0xFF0F172A)),
-                strokeLineWidth = 1.5f,
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(6f, 12f)
-                horizontalLineTo(2f)
+                moveTo(3f, 12f)
+                lineTo(6f, 12f)
             }
             path(
-                stroke = SolidColor(Color(0xFF0F172A)),
-                strokeLineWidth = 1.5f,
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(4.929f, 4.929f)
+                moveTo(17.657f, 6.343f)
+                lineTo(18.364f, 5.636f)
+            }
+            path(
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round
+            ) {
+                moveTo(5.636f, 18.364f)
+                lineTo(7.05f, 16.95f)
+            }
+            path(
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round
+            ) {
+                moveTo(16.95f, 16.95f)
+                lineTo(18.364f, 18.364f)
+            }
+            path(
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round
+            ) {
+                moveTo(5.636f, 5.636f)
                 lineTo(7.757f, 7.757f)
-            }
-            path(
-                stroke = SolidColor(Color(0xFF0F172A)),
-                strokeLineWidth = 1.5f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
-            ) {
-                moveTo(16.243f, 16.243f)
-                lineTo(19.071f, 19.071f)
-            }
-            path(
-                stroke = SolidColor(Color(0xFF0F172A)),
-                strokeLineWidth = 1.5f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
-            ) {
-                moveTo(19.071f, 4.929f)
-                lineTo(16.243f, 7.757f)
-            }
-            path(
-                stroke = SolidColor(Color(0xFF0F172A)),
-                strokeLineWidth = 1.5f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
-            ) {
-                moveTo(7.757f, 16.243f)
-                lineTo(4.929f, 19.071f)
             }
         }.build()
 
-        return _SystemRestart!!
+        return _Spinner!!
     }
 
 @Suppress("ObjectPropertyName")
-private var _SystemRestart: ImageVector? = null
+private var _Spinner: ImageVector? = null
+

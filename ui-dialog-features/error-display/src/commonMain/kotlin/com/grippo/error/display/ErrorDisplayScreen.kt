@@ -27,7 +27,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.got_it_btn
-import com.grippo.design.resources.provider.icons.WarningTriangleOutline
+import com.grippo.design.resources.provider.icons.Warning
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -49,7 +49,7 @@ internal fun ErrorDisplayScreen(
 
         Icon(
             modifier = Modifier.size(AppTokens.dp.error.icon),
-            imageVector = AppTokens.icons.WarningTriangleOutline,
+            imageVector = AppTokens.icons.Warning,
             tint = AppTokens.colors.semantic.error,
             contentDescription = null
         )

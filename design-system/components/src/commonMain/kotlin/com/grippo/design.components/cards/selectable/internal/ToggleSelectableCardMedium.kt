@@ -22,7 +22,7 @@ import com.grippo.design.components.selectors.Toggle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.icons.SystemRestart
+import com.grippo.design.resources.provider.icons.Spinner
 
 @Composable
 internal fun ToggleSelectableCardMedium(
@@ -78,7 +78,7 @@ private fun ToggleSelectableCardMediumPreview() {
         ToggleSelectableCardVariants(
             ToggleSelectableCardStyle.Medium(
                 title = "Test Title",
-                icon = AppTokens.icons.SystemRestart
+                icon = AppTokens.icons.Spinner
             )
         )
     }

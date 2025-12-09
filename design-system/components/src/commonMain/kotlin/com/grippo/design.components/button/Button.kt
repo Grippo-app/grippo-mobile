@@ -48,7 +48,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.icons.Google
-import com.grippo.design.resources.provider.icons.SystemRestart
+import com.grippo.design.resources.provider.icons.Spinner
 
 @Immutable
 public sealed interface ButtonContent {
@@ -244,7 +244,7 @@ public fun Button(
                             modifier = Modifier
                                 .size(iconSize)
                                 .graphicsLayer { rotationZ = angle },
-                            imageVector = AppTokens.icons.SystemRestart,
+                            imageVector = AppTokens.icons.Spinner,
                             tint = colorTokens.icon,
                             contentDescription = null
                         )
@@ -326,7 +326,7 @@ private fun StartIconOrLoader(
                     alpha = loaderAlpha
                     rotationZ = angle
                 },
-            imageVector = AppTokens.icons.SystemRestart,
+            imageVector = AppTokens.icons.Spinner,
             tint = tint,
             contentDescription = null
         )
@@ -422,7 +422,7 @@ private fun CollapsingLoaderSlot(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = AppTokens.icons.SystemRestart,
+                    imageVector = AppTokens.icons.Spinner,
                     tint = tint,
                     contentDescription = null
                 )

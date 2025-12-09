@@ -8,9 +8,6 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.custom_range
 import com.grippo.design.resources.provider.icons.Google
-import com.grippo.design.resources.provider.icons.Settings
-import com.grippo.design.resources.provider.icons.Week
-import com.grippo.design.resources.provider.icons.Year
 import com.grippo.design.resources.provider.this_day
 import com.grippo.design.resources.provider.this_month
 import com.grippo.design.resources.provider.this_week

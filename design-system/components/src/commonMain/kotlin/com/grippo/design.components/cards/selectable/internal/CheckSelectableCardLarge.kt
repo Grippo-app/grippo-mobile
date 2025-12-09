@@ -29,7 +29,7 @@ import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.icons.SystemRestart
+import com.grippo.design.resources.provider.icons.Spinner
 
 @Composable
 internal fun CheckSelectableCardLarge(
@@ -122,7 +122,7 @@ private fun CheckSelectableCardLargePreview() {
             CheckSelectableCardStyle.Large(
                 title = "Test Title",
                 description = "Test Description with big text for all cases and more options to do somethig!",
-                icon = AppTokens.icons.SystemRestart,
+                icon = AppTokens.icons.Spinner,
                 subContent = {
                     Box(
                         modifier = Modifier
@@ -137,7 +137,7 @@ private fun CheckSelectableCardLargePreview() {
             CheckSelectableCardStyle.Large(
                 title = "Test Title",
                 description = "Test Description with big text for all cases and more options to do somethig!",
-                icon = AppTokens.icons.SystemRestart,
+                icon = AppTokens.icons.Spinner,
                 subContent = null
             )
         )

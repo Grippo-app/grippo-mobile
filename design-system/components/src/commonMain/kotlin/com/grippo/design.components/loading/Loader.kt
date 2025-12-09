@@ -21,7 +21,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.icons.SystemRestart
+import com.grippo.design.resources.provider.icons.Spinner
 import com.grippo.design.resources.provider.loading
 
 @Composable
@@ -50,7 +50,7 @@ public fun Loader(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .size(AppTokens.dp.loader.icon)
                 .rotate(rotation),
-            imageVector = AppTokens.icons.SystemRestart,
+            imageVector = AppTokens.icons.Spinner,
             tint = AppTokens.colors.icon.secondary,
             contentDescription = null
         )

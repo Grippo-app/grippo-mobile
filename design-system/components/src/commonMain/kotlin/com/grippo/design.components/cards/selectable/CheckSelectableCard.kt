@@ -16,7 +16,7 @@ import com.grippo.design.components.cards.selectable.internal.CheckSelectableCar
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.icons.SystemRestart
+import com.grippo.design.resources.provider.icons.Spinner
 
 
 @Immutable
@@ -82,7 +82,7 @@ private fun CheckSelectableCardLargePreview() {
             CheckSelectableCardStyle.Large(
                 title = "Test Title",
                 description = "Test Description",
-                icon = AppTokens.icons.SystemRestart,
+                icon = AppTokens.icons.Spinner,
                 subContent = {
                     Box(modifier = Modifier.size(40.dp).background(Color.Green))
                 }
@@ -93,7 +93,7 @@ private fun CheckSelectableCardLargePreview() {
             CheckSelectableCardStyle.Large(
                 title = "Test Title",
                 description = "Test Description",
-                icon = AppTokens.icons.SystemRestart,
+                icon = AppTokens.icons.Spinner,
                 subContent = null
             )
         )

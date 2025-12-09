@@ -9,7 +9,7 @@ import com.grippo.design.components.cards.selectable.internal.ToggleSelectableCa
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.icons.SystemRestart
+import com.grippo.design.resources.provider.icons.Spinner
 
 @Immutable
 public sealed class ToggleSelectableCardStyle(
@@ -58,7 +58,7 @@ private fun ToggleSelectableCardMediumPreview() {
         ToggleSelectableCardVariants(
             ToggleSelectableCardStyle.Medium(
                 title = "Test Title",
-                icon = AppTokens.icons.SystemRestart
+                icon = AppTokens.icons.Spinner
             )
         )
     }

@@ -72,19 +72,10 @@ public fun ConnectionSnackbar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            Icon(
-                modifier = Modifier.size(AppTokens.dp.connectionSnackbar.icon),
-                imageVector = AppTokens.icons.WifiOff,
-                contentDescription = null,
-                tint = AppTokens.colors.icon.inverted,
-            )
-
-            Spacer(modifier = Modifier.width(AppTokens.dp.connectionSnackbar.padding))
-
             Text(
                 text = AppTokens.strings.res(Res.string.no_internet_connection),
                 style = AppTokens.typography.b12Semi(),
-                color = AppTokens.colors.text.inverted
+                color = AppTokens.colors.text.primary
             )
         }
     }
