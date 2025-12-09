@@ -3,7 +3,6 @@ package com.grippo.design.resources.provider.icons
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
@@ -22,26 +21,21 @@ public val AppIcon.Search: ImageVector
             viewportHeight = 24f
         ).apply {
             path(
-                stroke = SolidColor(Color(0xFF0F172A)),
-                strokeLineWidth = 1.5f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f
             ) {
-                moveTo(21f, 21f)
-                lineTo(16.514f, 16.514f)
+                moveTo(11f, 11f)
+                moveToRelative(-7f, 0f)
+                arcToRelative(7f, 7f, 0f, isMoreThanHalf = true, isPositiveArc = true, 14f, 0f)
+                arcToRelative(7f, 7f, 0f, isMoreThanHalf = true, isPositiveArc = true, -14f, 0f)
             }
             path(
-                stroke = SolidColor(Color(0xFF0F172A)),
-                strokeLineWidth = 1.5f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round
             ) {
-                moveTo(11f, 19f)
-                curveTo(15.418f, 19f, 19f, 15.418f, 19f, 11f)
-                curveTo(19f, 6.582f, 15.418f, 3f, 11f, 3f)
-                curveTo(6.582f, 3f, 3f, 6.582f, 3f, 11f)
-                curveTo(3f, 15.418f, 6.582f, 19f, 11f, 19f)
-                close()
+                moveTo(20f, 20f)
+                lineTo(17f, 17f)
             }
         }.build()
 
