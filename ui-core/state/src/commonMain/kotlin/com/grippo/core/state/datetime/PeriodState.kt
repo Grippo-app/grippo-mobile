@@ -7,8 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.custom_range
-import com.grippo.design.resources.provider.icons.Calendar
-import com.grippo.design.resources.provider.icons.Day
+import com.grippo.design.resources.provider.icons.Google
 import com.grippo.design.resources.provider.icons.Settings
 import com.grippo.design.resources.provider.icons.Week
 import com.grippo.design.resources.provider.icons.Year
@@ -89,11 +88,11 @@ public sealed interface PeriodState {
 
     @Composable
     public fun icon(): ImageVector = when (this) {
-        is Custom -> AppTokens.icons.Settings
-        is ThisDay -> AppTokens.icons.Day
-        is ThisWeek -> AppTokens.icons.Week
-        is ThisMonth -> AppTokens.icons.Calendar
-        is ThisYear -> AppTokens.icons.Year
+        is Custom -> AppTokens.icons.Google
+        is ThisDay -> AppTokens.icons.Google
+        is ThisWeek -> AppTokens.icons.Google
+        is ThisMonth -> AppTokens.icons.Google
+        is ThisYear -> AppTokens.icons.Google
     }
 
     @Composable

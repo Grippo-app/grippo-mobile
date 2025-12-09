@@ -7,13 +7,13 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 import com.grippo.design.resources.provider.AppIcon
 
-public val AppIcon.EyeOff: ImageVector
+public val AppIcon.EyeOn: ImageVector
     get() {
-        if (_EyeOff != null) {
-            return _EyeOff!!
+        if (_EyeOn != null) {
+            return _EyeOn!!
         }
-        _EyeOff = ImageVector.Builder(
-            name = "EyeOff",
+        _EyeOn = ImageVector.Builder(
+            name = "EyeOn",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
             viewportWidth = 24f,
@@ -34,10 +34,16 @@ public val AppIcon.EyeOff: ImageVector
                 curveTo(20.469f, 9.234f, 17.444f, 5f, 12f, 5f)
                 close()
             }
+            path(fill = SolidColor(Color(0xFF33363F))) {
+                moveTo(12f, 12f)
+                moveToRelative(-4f, 0f)
+                arcToRelative(4f, 4f, 0f, isMoreThanHalf = true, isPositiveArc = true, 8f, 0f)
+                arcToRelative(4f, 4f, 0f, isMoreThanHalf = true, isPositiveArc = true, -8f, 0f)
+            }
         }.build()
 
-        return _EyeOff!!
+        return _EyeOn!!
     }
 
 @Suppress("ObjectPropertyName")
-private var _EyeOff: ImageVector? = null
+private var _EyeOn: ImageVector? = null

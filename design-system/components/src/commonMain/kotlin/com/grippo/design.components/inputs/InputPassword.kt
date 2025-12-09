@@ -33,7 +33,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.icons.EyeEmpty
+import com.grippo.design.resources.provider.icons.EyeOn
 import com.grippo.design.resources.provider.icons.EyeOff
 import com.grippo.design.resources.provider.icons.Lock
 import com.grippo.design.resources.provider.password_placeholder
@@ -87,7 +87,7 @@ public fun InputPassword(
                         ) {
                             Icon(
                                 modifier = Modifier.size(AppTokens.dp.input.icon),
-                                imageVector = AppTokens.icons.EyeOff,
+                                imageVector = AppTokens.icons.EyeOn,
                                 tint = color,
                                 contentDescription = null,
                             )
@@ -109,7 +109,7 @@ public fun InputPassword(
                         ) {
                             Icon(
                                 modifier = Modifier.size(AppTokens.dp.input.icon),
-                                imageVector = AppTokens.icons.EyeEmpty,
+                                imageVector = AppTokens.icons.EyeOff,
                                 tint = color,
                                 contentDescription = null,
                             )
