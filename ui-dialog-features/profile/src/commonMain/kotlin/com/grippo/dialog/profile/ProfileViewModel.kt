@@ -1,7 +1,8 @@
 package com.grippo.dialog.profile
 
 import com.grippo.core.foundation.BaseViewModel
-import com.grippo.core.state.profile.ProfileActivityMenu
+import com.grippo.core.state.profile.ProfileMenu
+import com.grippo.core.state.profile.SettingsMenu
 import com.grippo.data.features.api.authorization.AuthorizationFeature
 import com.grippo.data.features.api.user.UserFeature
 import com.grippo.data.features.api.user.models.User
@@ -31,8 +32,12 @@ public class ProfileViewModel(
         }
     }
 
-    override fun onActivityMenuClick(menu: ProfileActivityMenu) {
-        navigateTo(ProfileDirection.BackWithResult(menu))
+    override fun onProfileMenuClick(menu: ProfileMenu) {
+        navigateTo(ProfileDirection.BackWithProfileMenuResult(menu))
+    }
+
+    override fun onSettingsMenuClick(menu: SettingsMenu) {
+        navigateTo(ProfileDirection.BackWithSettingsMenuResult(menu))
     }
 
     override fun onBack() {

@@ -6,11 +6,13 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
-import com.grippo.core.state.profile.ProfileActivityMenu
+import com.grippo.core.state.profile.ProfileMenu
+import com.grippo.core.state.profile.SettingsMenu
 
 public class ProfileComponent(
     componentContext: ComponentContext,
-    private val onResult: (ProfileActivityMenu) -> Unit,
+    private val onProfileResult: (ProfileMenu) -> Unit,
+    private val onSettingsResult: (SettingsMenu) -> Unit,
     private val close: () -> Unit,
 ) : BaseComponent<ProfileDirection>(componentContext) {
 
@@ -29,7 +31,8 @@ public class ProfileComponent(
 
     override suspend fun eventListener(direction: ProfileDirection) {
         when (direction) {
-            is ProfileDirection.BackWithResult -> onResult.invoke(direction.item)
+            is ProfileDirection.BackWithProfileMenuResult -> onProfileResult.invoke(direction.item)
+            is ProfileDirection.BackWithSettingsMenuResult -> onSettingsResult.invoke(direction.item)
             ProfileDirection.Back -> close.invoke()
         }
     }

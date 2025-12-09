@@ -8,7 +8,8 @@ import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.formatters.HeightFormatState
 import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.menu.MenuItemState
-import com.grippo.core.state.profile.ProfileActivityMenu
+import com.grippo.core.state.profile.ProfileMenu
+import com.grippo.core.state.profile.SettingsMenu
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.IterationFocus
 import com.grippo.core.state.trainings.IterationState
@@ -136,7 +137,8 @@ public sealed class DialogConfig(
 
     @Serializable
     public data class Profile(
-        @Transient val onResult: (ProfileActivityMenu) -> Unit = {},
+        @Transient val onProfileResult: (ProfileMenu) -> Unit = {},
+        @Transient val onSettingsResult: (SettingsMenu) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true

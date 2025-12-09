@@ -6,13 +6,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.UiText
-import com.grippo.core.state.profile.ProfileActivityMenu
+import com.grippo.core.state.profile.ProfileMenu
+import com.grippo.core.state.profile.SettingsMenu
 import com.grippo.core.state.profile.stubUser
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
@@ -39,7 +41,8 @@ internal fun ProfileScreen(
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -55,13 +58,45 @@ internal fun ProfileScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        val activity = ProfileActivityMenu.entries.map {
+        val profileMenu = ProfileMenu.entries.map {
             it to MenuItem(UiText.Str(it.text()), it.icon())
         }.toPersistentList()
 
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = AppTokens.dp.contentPadding.subContent),
+            text = ProfileMenu.title(),
+            style = AppTokens.typography.b14Semi(),
+            color = AppTokens.colors.text.secondary
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+
         Menu(
-            items = activity,
-            onClick = contract::onActivityMenuClick
+            items = profileMenu,
+            onClick = contract::onProfileMenuClick
+        )
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+        val settingsMenu = SettingsMenu.entries.map {
+            it to MenuItem(UiText.Str(it.text()), it.icon())
+        }.toPersistentList()
+
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = AppTokens.dp.contentPadding.subContent),
+            text = SettingsMenu.title(),
+            style = AppTokens.typography.b14Semi(),
+            color = AppTokens.colors.text.secondary
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+
+        Menu(
+            items = settingsMenu,
+            onClick = contract::onSettingsMenuClick
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))

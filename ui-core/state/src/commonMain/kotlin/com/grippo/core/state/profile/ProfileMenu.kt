@@ -6,20 +6,16 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.activity
-import com.grippo.design.resources.provider.debug
-import com.grippo.design.resources.provider.icons.Bug
-import com.grippo.design.resources.provider.icons.Dumbbell
-import com.grippo.design.resources.provider.icons.Waist
+import com.grippo.design.resources.provider.icons.Edit
 import com.grippo.design.resources.provider.profile_menu_excluded_muscles
 import com.grippo.design.resources.provider.profile_menu_missing_equipment
 import kotlinx.serialization.Serializable
 
 @Immutable
 @Serializable
-public enum class ProfileActivityMenu {
-    ExcludedMuscles,
-    MissingEquipment,
-    Debug;
+public enum class ProfileMenu {
+    Muscles,
+    Equipment;
 
     public companion object Companion {
         @Composable
@@ -31,18 +27,16 @@ public enum class ProfileActivityMenu {
     @Composable
     public fun text(): String {
         return when (this) {
-            ExcludedMuscles -> AppTokens.strings.res(Res.string.profile_menu_excluded_muscles)
-            MissingEquipment -> AppTokens.strings.res(Res.string.profile_menu_missing_equipment)
-            Debug -> AppTokens.strings.res(Res.string.debug)
+            Muscles -> AppTokens.strings.res(Res.string.profile_menu_excluded_muscles)
+            Equipment -> AppTokens.strings.res(Res.string.profile_menu_missing_equipment)
         }
     }
 
     @Composable
     public fun icon(): ImageVector {
         return when (this) {
-            ExcludedMuscles -> AppTokens.icons.Waist
-            MissingEquipment -> AppTokens.icons.Dumbbell
-            Debug -> AppTokens.icons.Bug
+            Muscles -> AppTokens.icons.Edit
+            Equipment -> AppTokens.icons.Edit
         }
     }
 }

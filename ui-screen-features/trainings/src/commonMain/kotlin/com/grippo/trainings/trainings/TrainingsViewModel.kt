@@ -2,7 +2,8 @@ package com.grippo.trainings.trainings
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.menu.MenuItemState
-import com.grippo.core.state.profile.ProfileActivityMenu
+import com.grippo.core.state.profile.ProfileMenu
+import com.grippo.core.state.profile.SettingsMenu
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.design.resources.provider.providers.StringProvider
@@ -124,13 +125,17 @@ internal class TrainingsViewModel(
 
     override fun onOpenProfile() {
         val dialog = DialogConfig.Profile(
-            onResult = {
+            onProfileResult = {
                 when (it) {
-                    ProfileActivityMenu.ExcludedMuscles -> navigateTo(TrainingsDirection.ExcludedMuscles)
-                    ProfileActivityMenu.MissingEquipment -> navigateTo(TrainingsDirection.MissingEquipment)
-                    ProfileActivityMenu.Debug -> navigateTo(TrainingsDirection.Debug)
+                    ProfileMenu.Muscles -> navigateTo(TrainingsDirection.ExcludedMuscles)
+                    ProfileMenu.Equipment -> navigateTo(TrainingsDirection.MissingEquipment)
                 }
             },
+            onSettingsResult = {
+                when (it) {
+                    SettingsMenu.Debug -> navigateTo(TrainingsDirection.Debug)
+                }
+            }
         )
 
         dialogController.show(dialog)

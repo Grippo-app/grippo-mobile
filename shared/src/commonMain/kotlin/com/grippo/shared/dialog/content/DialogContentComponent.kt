@@ -175,7 +175,8 @@ internal class DialogContentComponent(
             is DialogConfig.Profile -> Child.Profile(
                 ProfileComponent(
                     componentContext = context,
-                    onResult = { action -> viewModel.onBack { router.onResult.invoke(action) } },
+                    onProfileResult = { action -> viewModel.onBack { router.onProfileResult.invoke(action) } },
+                    onSettingsResult = { action -> viewModel.onBack { router.onSettingsResult.invoke(action) } },
                     close = { viewModel.onBack(null) }
                 )
             )

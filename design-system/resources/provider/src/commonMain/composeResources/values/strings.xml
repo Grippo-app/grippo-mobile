@@ -127,9 +127,8 @@
     <string name="user_card_value_personal_records">%1$s Personal Records</string>
     <string name="user_card_no_records_yet">No records yet</string>
 
-    <string name="profile_menu_exercise_library">Exercise Library</string>
-    <string name="profile_menu_excluded_muscles">Excluded Muscles</string>
-    <string name="profile_menu_missing_equipment">Missing equipment</string>
+    <string name="profile_menu_excluded_muscles">Muscles</string>
+    <string name="profile_menu_missing_equipment">Equipment</string>
 
     <string name="trainings">Trainings</string>
     <string name="trainings_period_daily">Daily</string>
