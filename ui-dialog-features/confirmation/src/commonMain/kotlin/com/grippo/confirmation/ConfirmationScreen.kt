@@ -27,7 +27,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.cancel_btn
 import com.grippo.design.resources.provider.confirm_btn
-import com.grippo.design.resources.provider.icons.QuestionMarkCircleOutline
+import com.grippo.design.resources.provider.icons.Question
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -49,7 +49,7 @@ internal fun ConfirmationScreen(
 
         Icon(
             modifier = Modifier.size(AppTokens.dp.confirmation.icon),
-            imageVector = AppTokens.icons.QuestionMarkCircleOutline,
+            imageVector = AppTokens.icons.Question,
             tint = AppTokens.colors.semantic.info,
             contentDescription = null
         )

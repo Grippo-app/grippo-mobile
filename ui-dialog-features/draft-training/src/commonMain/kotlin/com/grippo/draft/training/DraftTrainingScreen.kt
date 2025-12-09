@@ -38,7 +38,7 @@ import com.grippo.design.resources.provider.draft_training_alert_description_add
 import com.grippo.design.resources.provider.draft_training_alert_description_edit
 import com.grippo.design.resources.provider.draft_training_alert_title_add
 import com.grippo.design.resources.provider.draft_training_alert_title_edit
-import com.grippo.design.resources.provider.icons.QuestionMarkCircleOutline
+import com.grippo.design.resources.provider.icons.Question
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -62,7 +62,7 @@ internal fun DraftTrainingScreen(
 
         Icon(
             modifier = Modifier.size(AppTokens.dp.confirmation.icon),
-            imageVector = AppTokens.icons.QuestionMarkCircleOutline,
+            imageVector = AppTokens.icons.Question,
             tint = AppTokens.colors.semantic.info,
             contentDescription = null
         )
