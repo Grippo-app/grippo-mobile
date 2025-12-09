@@ -16,6 +16,7 @@ import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.icons.ArrowRight
 import com.grippo.design.resources.provider.icons.User
 
 @Stable
@@ -67,8 +68,15 @@ public fun MenuCard(
             text = title,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            style = AppTokens.typography.b14Semi(),
+            style = AppTokens.typography.b14Bold(),
             color = AppTokens.colors.text.primary
+        )
+
+        Icon(
+            modifier = Modifier.size(AppTokens.dp.menu.item.icon),
+            imageVector = AppTokens.icons.ArrowRight,
+            tint = AppTokens.colors.icon.secondary,
+            contentDescription = null
         )
     }
 }

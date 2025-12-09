@@ -51,7 +51,6 @@ public fun <KEY> Menu(
             if (index < items.lastIndex) {
                 HorizontalDivider(
                     modifier = Modifier
-//                        .padding(horizontal = AppTokens.dp.menu.item.horizontalPadding)
                         .fillMaxWidth(),
                     color = AppTokens.colors.divider.default
                 )
