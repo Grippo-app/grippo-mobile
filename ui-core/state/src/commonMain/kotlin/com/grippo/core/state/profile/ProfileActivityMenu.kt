@@ -8,7 +8,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.activity
 import com.grippo.design.resources.provider.debug
 import com.grippo.design.resources.provider.icons.Bug
-import com.grippo.design.resources.provider.icons.Gym
+import com.grippo.design.resources.provider.icons.Dumbbell
 import com.grippo.design.resources.provider.icons.Waist
 import com.grippo.design.resources.provider.profile_menu_excluded_muscles
 import com.grippo.design.resources.provider.profile_menu_missing_equipment
@@ -41,7 +41,7 @@ public enum class ProfileActivityMenu {
     public fun icon(): ImageVector {
         return when (this) {
             ExcludedMuscles -> AppTokens.icons.Waist
-            MissingEquipment -> AppTokens.icons.Gym
+            MissingEquipment -> AppTokens.icons.Dumbbell
             Debug -> AppTokens.icons.Bug
         }
     }
