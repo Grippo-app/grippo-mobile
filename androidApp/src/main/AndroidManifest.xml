@@ -8,6 +8,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Grippo"
         android:allowBackup="true"
+        android:label="Grippo"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:usesCleartextTraffic="true">
