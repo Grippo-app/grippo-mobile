@@ -3,7 +3,6 @@ package com.grippo.design.resources.provider.icons
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
@@ -22,46 +21,65 @@ public val AppIcon.Height: ImageVector
             viewportHeight = 24f
         ).apply {
             path(
-                stroke = SolidColor(Color(0xFF0F172A)),
-                strokeLineWidth = 1.5f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round
             ) {
-                moveTo(12.441f, 9.127f)
-                lineTo(11.032f, 14.762f)
-                lineTo(15.963f, 21.101f)
+                moveTo(8f, 3f)
+                verticalLineTo(6f)
             }
             path(
-                stroke = SolidColor(Color(0xFF0F172A)),
-                strokeLineWidth = 1.5f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round
             ) {
-                moveTo(10.328f, 18.284f)
-                lineTo(8.215f, 21.101f)
+                moveTo(8f, 14f)
+                verticalLineTo(17f)
             }
             path(
-                stroke = SolidColor(Color(0xFF0F172A)),
-                strokeLineWidth = 1.5f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f
             ) {
-                moveTo(8.215f, 13.353f)
-                curveTo(8.215f, 9.409f, 11.032f, 9.127f, 12.441f, 9.127f)
-                lineTo(13.849f, 9.127f)
-                curveTo(14.084f, 10.301f, 15.117f, 12.79f, 17.371f, 13.353f)
+                moveTo(6.8f, 6f)
+                lineTo(9.2f, 6f)
+                arcTo(0.8f, 0.8f, 0f, isMoreThanHalf = false, isPositiveArc = true, 10f, 6.8f)
+                lineTo(10f, 13.2f)
+                arcTo(0.8f, 0.8f, 0f, isMoreThanHalf = false, isPositiveArc = true, 9.2f, 14f)
+                lineTo(6.8f, 14f)
+                arcTo(0.8f, 0.8f, 0f, isMoreThanHalf = false, isPositiveArc = true, 6f, 13.2f)
+                lineTo(6f, 6.8f)
+                arcTo(0.8f, 0.8f, 0f, isMoreThanHalf = false, isPositiveArc = true, 6.8f, 6f)
+                close()
             }
             path(
-                stroke = SolidColor(Color(0xFF0F172A)),
-                strokeLineWidth = 1.5f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round
             ) {
-                moveTo(13f, 7f)
-                curveTo(14.105f, 7f, 15f, 6.105f, 15f, 5f)
-                curveTo(15f, 3.895f, 14.105f, 3f, 13f, 3f)
-                curveTo(11.895f, 3f, 11f, 3.895f, 11f, 5f)
-                curveTo(11f, 6.105f, 11.895f, 7f, 13f, 7f)
+                moveTo(16f, 7f)
+                verticalLineTo(12f)
+            }
+            path(
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round
+            ) {
+                moveTo(16f, 17f)
+                verticalLineTo(20f)
+            }
+            path(
+                stroke = SolidColor(Color(0xFF33363F)),
+                strokeLineWidth = 2f
+            ) {
+                moveTo(14.8f, 12f)
+                lineTo(17.2f, 12f)
+                arcTo(0.8f, 0.8f, 0f, isMoreThanHalf = false, isPositiveArc = true, 18f, 12.8f)
+                lineTo(18f, 16.2f)
+                arcTo(0.8f, 0.8f, 0f, isMoreThanHalf = false, isPositiveArc = true, 17.2f, 17f)
+                lineTo(14.8f, 17f)
+                arcTo(0.8f, 0.8f, 0f, isMoreThanHalf = false, isPositiveArc = true, 14f, 16.2f)
+                lineTo(14f, 12.8f)
+                arcTo(0.8f, 0.8f, 0f, isMoreThanHalf = false, isPositiveArc = true, 14.8f, 12f)
                 close()
             }
         }.build()
@@ -71,3 +89,4 @@ public val AppIcon.Height: ImageVector
 
 @Suppress("ObjectPropertyName")
 private var _Height: ImageVector? = null
+
