@@ -7,7 +7,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.activity
 import com.grippo.design.resources.provider.debug
-import com.grippo.design.resources.provider.icons.Flask
+import com.grippo.design.resources.provider.icons.Bug
 import com.grippo.design.resources.provider.icons.Gym
 import com.grippo.design.resources.provider.icons.Waist
 import com.grippo.design.resources.provider.profile_menu_excluded_muscles
@@ -42,7 +42,7 @@ public enum class ProfileActivityMenu {
         return when (this) {
             ExcludedMuscles -> AppTokens.icons.Waist
             MissingEquipment -> AppTokens.icons.Gym
-            Debug -> AppTokens.icons.Flask
+            Debug -> AppTokens.icons.Bug
         }
     }
 }
