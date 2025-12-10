@@ -2,7 +2,6 @@ package com.grippo.design.components.digest
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import com.grippo.core.state.digest.MonthlyDigestState
 import com.grippo.core.state.digest.stubMonthlyDigest
 import com.grippo.design.components.modifiers.scalableClick
@@ -128,12 +126,7 @@ private fun MonthlyDigestStatGrid(
             )
     ) {
         DigestStatRow(values = firstRow)
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(1.dp)
-                .background(AppTokens.colors.divider.default.copy(alpha = 0.3f))
-        )
+
         DigestStatRow(values = secondRow)
     }
 }
