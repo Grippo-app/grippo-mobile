@@ -1,6 +1,5 @@
 package com.grippo.design.components.digest
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -58,18 +56,13 @@ public fun DailyDigestCard(
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
         ) {
             Icon(
-                modifier = Modifier
-                    .size(AppTokens.dp.digest.daily.icon)
-                    .background(
-                        color = AppTokens.colors.brand.color1,
-                        shape = CircleShape
-                    ),
+                modifier = Modifier.size(AppTokens.dp.digest.daily.icon),
                 imageVector = AppTokens.icons.Trophy,
                 contentDescription = null,
-                tint = AppTokens.colors.icon.primary
+                tint = AppTokens.colors.brand.color1,
             )
 
             Text(

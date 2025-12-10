@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -56,18 +55,13 @@ public fun MonthlyDigestCard(
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
         ) {
             Icon(
-                modifier = Modifier
-                    .size(AppTokens.dp.digest.weekly.icon)
-                    .background(
-                        color = AppTokens.colors.brand.color4,
-                        shape = CircleShape
-                    ),
+                modifier = Modifier.size(AppTokens.dp.digest.weekly.icon),
                 imageVector = AppTokens.icons.Trophy,
                 contentDescription = null,
-                tint = AppTokens.colors.icon.primary
+                tint = AppTokens.colors.brand.color4,
             )
 
             Text(
