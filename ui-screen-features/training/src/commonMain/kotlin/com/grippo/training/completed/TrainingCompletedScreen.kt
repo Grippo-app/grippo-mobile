@@ -60,6 +60,9 @@ internal fun TrainingCompletedScreen(
 ) = BaseComposeScreen(
     ScreenBackground.Color(
         value = AppTokens.colors.background.screen,
+        ambient = ScreenBackground.Ambient(
+            color = AppTokens.colors.brand.color6,
+        )
     )
 ) {
     if (loaders.contains(TrainingCompletedLoader.SaveTraining)) {
