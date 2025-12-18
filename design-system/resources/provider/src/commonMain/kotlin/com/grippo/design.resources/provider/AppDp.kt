@@ -28,17 +28,18 @@ public data object AppDp {
 
     private data object Radius {
         val small: Dp = 8.dp
-        val medium: Dp = 16.dp
+        val medium: Dp = 12.dp
         val large: Dp = 28.dp
     }
 
     private data object Icon {
         val extraSmall: Dp = 12.dp
         val small: Dp = 18.dp
-        val medium: Dp = 24.dp
-        val large: Dp = 32.dp
-        val xLarge: Dp = 68.dp
-        val xxLarge: Dp = 100.dp
+        val medium: Dp = 22.dp
+        val large: Dp = 24.dp
+        val xLarge: Dp = 32.dp
+        val xxLarge: Dp = 68.dp
+        val xxxLarge: Dp = 100.dp
     }
 
     val bottomSheet: BottomSheet = BottomSheet
@@ -120,7 +121,7 @@ public data object AppDp {
     }
 
     public data object Badge {
-        val size: Dp = icon.medium
+        val size: Dp = icon.large
     }
 
     public data object Digest {
@@ -129,11 +130,11 @@ public data object AppDp {
         val monthly: Monthly = Monthly
 
         public data object Daily {
-            val icon: Dp = AppDp.icon.large
+            val icon: Dp = AppDp.icon.xLarge
         }
 
         public data object Weekly {
-            val icon: Dp = AppDp.icon.large
+            val icon: Dp = AppDp.icon.xLarge
             val stat: Stat = Stat
 
             public data object Stat {
@@ -142,7 +143,7 @@ public data object AppDp {
         }
 
         public data object Monthly {
-            val icon: Dp = AppDp.icon.large
+            val icon: Dp = AppDp.icon.xLarge
             val stat: Stat = Stat
 
             public data object Stat {
@@ -162,6 +163,7 @@ public data object AppDp {
 
     public data object Input {
         val height: Dp = size.medium
+        val radius: Dp = AppDp.radius.medium
         val horizontalPadding: Dp = padding.extraLarge
         val icon: Dp = AppDp.icon.medium
     }
@@ -201,7 +203,7 @@ public data object AppDp {
     public data object UserCard
 
     public data object TimeLabel {
-        val icon: Dp = AppDp.icon.medium
+        val icon: Dp = AppDp.icon.large
         val spacer: Dp = padding.extraSmall
     }
 
@@ -270,12 +272,12 @@ public data object AppDp {
         val medium: Medium = Medium
 
         public data object Medium {
-            val size: Dp = icon.xLarge
+            val size: Dp = icon.xxLarge
             val radius: Dp = AppDp.radius.medium
         }
 
         public data object Large {
-            val size: Dp = icon.xxLarge
+            val size: Dp = icon.xxxLarge
             val radius: Dp = AppDp.radius.medium
         }
     }
@@ -328,14 +330,14 @@ public data object AppDp {
             val horizontalPadding: Dp = padding.large
             val verticalPadding: Dp = padding.large
             val radius: Dp = AppDp.radius.medium
-            val icon: Dp = AppDp.icon.large
+            val icon: Dp = AppDp.icon.xLarge
         }
 
         public data object Medium {
             val horizontalPadding: Dp = padding.medium
             val verticalPadding: Dp = padding.large
             val radius: Dp = AppDp.radius.medium
-            val icon: Dp = AppDp.icon.medium
+            val icon: Dp = AppDp.icon.large
         }
 
         public data object Small {
@@ -347,15 +349,15 @@ public data object AppDp {
     }
 
     public data object Error {
-        val icon: Dp = AppDp.icon.xLarge
+        val icon: Dp = AppDp.icon.xxLarge
     }
 
     public data object Confirmation {
-        val icon: Dp = AppDp.icon.xLarge
+        val icon: Dp = AppDp.icon.xxLarge
     }
 
     public data object Loader {
-        val icon: Dp = AppDp.icon.large
+        val icon: Dp = AppDp.icon.xLarge
     }
 
     public data object Segment {
@@ -370,14 +372,12 @@ public data object AppDp {
     public data object Tab {
         val horizontalPadding: Dp = padding.large
         val verticalPadding: Dp = padding.medium
-        val icon: Dp = AppDp.icon.medium
+        val icon: Dp = AppDp.icon.large
     }
 
     public data object ConnectionSnackbar {
-        val horizontalPadding: Dp = AppDp.padding.extraLarge
-        val verticalPadding: Dp = AppDp.padding.small
-        val padding: Dp = AppDp.padding.extraSmall
-        val icon: Dp = AppDp.icon.small
+        val horizontalPadding: Dp = padding.extraLarge
+        val verticalPadding: Dp = padding.small
     }
 
     public data object WheelPicker {

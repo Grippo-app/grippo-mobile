@@ -53,9 +53,6 @@ internal fun CompletedScreen(
 ) = BaseComposeScreen(
     ScreenBackground.Color(
         value = AppTokens.colors.background.screen,
-        ambient = ScreenBackground.Ambient(
-            color = AppTokens.colors.brand.color1,
-        )
     )
 ) {
 

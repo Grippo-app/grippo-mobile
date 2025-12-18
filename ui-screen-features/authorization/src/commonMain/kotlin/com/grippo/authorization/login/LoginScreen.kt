@@ -1,11 +1,11 @@
 package com.grippo.authorization.login
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.EmailFormatState
@@ -35,7 +36,9 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.continue_with_google
+import com.grippo.design.resources.provider.icons.ArrowRight
 import com.grippo.design.resources.provider.icons.Google
+import com.grippo.design.resources.provider.icons.GrippoLogo
 import com.grippo.design.resources.provider.login_button_login
 import com.grippo.design.resources.provider.login_button_registration
 import com.grippo.design.resources.provider.login_button_registration_label
@@ -55,7 +58,7 @@ internal fun LoginScreen(
     ScreenBackground.Color(
         value = AppTokens.colors.background.screen,
         ambient = ScreenBackground.Ambient(
-            color = AppTokens.colors.brand.color5,
+            color = AppTokens.colors.brand.color6,
         )
     ),
 ) {
@@ -72,9 +75,17 @@ internal fun LoginScreen(
             .padding(
                 horizontal = AppTokens.dp.screen.horizontalPadding,
                 vertical = AppTokens.dp.contentPadding.content
-            ).imePadding(),
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        Image(
+            modifier = Modifier.size(80.dp),
+            imageVector = AppTokens.icons.GrippoLogo,
+            contentDescription = null,
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         Text(
             modifier = Modifier.fillMaxWidth(),
@@ -125,6 +136,7 @@ internal fun LoginScreen(
             modifier = Modifier.fillMaxWidth(),
             content = ButtonContent.Text(
                 text = AppTokens.strings.res(Res.string.login_button_login),
+                endIcon = ButtonIcon.Icon(AppTokens.icons.ArrowRight)
             ),
             state = buttonLoginByEmailState,
             style = ButtonStyle.Primary,

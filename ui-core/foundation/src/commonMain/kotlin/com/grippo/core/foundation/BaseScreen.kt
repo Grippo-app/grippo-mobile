@@ -17,10 +17,12 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalFocusManager
 import kotlin.math.max
 import androidx.compose.ui.graphics.Color as ComposeColor
@@ -49,7 +51,7 @@ public fun BaseComposeScreen(
     Column(
         modifier = Modifier
             .background(background.value)
-            // .ambient(background.ambient)
+            .ambient(background.ambient)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
@@ -63,35 +65,38 @@ public fun BaseComposeScreen(
 private fun Modifier.ambient(ambient: ScreenBackground.Ambient?): Modifier {
     if (ambient == null) return this
 
-    // Very low-amplitude alpha breathing, not position drift.
-    val infinite = rememberInfiniteTransition(label = "bg-breath")
-    val pulse by infinite.animateFloat(
-        initialValue = 0.9f,
-        targetValue = 1.1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 6000, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "bg-breath-alpha"
-    )
+    return this.composed {
+        val infinite = rememberInfiniteTransition(label = "bg-ambient")
 
-    return this.then(
+        val pulse by infinite.animateFloat(
+            initialValue = 0.96f,
+            targetValue = 1.04f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(durationMillis = 8500, easing = LinearEasing),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "ambient-pulse"
+        )
+
         Modifier.drawBehind {
             if (size.minDimension <= 0f) return@drawBehind
 
             val w = size.width
             val h = size.height
-            val dimension = max(w, h)
+            val d = max(w, h)
 
-            // 1) main ambient glow
-            run {
-                val center = Offset(x = w * 0.5f, y = h * 0.33f)
-                val radius = dimension * 0.9f
+            val ambientSoft = lerp(ambient.color, Color.White, 0.14f)
+
+            fun glow(
+                center: Offset,
+                radius: Float,
+                alpha: Float
+            ) {
                 drawCircle(
                     brush = Brush.radialGradient(
                         colorStops = arrayOf(
-                            0.0f to ambient.color.copy(alpha = 0f),
-                            0.4f to ambient.color.copy(alpha = 0.08f * pulse),
+                            0.0f to ambientSoft.copy(alpha = 0.0f),
+                            0.35f to ambientSoft.copy(alpha = alpha * pulse),
                             1.0f to Color.Transparent
                         ),
                         center = center,
@@ -102,39 +107,56 @@ private fun Modifier.ambient(ambient: ScreenBackground.Ambient?): Modifier {
                 )
             }
 
-            // 2) vertical depth wash (bottom darkening)
-            run {
-                drawRect(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Transparent,
-                            Color.Black.copy(alpha = 0.22f)
-                        ),
-                        startY = h * 0.4f,
-                        endY = h
-                    ),
-                    size = size
-                )
-            }
+            // Big overlapping circles (soft, non-flashy)
+            glow(
+                center = Offset(x = w * 0.75f, y = h * 0.18f),
+                radius = d * 0.95f,
+                alpha = 0.028f
+            )
+            glow(
+                center = Offset(x = w * 0.20f, y = h * 0.45f),
+                radius = d * 0.80f,
+                alpha = 0.018f
+            )
+            glow(
+                center = Offset(x = w * 0.80f, y = h * 0.85f),
+                radius = d * 0.70f,
+                alpha = 0.012f
+            )
 
-            // 3) subtle edge vignette
+            // Bottom depth wash
+            drawRect(
+                brush = Brush.verticalGradient(
+                    colorStops = arrayOf(
+                        0.0f to Color.Transparent,
+                        0.62f to Color.Transparent,
+                        1.0f to Color.Black.copy(alpha = 0.16f)
+                    ),
+                    startY = 0f,
+                    endY = h
+                ),
+                size = size
+            )
+
+            // Gentle vignette
             run {
-                val vignetteRadius = dimension * 0.95f
-                val vignetteCenter = Offset(x = w * 0.5f, y = h * 0.5f)
+                val center = Offset(x = w * 0.5f, y = h * 0.5f)
+                val radius = d * 1.10f
                 drawCircle(
                     brush = Brush.radialGradient(
                         colorStops = arrayOf(
                             0.0f to Color.Transparent,
-                            0.7f to Color.Transparent,
-                            1.0f to Color.Black.copy(alpha = 0.12f)
+                            0.80f to Color.Transparent,
+                            1.0f to Color.Black.copy(alpha = 0.11f)
                         ),
-                        center = vignetteCenter,
-                        radius = vignetteRadius
+                        center = center,
+                        radius = radius
                     ),
-                    center = vignetteCenter,
-                    radius = vignetteRadius
+                    center = center,
+                    radius = radius
                 )
             }
         }
-    )
+    }
 }
+

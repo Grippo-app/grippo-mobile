@@ -1,10 +1,8 @@
 package com.grippo.exercise.example.picker.internal
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,20 +13,13 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.grippo.design.components.badge.Badge
-import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonContent
-import com.grippo.design.components.button.ButtonIcon
-import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
 import com.grippo.design.components.cards.selectable.SelectableCard
 import com.grippo.design.components.inputs.InputSearch
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.icons.Filter
 import com.grippo.exercise.example.picker.ExerciseExamplePickerContract
 import com.grippo.exercise.example.picker.ManualQueries
 
@@ -39,36 +30,13 @@ internal fun ManualHeader(
     contract: ExerciseExamplePickerContract,
 ) {
     Column(modifier = modifier) {
-        Row(
+        InputSearch(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-        ) {
-            InputSearch(
-                modifier = Modifier.weight(1f),
-                value = value.name,
-                onValueChange = contract::onQueryChange
-            )
-            Box {
-                Button(
-                    content = ButtonContent.Icon(
-                        icon = ButtonIcon.Icon(AppTokens.icons.Filter)
-                    ),
-                    style = ButtonStyle.Tertiary,
-                    onClick = contract::onFiltersClick
-                )
-
-                val count = remember(value.filters) {
-                    value.filters.count { it.isSelected() }
-                }
-
-                Badge(
-                    modifier = Modifier.align(Alignment.TopEnd),
-                    value = count
-                )
-            }
-        }
+            value = value.name,
+            onValueChange = contract::onQueryChange
+        )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
