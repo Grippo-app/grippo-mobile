@@ -1,4 +1,4 @@
-package com.grippo.trainings
+package com.grippo.home
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.training.TrainingFeature
@@ -7,12 +7,12 @@ import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import kotlinx.coroutines.flow.firstOrNull
 
-public class TrainingsRootViewModel(
+public class HomeRootViewModel(
     trainingFeature: TrainingFeature,
     private val dialogController: DialogController,
-) : BaseViewModel<TrainingsRootState, TrainingsRootDirection, TrainingsRootLoader>(
-    TrainingsRootState
-), TrainingsRootContract {
+) : BaseViewModel<HomeRootState, HomeRootDirection, HomeRootLoader>(
+    HomeRootState
+), HomeRootContract {
 
     init {
         safeLaunch {
@@ -27,7 +27,7 @@ public class TrainingsRootViewModel(
         if (hasDraftTraining) {
             safeLaunch {
                 val config = DialogConfig.DraftTraining(
-                    onResult = { navigateTo(TrainingsRootDirection.ToDraftTraining) }
+                    onResult = { navigateTo(HomeRootDirection.ToDraftTraining) }
                 )
 
                 dialogController.show(config)
@@ -36,14 +36,26 @@ public class TrainingsRootViewModel(
     }
 
     override fun onBack() {
-        navigateTo(TrainingsRootDirection.Back)
+        navigateTo(HomeRootDirection.Back)
     }
 
-    override fun toEditTraining(id: String) {
-        navigateTo(TrainingsRootDirection.ToEditTraining(id))
+    override fun toExcludedMuscles() {
+        navigateTo(HomeRootDirection.ToExcludedMuscles)
+    }
+
+    override fun toMissingEquipment() {
+        navigateTo(HomeRootDirection.ToMissingEquipment)
+    }
+
+    override fun toWeightHistory() {
+        navigateTo(HomeRootDirection.ToWeightHistory)
+    }
+
+    override fun toDebug() {
+        navigateTo(HomeRootDirection.ToDebug)
     }
 
     override fun toAddTraining() {
-        navigateTo(TrainingsRootDirection.ToAddTraining)
+        navigateTo(HomeRootDirection.ToAddTraining)
     }
 }

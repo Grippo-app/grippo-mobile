@@ -41,10 +41,7 @@ internal fun NameScreen(
     contract: NameContract
 ) = BaseComposeScreen(
     ScreenBackground.Color(
-        value = AppTokens.colors.background.screen,
-        ambient = ScreenBackground.Ambient(
-            color = AppTokens.colors.brand.color6,
-        )
+        value = AppTokens.colors.background.screen
     )
 ) {
     Toolbar(

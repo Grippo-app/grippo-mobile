@@ -47,10 +47,7 @@ internal fun ExperienceScreen(
     contract: ExperienceContract
 ) = BaseComposeScreen(
     ScreenBackground.Color(
-        value = AppTokens.colors.background.screen,
-        ambient = ScreenBackground.Ambient(
-            color = AppTokens.colors.brand.color6,
-        )
+        value = AppTokens.colors.background.screen
     )
 ) {
     Toolbar(

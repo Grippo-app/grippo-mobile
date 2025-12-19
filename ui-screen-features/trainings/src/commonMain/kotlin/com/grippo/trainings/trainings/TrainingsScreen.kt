@@ -20,7 +20,6 @@ import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
-import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.segment.Segment
@@ -33,7 +32,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.ArrowRight
-import com.grippo.design.resources.provider.icons.User
 import com.grippo.design.resources.provider.start_workout
 import com.grippo.design.resources.provider.trainings
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
@@ -58,10 +56,7 @@ internal fun TrainingsScreen(
     contract: TrainingsContract
 ) = BaseComposeScreen(
     ScreenBackground.Color(
-        value = AppTokens.colors.background.screen,
-        ambient = ScreenBackground.Ambient(
-            color = AppTokens.colors.brand.color6,
-        )
+        value = AppTokens.colors.background.screen
     )
 ) {
     val allowedOffsets = TrainingsPagerOffsets
@@ -95,15 +90,6 @@ internal fun TrainingsScreen(
         modifier = Modifier.fillMaxWidth(),
         title = AppTokens.strings.res(Res.string.trainings),
         style = ToolbarStyle.Transparent,
-        trailing = {
-            Button(
-                modifier = Modifier.padding(end = AppTokens.dp.contentPadding.subContent),
-                content = ButtonContent.Icon(icon = ButtonIcon.Icon(AppTokens.icons.User)),
-                style = ButtonStyle.Transparent,
-                size = ButtonSize.Small,
-                onClick = contract::onOpenProfile
-            )
-        },
         content = {
             Segment(
                 modifier = Modifier

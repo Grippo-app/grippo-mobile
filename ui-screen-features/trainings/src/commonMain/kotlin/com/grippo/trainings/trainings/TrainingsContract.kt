@@ -8,7 +8,6 @@ internal interface TrainingsContract {
     fun onAddTraining()
     fun onDailyDigestViewStats()
     fun onExerciseClick(id: String)
-    fun onOpenProfile()
     fun onTrainingMenuClick(id: String)
     fun onShiftDate(days: Int)
     fun onSelectPeriod(period: TrainingsTimelinePeriod)
@@ -20,7 +19,6 @@ internal interface TrainingsContract {
         override fun onAddTraining() {}
         override fun onDailyDigestViewStats() {}
         override fun onExerciseClick(id: String) {}
-        override fun onOpenProfile() {}
         override fun onTrainingMenuClick(id: String) {}
         override fun onShiftDate(days: Int) {}
         override fun onSelectPeriod(period: TrainingsTimelinePeriod) {}

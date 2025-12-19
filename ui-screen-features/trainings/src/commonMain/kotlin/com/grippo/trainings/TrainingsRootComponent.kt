@@ -17,10 +17,6 @@ import com.grippo.trainings.trainings.TrainingsComponent
 public class TrainingsRootComponent(
     initial: TrainingsRouter,
     componentContext: ComponentContext,
-    private val toExcludedMuscles: () -> Unit,
-    private val toMissingEquipment: () -> Unit,
-    private val toWeightHistory: () -> Unit,
-    private val toDebug: () -> Unit,
     private val toTraining: (stage: StageState) -> Unit,
     private val close: () -> Unit,
 ) : BaseComponent<TrainingsRootDirection>(componentContext) {
@@ -41,10 +37,6 @@ public class TrainingsRootComponent(
     override suspend fun eventListener(direction: TrainingsRootDirection) {
         when (direction) {
             TrainingsRootDirection.Back -> close.invoke()
-            TrainingsRootDirection.ToExcludedMuscles -> toExcludedMuscles.invoke()
-            TrainingsRootDirection.ToMissingEquipment -> toMissingEquipment.invoke()
-            TrainingsRootDirection.ToWeightHistory -> toWeightHistory.invoke()
-            TrainingsRootDirection.ToDebug -> toDebug.invoke()
             TrainingsRootDirection.ToAddTraining -> toTraining.invoke(StageState.Add)
             TrainingsRootDirection.ToDraftTraining -> toTraining.invoke(StageState.Draft)
             is TrainingsRootDirection.ToEditTraining -> toTraining.invoke(
@@ -74,11 +66,7 @@ public class TrainingsRootComponent(
                 TrainingsComponent(
                     componentContext = context,
                     toEditTraining = viewModel::toEditTraining,
-                    toExcludedMuscles = viewModel::toExcludedMuscles,
-                    toMissingEquipment = viewModel::toMissingEquipment,
-                    toWeightHistory = viewModel::toWeightHistory,
                     toAddTraining = viewModel::toAddTraining,
-                    toDebug = viewModel::toDebug,
                     back = viewModel::onBack
                 ),
             )

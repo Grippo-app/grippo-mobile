@@ -1,0 +1,63 @@
+package com.grippo.home.home
+
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.grippo.core.foundation.BaseComposeScreen
+import com.grippo.core.foundation.ScreenBackground
+import com.grippo.design.components.button.Button
+import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonIcon
+import com.grippo.design.components.button.ButtonSize
+import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.toolbar.Toolbar
+import com.grippo.design.components.toolbar.ToolbarStyle
+import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.icons.User
+import com.grippo.design.resources.provider.trainings
+import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentSetOf
+
+@Composable
+internal fun HomeScreen(
+    state: HomeState,
+    loaders: ImmutableSet<HomeLoader>,
+    contract: HomeContract
+) = BaseComposeScreen(
+    ScreenBackground.Color(
+        value = AppTokens.colors.background.screen,
+    )
+) {
+    Toolbar(
+        modifier = Modifier.fillMaxWidth(),
+        title = AppTokens.strings.res(Res.string.trainings),
+        style = ToolbarStyle.Transparent,
+        trailing = {
+            Button(
+                modifier = Modifier.padding(end = AppTokens.dp.contentPadding.subContent),
+                content = ButtonContent.Icon(icon = ButtonIcon.Icon(AppTokens.icons.User)),
+                style = ButtonStyle.Transparent,
+                size = ButtonSize.Small,
+                onClick = contract::onOpenProfile
+            )
+        },
+    )
+
+
+}
+
+@AppPreview
+@Composable
+private fun HomeScreenPreview() {
+    PreviewContainer {
+        HomeScreen(
+            state = HomeState,
+            loaders = persistentSetOf(),
+            contract = HomeContract.Empty
+        )
+    }
+}

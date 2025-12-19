@@ -18,9 +18,10 @@ import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.debug.DebugComponent
 import com.grippo.design.components.connection.snackbar.ConnectionSnackbar
 import com.grippo.design.core.AppTheme
-import com.grippo.trainings.TrainingsRootComponent
+import com.grippo.home.HomeRootComponent
 import com.grippo.profile.ProfileComponent
 import com.grippo.screen.api.AuthRouter
+import com.grippo.screen.api.HomeRouter
 import com.grippo.screen.api.ProfileRouter
 import com.grippo.screen.api.RootRouter
 import com.grippo.screen.api.TrainingRouter
@@ -35,6 +36,7 @@ import com.grippo.toolkit.date.utils.DateFormatting
 import com.grippo.toolkit.localization.AppLocale
 import com.grippo.toolkit.theme.AppTheme
 import com.grippo.training.TrainingComponent
+import com.grippo.trainings.TrainingsRootComponent
 
 public class RootComponent(
     componentContext: ComponentContext,
@@ -116,14 +118,23 @@ public class RootComponent(
                 ),
             )
 
-            RootRouter.Home -> Trainings(
-                TrainingsRootComponent(
+            RootRouter.Home -> Child.Home(
+                HomeRootComponent(
                     componentContext = context,
-                    initial = TrainingsRouter.Trainings,
+                    initial = HomeRouter.Home,
                     toWeightHistory = viewModel::toWeightHistory,
                     toMissingEquipment = viewModel::toMissingEquipment,
                     toExcludedMuscles = viewModel::toExcludedMuscles,
                     toDebug = viewModel::toDebug,
+                    toTraining = viewModel::toTraining,
+                    close = viewModel::onClose
+                )
+            )
+
+            RootRouter.Trainings -> Trainings(
+                TrainingsRootComponent(
+                    componentContext = context,
+                    initial = TrainingsRouter.Trainings,
                     toTraining = viewModel::toTraining,
                     close = viewModel::onClose
                 )
@@ -178,6 +189,9 @@ public class RootComponent(
             Child(component)
 
         public data class Trainings(override val component: TrainingsRootComponent) :
+            Child(component)
+
+        public data class Home(override val component: HomeRootComponent) :
             Child(component)
 
         public data class Profile(override val component: ProfileComponent) :

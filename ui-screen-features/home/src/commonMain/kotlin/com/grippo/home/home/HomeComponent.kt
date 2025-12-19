@@ -1,4 +1,4 @@
-package com.grippo.trainings.trainings
+package com.grippo.home.home
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
@@ -7,15 +7,18 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 
-internal class TrainingsComponent(
+internal class HomeComponent(
     componentContext: ComponentContext,
     private val back: () -> Unit,
-    private val toEditTraining: (id: String) -> Unit,
+    private val toExcludedMuscles: () -> Unit,
+    private val toMissingEquipment: () -> Unit,
+    private val toWeightHistory: () -> Unit,
+    private val toDebug: () -> Unit,
     private val toAddTraining: () -> Unit,
-) : BaseComponent<TrainingsDirection>(componentContext) {
+) : BaseComponent<HomeDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        TrainingsViewModel(
+        HomeViewModel(
             trainingFeature = getKoin().get(),
             dialogController = getKoin().get(),
             stringProvider = getKoin().get(),
@@ -28,11 +31,14 @@ internal class TrainingsComponent(
         backHandler.register(backCallback)
     }
 
-    override suspend fun eventListener(direction: TrainingsDirection) {
+    override suspend fun eventListener(direction: HomeDirection) {
         when (direction) {
-            TrainingsDirection.Back -> back.invoke()
-            is TrainingsDirection.EditTraining -> toEditTraining.invoke(direction.id)
-            TrainingsDirection.AddTraining -> toAddTraining.invoke()
+            HomeDirection.Back -> back.invoke()
+            HomeDirection.AddTraining -> toAddTraining.invoke()
+            HomeDirection.Debug -> toDebug.invoke()
+            HomeDirection.ExcludedMuscles -> toExcludedMuscles.invoke()
+            HomeDirection.MissingEquipment -> toMissingEquipment.invoke()
+            HomeDirection.WeightHistory -> toWeightHistory.invoke()
         }
     }
 
@@ -40,6 +46,6 @@ internal class TrainingsComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        TrainingsScreen(state.value, loaders.value, viewModel)
+        HomeScreen(state.value, loaders.value, viewModel)
     }
 }

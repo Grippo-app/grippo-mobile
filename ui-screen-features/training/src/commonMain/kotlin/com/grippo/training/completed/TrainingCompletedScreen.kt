@@ -61,7 +61,7 @@ internal fun TrainingCompletedScreen(
     ScreenBackground.Color(
         value = AppTokens.colors.background.screen,
         ambient = ScreenBackground.Ambient(
-            color = AppTokens.colors.brand.color6,
+            color = AppTokens.colors.brand.color3,
         )
     )
 ) {
