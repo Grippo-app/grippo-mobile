@@ -14,8 +14,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
-import com.grippo.core.state.digest.DailyDigestState
-import com.grippo.core.state.digest.stubDailyDigest
+import com.grippo.core.state.trainings.digest.DailyDigestState
+import com.grippo.core.state.trainings.digest.stubDailyDigest
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview

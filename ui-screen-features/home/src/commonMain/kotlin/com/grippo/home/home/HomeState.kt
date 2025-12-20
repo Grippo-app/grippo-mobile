@@ -1,9 +1,9 @@
 package com.grippo.home.home
 
 import androidx.compose.runtime.Immutable
-import com.grippo.core.state.digest.MonthlyDigestState
-import com.grippo.core.state.digest.WeeklyDigestState
 import com.grippo.core.state.trainings.TrainingState
+import com.grippo.core.state.trainings.digest.MonthlyDigestState
+import com.grippo.core.state.trainings.digest.WeeklyDigestState
 
 @Immutable
 internal data class HomeState(

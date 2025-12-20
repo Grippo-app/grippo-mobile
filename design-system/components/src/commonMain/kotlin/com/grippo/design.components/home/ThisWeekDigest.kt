@@ -22,12 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import com.grippo.core.state.digest.WeeklyDigestState
-import com.grippo.core.state.digest.stubWeeklyDigest
-import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonContent
-import com.grippo.design.components.button.ButtonSize
-import com.grippo.design.components.button.ButtonStyle
+import com.grippo.core.state.trainings.digest.WeeklyDigestState
+import com.grippo.core.state.trainings.digest.stubWeeklyDigest
 import com.grippo.design.components.modifiers.spot
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -35,7 +31,6 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.duration
 import com.grippo.design.resources.provider.icons.Trophy
-import com.grippo.design.resources.provider.overview
 import com.grippo.design.resources.provider.sets
 import com.grippo.design.resources.provider.trainings
 import com.grippo.design.resources.provider.volume
@@ -129,17 +124,6 @@ public fun ThisWeekDigestCard(
             )
 
             Spacer(Modifier.weight(1f))
-
-            Spacer(Modifier.height(AppTokens.dp.contentPadding.block))
-
-            Button(
-                content = ButtonContent.Text(
-                    text = AppTokens.strings.res(Res.string.overview),
-                ),
-                style = ButtonStyle.Secondary,
-                size = ButtonSize.Small,
-                onClick = {}
-            )
         }
     }
 }

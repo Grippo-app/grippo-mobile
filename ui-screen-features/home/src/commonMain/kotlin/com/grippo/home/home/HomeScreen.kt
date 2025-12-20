@@ -11,8 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
-import com.grippo.core.state.digest.stubMonthlyDigest
-import com.grippo.core.state.digest.stubWeeklyDigest
+import com.grippo.core.state.trainings.digest.stubMonthlyDigest
+import com.grippo.core.state.trainings.digest.stubWeeklyDigest
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent

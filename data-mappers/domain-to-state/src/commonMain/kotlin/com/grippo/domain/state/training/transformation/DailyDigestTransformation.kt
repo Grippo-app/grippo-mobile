@@ -1,8 +1,8 @@
 package com.grippo.domain.state.training.transformation
 
-import com.grippo.core.state.digest.DailyDigestState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.trainings.TrainingState
+import com.grippo.core.state.trainings.digest.DailyDigestState
 import kotlinx.datetime.LocalDate
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO

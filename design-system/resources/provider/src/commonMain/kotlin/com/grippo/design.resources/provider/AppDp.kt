@@ -105,8 +105,17 @@ public data object AppDp {
         val lastTraining: LastTraining = LastTraining
         val thisWeekDigest: ThisWeekDigest = ThisWeekDigest
         val thisMonthDigest: ThisMonthDigest = ThisMonthDigest
+        val highlights: Highlights = Highlights
 
         public data object LastTraining {
+            val radius: Dp = AppDp.radius.medium
+            val horizontalPadding: Dp = padding.large
+            val verticalPadding: Dp = padding.large
+            val spacing: Dp = padding.extraSmall
+            val image: Dp = icon.xxxxLarge
+        }
+
+        public data object Highlights {
             val radius: Dp = AppDp.radius.medium
             val horizontalPadding: Dp = padding.large
             val verticalPadding: Dp = padding.large
