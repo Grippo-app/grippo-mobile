@@ -22,6 +22,10 @@ internal class TrainingFeatureImpl(
         return repository.observeExercise(id)
     }
 
+    override fun observeLastTraining(): Flow<Training?> {
+        return repository.observeLastTraining()
+    }
+
     override fun observeTrainings(start: LocalDateTime, end: LocalDateTime): Flow<List<Training>> {
         return repository.observeTrainings(start, end)
     }

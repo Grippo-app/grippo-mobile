@@ -43,6 +43,11 @@ internal class TrainingRepositoryImpl(
             .map { it?.toDomain() }
     }
 
+    override fun observeLastTraining(): Flow<Training?> {
+        return trainingDao.getLast()
+            .map { it?.toDomain() }
+    }
+
     override fun observeTrainings(start: LocalDateTime, end: LocalDateTime): Flow<List<Training>> {
         return trainingDao.get(
             from = DateTimeUtils.toUtcIso(start),

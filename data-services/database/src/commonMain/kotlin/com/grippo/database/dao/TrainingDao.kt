@@ -46,6 +46,16 @@ public interface TrainingDao {
     )
     public fun getExerciseById(id: String): Flow<ExercisePack?>
 
+    @Transaction
+    @Query(
+        """
+        SELECT * FROM training
+        ORDER BY createdAt DESC
+        LIMIT 1
+        """
+    )
+    public fun getLast(): Flow<TrainingPack?>
+
     // ────────────── INSERT ──────────────
 
     @Transaction

@@ -64,14 +64,16 @@ internal fun HomeScreen(
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
-        item(
-            key = "last_workout_card",
-            span = { GridItemSpan(2) }
-        ) {
-            LastTrainingCard(
-                modifier = Modifier.fillMaxWidth(),
-                value = stubTraining(),
-            )
+        state.lastTraining?.let { lastTraining ->
+            item(
+                key = "last_workout_card",
+                span = { GridItemSpan(2) }
+            ) {
+                LastTrainingCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = lastTraining,
+                )
+            }
         }
     }
 }
@@ -81,7 +83,9 @@ internal fun HomeScreen(
 private fun HomeScreenPreview() {
     PreviewContainer {
         HomeScreen(
-            state = HomeState,
+            state = HomeState(
+                lastTraining = stubTraining()
+            ),
             loaders = persistentSetOf(),
             contract = HomeContract.Empty
         )
