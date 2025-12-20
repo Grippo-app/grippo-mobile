@@ -1,6 +1,5 @@
 package com.grippo.design.components.training.internal
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -198,14 +196,10 @@ private fun WeeklyStatChip(
     contentColor: androidx.compose.ui.graphics.Color = AppTokens.colors.text.secondary,
 ) {
     Text(
-        modifier = modifier
-            .background(
-                color = AppTokens.colors.background.card,
-                shape = RoundedCornerShape(AppTokens.dp.trainingCard.weekly.radius)
-            ).padding(
-                horizontal = AppTokens.dp.contentPadding.content,
-                vertical = AppTokens.dp.contentPadding.text
-            ),
+        modifier = modifier.padding(
+            horizontal = AppTokens.dp.contentPadding.content,
+            vertical = AppTokens.dp.contentPadding.text
+        ),
         text = text,
         style = AppTokens.typography.b13Med(),
         color = contentColor,

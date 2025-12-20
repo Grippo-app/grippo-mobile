@@ -76,7 +76,7 @@ public data object AppDp {
     val radio: Radio = Radio
     val badge: Badge = Badge
     val aiSuggestionCard: AiSuggestionCard = AiSuggestionCard
-    val trainingCard: TrainingCard = TrainingCard
+    val home: HomeContent = HomeContent
 
     public data object Screen {
         val toolbar: Toolbar = Toolbar
@@ -100,16 +100,14 @@ public data object AppDp {
         val radius: Dp = AppDp.radius.medium
     }
 
-    public data object TrainingCard {
-        val weekly: Weekly = Weekly
-        val monthly: Monthly = Monthly
+    public data object HomeContent {
+        val lastTraining: LastTraining = LastTraining
 
-        public data object Weekly {
+        public data object LastTraining {
             val radius: Dp = AppDp.radius.medium
-        }
-
-        public data object Monthly {
-            val radius: Dp = AppDp.radius.medium
+            val horizontalPadding: Dp = padding.large
+            val verticalPadding: Dp = padding.large
+            val spacing: Dp = padding.extraSmall
         }
     }
 

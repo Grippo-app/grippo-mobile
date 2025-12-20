@@ -1,16 +1,23 @@
 package com.grippo.home.home
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.home.LastTrainingCard
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
@@ -47,7 +54,26 @@ internal fun HomeScreen(
         },
     )
 
-
+    LazyVerticalGrid(
+        modifier = Modifier.fillMaxWidth().weight(1f),
+        columns = GridCells.Fixed(2),
+        contentPadding = PaddingValues(
+            horizontal = AppTokens.dp.screen.horizontalPadding,
+            vertical = AppTokens.dp.screen.verticalPadding
+        ),
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+    ) {
+        item(
+            key = "last_workout_card",
+            span = { GridItemSpan(2) }
+        ) {
+            LastTrainingCard(
+                modifier = Modifier.fillMaxWidth(),
+                value = stubTraining(),
+            )
+        }
+    }
 }
 
 @AppPreview
