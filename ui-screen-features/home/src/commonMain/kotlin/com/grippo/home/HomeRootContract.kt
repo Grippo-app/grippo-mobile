@@ -9,6 +9,7 @@ internal interface HomeRootContract {
     fun toMissingEquipment()
     fun toWeightHistory()
     fun toDebug()
+    fun toTrainings()
     fun toAddTraining()
 
     @Immutable
@@ -18,6 +19,7 @@ internal interface HomeRootContract {
         override fun toMissingEquipment() {}
         override fun toWeightHistory() {}
         override fun toDebug() {}
+        override fun toTrainings() {}
         override fun toAddTraining() {}
     }
 }

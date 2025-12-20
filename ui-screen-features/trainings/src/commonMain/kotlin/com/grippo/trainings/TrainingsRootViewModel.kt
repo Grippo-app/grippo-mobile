@@ -27,7 +27,7 @@ public class TrainingsRootViewModel(
         if (hasDraftTraining) {
             safeLaunch {
                 val config = DialogConfig.DraftTraining(
-                    onResult = { navigateTo(TrainingsRootDirection.ToDraftTraining) }
+                    onResult = { navigateTo(TrainingsRootDirection.DraftTraining) }
                 )
 
                 dialogController.show(config)
@@ -40,10 +40,10 @@ public class TrainingsRootViewModel(
     }
 
     override fun toEditTraining(id: String) {
-        navigateTo(TrainingsRootDirection.ToEditTraining(id))
+        navigateTo(TrainingsRootDirection.EditTraining(id))
     }
 
     override fun toAddTraining() {
-        navigateTo(TrainingsRootDirection.ToAddTraining)
+        navigateTo(TrainingsRootDirection.AddTraining)
     }
 }

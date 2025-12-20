@@ -37,9 +37,9 @@ public class TrainingsRootComponent(
     override suspend fun eventListener(direction: TrainingsRootDirection) {
         when (direction) {
             TrainingsRootDirection.Back -> close.invoke()
-            TrainingsRootDirection.ToAddTraining -> toTraining.invoke(StageState.Add)
-            TrainingsRootDirection.ToDraftTraining -> toTraining.invoke(StageState.Draft)
-            is TrainingsRootDirection.ToEditTraining -> toTraining.invoke(
+            TrainingsRootDirection.AddTraining -> toTraining.invoke(StageState.Add)
+            TrainingsRootDirection.DraftTraining -> toTraining.invoke(StageState.Draft)
+            is TrainingsRootDirection.EditTraining -> toTraining.invoke(
                 StageState.Edit(direction.id)
             )
         }

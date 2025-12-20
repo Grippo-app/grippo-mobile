@@ -22,6 +22,7 @@ public class HomeRootComponent(
     private val toWeightHistory: () -> Unit,
     private val toDebug: () -> Unit,
     private val toTraining: (stage: StageState) -> Unit,
+    private val toTrainings: () -> Unit,
     private val close: () -> Unit,
 ) : BaseComponent<HomeRootDirection>(componentContext) {
 
@@ -41,12 +42,13 @@ public class HomeRootComponent(
     override suspend fun eventListener(direction: HomeRootDirection) {
         when (direction) {
             HomeRootDirection.Back -> close.invoke()
-            HomeRootDirection.ToExcludedMuscles -> toExcludedMuscles.invoke()
-            HomeRootDirection.ToMissingEquipment -> toMissingEquipment.invoke()
-            HomeRootDirection.ToWeightHistory -> toWeightHistory.invoke()
-            HomeRootDirection.ToDebug -> toDebug.invoke()
-            HomeRootDirection.ToAddTraining -> toTraining.invoke(StageState.Add)
-            HomeRootDirection.ToDraftTraining -> toTraining.invoke(StageState.Draft)
+            HomeRootDirection.ExcludedMuscles -> toExcludedMuscles.invoke()
+            HomeRootDirection.MissingEquipment -> toMissingEquipment.invoke()
+            HomeRootDirection.WeightHistory -> toWeightHistory.invoke()
+            HomeRootDirection.Debug -> toDebug.invoke()
+            HomeRootDirection.AddTraining -> toTraining.invoke(StageState.Add)
+            HomeRootDirection.DraftTraining -> toTraining.invoke(StageState.Draft)
+            HomeRootDirection.Trainings -> toTrainings.invoke()
         }
     }
 
@@ -75,6 +77,7 @@ public class HomeRootComponent(
                     toWeightHistory = viewModel::toWeightHistory,
                     toAddTraining = viewModel::toAddTraining,
                     toDebug = viewModel::toDebug,
+                    toTrainings = viewModel::toTrainings,
                     back = viewModel::onBack
                 ),
             )

@@ -9,6 +9,7 @@ public interface RootContract {
     public fun toHome()
     public fun toProfile()
     public fun toDebug()
+    public fun toTrainings()
     public fun toTraining(stage: StageState)
     public fun toWeightHistory()
     public fun toMissingEquipment()
@@ -21,6 +22,7 @@ public interface RootContract {
         override fun toHome() {}
         override fun toProfile() {}
         override fun toDebug() {}
+        override fun toTrainings() {}
         override fun toTraining(stage: StageState) {}
         override fun toWeightHistory() {}
         override fun toMissingEquipment() {}

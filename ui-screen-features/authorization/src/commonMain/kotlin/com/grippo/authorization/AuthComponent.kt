@@ -40,8 +40,8 @@ public class AuthComponent(
         when (direction) {
             AuthDirection.AuthProcess -> navigation.replaceAll(AuthRouter.AuthProcess)
             AuthDirection.Back -> close.invoke()
-            AuthDirection.ToHome -> toHome.invoke()
-            AuthDirection.ToProfileCreation -> navigation.push(AuthRouter.ProfileCreation)
+            AuthDirection.Home -> toHome.invoke()
+            AuthDirection.ProfileCreation -> navigation.push(AuthRouter.ProfileCreation)
         }
     }
 

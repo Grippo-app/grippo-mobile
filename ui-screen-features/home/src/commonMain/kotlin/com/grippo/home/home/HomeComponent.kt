@@ -15,13 +15,13 @@ internal class HomeComponent(
     private val toWeightHistory: () -> Unit,
     private val toDebug: () -> Unit,
     private val toAddTraining: () -> Unit,
+    private val toTrainings: () -> Unit,
 ) : BaseComponent<HomeDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
         HomeViewModel(
             trainingFeature = getKoin().get(),
             dialogController = getKoin().get(),
-            stringProvider = getKoin().get(),
         )
     }
 
@@ -39,6 +39,7 @@ internal class HomeComponent(
             HomeDirection.ExcludedMuscles -> toExcludedMuscles.invoke()
             HomeDirection.MissingEquipment -> toMissingEquipment.invoke()
             HomeDirection.WeightHistory -> toWeightHistory.invoke()
+            HomeDirection.Trainings -> toTrainings.invoke()
         }
     }
 

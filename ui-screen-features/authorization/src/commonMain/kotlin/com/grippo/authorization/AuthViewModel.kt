@@ -14,10 +14,10 @@ public class AuthViewModel : BaseViewModel<AuthState, AuthDirection, AuthLoader>
     }
 
     override fun toHome() {
-        navigateTo(AuthDirection.ToHome)
+        navigateTo(AuthDirection.Home)
     }
 
     override fun toProfileCreation() {
-        navigateTo(AuthDirection.ToProfileCreation)
+        navigateTo(AuthDirection.ProfileCreation)
     }
 }

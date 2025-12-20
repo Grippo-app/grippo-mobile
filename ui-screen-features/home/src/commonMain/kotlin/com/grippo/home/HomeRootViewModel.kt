@@ -27,7 +27,7 @@ public class HomeRootViewModel(
         if (hasDraftTraining) {
             safeLaunch {
                 val config = DialogConfig.DraftTraining(
-                    onResult = { navigateTo(HomeRootDirection.ToDraftTraining) }
+                    onResult = { navigateTo(HomeRootDirection.DraftTraining) }
                 )
 
                 dialogController.show(config)
@@ -40,22 +40,26 @@ public class HomeRootViewModel(
     }
 
     override fun toExcludedMuscles() {
-        navigateTo(HomeRootDirection.ToExcludedMuscles)
+        navigateTo(HomeRootDirection.ExcludedMuscles)
     }
 
     override fun toMissingEquipment() {
-        navigateTo(HomeRootDirection.ToMissingEquipment)
+        navigateTo(HomeRootDirection.MissingEquipment)
     }
 
     override fun toWeightHistory() {
-        navigateTo(HomeRootDirection.ToWeightHistory)
+        navigateTo(HomeRootDirection.WeightHistory)
     }
 
     override fun toDebug() {
-        navigateTo(HomeRootDirection.ToDebug)
+        navigateTo(HomeRootDirection.Debug)
+    }
+
+    override fun toTrainings() {
+        navigateTo(HomeRootDirection.Trainings)
     }
 
     override fun toAddTraining() {
-        navigateTo(HomeRootDirection.ToAddTraining)
+        navigateTo(HomeRootDirection.AddTraining)
     }
 }

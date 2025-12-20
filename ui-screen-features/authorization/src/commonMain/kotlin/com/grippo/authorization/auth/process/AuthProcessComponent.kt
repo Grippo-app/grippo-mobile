@@ -36,9 +36,9 @@ internal class AuthProcessComponent(
     override suspend fun eventListener(direction: AuthProcessDirection) {
         when (direction) {
             AuthProcessDirection.Close -> close.invoke()
-            AuthProcessDirection.ToRegistration -> navigation.push(AuthProcessRouter.Registration)
-            AuthProcessDirection.ToHome -> toHome.invoke()
-            AuthProcessDirection.ToProfileCreation -> toProfileCreation.invoke()
+            AuthProcessDirection.Registration -> navigation.push(AuthProcessRouter.Registration)
+            AuthProcessDirection.Home -> toHome.invoke()
+            AuthProcessDirection.ProfileCreation -> toProfileCreation.invoke()
             AuthProcessDirection.Back -> navigation.pop()
         }
     }

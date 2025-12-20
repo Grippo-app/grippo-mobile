@@ -11,15 +11,15 @@ internal class AuthProcessViewModel :
     }
 
     override fun toRegistration() {
-        navigateTo(AuthProcessDirection.ToRegistration)
+        navigateTo(AuthProcessDirection.Registration)
     }
 
     override fun toHome() {
-        navigateTo(AuthProcessDirection.ToHome)
+        navigateTo(AuthProcessDirection.Home)
     }
 
     override fun toProfileCreation() {
-        navigateTo(AuthProcessDirection.ToProfileCreation)
+        navigateTo(AuthProcessDirection.ProfileCreation)
     }
 
     override fun onBack() {

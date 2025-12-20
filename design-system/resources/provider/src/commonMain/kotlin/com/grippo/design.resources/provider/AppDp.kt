@@ -40,6 +40,7 @@ public data object AppDp {
         val xLarge: Dp = 32.dp
         val xxLarge: Dp = 68.dp
         val xxxLarge: Dp = 100.dp
+        val xxxxLarge: Dp = 200.dp
     }
 
     val bottomSheet: BottomSheet = BottomSheet
@@ -102,12 +103,33 @@ public data object AppDp {
 
     public data object HomeContent {
         val lastTraining: LastTraining = LastTraining
+        val thisWeekDigest: ThisWeekDigest = ThisWeekDigest
+        val thisMonthDigest: ThisMonthDigest = ThisMonthDigest
 
         public data object LastTraining {
             val radius: Dp = AppDp.radius.medium
             val horizontalPadding: Dp = padding.large
             val verticalPadding: Dp = padding.large
             val spacing: Dp = padding.extraSmall
+            val image: Dp = icon.xxxxLarge
+        }
+
+        public data object ThisWeekDigest {
+            val radius: Dp = AppDp.radius.medium
+            val horizontalPadding: Dp = padding.large
+            val verticalPadding: Dp = padding.large
+            val spacing: Dp = padding.extraSmall
+            val image: Dp = AppDp.icon.xxxLarge
+            val icon: Dp = AppDp.icon.large
+        }
+
+        public data object ThisMonthDigest {
+            val radius: Dp = AppDp.radius.medium
+            val horizontalPadding: Dp = padding.large
+            val verticalPadding: Dp = padding.large
+            val spacing: Dp = padding.extraSmall
+            val image: Dp = AppDp.icon.xxxLarge
+            val icon: Dp = AppDp.icon.large
         }
     }
 

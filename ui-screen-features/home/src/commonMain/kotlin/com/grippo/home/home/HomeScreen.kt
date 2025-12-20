@@ -11,6 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.digest.stubMonthlyDigest
+import com.grippo.core.state.digest.stubWeeklyDigest
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
@@ -18,14 +20,14 @@ import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.home.LastTrainingCard
+import com.grippo.design.components.home.ThisMonthDigestCard
+import com.grippo.design.components.home.ThisWeekDigestCard
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.User
-import com.grippo.design.resources.provider.trainings
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -41,7 +43,6 @@ internal fun HomeScreen(
 ) {
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
-        title = AppTokens.strings.res(Res.string.trainings),
         style = ToolbarStyle.Transparent,
         trailing = {
             Button(
@@ -72,7 +73,32 @@ internal fun HomeScreen(
                 LastTrainingCard(
                     modifier = Modifier.fillMaxWidth(),
                     value = lastTraining,
+                    onViewWorkout = contract::onOpenTrainings
                 )
+            }
+
+            state.weeklyDigestState?.let { weeklyDigest ->
+                item(
+                    key = "weekly_digest",
+                    span = { GridItemSpan(1) }
+                ) {
+                    ThisWeekDigestCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = weeklyDigest,
+                    )
+                }
+            }
+
+            state.monthlyDigestState?.let { monthlyDigest ->
+                item(
+                    key = "monthly_digest",
+                    span = { GridItemSpan(1) }
+                ) {
+                    ThisMonthDigestCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = monthlyDigest,
+                    )
+                }
             }
         }
     }
@@ -84,7 +110,9 @@ private fun HomeScreenPreview() {
     PreviewContainer {
         HomeScreen(
             state = HomeState(
-                lastTraining = stubTraining()
+                lastTraining = stubTraining(),
+                weeklyDigestState = stubWeeklyDigest(),
+                monthlyDigestState = stubMonthlyDigest(),
             ),
             loaders = persistentSetOf(),
             contract = HomeContract.Empty

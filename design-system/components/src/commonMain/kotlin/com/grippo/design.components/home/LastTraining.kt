@@ -35,6 +35,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.barbell
 import com.grippo.design.resources.provider.icons.ArrowRight
+import com.grippo.design.resources.provider.last_workout
 import com.grippo.design.resources.provider.plus_value_more
 import com.grippo.design.resources.provider.view_workout
 import com.grippo.toolkit.date.utils.DateFormat
@@ -45,6 +46,7 @@ import kotlinx.collections.immutable.toPersistentList
 public fun LastTrainingCard(
     modifier: Modifier = Modifier,
     value: TrainingState,
+    onViewWorkout: () -> Unit
 ) {
 
     val startLabel = remember(value.createdAt, value.duration) {
@@ -68,7 +70,6 @@ public fun LastTrainingCard(
         modifier = modifier
             .height(intrinsicSize = IntrinsicSize.Max)
             .clip(RoundedCornerShape(AppTokens.dp.home.lastTraining.radius))
-            .height(intrinsicSize = IntrinsicSize.Min)
             .background(
                 AppTokens.colors.background.card,
                 shape = RoundedCornerShape(AppTokens.dp.home.lastTraining.radius)
@@ -97,7 +98,7 @@ public fun LastTrainingCard(
         ) {
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = "Last workout",
+                text = AppTokens.strings.res(Res.string.last_workout),
                 style = AppTokens.typography.h4(),
                 color = AppTokens.colors.text.primary
             )
@@ -153,7 +154,7 @@ public fun LastTrainingCard(
                     endIcon = ButtonIcon.Icon(AppTokens.icons.ArrowRight)
                 ),
                 size = ButtonSize.Small,
-                onClick = {}
+                onClick = onViewWorkout
             )
         }
     }
@@ -165,21 +166,25 @@ private fun LastTrainingCardPreview() {
     PreviewContainer {
         LastTrainingCard(
             value = stubTraining(),
+            onViewWorkout = {}
         )
 
         LastTrainingCard(
             value = stubTraining()
                 .copy(exercises = stubTraining().exercises.take(4).toPersistentList()),
+            onViewWorkout = {}
         )
 
         LastTrainingCard(
             value = stubTraining()
                 .copy(exercises = stubTraining().exercises.take(3).toPersistentList()),
+            onViewWorkout = {}
         )
 
         LastTrainingCard(
             value = stubTraining()
                 .copy(exercises = stubTraining().exercises.take(1).toPersistentList()),
+            onViewWorkout = {}
         )
     }
 }

@@ -37,31 +37,35 @@ public class RootViewModel(
     }
 
     override fun toHome() {
-        navigateTo(RootDirection.ToHome)
+        navigateTo(RootDirection.Home)
     }
 
     override fun toProfile() {
-        navigateTo(RootDirection.ToProfile)
+        navigateTo(RootDirection.Profile)
     }
 
     override fun toDebug() {
-        navigateTo(RootDirection.ToDebug)
+        navigateTo(RootDirection.Debug)
+    }
+
+    override fun toTrainings() {
+        navigateTo(RootDirection.Trainings)
     }
 
     override fun toTraining(stage: StageState) {
-        navigateTo(RootDirection.ToTraining(stage))
+        navigateTo(RootDirection.Training(stage))
     }
 
     override fun toWeightHistory() {
-        navigateTo(RootDirection.ToWeightHistory)
+        navigateTo(RootDirection.WeightHistory)
     }
 
     override fun toMissingEquipment() {
-        navigateTo(RootDirection.ToMissingEquipment)
+        navigateTo(RootDirection.MissingEquipment)
     }
 
     override fun toExcludedMuscles() {
-        navigateTo(RootDirection.ToExcludedMuscles)
+        navigateTo(RootDirection.ExcludedMuscles)
     }
 
     override fun onBack() {

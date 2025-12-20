@@ -8,7 +8,7 @@ import kotlinx.datetime.LocalDate
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
 
-internal fun List<TrainingState>.toMonthlyDigestState(
+public fun List<TrainingState>.toMonthlyDigestState(
     range: DateRange?,
 ): MonthlyDigestState {
     val trainings = this

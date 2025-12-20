@@ -6,12 +6,13 @@ import com.grippo.core.state.stage.StageState
 public sealed interface RootDirection : BaseDirection {
     public data object Login : RootDirection
     public data object Close : RootDirection
-    public data object ToHome : RootDirection
-    public data object ToProfile : RootDirection
-    public data object ToDebug : RootDirection
-    public data class ToTraining(val stage: StageState) : RootDirection
-    public data object ToWeightHistory : RootDirection
-    public data object ToMissingEquipment : RootDirection
-    public data object ToExcludedMuscles : RootDirection
+    public data object Home : RootDirection
+    public data object Profile : RootDirection
+    public data object Debug : RootDirection
+    public data object Trainings : RootDirection
+    public data class Training(val stage: StageState) : RootDirection
+    public data object WeightHistory : RootDirection
+    public data object MissingEquipment : RootDirection
+    public data object ExcludedMuscles : RootDirection
     public data object Back : RootDirection
 }

@@ -24,6 +24,7 @@ import com.grippo.screen.api.AuthRouter
 import com.grippo.screen.api.HomeRouter
 import com.grippo.screen.api.ProfileRouter
 import com.grippo.screen.api.RootRouter
+import com.grippo.screen.api.RootRouter.Auth
 import com.grippo.screen.api.TrainingRouter
 import com.grippo.screen.api.TrainingsRouter
 import com.grippo.shared.dialog.DialogComponent
@@ -56,7 +57,7 @@ public class RootComponent(
     internal val childStack: Value<ChildStack<RootRouter, Child>> = childStack(
         source = navigation,
         serializer = RootRouter.serializer(),
-        initialConfiguration = RootRouter.Auth(AuthRouter.Splash),
+        initialConfiguration = Auth(AuthRouter.Splash),
         handleBackButton = true,
         key = "RootComponent",
         childFactory = ::createChild,
@@ -71,35 +72,39 @@ public class RootComponent(
     override suspend fun eventListener(direction: RootDirection) {
         when (direction) {
             RootDirection.Login -> if (childStack.value.active.instance !is Authorization) {
-                navigation.replaceAll(RootRouter.Auth(AuthRouter.AuthProcess))
+                navigation.replaceAll(Auth(AuthRouter.AuthProcess))
             }
 
-            RootDirection.ToHome -> navigation.replaceAll(
+            RootDirection.Home -> navigation.replaceAll(
                 RootRouter.Home
             )
 
-            RootDirection.ToProfile -> navigation.push(
+            RootDirection.Profile -> navigation.push(
                 RootRouter.Profile(ProfileRouter.WeightHistory)
             )
 
-            RootDirection.ToDebug -> navigation.push(
+            RootDirection.Debug -> navigation.push(
                 RootRouter.Debug
             )
 
-            is RootDirection.ToTraining -> navigation.push(
+            is RootDirection.Training -> navigation.push(
                 RootRouter.Training(direction.stage)
             )
 
-            RootDirection.ToWeightHistory -> navigation.push(
+            RootDirection.WeightHistory -> navigation.push(
                 RootRouter.Profile(ProfileRouter.WeightHistory)
             )
 
-            RootDirection.ToMissingEquipment -> navigation.push(
+            RootDirection.MissingEquipment -> navigation.push(
                 RootRouter.Profile(ProfileRouter.Equipments)
             )
 
-            RootDirection.ToExcludedMuscles -> navigation.push(
+            RootDirection.ExcludedMuscles -> navigation.push(
                 RootRouter.Profile(ProfileRouter.Muscles)
+            )
+
+            RootDirection.Trainings -> navigation.push(
+                RootRouter.Trainings
             )
 
             RootDirection.Back -> navigation.pop()
@@ -109,7 +114,7 @@ public class RootComponent(
 
     private fun createChild(router: RootRouter, context: ComponentContext): Child {
         return when (router) {
-            is RootRouter.Auth -> Authorization(
+            is Auth -> Authorization(
                 AuthComponent(
                     componentContext = context,
                     initial = router.value,
@@ -127,6 +132,7 @@ public class RootComponent(
                     toExcludedMuscles = viewModel::toExcludedMuscles,
                     toDebug = viewModel::toDebug,
                     toTraining = viewModel::toTraining,
+                    toTrainings = viewModel::toTrainings,
                     close = viewModel::onClose
                 )
             )
@@ -136,7 +142,7 @@ public class RootComponent(
                     componentContext = context,
                     initial = TrainingsRouter.Trainings,
                     toTraining = viewModel::toTraining,
-                    close = viewModel::onClose
+                    close = viewModel::onBack
                 )
             )
 
