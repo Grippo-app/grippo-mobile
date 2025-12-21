@@ -168,128 +168,138 @@ public fun HighlightsCard(
 
             Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
 
-            if (value.focusExercise != null || value.muscleFocus != null) {
-                val spacing = AppTokens.dp.contentPadding.content
+            val spacing = AppTokens.dp.contentPadding.content
+            fun metricOf(type: HighlightMetric): HighlightPerformanceMetric? =
+                value.performance.firstOrNull { it.metric == type }
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(spacing),
-                ) {
-                    value.focusExercise?.let { focus ->
-                        HighlightPanel(modifier = Modifier.weight(1f)) {
-                            val sessions = AppTokens.strings.res(Res.string.highlight_sessions, focus.sessions)
-                            val force = focus.forceType.title().text()
-                            val weight = focus.weightType.title().text()
-                            val forceWeight =
-                                AppTokens.strings.res(Res.string.highlight_force_weight, force, weight)
+            // Focus exercise - full width
+            value.focusExercise?.let { focus ->
+                HighlightPanel(modifier = Modifier.fillMaxWidth()) {
+                    val sessions = AppTokens.strings.res(Res.string.highlight_sessions, focus.sessions)
+                    val force = focus.forceType.title().text()
+                    val weight = focus.weightType.title().text()
+                    val forceWeight =
+                        AppTokens.strings.res(Res.string.highlight_force_weight, force, weight)
 
-                            Text(
-                                text = AppTokens.strings.res(Res.string.highlight_focus_exercise),
-                                style = AppTokens.typography.b11Med(),
-                                color = AppTokens.colors.text.secondary,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
+                    Text(
+                        text = AppTokens.strings.res(Res.string.highlight_focus_exercise),
+                        style = AppTokens.typography.b11Med(),
+                        color = AppTokens.colors.text.secondary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
 
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Text(
-                                    modifier = Modifier.weight(1f),
-                                    text = focus.name,
-                                    style = AppTokens.typography.h5(),
-                                    color = AppTokens.colors.text.primary,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            modifier = Modifier.weight(1f),
+                            text = focus.name,
+                            style = AppTokens.typography.h5(),
+                            color = AppTokens.colors.text.primary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
 
-                                Text(
-                                    text = focus.totalVolume.short(),
-                                    style = AppTokens.typography.b14Semi(),
-                                    color = AppTokens.colors.text.primary,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-                            }
+                        Text(
+                            text = focus.totalVolume.short(),
+                            style = AppTokens.typography.b14Semi(),
+                            color = AppTokens.colors.text.primary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
 
-                            Text(
-                                text = "$sessions · $forceWeight",
-                                style = AppTokens.typography.b13Med(),
-                                color = AppTokens.colors.text.secondary,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        }
-                    } ?: Spacer(modifier = Modifier.weight(1f))
-
-                    value.muscleFocus?.let { muscle ->
-                        HighlightPanel(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = AppTokens.strings.res(Res.string.highlight_muscle_focus),
-                                style = AppTokens.typography.b11Med(),
-                                color = AppTokens.colors.text.secondary,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-
-                            Text(
-                                text = muscle.muscleGroup.title().text(),
-                                style = AppTokens.typography.h5(),
-                                color = AppTokens.colors.text.primary,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-
-                            Text(
-                                text = muscle.load.short(),
-                                style = AppTokens.typography.b13Med(),
-                                color = AppTokens.colors.text.secondary,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        }
-                    } ?: Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = "$sessions · $forceWeight",
+                        style = AppTokens.typography.b13Med(),
+                        color = AppTokens.colors.text.secondary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
                 }
 
                 Spacer(Modifier.height(spacing))
             }
 
-            if (value.performance.isNotEmpty()) {
-                val spacing = AppTokens.dp.contentPadding.content
-                val performanceCards = value.performance.take(4)
+            // Row: Muscle focus + Consistency
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(spacing),
+            ) {
+                value.muscleFocus?.let { muscle ->
+                    HighlightPanel(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = AppTokens.strings.res(Res.string.highlight_muscle_focus),
+                            style = AppTokens.typography.b11Med(),
+                            color = AppTokens.colors.text.secondary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
 
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(spacing),
-                ) {
-                    buildList<@Composable () -> Unit> {
-                        add { HighlightConsistencyPanel(value) }
-                        performanceCards.forEach { metric ->
-                            add { HighlightPerformancePrimaryMetric(metric) }
-                        }
-                    }.chunked(2).forEach { rowCards ->
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(spacing),
-                        ) {
-                            rowCards.forEach { card ->
-                                HighlightPanel(modifier = Modifier.weight(1f)) {
-                                    card()
-                                }
-                            }
+                        Text(
+                            text = muscle.muscleGroup.title().text(),
+                            style = AppTokens.typography.h5(),
+                            color = AppTokens.colors.text.primary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
 
-                            if (rowCards.size == 1) {
-                                Spacer(modifier = Modifier.weight(1f))
-                            }
-                        }
+                        Text(
+                            text = muscle.load.short(),
+                            style = AppTokens.typography.b13Med(),
+                            color = AppTokens.colors.text.secondary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
                     }
-                }
-            } else {
-                HighlightPanel(modifier = Modifier.fillMaxWidth()) {
+                } ?: Spacer(modifier = Modifier.weight(1f))
+
+                HighlightPanel(modifier = Modifier.weight(1f)) {
                     HighlightConsistencyPanel(value)
                 }
+            }
+
+            Spacer(Modifier.height(spacing))
+
+            // Row: Duration + Volume
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(spacing),
+            ) {
+                metricOf(HighlightMetric.Duration)?.let { metric ->
+                    HighlightPanel(modifier = Modifier.weight(1f)) {
+                        HighlightPerformancePrimaryMetric(metric)
+                    }
+                } ?: Spacer(modifier = Modifier.weight(1f))
+
+                metricOf(HighlightMetric.Volume)?.let { metric ->
+                    HighlightPanel(modifier = Modifier.weight(1f)) {
+                        HighlightPerformancePrimaryMetric(metric)
+                    }
+                } ?: Spacer(modifier = Modifier.weight(1f))
+            }
+
+            Spacer(Modifier.height(spacing))
+
+            // Row: Reps + Intensity
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(spacing),
+            ) {
+                metricOf(HighlightMetric.Repetitions)?.let { metric ->
+                    HighlightPanel(modifier = Modifier.weight(1f)) {
+                        HighlightPerformancePrimaryMetric(metric)
+                    }
+                } ?: Spacer(modifier = Modifier.weight(1f))
+
+                metricOf(HighlightMetric.Intensity)?.let { metric ->
+                    HighlightPanel(modifier = Modifier.weight(1f)) {
+                        HighlightPerformancePrimaryMetric(metric)
+                    }
+                } ?: Spacer(modifier = Modifier.weight(1f))
             }
         }
     }
