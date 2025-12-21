@@ -7,6 +7,7 @@ import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 
 internal fun List<TrainingState>.toMonthlyTrainingListValue(
     range: DateRange?,
@@ -21,7 +22,7 @@ internal fun List<TrainingState>.toMonthlyTrainingListValue(
     flat += TrainingListValue.MonthlyDigest(
         summary = digest,
         month = digest.month,
-        key = "monthly-digest-${digest.month.year}-${digest.month.monthNumber}",
+        key = "monthly-digest-${digest.month.year}-${digest.month.month.number}",
     )
 
     sortedDates.forEachIndexed { index, date ->

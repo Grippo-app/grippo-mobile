@@ -12,7 +12,6 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
             extensions.getByType<KotlinMultiplatformExtension>().apply {
                 explicitApi()
 
-                androidTarget()
                 iosX64()
                 iosArm64()
                 iosSimulatorArm64()

@@ -221,6 +221,6 @@ public object DateTimeUtils {
         val nextYear = if (month == Month.DECEMBER) year + 1 else year
         val firstOfNextMonth = LocalDate(nextYear, nextMonth, 1)
         val lastDayOfThisMonth = firstOfNextMonth.minus(DatePeriod(days = 1))
-        return lastDayOfThisMonth.dayOfMonth
+        return lastDayOfThisMonth.day
     }
 }

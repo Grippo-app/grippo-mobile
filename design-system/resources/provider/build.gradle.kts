@@ -11,6 +11,10 @@ compose.resources {
 }
 
 kotlin {
+    androidLibrary {
+        androidResources.enable = true
+    }
+
     sourceSets.commonMain.dependencies {
         api(compose.components.resources)
         implementation(compose.foundation)
