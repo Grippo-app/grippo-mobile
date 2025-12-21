@@ -80,8 +80,8 @@ public fun LastTrainingCard(
             modifier = Modifier
                 .spot(color = AppTokens.colors.brand.color5)
                 .align(Alignment.CenterEnd)
-                .offset(x = 100.dp)
-                .size(200.dp)
+                .offset(x = (AppTokens.dp.home.lastTraining.image / 2))
+                .size(AppTokens.dp.home.lastTraining.image)
                 .scale(2f),
             painter = AppTokens.drawables.res(Res.drawable.barbell),
             contentDescription = null,
