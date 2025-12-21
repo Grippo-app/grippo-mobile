@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -78,14 +79,11 @@ public fun HighlightsCard(
                 shape = RoundedCornerShape(AppTokens.dp.home.highlights.radius)
             )
     ) {
-        Image(
+        Spacer(
             modifier = Modifier
-                .spot(color = AppTokens.colors.brand.color3)
+                .spot(color = AppTokens.colors.brand.color2)
                 .align(Alignment.CenterEnd)
                 .size(AppTokens.dp.home.highlights.image),
-            painter = AppTokens.drawables.res(Res.drawable.weight),
-            contentDescription = null,
-            contentScale = ContentScale.Fit,
         )
 
         Column(
@@ -145,18 +143,10 @@ public fun HighlightsCard(
                 )
             }
 
-            Row(
+            HighlightSummaryGrid(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-            ) {
-                summaryItems.forEach { item ->
-                    HighlightSummaryStat(
-                        modifier = Modifier.weight(1f),
-                        label = item.label,
-                        value = item.value
-                    )
-                }
-            }
+                items = summaryItems
+            )
 
             value.focusExercise?.let { focus ->
                 Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
@@ -181,12 +171,32 @@ public fun HighlightsCard(
 
             Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-            ) {
+            if (value.performance.isNotEmpty()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+                ) {
+                    HighlightDetailRow(
+                        modifier = Modifier.weight(1f),
+                        title = AppTokens.strings.res(Res.string.highlight_consistency),
+                        headline = AppTokens.strings.res(
+                            Res.string.highlight_streak,
+                            value.consistency.bestStreakDays
+                        ),
+                        supporting = AppTokens.strings.res(
+                            Res.string.highlight_active_days,
+                            value.consistency.activeDays
+                        )
+                    )
+
+                    HighlightPerformanceSection(
+                        modifier = Modifier.weight(1f),
+                        metrics = value.performance
+                    )
+                }
+            } else {
                 HighlightDetailRow(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.fillMaxWidth(),
                     title = AppTokens.strings.res(Res.string.highlight_consistency),
                     headline = AppTokens.strings.res(
                         Res.string.highlight_streak,
@@ -197,12 +207,36 @@ public fun HighlightsCard(
                         value.consistency.activeDays
                     )
                 )
+            }
+        }
+    }
+}
 
-                if (value.performance.isNotEmpty()) {
-                    HighlightPerformanceSection(
+@Composable
+private fun HighlightSummaryGrid(
+    modifier: Modifier = Modifier,
+    items: List<HighlightSummaryItem>,
+) {
+    val spacing = AppTokens.dp.contentPadding.content
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(spacing)
+    ) {
+        items.chunked(2).forEach { rowItems ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(spacing)
+            ) {
+                rowItems.forEach { item ->
+                    HighlightSummaryStat(
                         modifier = Modifier.weight(1f),
-                        metrics = value.performance
+                        label = item.label,
+                        value = item.value
                     )
+                }
+
+                if (rowItems.size == 1) {
+                    Spacer(modifier = Modifier.weight(1f))
                 }
             }
         }
