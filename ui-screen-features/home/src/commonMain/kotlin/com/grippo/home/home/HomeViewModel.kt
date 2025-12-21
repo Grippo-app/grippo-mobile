@@ -30,8 +30,8 @@ internal class HomeViewModel(
     HomeState()
 ), HomeContract {
 
-    private val weeklyRange: DateRange = DateTimeUtils.thisWeek()
-    private val monthlyRange: DateRange = DateTimeUtils.thisMonth()
+    private val weeklyRange: DateRange = DateTimeUtils.trailingWeek()
+    private val monthlyRange: DateRange = DateTimeUtils.trailingMonth()
 
     init {
         trainingFeature

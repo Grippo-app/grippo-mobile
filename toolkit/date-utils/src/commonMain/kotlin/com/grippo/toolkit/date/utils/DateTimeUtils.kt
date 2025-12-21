@@ -93,6 +93,26 @@ public object DateTimeUtils {
         )
     }
 
+    public fun trailingMonth(): DateRange {
+        val today = Clock.System.now().toLocalDateTime(timeZone).date
+        val monthAgo = today.minus(DatePeriod(days = 31))
+
+        return DateRange(
+            from = monthAgo.atTime(DayTime.StartOfDay.localTime),
+            to = today.atTime(DayTime.EndOfDay.localTime)
+        )
+    }
+
+    public fun trailingWeek(): DateRange {
+        val today = Clock.System.now().toLocalDateTime(timeZone).date
+        val weekAgo = today.minus(DatePeriod(days = 7))
+
+        return DateRange(
+            from = weekAgo.atTime(DayTime.StartOfDay.localTime),
+            to = today.atTime(DayTime.EndOfDay.localTime)
+        )
+    }
+
     /* * * * * * * * * * *
      * Time for date
      * * * * * * * * * * */
