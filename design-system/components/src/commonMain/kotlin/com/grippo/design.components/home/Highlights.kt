@@ -215,7 +215,7 @@ private fun HighlightPanel(
     Column(
         modifier = modifier
             .clip(shape)
-            .background(AppTokens.colors.text.primary.copy(alpha = PANEL_BACKGROUND_ALPHA), shape = shape)
+            .background(AppTokens.colors.background.card, shape = shape)
             .padding(AppTokens.dp.contentPadding.content),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
     ) {
@@ -344,7 +344,7 @@ private fun HighlightStatusChip(status: HighlightPerformanceStatus) {
     Box(
         modifier = Modifier
             .clip(shape)
-            .background(color.copy(alpha = CHIP_BACKGROUND_ALPHA), shape = shape)
+            .background(color.copy(alpha = 0.2f), shape = shape)
             .padding(
                 horizontal = AppTokens.dp.chip.small.horizontalPadding,
                 vertical = AppTokens.dp.chip.small.verticalPadding
@@ -635,9 +635,6 @@ private fun formatTrendDelta(delta: Int): String {
         else -> "0%"
     }
 }
-
-private const val PANEL_BACKGROUND_ALPHA: Float = 0.06f
-private const val CHIP_BACKGROUND_ALPHA: Float = 0.16f
 
 @AppPreview
 @Composable
