@@ -23,7 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import com.grippo.core.state.formatters.VolumeFormatState
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.trainings.highlight.Highlight
 import com.grippo.core.state.trainings.highlight.HighlightExerciseFocus
 import com.grippo.core.state.trainings.highlight.HighlightMetric
@@ -50,16 +51,20 @@ import com.grippo.design.resources.provider.highlight_status_stable
 import com.grippo.design.resources.provider.highlight_story_comeback
 import com.grippo.design.resources.provider.highlight_story_consistency
 import com.grippo.design.resources.provider.highlight_story_momentum
+import com.grippo.design.resources.provider.highlight_story_work
 import com.grippo.design.resources.provider.highlight_streak
-import com.grippo.design.resources.provider.highlight_trend
+import com.grippo.design.resources.provider.highlight_type_comeback_hint
 import com.grippo.design.resources.provider.highlight_type_comeback
+import com.grippo.design.resources.provider.highlight_type_consistency_hint
 import com.grippo.design.resources.provider.highlight_type_consistency
+import com.grippo.design.resources.provider.highlight_type_momentum_hint
 import com.grippo.design.resources.provider.highlight_type_momentum
 import com.grippo.design.resources.provider.highlight_unique_exercises
 import com.grippo.design.resources.provider.highlight_vs_average
 import com.grippo.design.resources.provider.highlights
 import com.grippo.design.resources.provider.icons.Intensity
-import com.grippo.design.resources.provider.trainings
+import com.grippo.design.resources.provider.intensity_chip
+import com.grippo.design.resources.provider.reps
 import com.grippo.design.resources.provider.volume
 import com.grippo.toolkit.date.utils.DateTimeUtils
 
@@ -109,12 +114,50 @@ public fun HighlightsCard(
                     horizontal = AppTokens.dp.home.highlights.horizontalPadding
                 )
         ) {
-            Text(
+            val storyTitle = when (storyType) {
+                HighlightStoryType.Consistency -> AppTokens.strings.res(Res.string.highlight_type_consistency)
+                HighlightStoryType.Momentum -> AppTokens.strings.res(Res.string.highlight_type_momentum)
+                HighlightStoryType.Comeback -> AppTokens.strings.res(Res.string.highlight_type_comeback)
+            }
+            val storyHint = when (storyType) {
+                HighlightStoryType.Consistency -> AppTokens.strings.res(Res.string.highlight_type_consistency_hint)
+                HighlightStoryType.Momentum -> AppTokens.strings.res(Res.string.highlight_type_momentum_hint)
+                HighlightStoryType.Comeback -> AppTokens.strings.res(Res.string.highlight_type_comeback_hint)
+            }
+            val storyChipShape = RoundedCornerShape(AppTokens.dp.chip.small.radius)
+
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                text = AppTokens.strings.res(Res.string.highlights),
-                style = AppTokens.typography.h4(),
-                color = AppTokens.colors.text.primary
-            )
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = AppTokens.strings.res(Res.string.highlights),
+                    style = AppTokens.typography.h4(),
+                    color = AppTokens.colors.text.primary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+
+                Text(
+                    modifier = Modifier
+                        .clip(storyChipShape)
+                        .background(
+                            AppTokens.colors.text.primary.copy(alpha = 0.08f),
+                            shape = storyChipShape
+                        )
+                        .padding(
+                            horizontal = AppTokens.dp.chip.small.horizontalPadding,
+                            vertical = AppTokens.dp.chip.small.verticalPadding
+                        ),
+                    text = "$storyTitle · $storyHint",
+                    style = AppTokens.typography.b12Semi(),
+                    color = AppTokens.colors.text.primary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
 
             Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
 
@@ -125,87 +168,122 @@ public fun HighlightsCard(
 
             Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
 
-            val summaryItems = buildList {
-                add(
-                    HighlightSummaryItem(
-                        label = AppTokens.strings.res(Res.string.trainings),
-                        value = value.trainingsCount.toString()
-                    )
-                )
+            if (value.focusExercise != null || value.muscleFocus != null) {
+                val spacing = AppTokens.dp.contentPadding.content
 
-                add(
-                    HighlightSummaryItem(
-                        label = AppTokens.strings.res(Res.string.highlight_unique_exercises),
-                        value = value.uniqueExercises.toString()
-                    )
-                )
-
-                value.totalVolume.takeUnless { it is VolumeFormatState.Empty }?.short()
-                    ?.let { volume ->
-                        add(
-                            HighlightSummaryItem(
-                                label = AppTokens.strings.res(Res.string.volume),
-                                value = volume
-                            )
-                        )
-                    }
-
-                add(
-                    HighlightSummaryItem(
-                        label = AppTokens.strings.res(Res.string.duration),
-                        value = DateTimeUtils.format(value.totalDuration)
-                    )
-                )
-            }
-
-            HighlightSummaryGrid(
-                modifier = Modifier.fillMaxWidth(),
-                items = summaryItems
-            )
-
-            value.focusExercise?.let { focus ->
-                Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
-
-                val sessions = AppTokens.strings.res(Res.string.highlight_sessions, focus.sessions)
-                val force = focus.forceType.title().text()
-                val weight = focus.weightType.title().text()
-                val forceWeight = AppTokens.strings.res(Res.string.highlight_force_weight, force, weight)
-
-                HighlightDetailRow(
-                    title = AppTokens.strings.res(Res.string.highlight_focus_exercise),
-                    headline = focus.name,
-                    supporting = "$sessions · $forceWeight",
-                    trailing = focus.totalVolume.short()
-                )
-            }
-
-            value.muscleFocus?.let { muscle ->
-                Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
-
-                HighlightDetailRow(
-                    title = AppTokens.strings.res(Res.string.highlight_muscle_focus),
-                    headline = muscle.muscleGroup.title().text(),
-                    supporting = muscle.load.short(),
-                )
-            }
-
-            Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
-
-            if (value.performance.isNotEmpty()) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+                    horizontalArrangement = Arrangement.spacedBy(spacing),
                 ) {
-                    HighlightPanel(
-                        modifier = Modifier.weight(1f),
-                    ) {
-                        HighlightConsistencyPanel(value)
-                    }
+                    value.focusExercise?.let { focus ->
+                        HighlightPanel(modifier = Modifier.weight(1f)) {
+                            val sessions = AppTokens.strings.res(Res.string.highlight_sessions, focus.sessions)
+                            val force = focus.forceType.title().text()
+                            val weight = focus.weightType.title().text()
+                            val forceWeight =
+                                AppTokens.strings.res(Res.string.highlight_force_weight, force, weight)
 
-                    HighlightPanel(
-                        modifier = Modifier.weight(1f),
-                    ) {
-                        HighlightPerformancePanel(metrics = value.performance)
+                            Text(
+                                text = AppTokens.strings.res(Res.string.highlight_focus_exercise),
+                                style = AppTokens.typography.b11Med(),
+                                color = AppTokens.colors.text.secondary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Text(
+                                    modifier = Modifier.weight(1f),
+                                    text = focus.name,
+                                    style = AppTokens.typography.h5(),
+                                    color = AppTokens.colors.text.primary,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+
+                                Text(
+                                    text = focus.totalVolume.short(),
+                                    style = AppTokens.typography.b14Semi(),
+                                    color = AppTokens.colors.text.primary,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                            }
+
+                            Text(
+                                text = "$sessions · $forceWeight",
+                                style = AppTokens.typography.b13Med(),
+                                color = AppTokens.colors.text.secondary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    } ?: Spacer(modifier = Modifier.weight(1f))
+
+                    value.muscleFocus?.let { muscle ->
+                        HighlightPanel(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = AppTokens.strings.res(Res.string.highlight_muscle_focus),
+                                style = AppTokens.typography.b11Med(),
+                                color = AppTokens.colors.text.secondary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+
+                            Text(
+                                text = muscle.muscleGroup.title().text(),
+                                style = AppTokens.typography.h5(),
+                                color = AppTokens.colors.text.primary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+
+                            Text(
+                                text = muscle.load.short(),
+                                style = AppTokens.typography.b13Med(),
+                                color = AppTokens.colors.text.secondary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    } ?: Spacer(modifier = Modifier.weight(1f))
+                }
+
+                Spacer(Modifier.height(spacing))
+            }
+
+            if (value.performance.isNotEmpty()) {
+                val spacing = AppTokens.dp.contentPadding.content
+                val performanceCards = value.performance.take(4)
+
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(spacing),
+                ) {
+                    buildList<@Composable () -> Unit> {
+                        add { HighlightConsistencyPanel(value) }
+                        performanceCards.forEach { metric ->
+                            add { HighlightPerformancePrimaryMetric(metric) }
+                        }
+                    }.chunked(2).forEach { rowCards ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(spacing),
+                        ) {
+                            rowCards.forEach { card ->
+                                HighlightPanel(modifier = Modifier.weight(1f)) {
+                                    card()
+                                }
+                            }
+
+                            if (rowCards.size == 1) {
+                                Spacer(modifier = Modifier.weight(1f))
+                            }
+                        }
                     }
                 }
             } else {
@@ -259,87 +337,6 @@ private fun HighlightConsistencyPanel(value: Highlight) {
 }
 
 @Composable
-private fun HighlightSummaryGrid(
-    modifier: Modifier = Modifier,
-    items: List<HighlightSummaryItem>,
-) {
-    val spacing = AppTokens.dp.contentPadding.content
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(spacing)
-    ) {
-        items.chunked(2).forEach { rowItems ->
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(spacing)
-            ) {
-                rowItems.forEach { item ->
-                    HighlightSummaryStat(
-                        modifier = Modifier.weight(1f),
-                        label = item.label,
-                        value = item.value
-                    )
-                }
-
-                if (rowItems.size == 1) {
-                    Spacer(modifier = Modifier.weight(1f))
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun HighlightSummaryStat(
-    modifier: Modifier = Modifier,
-    label: String,
-    value: String,
-) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
-    ) {
-        Text(
-            text = label,
-            style = AppTokens.typography.b12Med(),
-            color = AppTokens.colors.text.secondary
-        )
-
-        Text(
-            text = value,
-            style = AppTokens.typography.b13Semi(),
-            color = AppTokens.colors.text.primary
-        )
-    }
-}
-
-private data class HighlightSummaryItem(
-    val label: String,
-    val value: String,
-)
-
-@Composable
-private fun HighlightPerformancePanel(
-    metrics: List<HighlightPerformanceMetric>,
-) {
-    val primary = metrics.firstOrNull() ?: return
-    Text(
-        text = AppTokens.strings.res(Res.string.highlight_trend),
-        style = AppTokens.typography.b11Med(),
-        color = AppTokens.colors.text.secondary
-    )
-
-    HighlightPerformancePrimaryMetric(metric = primary)
-
-    if (metrics.size > 1) {
-        Spacer(Modifier.height(AppTokens.dp.contentPadding.text / 2))
-        metrics.drop(1).take(2).forEach { metric ->
-            HighlightPerformanceCompactMetric(metric = metric)
-        }
-    }
-}
-
-@Composable
 private fun HighlightStatusChip(status: HighlightPerformanceStatus) {
     val label = when (status) {
         HighlightPerformanceStatus.Record ->
@@ -355,14 +352,7 @@ private fun HighlightStatusChip(status: HighlightPerformanceStatus) {
             AppTokens.strings.res(Res.string.highlight_status_declined)
     }
 
-    val color = when (status) {
-        HighlightPerformanceStatus.Record,
-        HighlightPerformanceStatus.Improved -> AppTokens.colors.semantic.success
-
-        HighlightPerformanceStatus.Stable -> AppTokens.colors.text.secondary
-
-        HighlightPerformanceStatus.Declined -> AppTokens.colors.semantic.warning
-    }
+    val color = performanceStatusColor(status)
 
     val shape = RoundedCornerShape(AppTokens.dp.chip.small.radius)
 
@@ -381,22 +371,28 @@ private fun HighlightStatusChip(status: HighlightPerformanceStatus) {
 }
 
 @Composable
+private fun performanceStatusColor(status: HighlightPerformanceStatus): Color {
+    return when (status) {
+        HighlightPerformanceStatus.Record,
+        HighlightPerformanceStatus.Improved -> AppTokens.colors.semantic.success
+
+        HighlightPerformanceStatus.Stable -> AppTokens.colors.text.secondary
+
+        HighlightPerformanceStatus.Declined -> AppTokens.colors.semantic.warning
+    }
+}
+
+@Composable
 private fun HighlightPerformancePrimaryMetric(metric: HighlightPerformanceMetric) {
     val label = when (metric.metric) {
-        HighlightMetric.Volume -> AppTokens.strings.res(Res.string.volume)
         HighlightMetric.Duration -> AppTokens.strings.res(Res.string.duration)
+        HighlightMetric.Volume -> AppTokens.strings.res(Res.string.volume)
+        HighlightMetric.Repetitions -> AppTokens.strings.res(Res.string.reps)
+        HighlightMetric.Intensity -> AppTokens.strings.res(Res.string.intensity_chip)
     }
     val delta = formatTrendDelta(metric.deltaPercentage)
     val vsAverage = AppTokens.strings.res(Res.string.highlight_vs_average)
     val (current, average, bestLabel) = when (metric) {
-        is HighlightPerformanceMetric.Volume -> {
-            val best = AppTokens.strings.res(
-                Res.string.highlight_best_value,
-                metric.best.short()
-            )
-            Triple(metric.current.short(), metric.average.short(), best)
-        }
-
         is HighlightPerformanceMetric.Duration -> {
             val best = AppTokens.strings.res(
                 Res.string.highlight_best_value,
@@ -408,6 +404,30 @@ private fun HighlightPerformancePrimaryMetric(metric: HighlightPerformanceMetric
                 best
             )
         }
+
+        is HighlightPerformanceMetric.Volume -> {
+            val best = AppTokens.strings.res(
+                Res.string.highlight_best_value,
+                metric.best.short()
+            )
+            Triple(metric.current.short(), metric.average.short(), best)
+        }
+
+        is HighlightPerformanceMetric.Repetitions -> {
+            val best = AppTokens.strings.res(
+                Res.string.highlight_best_value,
+                metric.best.short()
+            )
+            Triple(metric.current.short(), metric.average.short(), best)
+        }
+
+        is HighlightPerformanceMetric.Intensity -> {
+            val best = AppTokens.strings.res(
+                Res.string.highlight_best_value,
+                metric.best.short()
+            )
+            Triple(metric.current.short(), metric.average.short(), best)
+        }
     }
 
     Column(
@@ -416,7 +436,9 @@ private fun HighlightPerformancePrimaryMetric(metric: HighlightPerformanceMetric
         Text(
             text = label,
             style = AppTokens.typography.b11Med(),
-            color = AppTokens.colors.text.secondary
+            color = AppTokens.colors.text.secondary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
 
         Row(
@@ -428,10 +450,7 @@ private fun HighlightPerformancePrimaryMetric(metric: HighlightPerformanceMetric
                 modifier = Modifier.weight(1f),
                 text = delta,
                 style = AppTokens.typography.h5(),
-                color = if (metric.status == HighlightPerformanceStatus.Declined)
-                    AppTokens.colors.semantic.warning
-                else
-                    AppTokens.colors.text.primary
+                color = performanceStatusColor(metric.status)
             )
 
             HighlightStatusChip(status = metric.status)
@@ -440,45 +459,15 @@ private fun HighlightPerformancePrimaryMetric(metric: HighlightPerformanceMetric
         Text(
             text = "$current · $vsAverage $average",
             style = AppTokens.typography.b13Med(),
-            color = AppTokens.colors.text.secondary
+            color = AppTokens.colors.text.secondary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
 
         Text(
             text = bestLabel,
             style = AppTokens.typography.b12Med(),
             color = AppTokens.colors.text.tertiary
-        )
-    }
-}
-
-@Composable
-private fun HighlightPerformanceCompactMetric(metric: HighlightPerformanceMetric) {
-    val label = when (metric.metric) {
-        HighlightMetric.Volume -> AppTokens.strings.res(Res.string.volume)
-        HighlightMetric.Duration -> AppTokens.strings.res(Res.string.duration)
-    }
-    val delta = formatTrendDelta(metric.deltaPercentage)
-    val deltaColor =
-        if (metric.status == HighlightPerformanceStatus.Declined)
-            AppTokens.colors.semantic.warning
-        else
-            AppTokens.colors.text.primary
-
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = label,
-            style = AppTokens.typography.b12Med(),
-            color = AppTokens.colors.text.secondary
-        )
-
-        Text(
-            text = delta,
-            style = AppTokens.typography.b12Semi(),
-            color = deltaColor
         )
     }
 }
@@ -537,12 +526,6 @@ private fun HighlightStorySection(
     value: Highlight,
     type: HighlightStoryType,
 ) {
-    val title = when (type) {
-        HighlightStoryType.Consistency -> AppTokens.strings.res(Res.string.highlight_type_consistency)
-        HighlightStoryType.Momentum -> AppTokens.strings.res(Res.string.highlight_type_momentum)
-        HighlightStoryType.Comeback -> AppTokens.strings.res(Res.string.highlight_type_comeback)
-    }
-
     val description = when (type) {
         HighlightStoryType.Consistency -> AppTokens.strings.res(
             Res.string.highlight_story_consistency,
@@ -554,14 +537,15 @@ private fun HighlightStorySection(
             val dominant = value.performance.firstOrNull()
             if (dominant == null) {
                 AppTokens.strings.res(
-                    Res.string.highlight_story_comeback,
-                    value.trainingsCount,
+                    Res.string.highlight_story_work,
                     DateTimeUtils.format(value.totalDuration)
                 )
             } else {
                 val metric = when (dominant.metric) {
                     HighlightMetric.Volume -> AppTokens.strings.res(Res.string.volume)
                     HighlightMetric.Duration -> AppTokens.strings.res(Res.string.duration)
+                    HighlightMetric.Repetitions -> AppTokens.strings.res(Res.string.reps)
+                    HighlightMetric.Intensity -> AppTokens.strings.res(Res.string.intensity_chip)
                 }
                 val delta = formatTrendDelta(dominant.deltaPercentage)
                 AppTokens.strings.res(
@@ -573,8 +557,7 @@ private fun HighlightStorySection(
         }
 
         HighlightStoryType.Comeback -> AppTokens.strings.res(
-            Res.string.highlight_story_comeback,
-            value.trainingsCount,
+            Res.string.highlight_story_work,
             DateTimeUtils.format(value.totalDuration)
         )
     }
@@ -584,12 +567,6 @@ private fun HighlightStorySection(
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
     ) {
         Text(
-            text = title,
-            style = AppTokens.typography.b12Semi(),
-            color = AppTokens.colors.brand.color6
-        )
-
-        Text(
             text = description,
             style = AppTokens.typography.b13Med(),
             color = AppTokens.colors.text.secondary
@@ -598,7 +575,9 @@ private fun HighlightStorySection(
 }
 
 private enum class HighlightStoryType {
-    Consistency, Momentum, Comeback
+    Consistency,
+    Momentum,
+    Comeback
 }
 
 private fun formatTrendDelta(delta: Int): String {

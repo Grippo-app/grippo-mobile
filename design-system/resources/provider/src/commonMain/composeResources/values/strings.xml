@@ -14,6 +14,9 @@
     <string name="highlight_type_consistency">Consistency win</string>
     <string name="highlight_type_momentum">Momentum boost</string>
     <string name="highlight_type_comeback">Back on track</string>
+    <string name="highlight_type_consistency_hint">Active days &amp; streak</string>
+    <string name="highlight_type_momentum_hint">Better vs your avg</string>
+    <string name="highlight_type_comeback_hint">Back to routine</string>
     <string name="highlight_vs_average">vs avg</string>
     <string name="highlight_best_value">Best %1$s</string>
     <string name="highlight_status_record">New record</string>
@@ -23,6 +26,7 @@
     <string name="highlight_story_consistency">%1$d active days and a %2$d-day streak.</string>
     <string name="highlight_story_momentum">%1$s is up %2$s vs average.</string>
     <string name="highlight_story_comeback">%1$d workouts and %2$s of work this period.</string>
+    <string name="highlight_story_work">%1$s of work this period.</string>
     <string name="highlight_focus_exercise">Focus exercise</string>
     <string name="highlight_muscle_focus">Muscle focus</string>
     <string name="highlight_unique_exercises">Unique exercises</string>

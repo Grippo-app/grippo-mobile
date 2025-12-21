@@ -3,7 +3,9 @@ package com.grippo.core.state.trainings.highlight
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.examples.ForceTypeEnumState
 import com.grippo.core.state.examples.WeightTypeEnumState
+import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.PercentageFormatState
+import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.muscles.MuscleGroupEnumState
 import kotlin.time.Duration
@@ -12,10 +14,7 @@ import kotlin.time.Duration.Companion.minutes
 
 @Immutable
 public data class Highlight(
-    val trainingsCount: Int,
     val totalDuration: Duration,
-    val totalVolume: VolumeFormatState,
-    val uniqueExercises: Int,
     val focusExercise: HighlightExerciseFocus?,
     val muscleFocus: HighlightMuscleFocus?,
     val consistency: HighlightConsistency,
@@ -45,7 +44,10 @@ public data class HighlightConsistency(
 
 @Immutable
 public enum class HighlightMetric {
-    Volume, Duration
+    Duration,
+    Volume,
+    Repetitions,
+    Intensity,
 }
 
 @Immutable
@@ -75,6 +77,28 @@ public sealed interface HighlightPerformanceMetric {
     ) : HighlightPerformanceMetric {
         override val metric: HighlightMetric = HighlightMetric.Duration
     }
+
+    @Immutable
+    public data class Repetitions(
+        override val deltaPercentage: Int,
+        val current: RepetitionsFormatState,
+        val average: RepetitionsFormatState,
+        val best: RepetitionsFormatState,
+        override val status: HighlightPerformanceStatus,
+    ) : HighlightPerformanceMetric {
+        override val metric: HighlightMetric = HighlightMetric.Repetitions
+    }
+
+    @Immutable
+    public data class Intensity(
+        override val deltaPercentage: Int,
+        val current: IntensityFormatState,
+        val average: IntensityFormatState,
+        val best: IntensityFormatState,
+        override val status: HighlightPerformanceStatus,
+    ) : HighlightPerformanceMetric {
+        override val metric: HighlightMetric = HighlightMetric.Intensity
+    }
 }
 
 @Immutable
@@ -83,10 +107,7 @@ public enum class HighlightPerformanceStatus {
 }
 
 public fun stubHighlight(): Highlight = Highlight(
-    trainingsCount = 12,
     totalDuration = 28.hours,
-    totalVolume = VolumeFormatState.of(2_450f),
-    uniqueExercises = 8,
     focusExercise = HighlightExerciseFocus(
         name = "Bench press",
         sessions = 5,
@@ -116,6 +137,20 @@ public fun stubHighlight(): Highlight = Highlight(
             average = 70.minutes,
             best = 75.minutes,
             status = HighlightPerformanceStatus.Declined
+        ),
+        HighlightPerformanceMetric.Repetitions(
+            deltaPercentage = 12,
+            current = RepetitionsFormatState.of(84),
+            average = RepetitionsFormatState.of(75),
+            best = RepetitionsFormatState.of(92),
+            status = HighlightPerformanceStatus.Improved
+        ),
+        HighlightPerformanceMetric.Intensity(
+            deltaPercentage = 3,
+            current = IntensityFormatState.of(36f),
+            average = IntensityFormatState.of(35f),
+            best = IntensityFormatState.of(42f),
+            status = HighlightPerformanceStatus.Stable
         )
     )
 )

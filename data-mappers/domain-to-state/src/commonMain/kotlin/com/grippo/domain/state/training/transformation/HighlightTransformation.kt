@@ -2,7 +2,9 @@ package com.grippo.domain.state.training.transformation
 
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.examples.ForceTypeEnumState
+import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.PercentageFormatState
+import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.muscles.MuscleEnumState
 import com.grippo.core.state.muscles.MuscleGroupEnumState
@@ -17,7 +19,6 @@ import com.grippo.core.state.trainings.highlight.HighlightPerformanceStatus
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
-import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
@@ -28,15 +29,10 @@ public fun List<TrainingState>.toHighlight(
 ): Highlight {
     val trainings = this
     val totalDuration: Duration = trainings.fold(ZERO) { acc, training -> acc + training.duration }
-    val totalVolume = trainings.totalVolumeState()
     val exampleIndex = exerciseExamples.associateBy { it.value.id }
-    val uniqueExercises = trainings.distinctExerciseCount()
 
     return Highlight(
-        trainingsCount = trainings.size,
         totalDuration = totalDuration,
-        totalVolume = totalVolume,
-        uniqueExercises = uniqueExercises,
         focusExercise = trainings.focusExercise(),
         muscleFocus = trainings.muscleFocus(exampleIndex),
         consistency = trainings.consistency(),
@@ -44,27 +40,10 @@ public fun List<TrainingState>.toHighlight(
     )
 }
 
-private fun List<TrainingState>.distinctExerciseCount(): Int {
-    if (isEmpty()) return 0
-    return flatMap { training ->
-        training.exercises.map { it.exerciseExample.id }
-    }.toSet().size
-}
-
-private fun List<TrainingState>.totalVolumeState(): VolumeFormatState {
-    val values = mapNotNull { it.metrics.volume.validValue() }
-    if (values.isEmpty()) return VolumeFormatState.Empty()
-    val total = values.sum()
-    return VolumeFormatState.Valid(
-        display = total.toInt().toString(),
-        value = total
-    )
-}
-
 private fun List<TrainingState>.focusExercise(): HighlightExerciseFocus? {
     val volumes = flatMap { training ->
         training.exercises.mapNotNull { exercise ->
-            val volume = exercise.metrics.volume.validValue() ?: return@mapNotNull null
+            val volume = exercise.metrics.volume.value ?: return@mapNotNull null
             ExerciseVolume(exercise, volume)
         }
     }
@@ -99,7 +78,7 @@ private fun List<TrainingState>.muscleFocus(
     val contributions = mutableMapOf<MuscleGroupEnumState, Float>()
 
     for (exercise in flatMap { it.exercises }) {
-        val volume = exercise.metrics.volume.validValue()?.takeIf { it > 0f } ?: continue
+        val volume = exercise.metrics.volume.value?.takeIf { it > 0f } ?: continue
         val exampleId = exercise.exerciseExample.id
         val example = exerciseExamples[exampleId]
         if (example != null) {
@@ -154,7 +133,12 @@ private fun List<TrainingState>.muscleFocus(
             }
         }
 
-        val fallbackGroup = exercise.exerciseExample.forceType.toMuscleGroup()
+        val fallbackGroup = when (exercise.exerciseExample.forceType) {
+            ForceTypeEnumState.PULL -> MuscleGroupEnumState.BACK_MUSCLES
+            ForceTypeEnumState.PUSH -> MuscleGroupEnumState.CHEST_MUSCLES
+            ForceTypeEnumState.HINGE -> MuscleGroupEnumState.LEGS
+        }
+
         contributions[fallbackGroup] = (contributions[fallbackGroup] ?: 0f) + volume
     }
 
@@ -171,7 +155,7 @@ private fun List<TrainingState>.muscleFocus(
 }
 
 private fun List<TrainingState>.consistency(): HighlightConsistency {
-    val dates = map { it.trainingDate() }.distinct().sorted()
+    val dates = map { it.createdAt.date }.distinct().sorted()
     if (dates.isEmpty()) {
         return HighlightConsistency(activeDays = 0, bestStreakDays = 0)
     }
@@ -203,52 +187,102 @@ private fun List<TrainingState>.performanceMetrics(): List<HighlightPerformanceM
     val latestTraining = maxByOrNull { it.createdAt } ?: return emptyList()
     val performance = mutableListOf<HighlightPerformanceMetric>()
 
-    val latestVolume = latestTraining.metrics.volume.validValue()
-    val volumeValues = mapNotNull { it.metrics.volume.validValue()?.toDouble() }
-    if (latestVolume != null && volumeValues.isNotEmpty()) {
-        val averageVolume = volumeValues.average()
-        val delta = percentageDelta(latestVolume.toDouble(), averageVolume) ?: 0
-        val current = latestTraining.metrics.volume as? VolumeFormatState.Valid
-            ?: VolumeFormatState.of(latestVolume)
-        val average = VolumeFormatState.of(averageVolume.toFloat())
-        val bestValue = (volumeValues.maxOrNull() ?: latestVolume.toDouble())
-        val status = determinePerformanceStatus(
-            delta = delta,
-            current = latestVolume.toDouble(),
-            best = bestValue
-        )
-        val best = VolumeFormatState.of(bestValue.toFloat())
-        performance += HighlightPerformanceMetric.Volume(
-            deltaPercentage = delta,
-            current = current,
-            average = average,
-            best = best,
-            status = status
-        )
+    // 1) Duration (vs average)
+    run {
+        val values = map { it.duration.inWholeMinutes.toDouble() }
+        val current = latestTraining.duration.inWholeMinutes.toDouble()
+        if (values.isNotEmpty() && current > 0) {
+            val average = values.average()
+            val best = values.maxOrNull() ?: current
+            val delta = percentageDelta(current, average) ?: 0
+            val status = determinePerformanceStatus(delta = delta, current = current, best = best)
+            performance += HighlightPerformanceMetric.Duration(
+                deltaPercentage = delta,
+                current = latestTraining.duration,
+                average = average.minutes,
+                best = best.minutes,
+                status = status
+            )
+        }
     }
 
-    val durationValues = map { it.duration.inWholeMinutes.toDouble() }
-    if (durationValues.isNotEmpty()) {
-        val averageDuration = durationValues.average()
-        val currentMinutes = latestTraining.duration.inWholeMinutes.toDouble()
-        val delta = percentageDelta(currentMinutes, averageDuration) ?: 0
-        val bestValue = (durationValues.maxOrNull() ?: currentMinutes)
-        val status = determinePerformanceStatus(
-            delta = delta,
-            current = currentMinutes,
-            best = bestValue
-        )
-
-        performance += HighlightPerformanceMetric.Duration(
-            deltaPercentage = delta,
-            current = latestTraining.duration,
-            average = averageDuration.minutes,
-            best = bestValue.minutes,
-            status = status
-        )
+    // 2) Volume (vs average)
+    run {
+        val currentValue = (latestTraining.metrics.volume as? VolumeFormatState.Valid)?.value
+        val values =
+            mapNotNull { (it.metrics.volume as? VolumeFormatState.Valid)?.value?.toDouble() }
+        if (currentValue != null && values.isNotEmpty()) {
+            val average = values.average()
+            val best = values.maxOrNull() ?: currentValue.toDouble()
+            val delta = percentageDelta(currentValue.toDouble(), average) ?: 0
+            val status = determinePerformanceStatus(
+                delta = delta,
+                current = currentValue.toDouble(),
+                best = best
+            )
+            performance += HighlightPerformanceMetric.Volume(
+                deltaPercentage = delta,
+                current = latestTraining.metrics.volume as? VolumeFormatState.Valid
+                    ?: VolumeFormatState.of(currentValue),
+                average = VolumeFormatState.of(average.toFloat()),
+                best = VolumeFormatState.of(best.toFloat()),
+                status = status
+            )
+        }
     }
 
-    return performance.sortedByDescending { abs(it.deltaPercentage) }
+    // 3) Repetitions (vs average)
+    run {
+        val currentValue =
+            (latestTraining.metrics.repetitions as? RepetitionsFormatState.Valid)?.value
+        val values =
+            mapNotNull { (it.metrics.repetitions as? RepetitionsFormatState.Valid)?.value?.toDouble() }
+        if (currentValue != null && values.isNotEmpty()) {
+            val average = values.average()
+            val best = values.maxOrNull() ?: currentValue.toDouble()
+            val delta = percentageDelta(currentValue.toDouble(), average) ?: 0
+            val status = determinePerformanceStatus(
+                delta = delta,
+                current = currentValue.toDouble(),
+                best = best
+            )
+            performance += HighlightPerformanceMetric.Repetitions(
+                deltaPercentage = delta,
+                current = latestTraining.metrics.repetitions as? RepetitionsFormatState.Valid
+                    ?: RepetitionsFormatState.of(currentValue),
+                average = RepetitionsFormatState.of(average.toInt()),
+                best = RepetitionsFormatState.of(best.toInt()),
+                status = status
+            )
+        }
+    }
+
+    // 4) Intensity (vs average)
+    run {
+        val currentValue = (latestTraining.metrics.intensity as? IntensityFormatState.Valid)?.value
+        val values =
+            mapNotNull { (it.metrics.intensity as? IntensityFormatState.Valid)?.value?.toDouble() }
+        if (currentValue != null && values.isNotEmpty()) {
+            val average = values.average()
+            val best = values.maxOrNull() ?: currentValue.toDouble()
+            val delta = percentageDelta(currentValue.toDouble(), average) ?: 0
+            val status = determinePerformanceStatus(
+                delta = delta,
+                current = currentValue.toDouble(),
+                best = best
+            )
+            performance += HighlightPerformanceMetric.Intensity(
+                deltaPercentage = delta,
+                current = latestTraining.metrics.intensity as? IntensityFormatState.Valid
+                    ?: IntensityFormatState.of(currentValue),
+                average = IntensityFormatState.of(average.toFloat()),
+                best = IntensityFormatState.of(best.toFloat()),
+                status = status
+            )
+        }
+    }
+
+    return performance
 }
 
 private fun percentageDelta(current: Double, average: Double): Int? {
@@ -276,21 +310,6 @@ private fun determinePerformanceStatus(
         else -> HighlightPerformanceStatus.Stable
     }
 }
-
-private fun VolumeFormatState.validValue(): Float? = when (this) {
-    is VolumeFormatState.Valid -> value
-    else -> null
-}
-
-private fun ForceTypeEnumState.toMuscleGroup(): MuscleGroupEnumState {
-    return when (this) {
-        ForceTypeEnumState.PULL -> MuscleGroupEnumState.BACK_MUSCLES
-        ForceTypeEnumState.PUSH -> MuscleGroupEnumState.CHEST_MUSCLES
-        ForceTypeEnumState.HINGE -> MuscleGroupEnumState.LEGS
-    }
-}
-
-private fun TrainingState.trainingDate(): LocalDate = createdAt.date
 
 private data class ExerciseVolume(
     val exercise: ExerciseState,
