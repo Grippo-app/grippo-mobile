@@ -23,9 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
-import com.grippo.core.state.examples.ForceTypeEnumState
-import com.grippo.core.state.examples.WeightTypeEnumState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.trainings.highlight.Highlight
 import com.grippo.core.state.trainings.highlight.HighlightExerciseFocus
@@ -62,10 +59,8 @@ import com.grippo.design.resources.provider.highlight_unique_exercises
 import com.grippo.design.resources.provider.highlight_vs_average
 import com.grippo.design.resources.provider.highlights
 import com.grippo.design.resources.provider.icons.Intensity
-import com.grippo.design.resources.provider.icons.Trophy
 import com.grippo.design.resources.provider.trainings
 import com.grippo.design.resources.provider.volume
-import com.grippo.design.resources.provider.weight
 import com.grippo.toolkit.date.utils.DateTimeUtils
 
 @Composable
@@ -74,6 +69,17 @@ public fun HighlightsCard(
     value: Highlight,
     onViewWorkout: () -> Unit
 ) {
+    val storyType = run {
+        val dominantMetric = value.performance.firstOrNull()
+        when {
+            value.consistency.bestStreakDays >= 4 -> HighlightStoryType.Consistency
+            dominantMetric?.status == HighlightPerformanceStatus.Record ||
+                    dominantMetric?.status == HighlightPerformanceStatus.Improved -> HighlightStoryType.Momentum
+
+            else -> HighlightStoryType.Comeback
+        }
+    }
+
     Box(
         modifier = modifier
             .height(intrinsicSize = IntrinsicSize.Max)
@@ -114,7 +120,7 @@ public fun HighlightsCard(
 
             HighlightStorySection(
                 value = value,
-                type = value.storyType()
+                type = storyType
             )
 
             Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
@@ -160,10 +166,15 @@ public fun HighlightsCard(
             value.focusExercise?.let { focus ->
                 Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
 
+                val sessions = AppTokens.strings.res(Res.string.highlight_sessions, focus.sessions)
+                val force = focus.forceType.title().text()
+                val weight = focus.weightType.title().text()
+                val forceWeight = AppTokens.strings.res(Res.string.highlight_force_weight, force, weight)
+
                 HighlightDetailRow(
                     title = AppTokens.strings.res(Res.string.highlight_focus_exercise),
                     headline = focus.name,
-                    supporting = focusSupportingText(focus),
+                    supporting = "$sessions · $forceWeight",
                     trailing = focus.totalVolume.short()
                 )
             }
@@ -238,7 +249,10 @@ private fun HighlightConsistencyPanel(value: Highlight) {
     )
 
     Text(
-        text = AppTokens.strings.res(Res.string.highlight_active_days, value.consistency.activeDays),
+        text = AppTokens.strings.res(
+            Res.string.highlight_active_days,
+            value.consistency.activeDays
+        ),
         style = AppTokens.typography.b13Med(),
         color = AppTokens.colors.text.secondary
     )
@@ -309,21 +323,11 @@ private fun HighlightPerformancePanel(
     metrics: List<HighlightPerformanceMetric>,
 ) {
     val primary = metrics.firstOrNull() ?: return
-
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            modifier = Modifier.weight(1f),
-            text = AppTokens.strings.res(Res.string.highlight_trend),
-            style = AppTokens.typography.b11Med(),
-            color = AppTokens.colors.text.secondary
-        )
-
-        HighlightStatusChip(status = primary.status)
-    }
+    Text(
+        text = AppTokens.strings.res(Res.string.highlight_trend),
+        style = AppTokens.typography.b11Med(),
+        color = AppTokens.colors.text.secondary
+    )
 
     HighlightPerformancePrimaryMetric(metric = primary)
 
@@ -337,11 +341,32 @@ private fun HighlightPerformancePanel(
 
 @Composable
 private fun HighlightStatusChip(status: HighlightPerformanceStatus) {
-    val label = performanceStatusLabel(status)
-    val color = performanceStatusColor(status)
+    val label = when (status) {
+        HighlightPerformanceStatus.Record ->
+            AppTokens.strings.res(Res.string.highlight_status_record)
+
+        HighlightPerformanceStatus.Improved ->
+            AppTokens.strings.res(Res.string.highlight_status_improved)
+
+        HighlightPerformanceStatus.Stable ->
+            AppTokens.strings.res(Res.string.highlight_status_stable)
+
+        HighlightPerformanceStatus.Declined ->
+            AppTokens.strings.res(Res.string.highlight_status_declined)
+    }
+
+    val color = when (status) {
+        HighlightPerformanceStatus.Record,
+        HighlightPerformanceStatus.Improved -> AppTokens.colors.semantic.success
+
+        HighlightPerformanceStatus.Stable -> AppTokens.colors.text.secondary
+
+        HighlightPerformanceStatus.Declined -> AppTokens.colors.semantic.warning
+    }
+
     val shape = RoundedCornerShape(AppTokens.dp.chip.small.radius)
 
-    Box(
+    Text(
         modifier = Modifier
             .clip(shape)
             .background(color.copy(alpha = 0.2f), shape = shape)
@@ -349,14 +374,10 @@ private fun HighlightStatusChip(status: HighlightPerformanceStatus) {
                 horizontal = AppTokens.dp.chip.small.horizontalPadding,
                 vertical = AppTokens.dp.chip.small.verticalPadding
             ),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = label,
-            style = AppTokens.typography.b11Semi(),
-            color = color
-        )
-    }
+        text = label,
+        style = AppTokens.typography.b11Semi(),
+        color = color
+    )
 }
 
 @Composable
@@ -398,14 +419,23 @@ private fun HighlightPerformancePrimaryMetric(metric: HighlightPerformanceMetric
             color = AppTokens.colors.text.secondary
         )
 
-        Text(
-            text = delta,
-            style = AppTokens.typography.h5(),
-            color = if (metric.status == HighlightPerformanceStatus.Declined)
-                AppTokens.colors.semantic.warning
-            else
-                AppTokens.colors.text.primary
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = delta,
+                style = AppTokens.typography.h5(),
+                color = if (metric.status == HighlightPerformanceStatus.Declined)
+                    AppTokens.colors.semantic.warning
+                else
+                    AppTokens.colors.text.primary
+            )
+
+            HighlightStatusChip(status = metric.status)
+        }
 
         Text(
             text = "$current · $vsAverage $average",
@@ -503,23 +533,6 @@ private fun HighlightDetailRow(
 }
 
 @Composable
-private fun focusSupportingText(focus: HighlightExerciseFocus): String {
-    val sessions = AppTokens.strings.res(Res.string.highlight_sessions, focus.sessions)
-    val forceWeight = forceWeightLabel(focus.forceType, focus.weightType)
-    return "$sessions · $forceWeight"
-}
-
-@Composable
-private fun forceWeightLabel(
-    forceType: ForceTypeEnumState,
-    weightType: WeightTypeEnumState,
-): String {
-    val force = forceType.title().text()
-    val weight = weightType.title().text()
-    return AppTokens.strings.res(Res.string.highlight_force_weight, force, weight)
-}
-
-@Composable
 private fun HighlightStorySection(
     value: Highlight,
     type: HighlightStoryType,
@@ -586,46 +599,6 @@ private fun HighlightStorySection(
 
 private enum class HighlightStoryType {
     Consistency, Momentum, Comeback
-}
-
-@Composable
-private fun performanceStatusLabel(status: HighlightPerformanceStatus): String {
-    return when (status) {
-        HighlightPerformanceStatus.Record ->
-            AppTokens.strings.res(Res.string.highlight_status_record)
-
-        HighlightPerformanceStatus.Improved ->
-            AppTokens.strings.res(Res.string.highlight_status_improved)
-
-        HighlightPerformanceStatus.Stable ->
-            AppTokens.strings.res(Res.string.highlight_status_stable)
-
-        HighlightPerformanceStatus.Declined ->
-            AppTokens.strings.res(Res.string.highlight_status_declined)
-    }
-}
-
-@Composable
-private fun performanceStatusColor(status: HighlightPerformanceStatus): Color {
-    return when (status) {
-        HighlightPerformanceStatus.Record,
-        HighlightPerformanceStatus.Improved -> AppTokens.colors.semantic.success
-
-        HighlightPerformanceStatus.Stable -> AppTokens.colors.text.secondary
-
-        HighlightPerformanceStatus.Declined -> AppTokens.colors.semantic.warning
-    }
-}
-
-private fun Highlight.storyType(): HighlightStoryType {
-    val dominantMetric = performance.firstOrNull()
-    return when {
-        consistency.bestStreakDays >= 4 -> HighlightStoryType.Consistency
-        dominantMetric?.status == HighlightPerformanceStatus.Record ||
-                dominantMetric?.status == HighlightPerformanceStatus.Improved -> HighlightStoryType.Momentum
-
-        else -> HighlightStoryType.Comeback
-    }
 }
 
 private fun formatTrendDelta(delta: Int): String {
