@@ -16,6 +16,7 @@ import com.grippo.core.state.trainings.highlight.HighlightExerciseFocus
 import com.grippo.core.state.trainings.highlight.HighlightMuscleFocus
 import com.grippo.core.state.trainings.highlight.HighlightPerformanceMetric
 import com.grippo.core.state.trainings.highlight.HighlightPerformanceStatus
+import com.grippo.toolkit.logger.AppLogger
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
@@ -208,9 +209,8 @@ private fun List<TrainingState>.performanceMetrics(): List<HighlightPerformanceM
 
     // 2) Volume (vs average)
     run {
-        val currentValue = (latestTraining.metrics.volume as? VolumeFormatState.Valid)?.value
-        val values =
-            mapNotNull { (it.metrics.volume as? VolumeFormatState.Valid)?.value?.toDouble() }
+        val currentValue = latestTraining.metrics.volume.value
+        val values = mapNotNull { it.metrics.volume.value?.toDouble() }
         if (currentValue != null && values.isNotEmpty()) {
             val average = values.average()
             val best = values.maxOrNull() ?: currentValue.toDouble()
@@ -222,8 +222,7 @@ private fun List<TrainingState>.performanceMetrics(): List<HighlightPerformanceM
             )
             performance += HighlightPerformanceMetric.Volume(
                 deltaPercentage = delta,
-                current = latestTraining.metrics.volume as? VolumeFormatState.Valid
-                    ?: VolumeFormatState.of(currentValue),
+                current = latestTraining.metrics.volume,
                 average = VolumeFormatState.of(average.toFloat()),
                 best = VolumeFormatState.of(best.toFloat()),
                 status = status
@@ -233,35 +232,39 @@ private fun List<TrainingState>.performanceMetrics(): List<HighlightPerformanceM
 
     // 3) Repetitions (vs average)
     run {
-        val currentValue =
-            (latestTraining.metrics.repetitions as? RepetitionsFormatState.Valid)?.value
-        val values =
-            mapNotNull { (it.metrics.repetitions as? RepetitionsFormatState.Valid)?.value?.toDouble() }
-        if (currentValue != null && values.isNotEmpty()) {
-            val average = values.average()
-            val best = values.maxOrNull() ?: currentValue.toDouble()
-            val delta = percentageDelta(currentValue.toDouble(), average) ?: 0
-            val status = determinePerformanceStatus(
-                delta = delta,
-                current = currentValue.toDouble(),
-                best = best
+        val currentValue = latestTraining.metrics.repetitions.value
+        val values = mapNotNull { it.metrics.repetitions.value?.toDouble() }
+        if (currentValue == null || values.isEmpty()) {
+            val nonNullCount = count { it.metrics.repetitions.value != null }
+            AppLogger.General.warning(
+                "Highlights: repetitions trend skipped (no reps value). " +
+                        "latestRepetitions=${latestTraining.metrics.repetitions} " +
+                        "nonNullTrainings=$nonNullCount totalTrainings=${size}"
             )
-            performance += HighlightPerformanceMetric.Repetitions(
-                deltaPercentage = delta,
-                current = latestTraining.metrics.repetitions as? RepetitionsFormatState.Valid
-                    ?: RepetitionsFormatState.of(currentValue),
-                average = RepetitionsFormatState.of(average.toInt()),
-                best = RepetitionsFormatState.of(best.toInt()),
-                status = status
-            )
+            return@run
         }
+
+        val average = values.average()
+        val best = values.maxOrNull() ?: currentValue.toDouble()
+        val delta = percentageDelta(currentValue.toDouble(), average) ?: 0
+        val status = determinePerformanceStatus(
+            delta = delta,
+            current = currentValue.toDouble(),
+            best = best
+        )
+        performance += HighlightPerformanceMetric.Repetitions(
+            deltaPercentage = delta,
+            current = latestTraining.metrics.repetitions,
+            average = RepetitionsFormatState.of(average.toInt()),
+            best = RepetitionsFormatState.of(best.toInt()),
+            status = status
+        )
     }
 
     // 4) Intensity (vs average)
     run {
-        val currentValue = (latestTraining.metrics.intensity as? IntensityFormatState.Valid)?.value
-        val values =
-            mapNotNull { (it.metrics.intensity as? IntensityFormatState.Valid)?.value?.toDouble() }
+        val currentValue = latestTraining.metrics.intensity.value
+        val values = mapNotNull { it.metrics.intensity.value?.toDouble() }
         if (currentValue != null && values.isNotEmpty()) {
             val average = values.average()
             val best = values.maxOrNull() ?: currentValue.toDouble()
@@ -273,8 +276,7 @@ private fun List<TrainingState>.performanceMetrics(): List<HighlightPerformanceM
             )
             performance += HighlightPerformanceMetric.Intensity(
                 deltaPercentage = delta,
-                current = latestTraining.metrics.intensity as? IntensityFormatState.Valid
-                    ?: IntensityFormatState.of(currentValue),
+                current = latestTraining.metrics.intensity,
                 average = IntensityFormatState.of(average.toFloat()),
                 best = IntensityFormatState.of(best.toFloat()),
                 status = status
