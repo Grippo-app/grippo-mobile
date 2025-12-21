@@ -13,12 +13,14 @@ import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.trainings.digest.stubMonthlyDigest
 import com.grippo.core.state.trainings.digest.stubWeeklyDigest
+import com.grippo.core.state.trainings.highlight.stubHighlight
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.home.HighlightsCard
 import com.grippo.design.components.home.LastTrainingCard
 import com.grippo.design.components.home.ThisMonthDigestCard
 import com.grippo.design.components.home.ThisWeekDigestCard
@@ -76,29 +78,42 @@ internal fun HomeScreen(
                     onViewWorkout = contract::onOpenTrainings
                 )
             }
+        }
 
-            state.weeklyDigestState?.let { weeklyDigest ->
-                item(
-                    key = "weekly_digest",
-                    span = { GridItemSpan(1) }
-                ) {
-                    ThisWeekDigestCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = weeklyDigest,
-                    )
-                }
+        state.highlight?.let { highlight ->
+            item(
+                key = "monthly_highlight",
+                span = { GridItemSpan(2) }
+            ) {
+                HighlightsCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = highlight,
+                    onViewWorkout = contract::onOpenTrainings
+                )
             }
+        }
 
-            state.monthlyDigestState?.let { monthlyDigest ->
-                item(
-                    key = "monthly_digest",
-                    span = { GridItemSpan(1) }
-                ) {
-                    ThisMonthDigestCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = monthlyDigest,
-                    )
-                }
+        state.weeklyDigestState?.let { weeklyDigest ->
+            item(
+                key = "weekly_digest",
+                span = { GridItemSpan(1) }
+            ) {
+                ThisWeekDigestCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = weeklyDigest,
+                )
+            }
+        }
+
+        state.monthlyDigestState?.let { monthlyDigest ->
+            item(
+                key = "monthly_digest",
+                span = { GridItemSpan(1) }
+            ) {
+                ThisMonthDigestCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = monthlyDigest,
+                )
             }
         }
     }
@@ -113,6 +128,7 @@ private fun HomeScreenPreview() {
                 lastTraining = stubTraining(),
                 weeklyDigestState = stubWeeklyDigest(),
                 monthlyDigestState = stubMonthlyDigest(),
+                highlight = stubHighlight(),
             ),
             loaders = persistentSetOf(),
             contract = HomeContract.Empty

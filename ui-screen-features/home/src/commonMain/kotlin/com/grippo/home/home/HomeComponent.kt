@@ -22,6 +22,7 @@ internal class HomeComponent(
         HomeViewModel(
             trainingFeature = getKoin().get(),
             dialogController = getKoin().get(),
+            exerciseExampleFeature = getKoin().get(),
         )
     }
 
