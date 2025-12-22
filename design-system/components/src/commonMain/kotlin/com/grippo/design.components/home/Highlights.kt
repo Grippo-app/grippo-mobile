@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -50,6 +52,7 @@ import com.grippo.design.resources.provider.highlight_type_momentum
 import com.grippo.design.resources.provider.highlight_type_momentum_hint
 import com.grippo.design.resources.provider.highlight_vs_average
 import com.grippo.design.resources.provider.highlights
+import com.grippo.design.resources.provider.icons.Intensity
 import com.grippo.design.resources.provider.intensity_chip
 import com.grippo.design.resources.provider.repetitions
 import com.grippo.design.resources.provider.reps
@@ -88,14 +91,21 @@ public fun HighlightsCard(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            Icon(
+                modifier = Modifier.size(AppTokens.dp.home.highlights.icon),
+                imageVector = AppTokens.icons.Intensity,
+                tint = AppTokens.colors.semantic.warning,
+                contentDescription = null
+            )
+
             Text(
                 modifier = Modifier.weight(1f),
                 text = AppTokens.strings.res(Res.string.highlights),
                 style = AppTokens.typography.h4(),
-                color = AppTokens.colors.text.primary,
+                color = AppTokens.colors.semantic.warning,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )

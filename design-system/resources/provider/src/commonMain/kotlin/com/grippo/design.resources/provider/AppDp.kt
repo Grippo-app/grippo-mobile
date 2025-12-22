@@ -116,11 +116,7 @@ public data object AppDp {
         }
 
         public data object Highlights {
-            val radius: Dp = AppDp.radius.medium
-            val horizontalPadding: Dp = padding.large
-            val verticalPadding: Dp = padding.large
-            val spacing: Dp = padding.extraSmall
-            val image: Dp = icon.xxxxLarge
+            val icon: Dp = AppDp.icon.medium
             val status: Status = Status
 
             public data object Status {

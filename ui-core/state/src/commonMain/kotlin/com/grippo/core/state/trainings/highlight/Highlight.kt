@@ -123,7 +123,7 @@ public fun stubHighlight(): Highlight = Highlight(
         activeDays = 16,
         bestStreakDays = 5,
     ),
-    performance = listOf<HighlightPerformanceMetric>(
+    performance = listOf(
         HighlightPerformanceMetric.Volume(
             deltaPercentage = 24,
             current = VolumeFormatState.of(1_200f),
