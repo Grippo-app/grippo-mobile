@@ -443,55 +443,6 @@ private fun HighlightPerformancePrimaryMetric(metric: HighlightPerformanceMetric
 }
 
 @Composable
-private fun HighlightDetailRow(
-    modifier: Modifier = Modifier,
-    title: String,
-    headline: String,
-    supporting: String?,
-    trailing: String? = null,
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = title,
-                style = AppTokens.typography.b11Med(),
-                color = AppTokens.colors.text.secondary
-            )
-
-            Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
-
-            Text(
-                text = headline,
-                style = AppTokens.typography.h5(),
-                color = AppTokens.colors.text.primary
-            )
-
-            supporting?.let {
-                Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
-
-                Text(
-                    text = it,
-                    style = AppTokens.typography.b13Med(),
-                    color = AppTokens.colors.text.secondary
-                )
-            }
-        }
-
-        trailing?.let {
-            Text(
-                text = it,
-                style = AppTokens.typography.b14Semi(),
-                color = AppTokens.colors.text.primary
-            )
-        }
-    }
-}
-
-@Composable
 private fun HighlightStorySection(
     value: Highlight,
     type: HighlightStoryType,

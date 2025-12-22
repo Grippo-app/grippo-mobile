@@ -65,7 +65,7 @@ internal fun HomeScreen(
             vertical = AppTokens.dp.screen.verticalPadding
         ),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block)
     ) {
         state.lastTraining?.let { lastTraining ->
             item(
