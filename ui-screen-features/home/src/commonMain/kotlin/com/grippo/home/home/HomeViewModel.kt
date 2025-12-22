@@ -129,6 +129,10 @@ internal class HomeViewModel(
         }
     }
 
+    override fun onStartTraining() {
+        navigateTo(HomeDirection.AddTraining)
+    }
+
     override fun onOpenProfile() {
         val dialog = DialogConfig.Profile(
             onProfileResult = {
