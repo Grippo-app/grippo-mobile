@@ -7,6 +7,7 @@ internal interface HomeContract {
     fun onOpenProfile()
     fun onStartTraining()
     fun onOpenTrainings()
+    fun onOpenExample()
     fun onBack()
 
     @Immutable
@@ -14,6 +15,7 @@ internal interface HomeContract {
         override fun onOpenProfile() {}
         override fun onStartTraining() {}
         override fun onOpenTrainings() {}
+        override fun onOpenExample() {}
         override fun onBack() {}
     }
 }

@@ -11,6 +11,7 @@ import com.grippo.core.state.muscles.MuscleGroupEnumState
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
+import kotlin.uuid.Uuid
 
 @Immutable
 public data class Highlight(
@@ -23,6 +24,7 @@ public data class Highlight(
 
 @Immutable
 public data class HighlightExerciseFocus(
+    val exampleId: String,
     val name: String,
     val sessions: Int,
     val totalVolume: VolumeFormatState,
@@ -109,6 +111,7 @@ public enum class HighlightPerformanceStatus {
 public fun stubHighlight(): Highlight = Highlight(
     totalDuration = 28.hours,
     focusExercise = HighlightExerciseFocus(
+        exampleId = Uuid.random().toString(),
         name = "Bench press",
         sessions = 5,
         totalVolume = VolumeFormatState.of(1_200f),

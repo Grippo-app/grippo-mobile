@@ -30,7 +30,6 @@ internal class HomeViewModel(
     HomeState()
 ), HomeContract {
 
-    private val weeklyRange: DateRange = DateTimeUtils.trailingWeek()
     private val monthlyRange: DateRange = DateTimeUtils.trailingMonth()
 
     init {
@@ -40,21 +39,9 @@ internal class HomeViewModel(
             .safeLaunch()
 
         trainingFeature
-            .observeTrainings(start = weeklyRange.from, end = weeklyRange.to)
-            .onEach(::provideWeeklyDigest)
-            .safeLaunch()
-
-        trainingFeature
             .observeTrainings(start = monthlyRange.from, end = monthlyRange.to)
-            .onEach(::provideMonthlyDigest)
+            .onEach(::provideDigests)
             .safeLaunch()
-
-        safeLaunch {
-            trainingFeature.getTrainings(
-                start = weeklyRange.from,
-                end = weeklyRange.to
-            ).getOrThrow()
-        }
 
         safeLaunch {
             trainingFeature.getTrainings(
@@ -89,28 +76,23 @@ internal class HomeViewModel(
         update { it.copy(lastTraining = training) }
     }
 
-    private fun provideWeeklyDigest(trainings: List<Training>) {
+    private fun provideDigests(trainings: List<Training>) {
         if (trainings.isEmpty()) {
-            update { it.copy(weeklyDigestState = null) }
+            update {
+                it.copy(
+                    weeklyDigestState = null,
+                    monthlyDigestState = null,
+                    highlight = null,
+                    highlightContext = null
+                )
+            }
             return
         }
 
-        val digest = trainings
-            .toState()
-            .toWeeklyDigestState(range = weeklyRange)
-
-        update { it.copy(weeklyDigestState = digest) }
-    }
-
-    private fun provideMonthlyDigest(trainings: List<Training>) {
-        if (trainings.isEmpty()) {
-            update { it.copy(monthlyDigestState = null, highlight = null, highlightContext = null) }
-            return
-        }
-
-        val trainingStates = trainings.toState()
-        val digest = trainingStates.toMonthlyDigestState(range = monthlyRange)
-        val highlight = trainingStates.toHighlight(exerciseExamples = emptyList())
+        val trainingsState = trainings.toState()
+        val weekly = trainingsState.toWeeklyDigestState(range = DateTimeUtils.trailingWeek())
+        val monthly = trainingsState.toMonthlyDigestState(range = monthlyRange)
+        val highlight = trainingsState.toHighlight(exerciseExamples = emptyList())
         val ids = trainings
             .flatMap { it.exercises }
             .map { it.exerciseExample.id }
@@ -118,10 +100,11 @@ internal class HomeViewModel(
 
         update {
             it.copy(
-                monthlyDigestState = digest,
+                weeklyDigestState = weekly,
+                monthlyDigestState = monthly,
                 highlight = highlight,
                 highlightContext = HighlightContext(
-                    trainings = trainingStates,
+                    trainings = trainingsState,
                     exampleIds = ids,
                     examples = emptyList()
                 )
@@ -155,6 +138,16 @@ internal class HomeViewModel(
         navigateTo(HomeDirection.Trainings)
     }
 
+    override fun onOpenExample() {
+        val exampleId = state.value.highlight?.focusExercise?.exampleId ?: return
+
+        val dialog = DialogConfig.ExerciseExample(
+            id = exampleId
+        )
+
+        dialogController.show(dialog)
+    }
+
     override fun onBack() {
         navigateTo(HomeDirection.Back)
     }
@@ -165,6 +158,7 @@ internal class HomeViewModel(
     ) {
         val examples = list.toState()
         val highlight = context.trainings.toHighlight(exerciseExamples = examples)
+
         update {
             it.copy(
                 highlight = highlight,

@@ -60,6 +60,7 @@ private fun List<TrainingState>.focusExercise(): HighlightExerciseFocus? {
     if (totalVolume <= 0f) return null
 
     return HighlightExerciseFocus(
+        exampleId = sample.exerciseExample.id,
         name = sample.name,
         sessions = topEntry.value.size,
         totalVolume = VolumeFormatState.Valid(

@@ -67,7 +67,7 @@ internal fun HomeScreen(
     BottomOverlayContainer(
         modifier = Modifier
             .fillMaxWidth()
-            .weight(1f, false),
+            .weight(1f),
         contentPadding = PaddingValues(
             horizontal = AppTokens.dp.screen.horizontalPadding,
             vertical = AppTokens.dp.screen.verticalPadding
@@ -104,7 +104,8 @@ internal fun HomeScreen(
                         HighlightsCard(
                             modifier = Modifier.fillMaxWidth(),
                             value = highlight,
-                            onViewWorkout = contract::onOpenTrainings
+                            onViewWorkout = contract::onOpenTrainings,
+                            onExampleClick = contract::onOpenExample
                         )
                     }
                 }

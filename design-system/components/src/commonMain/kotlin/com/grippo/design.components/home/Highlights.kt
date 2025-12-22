@@ -24,6 +24,7 @@ import com.grippo.core.state.trainings.highlight.HighlightMetric
 import com.grippo.core.state.trainings.highlight.HighlightPerformanceMetric
 import com.grippo.core.state.trainings.highlight.HighlightPerformanceStatus
 import com.grippo.core.state.trainings.highlight.stubHighlight
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -63,7 +64,8 @@ import com.grippo.toolkit.date.utils.DateTimeUtils
 public fun HighlightsCard(
     modifier: Modifier = Modifier,
     value: Highlight,
-    onViewWorkout: () -> Unit
+    onViewWorkout: () -> Unit,
+    onExampleClick: () -> Unit
 ) {
     val storyType = run {
         val dominantMetric = value.performance.firstOrNull()
@@ -139,12 +141,17 @@ public fun HighlightsCard(
         Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
 
         val spacing = AppTokens.dp.contentPadding.content
+
         fun metricOf(type: HighlightMetric): HighlightPerformanceMetric? =
             value.performance.firstOrNull { it.metric == type }
 
         // Focus exercise - full width
         value.focusExercise?.let { focus ->
-            HighlightPanel(modifier = Modifier.fillMaxWidth()) {
+            HighlightPanel(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .scalableClick(onClick = onExampleClick)
+            ) {
                 val sessions =
                     AppTokens.strings.res(Res.string.highlight_sessions, focus.sessions)
                 val force = focus.forceType.title().text()
@@ -525,7 +532,8 @@ private fun HighlightsCardPreview() {
     PreviewContainer {
         HighlightsCard(
             value = stubHighlight(),
-            onViewWorkout = {}
+            onViewWorkout = {},
+            onExampleClick = {}
         )
     }
 }
