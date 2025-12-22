@@ -121,6 +121,13 @@ public data object AppDp {
             val verticalPadding: Dp = padding.large
             val spacing: Dp = padding.extraSmall
             val image: Dp = icon.xxxxLarge
+            val status: Status = Status
+
+            public data object Status {
+                val radius: Dp = AppDp.radius.small
+                val horizontalPadding: Dp = padding.small
+                val verticalPadding: Dp = padding.extraSmall
+            }
         }
 
         public data object ThisWeekDigest {
