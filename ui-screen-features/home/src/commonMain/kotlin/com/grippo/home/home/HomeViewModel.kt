@@ -1,10 +1,10 @@
 package com.grippo.home.home
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.profile.ProfileMenu
 import com.grippo.core.state.profile.SettingsMenu
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
-import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.dialog.api.DialogConfig
@@ -16,10 +16,8 @@ import com.grippo.domain.state.training.transformation.toMonthlyDigestState
 import com.grippo.domain.state.training.transformation.toWeeklyDigestState
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
-import kotlinx.coroutines.flow.distinctUntilChangedBy
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
 
 internal class HomeViewModel(
@@ -40,7 +38,7 @@ internal class HomeViewModel(
 
         trainingFeature
             .observeTrainings(start = monthlyRange.from, end = monthlyRange.to)
-            .onEach(::provideDigests)
+            .onEach(::provideTrainings)
             .safeLaunch()
 
         safeLaunch {
@@ -50,25 +48,6 @@ internal class HomeViewModel(
             ).getOrThrow()
         }
 
-        state
-            .map { it.highlightContext }
-            .distinctUntilChangedBy { context ->
-                context?.let { ctx -> ctx.exampleIds to ctx.trainings }
-            }
-            .flatMapLatest { context ->
-                when {
-                    context == null -> flowOf<HighlightPayload?>(null)
-                    context.exampleIds.isEmpty() -> flowOf(HighlightPayload(context, emptyList()))
-                    else -> exerciseExampleFeature
-                        .observeExerciseExamples(context.exampleIds.toList())
-                        .map { examples -> HighlightPayload(context, examples) }
-                }
-            }
-            .onEach { payload ->
-                val data = payload ?: return@onEach
-                provideHighlightExamples(data.context, data.examples)
-            }
-            .safeLaunch()
     }
 
     private fun provideLastTraining(value: Training?) {
@@ -76,38 +55,47 @@ internal class HomeViewModel(
         update { it.copy(lastTraining = training) }
     }
 
-    private fun provideDigests(trainings: List<Training>) {
-        if (trainings.isEmpty()) {
+    private suspend fun provideTrainings(list: List<Training>) {
+        if (list.isEmpty()) {
             update {
                 it.copy(
                     weeklyDigestState = null,
                     monthlyDigestState = null,
                     highlight = null,
-                    highlightContext = null
+                    trainings = persistentListOf(),
                 )
             }
             return
         }
 
-        val trainingsState = trainings.toState()
-        val weekly = trainingsState.toWeeklyDigestState(range = DateTimeUtils.trailingWeek())
-        val monthly = trainingsState.toMonthlyDigestState(range = monthlyRange)
-        val highlight = trainingsState.toHighlight(exerciseExamples = emptyList())
-        val ids = trainings
-            .flatMap { it.exercises }
-            .map { it.exerciseExample.id }
+        val trainings = list.toState()
+
+        val weekly = trainings.toWeeklyDigestState(range = DateTimeUtils.trailingWeek())
+
+        val monthly = trainings.toMonthlyDigestState(range = monthlyRange)
+
+        val exampleIds = list
+            .flatMap { training -> training.exercises }
+            .map { exercise -> exercise.exerciseExample.id }
             .toSet()
+
+        val examples: List<ExerciseExampleState> = if (exampleIds.isEmpty()) {
+            emptyList()
+        } else {
+            exerciseExampleFeature
+                .observeExerciseExamples(exampleIds.toList())
+                .first()
+                .toState()
+        }
+
+        val highlight = trainings.toHighlight(exerciseExamples = examples)
 
         update {
             it.copy(
                 weeklyDigestState = weekly,
                 monthlyDigestState = monthly,
-                highlight = highlight,
-                highlightContext = HighlightContext(
-                    trainings = trainingsState,
-                    exampleIds = ids,
-                    examples = emptyList()
-                )
+                trainings = trainings,
+                highlight = highlight
             )
         }
     }
@@ -149,24 +137,4 @@ internal class HomeViewModel(
     override fun onBack() {
         navigateTo(HomeDirection.Back)
     }
-
-    private fun provideHighlightExamples(
-        context: HighlightContext,
-        list: List<ExerciseExample>,
-    ) {
-        val examples = list.toState()
-        val highlight = context.trainings.toHighlight(exerciseExamples = examples)
-
-        update {
-            it.copy(
-                highlight = highlight,
-                highlightContext = context.copy(examples = examples)
-            )
-        }
-    }
-
-    private data class HighlightPayload(
-        val context: HighlightContext,
-        val examples: List<ExerciseExample>,
-    )
 }

@@ -43,7 +43,15 @@ public fun List<TrainingState>.toHighlight(
 private fun List<TrainingState>.focusExercise(
     exerciseExamples: Map<String, ExerciseExampleState>,
 ): ExerciseExampleState? {
-    if (isEmpty() || exerciseExamples.isEmpty()) return null
+    if (isEmpty()) {
+        AppLogger.General.warning("Highlights: focus exercise skipped (no trainings)")
+        return null
+    }
+
+    if (exerciseExamples.isEmpty()) {
+        AppLogger.General.warning("Highlights: focus exercise skipped (exercise examples cache empty)")
+        return null
+    }
 
     val volumes = flatMap { training ->
         training.exercises.mapNotNull { exercise ->
@@ -51,18 +59,40 @@ private fun List<TrainingState>.focusExercise(
             ExerciseVolume(exercise, volume)
         }
     }
-    if (volumes.isEmpty()) return null
+    if (volumes.isEmpty()) {
+        AppLogger.General.warning("Highlights: focus exercise skipped (no exercises with volume)")
+        return null
+    }
 
     val topEntry = volumes
         .groupBy { it.exercise.exerciseExample.id }
         .maxByOrNull { entry -> entry.value.sumOf { item -> item.volume.toDouble() } }
-        ?: return null
+        ?: run {
+            AppLogger.General.warning("Highlights: focus exercise skipped (unable to determine top exercise)")
+            return null
+        }
 
     val sample = topEntry.value.first().exercise
     val totalVolume = topEntry.value.sumOf { it.volume.toDouble() }.toFloat()
-    if (totalVolume <= 0f) return null
+    if (totalVolume <= 0f) {
+        AppLogger.General.warning(
+            "Highlights: focus exercise skipped (non-positive total volume) exampleId=${sample.exerciseExample.id}"
+        )
+        return null
+    }
 
-    return exerciseExamples[sample.exerciseExample.id]
+    val example = exerciseExamples[sample.exerciseExample.id]
+    if (example == null) {
+        AppLogger.General.warning(
+            "Highlights: focus exercise example missing exampleId=${sample.exerciseExample.id} cacheSize=${exerciseExamples.size}"
+        )
+        return null
+    }
+
+    AppLogger.General.warning(
+        "Highlights: focus exercise selected id=${example.value.id} sessions=${topEntry.value.size} totalVolume=$totalVolume"
+    )
+    return example
 }
 
 private fun List<TrainingState>.muscleFocus(

@@ -1,11 +1,12 @@
 package com.grippo.home.home
 
 import androidx.compose.runtime.Immutable
-import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.trainings.TrainingState
 import com.grippo.core.state.trainings.digest.MonthlyDigestState
 import com.grippo.core.state.trainings.digest.WeeklyDigestState
 import com.grippo.core.state.trainings.highlight.Highlight
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 internal data class HomeState(
@@ -13,12 +14,5 @@ internal data class HomeState(
     val weeklyDigestState: WeeklyDigestState? = null,
     val monthlyDigestState: MonthlyDigestState? = null,
     val highlight: Highlight? = null,
-    val highlightContext: HighlightContext? = null,
-)
-
-@Immutable
-internal data class HighlightContext(
-    val trainings: List<TrainingState>,
-    val exampleIds: Set<String>,
-    val examples: List<ExerciseExampleState>,
+    val trainings: ImmutableList<TrainingState> = persistentListOf(),
 )
