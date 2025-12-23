@@ -1,6 +1,5 @@
 package com.grippo.exercise.example.exerciseexample
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -160,10 +159,7 @@ internal fun ExerciseExampleScreen(
             )
         }
 
-        AnimatedVisibility(
-            modifier = Modifier.fillMaxWidth(),
-            visible = state.recent.isNotEmpty(),
-        ) {
+        if (state.recent.isNotEmpty()) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
@@ -205,10 +201,7 @@ internal fun ExerciseExampleScreen(
             }
         }
 
-        AnimatedVisibility(
-            modifier = Modifier.fillMaxWidth(),
-            visible = state.achievements.isNotEmpty(),
-        ) {
+        if (state.achievements.isNotEmpty()) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
