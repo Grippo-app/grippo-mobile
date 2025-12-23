@@ -39,6 +39,7 @@ import com.grippo.toolkit.date.utils.DateFormat
 internal fun ExerciseExampleCardMedium(
     modifier: Modifier,
     value: ExerciseExampleState,
+    allowUsageLabel: Boolean,
     onCardClick: () -> Unit,
 ) {
     Column(modifier = modifier.scalableClick(onClick = onCardClick)) {
@@ -101,36 +102,38 @@ internal fun ExerciseExampleCardMedium(
             }
         }
 
-        Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
+        if (allowUsageLabel) {
+            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
 
-            val lastUsedDate = value.value.lastUsed?.let { l ->
-                DateCompose.rememberFormat(l.date, DateFormat.DateOnly.DateDdMmm)
-            }
+                val lastUsedDate = value.value.lastUsed?.let { l ->
+                    DateCompose.rememberFormat(l.date, DateFormat.DateOnly.DateDdMmm)
+                }
 
-            lastUsedDate?.let {
-                Text(
-                    text = AppTokens.strings.res(Res.string.last_used_label),
+                lastUsedDate?.let {
+                    Text(
+                        text = AppTokens.strings.res(Res.string.last_used_label),
+                        style = AppTokens.typography.b12Med(),
+                        color = AppTokens.colors.text.secondary
+                    )
+
+                    Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.text))
+
+                    Text(
+                        text = lastUsedDate,
+                        style = AppTokens.typography.b12Semi(),
+                        color = AppTokens.colors.text.secondary
+                    )
+                } ?: Text(
+                    text = AppTokens.strings.res(Res.string.not_used_before),
                     style = AppTokens.typography.b12Med(),
-                    color = AppTokens.colors.text.secondary
+                    color = AppTokens.colors.text.tertiary
                 )
-
-                Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.text))
-
-                Text(
-                    text = lastUsedDate,
-                    style = AppTokens.typography.b12Semi(),
-                    color = AppTokens.colors.text.secondary
-                )
-            } ?: Text(
-                text = AppTokens.strings.res(Res.string.not_used_before),
-                style = AppTokens.typography.b12Med(),
-                color = AppTokens.colors.text.tertiary
-            )
+            }
         }
     }
 }
@@ -142,7 +145,13 @@ private fun ExerciseExampleCardMediumPreview() {
         ExerciseExampleCard(
             modifier = Modifier.fillMaxWidth(),
             value = stubExerciseExample(),
-            style = ExerciseExampleCardStyle.Medium({}),
+            style = ExerciseExampleCardStyle.Medium({}, allowUsageLabel = true),
+        )
+
+        ExerciseExampleCard(
+            modifier = Modifier.fillMaxWidth(),
+            value = stubExerciseExample(),
+            style = ExerciseExampleCardStyle.Medium({}, allowUsageLabel = false),
         )
     }
 }

@@ -173,6 +173,7 @@ internal fun ExerciseExamplePickerScreen(
                                         value = item,
                                         style = ExerciseExampleCardStyle.Medium(
                                             onClick = selectClickProvider,
+                                            allowUsageLabel = true
                                         ),
                                     )
                                 }

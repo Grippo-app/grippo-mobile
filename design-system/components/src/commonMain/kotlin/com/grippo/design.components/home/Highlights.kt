@@ -37,9 +37,7 @@ import com.grippo.design.resources.provider.highlight_active_days
 import com.grippo.design.resources.provider.highlight_best_value
 import com.grippo.design.resources.provider.highlight_consistency
 import com.grippo.design.resources.provider.highlight_focus_exercise
-import com.grippo.design.resources.provider.highlight_force_weight
 import com.grippo.design.resources.provider.highlight_muscle_focus
-import com.grippo.design.resources.provider.highlight_sessions
 import com.grippo.design.resources.provider.highlight_status_declined
 import com.grippo.design.resources.provider.highlight_status_improved
 import com.grippo.design.resources.provider.highlight_status_record
@@ -138,20 +136,10 @@ public fun HighlightsCard(
             value.performance.firstOrNull { it.metric == type }
 
         // Focus exercise - full width
-        value.focusExercise?.let { exampleState ->
-            val example = exampleState.value
+        value.focusExercise?.let { example ->
             HighlightPanel(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                val sessions = AppTokens.strings.res(
-                    Res.string.highlight_sessions, example.usageCount
-                )
-                val force = example.forceType.title().text()
-                val weight = example.weightType.title().text()
-                val forceWeight = AppTokens.strings.res(
-                    Res.string.highlight_force_weight, force, weight
-                )
-
                 Text(
                     text = AppTokens.strings.res(Res.string.highlight_focus_exercise),
                     style = AppTokens.typography.b11Med(),
@@ -160,24 +148,17 @@ public fun HighlightsCard(
                     overflow = TextOverflow.Ellipsis,
                 )
 
-                val onExampleClickProvider = remember(exampleState.value.id) {
-                    { onExampleClick.invoke(exampleState.value.id) }
+                val onExampleClickProvider = remember(example.value.id) {
+                    { onExampleClick.invoke(example.value.id) }
                 }
 
                 ExerciseExampleCard(
                     modifier = Modifier.fillMaxWidth(),
-                    value = exampleState,
+                    value = example,
                     style = ExerciseExampleCardStyle.Medium(
-                        onClick = onExampleClickProvider
+                        onClick = onExampleClickProvider,
+                        allowUsageLabel = false
                     )
-                )
-
-                Text(
-                    text = "$sessions · $forceWeight",
-                    style = AppTokens.typography.b13Med(),
-                    color = AppTokens.colors.text.secondary,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
                 )
             }
 
