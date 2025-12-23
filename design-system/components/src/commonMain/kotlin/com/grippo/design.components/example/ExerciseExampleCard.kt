@@ -17,12 +17,12 @@ import com.grippo.design.preview.PreviewContainer
 public sealed interface ExerciseExampleCardStyle {
     @Immutable
     public data class Small(
-        val onCardClick: () -> Unit,
+        val onClick: () -> Unit,
     ) : ExerciseExampleCardStyle
 
     @Immutable
     public data class Medium(
-        val onCardClick: () -> Unit,
+        val onClick: () -> Unit,
     ) : ExerciseExampleCardStyle
 }
 
@@ -36,13 +36,13 @@ public fun ExerciseExampleCard(
         is ExerciseExampleCardStyle.Small -> ExerciseExampleCardSmall(
             modifier = modifier,
             value = value,
-            onCardClick = style.onCardClick
+            onCardClick = style.onClick
         )
 
         is ExerciseExampleCardStyle.Medium -> ExerciseExampleCardMedium(
             modifier = modifier,
             value = value,
-            onCardClick = style.onCardClick,
+            onCardClick = style.onClick,
         )
     }
 }

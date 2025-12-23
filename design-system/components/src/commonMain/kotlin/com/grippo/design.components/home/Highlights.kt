@@ -14,6 +14,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,7 +26,8 @@ import com.grippo.core.state.trainings.highlight.HighlightMetric
 import com.grippo.core.state.trainings.highlight.HighlightPerformanceMetric
 import com.grippo.core.state.trainings.highlight.HighlightPerformanceStatus
 import com.grippo.core.state.trainings.highlight.stubHighlight
-import com.grippo.design.components.modifiers.scalableClick
+import com.grippo.design.components.example.ExerciseExampleCard
+import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -41,9 +44,6 @@ import com.grippo.design.resources.provider.highlight_status_declined
 import com.grippo.design.resources.provider.highlight_status_improved
 import com.grippo.design.resources.provider.highlight_status_record
 import com.grippo.design.resources.provider.highlight_status_stable
-import com.grippo.design.resources.provider.highlight_story_consistency
-import com.grippo.design.resources.provider.highlight_story_momentum
-import com.grippo.design.resources.provider.highlight_story_work
 import com.grippo.design.resources.provider.highlight_streak
 import com.grippo.design.resources.provider.highlight_type_comeback
 import com.grippo.design.resources.provider.highlight_type_comeback_hint
@@ -56,7 +56,6 @@ import com.grippo.design.resources.provider.highlights
 import com.grippo.design.resources.provider.icons.Intensity
 import com.grippo.design.resources.provider.intensity_chip
 import com.grippo.design.resources.provider.repetitions
-import com.grippo.design.resources.provider.reps
 import com.grippo.design.resources.provider.volume
 import com.grippo.toolkit.date.utils.DateTimeUtils
 
@@ -65,7 +64,7 @@ public fun HighlightsCard(
     modifier: Modifier = Modifier,
     value: Highlight,
     onViewWorkout: () -> Unit,
-    onExampleClick: () -> Unit
+    onExampleClick: (id: String) -> Unit
 ) {
     val storyType = run {
         val dominantMetric = value.performance.firstOrNull()
@@ -131,13 +130,6 @@ public fun HighlightsCard(
             )
         }
 
-        Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
-
-        HighlightStorySection(
-            value = value,
-            type = storyType
-        )
-
         Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
 
         val spacing = AppTokens.dp.contentPadding.content
@@ -146,18 +138,19 @@ public fun HighlightsCard(
             value.performance.firstOrNull { it.metric == type }
 
         // Focus exercise - full width
-        value.focusExercise?.let { focus ->
+        value.focusExercise?.let { exampleState ->
+            val example = exampleState.value
             HighlightPanel(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .scalableClick(onClick = onExampleClick)
+                modifier = Modifier.fillMaxWidth()
             ) {
-                val sessions =
-                    AppTokens.strings.res(Res.string.highlight_sessions, focus.sessions)
-                val force = focus.forceType.title().text()
-                val weight = focus.weightType.title().text()
-                val forceWeight =
-                    AppTokens.strings.res(Res.string.highlight_force_weight, force, weight)
+                val sessions = AppTokens.strings.res(
+                    Res.string.highlight_sessions, example.usageCount
+                )
+                val force = example.forceType.title().text()
+                val weight = example.weightType.title().text()
+                val forceWeight = AppTokens.strings.res(
+                    Res.string.highlight_force_weight, force, weight
+                )
 
                 Text(
                     text = AppTokens.strings.res(Res.string.highlight_focus_exercise),
@@ -167,28 +160,17 @@ public fun HighlightsCard(
                     overflow = TextOverflow.Ellipsis,
                 )
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        modifier = Modifier.weight(1f),
-                        text = focus.name,
-                        style = AppTokens.typography.h5(),
-                        color = AppTokens.colors.text.primary,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-
-                    Text(
-                        text = focus.totalVolume.short(),
-                        style = AppTokens.typography.b14Semi(),
-                        color = AppTokens.colors.text.primary,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
+                val onExampleClickProvider = remember(exampleState.value.id) {
+                    { onExampleClick.invoke(exampleState.value.id) }
                 }
+
+                ExerciseExampleCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = exampleState,
+                    style = ExerciseExampleCardStyle.Medium(
+                        onClick = onExampleClickProvider
+                    )
+                )
 
                 Text(
                     text = "$sessions · $forceWeight",
@@ -459,59 +441,7 @@ private fun HighlightPerformancePrimaryMetric(metric: HighlightPerformanceMetric
     }
 }
 
-@Composable
-private fun HighlightStorySection(
-    value: Highlight,
-    type: HighlightStoryType,
-) {
-    val description = when (type) {
-        HighlightStoryType.Consistency -> AppTokens.strings.res(
-            Res.string.highlight_story_consistency,
-            value.consistency.activeDays,
-            value.consistency.bestStreakDays
-        )
-
-        HighlightStoryType.Momentum -> {
-            val dominant = value.performance.firstOrNull()
-            if (dominant == null) {
-                AppTokens.strings.res(
-                    Res.string.highlight_story_work,
-                    DateTimeUtils.format(value.totalDuration)
-                )
-            } else {
-                val metric = when (dominant.metric) {
-                    HighlightMetric.Volume -> AppTokens.strings.res(Res.string.volume)
-                    HighlightMetric.Duration -> AppTokens.strings.res(Res.string.duration)
-                    HighlightMetric.Repetitions -> AppTokens.strings.res(Res.string.reps)
-                    HighlightMetric.Intensity -> AppTokens.strings.res(Res.string.intensity_chip)
-                }
-                val delta = formatTrendDelta(dominant.deltaPercentage)
-                AppTokens.strings.res(
-                    Res.string.highlight_story_momentum,
-                    metric,
-                    delta
-                )
-            }
-        }
-
-        HighlightStoryType.Comeback -> AppTokens.strings.res(
-            Res.string.highlight_story_work,
-            DateTimeUtils.format(value.totalDuration)
-        )
-    }
-
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
-    ) {
-        Text(
-            text = description,
-            style = AppTokens.typography.b13Med(),
-            color = AppTokens.colors.text.secondary
-        )
-    }
-}
-
+@Immutable
 private enum class HighlightStoryType {
     Consistency,
     Momentum,

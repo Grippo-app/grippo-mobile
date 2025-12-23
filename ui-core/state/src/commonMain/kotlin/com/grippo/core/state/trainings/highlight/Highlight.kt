@@ -1,8 +1,8 @@
 package com.grippo.core.state.trainings.highlight
 
 import androidx.compose.runtime.Immutable
-import com.grippo.core.state.examples.ForceTypeEnumState
-import com.grippo.core.state.examples.WeightTypeEnumState
+import com.grippo.core.state.examples.ExerciseExampleState
+import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.PercentageFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
@@ -11,25 +11,14 @@ import com.grippo.core.state.muscles.MuscleGroupEnumState
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
-import kotlin.uuid.Uuid
 
 @Immutable
 public data class Highlight(
     val totalDuration: Duration,
-    val focusExercise: HighlightExerciseFocus?,
+    val focusExercise: ExerciseExampleState?,
     val muscleFocus: HighlightMuscleFocus?,
     val consistency: HighlightConsistency,
     val performance: List<HighlightPerformanceMetric>,
-)
-
-@Immutable
-public data class HighlightExerciseFocus(
-    val exampleId: String,
-    val name: String,
-    val sessions: Int,
-    val totalVolume: VolumeFormatState,
-    val forceType: ForceTypeEnumState,
-    val weightType: WeightTypeEnumState,
 )
 
 @Immutable
@@ -108,16 +97,10 @@ public enum class HighlightPerformanceStatus {
     Record, Improved, Stable, Declined
 }
 
+
 public fun stubHighlight(): Highlight = Highlight(
     totalDuration = 28.hours,
-    focusExercise = HighlightExerciseFocus(
-        exampleId = Uuid.random().toString(),
-        name = "Bench press",
-        sessions = 5,
-        totalVolume = VolumeFormatState.of(1_200f),
-        forceType = ForceTypeEnumState.PUSH,
-        weightType = WeightTypeEnumState.FREE
-    ),
+    focusExercise = stubExerciseExample(),
     muscleFocus = HighlightMuscleFocus(
         muscleGroup = MuscleGroupEnumState.CHEST_MUSCLES,
         load = PercentageFormatState.of(42)

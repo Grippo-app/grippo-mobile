@@ -12,7 +12,6 @@ import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.TrainingState
 import com.grippo.core.state.trainings.highlight.Highlight
 import com.grippo.core.state.trainings.highlight.HighlightConsistency
-import com.grippo.core.state.trainings.highlight.HighlightExerciseFocus
 import com.grippo.core.state.trainings.highlight.HighlightMuscleFocus
 import com.grippo.core.state.trainings.highlight.HighlightPerformanceMetric
 import com.grippo.core.state.trainings.highlight.HighlightPerformanceStatus
@@ -34,14 +33,18 @@ public fun List<TrainingState>.toHighlight(
 
     return Highlight(
         totalDuration = totalDuration,
-        focusExercise = trainings.focusExercise(),
+        focusExercise = trainings.focusExercise(exampleIndex),
         muscleFocus = trainings.muscleFocus(exampleIndex),
         consistency = trainings.consistency(),
         performance = trainings.performanceMetrics()
     )
 }
 
-private fun List<TrainingState>.focusExercise(): HighlightExerciseFocus? {
+private fun List<TrainingState>.focusExercise(
+    exerciseExamples: Map<String, ExerciseExampleState>,
+): ExerciseExampleState? {
+    if (isEmpty() || exerciseExamples.isEmpty()) return null
+
     val volumes = flatMap { training ->
         training.exercises.mapNotNull { exercise ->
             val volume = exercise.metrics.volume.value ?: return@mapNotNull null
@@ -59,17 +62,7 @@ private fun List<TrainingState>.focusExercise(): HighlightExerciseFocus? {
     val totalVolume = topEntry.value.sumOf { it.volume.toDouble() }.toFloat()
     if (totalVolume <= 0f) return null
 
-    return HighlightExerciseFocus(
-        exampleId = sample.exerciseExample.id,
-        name = sample.name,
-        sessions = topEntry.value.size,
-        totalVolume = VolumeFormatState.Valid(
-            display = totalVolume.toInt().toString(),
-            value = totalVolume
-        ),
-        forceType = sample.exerciseExample.forceType,
-        weightType = sample.exerciseExample.weightType
-    )
+    return exerciseExamples[sample.exerciseExample.id]
 }
 
 private fun List<TrainingState>.muscleFocus(

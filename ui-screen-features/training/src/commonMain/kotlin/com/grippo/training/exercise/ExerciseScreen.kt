@@ -69,7 +69,7 @@ internal fun ExerciseScreen(
                             top = AppTokens.dp.contentPadding.content,
                         ),
                     style = ExerciseExampleCardStyle.Small(
-                        onCardClick = contract::onExampleClick,
+                        onClick = contract::onExampleClick,
                     ),
                     value = example
                 )
@@ -120,7 +120,7 @@ internal fun ExerciseScreen(
 
         itemsIndexed(
             items = state.exercise.iterations,
-            key = { index, item -> item.id }
+            key = { _, item -> item.id }
         ) { index, iteration ->
             val editVolumeProvider = remember(iteration.id) {
                 { contract.onEditVolume(iteration.id) }

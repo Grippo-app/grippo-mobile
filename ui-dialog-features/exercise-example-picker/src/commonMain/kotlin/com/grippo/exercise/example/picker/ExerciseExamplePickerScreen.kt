@@ -172,7 +172,7 @@ internal fun ExerciseExamplePickerScreen(
                                         modifier = Modifier.fillMaxWidth(),
                                         value = item,
                                         style = ExerciseExampleCardStyle.Medium(
-                                            onCardClick = selectClickProvider,
+                                            onClick = selectClickProvider,
                                         ),
                                     )
                                 }

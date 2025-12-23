@@ -138,11 +138,9 @@ internal class HomeViewModel(
         navigateTo(HomeDirection.Trainings)
     }
 
-    override fun onOpenExample() {
-        val exampleId = state.value.highlight?.focusExercise?.exampleId ?: return
-
+    override fun onOpenExample(id: String) {
         val dialog = DialogConfig.ExerciseExample(
-            id = exampleId
+            id = id
         )
 
         dialogController.show(dialog)
