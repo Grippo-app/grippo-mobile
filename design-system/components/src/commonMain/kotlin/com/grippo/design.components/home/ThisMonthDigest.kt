@@ -57,8 +57,8 @@ public fun ThisMonthDigestCard(
                 .align(Alignment.CenterEnd)
                 .offset(x = (AppTokens.dp.home.thisMonthDigest.image / 2))
                 .size(AppTokens.dp.home.thisMonthDigest.image)
-                .scale(2f)
-                .alpha(0.3f),
+                .scale(1.6f)
+                .alpha(0.2f),
             imageVector = AppTokens.icons.Trophy,
             contentDescription = null,
         )
@@ -71,7 +71,6 @@ public fun ThisMonthDigestCard(
                     horizontal = AppTokens.dp.home.thisMonthDigest.horizontalPadding
                 )
         ) {
-
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
@@ -87,7 +86,7 @@ public fun ThisMonthDigestCard(
                     modifier = Modifier.fillMaxWidth(),
                     text = AppTokens.strings.res(Res.string.monthly),
                     style = AppTokens.typography.h4(),
-                    color = AppTokens.colors.text.primary
+                    color =AppTokens.colors.brand.color6,
                 )
             }
 

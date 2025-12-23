@@ -53,12 +53,12 @@ public fun ThisWeekDigestCard(
     ) {
         Icon(
             modifier = Modifier
-                .spot(color = AppTokens.colors.brand.color3)
+                .spot(color = AppTokens.colors.brand.color4)
                 .align(Alignment.CenterEnd)
                 .offset(x = (AppTokens.dp.home.thisWeekDigest.image / 2))
                 .size(AppTokens.dp.home.thisWeekDigest.image)
-                .scale(2f)
-                .alpha(0.3f),
+                .scale(1.6f)
+                .alpha(0.2f),
             imageVector = AppTokens.icons.Trophy,
             contentDescription = null,
         )
@@ -71,7 +71,6 @@ public fun ThisWeekDigestCard(
                     horizontal = AppTokens.dp.home.thisWeekDigest.horizontalPadding
                 )
         ) {
-
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
@@ -80,14 +79,14 @@ public fun ThisWeekDigestCard(
                     modifier = Modifier.size(AppTokens.dp.home.thisWeekDigest.icon),
                     imageVector = AppTokens.icons.Trophy,
                     contentDescription = null,
-                    tint = AppTokens.colors.brand.color3,
+                    tint = AppTokens.colors.brand.color4,
                 )
 
                 Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = AppTokens.strings.res(Res.string.weekly),
                     style = AppTokens.typography.h4(),
-                    color = AppTokens.colors.text.primary
+                    color = AppTokens.colors.brand.color4,
                 )
             }
 

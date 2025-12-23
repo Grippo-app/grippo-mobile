@@ -118,11 +118,16 @@ public data object AppDp {
         public data object Highlights {
             val icon: Dp = AppDp.icon.medium
             val status: Status = Status
+            val performance: Performance = Performance
 
             public data object Status {
                 val radius: Dp = AppDp.radius.small
                 val horizontalPadding: Dp = padding.small
                 val verticalPadding: Dp = padding.extraSmall
+            }
+
+            public data object Performance {
+                val icon: Dp = AppDp.icon.extraSmall
             }
         }
 

@@ -346,7 +346,6 @@ private fun performanceStatusColor(status: HighlightPerformanceStatus): Color {
         HighlightPerformanceStatus.Improved -> AppTokens.colors.semantic.success
 
         HighlightPerformanceStatus.Stable -> AppTokens.colors.text.secondary
-
         HighlightPerformanceStatus.Declined -> AppTokens.colors.semantic.warning
     }
 }
@@ -361,6 +360,7 @@ private fun HighlightPerformancePrimaryMetric(metric: HighlightPerformanceMetric
     }
     val delta = formatTrendDelta(metric.deltaPercentage)
     val vsAverage = AppTokens.strings.res(Res.string.highlight_vs_average)
+
     val (current, average, bestLabel) = when (metric) {
         is HighlightPerformanceMetric.Duration -> {
             val best = AppTokens.strings.res(
@@ -402,13 +402,26 @@ private fun HighlightPerformancePrimaryMetric(metric: HighlightPerformanceMetric
     Column(
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text / 2)
     ) {
-        Text(
-            text = label,
-            style = AppTokens.typography.b11Med(),
-            color = AppTokens.colors.text.secondary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
+
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                modifier = Modifier.size(AppTokens.dp.home.highlights.performance.icon),
+                imageVector = metric.metric.icon(),
+                tint = AppTokens.colors.icon.secondary,
+                contentDescription = null
+            )
+
+            Text(
+                text = label,
+                style = AppTokens.typography.b11Med(),
+                color = AppTokens.colors.text.secondary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
 
         Row(
             modifier = Modifier.fillMaxWidth(),

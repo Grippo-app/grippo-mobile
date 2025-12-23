@@ -1,6 +1,8 @@
 package com.grippo.core.state.trainings.highlight
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.core.state.formatters.IntensityFormatState
@@ -8,6 +10,11 @@ import com.grippo.core.state.formatters.PercentageFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.muscles.MuscleGroupEnumState
+import com.grippo.design.core.AppTokens
+import com.grippo.design.resources.provider.icons.Intensity
+import com.grippo.design.resources.provider.icons.Repeat
+import com.grippo.design.resources.provider.icons.Timer
+import com.grippo.design.resources.provider.icons.Volume
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
@@ -38,7 +45,17 @@ public enum class HighlightMetric {
     Duration,
     Volume,
     Repetitions,
-    Intensity,
+    Intensity;
+
+    @Composable
+    public fun icon(): ImageVector {
+        return when (this) {
+            Duration -> AppTokens.icons.Timer
+            Volume -> AppTokens.icons.Volume
+            Repetitions -> AppTokens.icons.Repeat
+            Intensity -> AppTokens.icons.Intensity
+        }
+    }
 }
 
 @Immutable
