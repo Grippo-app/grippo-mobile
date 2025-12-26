@@ -80,6 +80,14 @@ public object DarkColor : AppColor {
         override val peakIntensity2: Color = AppPalette.Unique.Copper
     }
 
+    override val lineIndicator: AppColor.LineIndicatorColors =
+        object : AppColor.LineIndicatorColors {
+            override val primary = progressIndicatorColors(AppPalette.Common.White)
+            override val success = progressIndicatorColors(AppPalette.Unique.Green)
+            override val info = progressIndicatorColors(AppPalette.Common.White)
+            override val warning = progressIndicatorColors(AppPalette.Unique.Orange)
+        }
+
     override val input: AppColor.InputColors = object : AppColor.InputColors {
         override val placeholder = AppPalette.NeutralDark.N500
         override val label = AppPalette.NeutralDark.N500
@@ -260,4 +268,10 @@ public object DarkColor : AppColor {
         override val palette5OrangeRedGrowth: List<Color> =
             AppPalette.Gradient.Palette5OrangeRedGrowth
     }
+
+    private fun progressIndicatorColors(color: Color): AppColor.LineIndicatorColors.IndicatorColors =
+        object : AppColor.LineIndicatorColors.IndicatorColors {
+            override val indicator: Color = color
+            override val track: Color = color.copy(alpha = 0.2f)
+        }
 }

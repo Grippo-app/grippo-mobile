@@ -26,6 +26,7 @@ public interface AppColor {
     public val palette: PaletteColors
     public val static: Static
     public val achievements: Achievements
+    public val lineIndicator: LineIndicatorColors
     public val selectableCardColors: SelectableCardColors
 
     public interface DividerColors {
@@ -225,6 +226,18 @@ public interface AppColor {
         public interface Small {
             public val selectedBackground1: Color
             public val selectedBackground2: Color
+        }
+    }
+
+    public interface LineIndicatorColors {
+        public val primary: IndicatorColors
+        public val success: IndicatorColors
+        public val info: IndicatorColors
+        public val warning: IndicatorColors
+
+        public interface IndicatorColors {
+            public val indicator: Color
+            public val track: Color
         }
     }
 

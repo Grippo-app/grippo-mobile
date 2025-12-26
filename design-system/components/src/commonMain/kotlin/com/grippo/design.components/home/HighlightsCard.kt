@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -36,12 +35,11 @@ import com.grippo.core.state.trainings.highlight.HighlightMuscleFocus
 import com.grippo.core.state.trainings.highlight.HighlightPerformanceMetric
 import com.grippo.core.state.trainings.highlight.HighlightPerformanceStatus
 import com.grippo.core.state.trainings.highlight.HighlightStreakMood
-import com.grippo.core.state.trainings.highlight.HighlightStreakProgressEntry
 import com.grippo.core.state.trainings.highlight.HighlightStreakType
 import com.grippo.core.state.trainings.highlight.stubHighlight
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
-import com.grippo.design.components.modifiers.fire
+import com.grippo.design.components.indicators.LineIndicator
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -162,9 +160,7 @@ public fun HighlightsCard(
         // Focus exercise - full width
         value.focusExercise?.let { example ->
             HighlightPanel(
-                modifier = Modifier
-                    .fire()
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 content = {
                     Text(
                         text = AppTokens.strings.res(Res.string.highlight_focus_exercise),
@@ -331,7 +327,11 @@ private fun HighlightStreakPanel(value: Highlight) {
     val featured = streak.featured
     val title = AppTokens.strings.res(Res.string.highlight_streaks)
     val headline = when (featured.type) {
-        HighlightStreakType.Daily -> AppTokens.strings.res(Res.string.highlight_streak, featured.length)
+        HighlightStreakType.Daily -> AppTokens.strings.res(
+            Res.string.highlight_streak,
+            featured.length
+        )
+
         HighlightStreakType.Weekly -> AppTokens.strings.res(
             Res.string.highlight_streak_weekly,
             featured.length,
@@ -368,9 +368,12 @@ private fun HighlightStreakPanel(value: Highlight) {
         HighlightStreakMood.OnTrack -> AppTokens.strings.res(Res.string.highlight_streak_mood_on_track)
         HighlightStreakMood.Restart -> AppTokens.strings.res(Res.string.highlight_streak_mood_restart)
     }
-    val progressColor = streakMoodColor(featured.mood)
     val progressValue = (featured.progressPercent.coerceIn(0, 100)) / 100f
-    val shape = RoundedCornerShape(AppTokens.dp.contentPadding.text)
+    val progressColors = when (featured.mood) {
+        HighlightStreakMood.CrushingIt -> AppTokens.colors.lineIndicator.success
+        HighlightStreakMood.OnTrack -> AppTokens.colors.lineIndicator.info
+        HighlightStreakMood.Restart -> AppTokens.colors.lineIndicator.warning
+    }
 
     Text(
         text = title,
@@ -396,13 +399,10 @@ private fun HighlightStreakPanel(value: Highlight) {
         overflow = TextOverflow.Ellipsis
     )
 
-    LinearProgressIndicator(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(shape),
-        progress = { progressValue },
-        color = progressColor,
-        trackColor = progressColor.copy(alpha = 0.2f)
+    LineIndicator(
+        modifier = Modifier.fillMaxWidth(),
+        progress = progressValue,
+        colors = progressColors
     )
 
     Text(
@@ -421,15 +421,6 @@ private fun HighlightStreakPanel(value: Highlight) {
         style = AppTokens.typography.b12Med(),
         color = AppTokens.colors.text.tertiary
     )
-}
-
-@Composable
-private fun streakMoodColor(mood: HighlightStreakMood): Color {
-    return when (mood) {
-        HighlightStreakMood.CrushingIt -> AppTokens.colors.semantic.success
-        HighlightStreakMood.OnTrack -> AppTokens.colors.semantic.info
-        HighlightStreakMood.Restart -> AppTokens.colors.semantic.warning
-    }
 }
 
 @Composable
