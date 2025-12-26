@@ -103,6 +103,11 @@ public data object AppDp {
         val lastTraining: LastTraining = LastTraining
         val highlights: Highlights = Highlights
         val digest: Digest = Digest
+        val empty: Empty = Empty
+
+        public data object Empty {
+            val image: Dp = icon.xxxxLarge
+        }
 
         public data object LastTraining {
             val radius: Dp = AppDp.radius.medium
@@ -289,8 +294,7 @@ public data object AppDp {
 
         public data object Large
 
-        public data object Medium {
-        }
+        public data object Medium
 
         public data object Small {
             val radius: Dp = AppDp.radius.medium

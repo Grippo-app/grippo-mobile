@@ -153,6 +153,8 @@
     <string name="equipments">Обладнання</string>
     <string name="muscles">М’язи</string>
     <string name="weight_history">Історія ваги</string>
+    <string name="home_empty_title">Залишився один крок</string>
+    <string name="home_empty_subtitle">Почни своє перше тренування, і тут з’являться підбірки.</string>
     <string name="start_workout">Почати тренування</string>
     <string name="debug">Налагодження</string>
     <string name="clear_logs">Очистити логи</string>

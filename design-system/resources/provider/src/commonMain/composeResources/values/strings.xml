@@ -153,6 +153,8 @@
     <string name="equipments">Equipments</string>
     <string name="muscles">Muscles</string>
     <string name="weight_history">Weight History</string>
+    <string name="home_empty_title">Only one step left</string>
+    <string name="home_empty_subtitle">Start your first workout to see highlights here.</string>
     <string name="start_workout">Start Workout</string>
     <string name="debug">Debug</string>
     <string name="clear_logs">Clear logs</string>
