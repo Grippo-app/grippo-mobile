@@ -98,7 +98,7 @@ internal fun HomeScreen(
                         LastTrainingCard(
                             modifier = Modifier.fillMaxWidth(),
                             value = state.lastTraining,
-                            onViewWorkout = contract::onOpenTrainings
+                            onClick = contract::onOpenTrainings
                         )
                     }
                 }
