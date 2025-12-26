@@ -57,7 +57,8 @@ import com.grippo.design.resources.provider.highlight_streak_mood_on_track
 import com.grippo.design.resources.provider.highlight_streak_mood_restart
 import com.grippo.design.resources.provider.highlight_streak_rhythm
 import com.grippo.design.resources.provider.highlight_streak_rhythm_target
-import com.grippo.design.resources.provider.highlight_streak_weekly
+import com.grippo.design.resources.provider.highlight_streak_weekly_headline_primary
+import com.grippo.design.resources.provider.highlight_streak_weekly_headline_secondary
 import com.grippo.design.resources.provider.highlight_streak_weekly_target
 import com.grippo.design.resources.provider.highlight_streaks
 import com.grippo.design.resources.provider.highlight_type_comeback
@@ -70,7 +71,6 @@ import com.grippo.design.resources.provider.highlight_vs_average
 import com.grippo.design.resources.provider.highlights
 import com.grippo.design.resources.provider.icons.Intensity
 import com.grippo.design.resources.provider.intensity_chip
-import com.grippo.design.resources.provider.muscles
 import com.grippo.design.resources.provider.repetitions
 import com.grippo.design.resources.provider.volume
 import com.grippo.toolkit.date.utils.DateTimeUtils
@@ -284,8 +284,6 @@ private fun HighlightPanel(
 
 @Composable
 private fun HighlightMuscleFocusPanel(muscle: HighlightMuscleFocus) {
-    val segments = muscle.segments
-
     Text(
         text = AppTokens.strings.res(Res.string.highlight_muscle_focus),
         style = AppTokens.typography.b12Med(),
@@ -294,36 +292,55 @@ private fun HighlightMuscleFocusPanel(muscle: HighlightMuscleFocus) {
         overflow = TextOverflow.Ellipsis,
     )
 
-    if (segments.isEmpty()) {
-        Text(
-            text = AppTokens.strings.res(Res.string.muscles),
-            style = AppTokens.typography.h5(),
-            color = AppTokens.colors.text.primary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
-        Text(
-            text = "-",
-            style = AppTokens.typography.b13Med(),
-            color = AppTokens.colors.text.secondary
-        )
-        return
-    }
-
     Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)) {
-        segments.forEach { segment ->
-            HighlightMuscleFocusSegmentRow(segment)
+        muscle.segments.forEachIndexed { index, segment ->
+            HighlightMuscleFocusSegmentRow(
+                segment = segment,
+                isDominant = index == 0
+            )
         }
     }
 }
 
 @Composable
-private fun HighlightMuscleFocusSegmentRow(segment: HighlightMuscleFocusSegment) {
+private fun HighlightMuscleFocusSegmentRow(
+    segment: HighlightMuscleFocusSegment,
+    isDominant: Boolean,
+) {
     val progress = segment.load.value
         ?.coerceIn(0, 100)
         ?.toFloat()
         ?.div(100f) ?: 0f
-    val spacing = AppTokens.dp.contentPadding.text / 4
+    val spacing = if (isDominant) {
+        AppTokens.dp.contentPadding.text
+    } else {
+        AppTokens.dp.contentPadding.text
+    }
+    val labelStyle = if (isDominant) {
+        AppTokens.typography.h5()
+    } else {
+        AppTokens.typography.b13Med()
+    }
+    val valueStyle = if (isDominant) {
+        AppTokens.typography.h5()
+    } else {
+        AppTokens.typography.b13Semi()
+    }
+    val labelColor = if (isDominant) {
+        AppTokens.colors.text.primary
+    } else {
+        AppTokens.colors.text.secondary
+    }
+    val valueColor = if (isDominant) {
+        AppTokens.colors.text.primary
+    } else {
+        AppTokens.colors.text.secondary
+    }
+    val indicatorColors = if (isDominant) {
+        AppTokens.colors.lineIndicator.success
+    } else {
+        AppTokens.colors.lineIndicator.primary
+    }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(spacing)
@@ -336,16 +353,16 @@ private fun HighlightMuscleFocusSegmentRow(segment: HighlightMuscleFocusSegment)
             Text(
                 modifier = Modifier.weight(1f),
                 text = segment.muscleGroup.title().text(),
-                style = AppTokens.typography.b13Med(),
-                color = AppTokens.colors.text.primary,
+                style = labelStyle,
+                color = labelColor,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
 
             Text(
                 text = segment.load.short(),
-                style = AppTokens.typography.b13Semi(),
-                color = AppTokens.colors.text.secondary,
+                style = valueStyle,
+                color = valueColor,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -354,45 +371,46 @@ private fun HighlightMuscleFocusSegmentRow(segment: HighlightMuscleFocusSegment)
         LineIndicator(
             modifier = Modifier.fillMaxWidth(),
             progress = progress,
+            colors = indicatorColors
         )
     }
 }
 
 @Composable
 private fun HighlightStreakPanel(value: Highlight) {
-    val streak = value.streak
-    val featured = streak.featured
     val title = AppTokens.strings.res(Res.string.highlight_streaks)
-    val headline = when (featured.type) {
+    val (headlinePrimary, headlineSecondary) = when (value.streak.featured.type) {
         HighlightStreakType.Daily -> AppTokens.strings.res(
             Res.string.highlight_streak,
-            featured.length
-        )
+            value.streak.featured.length
+        ) to null
 
         HighlightStreakType.Weekly -> AppTokens.strings.res(
-            Res.string.highlight_streak_weekly,
-            featured.length,
-            featured.targetSessionsPerPeriod
+            Res.string.highlight_streak_weekly_headline_primary,
+            value.streak.featured.length
+        ) to AppTokens.strings.res(
+            Res.string.highlight_streak_weekly_headline_secondary,
+            value.streak.featured.targetSessionsPerPeriod
         )
 
         HighlightStreakType.Rhythm -> {
-            val rhythm = requireNotNull(featured.rhythm)
+            val rhythm = value.streak.featured.rhythm ?: return
             AppTokens.strings.res(
                 Res.string.highlight_streak_rhythm,
                 rhythm.workDays,
                 rhythm.restDays
-            )
+            ) to null
         }
     }
-    val cadenceLabel = when (featured.type) {
+    val cadenceLabel = when (value.streak.featured.type) {
         HighlightStreakType.Daily -> AppTokens.strings.res(Res.string.highlight_streak_daily_target)
         HighlightStreakType.Weekly -> AppTokens.strings.res(
             Res.string.highlight_streak_weekly_target,
-            featured.targetSessionsPerPeriod
+            value.streak.featured.targetSessionsPerPeriod
         )
 
         HighlightStreakType.Rhythm -> {
-            val rhythm = requireNotNull(featured.rhythm)
+            val rhythm = value.streak.featured.rhythm ?: return
             AppTokens.strings.res(
                 Res.string.highlight_streak_rhythm_target,
                 rhythm.workDays,
@@ -400,13 +418,13 @@ private fun HighlightStreakPanel(value: Highlight) {
             )
         }
     }
-    val encouragement = when (featured.mood) {
+    val encouragement = when (value.streak.featured.mood) {
         HighlightStreakMood.CrushingIt -> AppTokens.strings.res(Res.string.highlight_streak_mood_crushing)
         HighlightStreakMood.OnTrack -> AppTokens.strings.res(Res.string.highlight_streak_mood_on_track)
         HighlightStreakMood.Restart -> AppTokens.strings.res(Res.string.highlight_streak_mood_restart)
     }
-    val progressValue = (featured.progressPercent.coerceIn(0, 100)) / 100f
-    val progressColors = when (featured.mood) {
+    val progressValue = (value.streak.featured.progressPercent.coerceIn(0, 100)) / 100f
+    val progressColors = when (value.streak.featured.mood) {
         HighlightStreakMood.CrushingIt -> AppTokens.colors.lineIndicator.success
         HighlightStreakMood.OnTrack -> AppTokens.colors.lineIndicator.info
         HighlightStreakMood.Restart -> AppTokens.colors.lineIndicator.warning
@@ -420,13 +438,25 @@ private fun HighlightStreakPanel(value: Highlight) {
         overflow = TextOverflow.Ellipsis
     )
 
-    Text(
-        text = headline,
-        style = AppTokens.typography.h5(),
-        color = AppTokens.colors.text.primary,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis
-    )
+    Column {
+        Text(
+            text = headlinePrimary,
+            style = AppTokens.typography.h5(),
+            color = AppTokens.colors.text.primary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+
+        headlineSecondary?.let { secondary ->
+            Text(
+                text = secondary,
+                style = AppTokens.typography.b13Med(),
+                color = AppTokens.colors.text.primary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
 
     Text(
         text = cadenceLabel,
@@ -445,7 +475,7 @@ private fun HighlightStreakPanel(value: Highlight) {
     Text(
         text = AppTokens.strings.res(
             Res.string.highlight_active_days,
-            streak.totalActiveDays
+            value.streak.totalActiveDays
         ),
         style = AppTokens.typography.b13Med(),
         color = AppTokens.colors.text.secondary,

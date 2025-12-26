@@ -38,6 +38,8 @@
     <string name="highlight_active_days">%1$s active days</string>
     <string name="highlight_streak">%1$d-day streak</string>
     <string name="highlight_streak_weekly">%1$d-week streak at %2$d/week</string>
+    <string name="highlight_streak_weekly_headline_primary">%1$d-week streak</string>
+    <string name="highlight_streak_weekly_headline_secondary">at %1$d/week</string>
     <string name="highlight_streak_weekly_target">Goal · %1$d workouts/week</string>
     <string name="highlight_streak_daily_target">Goal · Back-to-back days</string>
     <string name="highlight_streak_rhythm">%1$d-on / %2$d-off streak</string>
