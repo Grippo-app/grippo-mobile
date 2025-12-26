@@ -19,7 +19,6 @@ import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
-import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.segment.Segment
@@ -32,7 +31,6 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.icons.ArrowRight
 import com.grippo.design.resources.provider.start_workout
 import com.grippo.design.resources.provider.trainings
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
@@ -165,7 +163,6 @@ internal fun TrainingsScreen(
                     .fillMaxWidth(1f),
                 content = ButtonContent.Text(
                     text = AppTokens.strings.res(Res.string.start_workout),
-                    endIcon = ButtonIcon.Icon(AppTokens.icons.ArrowRight)
                 ),
                 style = ButtonStyle.Primary,
                 onClick = contract::onAddTraining

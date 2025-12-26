@@ -57,6 +57,8 @@ internal fun EmptyHomeContent(
                 .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
             Text(
                 text = title,
                 style = AppTokens.typography.h2(),

@@ -219,7 +219,7 @@ public data object AppDp {
             val height: Dp = size.medium
             val horizontalPadding: Dp = padding.large
             val icon: Dp = AppDp.icon.medium
-            val space: Dp = padding.small
+            val space: Dp = padding.tiny
             val spaceTransparent: Dp = padding.tiny
         }
 
@@ -227,7 +227,7 @@ public data object AppDp {
             val height: Dp = size.small
             val horizontalPadding: Dp = padding.medium
             val icon: Dp = AppDp.icon.medium
-            val space: Dp = padding.small
+            val space: Dp = padding.tiny
             val spaceTransparent: Dp = padding.tiny
         }
     }

@@ -36,7 +36,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.continue_with_google
-import com.grippo.design.resources.provider.icons.ArrowRight
 import com.grippo.design.resources.provider.icons.Google
 import com.grippo.design.resources.provider.icons.GrippoLogo
 import com.grippo.design.resources.provider.login_button_login
@@ -57,9 +56,6 @@ internal fun LoginScreen(
 ) = BaseComposeScreen(
     ScreenBackground.Color(
         value = AppTokens.colors.background.screen,
-        ambient = ScreenBackground.Ambient(
-            color = AppTokens.colors.brand.color6,
-        )
     ),
 ) {
     Toolbar(
@@ -136,7 +132,6 @@ internal fun LoginScreen(
             modifier = Modifier.fillMaxWidth(),
             content = ButtonContent.Text(
                 text = AppTokens.strings.res(Res.string.login_button_login),
-                endIcon = ButtonIcon.Icon(AppTokens.icons.ArrowRight)
             ),
             state = buttonLoginByEmailState,
             style = ButtonStyle.Primary,
