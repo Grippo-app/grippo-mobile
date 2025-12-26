@@ -30,11 +30,6 @@ internal class HomeViewModel(
 ), HomeContract {
 
     init {
-        trainingFeature
-            .observeLastTraining()
-            .onEach(::provideLastTraining)
-            .safeLaunch()
-
         val now = DateTimeUtils.now()
 
         val range = DateRange(
@@ -50,12 +45,6 @@ internal class HomeViewModel(
         safeLaunch {
             trainingFeature.getTrainings(start = range.from, end = range.to).getOrThrow()
         }
-
-    }
-
-    private fun provideLastTraining(value: Training?) {
-        val training = value?.toState() ?: return
-        update { it.copy(lastTraining = training) }
     }
 
     private suspend fun provideTrainings(list: List<Training>) {
@@ -66,12 +55,15 @@ internal class HomeViewModel(
                     monthlyDigestState = null,
                     highlight = null,
                     trainings = persistentListOf(),
+                    lastTraining = null
                 )
             }
             return
         }
 
         val trainings = list.toState()
+
+        val last = trainings.first()
 
         val weekly = trainings.toWeeklyDigestState(range = DateTimeUtils.trailingWeek())
 
@@ -98,7 +90,8 @@ internal class HomeViewModel(
                 weeklyDigestState = weekly,
                 monthlyDigestState = monthly,
                 trainings = trainings,
-                highlight = highlight
+                highlight = highlight,
+                lastTraining = last
             )
         }
     }
