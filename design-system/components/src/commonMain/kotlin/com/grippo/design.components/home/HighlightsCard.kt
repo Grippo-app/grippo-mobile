@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -34,6 +35,9 @@ import com.grippo.core.state.trainings.highlight.HighlightMetric
 import com.grippo.core.state.trainings.highlight.HighlightMuscleFocus
 import com.grippo.core.state.trainings.highlight.HighlightPerformanceMetric
 import com.grippo.core.state.trainings.highlight.HighlightPerformanceStatus
+import com.grippo.core.state.trainings.highlight.HighlightStreakMood
+import com.grippo.core.state.trainings.highlight.HighlightStreakProgressEntry
+import com.grippo.core.state.trainings.highlight.HighlightStreakType
 import com.grippo.core.state.trainings.highlight.stubHighlight
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
@@ -45,7 +49,6 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.duration
 import com.grippo.design.resources.provider.highlight_active_days
 import com.grippo.design.resources.provider.highlight_best_value
-import com.grippo.design.resources.provider.highlight_consistency
 import com.grippo.design.resources.provider.highlight_focus_exercise
 import com.grippo.design.resources.provider.highlight_muscle_focus
 import com.grippo.design.resources.provider.highlight_status_declined
@@ -53,6 +56,15 @@ import com.grippo.design.resources.provider.highlight_status_improved
 import com.grippo.design.resources.provider.highlight_status_record
 import com.grippo.design.resources.provider.highlight_status_stable
 import com.grippo.design.resources.provider.highlight_streak
+import com.grippo.design.resources.provider.highlight_streak_daily_target
+import com.grippo.design.resources.provider.highlight_streak_mood_crushing
+import com.grippo.design.resources.provider.highlight_streak_mood_on_track
+import com.grippo.design.resources.provider.highlight_streak_mood_restart
+import com.grippo.design.resources.provider.highlight_streak_rhythm
+import com.grippo.design.resources.provider.highlight_streak_rhythm_target
+import com.grippo.design.resources.provider.highlight_streak_weekly
+import com.grippo.design.resources.provider.highlight_streak_weekly_target
+import com.grippo.design.resources.provider.highlight_streaks
 import com.grippo.design.resources.provider.highlight_type_comeback
 import com.grippo.design.resources.provider.highlight_type_comeback_hint
 import com.grippo.design.resources.provider.highlight_type_consistency
@@ -77,8 +89,9 @@ public fun HighlightsCard(
 ) {
     val storyType = run {
         val dominantMetric = value.performance.firstOrNull()
+        val streakLength = value.streak.featured.length
         when {
-            value.consistency.bestStreakDays >= 4 -> HighlightStoryType.Consistency
+            streakLength >= 3 -> HighlightStoryType.Consistency
             dominantMetric?.status == HighlightPerformanceStatus.Record ||
                     dominantMetric?.status == HighlightPerformanceStatus.Improved -> HighlightStoryType.Momentum
 
@@ -314,26 +327,109 @@ private fun HighlightMuscleFocusPanel(muscle: HighlightMuscleFocus) {
 
 @Composable
 private fun HighlightStreakPanel(value: Highlight) {
+    val streak = value.streak
+    val featured = streak.featured
+    val title = AppTokens.strings.res(Res.string.highlight_streaks)
+    val headline = when (featured.type) {
+        HighlightStreakType.Daily -> AppTokens.strings.res(Res.string.highlight_streak, featured.length)
+        HighlightStreakType.Weekly -> AppTokens.strings.res(
+            Res.string.highlight_streak_weekly,
+            featured.length,
+            featured.targetSessionsPerPeriod
+        )
+
+        HighlightStreakType.Rhythm -> {
+            val rhythm = requireNotNull(featured.rhythm)
+            AppTokens.strings.res(
+                Res.string.highlight_streak_rhythm,
+                rhythm.workDays,
+                rhythm.restDays
+            )
+        }
+    }
+    val cadenceLabel = when (featured.type) {
+        HighlightStreakType.Daily -> AppTokens.strings.res(Res.string.highlight_streak_daily_target)
+        HighlightStreakType.Weekly -> AppTokens.strings.res(
+            Res.string.highlight_streak_weekly_target,
+            featured.targetSessionsPerPeriod
+        )
+
+        HighlightStreakType.Rhythm -> {
+            val rhythm = requireNotNull(featured.rhythm)
+            AppTokens.strings.res(
+                Res.string.highlight_streak_rhythm_target,
+                rhythm.workDays,
+                rhythm.restDays
+            )
+        }
+    }
+    val encouragement = when (featured.mood) {
+        HighlightStreakMood.CrushingIt -> AppTokens.strings.res(Res.string.highlight_streak_mood_crushing)
+        HighlightStreakMood.OnTrack -> AppTokens.strings.res(Res.string.highlight_streak_mood_on_track)
+        HighlightStreakMood.Restart -> AppTokens.strings.res(Res.string.highlight_streak_mood_restart)
+    }
+    val progressColor = streakMoodColor(featured.mood)
+    val progressValue = (featured.progressPercent.coerceIn(0, 100)) / 100f
+    val shape = RoundedCornerShape(AppTokens.dp.contentPadding.text)
+
     Text(
-        text = AppTokens.strings.res(Res.string.highlight_consistency),
+        text = title,
         style = AppTokens.typography.b12Med(),
-        color = AppTokens.colors.text.secondary
+        color = AppTokens.colors.text.secondary,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis
     )
 
     Text(
-        text = AppTokens.strings.res(Res.string.highlight_streak, value.consistency.bestStreakDays),
+        text = headline,
         style = AppTokens.typography.h5(),
-        color = AppTokens.colors.text.primary
+        color = AppTokens.colors.text.primary,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis
+    )
+
+    Text(
+        text = cadenceLabel,
+        style = AppTokens.typography.b13Med(),
+        color = AppTokens.colors.text.secondary,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis
+    )
+
+    LinearProgressIndicator(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(shape),
+        progress = { progressValue },
+        color = progressColor,
+        trackColor = progressColor.copy(alpha = 0.2f)
     )
 
     Text(
         text = AppTokens.strings.res(
             Res.string.highlight_active_days,
-            value.consistency.activeDays
+            streak.totalActiveDays
         ),
         style = AppTokens.typography.b13Med(),
-        color = AppTokens.colors.text.secondary
+        color = AppTokens.colors.text.secondary,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis
     )
+
+    Text(
+        text = encouragement,
+        style = AppTokens.typography.b12Med(),
+        color = AppTokens.colors.text.tertiary
+    )
+}
+
+@Composable
+private fun streakMoodColor(mood: HighlightStreakMood): Color {
+    return when (mood) {
+        HighlightStreakMood.CrushingIt -> AppTokens.colors.semantic.success
+        HighlightStreakMood.OnTrack -> AppTokens.colors.semantic.info
+        HighlightStreakMood.Restart -> AppTokens.colors.semantic.warning
+    }
 }
 
 @Composable

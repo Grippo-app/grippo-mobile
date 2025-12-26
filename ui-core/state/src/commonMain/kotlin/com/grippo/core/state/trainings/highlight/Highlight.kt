@@ -24,7 +24,7 @@ public data class Highlight(
     val totalDuration: Duration,
     val focusExercise: ExerciseExampleState?,
     val muscleFocus: HighlightMuscleFocus?,
-    val consistency: HighlightConsistency,
+    val streak: HighlightStreak,
     val performance: List<HighlightPerformanceMetric>,
 )
 
@@ -35,9 +35,48 @@ public data class HighlightMuscleFocus(
 )
 
 @Immutable
-public data class HighlightConsistency(
-    val activeDays: Int,
-    val bestStreakDays: Int,
+public data class HighlightStreak(
+    val totalActiveDays: Int,
+    val featured: HighlightStreakFeatured,
+    val timeline: List<HighlightStreakProgressEntry>,
+)
+
+@Immutable
+public data class HighlightStreakFeatured(
+    val type: HighlightStreakType,
+    val length: Int,
+    val targetSessionsPerPeriod: Int,
+    val periodLengthDays: Int,
+    val mood: HighlightStreakMood,
+    val progressPercent: Int,
+    val rhythm: HighlightStreakRhythm? = null,
+)
+
+@Immutable
+public enum class HighlightStreakType {
+    Daily,
+    Weekly,
+    Rhythm,
+}
+
+@Immutable
+public enum class HighlightStreakMood {
+    CrushingIt,
+    OnTrack,
+    Restart,
+}
+
+@Immutable
+public data class HighlightStreakProgressEntry(
+    val progressPercent: Int,
+    val achievedSessions: Int,
+    val targetSessions: Int,
+)
+
+@Immutable
+public data class HighlightStreakRhythm(
+    val workDays: Int,
+    val restDays: Int,
 )
 
 @Immutable
@@ -111,9 +150,11 @@ public sealed interface HighlightPerformanceMetric {
 
 @Immutable
 public enum class HighlightPerformanceStatus {
-    Record, Improved, Stable, Declined
+    Record,
+    Improved,
+    Stable,
+    Declined
 }
-
 
 public fun stubHighlight(): Highlight = Highlight(
     totalDuration = 28.hours,
@@ -122,9 +163,23 @@ public fun stubHighlight(): Highlight = Highlight(
         muscleGroup = MuscleGroupEnumState.CHEST_MUSCLES,
         load = PercentageFormatState.of(42)
     ),
-    consistency = HighlightConsistency(
-        activeDays = 16,
-        bestStreakDays = 5,
+    streak = HighlightStreak(
+        totalActiveDays = 16,
+        featured = HighlightStreakFeatured(
+            type = HighlightStreakType.Rhythm,
+            length = 4,
+            targetSessionsPerPeriod = 2,
+            periodLengthDays = 3,
+            mood = HighlightStreakMood.CrushingIt,
+            progressPercent = 80,
+            rhythm = HighlightStreakRhythm(workDays = 2, restDays = 1),
+        ),
+        timeline = listOf(
+            HighlightStreakProgressEntry(progressPercent = 100, achievedSessions = 2, targetSessions = 2),
+            HighlightStreakProgressEntry(progressPercent = 100, achievedSessions = 2, targetSessions = 2),
+            HighlightStreakProgressEntry(progressPercent = 60, achievedSessions = 1, targetSessions = 2),
+            HighlightStreakProgressEntry(progressPercent = 80, achievedSessions = 2, targetSessions = 2),
+        )
     ),
     performance = listOf(
         HighlightPerformanceMetric.Volume(
