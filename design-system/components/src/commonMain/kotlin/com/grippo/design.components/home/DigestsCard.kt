@@ -23,8 +23,8 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.digests
 import com.grippo.design.resources.provider.icons.LineUp
-import com.grippo.design.resources.provider.summary
 
 @Composable
 public fun DigestsCard(
@@ -47,7 +47,7 @@ public fun DigestsCard(
 
             Text(
                 modifier = Modifier.weight(1f),
-                text = AppTokens.strings.res(Res.string.summary),
+                text = AppTokens.strings.res(Res.string.digests),
                 style = AppTokens.typography.h4(),
                 color = AppTokens.colors.text.secondary,
                 maxLines = 1,

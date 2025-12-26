@@ -39,7 +39,6 @@ public object DarkColor : AppColor {
         override val secondary = AppPalette.NeutralDark.N600
         override val tertiary = AppPalette.NeutralDark.N500
         override val disabled = AppPalette.NeutralDark.N300
-        override val inverted = AppPalette.Common.Black
     }
 
     override val toggle: AppColor.ToggleColors = object : AppColor.ToggleColors {
@@ -119,7 +118,6 @@ public object DarkColor : AppColor {
 
     override val brand: AppColor.BrandColors = object : AppColor.BrandColors {
         override val color1: Color = AppPalette.Unique.Magenta
-        override val color2: Color = AppPalette.Unique.Coral
 
         override val color3: Color = AppPalette.Unique.Green
         override val color4: Color = AppPalette.Unique.Teal
@@ -129,20 +127,17 @@ public object DarkColor : AppColor {
     }
 
     override val dialog: AppColor.DialogColors = object : AppColor.DialogColors {
-        override val handle = AppPalette.NeutralDark.N400
         override val scrim = Color(0xB3000000)
     }
 
     override val static: AppColor.Static = object : AppColor.Static {
         override val white: Color = AppPalette.Common.White
-        override val black: Color = AppPalette.Common.Black
     }
 
     override val text: AppColor.TextColors = object : AppColor.TextColors {
         override val primary = AppPalette.NeutralDark.N800
         override val secondary = AppPalette.NeutralDark.N700
         override val tertiary = AppPalette.NeutralDark.N500
-        override val inverted = AppPalette.Common.Black
         override val disabled = AppPalette.NeutralDark.N400
     }
 

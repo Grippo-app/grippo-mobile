@@ -4,7 +4,7 @@
     <string name="ex">Ex</string>
     <string name="kg">kg</string>
     <string name="reps">reps</string>
-    <string name="summary">Summary</string>
+    <string name="digests">Digests</string>
     <string name="filters">Filters</string>
     <string name="repetitions">Repetitions</string>
     <string name="search_placeholder">Search..</string>
@@ -25,19 +25,11 @@
     <string name="highlight_status_improved">Trending up</string>
     <string name="highlight_status_stable">On track</string>
     <string name="highlight_status_declined">Needs focus</string>
-    <string name="highlight_story_consistency">%1$d active days and a %2$d-day streak.</string>
-    <string name="highlight_story_momentum">%1$s is up %2$s vs average.</string>
-    <string name="highlight_story_comeback">%1$d workouts and %2$s of work this period.</string>
-    <string name="highlight_story_work">%1$s of work this period.</string>
     <string name="highlight_focus_exercise">Focus exercise</string>
     <string name="highlight_muscle_focus">Muscle focus</string>
-    <string name="highlight_unique_exercises">Unique exercises</string>
     <string name="highlight_streaks">Streaks</string>
-    <string name="highlight_trend">Performance trend</string>
-    <string name="highlight_sessions">%1$s sessions</string>
     <string name="highlight_active_days">%1$s active days</string>
     <string name="highlight_streak">%1$d-day streak</string>
-    <string name="highlight_streak_weekly">%1$d-week streak at %2$d/week</string>
     <string name="highlight_streak_weekly_headline_primary">%1$d-week streak</string>
     <string name="highlight_streak_weekly_headline_secondary">at %1$d/week</string>
     <string name="highlight_streak_weekly_target">Goal · %1$d workouts/week</string>
@@ -47,15 +39,11 @@
     <string name="highlight_streak_mood_crushing">🔥 You're unstoppable — keep stacking these wins.</string>
     <string name="highlight_streak_mood_on_track">Momentum is building. Stay with this rhythm.</string>
     <string name="highlight_streak_mood_restart">Every streak starts now. You've got this.</string>
-    <string name="highlight_force_weight">%1$s · %2$s</string>
     <string name="sets_value">Sets (%1$s)</string>
     <string name="value_sets">%1$s sets</string>
     <string name="one_set">1 set</string>
     <string name="percent">%</string>
     <string name="complete">Complete</string>
-    <string name="suggestions">Suggestions</string>
-    <string name="prepare_training">Prepare training</string>
-    <string name="back">Back</string>
     <string name="selected">Selected</string>
     <string name="cm">cm</string>
     <string name="next_btn">Next</string>
@@ -65,13 +53,11 @@
     <string name="confirm_btn">Confirm</string>
     <string name="no_data_yet">No data yet</string>
     <string name="no_exercises_yet">No exercises yet</string>
-    <string name="daily_digest">Daily digest</string>
     <string name="daily">Daily</string>
     <string name="yearly">Yearly</string>
     <string name="custom">Custom</string>
     <string name="weekly_digest">Weekly digest</string>
     <string name="weekly">Weekly</string>
-    <string name="monthly_digest">Monthly digest</string>
     <string name="monthly">Monthly</string>
     <string name="monthly_digest_template">%1$s digest</string>
     <string name="daily_digest_template">%1$s digest</string>
@@ -85,12 +71,10 @@
     <string name="edit_btn">Edit</string>
     <string name="get_started_btn">Get Started</string>
     <string name="continue_btn">Continue</string>
-    <string name="skip_btn">Skip</string>
     <string name="exercises">Exercises</string>
     <string name="add_exercise_btn">Add exercise</string>
     <string name="save_btn">Save</string>
     <string name="workout_saved">Workout saved</string>
-    <string name="set_label">Set</string>
     <string name="add_set_btn">Add Set</string>
     <string name="or">OR</string>
     <string name="email_placeholder">Enter email</string>
@@ -104,17 +88,9 @@
     <string name="not_used_before">Not used before</string>
     <string name="ai_suggestion_btn">Suggest</string>
     <string name="more">More</string>
-    <string name="last_iterations">Last iterations</string>
     <string name="history">History</string>
     <string name="achievements">Achievements</string>
 
-    <string name="time_ago_day">%d day</string>
-    <string name="time_ago_days">%d days</string>
-    <string name="time_ago_month">%d month</string>
-    <string name="time_ago_months">%d months</string>
-    <string name="time_ago_year">%d year</string>
-    <string name="time_ago_years">%d years</string>
-    <string name="time_ago_less_than_day">&lt; 1 day</string>
 
     <string name="login_title">Welcome to Grippo</string>
     <string name="login_description">Sign in to your account</string>
@@ -146,9 +122,7 @@
     <string name="height_picker_title">Select your height</string>
     <string name="height_picker_description">This will help us personalize your workout recommendations.</string>
 
-    <string name="date_picker_title">Select date</string>
     <string name="period_picker_title">Select period</string>
-    <string name="text_picker_title">Select option</string>
 
     <string name="weight_picker_title">Select your weight</string>
     <string name="weight_picker_description">Used for calculating stats like BMI and optimizing your workouts.</string>
@@ -162,11 +136,6 @@
     <string name="experience_advanced_description">You've been working out for over 2 years, have good exercise form, and show consistent physical progress.</string>
     <string name="experience_pro_description">You've been working out for over 5 years, have excellent exercise form, and maintain a high level of muscular development.</string>
 
-    <string name="user_card_value_in_a_row">%1$s in a Row</string>
-    <string name="user_card_value_workouts">%1$s Workouts</string>
-    <string name="user_card_no_workouts_yet">No workouts yet</string>
-    <string name="user_card_value_personal_records">%1$s Personal Records</string>
-    <string name="user_card_no_records_yet">No records yet</string>
 
     <string name="profile_menu_excluded_muscles">Muscles</string>
     <string name="profile_menu_missing_equipment">Equipment</string>
@@ -178,7 +147,6 @@
     <string name="training">Training</string>
     <string name="duration">Duration</string>
     <string name="sets">Sets</string>
-    <string name="profile">Profile</string>
     <string name="statistics">Statistics</string>
     <string name="value_statistics">%1$s statistics</string>
     <string name="trends">Trends</string>
@@ -186,14 +154,11 @@
     <string name="muscles">Muscles</string>
     <string name="weight_history">Weight History</string>
     <string name="start_workout">Start Workout</string>
-    <string name="system">System</string>
     <string name="debug">Debug</string>
     <string name="clear_logs">Clear logs</string>
     <string name="settings">Settings</string>
     <string name="activity">Activity</string>
     <string name="overview">Overview</string>
-    <string name="required_equipment">Required equipment</string>
-    <string name="training_at_value">Training at %1$s</string>
     <string name="no_internet_connection">No internet connection</string>
     <string name="this_day">This day</string>
     <string name="this_week">This week</string>
@@ -207,34 +172,12 @@
     <string name="tomorrow">Tomorrow</string>
     <string name="select_start_date">Select start date</string>
     <string name="select_end_date">Select end date</string>
-    <string name="r">R</string>
     <string name="x">x</string>
-    <string name="select">Select</string>
     <string name="tonnage_chip">Tonnage</string>
     <string name="intensity_chip">Intensity</string>
     <string name="repetitions_chip">Repetitions</string>
-    <string name="close">Close</string>
-    <string name="from">From</string>
-    <string name="to">To</string>
-    <string name="axis_hour">Hour</string>
-    <string name="axis_day">Day</string>
-    <string name="axis_month">Month</string>
     <string name="volume">Volume</string>
-    <string name="muscle_group">Muscle Group</string>
-    <string name="series_current">Current</string>
-    <string name="bench_press">Bench Press</string>
-    <string name="deadlift">Deadlift</string>
-    <string name="squat">Squat</string>
     <string name="sets_label">Sets:</string>
-    <string name="overhead_press">Overhead Press</string>
-    <string name="row_ex">Row</string>
-    <string name="chest_muscle">Chest</string>
-    <string name="back_muscle">Back</string>
-    <string name="legs_muscle">Legs</string>
-    <string name="shoulders_muscle">Shoulders</string>
-    <string name="arms_muscle">Arms</string>
-    <string name="core_muscle">Core</string>
-    <string name="strength_progress">Strength Progress</string>
     <string name="training_progress_lost_title">Exit Training</string>
     <string name="training_progress_lost_description">Closing now will cause all your progress in this session to be lost.</string>
     <string name="something_went_wrong">Something went wrong</string>
@@ -257,13 +200,11 @@
 
     <string name="last_used_label">Last used:</string>
 
-    <string name="add_training_title">Add training</string>
     <string name="edit_training_title">Edit training</string>
 
     <string name="filter_weight_type">Weight type</string>
     <string name="filter_force_type">Force type</string>
     <string name="filter_category">Category</string>
-    <string name="filter_experience">Experience</string>
 
     <!-- ForceTypeEnumState -->
     <string name="force_type_pull">Pull</string>
@@ -383,26 +324,10 @@
     <string name="iteration_focus_repetitions">Repetitions</string>
     <string name="iteration_focus_unidentified">Unidentified</string>
 
-    <string name="mostly_used">Mostly used</string>
-    <string name="recently_used">Recently used</string>
-    <string name="new_added">New added</string>
 
     <!-- ThemeState -->
-    <string name="theme_light">Light</string>
-    <string name="theme_dark">Dark</string>
-    <string name="theme_system">System</string>
 
     <!-- LocaleState -->
-    <string name="language_english">English</string>
-    <string name="language_ukrainian">Ukrainian</string>
-    <string name="language_system">System</string>
 
-    <string name="chart_title_exercise_volume">Exercise volume</string>
-    <string name="chart_title_category">Category</string>
-    <string name="chart_title_weight_type">Weight type</string>
-    <string name="chart_title_experience">Experience</string>
-    <string name="chart_title_force_type">Force type</string>
-    <string name="chart_title_muscle_load">Muscle Load (%)</string>
-    <string name="chart_title_muscle_heap">Warm map of Load</string>
 
 </resources>

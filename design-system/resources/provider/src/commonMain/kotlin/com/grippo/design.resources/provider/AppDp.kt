@@ -57,7 +57,6 @@ public data object AppDp {
     val menu: Menu = Menu
     val checkSelectableCard: CheckSelectableCard = CheckSelectableCard
     val toggleSelectableCard: ToggleSelectableCard = ToggleSelectableCard
-    val informationCard: InformationCard = InformationCard
     val wheelPicker: WheelPicker = WheelPicker
     val userCard: UserCard = UserCard
     val achievementCard: AchievementCard = AchievementCard
@@ -75,7 +74,6 @@ public data object AppDp {
     val connectionSnackbar: ConnectionSnackbar = ConnectionSnackbar
     val toggle: Toggle = Toggle
     val radio: Radio = Radio
-    val badge: Badge = Badge
     val aiSuggestionCard: AiSuggestionCard = AiSuggestionCard
     val home: HomeContent = HomeContent
 
@@ -116,13 +114,11 @@ public data object AppDp {
         public data object Highlights {
             val icon: Dp = AppDp.icon.medium
             val status: Status = Status
-            val image: Dp = AppDp.icon.xxxLarge
             val performance: Performance = Performance
             val panel: Panel = Panel
 
             public data object Panel {
                 val radius: Dp = AppDp.radius.small
-                val image: Dp = AppDp.icon.xxLarge
             }
 
             public data object Status {
@@ -145,7 +141,6 @@ public data object AppDp {
                 val radius: Dp = AppDp.radius.small
                 val horizontalPadding: Dp = padding.large
                 val verticalPadding: Dp = padding.large
-                val spacing: Dp = padding.extraSmall
                 val image: Dp = AppDp.icon.xxxLarge
                 val icon: Dp = AppDp.icon.large
             }
@@ -154,7 +149,6 @@ public data object AppDp {
                 val radius: Dp = AppDp.radius.small
                 val horizontalPadding: Dp = padding.large
                 val verticalPadding: Dp = padding.large
-                val spacing: Dp = padding.extraSmall
                 val image: Dp = AppDp.icon.xxxLarge
                 val icon: Dp = AppDp.icon.large
             }
@@ -166,10 +160,6 @@ public data object AppDp {
         val content: Dp = padding.medium
         val subContent: Dp = padding.small
         val text: Dp = padding.extraSmall
-    }
-
-    public data object Badge {
-        val size: Dp = icon.large
     }
 
     public data object Digest {
@@ -278,10 +268,6 @@ public data object AppDp {
         }
     }
 
-    public data object InformationCard {
-        val height: Dp = size.medium
-    }
-
     public data object Toggle {
         val width: Dp = 48.dp
         val height: Dp = 29.dp
@@ -304,14 +290,12 @@ public data object AppDp {
         public data object Large
 
         public data object Medium {
-            val spacing: Dp = padding.extraSmall
         }
 
         public data object Small {
             val radius: Dp = AppDp.radius.medium
             val horizontalPadding: Dp = padding.medium
             val verticalPadding: Dp = padding.medium
-            val spacing: Dp = padding.extraSmall
         }
     }
 

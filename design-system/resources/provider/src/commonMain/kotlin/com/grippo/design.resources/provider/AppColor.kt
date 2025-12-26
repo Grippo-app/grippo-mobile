@@ -47,7 +47,6 @@ public interface AppColor {
     }
 
     public interface Static {
-        public val black: Color
         public val white: Color
     }
 
@@ -110,7 +109,6 @@ public interface AppColor {
 
     public interface BrandColors {
         public val color1: Color
-        public val color2: Color
         public val color3: Color
         public val color4: Color
         public val color5: Color
@@ -124,7 +122,6 @@ public interface AppColor {
     }
 
     public interface DialogColors {
-        public val handle: Color
         public val scrim: Color
     }
 
@@ -132,7 +129,6 @@ public interface AppColor {
         public val primary: Color
         public val secondary: Color
         public val tertiary: Color
-        public val inverted: Color
         public val disabled: Color
     }
 
@@ -157,7 +153,6 @@ public interface AppColor {
         public val secondary: Color
         public val tertiary: Color
         public val disabled: Color
-        public val inverted: Color
     }
 
     public interface ProfileColors {

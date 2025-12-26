@@ -42,7 +42,7 @@ public fun AiSuggestionCard(
         // Tune typing speed if needed
         val typingSpeedMs = 18L
         for (i in value.indices) {
-            displayedText = value.substring(0, i + 1)
+            displayedText = value.take(i + 1)
             delay(typingSpeedMs)
         }
     }
