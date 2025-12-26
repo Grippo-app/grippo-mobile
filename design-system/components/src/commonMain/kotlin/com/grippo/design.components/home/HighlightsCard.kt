@@ -25,6 +25,7 @@ import com.grippo.core.state.trainings.highlight.Highlight
 import com.grippo.core.state.trainings.highlight.HighlightMetric
 import com.grippo.core.state.trainings.highlight.HighlightPerformanceMetric
 import com.grippo.core.state.trainings.highlight.HighlightPerformanceStatus
+import com.grippo.core.state.trainings.highlight.HighlightMuscleFocus
 import com.grippo.core.state.trainings.highlight.stubHighlight
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
@@ -170,29 +171,7 @@ public fun HighlightsCard(
         ) {
             value.muscleFocus?.let { muscle ->
                 HighlightPanel(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = AppTokens.strings.res(Res.string.highlight_muscle_focus),
-                        style = AppTokens.typography.b11Med(),
-                        color = AppTokens.colors.text.secondary,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-
-                    Text(
-                        text = muscle.muscleGroup.title().text(),
-                        style = AppTokens.typography.h5(),
-                        color = AppTokens.colors.text.primary,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-
-                    Text(
-                        text = muscle.load.short(),
-                        style = AppTokens.typography.b13Med(),
-                        color = AppTokens.colors.text.secondary,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
+                    HighlightMuscleFocusPanel(muscle)
                 }
             } ?: Spacer(modifier = Modifier.weight(1f))
 
@@ -257,6 +236,33 @@ private fun HighlightPanel(
             .padding(AppTokens.dp.contentPadding.content),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
         content = content
+    )
+}
+
+@Composable
+private fun HighlightMuscleFocusPanel(muscle: HighlightMuscleFocus) {
+    Text(
+        text = AppTokens.strings.res(Res.string.highlight_muscle_focus),
+        style = AppTokens.typography.b11Med(),
+        color = AppTokens.colors.text.secondary,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+    )
+
+    Text(
+        text = muscle.muscleGroup.title().text(),
+        style = AppTokens.typography.h5(),
+        color = AppTokens.colors.text.primary,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+    )
+
+    Text(
+        text = muscle.load.short(),
+        style = AppTokens.typography.b13Med(),
+        color = AppTokens.colors.text.secondary,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
     )
 }
 
