@@ -21,13 +21,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.unit.dp
 import com.grippo.core.state.trainings.TrainingState
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonSize
+import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.modifiers.spot
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -75,7 +75,6 @@ public fun LastTrainingCard(
                 shape = RoundedCornerShape(AppTokens.dp.home.lastTraining.radius)
             )
     ) {
-
         Image(
             modifier = Modifier
                 .spot(color = AppTokens.colors.brand.color5)
@@ -154,6 +153,7 @@ public fun LastTrainingCard(
                     endIcon = ButtonIcon.Icon(AppTokens.icons.ArrowRight)
                 ),
                 size = ButtonSize.Small,
+                style = ButtonStyle.Secondary,
                 onClick = onViewWorkout
             )
         }

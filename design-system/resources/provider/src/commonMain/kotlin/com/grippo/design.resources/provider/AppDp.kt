@@ -103,15 +103,13 @@ public data object AppDp {
 
     public data object HomeContent {
         val lastTraining: LastTraining = LastTraining
-        val thisWeekDigest: ThisWeekDigest = ThisWeekDigest
-        val thisMonthDigest: ThisMonthDigest = ThisMonthDigest
         val highlights: Highlights = Highlights
+        val digest: Digest = Digest
 
         public data object LastTraining {
             val radius: Dp = AppDp.radius.medium
             val horizontalPadding: Dp = padding.large
             val verticalPadding: Dp = padding.large
-            val spacing: Dp = padding.extraSmall
             val image: Dp = icon.xxxxLarge
         }
 
@@ -131,22 +129,28 @@ public data object AppDp {
             }
         }
 
-        public data object ThisWeekDigest {
-            val radius: Dp = AppDp.radius.medium
-            val horizontalPadding: Dp = padding.large
-            val verticalPadding: Dp = padding.large
-            val spacing: Dp = padding.extraSmall
-            val image: Dp = AppDp.icon.xxxLarge
-            val icon: Dp = AppDp.icon.large
-        }
+        public data object Digest {
+            val icon: Dp = AppDp.icon.medium
+            val week: Week = Week
+            val month: Month = Month
 
-        public data object ThisMonthDigest {
-            val radius: Dp = AppDp.radius.medium
-            val horizontalPadding: Dp = padding.large
-            val verticalPadding: Dp = padding.large
-            val spacing: Dp = padding.extraSmall
-            val image: Dp = AppDp.icon.xxxLarge
-            val icon: Dp = AppDp.icon.large
+            public data object Week {
+                val radius: Dp = AppDp.radius.medium
+                val horizontalPadding: Dp = padding.large
+                val verticalPadding: Dp = padding.large
+                val spacing: Dp = padding.extraSmall
+                val image: Dp = AppDp.icon.xxxLarge
+                val icon: Dp = AppDp.icon.large
+            }
+
+            public data object Month {
+                val radius: Dp = AppDp.radius.medium
+                val horizontalPadding: Dp = padding.large
+                val verticalPadding: Dp = padding.large
+                val spacing: Dp = padding.extraSmall
+                val image: Dp = AppDp.icon.xxxLarge
+                val icon: Dp = AppDp.icon.large
+            }
         }
     }
 

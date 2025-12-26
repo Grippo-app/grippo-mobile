@@ -19,6 +19,7 @@ import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
+import kotlin.time.Duration.Companion.days
 
 internal class HomeViewModel(
     private val trainingFeature: TrainingFeature,
@@ -28,24 +29,26 @@ internal class HomeViewModel(
     HomeState()
 ), HomeContract {
 
-    private val monthlyRange: DateRange = DateTimeUtils.trailingMonth()
-
     init {
         trainingFeature
             .observeLastTraining()
             .onEach(::provideLastTraining)
             .safeLaunch()
 
+        val now = DateTimeUtils.now()
+
+        val range = DateRange(
+            from = DateTimeUtils.minus(now, 90.days),
+            to = now
+        )
+
         trainingFeature
-            .observeTrainings(start = monthlyRange.from, end = monthlyRange.to)
+            .observeTrainings(start = range.from, end = range.to)
             .onEach(::provideTrainings)
             .safeLaunch()
 
         safeLaunch {
-            trainingFeature.getTrainings(
-                start = monthlyRange.from,
-                end = monthlyRange.to
-            ).getOrThrow()
+            trainingFeature.getTrainings(start = range.from, end = range.to).getOrThrow()
         }
 
     }
@@ -72,7 +75,7 @@ internal class HomeViewModel(
 
         val weekly = trainings.toWeeklyDigestState(range = DateTimeUtils.trailingWeek())
 
-        val monthly = trainings.toMonthlyDigestState(range = monthlyRange)
+        val monthly = trainings.toMonthlyDigestState(range = DateTimeUtils.trailingMonth())
 
         val exampleIds = list
             .flatMap { training -> training.exercises }

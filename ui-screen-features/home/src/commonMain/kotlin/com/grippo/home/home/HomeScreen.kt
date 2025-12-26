@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,10 +23,9 @@ import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
+import com.grippo.design.components.home.DigestsCard
 import com.grippo.design.components.home.HighlightsCard
 import com.grippo.design.components.home.LastTrainingCard
-import com.grippo.design.components.home.ThisMonthDigestCard
-import com.grippo.design.components.home.ThisWeekDigestCard
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
@@ -74,62 +71,39 @@ internal fun HomeScreen(
         ),
         overlay = AppTokens.colors.background.screen,
         content = { containerModifier, resolvedPadding ->
-            LazyVerticalGrid(
+            LazyColumn(
                 modifier = containerModifier
                     .fillMaxWidth()
                     .weight(1f),
-                columns = GridCells.Fixed(2),
                 contentPadding = resolvedPadding,
-                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block)
             ) {
-                state.lastTraining?.let { lastTraining ->
-                    item(
-                        key = "last_workout_card",
-                        span = { GridItemSpan(2) }
-                    ) {
+                if (state.lastTraining != null) {
+                    item(key = "last_workout") {
                         LastTrainingCard(
                             modifier = Modifier.fillMaxWidth(),
-                            value = lastTraining,
+                            value = state.lastTraining,
                             onViewWorkout = contract::onOpenTrainings
                         )
                     }
                 }
 
-                state.highlight?.let { highlight ->
-                    item(
-                        key = "monthly_highlight",
-                        span = { GridItemSpan(2) }
-                    ) {
+                if (state.highlight != null) {
+                    item(key = "highlight") {
                         HighlightsCard(
                             modifier = Modifier.fillMaxWidth(),
-                            value = highlight,
+                            value = state.highlight,
                             onViewWorkout = contract::onOpenTrainings,
                             onExampleClick = contract::onOpenExample
                         )
                     }
                 }
 
-                state.weeklyDigestState?.let { weeklyDigest ->
-                    item(
-                        key = "weekly_digest",
-                        span = { GridItemSpan(1) }
-                    ) {
-                        ThisWeekDigestCard(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = weeklyDigest,
-                        )
-                    }
-                }
-
-                state.monthlyDigestState?.let { monthlyDigest ->
-                    item(
-                        key = "monthly_digest",
-                        span = { GridItemSpan(1) }
-                    ) {
-                        ThisMonthDigestCard(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = monthlyDigest,
+                if (state.monthlyDigestState != null && state.weeklyDigestState != null) {
+                    item(key = "digest_section") {
+                        DigestsCard(
+                            weekly = state.weeklyDigestState,
+                            monthly = state.monthlyDigestState
                         )
                     }
                 }

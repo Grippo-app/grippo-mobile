@@ -1,4 +1,4 @@
-package com.grippo.design.components.home
+package com.grippo.design.components.home.internal
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,8 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import com.grippo.core.state.trainings.digest.WeeklyDigestState
-import com.grippo.core.state.trainings.digest.stubWeeklyDigest
+import com.grippo.core.state.trainings.digest.MonthlyDigestState
+import com.grippo.core.state.trainings.digest.stubMonthlyDigest
 import com.grippo.design.components.modifiers.spot
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -31,32 +31,32 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.duration
 import com.grippo.design.resources.provider.icons.Trophy
+import com.grippo.design.resources.provider.monthly
 import com.grippo.design.resources.provider.sets
 import com.grippo.design.resources.provider.trainings
 import com.grippo.design.resources.provider.volume
-import com.grippo.design.resources.provider.weekly
 import com.grippo.toolkit.date.utils.DateTimeUtils
 
 @Composable
-public fun ThisWeekDigestCard(
+internal fun MonthDigestCard(
     modifier: Modifier = Modifier,
-    value: WeeklyDigestState,
+    value: MonthlyDigestState,
 ) {
     Box(
         modifier = modifier
             .height(intrinsicSize = IntrinsicSize.Max)
-            .clip(RoundedCornerShape(AppTokens.dp.home.thisWeekDigest.radius))
+            .clip(RoundedCornerShape(AppTokens.dp.home.digest.month.radius))
             .background(
                 AppTokens.colors.background.card,
-                shape = RoundedCornerShape(AppTokens.dp.home.thisWeekDigest.radius)
+                shape = RoundedCornerShape(AppTokens.dp.home.digest.month.radius)
             )
     ) {
         Icon(
             modifier = Modifier
-                .spot(color = AppTokens.colors.brand.color4)
+                .spot(color = AppTokens.colors.brand.color6)
                 .align(Alignment.CenterEnd)
-                .offset(x = (AppTokens.dp.home.thisWeekDigest.image / 2))
-                .size(AppTokens.dp.home.thisWeekDigest.image)
+                .offset(x = (AppTokens.dp.home.digest.month.image / 2))
+                .size(AppTokens.dp.home.digest.month.image)
                 .scale(1.6f)
                 .alpha(0.2f),
             imageVector = AppTokens.icons.Trophy,
@@ -67,8 +67,8 @@ public fun ThisWeekDigestCard(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(
-                    vertical = AppTokens.dp.home.thisWeekDigest.verticalPadding,
-                    horizontal = AppTokens.dp.home.thisWeekDigest.horizontalPadding
+                    vertical = AppTokens.dp.home.digest.month.verticalPadding,
+                    horizontal = AppTokens.dp.home.digest.month.horizontalPadding
                 )
         ) {
             Row(
@@ -76,17 +76,17 @@ public fun ThisWeekDigestCard(
                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
             ) {
                 Icon(
-                    modifier = Modifier.size(AppTokens.dp.home.thisWeekDigest.icon),
+                    modifier = Modifier.size(AppTokens.dp.home.digest.month.icon),
                     imageVector = AppTokens.icons.Trophy,
                     contentDescription = null,
-                    tint = AppTokens.colors.brand.color4,
+                    tint = AppTokens.colors.brand.color6,
                 )
 
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = AppTokens.strings.res(Res.string.weekly),
+                    text = AppTokens.strings.res(Res.string.monthly),
                     style = AppTokens.typography.h4(),
-                    color = AppTokens.colors.brand.color4,
+                    color = AppTokens.colors.brand.color6,
                 )
             }
 
@@ -154,10 +154,10 @@ private fun WeeklyDigestStatRow(
 
 @AppPreview
 @Composable
-private fun ThisWeekDigestCardPreview() {
+private fun MonthDigestCardPreview() {
     PreviewContainer {
-        ThisWeekDigestCard(
-            value = stubWeeklyDigest(),
+        MonthDigestCard(
+            value = stubMonthlyDigest(),
         )
     }
 }

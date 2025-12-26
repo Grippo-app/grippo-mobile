@@ -159,6 +159,24 @@ internal fun ExerciseExampleScreen(
             )
         }
 
+        if (state.achievements.isNotEmpty()) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+                ContentSpliter(
+                    text = AppTokens.strings.res(Res.string.achievements)
+                )
+
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+                AchievementsCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = state.achievements,
+                    contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                )
+            }
+        }
+
         if (state.recent.isNotEmpty()) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
@@ -198,24 +216,6 @@ internal fun ExerciseExampleScreen(
                         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
                     }
                 }
-            }
-        }
-
-        if (state.achievements.isNotEmpty()) {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-                ContentSpliter(
-                    text = AppTokens.strings.res(Res.string.achievements)
-                )
-
-                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-                AchievementsCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = state.achievements,
-                    contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                )
             }
         }
 
