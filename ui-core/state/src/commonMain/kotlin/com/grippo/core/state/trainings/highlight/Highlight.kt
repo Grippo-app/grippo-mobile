@@ -30,6 +30,11 @@ public data class Highlight(
 
 @Immutable
 public data class HighlightMuscleFocus(
+    val segments: List<HighlightMuscleFocusSegment>,
+)
+
+@Immutable
+public data class HighlightMuscleFocusSegment(
     val muscleGroup: MuscleGroupEnumState,
     val load: PercentageFormatState,
 )
@@ -160,8 +165,24 @@ public fun stubHighlight(): Highlight = Highlight(
     totalDuration = 28.hours,
     focusExercise = stubExerciseExample(),
     muscleFocus = HighlightMuscleFocus(
-        muscleGroup = MuscleGroupEnumState.CHEST_MUSCLES,
-        load = PercentageFormatState.of(42)
+        segments = listOf(
+            HighlightMuscleFocusSegment(
+                muscleGroup = MuscleGroupEnumState.CHEST_MUSCLES,
+                load = PercentageFormatState.of(42)
+            ),
+            HighlightMuscleFocusSegment(
+                muscleGroup = MuscleGroupEnumState.BACK_MUSCLES,
+                load = PercentageFormatState.of(27)
+            ),
+            HighlightMuscleFocusSegment(
+                muscleGroup = MuscleGroupEnumState.ARMS_AND_FOREARMS,
+                load = PercentageFormatState.of(18)
+            ),
+            HighlightMuscleFocusSegment(
+                muscleGroup = MuscleGroupEnumState.LEGS,
+                load = PercentageFormatState.of(13)
+            )
+        )
     ),
     streak = HighlightStreak(
         totalActiveDays = 16,
@@ -175,10 +196,26 @@ public fun stubHighlight(): Highlight = Highlight(
             rhythm = HighlightStreakRhythm(workDays = 2, restDays = 1),
         ),
         timeline = listOf(
-            HighlightStreakProgressEntry(progressPercent = 100, achievedSessions = 2, targetSessions = 2),
-            HighlightStreakProgressEntry(progressPercent = 100, achievedSessions = 2, targetSessions = 2),
-            HighlightStreakProgressEntry(progressPercent = 60, achievedSessions = 1, targetSessions = 2),
-            HighlightStreakProgressEntry(progressPercent = 80, achievedSessions = 2, targetSessions = 2),
+            HighlightStreakProgressEntry(
+                progressPercent = 100,
+                achievedSessions = 2,
+                targetSessions = 2
+            ),
+            HighlightStreakProgressEntry(
+                progressPercent = 100,
+                achievedSessions = 2,
+                targetSessions = 2
+            ),
+            HighlightStreakProgressEntry(
+                progressPercent = 60,
+                achievedSessions = 1,
+                targetSessions = 2
+            ),
+            HighlightStreakProgressEntry(
+                progressPercent = 80,
+                achievedSessions = 2,
+                targetSessions = 2
+            ),
         )
     ),
     performance = listOf(

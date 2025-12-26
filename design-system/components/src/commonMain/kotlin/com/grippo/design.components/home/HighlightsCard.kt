@@ -1,6 +1,5 @@
 package com.grippo.design.components.home
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,14 +22,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.trainings.highlight.Highlight
 import com.grippo.core.state.trainings.highlight.HighlightMetric
 import com.grippo.core.state.trainings.highlight.HighlightMuscleFocus
+import com.grippo.core.state.trainings.highlight.HighlightMuscleFocusSegment
 import com.grippo.core.state.trainings.highlight.HighlightPerformanceMetric
 import com.grippo.core.state.trainings.highlight.HighlightPerformanceStatus
 import com.grippo.core.state.trainings.highlight.HighlightStreakMood
@@ -196,19 +192,6 @@ public fun HighlightsCard(
             value.muscleFocus?.let { muscle ->
                 HighlightPanel(
                     modifier = Modifier.weight(1f),
-                    decoration = {
-                        Image(
-                            modifier = Modifier
-                                .offset(x = AppTokens.dp.home.highlights.panel.image / 3)
-                                .size(AppTokens.dp.home.highlights.panel.image)
-                                .align(Alignment.CenterEnd)
-                                .scale(2.3f),
-                            painter = AppTokens.drawables.res(Res.drawable.muscles),
-                            contentDescription = null,
-                            contentScale = ContentScale.FillHeight,
-                            colorFilter = ColorFilter.tint(color = AppTokens.colors.icon.disabled)
-                        )
-                    },
                     content = {
                         HighlightMuscleFocusPanel(muscle)
                     }
@@ -296,6 +279,8 @@ private fun HighlightPanel(
 
 @Composable
 private fun HighlightMuscleFocusPanel(muscle: HighlightMuscleFocus) {
+    val segments = muscle.segments
+
     Text(
         text = AppTokens.strings.res(Res.string.highlight_muscle_focus),
         style = AppTokens.typography.b12Med(),
@@ -304,21 +289,68 @@ private fun HighlightMuscleFocusPanel(muscle: HighlightMuscleFocus) {
         overflow = TextOverflow.Ellipsis,
     )
 
-    Text(
-        text = muscle.muscleGroup.title().text(),
-        style = AppTokens.typography.h5(),
-        color = AppTokens.colors.text.primary,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-    )
+    if (segments.isEmpty()) {
+        Text(
+            text = AppTokens.strings.res(Res.string.muscles),
+            style = AppTokens.typography.h5(),
+            color = AppTokens.colors.text.primary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        Text(
+            text = "-",
+            style = AppTokens.typography.b13Med(),
+            color = AppTokens.colors.text.secondary
+        )
+        return
+    }
 
-    Text(
-        text = muscle.load.short(),
-        style = AppTokens.typography.b13Med(),
-        color = AppTokens.colors.text.secondary,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-    )
+    Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)) {
+        segments.forEach { segment ->
+            HighlightMuscleFocusSegmentRow(segment)
+        }
+    }
+}
+
+@Composable
+private fun HighlightMuscleFocusSegmentRow(segment: HighlightMuscleFocusSegment) {
+    val progress = segment.load.value
+        ?.coerceIn(0, 100)
+        ?.toFloat()
+        ?.div(100f) ?: 0f
+    val spacing = AppTokens.dp.contentPadding.text / 4
+
+    Column(
+        verticalArrangement = Arrangement.spacedBy(spacing)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = segment.muscleGroup.title().text(),
+                style = AppTokens.typography.b13Med(),
+                color = AppTokens.colors.text.primary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+
+            Text(
+                text = segment.load.short(),
+                style = AppTokens.typography.b13Semi(),
+                color = AppTokens.colors.text.secondary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+
+        LineIndicator(
+            modifier = Modifier.fillMaxWidth(),
+            progress = progress,
+        )
+    }
 }
 
 @Composable

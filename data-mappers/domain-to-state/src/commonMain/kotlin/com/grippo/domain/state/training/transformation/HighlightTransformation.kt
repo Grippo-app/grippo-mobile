@@ -12,6 +12,7 @@ import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.TrainingState
 import com.grippo.core.state.trainings.highlight.Highlight
 import com.grippo.core.state.trainings.highlight.HighlightMuscleFocus
+import com.grippo.core.state.trainings.highlight.HighlightMuscleFocusSegment
 import com.grippo.core.state.trainings.highlight.HighlightPerformanceMetric
 import com.grippo.core.state.trainings.highlight.HighlightPerformanceStatus
 import com.grippo.core.state.trainings.highlight.HighlightStreak
@@ -177,15 +178,37 @@ private fun List<TrainingState>.muscleFocus(
         contributions[fallbackGroup] = (contributions[fallbackGroup] ?: 0f) + volume
     }
 
-    val (group, loadValue) = contributions.maxByOrNull { it.value } ?: return null
     val totalLoad = contributions.values.sum()
     if (totalLoad <= 0f) return null
 
-    val percentage = ((loadValue / totalLoad) * 100).roundToInt()
+    val segments = contributions
+        .mapNotNull { (group, loadValue) ->
+            if (loadValue <= 0f) {
+                null
+            } else {
+                val percentage = ((loadValue / totalLoad) * 100).roundToInt()
+                if (percentage <= 0) {
+                    null
+                } else {
+                    HighlightMuscleFocusSegment(
+                        muscleGroup = group,
+                        load = PercentageFormatState.of(percentage)
+                    )
+                }
+            }
+        }
+        .sortedByDescending { segment ->
+            when (val state = segment.load) {
+                is PercentageFormatState.Valid -> state.value
+                is PercentageFormatState.Invalid -> state.value ?: 0
+                is PercentageFormatState.Empty -> 0
+            }
+        }
+
+    if (segments.isEmpty()) return null
 
     return HighlightMuscleFocus(
-        muscleGroup = group,
-        load = PercentageFormatState.of(percentage)
+        segments = segments
     )
 }
 
