@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -34,6 +35,7 @@ import com.grippo.design.resources.provider.home_empty_title
 import com.grippo.design.resources.provider.plate
 import com.grippo.design.resources.provider.start_workout
 import com.grippo.design.resources.provider.weight
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun EmptyHomeContent(
@@ -88,44 +90,51 @@ internal fun EmptyHomeContent(
 @Composable
 private fun EmptyHomeDecorations(modifier: Modifier = Modifier) {
     val largeIconSize = AppTokens.dp.home.empty.image
+    val dumbbell = AppTokens.drawables.res(Res.drawable.dumbbell)
+    val barbell = AppTokens.drawables.res(Res.drawable.barbell)
+    val plate = AppTokens.drawables.res(Res.drawable.plate)
+    val box = AppTokens.drawables.res(Res.drawable.box)
+    val weight = AppTokens.drawables.res(Res.drawable.weight)
 
-    val decorations = listOf(
-        EmptyHomeIcon(
-            painter = AppTokens.drawables.res(Res.drawable.dumbbell),
-            alignment = Alignment.TopStart,
-            offset = DpOffset(-(largeIconSize / 3), -(34.dp)),
-            rotation = -12f,
-            size = largeIconSize,
-        ),
-        EmptyHomeIcon(
-            painter = AppTokens.drawables.res(Res.drawable.barbell),
-            alignment = Alignment.TopEnd,
-            offset = DpOffset((largeIconSize / 3), (52).dp),
-            rotation = 0f,
-            size = largeIconSize,
-        ),
-        EmptyHomeIcon(
-            painter = AppTokens.drawables.res(Res.drawable.plate),
-            alignment = Alignment.CenterStart,
-            offset = DpOffset(-(largeIconSize / 2), -(34.dp)),
-            rotation = -18f,
-            size = largeIconSize,
-        ),
-        EmptyHomeIcon(
-            painter = AppTokens.drawables.res(Res.drawable.box),
-            alignment = Alignment.BottomEnd,
-            offset = DpOffset((largeIconSize / 3), -(52).dp),
-            rotation = -8f,
-            size = largeIconSize,
-        ),
-        EmptyHomeIcon(
-            painter = AppTokens.drawables.res(Res.drawable.weight),
-            alignment = Alignment.BottomStart,
-            offset = DpOffset(-(largeIconSize / 2), 60.dp),
-            rotation = 10f,
-            size = largeIconSize,
-        ),
-    )
+    val decorations = remember {
+        persistentListOf(
+            EmptyHomeIcon(
+                painter = dumbbell,
+                alignment = Alignment.TopStart,
+                offset = DpOffset(-(largeIconSize / 3), -(34.dp)),
+                rotation = -12f,
+                size = largeIconSize,
+            ),
+            EmptyHomeIcon(
+                painter = barbell,
+                alignment = Alignment.TopEnd,
+                offset = DpOffset((largeIconSize / 3), (52).dp),
+                rotation = 0f,
+                size = largeIconSize * 1.3f,
+            ),
+            EmptyHomeIcon(
+                painter = plate,
+                alignment = Alignment.CenterStart,
+                offset = DpOffset(-(largeIconSize / 2), -(34.dp)),
+                rotation = -18f,
+                size = largeIconSize,
+            ),
+            EmptyHomeIcon(
+                painter = box,
+                alignment = Alignment.BottomEnd,
+                offset = DpOffset((largeIconSize / 3), -(52).dp),
+                rotation = -8f,
+                size = largeIconSize,
+            ),
+            EmptyHomeIcon(
+                painter = weight,
+                alignment = Alignment.BottomStart,
+                offset = DpOffset(-(largeIconSize / 2), 60.dp),
+                rotation = 10f,
+                size = largeIconSize,
+            ),
+        )
+    }
 
     Box(modifier = modifier) {
         decorations.forEach { icon ->
@@ -134,7 +143,7 @@ private fun EmptyHomeDecorations(modifier: Modifier = Modifier) {
                     .align(icon.alignment)
                     .offset(x = icon.offset.x, y = icon.offset.y)
                     .size(icon.size)
-                    .scale(1.3f)
+                    .scale(1.4f)
                     .alpha(0.8f)
                     .graphicsLayer {
                         rotationZ = icon.rotation
