@@ -82,10 +82,22 @@ public object DarkColor : AppColor {
 
     override val lineIndicator: AppColor.LineIndicatorColors =
         object : AppColor.LineIndicatorColors {
-            override val primary = progressIndicatorColors(AppPalette.Common.White)
-            override val success = progressIndicatorColors(AppPalette.Unique.Green)
-            override val info = progressIndicatorColors(AppPalette.Common.White)
-            override val warning = progressIndicatorColors(AppPalette.Unique.Orange)
+            override val primary = object : AppColor.LineIndicatorColors.IndicatorColors {
+                override val indicator: Color = AppPalette.Common.White
+                override val track: Color = AppPalette.Common.White.copy(alpha = 0.2f)
+            }
+            override val success = object : AppColor.LineIndicatorColors.IndicatorColors {
+                override val indicator: Color = AppPalette.Unique.Green
+                override val track: Color = AppPalette.Unique.Green.copy(alpha = 0.2f)
+            }
+            override val info = object : AppColor.LineIndicatorColors.IndicatorColors {
+                override val indicator: Color = AppPalette.Common.White
+                override val track: Color = AppPalette.Common.White.copy(alpha = 0.2f)
+            }
+            override val warning = object : AppColor.LineIndicatorColors.IndicatorColors {
+                override val indicator: Color = AppPalette.Unique.Orange
+                override val track: Color = AppPalette.Unique.Orange.copy(alpha = 0.2f)
+            }
         }
 
     override val input: AppColor.InputColors = object : AppColor.InputColors {
@@ -269,9 +281,4 @@ public object DarkColor : AppColor {
             AppPalette.Gradient.Palette5OrangeRedGrowth
     }
 
-    private fun progressIndicatorColors(color: Color): AppColor.LineIndicatorColors.IndicatorColors =
-        object : AppColor.LineIndicatorColors.IndicatorColors {
-            override val indicator: Color = color
-            override val track: Color = color.copy(alpha = 0.2f)
-        }
 }
