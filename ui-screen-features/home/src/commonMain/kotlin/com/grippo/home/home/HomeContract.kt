@@ -8,6 +8,8 @@ internal interface HomeContract {
     fun onStartTraining()
     fun onOpenTrainings()
     fun onOpenExample(id: String)
+    fun onOpenWeeklyDigest()
+    fun onOpenMonthlyDigest()
     fun onBack()
 
     @Immutable
@@ -16,6 +18,8 @@ internal interface HomeContract {
         override fun onStartTraining() {}
         override fun onOpenTrainings() {}
         override fun onOpenExample(id: String) {}
+        override fun onOpenWeeklyDigest() {}
+        override fun onOpenMonthlyDigest() {}
         override fun onBack() {}
     }
 }

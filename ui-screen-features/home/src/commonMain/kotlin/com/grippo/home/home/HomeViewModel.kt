@@ -16,8 +16,8 @@ import com.grippo.domain.state.training.transformation.toMonthlyDigestState
 import com.grippo.domain.state.training.transformation.toWeeklyDigestState
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.onEach
 import kotlin.time.Duration.Companion.days
 
@@ -54,7 +54,6 @@ internal class HomeViewModel(
                     weeklyDigestState = null,
                     monthlyDigestState = null,
                     highlight = null,
-                    trainings = persistentListOf(),
                     lastTraining = null
                 )
             }
@@ -89,7 +88,6 @@ internal class HomeViewModel(
             it.copy(
                 weeklyDigestState = weekly,
                 monthlyDigestState = monthly,
-                trainings = trainings,
                 highlight = highlight,
                 lastTraining = last
             )
@@ -128,6 +126,38 @@ internal class HomeViewModel(
         )
 
         dialogController.show(dialog)
+    }
+
+    override fun onOpenMonthlyDigest() {
+        safeLaunch {
+            val range = DateTimeUtils.trailingMonth()
+            val trainings = trainingFeature.observeTrainings(range.from, range.to)
+                .firstOrNull()
+                ?.map { it.toState() } ?: return@safeLaunch
+
+            val config = DialogConfig.Statistics.Trainings(
+                trainings = trainings,
+                range = range
+            )
+
+            dialogController.show(config)
+        }
+    }
+
+    override fun onOpenWeeklyDigest() {
+        safeLaunch {
+            val range = DateTimeUtils.trailingWeek()
+            val trainings = trainingFeature.observeTrainings(range.from, range.to)
+                .firstOrNull()
+                ?.map { it.toState() } ?: return@safeLaunch
+
+            val config = DialogConfig.Statistics.Trainings(
+                trainings = trainings,
+                range = range
+            )
+
+            dialogController.show(config)
+        }
     }
 
     override fun onBack() {

@@ -19,6 +19,7 @@ import com.grippo.core.state.trainings.digest.stubMonthlyDigest
 import com.grippo.core.state.trainings.digest.stubWeeklyDigest
 import com.grippo.design.components.home.internal.MonthDigestCard
 import com.grippo.design.components.home.internal.WeekDigestCard
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -30,7 +31,9 @@ import com.grippo.design.resources.provider.icons.LineUp
 public fun DigestsCard(
     modifier: Modifier = Modifier,
     weekly: WeeklyDigestState,
-    monthly: MonthlyDigestState
+    monthly: MonthlyDigestState,
+    onWeeklyClick: () -> Unit,
+    onMonthlyClick: () -> Unit
 ) {
     Column(modifier = modifier) {
         Row(
@@ -61,14 +64,18 @@ public fun DigestsCard(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
         ) {
-            WeekDigestCard(
-                modifier = Modifier.weight(1f),
-                value = weekly,
+            MonthDigestCard(
+                modifier = Modifier
+                    .weight(1f)
+                    .scalableClick(onClick = onMonthlyClick),
+                value = monthly,
             )
 
-            MonthDigestCard(
-                modifier = Modifier.weight(1f),
-                value = monthly,
+            WeekDigestCard(
+                modifier = Modifier
+                    .weight(1f)
+                    .scalableClick(onClick = onWeeklyClick),
+                value = weekly,
             )
         }
     }
@@ -80,7 +87,9 @@ private fun DigestsCardPreview() {
     PreviewContainer {
         DigestsCard(
             weekly = stubWeeklyDigest(),
-            monthly = stubMonthlyDigest()
+            monthly = stubMonthlyDigest(),
+            onWeeklyClick = {},
+            onMonthlyClick = {}
         )
     }
 }

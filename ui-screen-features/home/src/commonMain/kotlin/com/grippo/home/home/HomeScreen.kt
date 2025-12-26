@@ -103,7 +103,9 @@ internal fun HomeScreen(
                     item(key = "digest_section") {
                         DigestsCard(
                             weekly = state.weeklyDigestState,
-                            monthly = state.monthlyDigestState
+                            monthly = state.monthlyDigestState,
+                            onWeeklyClick = contract::onOpenWeeklyDigest,
+                            onMonthlyClick = contract::onOpenMonthlyDigest
                         )
                     }
                 }
