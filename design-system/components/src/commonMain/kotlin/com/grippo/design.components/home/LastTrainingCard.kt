@@ -33,9 +33,9 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.barbell
 import com.grippo.design.resources.provider.icons.ArrowRight
 import com.grippo.design.resources.provider.last_workout
+import com.grippo.design.resources.provider.plate
 import com.grippo.design.resources.provider.plus_value_more
 import com.grippo.design.resources.provider.view_workout
 import com.grippo.toolkit.date.utils.DateFormat
@@ -82,7 +82,7 @@ public fun LastTrainingCard(
                 .offset(x = (AppTokens.dp.home.lastTraining.image / 2))
                 .size(AppTokens.dp.home.lastTraining.image)
                 .scale(2f),
-            painter = AppTokens.drawables.res(Res.drawable.barbell),
+            painter = AppTokens.drawables.res(Res.drawable.plate),
             contentDescription = null,
             contentScale = ContentScale.FillWidth,
         )

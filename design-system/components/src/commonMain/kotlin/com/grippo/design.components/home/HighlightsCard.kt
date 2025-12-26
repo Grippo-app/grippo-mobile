@@ -1,13 +1,18 @@
 package com.grippo.design.components.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,16 +24,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.trainings.highlight.Highlight
 import com.grippo.core.state.trainings.highlight.HighlightMetric
+import com.grippo.core.state.trainings.highlight.HighlightMuscleFocus
 import com.grippo.core.state.trainings.highlight.HighlightPerformanceMetric
 import com.grippo.core.state.trainings.highlight.HighlightPerformanceStatus
-import com.grippo.core.state.trainings.highlight.HighlightMuscleFocus
 import com.grippo.core.state.trainings.highlight.stubHighlight
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
+import com.grippo.design.components.modifiers.fire
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -54,6 +63,7 @@ import com.grippo.design.resources.provider.highlight_vs_average
 import com.grippo.design.resources.provider.highlights
 import com.grippo.design.resources.provider.icons.Intensity
 import com.grippo.design.resources.provider.intensity_chip
+import com.grippo.design.resources.provider.muscles
 import com.grippo.design.resources.provider.repetitions
 import com.grippo.design.resources.provider.volume
 import com.grippo.toolkit.date.utils.DateTimeUtils
@@ -63,7 +73,7 @@ public fun HighlightsCard(
     modifier: Modifier = Modifier,
     value: Highlight,
     onViewWorkout: () -> Unit,
-    onExampleClick: (id: String) -> Unit
+    onExampleClick: (id: String) -> Unit,
 ) {
     val storyType = run {
         val dominantMetric = value.performance.firstOrNull()
@@ -138,28 +148,33 @@ public fun HighlightsCard(
 
         // Focus exercise - full width
         value.focusExercise?.let { example ->
-            HighlightPanel(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = AppTokens.strings.res(Res.string.highlight_focus_exercise),
-                    style = AppTokens.typography.b11Med(),
-                    color = AppTokens.colors.text.secondary,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-
-                val onExampleClickProvider = remember(example.value.id) {
-                    { onExampleClick.invoke(example.value.id) }
-                }
-
-                ExerciseExampleCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = example,
-                    style = ExerciseExampleCardStyle.Medium(
-                        onClick = onExampleClickProvider,
-                        allowUsageLabel = true
+            HighlightPanel(
+                modifier = Modifier
+                    .fire()
+                    .fillMaxWidth(),
+                content = {
+                    Text(
+                        text = AppTokens.strings.res(Res.string.highlight_focus_exercise),
+                        style = AppTokens.typography.b12Med(),
+                        color = AppTokens.colors.text.secondary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
-                )
-            }
+
+                    val onExampleClickProvider = remember(example.value.id) {
+                        { onExampleClick.invoke(example.value.id) }
+                    }
+
+                    ExerciseExampleCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = example,
+                        style = ExerciseExampleCardStyle.Medium(
+                            onClick = onExampleClickProvider,
+                            allowUsageLabel = true
+                        )
+                    )
+                }
+            )
 
             Spacer(Modifier.height(spacing))
         }
@@ -170,14 +185,31 @@ public fun HighlightsCard(
             horizontalArrangement = Arrangement.spacedBy(spacing),
         ) {
             value.muscleFocus?.let { muscle ->
-                HighlightPanel(modifier = Modifier.weight(1f)) {
-                    HighlightMuscleFocusPanel(muscle)
-                }
+                HighlightPanel(
+                    modifier = Modifier.weight(1f),
+                    decoration = {
+                        Image(
+                            modifier = Modifier
+                                .offset(x = AppTokens.dp.home.highlights.panel.image / 3)
+                                .size(AppTokens.dp.home.highlights.panel.image)
+                                .align(Alignment.CenterEnd)
+                                .scale(2.3f),
+                            painter = AppTokens.drawables.res(Res.drawable.muscles),
+                            contentDescription = null,
+                            contentScale = ContentScale.FillHeight,
+                            colorFilter = ColorFilter.tint(color = AppTokens.colors.icon.disabled)
+                        )
+                    },
+                    content = {
+                        HighlightMuscleFocusPanel(muscle)
+                    }
+                )
             } ?: Spacer(modifier = Modifier.weight(1f))
 
-            HighlightPanel(modifier = Modifier.weight(1f)) {
-                HighlightStreakPanel(value)
-            }
+            HighlightPanel(
+                modifier = Modifier.weight(1f),
+                content = { HighlightStreakPanel(value) }
+            )
         }
 
         Spacer(Modifier.height(spacing))
@@ -188,15 +220,17 @@ public fun HighlightsCard(
             horizontalArrangement = Arrangement.spacedBy(spacing),
         ) {
             metricOf(HighlightMetric.Duration)?.let { metric ->
-                HighlightPanel(modifier = Modifier.weight(1f)) {
-                    HighlightPerformancePrimaryMetric(metric)
-                }
+                HighlightPanel(
+                    modifier = Modifier.weight(1f),
+                    content = { HighlightPerformancePrimaryMetric(metric) }
+                )
             } ?: Spacer(modifier = Modifier.weight(1f))
 
             metricOf(HighlightMetric.Volume)?.let { metric ->
-                HighlightPanel(modifier = Modifier.weight(1f)) {
-                    HighlightPerformancePrimaryMetric(metric)
-                }
+                HighlightPanel(
+                    modifier = Modifier.weight(1f),
+                    content = { HighlightPerformancePrimaryMetric(metric) }
+                )
             } ?: Spacer(modifier = Modifier.weight(1f))
         }
 
@@ -208,15 +242,17 @@ public fun HighlightsCard(
             horizontalArrangement = Arrangement.spacedBy(spacing),
         ) {
             metricOf(HighlightMetric.Repetitions)?.let { metric ->
-                HighlightPanel(modifier = Modifier.weight(1f)) {
-                    HighlightPerformancePrimaryMetric(metric)
-                }
+                HighlightPanel(
+                    modifier = Modifier.weight(1f),
+                    content = { HighlightPerformancePrimaryMetric(metric) }
+                )
             } ?: Spacer(modifier = Modifier.weight(1f))
 
             metricOf(HighlightMetric.Intensity)?.let { metric ->
-                HighlightPanel(modifier = Modifier.weight(1f)) {
-                    HighlightPerformancePrimaryMetric(metric)
-                }
+                HighlightPanel(
+                    modifier = Modifier.weight(1f),
+                    content = { HighlightPerformancePrimaryMetric(metric) }
+                )
             } ?: Spacer(modifier = Modifier.weight(1f))
         }
     }
@@ -225,25 +261,35 @@ public fun HighlightsCard(
 @Composable
 private fun HighlightPanel(
     modifier: Modifier = Modifier,
+    decoration: (@Composable BoxScope.() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    val shape = RoundedCornerShape(AppTokens.dp.home.highlights.status.radius)
-
-    Column(
+    Box(
         modifier = modifier
-            .clip(shape)
-            .background(AppTokens.colors.background.card, shape = shape)
-            .padding(AppTokens.dp.contentPadding.content),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-        content = content
-    )
+            .height(intrinsicSize = IntrinsicSize.Min)
+            .clip(RoundedCornerShape(AppTokens.dp.home.highlights.panel.radius))
+            .background(
+                AppTokens.colors.background.card,
+                shape = RoundedCornerShape(AppTokens.dp.home.highlights.panel.radius)
+            )
+    ) {
+        decoration?.invoke(this)
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(AppTokens.dp.contentPadding.content),
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+            content = content
+        )
+    }
 }
 
 @Composable
 private fun HighlightMuscleFocusPanel(muscle: HighlightMuscleFocus) {
     Text(
         text = AppTokens.strings.res(Res.string.highlight_muscle_focus),
-        style = AppTokens.typography.b11Med(),
+        style = AppTokens.typography.b12Med(),
         color = AppTokens.colors.text.secondary,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
@@ -270,7 +316,7 @@ private fun HighlightMuscleFocusPanel(muscle: HighlightMuscleFocus) {
 private fun HighlightStreakPanel(value: Highlight) {
     Text(
         text = AppTokens.strings.res(Res.string.highlight_consistency),
-        style = AppTokens.typography.b11Med(),
+        style = AppTokens.typography.b12Med(),
         color = AppTokens.colors.text.secondary
     )
 
@@ -401,7 +447,7 @@ private fun HighlightPerformancePrimaryMetric(metric: HighlightPerformanceMetric
 
             Text(
                 text = label,
-                style = AppTokens.typography.b11Med(),
+                style = AppTokens.typography.b12Med(),
                 color = AppTokens.colors.text.secondary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

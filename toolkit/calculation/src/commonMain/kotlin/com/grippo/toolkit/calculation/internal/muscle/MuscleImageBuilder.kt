@@ -1,9 +1,6 @@
 package com.grippo.toolkit.calculation.internal.muscle
 
 import androidx.compose.ui.graphics.Color
-import com.grippo.toolkit.calculation.models.MuscleColorSource
-import com.grippo.toolkit.calculation.models.MuscleImages
-import com.grippo.toolkit.calculation.models.MuscleLoadBreakdown
 import com.grippo.core.state.muscles.MuscleEnumState
 import com.grippo.core.state.muscles.MuscleGroupState
 import com.grippo.core.state.muscles.MuscleRepresentationState
@@ -11,10 +8,11 @@ import com.grippo.design.resources.provider.muscles.MuscleColorPreset
 import com.grippo.design.resources.provider.muscles.fullBack
 import com.grippo.design.resources.provider.muscles.fullFront
 import com.grippo.design.resources.provider.providers.ColorProvider
+import com.grippo.toolkit.calculation.models.MuscleColorSource
+import com.grippo.toolkit.calculation.models.MuscleImages
+import com.grippo.toolkit.calculation.models.MuscleLoadBreakdown
 
-internal class MuscleImageBuilder(
-    private val colorProvider: ColorProvider,
-) {
+internal class MuscleImageBuilder(private val colorProvider: ColorProvider) {
 
     suspend fun generateImagesFromBreakdown(
         breakdown: MuscleLoadBreakdown,
@@ -30,7 +28,8 @@ internal class MuscleImageBuilder(
     ): MuscleImages? {
         if (sources.isEmpty()) return null
 
-        val preset = buildPreset(sources) ?: return null
+        val preset = buildPreset(sources)
+
         return MuscleImages(
             front = fullFront(preset),
             back = fullBack(preset),
@@ -39,7 +38,7 @@ internal class MuscleImageBuilder(
 
     private suspend fun buildPreset(
         sources: List<MuscleColorSource>,
-    ): MuscleColorPreset? {
+    ): MuscleColorPreset {
         val colors = colorProvider.get()
 
         val fallback = colors.muscle.inactive

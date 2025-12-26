@@ -23,7 +23,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.icons.Timer
+import com.grippo.design.resources.provider.icons.LineUp
 import com.grippo.design.resources.provider.summary
 
 @Composable
@@ -40,8 +40,8 @@ public fun DigestsCard(
         ) {
             Icon(
                 modifier = Modifier.size(AppTokens.dp.home.digest.icon),
-                imageVector = AppTokens.icons.Timer,
-                tint = AppTokens.colors.icon.primary,
+                imageVector = AppTokens.icons.LineUp,
+                tint = AppTokens.colors.icon.secondary,
                 contentDescription = null
             )
 
@@ -49,7 +49,7 @@ public fun DigestsCard(
                 modifier = Modifier.weight(1f),
                 text = AppTokens.strings.res(Res.string.summary),
                 style = AppTokens.typography.h4(),
-                color = AppTokens.colors.text.primary,
+                color = AppTokens.colors.text.secondary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )

@@ -34,7 +34,7 @@ public enum class SpotAlignment {
 
 public fun Modifier.spot(
     color: Color,
-    alpha: Float = 0.3f,
+    alpha: Float = 0.4f,
     radiusMultiplier: Float = 1.25f,
     alignment: SpotAlignment = SpotAlignment.Center,
 ): Modifier = drawBehind {

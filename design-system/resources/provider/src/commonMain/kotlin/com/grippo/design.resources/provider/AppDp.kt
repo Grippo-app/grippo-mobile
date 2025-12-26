@@ -116,7 +116,14 @@ public data object AppDp {
         public data object Highlights {
             val icon: Dp = AppDp.icon.medium
             val status: Status = Status
+            val image: Dp = AppDp.icon.xxxLarge
             val performance: Performance = Performance
+            val panel: Panel = Panel
+
+            public data object Panel {
+                val radius: Dp = AppDp.radius.small
+                val image: Dp = AppDp.icon.xxLarge
+            }
 
             public data object Status {
                 val radius: Dp = AppDp.radius.small
@@ -135,7 +142,7 @@ public data object AppDp {
             val month: Month = Month
 
             public data object Week {
-                val radius: Dp = AppDp.radius.medium
+                val radius: Dp = AppDp.radius.small
                 val horizontalPadding: Dp = padding.large
                 val verticalPadding: Dp = padding.large
                 val spacing: Dp = padding.extraSmall
@@ -144,7 +151,7 @@ public data object AppDp {
             }
 
             public data object Month {
-                val radius: Dp = AppDp.radius.medium
+                val radius: Dp = AppDp.radius.small
                 val horizontalPadding: Dp = padding.large
                 val verticalPadding: Dp = padding.large
                 val spacing: Dp = padding.extraSmall
