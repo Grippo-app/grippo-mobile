@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -186,20 +187,24 @@ public fun HighlightsCard(
 
         // Row: Muscle focus + Workout streak
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(intrinsicSize = IntrinsicSize.Min),
             horizontalArrangement = Arrangement.spacedBy(spacing),
         ) {
             value.muscleFocus?.let { muscle ->
                 HighlightPanel(
-                    modifier = Modifier.weight(1f),
-                    content = {
-                        HighlightMuscleFocusPanel(muscle)
-                    }
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                    content = { HighlightMuscleFocusPanel(muscle) }
                 )
             } ?: Spacer(modifier = Modifier.weight(1f))
 
             HighlightPanel(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
                 content = { HighlightStreakPanel(value) }
             )
         }
