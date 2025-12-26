@@ -323,11 +323,4 @@
     <string name="iteration_focus_volume">Volume</string>
     <string name="iteration_focus_repetitions">Repetitions</string>
     <string name="iteration_focus_unidentified">Unidentified</string>
-
-
-    <!-- ThemeState -->
-
-    <!-- LocaleState -->
-
-
 </resources>
