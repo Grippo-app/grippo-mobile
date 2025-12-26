@@ -32,7 +32,7 @@
     <string name="highlight_focus_exercise">Focus exercise</string>
     <string name="highlight_muscle_focus">Muscle focus</string>
     <string name="highlight_unique_exercises">Unique exercises</string>
-    <string name="highlight_consistency">Consistency</string>
+    <string name="highlight_consistency">Workout streak</string>
     <string name="highlight_trend">Performance trend</string>
     <string name="highlight_sessions">%1$s sessions</string>
     <string name="highlight_active_days">%1$s active days</string>

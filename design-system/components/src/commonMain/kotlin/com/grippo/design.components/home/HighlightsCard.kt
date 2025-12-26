@@ -137,9 +137,7 @@ public fun HighlightsCard(
 
         // Focus exercise - full width
         value.focusExercise?.let { example ->
-            HighlightPanel(
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            HighlightPanel(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = AppTokens.strings.res(Res.string.highlight_focus_exercise),
                     style = AppTokens.typography.b11Med(),
@@ -157,7 +155,7 @@ public fun HighlightsCard(
                     value = example,
                     style = ExerciseExampleCardStyle.Medium(
                         onClick = onExampleClickProvider,
-                        allowUsageLabel = false
+                        allowUsageLabel = true
                     )
                 )
             }
@@ -165,7 +163,7 @@ public fun HighlightsCard(
             Spacer(Modifier.height(spacing))
         }
 
-        // Row: Muscle focus + Consistency
+        // Row: Muscle focus + Workout streak
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(spacing),
@@ -199,7 +197,7 @@ public fun HighlightsCard(
             } ?: Spacer(modifier = Modifier.weight(1f))
 
             HighlightPanel(modifier = Modifier.weight(1f)) {
-                HighlightConsistencyPanel(value)
+                HighlightStreakPanel(value)
             }
         }
 
@@ -257,13 +255,13 @@ private fun HighlightPanel(
             .clip(shape)
             .background(AppTokens.colors.background.card, shape = shape)
             .padding(AppTokens.dp.contentPadding.content),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
         content = content
     )
 }
 
 @Composable
-private fun HighlightConsistencyPanel(value: Highlight) {
+private fun HighlightStreakPanel(value: Highlight) {
     Text(
         text = AppTokens.strings.res(Res.string.highlight_consistency),
         style = AppTokens.typography.b11Med(),
