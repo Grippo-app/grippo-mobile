@@ -4,7 +4,7 @@
     <string name="ex">Упр.</string>
     <string name="kg">кг</string>
     <string name="reps">повт.</string>
-    <string name="digests">Дайджесты</string>
+    <string name="personal_digests">Персональные дайджесты</string>
     <string name="filters">Фильтры</string>
     <string name="repetitions">Повторения</string>
     <string name="search_placeholder">Поиск..</string>
