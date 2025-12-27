@@ -72,11 +72,6 @@ internal fun MonthlyTrainingsPage(
     val calendarWeeks = remember(monthReference, days) {
         buildMonthCalendar(monthReference, days)
     }
-    val monthLabel = remember(monthReference) {
-        val monthName =
-            DateTimeUtils.format(monthReference, DateFormat.DateOnly.MonthFullStandalone)
-        "$monthName ${monthReference.year}"
-    }
     val weekDayLabels = remember {
         val mondayReference = LocalDate(2023, 1, 2)
         DayOfWeek.entries.map { day ->
@@ -91,8 +86,8 @@ internal fun MonthlyTrainingsPage(
         contentPadding = contentPadding,
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.screen.verticalPadding),
     ) {
-        item(key = "digest") {
-            digest?.let { value ->
+        digest?.let { value ->
+            item(key = "digest") {
                 MonthDigestCard(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -106,7 +101,6 @@ internal fun MonthlyTrainingsPage(
             MonthCalendar(
                 modifier = Modifier
                     .fillMaxWidth(),
-                title = monthLabel,
                 weekDayLabels = weekDayLabels,
                 weeks = calendarWeeks,
                 onDayClick = onOpenDaily,
@@ -118,7 +112,6 @@ internal fun MonthlyTrainingsPage(
 @Composable
 private fun MonthCalendar(
     modifier: Modifier = Modifier,
-    title: String,
     weekDayLabels: List<String>,
     weeks: List<List<MonthlyCalendarDay>>,
     onDayClick: (LocalDate) -> Unit,
@@ -141,14 +134,6 @@ private fun MonthCalendar(
                 .fillMaxWidth()
                 .heightIn(min = minCalendarHeight),
         ) {
-            Text(
-                text = title,
-                style = AppTokens.typography.h3(),
-                color = AppTokens.colors.text.primary,
-            )
-
-            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.subContent))
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(horizontalSpacing)

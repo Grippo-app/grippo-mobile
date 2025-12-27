@@ -44,6 +44,11 @@ public sealed interface DateFormat {
         }
 
         @Immutable
+        public data object Mmmm : DateOnly {
+            override val pattern: String = "MMMM"
+        }
+
+        @Immutable
         public data object DateDdMmmm : DateOnly {
             override val pattern: String = "dd MMMM"
         }

@@ -1,5 +1,6 @@
 package com.grippo.design.components.datetime
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
@@ -16,7 +17,8 @@ import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.icons.ArrowDown
+import com.grippo.design.resources.provider.icons.ArrowLeft
+import com.grippo.design.resources.provider.icons.ArrowRight
 import com.grippo.toolkit.date.utils.DateCompose
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
@@ -30,7 +32,9 @@ public fun DatePicker(
     format: DateFormat.DateOnly,
     limitations: DateRange,
     enabled: Boolean = true,
-    onClick: () -> Unit,
+    onSelect: () -> Unit,
+    onNext: () -> Unit,
+    onPrevious: () -> Unit,
 ) {
     val text = DateCompose.rememberFormat(value.date, format)
 
@@ -51,29 +55,39 @@ public fun DatePicker(
 
     Row(
         modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly
     ) {
+        Button(
+            content = ButtonContent.Icon(
+                icon = ButtonIcon.Icon(AppTokens.icons.ArrowLeft)
+            ),
+            size = ButtonSize.Small,
+            style = ButtonStyle.Transparent,
+            onClick = onPrevious
+        )
+
         Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
 
         Text(
             modifier = Modifier.scalableClick(
                 enabled = enabled,
-                onClick = onClick
+                onClick = onSelect
             ),
             text = text,
             style = AppTokens.typography.h6(),
             color = titleColor
         )
 
-        Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
+        Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
 
         Button(
             content = ButtonContent.Icon(
-                icon = ButtonIcon.Icon(AppTokens.icons.ArrowDown)
+                icon = ButtonIcon.Icon(AppTokens.icons.ArrowRight)
             ),
             size = ButtonSize.Small,
             style = ButtonStyle.Transparent,
-            onClick = onClick
+            onClick = onNext
         )
     }
 }
@@ -86,16 +100,20 @@ private fun DatePickerPreview() {
             value = DateTimeUtils.now(),
             format = DateFormat.DateOnly.DateMmmDdYyyy,
             enabled = true,
-            onClick = {},
-            limitations = DateTimeUtils.thisWeek()
+            onSelect = {},
+            limitations = DateTimeUtils.thisWeek(),
+            onNext = {},
+            onPrevious = {}
         )
 
         DatePicker(
             value = DateTimeUtils.now(),
             format = DateFormat.DateOnly.DateMmmDdYyyy,
             enabled = false,
-            onClick = {},
-            limitations = DateTimeUtils.thisWeek()
+            onSelect = {},
+            limitations = DateTimeUtils.thisWeek(),
+            onNext = {},
+            onPrevious = {}
         )
     }
 }

@@ -3,16 +3,12 @@ package com.grippo.trainings.trainings
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
@@ -20,6 +16,7 @@ import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.datetime.DatePicker
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
@@ -34,18 +31,13 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.start_workout
 import com.grippo.design.resources.provider.trainings
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
+import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.trainings.trainings.components.DailyTrainingsPage
 import com.grippo.trainings.trainings.components.MonthlyTrainingsPage
-import com.grippo.trainings.trainings.utilities.TrainingsPagerOffsets
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.map
 
 @Composable
 internal fun TrainingsScreen(
@@ -57,31 +49,8 @@ internal fun TrainingsScreen(
         value = AppTokens.colors.background.screen
     )
 ) {
-    val allowedOffsets = TrainingsPagerOffsets
-
-    val centerPageIndex = allowedOffsets.indexOf(0).coerceAtLeast(0)
-
-    val pagerState = rememberPagerState(
-        initialPage = centerPageIndex,
-        pageCount = { allowedOffsets.size }
-    )
-
     val periodSegmentItems = remember {
         TrainingsTimelinePeriod.entries.map { it to it.text }.toPersistentList()
-    }
-
-    LaunchedEffect(centerPageIndex, allowedOffsets) {
-        snapshotFlow { pagerState.isScrollInProgress to pagerState.currentPage }
-            .filter { (inProgress, _) -> !inProgress }
-            .map { (_, page) -> page }
-            .distinctUntilChanged()
-            .collectLatest { page ->
-                if (page != centerPageIndex) {
-                    val delta = allowedOffsets.getOrNull(page) ?: 0
-                    contract.onShiftDate(delta)
-                    pagerState.scrollToPage(centerPageIndex)
-                }
-            }
     }
 
     Toolbar(
@@ -100,12 +69,27 @@ internal fun TrainingsScreen(
                 segmentWidth = SegmentWidth.EqualFill,
                 style = SegmentStyle.Fill
             )
+
+            Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+
+            DatePicker(
+                modifier = Modifier.fillMaxWidth(),
+                value = state.date.from,
+                format = when (state.period) {
+                    TrainingsTimelinePeriod.Daily -> DateFormat.DateOnly.DateDdMmm
+                    TrainingsTimelinePeriod.Monthly -> DateFormat.DateOnly.Mmmm
+                },
+                limitations = state.limitations,
+                onSelect = contract::onOpenDateSelector,
+                onNext = contract::onSelectNextDate,
+                onPrevious = contract::onSelectPreviousDate
+            )
         }
     )
 
     val basePadding = PaddingValues(
         horizontal = AppTokens.dp.screen.horizontalPadding,
-        vertical = AppTokens.dp.screen.verticalPadding
+        vertical = AppTokens.dp.contentPadding.content
     )
 
     BottomOverlayContainer(
@@ -115,35 +99,27 @@ internal fun TrainingsScreen(
         contentPadding = basePadding,
         overlay = AppTokens.colors.background.screen,
         content = { containerModifier, resolvedPadding ->
-            HorizontalPager(
-                modifier = containerModifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                state = pagerState
-            ) { page ->
-                val pageOffset = allowedOffsets.getOrNull(page) ?: 0
-                val pageTrainings = remember(state.trainings, pageOffset) {
-                    state.trainings[pageOffset] ?: persistentListOf()
-                }
+            when (state.period) {
+                TrainingsTimelinePeriod.Daily -> DailyTrainingsPage(
+                    modifier = containerModifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    trainings = state.trainings,
+                    contentPadding = resolvedPadding,
+                    onViewStatsClick = contract::onDailyDigestViewStats,
+                    onTrainingMenuClick = contract::onTrainingMenuClick,
+                    onExerciseClick = contract::onExerciseClick,
+                )
 
-                key(state.period, state.date, pageOffset) {
-                    when (state.period) {
-                        TrainingsTimelinePeriod.Daily -> DailyTrainingsPage(
-                            trainings = pageTrainings,
-                            contentPadding = resolvedPadding,
-                            onViewStatsClick = contract::onDailyDigestViewStats,
-                            onTrainingMenuClick = contract::onTrainingMenuClick,
-                            onExerciseClick = contract::onExerciseClick,
-                        )
-
-                        TrainingsTimelinePeriod.Monthly -> MonthlyTrainingsPage(
-                            trainings = pageTrainings,
-                            contentPadding = resolvedPadding,
-                            onDigestClick = contract::onDailyDigestViewStats,
-                            onOpenDaily = contract::onOpenDaily,
-                        )
-                    }
-                }
+                TrainingsTimelinePeriod.Monthly -> MonthlyTrainingsPage(
+                    modifier = containerModifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    trainings = state.trainings,
+                    contentPadding = resolvedPadding,
+                    onDigestClick = contract::onDailyDigestViewStats,
+                    onOpenDaily = contract::onOpenDaily,
+                )
             }
         },
         bottom = {
@@ -175,13 +151,11 @@ private fun DailyScreenPreview() {
             state = TrainingsState(
                 period = TrainingsTimelinePeriod.Daily,
                 date = TrainingsTimelinePeriod.Daily.defaultRange(),
-                trainings = persistentMapOf(
-                    0 to persistentListOf(
-                        stubTraining(),
-                        stubTraining(),
-                    ).transformToTrainingListValue(
-                        range = TrainingsTimelinePeriod.Daily.defaultRange()
-                    ),
+                trainings = persistentListOf(
+                    stubTraining(),
+                    stubTraining(),
+                ).transformToTrainingListValue(
+                    range = TrainingsTimelinePeriod.Daily.defaultRange()
                 ),
             ),
             loaders = persistentSetOf(),
@@ -198,13 +172,11 @@ private fun MonthlyScreenPreview() {
             state = TrainingsState(
                 period = TrainingsTimelinePeriod.Monthly,
                 date = TrainingsTimelinePeriod.Monthly.defaultRange(),
-                trainings = persistentMapOf(
-                    0 to persistentListOf(
-                        stubTraining(),
-                        stubTraining(),
-                    ).transformToTrainingListValue(
-                        range = TrainingsTimelinePeriod.Monthly.defaultRange()
-                    ),
+                trainings = persistentListOf(
+                    stubTraining(),
+                    stubTraining(),
+                ).transformToTrainingListValue(
+                    range = TrainingsTimelinePeriod.Monthly.defaultRange()
                 ),
             ),
             loaders = persistentSetOf(),

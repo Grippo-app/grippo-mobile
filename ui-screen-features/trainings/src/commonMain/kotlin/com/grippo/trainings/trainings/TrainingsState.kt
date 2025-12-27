@@ -14,8 +14,7 @@ import com.grippo.design.resources.provider.trainings_period_monthly
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.ImmutableMap
-import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -25,14 +24,14 @@ import kotlinx.datetime.plus
 @Immutable
 internal data class TrainingsState(
     val period: TrainingsTimelinePeriod = TrainingsTimelinePeriod.Monthly,
-    val date: DateRange = TrainingsTimelinePeriod.Daily.defaultRange(),
+    val date: DateRange = TrainingsTimelinePeriod.Monthly.defaultRange(),
     val limitations: DateRange = run {
         val currentYear = DateTimeUtils.thisYear()
         val previousYear = DateTimeUtils.shift(currentYear, DatePeriod(years = -1))
         val nextYear = DateTimeUtils.shift(currentYear, DatePeriod(years = 1))
         DateRange(from = previousYear.from, to = nextYear.to)
     },
-    val trainings: ImmutableMap<Int, ImmutableList<TrainingListValue>> = persistentMapOf(),
+    val trainings: ImmutableList<TrainingListValue> = persistentListOf(),
 )
 
 @Immutable

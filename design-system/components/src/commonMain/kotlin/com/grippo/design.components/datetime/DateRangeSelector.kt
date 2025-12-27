@@ -6,10 +6,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.design.core.AppTokens
-import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateRange
-import com.grippo.toolkit.date.utils.DateTimeUtils
 
+@Deprecated("don't use it")
 @Composable
 public fun DateRangeSelector(
     modifier: Modifier = Modifier,
@@ -23,22 +22,22 @@ public fun DateRangeSelector(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
-        DatePicker(
-            modifier = Modifier.weight(1f),
-            value = value.from,
-            format = DateFormat.DateOnly.DateMmmDdYyyy,
-            enabled = enabled,
-            onClick = onFromClick,
-            limitations = DateTimeUtils.thisWeek() // TODO FIX
-        )
-
-        DatePicker(
-            modifier = Modifier.weight(1f),
-            value = value.to,
-            format = DateFormat.DateOnly.DateMmmDdYyyy,
-            enabled = enabled,
-            onClick = onToClick,
-            limitations = DateTimeUtils.thisWeek() // TODO FIX
-        )
+//        DatePicker(
+//            modifier = Modifier.weight(1f),
+//            value = value.from,
+//            format = DateFormat.DateOnly.DateMmmDdYyyy,
+//            enabled = enabled,
+//            onSelect = onFromClick,
+//            limitations = DateTimeUtils.thisWeek()
+//        )
+//
+//        DatePicker(
+//            modifier = Modifier.weight(1f),
+//            value = value.to,
+//            format = DateFormat.DateOnly.DateMmmDdYyyy,
+//            enabled = enabled,
+//            onSelect = onToClick,
+//            limitations = DateTimeUtils.thisWeek() // TODO FIX
+//        )
     }
 }
