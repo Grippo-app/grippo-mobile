@@ -1,6 +1,5 @@
 package com.grippo.design.components.training.internal
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -156,15 +154,10 @@ private fun MonthlyStatCell(
     stat: MonthlyStat,
 ) {
     Column(
-        modifier = modifier
-            .background(
-                color = AppTokens.colors.background.card,
-                shape = RoundedCornerShape(AppTokens.dp.digest.monthly.stat.radius)
-            )
-            .padding(
-                horizontal = AppTokens.dp.contentPadding.subContent,
-                vertical = AppTokens.dp.contentPadding.text
-            ),
+        modifier = modifier.padding(
+            horizontal = AppTokens.dp.contentPadding.subContent,
+            vertical = AppTokens.dp.contentPadding.text
+        ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(

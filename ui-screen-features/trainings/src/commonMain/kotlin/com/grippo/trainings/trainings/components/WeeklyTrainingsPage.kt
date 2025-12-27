@@ -13,7 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.trainings.TrainingListValue
 import com.grippo.core.state.trainings.stubTraining
-import com.grippo.design.components.digest.WeeklyDigestCard
+import com.grippo.design.components.digest.WeekDigestCard
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.training.TrainingsCard
 import com.grippo.design.components.training.TrainingsCardStyle
@@ -31,7 +31,7 @@ internal fun WeeklyTrainingsPage(
     modifier: Modifier = Modifier,
     trainings: ImmutableList<TrainingListValue>,
     contentPadding: PaddingValues,
-    onViewStatsClick: () -> Unit,
+    onDigestClick: () -> Unit,
     onOpenDaily: (LocalDate) -> Unit,
 ) {
     val listState = rememberLazyListState()
@@ -56,12 +56,12 @@ internal fun WeeklyTrainingsPage(
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
         items(summaries, key = { it.key }) { summary ->
-            WeeklyDigestCard(
+            WeekDigestCard(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .scalableClick(onClick = onDigestClick)
                     .padding(vertical = AppTokens.dp.contentPadding.block),
                 value = summary.summary,
-                onViewStatsClick = onViewStatsClick
             )
         }
 
@@ -93,7 +93,7 @@ private fun WeeklyTrainingsPagePreview() {
                 range = DateTimeUtils.thisWeek()
             ),
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
-            onViewStatsClick = {},
+            onDigestClick = {},
             onOpenDaily = { _ -> },
         )
     }
@@ -106,7 +106,7 @@ private fun WeeklyTrainingsEmptyPagePreview() {
         WeeklyTrainingsPage(
             trainings = persistentListOf(),
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
-            onViewStatsClick = {},
+            onDigestClick = {},
             onOpenDaily = { _ -> },
         )
     }

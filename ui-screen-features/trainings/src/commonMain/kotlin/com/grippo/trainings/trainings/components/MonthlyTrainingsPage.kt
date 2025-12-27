@@ -13,7 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.trainings.TrainingListValue
 import com.grippo.core.state.trainings.stubTraining
-import com.grippo.design.components.digest.MonthlyDigestCard
+import com.grippo.design.components.digest.MonthDigestCard
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.training.TrainingsCard
 import com.grippo.design.components.training.TrainingsCardStyle
@@ -31,7 +31,7 @@ internal fun MonthlyTrainingsPage(
     modifier: Modifier = Modifier,
     trainings: ImmutableList<TrainingListValue>,
     contentPadding: PaddingValues,
-    onViewStatsClick: () -> Unit,
+    onDigestClick: () -> Unit,
     onOpenDaily: (LocalDate) -> Unit,
 ) {
     val gridState = rememberLazyListState()
@@ -55,12 +55,12 @@ internal fun MonthlyTrainingsPage(
     ) {
         digest?.let { value ->
             item(key = value.key) {
-                MonthlyDigestCard(
+                MonthDigestCard(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .scalableClick(onClick = onDigestClick)
                         .padding(vertical = AppTokens.dp.contentPadding.block),
                     value = value.summary,
-                    onViewStatsClick = onViewStatsClick
                 )
             }
         }
@@ -92,7 +92,7 @@ private fun MonthlyTrainingsPagePreview() {
                 range = DateTimeUtils.thisMonth()
             ),
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
-            onViewStatsClick = {},
+            onDigestClick = {},
             onOpenDaily = { _ -> },
         )
     }
@@ -105,7 +105,7 @@ private fun MonthlyTrainingsEmptyPagePreview() {
         MonthlyTrainingsPage(
             trainings = persistentListOf(),
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
-            onViewStatsClick = {},
+            onDigestClick = {},
             onOpenDaily = { _ -> },
         )
     }

@@ -64,7 +64,6 @@ public data object AppDp {
     val timeline: Timeline = Timeline
     val timeLabel: TimeLabel = TimeLabel
     val exerciseCard: ExerciseCard = ExerciseCard
-    val digest: Digest = Digest
     val exerciseExampleCard: ExerciseExampleCard = ExerciseExampleCard
     val exerciseExampleImage: ExerciseExampleImage = ExerciseExampleImage
     val iterationCard: IterationCard = IterationCard
@@ -76,6 +75,8 @@ public data object AppDp {
     val radio: Radio = Radio
     val aiSuggestionCard: AiSuggestionCard = AiSuggestionCard
     val home: HomeContent = HomeContent
+    val weekDigest: WeekDigest = WeekDigest
+    val monthDigest: MonthDigest = MonthDigest
 
     public data object Screen {
         val toolbar: Toolbar = Toolbar
@@ -99,10 +100,26 @@ public data object AppDp {
         val radius: Dp = AppDp.radius.medium
     }
 
+    public data object WeekDigest {
+        val radius: Dp = AppDp.radius.small
+        val horizontalPadding: Dp = padding.medium
+        val verticalPadding: Dp = padding.medium
+        val image: Dp = AppDp.icon.xxxLarge
+        val icon: Dp = AppDp.icon.large
+    }
+
+    public data object MonthDigest {
+        val radius: Dp = AppDp.radius.small
+        val horizontalPadding: Dp = padding.medium
+        val verticalPadding: Dp = padding.medium
+        val image: Dp = AppDp.icon.xxxLarge
+        val icon: Dp = AppDp.icon.large
+    }
+
     public data object HomeContent {
         val lastTraining: LastTraining = LastTraining
         val highlights: Highlights = Highlights
-        val digest: Digest = Digest
+        val digests: Digests = Digests
         val empty: Empty = Empty
 
         public data object Empty {
@@ -137,26 +154,8 @@ public data object AppDp {
             }
         }
 
-        public data object Digest {
+        public data object Digests {
             val icon: Dp = AppDp.icon.medium
-            val week: Week = Week
-            val month: Month = Month
-
-            public data object Week {
-                val radius: Dp = AppDp.radius.small
-                val horizontalPadding: Dp = padding.medium
-                val verticalPadding: Dp = padding.medium
-                val image: Dp = AppDp.icon.xxxLarge
-                val icon: Dp = AppDp.icon.large
-            }
-
-            public data object Month {
-                val radius: Dp = AppDp.radius.small
-                val horizontalPadding: Dp = padding.medium
-                val verticalPadding: Dp = padding.medium
-                val image: Dp = AppDp.icon.xxxLarge
-                val icon: Dp = AppDp.icon.large
-            }
         }
     }
 
@@ -165,34 +164,6 @@ public data object AppDp {
         val content: Dp = padding.medium
         val subContent: Dp = padding.small
         val text: Dp = padding.extraSmall
-    }
-
-    public data object Digest {
-        val daily: Daily = Daily
-        val weekly: Weekly = Weekly
-        val monthly: Monthly = Monthly
-
-        public data object Daily {
-            val icon: Dp = AppDp.icon.xLarge
-        }
-
-        public data object Weekly {
-            val icon: Dp = AppDp.icon.xLarge
-            val stat: Stat = Stat
-
-            public data object Stat {
-                val radius: Dp = AppDp.radius.small
-            }
-        }
-
-        public data object Monthly {
-            val icon: Dp = AppDp.icon.xLarge
-            val stat: Stat = Stat
-
-            public data object Stat {
-                val radius: Dp = AppDp.radius.medium
-            }
-        }
     }
 
     public data object BottomSheet {
@@ -398,6 +369,13 @@ public data object AppDp {
 
     public data object Segment {
         val outline: Outline = Outline
+        val fill: Fill = Fill
+
+        public data object Fill {
+            val space: Dp = padding.extraSmall
+            val inRadius: Dp = radius.small
+            val outRadius: Dp = radius.medium
+        }
 
         public data object Outline {
             val height: Dp = size.medium

@@ -1,9 +1,13 @@
 package com.grippo.design.components.segment
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +36,7 @@ public enum class SegmentWidth {
 @Immutable
 public enum class SegmentStyle {
     Outline,
+    Fill
 }
 
 @Composable
@@ -45,6 +50,61 @@ public fun <KEY> Segment(
 ) {
 
     when (style) {
+        SegmentStyle.Fill -> SegmentedFrame(
+            modifier = modifier
+                .background(
+                    AppTokens.colors.background.dialog,
+                    RoundedCornerShape(AppTokens.dp.segment.fill.outRadius)
+                ).padding(
+                    AppTokens.dp.segment.fill.space
+                ),
+            segmentSizing = when (segmentWidth) {
+                SegmentWidth.Unspecified -> SegmentSizing.Unspecified
+                SegmentWidth.EqualFill -> SegmentSizing.EqualFill
+            },
+            thumb = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            AppTokens.colors.background.card,
+                            RoundedCornerShape(AppTokens.dp.segment.fill.inRadius)
+                        ),
+                )
+            },
+            content = {
+                items.forEach { item ->
+
+                    val clickProvider = remember(item.first) { { onSelect.invoke(item.first) } }
+
+                    SegmentBox(
+                        selected = item.first == selected,
+                        content = {
+                            Text(
+                                modifier = Modifier
+                                    .scalableClick(onClick = clickProvider)
+                                    .padding(
+                                        horizontal = AppTokens.dp.contentPadding.block,
+                                        vertical = AppTokens.dp.contentPadding.subContent
+                                    ).wrapContentHeight(),
+                                text = item.second.text(),
+                                style = if (item.first == selected) {
+                                    AppTokens.typography.b14Bold()
+                                } else {
+                                    AppTokens.typography.b14Med()
+                                },
+                                color = if (item.first == selected) {
+                                    AppTokens.colors.text.primary
+                                } else {
+                                    AppTokens.colors.text.tertiary
+                                },
+                            )
+                        },
+                    )
+                }
+            }
+        )
+
         SegmentStyle.Outline -> SegmentedFrame(
             modifier = modifier,
             segmentSizing = when (segmentWidth) {

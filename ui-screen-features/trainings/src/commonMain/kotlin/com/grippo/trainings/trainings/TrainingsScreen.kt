@@ -99,7 +99,7 @@ internal fun TrainingsScreen(
                 selected = state.period,
                 onSelect = contract::onSelectPeriod,
                 segmentWidth = SegmentWidth.EqualFill,
-                style = SegmentStyle.Outline
+                style = SegmentStyle.Fill
             )
         }
     )
@@ -140,14 +140,14 @@ internal fun TrainingsScreen(
                         TrainingsTimelinePeriod.Weekly -> WeeklyTrainingsPage(
                             trainings = pageTrainings,
                             contentPadding = resolvedPadding,
-                            onViewStatsClick = contract::onDailyDigestViewStats,
+                            onDigestClick = contract::onDailyDigestViewStats,
                             onOpenDaily = contract::onOpenDaily,
                         )
 
                         TrainingsTimelinePeriod.Monthly -> MonthlyTrainingsPage(
                             trainings = pageTrainings,
                             contentPadding = resolvedPadding,
-                            onViewStatsClick = contract::onDailyDigestViewStats,
+                            onDigestClick = contract::onDailyDigestViewStats,
                             onOpenDaily = contract::onOpenDaily,
                         )
                     }
