@@ -154,7 +154,7 @@ internal fun ExerciseScreen(
                 style = ButtonStyle.Transparent,
                 size = ButtonSize.Small,
                 content = ButtonContent.Text(
-                    text = AppTokens.strings.res(Res.string.overview),
+                    text = AppTokens.strings.res(Res.string.more),
                     endIcon = ButtonIcon.Icon(AppTokens.icons.ArrowRight)
                 ),
             )
