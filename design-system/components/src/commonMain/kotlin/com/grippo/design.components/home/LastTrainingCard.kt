@@ -102,12 +102,12 @@ public fun LastTrainingCard(
                 color = AppTokens.colors.text.primary
             )
 
-            Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
+            Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
 
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = string,
-                style = AppTokens.typography.b13Med(),
+                style = AppTokens.typography.b12Med(),
                 color = AppTokens.colors.text.secondary
             )
 
@@ -125,7 +125,7 @@ public fun LastTrainingCard(
                 Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = "✓ ${it.name}",
-                    style = AppTokens.typography.b13Med(),
+                    style = AppTokens.typography.b13Semi(),
                     color = AppTokens.colors.text.secondary
                 )
             }
@@ -138,7 +138,7 @@ public fun LastTrainingCard(
                 Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = AppTokens.strings.res(Res.string.plus_value_more, lastExercisesCount),
-                    style = AppTokens.typography.b13Med(),
+                    style = AppTokens.typography.b13Semi(),
                     color = AppTokens.colors.text.secondary
                 )
             }
