@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -47,8 +48,6 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.number
 import kotlinx.datetime.plus
 
-private val DayCellHeight = 96.dp
-
 @Composable
 internal fun MonthlyTrainingsPage(
     modifier: Modifier = Modifier,
@@ -58,6 +57,10 @@ internal fun MonthlyTrainingsPage(
     onOpenDaily: (LocalDate) -> Unit,
 ) {
     val gridState = rememberLazyListState()
+
+    LaunchedEffect(trainings) {
+        gridState.scrollToItem(0)
+    }
 
     val digest = remember(trainings) {
         trainings.filterIsInstance<TrainingListValue.MonthlyDigest>().firstOrNull()
@@ -122,7 +125,7 @@ private fun MonthCalendar(
             val spacing = horizontalSpacing * (weekDayLabels.size - 1)
             (maxWidth - spacing) / weekDayLabels.size
         }
-        val dayCellHeight = DayCellHeight
+        val dayCellHeight = AppTokens.dp.calendar.monthly.cellHeight
         val weekRowCount = weeks.size.takeIf { it > 0 } ?: 1
         val gridSpacing = AppTokens.dp.contentPadding.subContent * (weekRowCount - 1)
         val minCalendarHeight = (dayCellHeight * weekRowCount) +

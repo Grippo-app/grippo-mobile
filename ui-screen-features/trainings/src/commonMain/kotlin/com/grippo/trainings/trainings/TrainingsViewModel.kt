@@ -161,10 +161,6 @@ internal class TrainingsViewModel(
         update { it.copy(period = TrainingsTimelinePeriod.Daily, date = aligned) }
     }
 
-    private fun openTrainingEdit(id: String) {
-        navigateTo(EditTraining(id))
-    }
-
     private fun openTrainingOverview(id: String) = safeLaunch {
         val training = trainingFeature.observeTraining(id).firstOrNull()
             ?: return@safeLaunch
@@ -192,7 +188,11 @@ internal class TrainingsViewModel(
             val days = from.date.daysUntil(to.date) + 1
             if (days <= 0) 1 else days
         }
-        val shiftPeriod = DatePeriod(days = span * direction)
+        // Monthly view always jumps exactly one calendar month regardless of range span.
+        val shiftPeriod = when (current.period) {
+            TrainingsTimelinePeriod.Monthly -> DatePeriod(months = direction)
+            TrainingsTimelinePeriod.Daily -> DatePeriod(days = span * direction)
+        }
         val shifted =
             DateTimeUtils.shift(current.date, shiftPeriod).coerceWithin(current.limitations)
 
@@ -205,5 +205,9 @@ internal class TrainingsViewModel(
         val start = if (from < limitations.from) limitations.from else from
         val end = if (to > limitations.to) limitations.to else to
         return if (end < start) DateRange(start, start) else DateRange(start, end)
+    }
+
+    private fun openTrainingEdit(id: String) {
+        navigateTo(EditTraining(id))
     }
 }

@@ -5,9 +5,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextAlign
-import com.grippo.design.components.empty.EmptyDecorations
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -24,12 +22,6 @@ internal fun TrainingsEmptyState(
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-        EmptyDecorations(
-            modifier = Modifier
-                .matchParentSize()
-                .alpha(0.3f)
-        )
-
         Text(
             text = text,
             style = AppTokens.typography.h6(),

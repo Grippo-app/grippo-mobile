@@ -24,6 +24,7 @@ public data object AppDp {
         val medium: Dp = 50.dp
         val large: Dp = 64.dp
         val xLarge: Dp = 72.dp
+        val xxLarge: Dp = 96.dp
     }
 
     private data object Radius {
@@ -77,6 +78,7 @@ public data object AppDp {
     val home: HomeContent = HomeContent
     val weekDigest: WeekDigest = WeekDigest
     val monthDigest: MonthDigest = MonthDigest
+    val calendar: Calendar = Calendar
 
     public data object Screen {
         val toolbar: Toolbar = Toolbar
@@ -98,6 +100,14 @@ public data object AppDp {
         val horizontalPadding: Dp = padding.large
         val verticalPadding: Dp = padding.large
         val radius: Dp = AppDp.radius.medium
+    }
+
+    public data object Calendar {
+        val monthly: Monthly = Monthly
+
+        public data object Monthly {
+            val cellHeight: Dp = size.xxLarge
+        }
     }
 
     public data object WeekDigest {
