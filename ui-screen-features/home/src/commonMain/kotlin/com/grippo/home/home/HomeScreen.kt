@@ -56,6 +56,7 @@ internal fun HomeScreen(
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         style = ToolbarStyle.Transparent,
+        title = "Grippo",
         trailing = {
             Button(
                 modifier = Modifier.padding(end = AppTokens.dp.contentPadding.subContent),
