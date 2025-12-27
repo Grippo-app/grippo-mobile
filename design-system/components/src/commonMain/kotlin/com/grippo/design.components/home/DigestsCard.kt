@@ -44,7 +44,7 @@ public fun DigestsCard(
             Icon(
                 modifier = Modifier.size(AppTokens.dp.home.digests.icon),
                 imageVector = AppTokens.icons.LineUp,
-                tint = AppTokens.colors.icon.secondary,
+                tint = AppTokens.colors.icon.primary,
                 contentDescription = null
             )
 
@@ -52,7 +52,7 @@ public fun DigestsCard(
                 modifier = Modifier.weight(1f),
                 text = AppTokens.strings.res(Res.string.digests),
                 style = AppTokens.typography.h4(),
-                color = AppTokens.colors.text.secondary,
+                color = AppTokens.colors.text.primary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
