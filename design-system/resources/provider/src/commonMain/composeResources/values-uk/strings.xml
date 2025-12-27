@@ -61,7 +61,7 @@
     <string name="monthly">Щомісяця</string>
     <string name="monthly_digest_template">Дайджест за %1$s</string>
     <string name="daily_digest_template">Дайджест за %1$s</string>
-    <string name="view_stats_btn">Переглянути статистику</string>
+    <string name="details">Деталі</string>
     <string name="cancel_btn">Скасувати</string>
     <string name="logout_btn">Вийти</string>
     <string name="loading">Завантаження..</string>

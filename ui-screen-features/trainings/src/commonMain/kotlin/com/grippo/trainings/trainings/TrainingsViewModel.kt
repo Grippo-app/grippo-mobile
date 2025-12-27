@@ -87,7 +87,7 @@ internal class TrainingsViewModel(
                     when (TrainingMenu.of(it)) {
                         TrainingMenu.Delete -> deleteTraining(id)
                         TrainingMenu.Edit -> openTrainingEdit(id)
-                        TrainingMenu.Overview -> openTrainingOverview(id)
+                        TrainingMenu.Details -> openTrainingOverview(id)
                         null -> {}
                     }
                 }

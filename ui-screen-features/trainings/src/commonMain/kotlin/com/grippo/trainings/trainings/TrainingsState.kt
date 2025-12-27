@@ -5,13 +5,13 @@ import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.trainings.TrainingListValue
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.delete_btn
+import com.grippo.design.resources.provider.details
 import com.grippo.design.resources.provider.edit_btn
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.design.resources.provider.selected
 import com.grippo.design.resources.provider.trainings_period_daily
 import com.grippo.design.resources.provider.trainings_period_monthly
 import com.grippo.design.resources.provider.trainings_period_weekly
-import com.grippo.design.resources.provider.view_stats_btn
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
@@ -40,9 +40,9 @@ internal data class TrainingsState(
 
 @Immutable
 internal enum class TrainingMenu(val id: String) {
+    Details("overview"),
     Edit("edit"),
-    Delete("delete"),
-    Overview("overview");
+    Delete("delete");
 
     companion object {
         suspend fun title(stringProvider: StringProvider): String {
@@ -58,7 +58,7 @@ internal enum class TrainingMenu(val id: String) {
         return when (this) {
             Delete -> stringProvider.get(Res.string.delete_btn)
             Edit -> stringProvider.get(Res.string.edit_btn)
-            Overview -> stringProvider.get(Res.string.view_stats_btn)
+            Details -> stringProvider.get(Res.string.details)
         }
     }
 }

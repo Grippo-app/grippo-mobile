@@ -61,7 +61,7 @@
     <string name="monthly">Monthly</string>
     <string name="monthly_digest_template">%1$s digest</string>
     <string name="daily_digest_template">%1$s digest</string>
-    <string name="view_stats_btn">View stats</string>
+    <string name="details">Details</string>
     <string name="cancel_btn">Cancel</string>
     <string name="logout_btn">Logout</string>
     <string name="loading">Loading..</string>
