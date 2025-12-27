@@ -102,7 +102,7 @@ public fun LastTrainingCard(
                 color = AppTokens.colors.text.primary
             )
 
-            Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
+            Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
 
             Text(
                 modifier = Modifier.fillMaxWidth(),
