@@ -36,7 +36,6 @@ import com.grippo.design.resources.provider.trainings
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
 import com.grippo.trainings.trainings.components.DailyTrainingsPage
 import com.grippo.trainings.trainings.components.MonthlyTrainingsPage
-import com.grippo.trainings.trainings.components.WeeklyTrainingsPage
 import com.grippo.trainings.trainings.utilities.TrainingsPagerOffsets
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
@@ -106,7 +105,7 @@ internal fun TrainingsScreen(
 
     val basePadding = PaddingValues(
         horizontal = AppTokens.dp.screen.horizontalPadding,
-        vertical = AppTokens.dp.contentPadding.content
+        vertical = AppTokens.dp.screen.verticalPadding
     )
 
     BottomOverlayContainer(
@@ -135,13 +134,6 @@ internal fun TrainingsScreen(
                             onViewStatsClick = contract::onDailyDigestViewStats,
                             onTrainingMenuClick = contract::onTrainingMenuClick,
                             onExerciseClick = contract::onExerciseClick,
-                        )
-
-                        TrainingsTimelinePeriod.Weekly -> WeeklyTrainingsPage(
-                            trainings = pageTrainings,
-                            contentPadding = resolvedPadding,
-                            onDigestClick = contract::onDailyDigestViewStats,
-                            onOpenDaily = contract::onOpenDaily,
                         )
 
                         TrainingsTimelinePeriod.Monthly -> MonthlyTrainingsPage(
@@ -189,29 +181,6 @@ private fun DailyScreenPreview() {
                         stubTraining(),
                     ).transformToTrainingListValue(
                         range = TrainingsTimelinePeriod.Daily.defaultRange()
-                    ),
-                ),
-            ),
-            loaders = persistentSetOf(),
-            contract = TrainingsContract.Empty
-        )
-    }
-}
-
-@AppPreview
-@Composable
-private fun WeeklyScreenPreview() {
-    PreviewContainer {
-        TrainingsScreen(
-            state = TrainingsState(
-                period = TrainingsTimelinePeriod.Weekly,
-                date = TrainingsTimelinePeriod.Weekly.defaultRange(),
-                trainings = persistentMapOf(
-                    0 to persistentListOf(
-                        stubTraining(),
-                        stubTraining(),
-                    ).transformToTrainingListValue(
-                        range = TrainingsTimelinePeriod.Weekly.defaultRange()
                     ),
                 ),
             ),
