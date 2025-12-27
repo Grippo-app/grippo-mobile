@@ -56,7 +56,7 @@ public fun DatePicker(
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Button(
             content = ButtonContent.Icon(

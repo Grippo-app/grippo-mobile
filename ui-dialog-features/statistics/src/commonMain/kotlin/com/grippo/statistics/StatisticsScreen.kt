@@ -62,9 +62,10 @@ internal fun StatisticsScreen(
                     Res.string.statistics
                 )
 
-                is StatisticsMode.Trainings -> AppTokens.strings.res(
-                    Res.string.value_statistics,
-                    mode.range.label()
+                is StatisticsMode.Trainings -> mode.range.label()?.let {
+                    AppTokens.strings.res(Res.string.value_statistics, it)
+                } ?: AppTokens.strings.res(
+                    Res.string.statistics
                 )
             },
             style = AppTokens.typography.h3(),

@@ -73,7 +73,9 @@ internal fun TrainingsScreen(
             Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
 
             DatePicker(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                    .fillMaxWidth(),
                 value = state.date.from,
                 format = when (state.period) {
                     TrainingsTimelinePeriod.Daily -> DateFormat.DateOnly.DateDdMmm

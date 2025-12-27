@@ -5,7 +5,6 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.custom
 import com.grippo.design.resources.provider.daily
 import com.grippo.design.resources.provider.monthly
 import com.grippo.design.resources.provider.weekly
@@ -45,13 +44,13 @@ public data class DateRange(
     }
 
     @Composable
-    public fun label(): String {
+    public fun label(): String? {
         return when (range()) {
             Range.DAILY -> AppTokens.strings.res(Res.string.daily)
             Range.WEEKLY -> AppTokens.strings.res(Res.string.weekly)
             Range.MONTHLY -> AppTokens.strings.res(Res.string.monthly)
             Range.YEARLY -> AppTokens.strings.res(Res.string.yearly)
-            Range.CUSTOM -> AppTokens.strings.res(Res.string.custom)
+            Range.CUSTOM -> null
         }
     }
 
