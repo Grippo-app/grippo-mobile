@@ -77,14 +77,16 @@ internal fun HomeScreen(
         return@BaseComposeScreen
     }
 
+    val basePadding = PaddingValues(
+        horizontal = AppTokens.dp.screen.horizontalPadding,
+        vertical = AppTokens.dp.contentPadding.content
+    )
+
     BottomOverlayContainer(
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f),
-        contentPadding = PaddingValues(
-            horizontal = AppTokens.dp.screen.horizontalPadding,
-            vertical = AppTokens.dp.screen.verticalPadding
-        ),
+        contentPadding = basePadding,
         overlay = AppTokens.colors.background.screen,
         content = { containerModifier, resolvedPadding ->
             LazyColumn(

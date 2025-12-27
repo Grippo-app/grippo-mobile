@@ -122,9 +122,8 @@ internal fun ExerciseExamplePickerScreen(
 
                 false -> {
                     val basePadding = PaddingValues(
-                        start = AppTokens.dp.dialog.horizontalPadding,
-                        end = AppTokens.dp.dialog.horizontalPadding,
-                        top = AppTokens.dp.contentPadding.content,
+                        horizontal = AppTokens.dp.screen.horizontalPadding,
+                        vertical = AppTokens.dp.contentPadding.content
                     )
 
                     BottomOverlayContainer(
