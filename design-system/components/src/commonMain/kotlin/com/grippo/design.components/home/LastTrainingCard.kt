@@ -2,6 +2,7 @@ package com.grippo.design.components.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -21,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.dp
 import com.grippo.core.state.trainings.TrainingState
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
@@ -73,6 +75,10 @@ public fun LastTrainingCard(
             .background(
                 AppTokens.colors.background.card,
                 shape = RoundedCornerShape(AppTokens.dp.home.lastTraining.radius)
+            ).border(
+                width = 1.dp,
+                shape = RoundedCornerShape(AppTokens.dp.home.lastTraining.radius),
+                color = AppTokens.colors.brand.color5.copy(0.3f)
             )
     ) {
         Image(
