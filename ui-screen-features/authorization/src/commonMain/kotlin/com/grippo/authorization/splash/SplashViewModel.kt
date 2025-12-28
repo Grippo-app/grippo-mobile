@@ -17,30 +17,22 @@ internal class SplashViewModel(
 ) : BaseViewModel<SplashState, SplashDirection, SplashLoader>(SplashState), SplashContract {
 
     init {
-        safeLaunch(
-            loader = SplashLoader.AppContent,
-            onError = { resolveNavigation() }
-        ) {
-            val muscles = async { muscleFeature.getMuscles().getOrThrow() }
-            val equipment = async { equipmentFeature.getEquipments().getOrThrow() }
-            awaitAll(muscles, equipment)
+        safeLaunch(loader = SplashLoader.AppContent) {
 
-            resolveNavigation()
-        }
-    }
-
-    private fun resolveNavigation() {
-        safeLaunch {
             val token = authorizationFeature.getToken().firstOrNull()
 
             if (token == null) {
+                val muscles = async { muscleFeature.getMuscles().getOrThrow() }
+                val equipment = async { equipmentFeature.getEquipments().getOrThrow() }
+                awaitAll(muscles, equipment)
+
                 navigateTo(SplashDirection.AuthProcess)
                 return@safeLaunch
             }
 
             val hasProfile = try {
                 userFeature.getUser().getOrThrow()
-            } catch (error: Throwable) {
+            } catch (_: Throwable) {
                 navigateTo(SplashDirection.AuthProcess)
                 return@safeLaunch
             }
