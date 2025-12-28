@@ -11,12 +11,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import kotlin.math.PI
 import kotlin.math.ceil
@@ -87,158 +87,112 @@ private fun DrawScope.drawProceduralFire(
     val timeScale = ((0.22f + 1.55f * s) * (1f + s) * (1f + s)).coerceIn(0.15f, 7.2f)
     val tSec = (timeNanos / 1_000_000_000f) * timeScale
 
-    // Base glow across the whole width (keeps the effect cohesive even if tongues are sparse).
-    val glowTopA = (0.04f + 0.10f * i).coerceIn(0.04f, 0.18f)
-    val glowBottomA = (0.18f + 0.22f * i).coerceIn(0.18f, 0.44f)
-    val baseGlow = Brush.verticalGradient(
-        colorStops = arrayOf(
-            0.00f to Color.Transparent,
-            0.55f to Color(0xFFFF6A00).copy(alpha = glowTopA),
-            0.78f to Color(0xFFFF7A00).copy(alpha = glowBottomA * 0.85f),
-            1.00f to Color(0xFFFFC400).copy(alpha = glowBottomA),
-        ),
-        startY = top,
-        endY = bottom,
-    )
+    // No baseGlow band in cartoon mode (it reads as a flat strip).
 
     clipRect(left = 0f, top = top, right = w, bottom = bottom) {
-        drawRect(brush = baseGlow)
+        // Cartoon fire doesn't need a flat full-width glow band (it reads as a straight layer).
+        // drawRect(brush = baseGlow)
 
-        // Fewer tongues, but thicker. `frequency` controls density. `intensity` also affects width.
-        // - lower frequency -> fewer tongues, much thicker
-        // - higher frequency -> more tongues, slightly thinner
-        val density = (0.70f + 0.80f * f).coerceIn(0.60f, 1.50f)
-        // Stronger impact with a non-linear curve:
-        // - low intensity -> noticeably thinner (avoid "too wide" at ~0.2)
-        // - high intensity -> thicker, but capped (max ~25% narrower vs older impl).
-        val intensityWidth = (0.30f + 1.00f * smooth01(i)).coerceIn(0.30f, 1.20f)
-        val minTongueW = (5f + 10f * i).coerceIn(5f, 13f)
-        val tongueBaseW = (((flameH * 0.80f) / density) * intensityWidth).coerceIn(minTongueW, 58f)
-        val spacing = tongueBaseW * (1.35f - 0.55f * f)
-        val count = max(3, ceil(w / spacing).toInt())
+        // Cartoon mode: layered tongues (back big / front small), with non-uniform spacing and smooth height noise.
+        val count = max(3, ceil(w / (170f - 70f * f)).toInt())
+        val cellW = (w / count.toFloat()).coerceAtLeast(1f)
+        val widthScale = (0.52f + 0.55f * smooth01(i)).coerceIn(0.52f, 1.05f)
+        val tongueWBase = (cellW * 1.35f * widthScale).coerceIn(12f, 78f)
         val maxTongueH = (flameH * 0.98f).coerceAtLeast(1f)
+        val minY = top + 0.75f
 
-        // Soft base layer so the very bottom feels like one flame, not many isolated tongues.
-        // Enabled only at moderate+ intensity to avoid "mush" when fire is small.
-        val baseBlend = ((i - 0.18f) / 0.82f).coerceIn(0f, 1f)
-        if (baseBlend > 0f) {
-            val bandH = (flameH * (0.18f + 0.26f * baseBlend)).coerceIn(8f, flameH * 0.52f)
-            val bandTop = (bottom - bandH).coerceAtLeast(top)
-            val bandA = (0.10f + 0.28f * baseBlend).coerceIn(0.10f, 0.42f)
-            val baseBand = Brush.verticalGradient(
-                colorStops = arrayOf(
-                    0.00f to Color(0xFFFF6A00).copy(alpha = bandA * 0.35f),
-                    0.55f to Color(0xFFFF8F00).copy(alpha = bandA * 0.70f),
-                    1.00f to Color(0xFFFFC400).copy(alpha = bandA),
-                ),
-                startY = bandTop,
-                endY = bottom,
+        // Base "mass" is created by overlap of tongues; avoid extra bottom bands that look like separate layers.
+
+        val wind01 = valueNoise1D(seed xor 0x12E15E35, x = 0.0f, t = tSec * 0.22f)
+        val wind = (wind01 * 2f - 1f)
+
+        // Make tongues overlap more so the bottom reads as one continuous flame.
+        val backCount = max(2, (count * 0.65f).toInt())
+        val frontCount = count + max(2, (count * 0.45f).toInt())
+
+        // Back layer: fewer, larger, darker (adds mass).
+        for (idx in 0 until backCount) {
+            val u = (idx + 0.5f) / backCount.toFloat()
+            val baseX = u * w
+            val r = hash01(seed, idx * 43 + 7)
+            val xNoise = valueNoise1D(seed xor 0x6D2B79F5, x = u * 1.7f, t = tSec * 0.10f)
+            val x = (baseX + (xNoise - 0.5f) * cellW * 0.85f).coerceIn(0f, w)
+
+            val hNoise = valueNoise1D(
+                seed xor 0x85EBCA6B.toInt(),
+                x = u * (1.9f + 1.4f * f),
+                t = tSec * 0.28f
             )
-            // Wave the top edge a bit, so it feels like a single fire-front rather than a flat band.
-            val front = Path().apply {
-                val seg = 22
-                moveTo(0f, bottom)
-                lineTo(0f, bandTop)
-                for (s in 0..seg) {
-                    val xu = s / seg.toFloat()
-                    val x = xu * w
-                    val n = valueNoise1D(seed xor 0x3C6EF372.toInt(), x = xu * 2.6f, t = tSec * 0.22f)
-                    val y = bandTop + (1f - n) * (bandH * (0.10f + 0.30f * baseBlend))
-                    lineTo(x, y)
-                }
-                lineTo(w, bottom)
-                close()
-            }
-            drawPath(path = front, brush = baseBand, blendMode = BlendMode.Plus)
+            val peak = smooth01(((hNoise - 0.70f) / 0.30f).coerceIn(0f, 1f))
+            val tongueH =
+                (maxTongueH * (0.50f + 0.55f * hNoise + 0.25f * peak)).coerceIn(6f, maxTongueH)
+            val tongueW = (tongueWBase * (1.30f + 0.85f * hNoise) * (0.90f + 0.20f * r)).coerceIn(
+                14f,
+                w * 0.72f
+            )
+
+            val phase = r * TAU
+            val sway =
+                (wind * tongueW * 0.12f + sin(tSec * (0.65f + 1.40f * s) + phase) * tongueW * 0.10f)
+                    .coerceIn(-tongueW * 0.26f, tongueW * 0.26f)
+
+            drawCartoonTongue(
+                seed = seed,
+                idx = 1000 + idx,
+                centerX = (x + sway).coerceIn(0f, w),
+                bottomY = bottom,
+                width = tongueW,
+                height = tongueH,
+                minY = minY,
+                tSec = tSec,
+                speed = s,
+                intensity = i,
+                alphaMul = 0.70f,
+                isBackLayer = true,
+            )
         }
 
-        // Heat-haze / shimmer just above the flame top (very subtle).
-        val hazeBlend = ((i - 0.28f) / 0.72f).coerceIn(0f, 1f)
-        if (hazeBlend > 0.01f) {
-            val hazeH = (flameH * (0.10f + 0.16f * hazeBlend)).coerceIn(10f, flameH * 0.35f)
-            val hazeTop = (top - hazeH * 0.55f).coerceAtLeast(0f)
-            val hazeBottom = (top + hazeH).coerceAtMost(bottom)
-            clipRect(left = 0f, top = hazeTop, right = w, bottom = hazeBottom) {
-                val lines = 4
-                for (k in 0 until lines) {
-                    val phase = k * 1.7f
-                    val y0 = top + hazeH * (0.15f + 0.22f * k)
-                    val a = (0.012f + 0.020f * hazeBlend).coerceIn(0.012f, 0.045f)
-                    val col = Color(0xFFFFE0B2).copy(alpha = a)
-                    val path = Path().apply {
-                        val seg = 28
-                        moveTo(0f, y0)
-                        for (s in 1..seg) {
-                            val xu = s / seg.toFloat()
-                            val x = xu * w
-                            val n = valueNoise1D(seed xor 0xA341316C.toInt(), x = xu * 3.2f + phase, t = tSec * 0.35f)
-                            val y = y0 + (n - 0.5f) * hazeH * 0.30f
-                            lineTo(x, y)
-                        }
-                    }
-                    drawPath(path = path, color = col, style = Stroke(width = 1.0f + 0.6f * k), blendMode = BlendMode.Plus)
-                }
-            }
-        }
+        // Front layer: more tongues, smaller, brighter (the "icon" tongues).
+        for (idx in 0 until frontCount) {
+            val u = (idx + 0.5f) / frontCount.toFloat()
+            val baseX = u * w
+            val r = hash01(seed, idx * 31 + 3)
+            val xNoise =
+                valueNoise1D(seed xor 0xC2B2AE35.toInt(), x = u * 3.2f + r * 0.9f, t = tSec * 0.22f)
+            val x = (baseX + (xNoise - 0.5f) * cellW * (0.55f + 0.35f * f)).coerceIn(0f, w)
 
-        for (idx in 0 until count) {
-            val u = (idx + 0.5f) / count.toFloat()
-            // Gust-field across X breaks the "even spacing" look (groups of tongues grow/shrink together).
-            val gustField = valueNoise1D(seed xor 0xC2B2AE35.toInt(), x = u * 2.3f, t = tSec * 0.18f)
-            val gustX = (gustField * 2f - 1f)
-            val xJitter = gustX * spacing * 0.22f
-            val xBase = (u * w + xJitter).coerceIn(0f, w)
-
-            val r1 = hash01(seed, idx * 7 + 1)
-            val r2 = hash01(seed, idx * 7 + 2)
-            val r3 = hash01(seed, idx * 7 + 3)
-            val r4 = hash01(seed, idx * 7 + 4)
-            val r5 = hash01(seed, idx * 7 + 5)
-            val r6 = hash01(seed, idx * 7 + 6)
-
-            // Keep tongues inside the flame area (no top clipping).
-            val baseH = flameH * (0.42f + 0.58f * r1)
-            // Slightly narrower at low intensity; also reduce width variance to avoid "fat spikes".
-            val widthIntensity = (0.86f + 0.14f * i).coerceIn(0.86f, 1.0f)
-            val baseW = tongueBaseW * (0.74f + 0.86f * r2) * widthIntensity * (0.92f + 0.18f * gustField)
-            val speed = 0.85f + 1.55f * r3
-            val phase = r4 * TAU
-
-            // Branches shouldn't "pop" in/out. Use slow noise for persistence + smooth presence.
-            val branchNoise = valueNoise1D(
-                seed = seed xor 0x4F1BBCDC,
-                x = (idx * 0.31f) + r5 * 3.0f,
-                t = tSec * 0.08f,
+            val hNoise = valueNoise1D(
+                seed xor 0x27D4EB2F,
+                x = u * (3.0f + 3.0f * f),
+                t = tSec * (0.42f + 0.35f * s)
             )
-            val branchPresence = smooth01(((branchNoise - 0.72f) / 0.22f).coerceIn(0f, 1f))
-            val tipSplitCount = when {
-                branchNoise > 0.965f -> 3
-                branchNoise > 0.905f -> 2
-                else -> 1
-            }
-            val tipSplit = branchPresence
+            val tongueH =
+                (maxTongueH * (0.35f + 0.65f * hNoise.pow(1.15f))).coerceIn(5f, maxTongueH)
+            val tongueW = (tongueWBase * (1.00f + 0.70f * hNoise) * (0.88f + 0.24f * r)).coerceIn(
+                12f,
+                w * 0.55f
+            )
 
-            val gust = (0.78f + 0.26f * sin(tSec * (0.55f + 0.45f * r6) + phase)).coerceIn(0.55f, 1.05f)
-            val height = (baseH * gust * (0.90f + 0.20f * gustField)).coerceAtMost(maxTongueH)
+            val phase = (r * TAU) + idx * 0.33f
+            val wobble = sin(tSec * (1.40f + 3.10f * s) + phase) * tongueW * 0.12f
+            val gust = sin(tSec * (0.70f + 1.25f * s) + phase * 0.7f) * tongueW * 0.07f
+            val sway =
+                (wind * tongueW * 0.14f + wobble + gust).coerceIn(-tongueW * 0.28f, tongueW * 0.28f)
 
-            // Outer → inner → core layers per tongue (gives depth + a more "hot" center).
-            drawTongueLayers(
+            drawCartoonTongue(
                 seed = seed,
                 idx = idx,
-                centerX = xBase,
+                centerX = (x + sway).coerceIn(0f, w),
                 bottomY = bottom,
-                width = baseW,
-                height = height,
-                clipTopY = top + 0.75f,
+                width = tongueW,
+                height = tongueH,
+                minY = minY,
                 tSec = tSec,
-                speed = speed,
-                phase = phase,
+                speed = s,
                 intensity = i,
-                baseTaper = 1.0f,
-                tipSplitCount = tipSplitCount,
-                tipSplit = tipSplit,
+                alphaMul = 1.0f,
+                isBackLayer = false,
             )
-
         }
 
         // Subtle embers/particles: small spots that occasionally float up.
@@ -247,11 +201,15 @@ private fun DrawScope.drawProceduralFire(
             val particleCount = max(4, (w / 140f).toInt() + 2)
             val baseAlpha = (0.03f + 0.10f * particleBlend).coerceIn(0.03f, 0.16f)
             val activeWindow = (0.07f + 0.14f * particleBlend).coerceIn(0.06f, 0.22f)
-            val globalWind = (valueNoise1D(seed xor 0x22D3A3B1, x = 0.0f, t = tSec * 0.10f) * 2f - 1f)
+            val globalWind =
+                (valueNoise1D(seed xor 0x22D3A3B1, x = 0.0f, t = tSec * 0.10f) * 2f - 1f)
 
             for (p in 0 until particleCount) {
                 val base = hash01(seed xor 0x5A1F7A13, p * 31 + 7)
-                val period = (2.6f - 1.2f * s).coerceIn(1.0f, 2.6f) * (0.85f + 0.60f * hash01(seed, p * 31 + 8))
+                val period = (2.6f - 1.2f * s).coerceIn(1.0f, 2.6f) * (0.85f + 0.60f * hash01(
+                    seed,
+                    p * 31 + 8
+                ))
                 val cycle = fract((tSec / period) + base)
                 if (cycle > activeWindow) continue
 
@@ -265,7 +223,8 @@ private fun DrawScope.drawProceduralFire(
                 val rise = flameH * (0.55f + 0.60f * hash01(seed, p * 31 + 9))
                 val y = (bottom - (u01.pow(1.35f) * rise)).coerceIn(top + 1f, bottom - 1f)
 
-                val r = (0.55f + 2.20f * hash01(seed, p * 31 + 12)) * (0.70f + 0.60f * particleBlend)
+                val r =
+                    (0.55f + 2.20f * hash01(seed, p * 31 + 12)) * (0.70f + 0.60f * particleBlend)
                 val warm = hash01(seed, p * 31 + 13)
                 val c = if (warm > 0.72f) Color(0xFFFFF8E1) else Color(0xFFFFD180)
 
@@ -277,20 +236,7 @@ private fun DrawScope.drawProceduralFire(
             }
         }
 
-        // Subtle "embers" line at the very bottom (helps the edge feel hot/active).
-        val emberA = (0.08f + 0.10f * i).coerceIn(0.06f, 0.22f)
-        drawLine(
-            color = Color(0xFFFFD180).copy(alpha = emberA),
-            start = Offset(0f, bottom - 0.75f),
-            end = Offset(w, bottom - 0.75f),
-            strokeWidth = 1.25f,
-        )
-        drawLine(
-            color = Color(0xFFFF6A00).copy(alpha = emberA * 0.65f),
-            start = Offset(0f, bottom - 1.85f),
-            end = Offset(w, bottom - 1.85f),
-            strokeWidth = 1.0f,
-        )
+        // Removed bottom straight ember lines (looked like a highlighted flat strip).
     }
 }
 
@@ -410,6 +356,145 @@ private fun DrawScope.drawTongueLayers(
     }
 }
 
+private fun DrawScope.drawCartoonTongue(
+    seed: Int,
+    idx: Int,
+    centerX: Float,
+    bottomY: Float,
+    width: Float,
+    height: Float,
+    minY: Float,
+    tSec: Float,
+    speed: Float,
+    intensity: Float,
+    alphaMul: Float,
+    isBackLayer: Boolean,
+) {
+    intensity.coerceIn(0f, 1f)
+    // Tip wiggles more than the base (cartoon flame "waving").
+    val tipNoise = valueNoise1D(
+        seed xor 0xA341316C.toInt(),
+        x = idx * 0.31f,
+        t = tSec * (1.05f + 1.45f * speed)
+    )
+    val tipWobble =
+        sin(tSec * (2.0f + 4.4f * speed) + idx * 0.7f) * width * 0.14f +
+                (tipNoise - 0.5f) * width * 0.16f
+    val tipX = (centerX + tipWobble).coerceIn(0f, Float.MAX_VALUE)
+    val asym = (hash01(seed, idx * 29 + 11) - 0.5f) * 0.28f
+    // Smaller roundness => less "dome", more flame tip.
+    val tipRound = (0.02f + 0.03f * hash01(seed, idx * 29 + 12)).coerceIn(0.015f, 0.06f)
+
+    val outer = buildCartoonFlamePath(
+        centerX = centerX,
+        tipX = tipX,
+        bottomY = bottomY,
+        width = width,
+        height = height,
+        minY = minY,
+        asym = asym,
+        tipRound = tipRound,
+    )
+    val inner = buildCartoonFlamePath(
+        centerX = centerX,
+        tipX = tipX - width * 0.02f,
+        bottomY = bottomY,
+        width = width * 0.42f,
+        height = height * 0.62f,
+        minY = minY,
+        asym = asym * 0.45f,
+        tipRound = tipRound * 0.75f,
+    )
+
+    // Cartoon palette (close to the icon): red -> orange -> yellow.
+    // User requested minimal transparency: keep it essentially opaque.
+    val aMul = alphaMul.coerceIn(0.60f, 1.25f)
+    val outerA = (0.92f * aMul).coerceIn(0.70f, 1.0f)
+    val innerA = (0.78f * aMul).coerceIn(0.55f, 0.95f)
+
+    val outerTop = if (isBackLayer) Color(0xFFB71C1C) else Color(0xFFFF3B1D)
+    val outerMid = if (isBackLayer) Color(0xFFD84315) else Color(0xFFFF5A00)
+    val outerBot = if (isBackLayer) Color(0xFFFF6A00) else Color(0xFFFF8F00)
+
+    val innerTop = Color(0xFFFFF3D0)
+    val innerMid = Color(0xFFFFE082)
+    val innerBot = Color(0xFFFFC400)
+
+    val outerBrush = Brush.verticalGradient(
+        colorStops = arrayOf(
+            0.00f to outerTop.copy(alpha = outerA),
+            0.55f to outerMid.copy(alpha = outerA),
+            1.00f to outerBot.copy(alpha = outerA),
+        ),
+        startY = max(minY, bottomY - height),
+        endY = bottomY,
+    )
+    val innerBrush = Brush.verticalGradient(
+        colorStops = arrayOf(
+            0.00f to innerTop.copy(alpha = innerA),
+            0.65f to innerMid.copy(alpha = innerA),
+            1.00f to innerBot.copy(alpha = innerA * 0.90f),
+        ),
+        startY = max(minY, bottomY - height * 0.62f),
+        endY = bottomY,
+    )
+
+    // Avoid "yellow snowmen": no additive blending for the core and no outline stroke.
+    drawPath(path = outer, brush = outerBrush)
+    drawPath(path = inner, brush = innerBrush)
+}
+
+private fun buildCartoonFlamePath(
+    centerX: Float,
+    tipX: Float,
+    bottomY: Float,
+    width: Float,
+    height: Float,
+    minY: Float,
+    asym: Float,
+    tipRound: Float,
+): Path {
+    val tipY = max(minY, bottomY - height)
+
+    // Less "blob", more flame: strong pinch + sharp tip (no dome).
+    val a = asym.coerceIn(-0.35f, 0.35f)
+    val pinch = (0.62f + 0.22f * (1f - tipRound)).coerceIn(0.55f, 0.88f)
+
+    val baseHalfL = width * 0.58f * (1f + a * 0.45f)
+    val baseHalfR = width * 0.58f * (1f - a * 0.45f)
+    val pinchHalfL = width * (0.14f + 0.12f * (1f - pinch)) * (1f + a * 0.20f)
+    val pinchHalfR = width * (0.14f + 0.12f * (1f - pinch)) * (1f - a * 0.20f)
+
+    val leftBase = centerX - baseHalfL
+    val rightBase = centerX + baseHalfR
+
+    val yBulge = bottomY - height * 0.22f
+    val yPinch = bottomY - height * (0.58f + 0.08f * pinch)
+    val yNeck = bottomY - height * 0.82f
+
+    val bulgeLx = centerX - baseHalfL * (0.95f + 0.05f * pinch)
+    val bulgeRx = centerX + baseHalfR * (0.95f + 0.05f * pinch)
+
+    val pinchLx = tipX - pinchHalfL
+    val pinchRx = tipX + pinchHalfR
+
+    return Path().apply {
+        moveTo(leftBase, bottomY)
+        cubicTo(
+            leftBase, yBulge,
+            bulgeLx, yBulge,
+            pinchLx, yPinch
+        )
+        quadraticTo(tipX, tipY, pinchRx, yPinch)
+        cubicTo(
+            bulgeRx, yNeck,
+            rightBase, yBulge,
+            rightBase, bottomY
+        )
+        close()
+    }
+}
+
 private fun flameBrush(
     bottomY: Float,
     topY: Float,
@@ -481,8 +566,10 @@ private fun buildTonguePath(
         )
 
         val sway = sin(phase + (tSec * (0.85f + 0.75f * speed)) + (u * 6.2f)) * (width * 0.12f)
-        val flutter = sin(edgeFlickerPhase + tSec * (1.2f + speed) + u * edgeFlickerFreq) * (width * 0.05f)
-        val tipCurl = sin(phase * 0.7f + tSec * (1.05f + 0.35f * speed) + u * (8.5f + 2.0f * speed)) * (width * 0.08f)
+        val flutter =
+            sin(edgeFlickerPhase + tSec * (1.2f + speed) + u * edgeFlickerFreq) * (width * 0.05f)
+        val tipCurl =
+            sin(phase * 0.7f + tSec * (1.05f + 0.35f * speed) + u * (8.5f + 2.0f * speed)) * (width * 0.08f)
         val curlWeight = (u * u).coerceIn(0f, 1f)
 
         // Random wind: slow gusts + per-tongue jitter, stronger at the tip.
@@ -502,16 +589,21 @@ private fun buildTonguePath(
         val windShift = (wind * width * 0.18f + gust * width * 0.06f) * windWeight * wobbleScale
 
         val x = centerX + wobbleScale * decay * (
-            sway + flutter +
-                (n1 - 0.5f) * width * 0.20f +
-                (n2 - 0.5f) * width * 0.10f +
-                tipCurl * curl * curlWeight
-            ) + windShift
+                sway + flutter +
+                        (n1 - 0.5f) * width * 0.20f +
+                        (n2 - 0.5f) * width * 0.10f +
+                        tipCurl * curl * curlWeight
+                ) + windShift
 
-        val edgePulse = 0.84f + 0.24f * sin(edgeFlickerPhase + tSec * (1.0f + 0.6f * speed) + u * (8.0f + 2.0f * speed))
+        val edgePulse =
+            0.84f + 0.24f * sin(edgeFlickerPhase + tSec * (1.0f + 0.6f * speed) + u * (8.0f + 2.0f * speed))
         val baseRamp = 0.18f
         val baseFactor =
-            if (u < baseRamp) lerp(baseTaper.coerceIn(0.02f, 1f), 1f, smooth01(u / baseRamp)) else 1f
+            if (u < baseRamp) lerp(
+                baseTaper.coerceIn(0.02f, 1f),
+                1f,
+                smooth01(u / baseRamp)
+            ) else 1f
 
         val rBase = (width * 0.5f) * profile * edgePulse * baseFactor
         val rL = max(0.40f, rBase * (1f + asym * 0.65f))

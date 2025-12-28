@@ -211,17 +211,17 @@ public fun HighlightsCard(
                         intensity = when (value.streak.featured.mood) {
                             HighlightStreakMood.CrushingIt -> 0.5f
                             HighlightStreakMood.OnTrack -> 0.4f
-                            HighlightStreakMood.Restart -> 0.3f
+                            HighlightStreakMood.Restart -> 0.4f
                         },
                         frequency = when (value.streak.featured.mood) {
                             HighlightStreakMood.CrushingIt -> 0.7f
                             HighlightStreakMood.OnTrack -> 0.8f
                             HighlightStreakMood.Restart -> 1f
                         },
-                        speed =  when (value.streak.featured.mood) {
-                            HighlightStreakMood.CrushingIt -> 0.7f
-                            HighlightStreakMood.OnTrack -> 0.7f
-                            HighlightStreakMood.Restart -> 0.7f
+                        speed = when (value.streak.featured.mood) {
+                            HighlightStreakMood.CrushingIt -> 1f
+                            HighlightStreakMood.OnTrack -> 1f
+                            HighlightStreakMood.Restart -> 1f
                         },
                     ),
                 content = { HighlightStreakPanel(value) }
@@ -437,11 +437,13 @@ private fun HighlightStreakPanel(value: Highlight) {
             )
         }
     }
-    val encouragement = when (value.streak.featured.mood) {
+
+    when (value.streak.featured.mood) {
         HighlightStreakMood.CrushingIt -> AppTokens.strings.res(Res.string.highlight_streak_mood_crushing)
         HighlightStreakMood.OnTrack -> AppTokens.strings.res(Res.string.highlight_streak_mood_on_track)
         HighlightStreakMood.Restart -> AppTokens.strings.res(Res.string.highlight_streak_mood_restart)
     }
+
     val progressValue = (value.streak.featured.progressPercent.coerceIn(0, 100)) / 100f
 
     val progressColors = when (value.streak.featured.mood) {

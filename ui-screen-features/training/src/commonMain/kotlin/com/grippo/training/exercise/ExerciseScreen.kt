@@ -23,6 +23,7 @@ import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.empty.EmptyState
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.components.swipe.SwipeToReveal
@@ -96,88 +97,120 @@ internal fun ExerciseScreen(
         title = AppTokens.strings.res(Res.string.exercise_record),
     )
 
-    LazyColumn(
+    val basePadding = PaddingValues(top = AppTokens.dp.contentPadding.block)
+
+    BottomOverlayContainer(
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
-    ) {
-        item {
-            Text(
-                modifier = Modifier
-                    .animateItem()
-                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                    .fillMaxWidth(),
-                text = AppTokens.strings.res(
-                    Res.string.sets_value,
-                    state.exercise.iterations.size
-                ),
-                style = AppTokens.typography.h4(),
-                color = AppTokens.colors.text.primary,
-                textAlign = TextAlign.Start
-            )
-        }
-
-        itemsIndexed(
-            items = state.exercise.iterations,
-            key = { _, item -> item.id }
-        ) { index, iteration ->
-            val editVolumeProvider = remember(iteration.id) {
-                { contract.onEditVolume(iteration.id) }
-            }
-
-            val editRepetitionProvider = remember(iteration.id) {
-                { contract.onEditRepetition(iteration.id) }
-            }
-
-            val deleteIterationProvider = remember(iteration.id) {
-                { contract.onDeleteIteration(iteration.id) }
-            }
-
-            SwipeToReveal(
-                modifier = Modifier.animateItem(),
-                actions = {
-                    Button(
-                        modifier = Modifier.padding(end = AppTokens.dp.screen.horizontalPadding),
-                        content = ButtonContent.Icon(
-                            icon = ButtonIcon.Icon(AppTokens.icons.Cancel)
-                        ),
-                        style = ButtonStyle.Error,
-                        onClick = deleteIterationProvider
-                    )
-                }
+        contentPadding = basePadding,
+        overlay = AppTokens.colors.background.screen,
+        content = { containerModifier, resolvedPadding ->
+            AnimatedContent(
+                modifier = containerModifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                transitionSpec = {
+                    (fadeIn(animationSpec = tween(220, delayMillis = 90)))
+                        .togetherWith(fadeOut(animationSpec = tween(90)))
+                },
+                targetState = state.exercise.iterations.isEmpty()
             ) {
-                IterationCard(
-                    modifier = Modifier
-                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                        .fillMaxWidth(),
-                    value = iteration,
-                    style = IterationCardStyle.Editable(
-                        label = (index + 1).toString(),
-                        onVolumeClick = editVolumeProvider,
-                        onRepetitionClick = editRepetitionProvider
+                when (it) {
+                    true -> EmptyState(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
                     )
-                )
+
+                    false -> LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                        contentPadding = resolvedPadding
+                    ) {
+                        item {
+                            Text(
+                                modifier = Modifier
+                                    .animateItem()
+                                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                                    .fillMaxWidth(),
+                                text = AppTokens.strings.res(
+                                    Res.string.sets_value,
+                                    state.exercise.iterations.size
+                                ),
+                                style = AppTokens.typography.h4(),
+                                color = AppTokens.colors.text.primary,
+                                textAlign = TextAlign.Start
+                            )
+                        }
+
+                        itemsIndexed(
+                            items = state.exercise.iterations,
+                            key = { _, item -> item.id }
+                        ) { index, iteration ->
+                            val editVolumeProvider = remember(iteration.id) {
+                                { contract.onEditVolume(iteration.id) }
+                            }
+
+                            val editRepetitionProvider = remember(iteration.id) {
+                                { contract.onEditRepetition(iteration.id) }
+                            }
+
+                            val deleteIterationProvider = remember(iteration.id) {
+                                { contract.onDeleteIteration(iteration.id) }
+                            }
+
+                            SwipeToReveal(
+                                modifier = Modifier.animateItem(),
+                                actions = {
+                                    Button(
+                                        modifier = Modifier.padding(end = AppTokens.dp.screen.horizontalPadding),
+                                        content = ButtonContent.Icon(
+                                            icon = ButtonIcon.Icon(AppTokens.icons.Cancel)
+                                        ),
+                                        style = ButtonStyle.Error,
+                                        onClick = deleteIterationProvider
+                                    )
+                                }
+                            ) {
+                                IterationCard(
+                                    modifier = Modifier
+                                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                                        .fillMaxWidth(),
+                                    value = iteration,
+                                    style = IterationCardStyle.Editable(
+                                        label = (index + 1).toString(),
+                                        onVolumeClick = editVolumeProvider,
+                                        onRepetitionClick = editRepetitionProvider
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
             }
+        },
+        bottom = {
+            Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
+
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+                content = ButtonContent.Text(
+                    text = AppTokens.strings.res(Res.string.add_set_btn),
+                ),
+                style = ButtonStyle.Secondary,
+                onClick = contract::onAddIteration
+            )
+
+            Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+
+            Spacer(modifier = Modifier.navigationBarsPadding())
         }
-    }
-
-    Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
-
-    Button(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-        content = ButtonContent.Text(
-            text = AppTokens.strings.res(Res.string.add_set_btn),
-        ),
-        style = ButtonStyle.Secondary,
-        onClick = contract::onAddIteration
     )
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
-
-    Spacer(modifier = Modifier.navigationBarsPadding())
 }
 
 @AppPreview

@@ -33,17 +33,16 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.empty.EmptyState
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
-import com.grippo.design.components.placeholder.ScreenPlaceholder
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.ai_suggestion_btn
 import com.grippo.design.resources.provider.icons.Molecule
-import com.grippo.design.resources.provider.not_found
 import com.grippo.design.resources.provider.select_exercise
 import com.grippo.exercise.example.picker.internal.AiSuggestionHeader
 import com.grippo.exercise.example.picker.internal.ManualHeader
@@ -113,11 +112,10 @@ internal fun ExerciseExamplePickerScreen(
             targetState = state.exerciseExamples.isEmpty(),
         ) {
             when (it) {
-                true -> ScreenPlaceholder(
+                true -> EmptyState(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
-                    text = AppTokens.strings.res(Res.string.not_found),
                 )
 
                 false -> {

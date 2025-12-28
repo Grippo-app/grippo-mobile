@@ -42,7 +42,6 @@ internal fun TrainingRecordingScreen(
         value = AppTokens.colors.background.screen
     )
 ) {
-
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         style = ToolbarStyle.Transparent,
@@ -104,7 +103,6 @@ private fun ScreenPreview() {
         )
     }
 }
-
 
 @AppPreview
 @Composable

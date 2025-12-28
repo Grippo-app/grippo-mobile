@@ -23,6 +23,7 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.empty.EmptyState
 import com.grippo.design.components.timeline.TimelineIndicator
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
@@ -55,26 +56,29 @@ internal fun DailyTrainingsPage(
     val timelineItems = remember(trainings) {
         trainings.filterIsInstance<TrainingListValue.Daily.Item>()
     }
-    if (digests.isEmpty() && timelineItems.isEmpty()) {
-        TrainingsEmptyState(modifier = modifier.fillMaxSize())
-        return
-    }
 
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        state = listState,
-        contentPadding = contentPadding
-    ) {
-        items(
-            items = timelineItems,
-            key = { it.key },
-            contentType = { it::class }
-        ) { value ->
-            DailyTimelineItem(
-                value = value,
-                onTrainingMenuClick = onTrainingMenuClick,
-                onExerciseClick = onExerciseClick
-            )
+    if (digests.isEmpty() && timelineItems.isEmpty()) {
+        EmptyState(
+            modifier = modifier.fillMaxSize()
+        )
+    } else {
+
+        LazyColumn(
+            modifier = modifier.fillMaxSize(),
+            state = listState,
+            contentPadding = contentPadding
+        ) {
+            items(
+                items = timelineItems,
+                key = { it.key },
+                contentType = { it::class }
+            ) { value ->
+                DailyTimelineItem(
+                    value = value,
+                    onTrainingMenuClick = onTrainingMenuClick,
+                    onExerciseClick = onExerciseClick
+                )
+            }
         }
     }
 }

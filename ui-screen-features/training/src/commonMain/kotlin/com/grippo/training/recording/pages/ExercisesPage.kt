@@ -6,7 +6,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -25,8 +24,8 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.empty.EmptyState
 import com.grippo.design.components.frames.BottomOverlayContainer
-import com.grippo.design.components.placeholder.ScreenPlaceholder
 import com.grippo.design.components.swipe.SwipeToReveal
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
@@ -36,7 +35,6 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.add_exercise_btn
 import com.grippo.design.resources.provider.icons.Cancel
-import com.grippo.design.resources.provider.no_exercises_yet
 import com.grippo.training.recording.TrainingRecordingContract
 import com.grippo.training.recording.TrainingRecordingScreen
 import com.grippo.training.recording.TrainingRecordingState
@@ -51,59 +49,35 @@ internal fun ColumnScope.ExercisesPage(
 ) {
     val exercises = remember(state.exercises) { state.exercises }
 
-    AnimatedContent(
-        modifier = modifier,
-        transitionSpec = {
-            (fadeIn(animationSpec = tween(220, delayMillis = 90)))
-                .togetherWith(fadeOut(animationSpec = tween(90)))
-        },
-        targetState = exercises.isEmpty()
-    ) {
-        when (it) {
-            true -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                ) {
-                    ScreenPlaceholder(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        text = AppTokens.strings.res(Res.string.no_exercises_yet),
-                    )
+    val basePadding = PaddingValues(top = AppTokens.dp.contentPadding.block)
 
-                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+    BottomOverlayContainer(
+        modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f),
+        contentPadding = basePadding,
+        overlay = AppTokens.colors.background.screen,
+        content = { containerModifier, resolvedPadding ->
+            AnimatedContent(
+                modifier = containerModifier,
+                transitionSpec = {
+                    (fadeIn(animationSpec = tween(220, delayMillis = 90)))
+                        .togetherWith(fadeOut(animationSpec = tween(90)))
+                },
+                targetState = exercises.isEmpty()
+            ) { s ->
+                when (s) {
+                    true -> {
+                        EmptyState(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                        )
+                    }
 
-                    Button(
-                        modifier = Modifier
-                            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                            .fillMaxWidth(1f),
-                        content = ButtonContent.Text(
-                            text = AppTokens.strings.res(Res.string.add_exercise_btn),
-                        ),
-                        style = ButtonStyle.Secondary,
-                        onClick = contract::onAddExercise
-                    )
-
-                    Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
-
-                    Spacer(modifier = Modifier.navigationBarsPadding())
-                }
-            }
-
-            false -> {
-                val basePadding = PaddingValues(top = AppTokens.dp.contentPadding.block)
-
-                BottomOverlayContainer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    contentPadding = basePadding,
-                    overlay = AppTokens.colors.background.screen,
-                    content = { containerModifier, resolvedPadding ->
+                    false -> {
                         LazyColumn(
-                            modifier = containerModifier
+                            modifier = Modifier
                                 .fillMaxWidth()
                                 .weight(1f),
                             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block),
@@ -146,29 +120,29 @@ internal fun ColumnScope.ExercisesPage(
                                 }
                             }
                         }
-                    },
-                    bottom = {
-                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-                        Button(
-                            modifier = Modifier
-                                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
-                                .fillMaxWidth(1f),
-                            content = ButtonContent.Text(
-                                text = AppTokens.strings.res(Res.string.add_exercise_btn),
-                            ),
-                            style = ButtonStyle.Secondary,
-                            onClick = contract::onAddExercise
-                        )
-
-                        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
-
-                        Spacer(modifier = Modifier.navigationBarsPadding())
                     }
-                )
+                }
             }
+        },
+        bottom = {
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+            Button(
+                modifier = Modifier
+                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                    .fillMaxWidth(1f),
+                content = ButtonContent.Text(
+                    text = AppTokens.strings.res(Res.string.add_exercise_btn),
+                ),
+                style = ButtonStyle.Secondary,
+                onClick = contract::onAddExercise
+            )
+
+            Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
+
+            Spacer(modifier = Modifier.navigationBarsPadding())
         }
-    }
+    )
 }
 
 @AppPreview
