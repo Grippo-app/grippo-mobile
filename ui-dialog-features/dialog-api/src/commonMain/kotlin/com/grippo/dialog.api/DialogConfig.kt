@@ -1,6 +1,5 @@
 package com.grippo.dialog.api
 
-import com.grippo.core.state.datetime.PeriodState
 import com.grippo.core.state.error.AppErrorState
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.filters.FilterValue
@@ -85,16 +84,6 @@ public sealed class DialogConfig(
         val limitations: DateRange,
         val title: String,
         @Transient val onResult: (value: DateFormatState) -> Unit = {},
-    ) : DialogConfig(
-        onDismiss = null,
-        dismissBySwipe = true
-    )
-
-    @Serializable
-    public data class PeriodPicker(
-        val initial: PeriodState,
-        val available: List<PeriodState>,
-        @Transient val onResult: (value: PeriodState) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true

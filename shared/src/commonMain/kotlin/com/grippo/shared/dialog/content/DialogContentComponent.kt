@@ -23,7 +23,6 @@ import com.grippo.filter.picker.FilterPickerComponent
 import com.grippo.height.picker.HeightPickerComponent
 import com.grippo.iteration.picker.IterationPickerComponent
 import com.grippo.menu.picker.MenuPickerComponent
-import com.grippo.period.picker.PeriodPickerComponent
 import com.grippo.statistics.StatisticsComponent
 import com.grippo.weight.picker.WeightPickerComponent
 
@@ -135,16 +134,6 @@ internal class DialogContentComponent(
                 )
             )
 
-            is DialogConfig.PeriodPicker -> Child.PeriodPicker(
-                PeriodPickerComponent(
-                    componentContext = context,
-                    initial = router.initial,
-                    available = router.available,
-                    onResult = { period -> viewModel.onBack { router.onResult.invoke(period) } },
-                    back = { viewModel.onBack(null) }
-                )
-            )
-
             is DialogConfig.ExerciseExamplePicker -> Child.ExerciseExamplePicker(
                 ExerciseExamplePickerComponent(
                     componentContext = context,
@@ -175,8 +164,20 @@ internal class DialogContentComponent(
             is DialogConfig.Profile -> Child.Profile(
                 ProfileComponent(
                     componentContext = context,
-                    onProfileResult = { action -> viewModel.onBack { router.onProfileResult.invoke(action) } },
-                    onSettingsResult = { action -> viewModel.onBack { router.onSettingsResult.invoke(action) } },
+                    onProfileResult = { action ->
+                        viewModel.onBack {
+                            router.onProfileResult.invoke(
+                                action
+                            )
+                        }
+                    },
+                    onSettingsResult = { action ->
+                        viewModel.onBack {
+                            router.onSettingsResult.invoke(
+                                action
+                            )
+                        }
+                    },
                     close = { viewModel.onBack(null) }
                 )
             )
@@ -228,9 +229,6 @@ internal class DialogContentComponent(
             Child(component)
 
         data class DatePicker(override val component: DatePickerComponent) :
-            Child(component)
-
-        data class PeriodPicker(override val component: PeriodPickerComponent) :
             Child(component)
 
         data class ExerciseExamplePicker(override val component: ExerciseExamplePickerComponent) :

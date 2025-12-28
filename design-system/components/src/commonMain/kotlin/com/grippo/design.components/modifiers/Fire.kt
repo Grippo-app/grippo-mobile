@@ -19,7 +19,6 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import kotlin.math.PI
-import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
@@ -83,162 +82,519 @@ private fun DrawScope.drawProceduralFire(
 
     val bottom = h
     val top = h - flameH
-    // Global time multiplier: at speed=1 we want very fast burn (≈2x faster than previous speed=1).
     val timeScale = ((0.22f + 1.55f * s) * (1f + s) * (1f + s)).coerceIn(0.15f, 7.2f)
     val tSec = (timeNanos / 1_000_000_000f) * timeScale
 
-    // No baseGlow band in cartoon mode (it reads as a flat strip).
-
     clipRect(left = 0f, top = top, right = w, bottom = bottom) {
-        // Cartoon fire doesn't need a flat full-width glow band (it reads as a straight layer).
-        // drawRect(brush = baseGlow)
+        // === IMPROVED FIRE RENDERING using advanced techniques ===
 
-        // Cartoon mode: layered tongues (back big / front small), with non-uniform spacing and smooth height noise.
-        val count = max(3, ceil(w / (170f - 70f * f)).toInt())
-        val cellW = (w / count.toFloat()).coerceAtLeast(1f)
-        val widthScale = (0.52f + 0.55f * smooth01(i)).coerceIn(0.52f, 1.05f)
-        val tongueWBase = (cellW * 1.35f * widthScale).coerceIn(12f, 78f)
-        val maxTongueH = (flameH * 0.98f).coerceAtLeast(1f)
-        val minY = top + 0.75f
+        // 1) Base merging layer: dense overlapping base to unify tongue bottoms
+        drawBaseMergingLayer(
+            seed = seed,
+            w = w,
+            bottom = bottom,
+            flameH = flameH,
+            top = top,
+            tSec = tSec,
+            intensity = i,
+            speed = s,
+            frequency = f
+        )
 
-        // Base "mass" is created by overlap of tongues; avoid extra bottom bands that look like separate layers.
+        // 2) Enhanced layered flame tongues with better turbulence
+        drawEnhancedFlameTongues(
+            seed = seed,
+            w = w,
+            bottom = bottom,
+            flameH = flameH,
+            top = top,
+            tSec = tSec,
+            intensity = i,
+            speed = s,
+            frequency = f
+        )
 
-        val wind01 = valueNoise1D(seed xor 0x12E15E35, x = 0.0f, t = tSec * 0.22f)
-        val wind = (wind01 * 2f - 1f)
-
-        // Make tongues overlap more so the bottom reads as one continuous flame.
-        val backCount = max(2, (count * 0.65f).toInt())
-        val frontCount = count + max(2, (count * 0.45f).toInt())
-
-        // Back layer: fewer, larger, darker (adds mass).
-        for (idx in 0 until backCount) {
-            val u = (idx + 0.5f) / backCount.toFloat()
-            val baseX = u * w
-            val r = hash01(seed, idx * 43 + 7)
-            val xNoise = valueNoise1D(seed xor 0x6D2B79F5, x = u * 1.7f, t = tSec * 0.10f)
-            val x = (baseX + (xNoise - 0.5f) * cellW * 0.85f).coerceIn(0f, w)
-
-            val hNoise = valueNoise1D(
-                seed xor 0x85EBCA6B.toInt(),
-                x = u * (1.9f + 1.4f * f),
-                t = tSec * 0.28f
-            )
-            val peak = smooth01(((hNoise - 0.70f) / 0.30f).coerceIn(0f, 1f))
-            val tongueH =
-                (maxTongueH * (0.50f + 0.55f * hNoise + 0.25f * peak)).coerceIn(6f, maxTongueH)
-            val tongueW = (tongueWBase * (1.30f + 0.85f * hNoise) * (0.90f + 0.20f * r)).coerceIn(
-                14f,
-                w * 0.72f
-            )
-
-            val phase = r * TAU
-            val sway =
-                (wind * tongueW * 0.12f + sin(tSec * (0.65f + 1.40f * s) + phase) * tongueW * 0.10f)
-                    .coerceIn(-tongueW * 0.26f, tongueW * 0.26f)
-
-            drawCartoonTongue(
-                seed = seed,
-                idx = 1000 + idx,
-                centerX = (x + sway).coerceIn(0f, w),
-                bottomY = bottom,
-                width = tongueW,
-                height = tongueH,
-                minY = minY,
-                tSec = tSec,
-                speed = s,
-                intensity = i,
-                alphaMul = 0.70f,
-                isBackLayer = true,
-            )
-        }
-
-        // Front layer: more tongues, smaller, brighter (the "icon" tongues).
-        for (idx in 0 until frontCount) {
-            val u = (idx + 0.5f) / frontCount.toFloat()
-            val baseX = u * w
-            val r = hash01(seed, idx * 31 + 3)
-            val xNoise =
-                valueNoise1D(seed xor 0xC2B2AE35.toInt(), x = u * 3.2f + r * 0.9f, t = tSec * 0.22f)
-            val x = (baseX + (xNoise - 0.5f) * cellW * (0.55f + 0.35f * f)).coerceIn(0f, w)
-
-            val hNoise = valueNoise1D(
-                seed xor 0x27D4EB2F,
-                x = u * (3.0f + 3.0f * f),
-                t = tSec * (0.42f + 0.35f * s)
-            )
-            val tongueH =
-                (maxTongueH * (0.35f + 0.65f * hNoise.pow(1.15f))).coerceIn(5f, maxTongueH)
-            val tongueW = (tongueWBase * (1.00f + 0.70f * hNoise) * (0.88f + 0.24f * r)).coerceIn(
-                12f,
-                w * 0.55f
-            )
-
-            val phase = (r * TAU) + idx * 0.33f
-            val wobble = sin(tSec * (1.40f + 3.10f * s) + phase) * tongueW * 0.12f
-            val gust = sin(tSec * (0.70f + 1.25f * s) + phase * 0.7f) * tongueW * 0.07f
-            val sway =
-                (wind * tongueW * 0.14f + wobble + gust).coerceIn(-tongueW * 0.28f, tongueW * 0.28f)
-
-            drawCartoonTongue(
-                seed = seed,
-                idx = idx,
-                centerX = (x + sway).coerceIn(0f, w),
-                bottomY = bottom,
-                width = tongueW,
-                height = tongueH,
-                minY = minY,
-                tSec = tSec,
-                speed = s,
-                intensity = i,
-                alphaMul = 1.0f,
-                isBackLayer = false,
-            )
-        }
-
-        // Subtle embers/particles: small spots that occasionally float up.
-        val particleBlend = ((i - 0.25f) / 0.75f).coerceIn(0f, 1f)
-        if (particleBlend > 0.01f) {
-            val particleCount = max(4, (w / 140f).toInt() + 2)
-            val baseAlpha = (0.03f + 0.10f * particleBlend).coerceIn(0.03f, 0.16f)
-            val activeWindow = (0.07f + 0.14f * particleBlend).coerceIn(0.06f, 0.22f)
-            val globalWind =
-                (valueNoise1D(seed xor 0x22D3A3B1, x = 0.0f, t = tSec * 0.10f) * 2f - 1f)
-
-            for (p in 0 until particleCount) {
-                val base = hash01(seed xor 0x5A1F7A13, p * 31 + 7)
-                val period = (2.6f - 1.2f * s).coerceIn(1.0f, 2.6f) * (0.85f + 0.60f * hash01(
-                    seed,
-                    p * 31 + 8
-                ))
-                val cycle = fract((tSec / period) + base)
-                if (cycle > activeWindow) continue
-
-                val u01 = (cycle / activeWindow).coerceIn(0f, 1f)
-                val fade = (sin(u01 * PI.toFloat())).coerceIn(0f, 1f)
-
-                val x0 = w * hash01(seed, p * 31 + 10)
-                val driftLocal = (hash01(seed, p * 31 + 11) - 0.5f) * (w * 0.05f)
-                val x = (x0 + (globalWind * w * 0.03f + driftLocal) * u01).coerceIn(0f, w)
-
-                val rise = flameH * (0.55f + 0.60f * hash01(seed, p * 31 + 9))
-                val y = (bottom - (u01.pow(1.35f) * rise)).coerceIn(top + 1f, bottom - 1f)
-
-                val r =
-                    (0.55f + 2.20f * hash01(seed, p * 31 + 12)) * (0.70f + 0.60f * particleBlend)
-                val warm = hash01(seed, p * 31 + 13)
-                val c = if (warm > 0.72f) Color(0xFFFFF8E1) else Color(0xFFFFD180)
-
-                drawCircle(
-                    color = c.copy(alpha = baseAlpha * fade),
-                    radius = r,
-                    center = Offset(x, y)
-                )
-            }
-        }
-
-        // Removed bottom straight ember lines (looked like a highlighted flat strip).
+        // 3) Advanced particle system with embers and sparks
+        drawAdvancedParticles(
+            seed = seed,
+            w = w,
+            h = h,
+            bottom = bottom,
+            flameH = flameH,
+            top = top,
+            tSec = tSec,
+            intensity = i,
+            speed = s
+        )
     }
 }
+
+// === ADVANCED FIRE RENDERING FUNCTIONS (Claude Sonnet 4.5 Enhanced) ===
+
+/**
+ * Draws dense overlapping base layer to create visual merging at tongue bottoms.
+ * Uses many small overlapping shapes (not a flat band) for organic look.
+ */
+private fun DrawScope.drawBaseMergingLayer(
+    seed: Int,
+    w: Float,
+    bottom: Float,
+    flameH: Float,
+    top: Float,
+    tSec: Float,
+    intensity: Float,
+    speed: Float,
+    frequency: Float,
+) {
+    // Base merging zone: lower 40% of flame height (MORE visible)
+    val mergeH = (flameH * 0.40f).coerceIn(10f, flameH * 0.50f)
+    val mergeTop = (bottom - mergeH).coerceAtLeast(top)
+
+    // VERY dense array of overlapping "base bumps" to create VISIBLE unified bottom
+    val bumpCount = max(12, (w / 35f * (1.0f + 0.7f * frequency)).toInt())
+
+    for (idx in 0 until bumpCount) {
+        val u = idx / (bumpCount - 1f).coerceAtLeast(1f)
+        val xBase = u * w
+
+        // Minimal horizontal wiggle (more stable base)
+        val xNoise = valueNoise1D(seed xor 0x7A2C4E91.toInt(), x = u * 2.5f, t = tSec * 0.16f)
+        val x = (xBase + (xNoise - 0.5f) * (w / bumpCount) * 0.4f).coerceIn(0f, w)
+
+        // Variable height for organic edge
+        val hNoise = valueNoise1D(seed xor 0x3F8D6B12.toInt(), x = u * 3.2f, t = tSec * 0.22f)
+        val h = (mergeH * (0.80f + 0.30f * hNoise)).coerceIn(8f, mergeH * 1.15f)
+
+        // VERY wide overlapping width (creates SOLID coverage at base)
+        val bumpW =
+            (w / bumpCount * 2.20f * (0.90f + 0.35f * smooth01(intensity))).coerceIn(25f, w * 0.40f)
+
+        // Draw as vertical gradient oval/circle
+        val bumpTop = max(mergeTop, bottom - h)
+        val radiusX = bumpW * 0.5f
+        val radiusY = h * 0.5f
+
+        // Color gradient (red-orange-yellow) with MUCH HIGHER alpha (more visible)
+        val alphaBase = (0.65f + 0.30f * intensity).coerceIn(0.60f, 0.98f)
+        val gradient = Brush.verticalGradient(
+            colorStops = arrayOf(
+                0.00f to Color(0xFFD84315).copy(alpha = alphaBase * 0.50f),
+                0.35f to Color(0xFFFF6A00).copy(alpha = alphaBase * 0.80f),
+                0.70f to Color(0xFFFF8F00).copy(alpha = alphaBase * 0.95f),
+                1.00f to Color(0xFFFFC400).copy(alpha = alphaBase),
+            ),
+            startY = bumpTop,
+            endY = bottom
+        )
+
+        // Draw ellipse/circle bump
+        drawOval(
+            brush = gradient,
+            topLeft = Offset(x - radiusX, bumpTop),
+            size = androidx.compose.ui.geometry.Size(radiusX * 2f, radiusY * 2f)
+        )
+    }
+}
+
+/**
+ * Holds parameters for a single flame tongue to be drawn.
+ */
+private data class TongueParams(
+    val idx: Int,
+    val centerX: Float,
+    val width: Float,
+    val height: Float,
+    val alphaMul: Float,
+    val isBackLayer: Boolean,
+    val zOrder: Float, // Depth for sorting (lower = back, higher = front)
+)
+
+/**
+ * Draws refined flame tongues with natural overlapping (not "ladder" effect).
+ * Computes all tongues first, sorts by depth (z-order), then draws back-to-front.
+ */
+private fun DrawScope.drawEnhancedFlameTongues(
+    seed: Int,
+    w: Float,
+    bottom: Float,
+    flameH: Float,
+    top: Float,
+    tSec: Float,
+    intensity: Float,
+    speed: Float,
+    frequency: Float,
+) {
+    val minY = top + 0.75f
+    val maxTongueH = (flameH * 0.98f).coerceAtLeast(1f)
+
+    // More tongues = better overlap = unified base
+    val baseCount = max(5, (w / 75f * (0.8f + 0.5f * frequency)).toInt())
+
+    // Gentle global wind (not extreme turbulence)
+    val wind01 = valueNoise1D(seed xor 0x12E15E35, x = 0.0f, t = tSec * 0.18f)
+    val wind = (wind01 * 2f - 1f) * 0.6f
+
+    // Collect all tongue parameters first
+    val tongues = mutableListOf<TongueParams>()
+
+    // Back layer: creates depth and fills gaps
+    val backCount = max(4, (baseCount * 0.75f).toInt())
+    for (idx in 0 until backCount) {
+        val u = (idx + 0.5f) / backCount.toFloat()
+
+        // Moderate position variation (not extreme FBM chaos)
+        val xNoise = valueNoise1D(seed xor 0x6D2B79F5, x = u * 2.0f, t = tSec * 0.14f)
+        val x = (u * w + (xNoise - 0.5f) * w * 0.08f).coerceIn(0f, w)
+
+        // Smooth height variation
+        val hNoise = fbm1D(
+            seed xor 0x85EBCA6B.toInt(),
+            x = u * (2.2f + 1.2f * frequency),
+            t = tSec * 0.32f,
+            octaves = 2
+        )
+        val tongueH = (maxTongueH * (0.60f + 0.45f * hNoise)).coerceIn(10f, maxTongueH)
+
+        // Controlled width (ensures overlap)
+        val baseW = (w / backCount * 1.60f * (0.75f + 0.45f * smooth01(intensity)))
+        val tongueW = (baseW * (1.05f + 0.35f * hNoise)).coerceIn(18f, w * 0.65f)
+
+        // SLOWER gentle sway (reduced amplitude)
+        val sway =
+            (wind * tongueW * 0.06f + sin(tSec * (0.70f + 1.30f * speed) + idx * 0.6f) * tongueW * 0.04f).coerceIn(
+                -tongueW * 0.12f,
+                tongueW * 0.12f
+            )
+
+        // Z-order: back layer gets lower values (0.0-0.4 range) with randomization
+        val zBase = hash01(seed, 1000 + idx) * 0.4f
+
+        tongues.add(
+            TongueParams(
+                idx = 1000 + idx,
+                centerX = (x + sway).coerceIn(0f, w),
+                width = tongueW,
+                height = tongueH,
+                alphaMul = 0.75f,
+                isBackLayer = true,
+                zOrder = zBase,
+            )
+        )
+    }
+
+    // Front layer: visual definition
+    val frontCount = baseCount + max(3, (baseCount * 0.55f).toInt())
+    for (idx in 0 until frontCount) {
+        val u = (idx + 0.5f) / frontCount.toFloat()
+
+        // Moderate position offset
+        val xNoise =
+            valueNoise1D(seed xor 0xC2B2AE35.toInt(), x = u * 3.5f + idx * 0.09f, t = tSec * 0.22f)
+        val x = (u * w + (xNoise - 0.5f) * w * (0.06f + 0.08f * frequency)).coerceIn(0f, w)
+
+        // Smooth height with some peaks
+        val hNoise = fbm1D(
+            seed xor 0x27D4EB2F,
+            x = u * (3.5f + 2.5f * frequency),
+            t = tSec * (0.45f + 0.40f * speed),
+            octaves = 2
+        )
+        val tongueH = (maxTongueH * (0.45f + 0.60f * hNoise.pow(1.08f))).coerceIn(8f, maxTongueH)
+
+        // Controlled width
+        val baseW = (w / baseCount * 1.40f * (0.70f + 0.40f * smooth01(intensity)))
+        val tongueW = (baseW * (0.95f + 0.45f * hNoise)).coerceIn(16f, w * 0.50f)
+
+        // SLOWER combined sway (reduced amplitude)
+        val wobbleFast = sin(tSec * (1.60f + 3.20f * speed) + idx * 0.50f) * tongueW * 0.05f
+        val wobbleSlow =
+            valueNoise1D(seed xor 0x165667B1, x = idx * 0.21f, t = tSec * (0.70f + 1.05f * speed))
+        val sway =
+            (wind * tongueW * 0.07f + wobbleFast + (wobbleSlow - 0.5f) * tongueW * 0.04f).coerceIn(
+                -tongueW * 0.14f,
+                tongueW * 0.14f
+            )
+
+        // Z-order: front layer gets higher values (0.6-1.0 range) with randomization
+        val zBase = 0.6f + hash01(seed, idx) * 0.4f
+
+        tongues.add(
+            TongueParams(
+                idx = idx,
+                centerX = (x + sway).coerceIn(0f, w),
+                width = tongueW,
+                height = tongueH,
+                alphaMul = 1.0f,
+                isBackLayer = false,
+                zOrder = zBase,
+            )
+        )
+    }
+
+    // Sort by z-order (back to front) for natural overlapping
+    tongues.sortBy { it.zOrder }
+
+    // Draw all tongues in sorted order
+    tongues.forEach { tongue ->
+        drawRefinedCartoonTongue(
+            seed = seed,
+            idx = tongue.idx,
+            centerX = tongue.centerX,
+            bottomY = bottom,
+            width = tongue.width,
+            height = tongue.height,
+            minY = minY,
+            flameH = flameH,
+            tSec = tSec,
+            speed = speed,
+            intensity = intensity,
+            alphaMul = tongue.alphaMul,
+            isBackLayer = tongue.isBackLayer,
+        )
+    }
+}
+
+/**
+ * Advanced particle system with improved physics and visual variety.
+ */
+private fun DrawScope.drawAdvancedParticles(
+    seed: Int,
+    w: Float,
+    h: Float,
+    bottom: Float,
+    flameH: Float,
+    top: Float,
+    tSec: Float,
+    intensity: Float,
+    speed: Float,
+) {
+    val particleBlend = ((intensity - 0.22f) / 0.78f).coerceIn(0f, 1f)
+    if (particleBlend < 0.01f) return
+
+    val particleCount = max(6, (w / 110f * (1.0f + 0.8f * particleBlend)).toInt())
+    val baseAlpha = (0.05f + 0.14f * particleBlend).coerceIn(0.05f, 0.24f)
+    val activeWindow = (0.10f + 0.18f * particleBlend).coerceIn(0.08f, 0.30f)
+
+    // Global wind field
+    val globalWind = fbm1D(seed xor 0x22D3A3B1, x = 0.0f, t = tSec * 0.12f, octaves = 2) * 2f - 1f
+
+    for (p in 0 until particleCount) {
+        val base = hash01(seed xor 0x5A1F7A13, p * 37 + 11)
+        val period =
+            (2.2f - 1.0f * speed).coerceIn(0.9f, 2.2f) * (0.80f + 0.65f * hash01(seed, p * 37 + 13))
+        val cycle = fract((tSec / period) + base)
+        if (cycle > activeWindow) continue
+
+        val u01 = (cycle / activeWindow).coerceIn(0f, 1f)
+        val fade = (sin(u01 * PI.toFloat())).coerceIn(0f, 1f)
+
+        // Starting position
+        val x0 = w * hash01(seed, p * 37 + 17)
+
+        // Turbulent drift (more realistic than linear drift)
+        val driftTurb = fbm1D(
+            seed xor 0x9FA8C2D1.toInt(),
+            x = p * 0.23f,
+            t = tSec * 0.35f + u01 * 2.5f,
+            octaves = 2
+        )
+        val driftX = (hash01(seed, p * 37 + 19) - 0.5f) * w * 0.08f + (driftTurb - 0.5f) * w * 0.06f
+        val x = (x0 + globalWind * w * 0.04f * u01 + driftX * u01).coerceIn(0f, w)
+
+        // Rising with acceleration (realistic physics)
+        val rise = flameH * (0.60f + 0.70f * hash01(seed, p * 37 + 23))
+        val y = (bottom - (u01.pow(1.25f) * rise)).coerceIn(top + 1f, bottom - 1f)
+
+        // Size variation
+        val r = (0.70f + 2.60f * hash01(seed, p * 37 + 29)) * (0.75f + 0.65f * particleBlend)
+
+        // Color variation (temperature-based)
+        val temp = hash01(seed, p * 37 + 31)
+        val c = when {
+            temp > 0.85f -> Color(0xFFFFFBF3) // Hot white
+            temp > 0.65f -> Color(0xFFFFF3D0) // Warm white
+            temp > 0.40f -> Color(0xFFFFE082) // Yellow
+            else -> Color(0xFFFFB350) // Orange
+        }
+
+        // Slight flicker for life
+        val flicker = 0.85f + 0.15f * sin(tSec * 8.5f + p * 1.7f)
+
+        drawCircle(
+            color = c.copy(alpha = baseAlpha * fade * flicker),
+            radius = r,
+            center = Offset(x, y)
+        )
+    }
+}
+
+/**
+ * Refined cartoon tongue with tighter layer gaps and smart base merging.
+ * Layers are closer together (less "gap"), and alpha increases near the base
+ * to create smooth merging between tongues.
+ */
+private fun DrawScope.drawRefinedCartoonTongue(
+    seed: Int,
+    idx: Int,
+    centerX: Float,
+    bottomY: Float,
+    width: Float,
+    height: Float,
+    minY: Float,
+    flameH: Float,
+    tSec: Float,
+    speed: Float,
+    intensity: Float,
+    alphaMul: Float,
+    isBackLayer: Boolean,
+) {
+    val i = intensity.coerceIn(0f, 1f)
+
+    // Moderate tip wobble (not excessive)
+    val tipNoise = valueNoise1D(
+        seed xor 0xA341316C.toInt(),
+        x = idx * 0.33f,
+        t = tSec * (1.15f + 1.50f * speed)
+    )
+    // SLOWER tip wobble (reduced amplitude for less side-to-side motion)
+    val tipWobble =
+        (tipNoise - 0.5f) * width * 0.08f + sin(tSec * (2.10f + 4.50f * speed) + idx * 0.75f) * width * 0.07f
+    val tipX = (centerX + tipWobble).coerceIn(0f, Float.MAX_VALUE)
+
+    val asymBase = (hash01(seed, idx * 29 + 11) - 0.5f) * 0.30f
+    // MUCH sharper tips (reduced from 0.018-0.062 to 0.005-0.020)
+    val tipRoundBase = (0.005f + 0.015f * hash01(seed, idx * 29 + 12)).coerceIn(0.005f, 0.020f)
+
+    // Controlled per-layer variation (not chaotic, but enough for interest)
+    val nMidW = valueNoise1D(seed xor 0xC2B2AE35.toInt(), x = idx * 0.23f, t = tSec * 0.58f)
+    val nMidH = valueNoise1D(seed xor 0x85EBCA6B.toInt(), x = idx * 0.29f, t = tSec * 0.52f)
+    val nInW = valueNoise1D(seed xor 0x27D4EB2F, x = idx * 0.21f, t = tSec * 0.72f)
+    val nInH = valueNoise1D(seed xor 0x165667B1, x = idx * 0.31f, t = tSec * 0.66f)
+
+    // TIGHTER gaps between layers (mid closer to outer, inner closer to mid)
+    val midWScale = (0.68f + 0.18f * nMidW).coerceIn(0.64f, 0.88f)  // was 0.44-0.92
+    val midHScale = (0.72f + 0.20f * nMidH).coerceIn(0.68f, 0.96f)  // was 0.50-1.00
+    val innerWScale = (0.42f + 0.18f * nInW).coerceIn(0.38f, 0.62f) // was 0.20-0.62
+    val innerHScale = (0.58f + 0.24f * nInH).coerceIn(0.52f, 0.88f) // was 0.32-1.00
+
+    val midTipX = tipX + (nMidW - 0.5f) * width * 0.10f
+    val innerTipX = tipX + (nInW - 0.5f) * width * 0.12f
+
+    val asymMid = (asymBase + (nMidH - 0.5f) * 0.20f).coerceIn(-0.42f, 0.42f)
+    val asymInner = (asymBase + (nInH - 0.5f) * 0.22f).coerceIn(-0.45f, 0.45f)
+    // Sharper tips for mid and inner layers too
+    val tipRoundMid = (tipRoundBase * (0.85f + 0.40f * nMidH)).coerceIn(0.004f, 0.025f)
+    val tipRoundInner = (tipRoundBase * (0.75f + 0.50f * nInH)).coerceIn(0.003f, 0.028f)
+
+    // Build three layers
+    val outer = buildCartoonFlamePath(
+        centerX = centerX,
+        tipX = tipX,
+        bottomY = bottomY,
+        width = width,
+        height = height,
+        minY = minY,
+        asym = asymBase,
+        tipRound = tipRoundBase,
+    )
+    val mid = buildCartoonFlamePath(
+        centerX = centerX,
+        tipX = midTipX,
+        bottomY = bottomY,
+        width = width * midWScale,
+        height = height * midHScale,
+        minY = minY,
+        asym = asymMid,
+        tipRound = tipRoundMid,
+    )
+    val inner = buildCartoonFlamePath(
+        centerX = centerX,
+        tipX = innerTipX,
+        bottomY = bottomY,
+        width = width * innerWScale,
+        height = height * innerHScale,
+        minY = minY,
+        asym = asymInner,
+        tipRound = tipRoundInner,
+    )
+
+    // Alpha values (base merging is handled by separate layer, not alpha tricks)
+    val aMul = alphaMul.coerceIn(0.42f, 1.28f)
+    val outerA = ((0.48f + 0.38f * i) * aMul).coerceIn(0.32f, 0.92f)
+    val midA = ((0.42f + 0.42f * i) * aMul).coerceIn(0.28f, 0.94f)
+    val innerA = ((0.32f + 0.45f * i) * aMul).coerceIn(0.22f, 0.92f)
+
+    // Refined color palette (closer to cartoon fire emoji)
+    val outerTop = if (isBackLayer) Color(0xFF8B0000) else Color(0xFFFF2D1A)
+    val outerMid = if (isBackLayer) Color(0xFFB71C1C) else Color(0xFFFF3B1D)
+    val outerBot = if (isBackLayer) Color(0xFFD84315) else Color(0xFFFF5A00)
+
+    val midTop = if (isBackLayer) Color(0xFFFF5A00) else Color(0xFFFF6A00)
+    val midMid = if (isBackLayer) Color(0xFFFF6A00) else Color(0xFFFF8F00)
+    val midBot = if (isBackLayer) Color(0xFFFF8F00) else Color(0xFFFFB300)
+
+    val innerTop = Color(0xFFFFF3D0)
+    val innerMid = Color(0xFFFFE698)
+    val innerBot = Color(0xFFFFD970)
+
+    val outerBrush = Brush.verticalGradient(
+        colorStops = arrayOf(
+            0.00f to outerTop.copy(alpha = outerA * 0.72f),
+            0.55f to outerMid.copy(alpha = outerA),
+            1.00f to outerBot.copy(alpha = outerA),
+        ),
+        startY = max(minY, bottomY - height),
+        endY = bottomY,
+    )
+    val midBrush = Brush.verticalGradient(
+        colorStops = arrayOf(
+            0.00f to midTop.copy(alpha = midA * 0.72f),
+            0.55f to midMid.copy(alpha = midA),
+            1.00f to midBot.copy(alpha = midA),
+        ),
+        startY = max(minY, bottomY - height * 0.85f),
+        endY = bottomY,
+    )
+    val innerBrush = Brush.verticalGradient(
+        colorStops = arrayOf(
+            0.00f to innerTop.copy(alpha = innerA * 0.65f),
+            0.65f to innerMid.copy(alpha = innerA),
+            1.00f to innerBot.copy(alpha = innerA * 0.94f),
+        ),
+        startY = max(minY, bottomY - height * 0.70f),
+        endY = bottomY,
+    )
+
+    drawPath(path = outer, brush = outerBrush)
+    drawPath(path = mid, brush = midBrush)
+    drawPath(path = inner, brush = innerBrush)
+}
+
+/**
+ * Fractal Brownian Motion (FBM) - multi-octave noise for natural-looking turbulence.
+ * This is the key to making fire look organic and chaotic.
+ */
+private fun fbm1D(seed: Int, x: Float, t: Float, octaves: Int): Float {
+    var value = 0f
+    var amplitude = 0.5f
+    var frequency = 1.0f
+    var maxValue = 0f
+
+    for (i in 0 until octaves) {
+        value += amplitude * valueNoise1D(
+            seed xor (i * 0x9E3779B9.toInt()),
+            x = x * frequency,
+            t = t * frequency
+        )
+        maxValue += amplitude
+        amplitude *= 0.5f
+        frequency *= 2.0f
+    }
+
+    return (value / maxValue).coerceIn(0f, 1f)
+}
+
+// === END OF ADVANCED FIRE RENDERING FUNCTIONS ===
 
 private fun DrawScope.drawTongueLayers(
     seed: Int,
@@ -354,94 +710,6 @@ private fun DrawScope.drawTongueLayers(
             blendMode = BlendMode.Plus,
         )
     }
-}
-
-private fun DrawScope.drawCartoonTongue(
-    seed: Int,
-    idx: Int,
-    centerX: Float,
-    bottomY: Float,
-    width: Float,
-    height: Float,
-    minY: Float,
-    tSec: Float,
-    speed: Float,
-    intensity: Float,
-    alphaMul: Float,
-    isBackLayer: Boolean,
-) {
-    intensity.coerceIn(0f, 1f)
-    // Tip wiggles more than the base (cartoon flame "waving").
-    val tipNoise = valueNoise1D(
-        seed xor 0xA341316C.toInt(),
-        x = idx * 0.31f,
-        t = tSec * (1.05f + 1.45f * speed)
-    )
-    val tipWobble =
-        sin(tSec * (2.0f + 4.4f * speed) + idx * 0.7f) * width * 0.14f +
-                (tipNoise - 0.5f) * width * 0.16f
-    val tipX = (centerX + tipWobble).coerceIn(0f, Float.MAX_VALUE)
-    val asym = (hash01(seed, idx * 29 + 11) - 0.5f) * 0.28f
-    // Smaller roundness => less "dome", more flame tip.
-    val tipRound = (0.02f + 0.03f * hash01(seed, idx * 29 + 12)).coerceIn(0.015f, 0.06f)
-
-    val outer = buildCartoonFlamePath(
-        centerX = centerX,
-        tipX = tipX,
-        bottomY = bottomY,
-        width = width,
-        height = height,
-        minY = minY,
-        asym = asym,
-        tipRound = tipRound,
-    )
-    val inner = buildCartoonFlamePath(
-        centerX = centerX,
-        tipX = tipX - width * 0.02f,
-        bottomY = bottomY,
-        width = width * 0.42f,
-        height = height * 0.62f,
-        minY = minY,
-        asym = asym * 0.45f,
-        tipRound = tipRound * 0.75f,
-    )
-
-    // Cartoon palette (close to the icon): red -> orange -> yellow.
-    // User requested minimal transparency: keep it essentially opaque.
-    val aMul = alphaMul.coerceIn(0.60f, 1.25f)
-    val outerA = (0.92f * aMul).coerceIn(0.70f, 1.0f)
-    val innerA = (0.78f * aMul).coerceIn(0.55f, 0.95f)
-
-    val outerTop = if (isBackLayer) Color(0xFFB71C1C) else Color(0xFFFF3B1D)
-    val outerMid = if (isBackLayer) Color(0xFFD84315) else Color(0xFFFF5A00)
-    val outerBot = if (isBackLayer) Color(0xFFFF6A00) else Color(0xFFFF8F00)
-
-    val innerTop = Color(0xFFFFF3D0)
-    val innerMid = Color(0xFFFFE082)
-    val innerBot = Color(0xFFFFC400)
-
-    val outerBrush = Brush.verticalGradient(
-        colorStops = arrayOf(
-            0.00f to outerTop.copy(alpha = outerA),
-            0.55f to outerMid.copy(alpha = outerA),
-            1.00f to outerBot.copy(alpha = outerA),
-        ),
-        startY = max(minY, bottomY - height),
-        endY = bottomY,
-    )
-    val innerBrush = Brush.verticalGradient(
-        colorStops = arrayOf(
-            0.00f to innerTop.copy(alpha = innerA),
-            0.65f to innerMid.copy(alpha = innerA),
-            1.00f to innerBot.copy(alpha = innerA * 0.90f),
-        ),
-        startY = max(minY, bottomY - height * 0.62f),
-        endY = bottomY,
-    )
-
-    // Avoid "yellow snowmen": no additive blending for the core and no outline stroke.
-    drawPath(path = outer, brush = outerBrush)
-    drawPath(path = inner, brush = innerBrush)
 }
 
 private fun buildCartoonFlamePath(
