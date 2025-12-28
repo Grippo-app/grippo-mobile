@@ -2,8 +2,7 @@ package com.grippo.design.components.modifiers
 
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
@@ -12,93 +11,85 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.clipRect
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.unit.IntSize
+import kotlin.math.PI
 import kotlin.math.ceil
+import kotlin.math.floor
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.pow
-import kotlin.math.roundToInt
+import kotlin.math.sin
 
-public fun Modifier.fire(intensity: Float = 1f): Modifier = composed {
+public fun Modifier.fire(
+    intensity: Float = 1f,
+    speed: Float = 1f,
+    frequency: Float = 1f,
+): Modifier = composed {
     val seed = remember { (kotlin.random.Random.nextInt() xor 0x6D2B79F5) }
-    val sim = remember { DoomFireSim(seed = seed) }
+    var timeNanos by remember { mutableLongStateOf(0L) }
 
-    var hostSize by remember { mutableStateOf(IntSize.Zero) }
-    var frameTick by remember { mutableIntStateOf(0) }
+    val intensityState by rememberUpdatedState(intensity.coerceIn(0f, 1f))
+    val speedState by rememberUpdatedState(speed.coerceIn(0f, 1f))
+    val frequencyState by rememberUpdatedState(frequency.coerceIn(0f, 1f))
 
-    val intensityClamped = intensity.coerceIn(0f, 1f)
-    val intensityState by rememberUpdatedState(intensityClamped)
-
-    LaunchedEffect(hostSize) {
-        if (hostSize.width <= 0 || hostSize.height <= 0) return@LaunchedEffect
-
-        var frame = 0
+    LaunchedEffect(Unit) {
         while (true) {
             withFrameNanos {
-                val i = intensityState
-                val fireHeightPx = (hostSize.height.toFloat() * i).coerceAtLeast(0f)
-
-                sim.resize(
-                    hostWidthPx = hostSize.width,
-                    fireHeightPx = fireHeightPx
-                )
-
-                sim.step(frame = frame++, intensity = i)
-                frameTick++
+                timeNanos = it
             }
         }
     }
 
     this
-        .onSizeChanged { hostSize = it }
         .drawWithContent {
-            drawDoomFireLayer(
-                sim = sim,
-                intensity = intensityClamped,
-                invalidate = frameTick
-            )
+            val i = intensityState
+            val s = speedState
+            val f = frequencyState
             drawContent()
+            if (i > 0.001f) {
+                drawProceduralFire(
+                    seed = seed,
+                    timeNanos = timeNanos,
+                    intensity = i,
+                    speed = s,
+                    frequency = f,
+                )
+            }
         }
 }
 
-private fun DrawScope.drawDoomFireLayer(
-    sim: DoomFireSim,
+private fun DrawScope.drawProceduralFire(
+    seed: Int,
+    timeNanos: Long,
     intensity: Float,
-    invalidate: Int
+    speed: Float,
+    frequency: Float,
 ) {
-    if (invalidate < 0) return
-
     val w = size.width
     val h = size.height
     if (w <= 2f || h <= 2f) return
 
-    val gridW = sim.gridWidth
-    val gridH = sim.gridHeight
-    if (gridW <= 0 || gridH <= 0) return
-
     val i = intensity.coerceIn(0f, 1f)
-    if (i <= 0.001f) return
-
+    val s = speed.coerceIn(0f, 1f)
+    val f = frequency.coerceIn(0f, 1f)
     val flameH = (h * i).coerceAtLeast(1f)
+    if (flameH < 1.5f) return
+
+    val bottom = h
     val top = h - flameH
+    // Global time multiplier: at speed=1 we want very fast burn (≈2x faster than previous speed=1).
+    val timeScale = ((0.22f + 1.55f * s) * (1f + s) * (1f + s)).coerceIn(0.15f, 7.2f)
+    val tSec = (timeNanos / 1_000_000_000f) * timeScale
 
-    val cellW = w / gridW.toFloat()
-    val cellH = flameH / gridH.toFloat()
-
-    val last = firePalette.lastIndex.coerceAtLeast(1)
-    val paletteBias = (last * 0.22f).roundToInt().coerceIn(0, last)
-
-    val drawThreshold = (5 + (1f - i) * 3f).roundToInt().coerceIn(4, 9)
-
-    val baseGlowAlphaTop = (0.00f + 0.12f * i).coerceIn(0.00f, 0.12f)
-    val baseGlowAlphaBottom = (0.18f + 0.22f * i).coerceIn(0.18f, 0.40f)
-
+    // Base glow across the whole width (keeps the effect cohesive even if tongues are sparse).
+    val glowTopA = (0.04f + 0.10f * i).coerceIn(0.04f, 0.18f)
+    val glowBottomA = (0.18f + 0.22f * i).coerceIn(0.18f, 0.44f)
     val baseGlow = Brush.verticalGradient(
         colorStops = arrayOf(
             0.00f to Color.Transparent,
@@ -435,8 +426,9 @@ private fun flameBrush(
             1.00f to bottomColor,
         ),
         startY = top,
-        endY = h
+        endY = bot,
     )
+}
 
 private fun buildTonguePath(
     seed: Int,
@@ -458,67 +450,76 @@ private fun buildTonguePath(
     val ptsL = ArrayList<Offset>(segments + 1)
     val ptsR = ArrayList<Offset>(segments + 1)
 
-        val pixels = sim.pixels
+    val tipPull = (0.02f + 0.05f * hash01(seed, idx * 19 + 77)).coerceIn(0.02f, 0.07f)
+    val edgeFlickerFreq = 7.0f + 4.0f * hash01(seed, idx * 19 + 78)
+    val edgeFlickerPhase = hash01(seed, idx * 19 + 79) * TAU
+    val noiseOffset = hash01(seed, idx * 19 + 80) * 10f
+    val asym = (hash01(seed, idx * 19 + 81) - 0.5f) * 0.22f // left/right asymmetry
+    val curl = (hash01(seed, idx * 19 + 82) - 0.5f) * 0.55f // tip curl strength
+    val bulgeAmt = (0.16f + 0.16f * hash01(seed, idx * 19 + 83)).coerceIn(0.12f, 0.32f)
+    val windSeed = seed xor 0x1B56C4E9
 
-        for (y in 0 until (gridH - 1)) {
-            val rowBase = y * gridW
-            val py = top + y * cellH
+    for (s in 0..segments) {
+        val u = s / segments.toFloat() // 0..1 (bottom -> top)
+        val y = max(minY, bottomY - u * height)
 
-            val fadeUp = 1f - (y / (gridH - 1).coerceAtLeast(1).toFloat())
-            val rowAlphaBase = (0.18f + 0.12f * i).coerceIn(0.18f, 0.30f)
-            val rowAlpha = (rowAlphaBase * (0.35f + 0.65f * fadeUp)).coerceIn(0.08f, 0.42f)
+        val rise = (1f - u).coerceIn(0f, 1f)
+        // Wider, more "flame-like" profile vs thin "cola" spikes.
+        val decay = rise.pow(0.55f)
+        val bulge = 1f + bulgeAmt * sin(u * PI.toFloat()) * (0.90f - 0.35f * u)
+        val profile = (decay * bulge).coerceIn(0f, 1.35f)
 
-            for (x in 0 until gridW) {
-                val v = pixels[rowBase + x]
-                if (v <= drawThreshold) continue
+        val n1 = valueNoise1D(
+            seed = seed,
+            x = (centerX * 0.035f) + (u * 2.8f) + noiseOffset,
+            t = (tSec * (0.75f + 0.55f * speed)),
+        )
+        val n2 = valueNoise1D(
+            seed = seed xor 0xB5297A4D.toInt(),
+            x = (centerX * 0.055f) + (u * 5.1f) + (noiseOffset * 1.7f),
+            t = (tSec * (0.95f + 0.65f * speed)),
+        )
 
-                val boosted = (v + paletteBias).coerceIn(0, last)
-                val c = firePalette[boosted]
+        val sway = sin(phase + (tSec * (0.85f + 0.75f * speed)) + (u * 6.2f)) * (width * 0.12f)
+        val flutter = sin(edgeFlickerPhase + tSec * (1.2f + speed) + u * edgeFlickerFreq) * (width * 0.05f)
+        val tipCurl = sin(phase * 0.7f + tSec * (1.05f + 0.35f * speed) + u * (8.5f + 2.0f * speed)) * (width * 0.08f)
+        val curlWeight = (u * u).coerceIn(0f, 1f)
 
-                val n = (boosted / last.toFloat()).coerceIn(0f, 1f)
-                val bright = n.toDouble().pow(1.6).toFloat()
-                val a = (rowAlpha * (0.25f + 0.75f * bright)).coerceIn(0.10f, 0.55f)
+        // Random wind: slow gusts + per-tongue jitter, stronger at the tip.
+        val wind01 = valueNoise1D(
+            seed = windSeed,
+            x = (idx * 0.13f) + noiseOffset,
+            t = tSec * 0.14f,
+        )
+        val wind = (wind01 * 2f - 1f)
+        val gust01 = valueNoise1D(
+            seed = windSeed xor 0x7F4A7C15,
+            x = (idx * 0.31f) + (u * 0.85f) + noiseOffset,
+            t = tSec * (0.55f + 0.25f * speed),
+        )
+        val gust = (gust01 * 2f - 1f)
+        val windWeight = u.pow(1.65f)
+        val windShift = (wind * width * 0.18f + gust * width * 0.06f) * windWeight * wobbleScale
 
-                drawRect(
-                    color = c,
-                    topLeft = Offset(x * cellW, py),
-                    size = Size(cellW + 0.35f, cellH + 0.35f),
-                    alpha = a
-                )
-            }
-        }
+        val x = centerX + wobbleScale * decay * (
+            sway + flutter +
+                (n1 - 0.5f) * width * 0.20f +
+                (n2 - 0.5f) * width * 0.10f +
+                tipCurl * curl * curlWeight
+            ) + windShift
+
+        val edgePulse = 0.84f + 0.24f * sin(edgeFlickerPhase + tSec * (1.0f + 0.6f * speed) + u * (8.0f + 2.0f * speed))
+        val baseRamp = 0.18f
+        val baseFactor =
+            if (u < baseRamp) lerp(baseTaper.coerceIn(0.02f, 1f), 1f, smooth01(u / baseRamp)) else 1f
+
+        val rBase = (width * 0.5f) * profile * edgePulse * baseFactor
+        val rL = max(0.40f, rBase * (1f + asym * 0.65f))
+        val rR = max(0.40f, rBase * (1f - asym * 0.65f))
+
+        ptsL.add(Offset(x - rL, y))
+        ptsR.add(Offset(x + rR, y))
     }
-}
-
-private class DoomFireSim(
-    private val seed: Int
-) {
-    var gridWidth: Int = 0
-        private set
-
-    var gridHeight: Int = 0
-        private set
-
-    var pixels: IntArray = IntArray(0)
-        private set
-
-    private val paletteMax = firePalette.lastIndex
-
-    private var lastHostWidth: Int = -1
-    private var lastFireHeightPx: Float = -1f
-
-    fun resize(
-        hostWidthPx: Int,
-        fireHeightPx: Float
-    ) {
-        if (hostWidthPx <= 0 || fireHeightPx <= 0.5f) {
-            gridWidth = 0
-            gridHeight = 0
-            pixels = IntArray(0)
-            lastHostWidth = hostWidthPx
-            lastFireHeightPx = fireHeightPx
-            return
-        }
 
     val leftTop = ptsL.last()
     val rightTop = ptsR.last()
@@ -559,67 +560,65 @@ private class DoomFireSim(
     }
 }
 
-                val dx = ((r ushr 2) and 3) - 1
-                val dstX = (x + dx).coerceIn(0, w - 1)
+private const val TAU: Float = (PI.toFloat() * 2f)
 
-                val dst = rowBase + dstX
-                if (newIntensity > pixels[dst]) {
-                    pixels[dst] = newIntensity
-                }
-            }
-        }
-    }
+private fun fract(x: Float): Float = x - floor(x)
 
-    private fun rand(seed: Int, frame: Int, index: Int): Int {
-        var x = seed
-        x = x xor (frame * 0x9E3779B9.toInt())
-        x = x xor (index * 0x85EBCA6B.toInt())
-        x = x xor (x ushr 16)
-        x *= 0x7FEB352D
-        x = x xor (x ushr 15)
-        x *= 0x846CA68B.toInt()
-        x = x xor (x ushr 16)
-        return x
-    }
+private fun hash01(seed: Int, v: Int): Float {
+    var x = seed xor (v * 0x9E3779B9.toInt())
+    x = x xor (x ushr 16)
+    x *= 0x7FEB352D
+    x = x xor (x ushr 15)
+    x *= 0x846CA68B.toInt()
+    x = x xor (x ushr 16)
+    val u = (x ushr 8) and 0x00FFFFFF
+    return u / 0x01000000.toFloat()
 }
 
-private val firePalette: Array<Color> = arrayOf(
-    Color(7, 7, 7),
-    Color(31, 7, 7),
-    Color(47, 15, 7),
-    Color(71, 15, 7),
-    Color(87, 23, 7),
-    Color(103, 31, 7),
-    Color(119, 31, 7),
-    Color(143, 39, 7),
-    Color(159, 47, 7),
-    Color(175, 63, 7),
-    Color(191, 71, 7),
-    Color(199, 71, 7),
-    Color(223, 79, 7),
-    Color(223, 87, 7),
-    Color(223, 87, 7),
-    Color(215, 95, 7),
-    Color(215, 95, 7),
-    Color(215, 95, 7),
-    Color(215, 103, 15),
-    Color(207, 111, 15),
-    Color(207, 119, 15),
-    Color(207, 127, 15),
-    Color(207, 135, 23),
-    Color(199, 135, 23),
-    Color(199, 143, 23),
-    Color(199, 151, 31),
-    Color(191, 159, 31),
-    Color(191, 159, 31),
-    Color(191, 167, 39),
-    Color(191, 167, 39),
-    Color(191, 175, 47),
-    Color(183, 175, 47),
-    Color(183, 183, 47),
-    Color(183, 183, 55),
-    Color(207, 207, 111),
-    Color(223, 223, 159),
-    Color(239, 239, 199),
-    Color(255, 255, 255)
-)
+/**
+ * 1D value-noise in [0..1] with time input; cheap + deterministic (no allocations).
+ */
+private fun valueNoise1D(seed: Int, x: Float, t: Float): Float {
+    val p = x + t * 0.55f
+    val x0 = floor(p)
+    val x1 = x0 + 1f
+    val f = p - x0
+    val u = f * f * (3f - 2f * f) // smoothstep
+
+    val h0 = hash01(seed, x0.toInt() * 374761393)
+    val h1 = hash01(seed, x1.toInt() * 374761393)
+    return lerp(h0, h1, u)
+}
+
+private fun lerp(a: Float, b: Float, t: Float): Float = a + (b - a) * t
+
+private fun smooth01(x: Float): Float {
+    val t = x.coerceIn(0f, 1f)
+    return t * t * (3f - 2f * t)
+}
+
+private fun Path.quadraticPolyline(points: List<Offset>) {
+    if (points.size < 2) return
+    for (i in 1 until points.size - 1) {
+        val p0 = points[i]
+        val p1 = points[i + 1]
+        val mx = (p0.x + p1.x) * 0.5f
+        val my = (p0.y + p1.y) * 0.5f
+        quadraticTo(p0.x, p0.y, mx, my)
+    }
+    val last = points.last()
+    lineTo(last.x, last.y)
+}
+
+private fun Path.quadraticPolylineReverse(points: List<Offset>) {
+    if (points.size < 2) return
+    for (i in points.size - 2 downTo 1) {
+        val p0 = points[i]
+        val p1 = points[i - 1]
+        val mx = (p0.x + p1.x) * 0.5f
+        val my = (p0.y + p1.y) * 0.5f
+        quadraticTo(p0.x, p0.y, mx, my)
+    }
+    val first = points.first()
+    lineTo(first.x, first.y)
+}
