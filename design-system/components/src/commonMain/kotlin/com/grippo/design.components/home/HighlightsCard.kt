@@ -210,13 +210,13 @@ public fun HighlightsCard(
                     .fire(
                         intensity = when (value.streak.featured.mood) {
                             HighlightStreakMood.CrushingIt -> 0.5f
-                            HighlightStreakMood.OnTrack -> 0.3f
-                            HighlightStreakMood.Restart -> 0.2f
+                            HighlightStreakMood.OnTrack -> 0.4f
+                            HighlightStreakMood.Restart -> 0.3f
                         },
                         frequency = when (value.streak.featured.mood) {
-                            HighlightStreakMood.CrushingIt -> 0.8f
-                            HighlightStreakMood.OnTrack -> 0.7f
-                            HighlightStreakMood.Restart -> 0.7f
+                            HighlightStreakMood.CrushingIt -> 0.7f
+                            HighlightStreakMood.OnTrack -> 0.8f
+                            HighlightStreakMood.Restart -> 1f
                         },
                         speed =  when (value.streak.featured.mood) {
                             HighlightStreakMood.CrushingIt -> 0.7f
