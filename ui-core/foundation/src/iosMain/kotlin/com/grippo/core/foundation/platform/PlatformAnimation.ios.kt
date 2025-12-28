@@ -13,7 +13,9 @@ import com.arkivanov.decompose.extensions.compose.experimental.stack.animation.s
 import com.arkivanov.decompose.extensions.compose.stack.animation.isFront
 
 public actual fun <C : Any, T : Any> platformAnimation(): StackAnimation<C, T> =
-    stackAnimation(animator = iosLikeSlide())
+    stackAnimation(animator = platformStackAnimator())
+
+public actual fun platformStackAnimator(): StackAnimator = iosLikeSlide()
 
 private fun iosLikeSlide(animationSpec: FiniteAnimationSpec<Float> = tween()): StackAnimator =
     stackAnimator(animationSpec = animationSpec) { factor, direction ->
