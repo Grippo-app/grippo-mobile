@@ -1,6 +1,12 @@
 package com.grippo.training.exercise
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -26,6 +32,7 @@ import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.empty.EmptyState
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
+import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.swipe.SwipeToReveal
 import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
