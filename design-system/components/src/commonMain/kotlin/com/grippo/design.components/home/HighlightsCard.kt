@@ -37,6 +37,7 @@ import com.grippo.core.state.trainings.highlight.stubHighlight
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.components.indicators.LineIndicator
+import com.grippo.design.components.modifiers.fire
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -204,7 +205,25 @@ public fun HighlightsCard(
             HighlightPanel(
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxHeight(),
+                    .fillMaxHeight()
+                    .clip(RoundedCornerShape(AppTokens.dp.home.highlights.panel.radius))
+                    .fire(
+                        intensity = when (value.streak.featured.mood) {
+                            HighlightStreakMood.CrushingIt -> 0.5f
+                            HighlightStreakMood.OnTrack -> 0.3f
+                            HighlightStreakMood.Restart -> 0.2f
+                        },
+                        frequency = when (value.streak.featured.mood) {
+                            HighlightStreakMood.CrushingIt -> 0.8f
+                            HighlightStreakMood.OnTrack -> 0.7f
+                            HighlightStreakMood.Restart -> 0.7f
+                        },
+                        speed =  when (value.streak.featured.mood) {
+                            HighlightStreakMood.CrushingIt -> 0.7f
+                            HighlightStreakMood.OnTrack -> 0.7f
+                            HighlightStreakMood.Restart -> 0.7f
+                        },
+                    ),
                 content = { HighlightStreakPanel(value) }
             )
         }
@@ -424,6 +443,7 @@ private fun HighlightStreakPanel(value: Highlight) {
         HighlightStreakMood.Restart -> AppTokens.strings.res(Res.string.highlight_streak_mood_restart)
     }
     val progressValue = (value.streak.featured.progressPercent.coerceIn(0, 100)) / 100f
+
     val progressColors = when (value.streak.featured.mood) {
         HighlightStreakMood.CrushingIt -> AppTokens.colors.lineIndicator.success
         HighlightStreakMood.OnTrack -> AppTokens.colors.lineIndicator.info
@@ -481,12 +501,6 @@ private fun HighlightStreakPanel(value: Highlight) {
         color = AppTokens.colors.text.secondary,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis
-    )
-
-    Text(
-        text = encouragement,
-        style = AppTokens.typography.b12Med(),
-        color = AppTokens.colors.text.tertiary
     )
 }
 
