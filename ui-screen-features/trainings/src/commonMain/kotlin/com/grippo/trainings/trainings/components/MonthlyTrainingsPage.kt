@@ -1,5 +1,10 @@
 package com.grippo.trainings.trainings.components
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -14,9 +19,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -45,7 +50,6 @@ import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.minus
-import kotlinx.datetime.number
 import kotlinx.datetime.plus
 
 @Composable
@@ -56,10 +60,10 @@ internal fun MonthlyTrainingsPage(
     onDigestClick: () -> Unit,
     onOpenDaily: (LocalDate) -> Unit,
 ) {
-    val gridState = rememberLazyListState()
+    val scrollState = rememberScrollState()
 
     LaunchedEffect(trainings) {
-        gridState.scrollToItem(0)
+        scrollState.scrollTo(0)
     }
 
     val digest = remember(trainings) {
@@ -83,32 +87,38 @@ internal fun MonthlyTrainingsPage(
         }
     }
 
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        state = gridState,
-        contentPadding = contentPadding,
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState)
+            .padding(contentPadding),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.screen.verticalPadding),
     ) {
-        digest?.let { value ->
-            item(key = "digest") {
+        AnimatedContent(
+            modifier = Modifier.fillMaxWidth(),
+            targetState = digest,
+            transitionSpec = {
+                (fadeIn(animationSpec = tween(220, delayMillis = 90)))
+                    .togetherWith(fadeOut(animationSpec = tween(90)))
+            },
+        ) { d ->
+            if (d != null) {
                 MonthDigestCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .scalableClick(onClick = onDigestClick),
-                    value = value.summary,
+                    value = d.summary,
                 )
             }
         }
 
-        item(key = "monthly_calendar_${monthReference.year}_${monthReference.month.number}") {
-            MonthCalendar(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                weekDayLabels = weekDayLabels,
-                weeks = calendarWeeks,
-                onDayClick = onOpenDaily,
-            )
-        }
+        MonthCalendar(
+            modifier = Modifier
+                .fillMaxWidth(),
+            weekDayLabels = weekDayLabels,
+            weeks = calendarWeeks,
+            onDayClick = onOpenDaily,
+        )
     }
 }
 
