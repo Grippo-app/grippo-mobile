@@ -45,6 +45,7 @@ import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
@@ -57,28 +58,33 @@ internal fun MonthlyTrainingsPage(
     modifier: Modifier = Modifier,
     trainings: ImmutableList<TrainingListValue>,
     contentPadding: PaddingValues,
+    month: LocalDate? = null,
     onDigestClick: () -> Unit,
     onOpenDaily: (LocalDate) -> Unit,
 ) {
     val scrollState = rememberScrollState()
 
-    LaunchedEffect(trainings) {
+    val monthlyContent = remember(trainings) {
+        trainings.monthlyContent()
+    }
+    val digest = monthlyContent.digest
+    val days = monthlyContent.days
+
+    val monthReference = remember(month, digest, days) {
+        month?.let { LocalDate(it.year, it.month, 1) }
+            ?: digest?.month
+            ?: days.firstOrNull()?.month
+            ?: DateTimeUtils.thisMonth().from.date
+    }
+
+    LaunchedEffect(monthReference) {
         scrollState.scrollTo(0)
     }
 
-    val digest = remember(trainings) {
-        trainings.filterIsInstance<TrainingListValue.MonthlyDigest>().firstOrNull()
-    }
-    val days = remember(trainings) {
-        trainings.filterIsInstance<TrainingListValue.MonthlyTrainingsDay>()
-    }
-
-    val monthReference = remember(digest, days) {
-        digest?.month ?: days.firstOrNull()?.month ?: DateTimeUtils.thisMonth().from.date
-    }
     val calendarWeeks = remember(monthReference, days) {
         buildMonthCalendar(monthReference, days)
     }
+
     val weekDayLabels = remember {
         val mondayReference = LocalDate(2023, 1, 2)
         DayOfWeek.entries.map { day ->
@@ -199,21 +205,21 @@ private fun MonthCalendarDayCell(
     val date = day.date
     val trainingCount = day.trainingDay?.trainings?.size ?: 0
     val hasTrainings = trainingCount > 0
-    val isToday = DateTimeUtils.isToday(date)
+    val isCurrentDay = day.isCurrentMonth && DateTimeUtils.isToday(date)
     val shape = RoundedCornerShape(AppTokens.dp.contentPadding.subContent)
     val defaultBorder = AppTokens.colors.border.default.copy(alpha = 0.3f)
     val backgroundColor = when {
-        isToday -> AppTokens.colors.brand.color6.copy(alpha = 0.16f)
+        isCurrentDay -> AppTokens.colors.brand.color6.copy(alpha = 0.16f)
         else -> Color.Transparent
     }
     val borderColor = when {
-        isToday -> AppTokens.colors.brand.color6
+        isCurrentDay -> AppTokens.colors.brand.color6
         hasTrainings -> AppTokens.colors.border.default
         else -> defaultBorder
     }
     val textColor = when {
         !day.isCurrentMonth -> AppTokens.colors.text.disabled
-        isToday -> AppTokens.colors.text.primary
+        isCurrentDay -> AppTokens.colors.text.primary
         hasTrainings -> AppTokens.colors.text.primary
         else -> AppTokens.colors.text.secondary
     }
@@ -247,6 +253,33 @@ private fun MonthCalendarDayCell(
             )
         }
     }
+}
+
+@Immutable
+private data class MonthlyCalendarContent(
+    val digest: TrainingListValue.MonthlyDigest?,
+    val days: ImmutableList<TrainingListValue.MonthlyTrainingsDay>,
+)
+
+private fun ImmutableList<TrainingListValue>.monthlyContent(): MonthlyCalendarContent {
+    var digest: TrainingListValue.MonthlyDigest? = null
+    val days = mutableListOf<TrainingListValue.MonthlyTrainingsDay>()
+
+    for (value in this) {
+        when (value) {
+            is TrainingListValue.MonthlyDigest -> if (digest == null) {
+                digest = value
+            }
+
+            is TrainingListValue.MonthlyTrainingsDay -> days += value
+            else -> Unit
+        }
+    }
+
+    return MonthlyCalendarContent(
+        digest = digest,
+        days = days.toPersistentList(),
+    )
 }
 
 private fun buildMonthCalendar(
@@ -290,6 +323,7 @@ private fun MonthlyTrainingsPagePreview() {
                 range = DateTimeUtils.thisMonth()
             ),
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
+            month = DateTimeUtils.thisMonth().from.date,
             onDigestClick = {},
             onOpenDaily = { _ -> },
         )
@@ -303,6 +337,7 @@ private fun MonthlyTrainingsEmptyPagePreview() {
         MonthlyTrainingsPage(
             trainings = persistentListOf(),
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
+            month = DateTimeUtils.thisMonth().from.date,
             onDigestClick = {},
             onOpenDaily = { _ -> },
         )

@@ -119,6 +119,7 @@ internal fun TrainingsScreen(
                         .weight(1f),
                     trainings = state.trainings,
                     contentPadding = resolvedPadding,
+                    month = state.date.from.date,
                     onDigestClick = contract::onDailyDigestViewStats,
                     onOpenDaily = contract::onOpenDaily,
                 )

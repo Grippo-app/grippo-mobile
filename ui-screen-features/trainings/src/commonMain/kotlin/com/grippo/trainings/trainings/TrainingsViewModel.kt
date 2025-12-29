@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.daysUntil
@@ -41,25 +42,21 @@ internal class TrainingsViewModel(
                 val range = date.coerceWithin(limitations)
                 trainingFeature
                     .observeTrainings(start = range.from, end = range.to)
-                    .map { trainings -> Triple(date, limitations, trainings) }
+                    .onStart {
+                        trainingFeature.getTrainings(
+                            start = range.from,
+                            end = range.to
+                        ).getOrThrow()
+                    }
+                    .map { trainings -> range to trainings }
             }
-            .onEach { (date, limitations, trainings) ->
-                provideTrainings(date, limitations, trainings)
-            }
-            .safeLaunch()
-
-        state
-            .map { it.date to it.limitations }
-            .distinctUntilChanged()
-            .onEach { (date, limitations) ->
-                val range = date.coerceWithin(limitations)
-                trainingFeature.getTrainings(start = range.from, end = range.to).getOrThrow()
+            .onEach { (range, trainings) ->
+                provideTrainings(range, trainings)
             }
             .safeLaunch()
     }
 
-    private fun provideTrainings(date: DateRange, limitations: DateRange, list: List<Training>) {
-        val range = date.coerceWithin(limitations)
+    private fun provideTrainings(range: DateRange, list: List<Training>) {
         val trainings = list
             .toState()
             .transformToTrainingListValue(range = range)
