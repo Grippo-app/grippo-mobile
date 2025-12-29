@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -70,8 +71,7 @@ internal fun ColumnScope.ExercisesPage(
                     true -> {
                         EmptyState(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f),
+                                .fillMaxSize(),
                         )
                     }
 

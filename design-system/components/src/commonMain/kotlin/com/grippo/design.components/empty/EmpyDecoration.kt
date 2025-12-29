@@ -1,107 +1,85 @@
 package com.grippo.design.components.empty
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.DpOffset
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.barbell
-import com.grippo.design.resources.provider.box
-import com.grippo.design.resources.provider.dumbbell
-import com.grippo.design.resources.provider.plate
-import com.grippo.design.resources.provider.weight
-import kotlinx.collections.immutable.persistentListOf
-
-@Immutable
-private data class EmptyIcon(
-    val painter: Painter,
-    val alignment: Alignment,
-    val offset: DpOffset,
-    val rotation: Float,
-    val size: Dp,
-)
 
 @Composable
 public fun EmptyDecorations(modifier: Modifier = Modifier) {
-    val largeIconSize = AppTokens.dp.home.empty.image
-    val dumbbell = AppTokens.drawables.res(Res.drawable.dumbbell)
-    val barbell = AppTokens.drawables.res(Res.drawable.barbell)
-    val plate = AppTokens.drawables.res(Res.drawable.plate)
-    val box = AppTokens.drawables.res(Res.drawable.box)
-    val weight = AppTokens.drawables.res(Res.drawable.weight)
+    val brand = AppTokens.colors.brand
+    val gridColor = AppTokens.colors.border.default.copy(alpha = 0.12f)
+    val highlight = brand.color1.copy(alpha = 0.15f)
+    val accent = brand.color4.copy(alpha = 0.2f)
 
-    val decorations = remember {
-        persistentListOf(
-            EmptyIcon(
-                painter = dumbbell,
-                alignment = Alignment.TopStart,
-                offset = DpOffset(-(largeIconSize / 3), -(34.dp)),
-                rotation = -12f,
-                size = largeIconSize,
+    Canvas(modifier = modifier) {
+        val width = size.width
+        val height = size.height
+        val minDimension = size.minDimension.coerceAtLeast(1f)
+
+        drawRect(
+            brush = Brush.verticalGradient(
+                colors = listOf(highlight, Color.Transparent)
             ),
-            EmptyIcon(
-                painter = barbell,
-                alignment = Alignment.TopEnd,
-                offset = DpOffset((largeIconSize / 3), (52).dp),
-                rotation = 0f,
-                size = largeIconSize * 1.3f,
-            ),
-            EmptyIcon(
-                painter = plate,
-                alignment = Alignment.CenterStart,
-                offset = DpOffset(-(largeIconSize / 2), -(34.dp)),
-                rotation = -18f,
-                size = largeIconSize,
-            ),
-            EmptyIcon(
-                painter = box,
-                alignment = Alignment.BottomEnd,
-                offset = DpOffset((largeIconSize / 3), -(52).dp),
-                rotation = -8f,
-                size = largeIconSize,
-            ),
-            EmptyIcon(
-                painter = weight,
-                alignment = Alignment.BottomStart,
-                offset = DpOffset(-(largeIconSize / 2), 60.dp),
-                rotation = 10f,
-                size = largeIconSize,
-            ),
+            size = size
         )
-    }
 
-    Box(modifier = modifier) {
-        decorations.forEach { icon ->
-            Image(
-                modifier = Modifier
-                    .align(icon.alignment)
-                    .offset(x = icon.offset.x, y = icon.offset.y)
-                    .size(icon.size)
-                    .scale(1.4f)
-                    .alpha(0.8f)
-                    .graphicsLayer {
-                        rotationZ = icon.rotation
-                    },
-                painter = icon.painter,
-                contentDescription = null
+        val verticalLines = 4
+        val horizontalLines = 3
+        val gridStroke = minDimension * 0.003f
+
+        repeat(verticalLines + 1) { index ->
+            val fraction = index / verticalLines.coerceAtLeast(1).toFloat()
+            val x = width * (0.15f + fraction * 0.7f)
+            drawLine(
+                color = gridColor,
+                start = Offset(x = x, y = height * 0.2f),
+                end = Offset(x = x, y = height * 0.85f),
+                strokeWidth = gridStroke
             )
         }
+
+        repeat(horizontalLines + 1) { index ->
+            val fraction = index / horizontalLines.coerceAtLeast(1).toFloat()
+            val y = height * (0.25f + fraction * 0.6f)
+            drawLine(
+                color = gridColor,
+                start = Offset(x = width * 0.1f, y = y),
+                end = Offset(x = width * 0.9f, y = y),
+                strokeWidth = gridStroke
+            )
+        }
+
+        drawLine(
+            color = accent,
+            start = Offset(x = width * 0.1f, y = height * 0.85f),
+            end = Offset(x = width * 0.9f, y = height * 0.3f),
+            strokeWidth = gridStroke * 1.2f,
+            cap = StrokeCap.Round
+        )
+
+        drawCircle(
+            brush = Brush.radialGradient(
+                colors = listOf(brand.color3.copy(alpha = 0.18f), Color.Transparent),
+                center = Offset(width * 0.8f, height * 0.35f),
+                radius = minDimension * 0.55f
+            )
+        )
+
+        drawCircle(
+            brush = Brush.radialGradient(
+                colors = listOf(brand.color2.copy(alpha = 0.15f), Color.Transparent),
+                center = Offset(width * 0.25f, height * 0.75f),
+                radius = minDimension * 0.5f
+            )
+        )
     }
 }
 
