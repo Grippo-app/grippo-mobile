@@ -237,12 +237,14 @@ internal fun StatisticsScreen(
                             )
                         }
                     }
+
+                item("bottom_space") {
+                    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+
+                    Spacer(modifier = Modifier.navigationBarsPadding())
+                }
             }
         }
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-
-        Spacer(modifier = Modifier.navigationBarsPadding())
     }
 }
 
