@@ -76,8 +76,7 @@ public data object AppDp {
     val radio: Radio = Radio
     val aiSuggestionCard: AiSuggestionCard = AiSuggestionCard
     val home: HomeContent = HomeContent
-    val weekDigest: WeekDigest = WeekDigest
-    val monthDigest: MonthDigest = MonthDigest
+    val digest: Digest = Digest
     val calendar: Calendar = Calendar
 
     public data object Screen {
@@ -110,20 +109,32 @@ public data object AppDp {
         }
     }
 
-    public data object WeekDigest {
-        val radius: Dp = AppDp.radius.small
-        val horizontalPadding: Dp = padding.medium
-        val verticalPadding: Dp = padding.medium
-        val image: Dp = AppDp.icon.xxxLarge
-        val icon: Dp = AppDp.icon.large
-    }
+    public data object Digest {
+        val week: Week = Week
+        val month: Month = Month
+        val layout: Layout = Layout
 
-    public data object MonthDigest {
-        val radius: Dp = AppDp.radius.small
-        val horizontalPadding: Dp = padding.medium
-        val verticalPadding: Dp = padding.medium
-        val image: Dp = AppDp.icon.xxxLarge
-        val icon: Dp = AppDp.icon.large
+        public data object Layout {
+            val radius: Dp = AppDp.radius.small
+            val horizontalPadding: Dp = padding.small
+            val verticalPadding: Dp = padding.extraSmall
+        }
+
+        public data object Week {
+            val radius: Dp = AppDp.radius.small
+            val horizontalPadding: Dp = padding.medium
+            val verticalPadding: Dp = padding.medium
+            val image: Dp = AppDp.icon.xxxLarge
+            val icon: Dp = AppDp.icon.large
+        }
+
+        public data object Month {
+            val radius: Dp = AppDp.radius.small
+            val horizontalPadding: Dp = padding.medium
+            val verticalPadding: Dp = padding.medium
+            val image: Dp = AppDp.icon.xxxLarge
+            val icon: Dp = AppDp.icon.large
+        }
     }
 
     public data object HomeContent {

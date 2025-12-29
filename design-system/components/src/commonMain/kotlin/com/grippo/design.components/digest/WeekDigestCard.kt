@@ -1,30 +1,10 @@
 package com.grippo.design.components.digest
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import com.grippo.core.state.trainings.digest.WeeklyDigestState
 import com.grippo.core.state.trainings.digest.stubWeeklyDigest
-import com.grippo.design.components.modifiers.spot
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -35,6 +15,7 @@ import com.grippo.design.resources.provider.sets
 import com.grippo.design.resources.provider.trainings
 import com.grippo.design.resources.provider.volume
 import com.grippo.design.resources.provider.weekly
+import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateTimeUtils
 
 @Composable
@@ -42,114 +23,46 @@ public fun WeekDigestCard(
     modifier: Modifier = Modifier,
     value: WeeklyDigestState,
 ) {
-    Box(
-        modifier = modifier
-            .height(intrinsicSize = IntrinsicSize.Max)
-            .clip(RoundedCornerShape(AppTokens.dp.weekDigest.radius))
-            .background(
-                AppTokens.colors.background.card,
-                shape = RoundedCornerShape(AppTokens.dp.weekDigest.radius)
-            )
-    ) {
-        Icon(
-            modifier = Modifier
-                .spot(color = AppTokens.colors.brand.color4)
-                .align(Alignment.CenterEnd)
-                .offset(x = (AppTokens.dp.weekDigest.image / 2))
-                .size(AppTokens.dp.weekDigest.image)
-                .scale(1.6f)
-                .alpha(0.2f),
-            imageVector = AppTokens.icons.Trophy,
-            contentDescription = null,
-        )
+    val subtitle = remember(value.weekStart, value.weekEnd) {
+        val from = DateTimeUtils.format(value.weekStart, DateFormat.DateOnly.DateDdMmm)
+        val to = DateTimeUtils.format(value.weekEnd, DateFormat.DateOnly.DateDdMmm)
+        "$from - $to"
+    }
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    vertical = AppTokens.dp.weekDigest.verticalPadding,
-                    horizontal = AppTokens.dp.weekDigest.horizontalPadding
-                )
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
-            ) {
-                Icon(
-                    modifier = Modifier.size(AppTokens.dp.weekDigest.icon),
-                    imageVector = AppTokens.icons.Trophy,
-                    contentDescription = null,
-                    tint = AppTokens.colors.brand.color4,
-                )
+    val style = DigestCardStyle(
+        radius = AppTokens.dp.digest.week.radius,
+        horizontalPadding = AppTokens.dp.digest.week.horizontalPadding,
+        verticalPadding = AppTokens.dp.digest.week.verticalPadding,
+        iconSize = AppTokens.dp.digest.week.icon,
+        illustrationSize = AppTokens.dp.digest.week.image,
+    )
 
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = AppTokens.strings.res(Res.string.weekly),
-                    style = AppTokens.typography.h4(),
-                    color = AppTokens.colors.brand.color4,
-                )
-            }
-
-            Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
-
-            WeeklyDigestStatRow(
-                modifier = Modifier.fillMaxWidth(),
+    DigestCard(
+        modifier = modifier,
+        style = style,
+        icon = AppTokens.icons.Trophy,
+        accentColor = AppTokens.colors.brand.color4,
+        title = AppTokens.strings.res(Res.string.weekly),
+        subtitle = subtitle,
+        metrics = listOf(
+            DigestMetric(
                 label = AppTokens.strings.res(Res.string.trainings),
-                value = value.trainingsCount.toString()
-            )
-
-            Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
-
-            WeeklyDigestStatRow(
-                modifier = Modifier.fillMaxWidth(),
+                value = value.trainingsCount.toString(),
+            ),
+            DigestMetric(
                 label = AppTokens.strings.res(Res.string.sets),
-                value = value.totalSets.toString()
-            )
-
-            Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
-
-            WeeklyDigestStatRow(
-                modifier = Modifier.fillMaxWidth(),
+                value = value.totalSets.toString(),
+            ),
+            DigestMetric(
                 label = AppTokens.strings.res(Res.string.duration),
                 value = DateTimeUtils.format(value.duration)
-            )
-
-            Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
-
-            WeeklyDigestStatRow(
-                modifier = Modifier.fillMaxWidth(),
+            ),
+            DigestMetric(
                 label = AppTokens.strings.res(Res.string.volume),
                 value = value.total.short()
             )
-
-            Spacer(Modifier.weight(1f))
-        }
-    }
-}
-
-@Composable
-private fun WeeklyDigestStatRow(
-    modifier: Modifier = Modifier,
-    label: String,
-    value: String,
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-    ) {
-        Text(
-            modifier = Modifier.weight(1f),
-            text = label,
-            style = AppTokens.typography.b12Med(),
-            color = AppTokens.colors.text.secondary,
         )
-
-        Text(
-            text = value,
-            style = AppTokens.typography.b12Semi(),
-            color = AppTokens.colors.text.primary,
-        )
-    }
+    )
 }
 
 @AppPreview

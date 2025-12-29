@@ -60,24 +60,21 @@ public fun DigestsCard(
 
         Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-        ) {
-            MonthDigestCard(
-                modifier = Modifier
-                    .weight(1f)
-                    .scalableClick(onClick = onMonthlyClick),
-                value = monthly,
-            )
+        MonthDigestCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .scalableClick(onClick = onMonthlyClick),
+            value = monthly,
+        )
 
-            WeekDigestCard(
-                modifier = Modifier
-                    .weight(1f)
-                    .scalableClick(onClick = onWeeklyClick),
-                value = weekly,
-            )
-        }
+        Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+
+        WeekDigestCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .scalableClick(onClick = onWeeklyClick),
+            value = weekly,
+        )
     }
 }
 

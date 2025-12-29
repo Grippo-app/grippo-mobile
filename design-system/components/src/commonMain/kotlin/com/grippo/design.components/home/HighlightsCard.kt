@@ -37,7 +37,6 @@ import com.grippo.core.state.trainings.highlight.stubHighlight
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.components.indicators.LineIndicator
-import com.grippo.design.components.modifiers.fire
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -205,25 +204,7 @@ public fun HighlightsCard(
             HighlightPanel(
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxHeight()
-                    .clip(RoundedCornerShape(AppTokens.dp.home.highlights.panel.radius))
-                    .fire(
-                        intensity = when (value.streak.featured.mood) {
-                            HighlightStreakMood.CrushingIt -> 0.5f
-                            HighlightStreakMood.OnTrack -> 0.4f
-                            HighlightStreakMood.Restart -> 0.4f
-                        },
-                        frequency = when (value.streak.featured.mood) {
-                            HighlightStreakMood.CrushingIt -> 0.7f
-                            HighlightStreakMood.OnTrack -> 0.8f
-                            HighlightStreakMood.Restart -> 1f
-                        },
-                        speed = when (value.streak.featured.mood) {
-                            HighlightStreakMood.CrushingIt -> 1f
-                            HighlightStreakMood.OnTrack -> 1f
-                            HighlightStreakMood.Restart -> 1f
-                        },
-                    ),
+                    .fillMaxHeight(),
                 content = { HighlightStreakPanel(value) }
             )
         }
