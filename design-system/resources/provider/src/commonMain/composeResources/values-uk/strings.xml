@@ -172,8 +172,8 @@
     <string name="today">Сьогодні</string>
     <string name="yesterday">Вчора</string>
     <string name="tomorrow">Завтра</string>
-    <string name="select_start_date">Оберіть дату початку</string>
-    <string name="select_end_date">Оберіть дату завершення</string>
+    <string name="select_date">Оберіть дату</string>
+    <string name="select_month">Оберіть місяць</string>
     <string name="x">x</string>
     <string name="tonnage_chip">Тоннаж</string>
     <string name="intensity_chip">Інтенсивність</string>

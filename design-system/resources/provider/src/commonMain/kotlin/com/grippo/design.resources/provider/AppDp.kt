@@ -424,6 +424,7 @@ public data object AppDp {
 
     public data object WheelPicker {
         val height: Dp = size.medium * 3
+        val radius: Dp = AppDp.radius.medium
     }
 
     public data object Chip {

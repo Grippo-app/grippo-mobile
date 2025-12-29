@@ -23,6 +23,7 @@ import com.grippo.filter.picker.FilterPickerComponent
 import com.grippo.height.picker.HeightPickerComponent
 import com.grippo.iteration.picker.IterationPickerComponent
 import com.grippo.menu.picker.MenuPickerComponent
+import com.grippo.month.picker.MonthPickerComponent
 import com.grippo.statistics.StatisticsComponent
 import com.grippo.weight.picker.WeightPickerComponent
 
@@ -117,6 +118,17 @@ internal class DialogContentComponent(
 
             is DialogConfig.DatePicker -> Child.DatePicker(
                 DatePickerComponent(
+                    componentContext = context,
+                    initial = router.initial,
+                    title = router.title,
+                    limitations = router.limitations,
+                    onResult = { date -> viewModel.onBack { router.onResult.invoke(date) } },
+                    back = { viewModel.onBack(null) }
+                )
+            )
+
+            is DialogConfig.MonthPicker -> Child.MonthPicker(
+                MonthPickerComponent(
                     componentContext = context,
                     initial = router.initial,
                     title = router.title,
@@ -229,6 +241,9 @@ internal class DialogContentComponent(
             Child(component)
 
         data class DatePicker(override val component: DatePickerComponent) :
+            Child(component)
+
+        data class MonthPicker(override val component: MonthPickerComponent) :
             Child(component)
 
         data class ExerciseExamplePicker(override val component: ExerciseExamplePickerComponent) :

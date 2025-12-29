@@ -7,7 +7,8 @@ import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.providers.StringProvider
-import com.grippo.design.resources.provider.select_start_date
+import com.grippo.design.resources.provider.select_date
+import com.grippo.design.resources.provider.select_month
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState
@@ -126,6 +127,13 @@ internal class TrainingsViewModel(
     }
 
     override fun onOpenDateSelector() {
+        when (state.value.period) {
+            TrainingsTimelinePeriod.Daily -> selectDate()
+            TrainingsTimelinePeriod.Monthly -> selectMonth()
+        }
+    }
+
+    private fun selectDate() {
         safeLaunch {
             val value = DateFormatState.of(
                 state.value.date.from,
@@ -133,11 +141,34 @@ internal class TrainingsViewModel(
             )
 
             val dialog = DialogConfig.DatePicker(
-                title = stringProvider.get(Res.string.select_start_date),
+                title = stringProvider.get(Res.string.select_date),
                 initial = value,
                 limitations = state.value.limitations,
                 onResult = { value ->
                     val date = value.value ?: return@DatePicker
+                    val period = state.value.period
+                    val range = period.rangeFor(date).coerceWithin(state.value.limitations)
+                    update { it.copy(date = range) }
+                }
+            )
+
+            dialogController.show(dialog)
+        }
+    }
+
+    private fun selectMonth() {
+        safeLaunch {
+            val value = DateFormatState.of(
+                state.value.date.from,
+                state.value.limitations
+            )
+
+            val dialog = DialogConfig.MonthPicker(
+                title = stringProvider.get(Res.string.select_month),
+                initial = value,
+                limitations = state.value.limitations,
+                onResult = { value ->
+                    val date = value.value ?: return@MonthPicker
                     val period = state.value.period
                     val range = period.rangeFor(date).coerceWithin(state.value.limitations)
                     update { it.copy(date = range) }

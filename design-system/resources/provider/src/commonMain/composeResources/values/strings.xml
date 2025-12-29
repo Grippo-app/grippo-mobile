@@ -172,8 +172,8 @@
     <string name="today">Today</string>
     <string name="yesterday">Yesterday</string>
     <string name="tomorrow">Tomorrow</string>
-    <string name="select_start_date">Select start date</string>
-    <string name="select_end_date">Select end date</string>
+    <string name="select_date">Select date</string>
+    <string name="select_month">Select month</string>
     <string name="x">x</string>
     <string name="tonnage_chip">Tonnage</string>
     <string name="intensity_chip">Intensity</string>

@@ -1,4 +1,4 @@
-package com.grippo.date.picker
+package com.grippo.month.picker
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,7 +16,6 @@ import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.DateFormatState
-import com.grippo.date.picker.internal.DateWheelPicker
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
@@ -26,15 +25,16 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.continue_btn
+import com.grippo.month.picker.internal.MonthWheelPicker
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
-internal fun DatePickerScreen(
-    state: DatePickerState,
-    loaders: ImmutableSet<DatePickerLoader>,
-    contract: DatePickerContract
+internal fun MonthPickerScreen(
+    state: MonthPickerState,
+    loaders: ImmutableSet<MonthPickerLoader>,
+    contract: MonthPickerContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
     Column(
@@ -56,21 +56,21 @@ internal fun DatePickerScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        DateWheelPicker(
+        MonthWheelPicker(
             modifier = Modifier
                 .height(AppTokens.dp.wheelPicker.height)
                 .fillMaxWidth(),
             initial = state.value.value,
-            select = contract::onSelectDate,
+            select = contract::onSelectMonth,
             limitations = state.limitations
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         val buttonState = remember(loaders, state.value) {
-            when {
-                state.value is DateFormatState.Invalid -> ButtonState.Disabled
-                state.value is DateFormatState.Empty -> ButtonState.Disabled
+            when (state.value) {
+                is DateFormatState.Invalid -> ButtonState.Disabled
+                is DateFormatState.Empty -> ButtonState.Disabled
                 else -> ButtonState.Enabled
             }
         }
@@ -95,14 +95,14 @@ internal fun DatePickerScreen(
 @Composable
 private fun ScreenPreview() {
     PreviewContainer {
-        DatePickerScreen(
-            state = DatePickerState(
-                value = DateFormatState.of(DateTimeUtils.now(), DateTimeUtils.thisWeek()),
+        MonthPickerScreen(
+            state = MonthPickerState(
+                value = DateFormatState.of(DateTimeUtils.now(), DateTimeUtils.thisYear()),
                 limitations = DateTimeUtils.trailingYear(),
-                title = "Select date",
+                title = "Select month",
             ),
             loaders = persistentSetOf(),
-            contract = DatePickerContract.Empty
+            contract = MonthPickerContract.Empty
         )
     }
 }

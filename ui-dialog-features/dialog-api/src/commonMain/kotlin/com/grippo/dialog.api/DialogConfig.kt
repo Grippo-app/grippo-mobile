@@ -90,6 +90,17 @@ public sealed class DialogConfig(
     )
 
     @Serializable
+    public data class MonthPicker(
+        val initial: DateFormatState,
+        val limitations: DateRange,
+        val title: String,
+        @Transient val onResult: (value: DateFormatState) -> Unit = {},
+    ) : DialogConfig(
+        onDismiss = null,
+        dismissBySwipe = true
+    )
+
+    @Serializable
     public data class DraftTraining(
         @Transient val onResult: () -> Unit = {},
     ) : DialogConfig(
