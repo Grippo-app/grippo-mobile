@@ -6,6 +6,10 @@ plugins {
 }
 
 kotlin {
+    android {
+        namespace = "com.grippo.ui.core.foundation"
+    }
+
     sourceSets.commonMain.dependencies {
         implementation(projects.toolkit.logger)
         implementation(projects.uiCore.error.errorProvider)

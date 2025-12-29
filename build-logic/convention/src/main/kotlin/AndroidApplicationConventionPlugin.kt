@@ -10,7 +10,6 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             pluginManager.applySafely("com.android.application")
-            pluginManager.applySafely("org.jetbrains.kotlin.android")
 
             extensions.configure<ApplicationExtension> {
                 compileSdk = 36

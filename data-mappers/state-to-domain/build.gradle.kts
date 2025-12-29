@@ -4,6 +4,10 @@ plugins {
 }
 
 kotlin {
+    android {
+        namespace = "com.grippo.data.mappers.state.to.domain"
+    }
+
     sourceSets.commonMain.dependencies {
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.uiCore.state)

@@ -5,6 +5,10 @@ plugins {
 }
 
 kotlin {
+    android {
+        namespace = "com.grippo.design.system.resources.provider.impl"
+    }
+
     sourceSets.commonMain.dependencies {
         implementation(projects.designSystem.resources.provider)
         implementation(projects.toolkit.theme)

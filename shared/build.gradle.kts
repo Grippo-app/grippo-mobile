@@ -7,6 +7,10 @@ plugins {
 }
 
 kotlin {
+    android {
+        namespace = "com.grippo.shared"
+    }
+
     sourceSets.commonMain.dependencies {
         api(libs.decompose.core)
         api(libs.decompose.extensions)

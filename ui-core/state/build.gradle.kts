@@ -6,6 +6,10 @@ plugins {
 }
 
 kotlin {
+    android {
+        namespace = "com.grippo.ui.core.state"
+    }
+
     sourceSets.commonMain.dependencies {
         implementation(projects.toolkit.dateUtils)
         implementation(projects.designSystem.core)

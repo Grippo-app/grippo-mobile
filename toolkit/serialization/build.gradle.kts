@@ -6,6 +6,10 @@ plugins {
 }
 
 kotlin {
+    android {
+        namespace = "com.grippo.toolkit.serialization"
+    }
+
     sourceSets.commonMain.dependencies {
         implementation(libs.kotlinx.serialization.json)
     }

@@ -5,6 +5,10 @@ plugins {
 }
 
 kotlin {
+    android {
+        namespace = "com.grippo.toolkit.localization"
+    }
+
     sourceSets.commonMain.dependencies {
         implementation(compose.foundation)
     }

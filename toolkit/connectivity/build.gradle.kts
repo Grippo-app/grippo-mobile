@@ -5,6 +5,10 @@ plugins {
 }
 
 kotlin {
+    android {
+        namespace = "com.grippo.toolkit.connectivity"
+    }
+
     sourceSets.commonMain.dependencies {
         implementation(libs.kotlinx.coroutines.core)
         implementation(projects.toolkit.context)

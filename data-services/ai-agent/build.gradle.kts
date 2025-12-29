@@ -5,6 +5,10 @@ plugins {
 }
 
 kotlin {
+    android {
+        namespace = "com.grippo.data.services.ai.agent"
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(projects.toolkit.httpClient)

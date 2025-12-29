@@ -5,6 +5,10 @@ plugins {
 }
 
 kotlin {
+    android {
+        namespace = "com.grippo.data.features.feature.api"
+    }
+
     sourceSets.commonMain.dependencies {
         implementation(libs.kotlinx.coroutines.core)
         implementation(libs.datetime)

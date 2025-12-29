@@ -6,6 +6,10 @@ plugins {
 }
 
 kotlin {
+    android {
+        namespace = "com.grippo.toolkit.http.client"
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(projects.toolkit.context)

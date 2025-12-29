@@ -5,6 +5,10 @@ plugins {
 }
 
 kotlin {
+    android {
+        namespace = "com.grippo.ui.core.error.error.provider.impl"
+    }
+
     sourceSets.commonMain.dependencies {
         implementation(projects.uiDialogFeatures.dialogApi)
         implementation(projects.uiCore.error.errorProvider)

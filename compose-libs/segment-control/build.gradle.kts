@@ -5,6 +5,10 @@ plugins {
 }
 
 kotlin {
+    android {
+        namespace = "com.grippo.compose.libs.segment.control"
+    }
+
     sourceSets.commonMain.dependencies {
         implementation(compose.foundation)
         implementation(compose.material3)

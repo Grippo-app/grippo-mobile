@@ -5,6 +5,8 @@ plugins {
 }
 
 android {
+    namespace = "com.grippo.android.app"
+
     defaultConfig {
         applicationId = "com.grippo.android"
         multiDexEnabled = true

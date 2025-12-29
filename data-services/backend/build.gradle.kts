@@ -6,6 +6,10 @@ plugins {
 }
 
 kotlin {
+    android {
+        namespace = "com.grippo.data.services.backend"
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(projects.toolkit.serialization)

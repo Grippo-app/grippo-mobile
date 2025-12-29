@@ -7,6 +7,10 @@ plugins {
 }
 
 kotlin {
+    android {
+        namespace = "com.grippo.ui.dialog.features.dialog.api"
+    }
+
     sourceSets.commonMain.dependencies {
         implementation(projects.uiCore.foundation)
         implementation(projects.uiCore.state)

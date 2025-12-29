@@ -5,6 +5,10 @@ plugins {
 }
 
 kotlin {
+    android {
+        namespace = "com.grippo.toolkit.image.loader"
+    }
+
     sourceSets.commonMain.dependencies {
         implementation(projects.toolkit.httpClient)
 

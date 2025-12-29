@@ -8,6 +8,10 @@ plugins {
 }
 
 kotlin {
+    android {
+        namespace = "com.grippo.data.services.google.auth"
+    }
+
     sourceSets.commonMain.dependencies {
         implementation(libs.kotlinx.coroutines.core)
         implementation(libs.kotlinx.serialization.json)

@@ -6,6 +6,10 @@ plugins {
 }
 
 kotlin {
+    android {
+        namespace = "com.grippo.data.features.ai.suggestions"
+    }
+
     sourceSets.commonMain.dependencies {
         implementation(projects.toolkit.dateUtils)
         implementation(projects.toolkit.serialization)
