@@ -61,7 +61,7 @@ internal fun TrainingRecordingScreen(
 
             Button(
                 content = ButtonContent.Text(text = AppTokens.strings.res(Res.string.save_btn)),
-                size = ButtonSize.Medium,
+                size = ButtonSize.Small,
                 style = ButtonStyle.Primary,
                 state = buttonState,
                 onClick = contract::onSave

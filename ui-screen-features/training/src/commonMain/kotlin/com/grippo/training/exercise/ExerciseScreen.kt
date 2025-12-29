@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -26,7 +27,6 @@ import com.grippo.core.state.trainings.stubExercise
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
-import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.empty.EmptyState
@@ -46,7 +46,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.add_set_btn
 import com.grippo.design.resources.provider.exercise_record
 import com.grippo.design.resources.provider.icons.Cancel
-import com.grippo.design.resources.provider.save_btn
+import com.grippo.design.resources.provider.icons.Check
 import com.grippo.design.resources.provider.sets_value
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -82,24 +82,6 @@ internal fun ExerciseScreen(
                     value = example
                 )
             }
-        },
-        trailing = {
-            val buttonState = remember(loaders, state.exercise.iterations) {
-                when {
-                    state.exercise.iterations.isEmpty() -> ButtonState.Disabled
-                    else -> ButtonState.Enabled
-                }
-            }
-
-            Button(
-                content = ButtonContent.Text(
-                    text = AppTokens.strings.res(Res.string.save_btn),
-                ),
-                style = ButtonStyle.Primary,
-                state = buttonState,
-                size = ButtonSize.Small,
-                onClick = contract::onSave
-            )
         },
         title = AppTokens.strings.res(Res.string.exercise_record),
     )
@@ -202,16 +184,38 @@ internal fun ExerciseScreen(
         bottom = {
             Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
 
-            Button(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-                content = ButtonContent.Text(
-                    text = AppTokens.strings.res(Res.string.add_set_btn),
-                ),
-                style = ButtonStyle.Secondary,
-                onClick = contract::onAddIteration
-            )
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+            ) {
+
+                Button(
+                    modifier = Modifier.weight(1f),
+                    content = ButtonContent.Text(
+                        text = AppTokens.strings.res(Res.string.add_set_btn),
+                    ),
+                    style = ButtonStyle.Secondary,
+                    onClick = contract::onAddIteration
+                )
+
+                val buttonState = remember(loaders, state.exercise.iterations) {
+                    when {
+                        state.exercise.iterations.isEmpty() -> ButtonState.Disabled
+                        else -> ButtonState.Enabled
+                    }
+                }
+
+                Button(
+                    content = ButtonContent.Icon(
+                        icon = ButtonIcon.Icon(AppTokens.icons.Check),
+                    ),
+                    style = ButtonStyle.Primary,
+                    state = buttonState,
+                    onClick = contract::onSave
+                )
+            }
 
             Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
 
