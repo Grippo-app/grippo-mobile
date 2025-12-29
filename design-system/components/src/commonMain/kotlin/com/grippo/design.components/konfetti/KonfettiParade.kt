@@ -6,6 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.konfetti.compose.Konfetti
 import com.grippo.konfetti.presets.parade
 
@@ -34,4 +36,12 @@ public fun KonfettiParade() {
             .fillMaxHeight(0.7f),
         parties = konfetti,
     )
+}
+
+@AppPreview
+@Composable
+private fun KonfettiParadePreview() {
+    PreviewContainer {
+        KonfettiParade()
+    }
 }

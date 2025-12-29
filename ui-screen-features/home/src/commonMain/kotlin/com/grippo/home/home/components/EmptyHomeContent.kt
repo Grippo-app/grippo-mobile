@@ -3,6 +3,7 @@ package com.grippo.home.home.components
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,6 +17,8 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.empty.EmptyDecorations
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.home_empty_subtitle
 import com.grippo.design.resources.provider.home_empty_title
@@ -70,5 +73,16 @@ internal fun EmptyHomeContent(
                 onClick = onStartTraining
             )
         }
+    }
+}
+
+@AppPreview
+@Composable
+private fun EmptyHomeContentPreview() {
+    PreviewContainer {
+        EmptyHomeContent(
+            modifier = Modifier.fillMaxSize(),
+            onStartTraining = {}
+        )
     }
 }

@@ -118,6 +118,7 @@ public object DarkColor : AppColor {
 
     override val brand: AppColor.BrandColors = object : AppColor.BrandColors {
         override val color1: Color = AppPalette.Unique.Magenta
+        override val color2: Color = AppPalette.Unique.Coral
 
         override val color3: Color = AppPalette.Unique.Green
         override val color4: Color = AppPalette.Unique.Teal

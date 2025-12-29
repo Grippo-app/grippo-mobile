@@ -109,6 +109,7 @@ public interface AppColor {
 
     public interface BrandColors {
         public val color1: Color
+        public val color2: Color
         public val color3: Color
         public val color4: Color
         public val color5: Color

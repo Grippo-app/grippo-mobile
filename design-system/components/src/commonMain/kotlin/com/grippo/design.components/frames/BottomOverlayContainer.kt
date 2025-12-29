@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -17,6 +19,8 @@ import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import kotlin.math.max
 
 @Composable
@@ -127,5 +131,35 @@ public fun BottomOverlayContainer(
                 bottomPlaceables.forEach { it.placeRelative(0, y) }
             }
         }
+    }
+}
+
+@AppPreview
+@Composable
+private fun BottomOverlayContainerPreview() {
+    PreviewContainer {
+        BottomOverlayContainer(
+            overlay = Color.Black,
+            bottom = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White)
+                        .padding(16.dp)
+                ) {
+                    Text("Bottom content")
+                }
+            },
+            content = { modifier, padding ->
+                Box(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .background(Color.LightGray)
+                        .padding(padding)
+                ) {
+                    Text("Main content with bottom overlay")
+                }
+            }
+        )
     }
 }

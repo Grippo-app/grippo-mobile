@@ -2,6 +2,7 @@ package com.grippo.design.components.empty
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -17,6 +18,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.barbell
 import com.grippo.design.resources.provider.box
@@ -99,5 +102,15 @@ public fun EmptyDecorations(modifier: Modifier = Modifier) {
                 contentDescription = null
             )
         }
+    }
+}
+
+@AppPreview
+@Composable
+private fun EmptyDecorationsPreview() {
+    PreviewContainer {
+        EmptyDecorations(
+            modifier = Modifier.fillMaxSize()
+        )
     }
 }

@@ -16,6 +16,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import kotlin.math.min
 
 private const val DefaultCalendarTrainingBars = 4
@@ -55,5 +57,28 @@ internal fun CalendarTrainingBars(
                 color = AppTokens.colors.text.secondary,
             )
         }
+    }
+}
+
+@AppPreview
+@Composable
+private fun CalendarTrainingBarsPreview() {
+    PreviewContainer {
+        CalendarTrainingBars(
+            count = 3,
+            barColor = AppTokens.colors.brand.color1
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun CalendarTrainingBarsWithOverflowPreview() {
+    PreviewContainer {
+        CalendarTrainingBars(
+            count = 7,
+            barColor = AppTokens.colors.brand.color2,
+            maxVisibleBars = 4
+        )
     }
 }

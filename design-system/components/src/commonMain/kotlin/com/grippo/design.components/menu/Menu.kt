@@ -12,7 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.core.state.formatters.UiText
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 public data class MenuItem(
@@ -56,5 +59,29 @@ public fun <KEY> Menu(
                 )
             }
         }
+    }
+}
+
+@AppPreview
+@Composable
+private fun MenuPreview() {
+    PreviewContainer {
+        Menu(
+            items = persistentListOf(
+                "settings" to MenuItem(
+                    title = UiText.Str("Settings"),
+                    icon = null
+                ),
+                "profile" to MenuItem(
+                    title = UiText.Str("Profile"),
+                    icon = null
+                ),
+                "logout" to MenuItem(
+                    title = UiText.Str("Logout"),
+                    icon = null
+                )
+            ),
+            onClick = {}
+        )
     }
 }
