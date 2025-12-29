@@ -1,4 +1,4 @@
-package com.grippo.design.components.ai
+package com.grippo.design.components.suggestion
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
@@ -28,7 +28,7 @@ import com.grippo.design.resources.provider.icons.Cancel
 import kotlinx.coroutines.delay
 
 @Composable
-public fun AiSuggestionCard(
+public fun SuggestionCard(
     modifier: Modifier = Modifier,
     value: String,
     onClose: () -> Unit
@@ -51,10 +51,10 @@ public fun AiSuggestionCard(
         modifier = modifier
             .background(
                 AppTokens.colors.background.card,
-                shape = RoundedCornerShape(AppTokens.dp.aiSuggestionCard.radius)
+                shape = RoundedCornerShape(AppTokens.dp.suggestionCard.radius)
             ).padding(
-                vertical = AppTokens.dp.aiSuggestionCard.verticalPadding,
-                horizontal = AppTokens.dp.aiSuggestionCard.horizontalPadding
+                vertical = AppTokens.dp.suggestionCard.verticalPadding,
+                horizontal = AppTokens.dp.suggestionCard.horizontalPadding
             ).animateContentSize(
                 animationSpec = spring(
                     dampingRatio = Spring.DampingRatioNoBouncy,
@@ -84,9 +84,9 @@ public fun AiSuggestionCard(
 
 @Composable
 @AppPreview
-private fun AiSuggestionCardPreview() {
+private fun SuggestionCardPreview() {
     PreviewContainer {
-        AiSuggestionCard(
+        SuggestionCard(
             value = "For some reason",
             onClose = {}
         )

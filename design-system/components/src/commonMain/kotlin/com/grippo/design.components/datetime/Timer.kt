@@ -1,4 +1,4 @@
-package com.grippo.design.components.timer
+package com.grippo.design.components.datetime
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

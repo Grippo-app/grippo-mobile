@@ -3,7 +3,7 @@ package com.grippo.exercise.example.picker.internal
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.grippo.design.components.ai.AiSuggestionCard
+import com.grippo.design.components.suggestion.SuggestionCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -16,7 +16,7 @@ internal fun AiSuggestionHeader(
     value: AiSuggestionQueries,
     contract: ExerciseExamplePickerContract,
 ) {
-    AiSuggestionCard(
+    SuggestionCard(
         modifier = modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
         value = value.reason,
         onClose = contract::onClearSuggestion

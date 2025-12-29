@@ -73,8 +73,7 @@ public data object AppDp {
     val chip: Chip = Chip
     val connectionSnackbar: ConnectionSnackbar = ConnectionSnackbar
     val toggle: Toggle = Toggle
-    val radio: Radio = Radio
-    val aiSuggestionCard: AiSuggestionCard = AiSuggestionCard
+    val suggestionCard: SuggestionCard = SuggestionCard
     val home: HomeContent = HomeContent
     val digest: Digest = Digest
     val calendar: Calendar = Calendar
@@ -95,7 +94,7 @@ public data object AppDp {
         val horizontalPadding: Dp = padding.extraLarge
     }
 
-    public data object AiSuggestionCard {
+    public data object SuggestionCard {
         val horizontalPadding: Dp = padding.large
         val verticalPadding: Dp = padding.large
         val radius: Dp = AppDp.radius.medium
@@ -273,12 +272,6 @@ public data object AppDp {
         val horizontalPadding: Dp = 15.dp
     }
 
-    public data object Radio {
-        val size: Dp = 26.dp
-        val borderWidth: Dp = 1.5.dp
-        val innerCircleRadius: Dp = 7.dp
-    }
-
     public data object ExerciseCard {
         val large: Large = Large
         val medium: Medium = Medium
@@ -324,10 +317,24 @@ public data object AppDp {
     }
 
     public data object AchievementCard {
-        val icon: Dp = size.large
+        val icon: Dp = AppDp.icon.large
         val horizontalPadding: Dp = padding.large
         val verticalPadding: Dp = padding.medium
         val radius: Dp = AppDp.radius.medium
+        val chip: Chip = Chip
+        val emblem: Emblem = Emblem
+
+        public data object Chip {
+            val radius: Dp = AppDp.radius.small
+            val horizontalPadding: Dp = padding.small
+            val verticalPadding: Dp = padding.extraSmall
+        }
+
+        public data object Emblem {
+            val size: Dp = AppDp.size.small
+            val radius: Dp = AppDp.radius.small
+            val padding: Dp = AppDp.padding.extraSmall
+        }
     }
 
     public data object ToggleSelectableCard {

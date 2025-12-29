@@ -23,8 +23,8 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.datetime.TimelineIndicator
 import com.grippo.design.components.empty.EmptyState
-import com.grippo.design.components.timeline.TimelineIndicator
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
 import com.grippo.design.core.AppTokens

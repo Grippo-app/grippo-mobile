@@ -21,5 +21,6 @@ internal fun ProfileCreationScreen(
         modifier = Modifier.fillMaxSize(),
         stack = component.childStack,
         animation = platformAnimation(),
-        content = { child -> child.instance.component.Render() })
+        content = { child -> child.instance.component.Render() }
+    )
 }

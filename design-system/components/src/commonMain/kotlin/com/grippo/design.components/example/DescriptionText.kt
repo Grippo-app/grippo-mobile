@@ -1,4 +1,4 @@
-package com.grippo.design.components.text
+package com.grippo.design.components.example
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
@@ -33,7 +33,6 @@ public fun DescriptionText(
 ) {
     var expanded by remember { mutableStateOf(false) }
     var isOverflow by remember { mutableStateOf(false) }
-
 
     val expandLabel = AppTokens.strings.res(Res.string.show_more)
     val collapseLabel = AppTokens.strings.res(Res.string.show_less)

@@ -16,7 +16,7 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.timer.Timer
+import com.grippo.design.components.datetime.Timer
 import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle

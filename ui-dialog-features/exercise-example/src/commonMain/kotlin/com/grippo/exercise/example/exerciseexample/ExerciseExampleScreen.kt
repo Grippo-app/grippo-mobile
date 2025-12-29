@@ -31,10 +31,10 @@ import com.grippo.design.components.chip.ChipSize
 import com.grippo.design.components.chip.ChipStype
 import com.grippo.design.components.chip.ChipTrailing
 import com.grippo.design.components.equipment.EquipmentsCard
+import com.grippo.design.components.example.DescriptionText
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
 import com.grippo.design.components.spliter.ContentSpliter
-import com.grippo.design.components.text.DescriptionText
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
 import com.grippo.design.core.AppTokens

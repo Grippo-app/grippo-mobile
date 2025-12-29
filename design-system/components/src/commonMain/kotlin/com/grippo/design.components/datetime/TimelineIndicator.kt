@@ -1,4 +1,4 @@
-package com.grippo.design.components.timeline
+package com.grippo.design.components.datetime
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
