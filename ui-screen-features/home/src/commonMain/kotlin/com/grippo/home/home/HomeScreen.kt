@@ -143,7 +143,7 @@ internal fun HomeScreen(
                 onClick = contract::onStartTraining
             )
 
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+            Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
 
             Spacer(modifier = Modifier.navigationBarsPadding())
         }
