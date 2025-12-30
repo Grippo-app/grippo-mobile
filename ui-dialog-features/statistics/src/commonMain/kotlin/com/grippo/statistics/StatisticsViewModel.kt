@@ -19,6 +19,8 @@ import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.muscles.toState
 import com.grippo.domain.state.training.toState
 import com.grippo.toolkit.calculation.AnalyticsApi
+import com.grippo.toolkit.calculation.models.MuscleLoadEntry
+import com.grippo.toolkit.calculation.models.MuscleLoadSummary
 import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -31,6 +33,10 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
+import com.grippo.core.state.muscles.metrics.MuscleImages as StateMuscleImages
+import com.grippo.core.state.muscles.metrics.MuscleLoadBreakdown as StateMuscleLoadBreakdown
+import com.grippo.core.state.muscles.metrics.MuscleLoadEntry as StateMuscleLoadEntry
+import com.grippo.core.state.muscles.metrics.MuscleLoadSummary as StateMuscleLoadSummary
 
 @OptIn(FlowPreview::class)
 public class StatisticsViewModel(
@@ -193,7 +199,7 @@ public class StatisticsViewModel(
                 categoryDistribution = categoryDistribution,
                 weightTypeDistribution = weightTypeDistribution,
                 forceTypeDistribution = forceTypeDistribution,
-                muscleLoad = muscleLoad,
+                muscleLoad = muscleLoad.toStateSummary(),
                 temporalHeatmap = heatmap,
             )
         }
@@ -241,7 +247,7 @@ public class StatisticsViewModel(
                 categoryDistribution = categoryDistribution,
                 weightTypeDistribution = weightTypeDistribution,
                 forceTypeDistribution = forceTypeDistribution,
-                muscleLoad = muscleLoad,
+                muscleLoad = muscleLoad.toStateSummary(),
                 temporalHeatmap = null,
             )
         }
@@ -299,5 +305,23 @@ public class StatisticsViewModel(
                 )
             )
         }
+    }
+
+    private fun MuscleLoadSummary.toStateSummary(): StateMuscleLoadSummary {
+        return StateMuscleLoadSummary(
+            perGroup = StateMuscleLoadBreakdown(
+                entries = perGroup.entries.map { it.toStateEntry() }
+            ),
+            images = images?.let { StateMuscleImages(front = it.front, back = it.back) }
+        )
+    }
+
+    private fun MuscleLoadEntry.toStateEntry(): StateMuscleLoadEntry {
+        return StateMuscleLoadEntry(
+            label = label,
+            value = value,
+            color = color,
+            muscles = muscles.toPersistentList()
+        )
     }
 }

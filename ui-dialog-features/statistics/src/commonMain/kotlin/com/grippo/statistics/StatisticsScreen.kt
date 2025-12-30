@@ -19,12 +19,14 @@ import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.muscles.MuscleEnumState
+import com.grippo.core.state.muscles.metrics.MuscleLoadBreakdown
+import com.grippo.core.state.muscles.metrics.MuscleLoadEntry
+import com.grippo.core.state.muscles.metrics.MuscleLoadSummary
 import com.grippo.core.state.trainings.stubMetrics
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.chart.DistributionPieChart
 import com.grippo.design.components.chart.MetricBarChart
 import com.grippo.design.components.chart.MuscleHeatmapChart
-import com.grippo.design.components.chart.MuscleLoadChart
 import com.grippo.design.components.chip.ChipSize
 import com.grippo.design.components.chip.IntensityChip
 import com.grippo.design.components.chip.IntensityChipStyle
@@ -33,6 +35,7 @@ import com.grippo.design.components.chip.RepetitionsChipStyle
 import com.grippo.design.components.chip.VolumeChip
 import com.grippo.design.components.chip.VolumeChipStyle
 import com.grippo.design.components.loading.Loader
+import com.grippo.design.components.muscle.MuscleLoading
 import com.grippo.design.components.spliter.ContentSpliter
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -46,10 +49,7 @@ import com.grippo.toolkit.calculation.models.DistributionBreakdown
 import com.grippo.toolkit.calculation.models.DistributionSlice
 import com.grippo.toolkit.calculation.models.MetricPoint
 import com.grippo.toolkit.calculation.models.MetricSeries
-import com.grippo.toolkit.calculation.models.MuscleLoadBreakdown
-import com.grippo.toolkit.calculation.models.MuscleLoadEntry
 import com.grippo.toolkit.calculation.models.MuscleLoadMatrix
-import com.grippo.toolkit.calculation.models.MuscleLoadSummary
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
@@ -228,12 +228,13 @@ internal fun StatisticsScreen(
                 }
 
                 state.muscleLoad
-                    ?.takeIf { it.perGroup.entries.isNotEmpty() }
-                    ?.let { summary ->
+                    ?.perGroup
+                    ?.entries
+                    ?.takeIf { it.isNotEmpty() }
+                    ?.let { entries ->
                         item(key = "muscle_load") {
-                            MuscleLoadChart(
-                                modifier = Modifier.fillMaxWidth(),
-                                value = summary,
+                            MuscleLoading(
+                                entries = entries
                             )
                         }
                     }
@@ -356,7 +357,7 @@ private fun ScreenPreview() {
                         label = "Chest",
                         value = 0.78f,
                         color = Color(0xFF4C83FF),
-                        muscles = listOf(
+                        muscles = persistentListOf(
                             MuscleEnumState.PECTORALIS_MAJOR_CLAVICULAR,
                             MuscleEnumState.PECTORALIS_MAJOR_STERNOCOSTAL
                         )
@@ -365,7 +366,7 @@ private fun ScreenPreview() {
                         label = "Back",
                         value = 0.64f,
                         color = Color(0xFFE76F51),
-                        muscles = listOf(
+                        muscles = persistentListOf(
                             MuscleEnumState.LATISSIMUS_DORSI,
                             MuscleEnumState.TRAPEZIUS
                         )
@@ -374,7 +375,7 @@ private fun ScreenPreview() {
                         label = "Legs",
                         value = 0.52f,
                         color = Color(0xFF5AD4A3),
-                        muscles = listOf(
+                        muscles = persistentListOf(
                             MuscleEnumState.QUADRICEPS,
                             MuscleEnumState.HAMSTRINGS
                         )
