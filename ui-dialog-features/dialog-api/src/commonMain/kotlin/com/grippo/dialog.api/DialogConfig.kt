@@ -9,10 +9,8 @@ import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.menu.MenuItemState
 import com.grippo.core.state.profile.ProfileMenu
 import com.grippo.core.state.profile.SettingsMenu
-import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.IterationFocus
 import com.grippo.core.state.trainings.IterationState
-import com.grippo.core.state.trainings.TrainingState
 import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -162,13 +160,12 @@ public sealed class DialogConfig(
 
         @Serializable
         public data class Trainings(
-            public val trainings: List<TrainingState>,
             public val range: DateRange,
         ) : Statistics()
 
         @Serializable
-        public data class Exercises(
-            public val exercises: List<ExerciseState>,
+        public data class Training(
+            public val id: String,
         ) : Statistics()
     }
 }

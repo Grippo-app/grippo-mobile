@@ -10,14 +10,18 @@ import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
+import com.grippo.data.features.api.training.TrainingFeature
+import com.grippo.data.features.api.training.models.Training
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.muscles.toState
+import com.grippo.domain.state.training.toState
 import com.grippo.toolkit.calculation.AnalyticsApi
 import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
@@ -35,17 +39,15 @@ public class StatisticsViewModel(
     colorProvider: ColorProvider,
     stringProvider: StringProvider,
     private val exerciseExampleFeature: ExerciseExampleFeature,
+    private val trainingFeature: TrainingFeature,
 ) : BaseViewModel<StatisticsState, StatisticsDirection, StatisticsLoader>(
     StatisticsState(
         mode = when (config) {
-            is DialogConfig.Statistics.Exercises -> StatisticsMode.Exercises(
-                exercises = config.exercises.toPersistentList()
-            )
-
             is DialogConfig.Statistics.Trainings -> StatisticsMode.Trainings(
-                trainings = config.trainings.toPersistentList(),
                 range = config.range
             )
+
+            is DialogConfig.Statistics.Training -> StatisticsMode.Exercises()
         }
     )
 ), StatisticsContract {
@@ -53,6 +55,11 @@ public class StatisticsViewModel(
     private val analytics = AnalyticsApi(stringProvider, colorProvider)
 
     init {
+        when (config) {
+            is DialogConfig.Statistics.Trainings -> observeTrainings(config.range)
+            is DialogConfig.Statistics.Training -> observeTraining(config.id)
+        }
+
         muscleFeature.observeMuscles()
             .onEach(::provideMuscles)
             .safeLaunch()
@@ -83,6 +90,25 @@ public class StatisticsViewModel(
 
     override fun onBack() {
         navigateTo(StatisticsDirection.Back)
+    }
+
+    private fun observeTrainings(range: DateRange) {
+        trainingFeature.observeTrainings(range.from, range.to)
+            .onEach { provideTrainings(range, it) }
+            .safeLaunch()
+
+        safeLaunch {
+            trainingFeature.getTrainings(
+                start = range.from,
+                end = range.to
+            ).getOrThrow()
+        }
+    }
+
+    private fun observeTraining(id: String) {
+        trainingFeature.observeTraining(id)
+            .onEach(::provideTraining)
+            .safeLaunch()
     }
 
     private suspend fun generateStatistics() {
@@ -243,5 +269,35 @@ public class StatisticsViewModel(
         is StatisticsMode.Exercises -> mode.exercises
             .map { it.exerciseExample.id }
             .distinct()
+    }
+
+    private fun provideTrainings(range: DateRange, list: List<Training>) {
+        val trainings = list
+            .toState()
+            .toPersistentList()
+
+        update {
+            it.copy(
+                mode = StatisticsMode.Trainings(
+                    trainings = trainings,
+                    range = range
+                )
+            )
+        }
+    }
+
+    private fun provideTraining(training: Training?) {
+        val exercises = training
+            ?.toState()
+            ?.exercises
+            ?: persistentListOf()
+
+        update {
+            it.copy(
+                mode = StatisticsMode.Exercises(
+                    exercises = exercises
+                )
+            )
+        }
     }
 }

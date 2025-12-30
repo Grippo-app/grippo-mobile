@@ -18,7 +18,6 @@ import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.trainings.trainings.TrainingsDirection.Back
 import com.grippo.trainings.trainings.TrainingsDirection.EditTraining
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -99,19 +98,11 @@ internal class TrainingsViewModel(
     }
 
     override fun onDailyDigestViewStats() {
-        safeLaunch {
-            val training = trainingFeature
-                .observeTrainings(state.value.date.from, state.value.date.to)
-                .firstOrNull()
-                ?: return@safeLaunch
+        val config = DialogConfig.Statistics.Trainings(
+            range = state.value.date
+        )
 
-            val config = DialogConfig.Statistics.Trainings(
-                trainings = training.toState(),
-                range = state.value.date
-            )
-
-            dialogController.show(config)
-        }
+        dialogController.show(config)
     }
 
     override fun onAddTraining() {
@@ -189,12 +180,9 @@ internal class TrainingsViewModel(
         update { it.copy(period = TrainingsTimelinePeriod.Daily, date = aligned) }
     }
 
-    private fun openTrainingOverview(id: String) = safeLaunch {
-        val training = trainingFeature.observeTraining(id).firstOrNull()
-            ?: return@safeLaunch
-
-        val config = DialogConfig.Statistics.Exercises(
-            exercises = training.toState().exercises
+    private fun openTrainingOverview(id: String) {
+        val config = DialogConfig.Statistics.Training(
+            id = id
         )
 
         dialogController.show(config)

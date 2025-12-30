@@ -17,7 +17,6 @@ import com.grippo.domain.state.training.transformation.toWeeklyDigestState
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.onEach
 import kotlin.time.Duration.Companion.days
 
@@ -129,35 +128,21 @@ internal class HomeViewModel(
     }
 
     override fun onOpenMonthlyDigest() {
-        safeLaunch {
-            val range = DateTimeUtils.trailingMonth()
-            val trainings = trainingFeature.observeTrainings(range.from, range.to)
-                .firstOrNull()
-                ?.map { it.toState() } ?: return@safeLaunch
+        val range = DateTimeUtils.trailingMonth()
+        val config = DialogConfig.Statistics.Trainings(
+            range = range
+        )
 
-            val config = DialogConfig.Statistics.Trainings(
-                trainings = trainings,
-                range = range
-            )
-
-            dialogController.show(config)
-        }
+        dialogController.show(config)
     }
 
     override fun onOpenWeeklyDigest() {
-        safeLaunch {
-            val range = DateTimeUtils.trailingWeek()
-            val trainings = trainingFeature.observeTrainings(range.from, range.to)
-                .firstOrNull()
-                ?.map { it.toState() } ?: return@safeLaunch
+        val range = DateTimeUtils.trailingWeek()
+        val config = DialogConfig.Statistics.Trainings(
+            range = range
+        )
 
-            val config = DialogConfig.Statistics.Trainings(
-                trainings = trainings,
-                range = range
-            )
-
-            dialogController.show(config)
-        }
+        dialogController.show(config)
     }
 
     override fun onBack() {
