@@ -3,6 +3,7 @@ package com.grippo.domain.state.training.transformation
 import com.grippo.core.state.trainings.TrainingListValue
 import com.grippo.core.state.trainings.TrainingPosition
 import com.grippo.core.state.trainings.TrainingState
+import com.grippo.domain.state.metrics.toDailyDigestState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDate

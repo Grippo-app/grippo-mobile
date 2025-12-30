@@ -18,10 +18,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.metrics.MuscleLoadBreakdown
+import com.grippo.core.state.metrics.MuscleLoadEntry
+import com.grippo.core.state.metrics.MuscleLoadSummary
 import com.grippo.core.state.muscles.MuscleEnumState
-import com.grippo.core.state.muscles.metrics.MuscleLoadBreakdown
-import com.grippo.core.state.muscles.metrics.MuscleLoadEntry
-import com.grippo.core.state.muscles.metrics.MuscleLoadSummary
 import com.grippo.core.state.trainings.stubMetrics
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.chart.DistributionPieChart
@@ -35,7 +35,7 @@ import com.grippo.design.components.chip.RepetitionsChipStyle
 import com.grippo.design.components.chip.VolumeChip
 import com.grippo.design.components.chip.VolumeChipStyle
 import com.grippo.design.components.loading.Loader
-import com.grippo.design.components.muscle.MuscleLoading
+import com.grippo.design.components.metrics.MuscleLoading
 import com.grippo.design.components.spliter.ContentSpliter
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview

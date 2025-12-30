@@ -1,9 +1,9 @@
 package com.grippo.core.state.trainings
 
 import androidx.compose.runtime.Immutable
-import com.grippo.core.state.trainings.digest.DailyDigestState
-import com.grippo.core.state.trainings.digest.MonthlyDigestState
-import com.grippo.core.state.trainings.digest.WeeklyDigestState
+import com.grippo.core.state.metrics.digest.DailyDigestState
+import com.grippo.core.state.metrics.digest.MonthlyDigestState
+import com.grippo.core.state.metrics.digest.WeeklyDigestState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime

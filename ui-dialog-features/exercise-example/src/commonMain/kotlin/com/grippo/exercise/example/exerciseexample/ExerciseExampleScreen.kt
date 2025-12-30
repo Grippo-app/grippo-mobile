@@ -33,7 +33,7 @@ import com.grippo.design.components.equipment.EquipmentsCard
 import com.grippo.design.components.example.DescriptionText
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
-import com.grippo.design.components.muscle.MuscleLoading
+import com.grippo.design.components.metrics.MuscleLoading
 import com.grippo.design.components.spliter.ContentSpliter
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle

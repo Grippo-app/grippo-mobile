@@ -1,33 +1,35 @@
 package com.grippo.home.home
 
 import com.grippo.core.foundation.BaseViewModel
-import com.grippo.core.state.examples.ExerciseExampleState
+import com.grippo.core.state.metrics.Highlight
 import com.grippo.core.state.profile.ProfileMenu
 import com.grippo.core.state.profile.SettingsMenu
-import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
-import com.grippo.data.features.api.muscle.MuscleLoadingUseCase
+import com.grippo.data.features.api.metrics.ExerciseSpotlightUseCase
+import com.grippo.data.features.api.metrics.MuscleLoadingUseCase
+import com.grippo.data.features.api.metrics.PerformanceTrendUseCase
+import com.grippo.data.features.api.metrics.TrainingStreakUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
-import com.grippo.domain.state.exercise.example.toState
-import com.grippo.domain.state.muscles.metrics.toState
+import com.grippo.domain.state.metrics.toMonthlyDigestState
+import com.grippo.domain.state.metrics.toState
+import com.grippo.domain.state.metrics.toWeeklyDigestState
 import com.grippo.domain.state.training.toState
-import com.grippo.domain.state.training.transformation.toHighlight
-import com.grippo.domain.state.training.transformation.toMonthlyDigestState
-import com.grippo.domain.state.training.transformation.toWeeklyDigestState
-import com.grippo.state.domain.training.toDomain
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.days
 
 internal class HomeViewModel(
     private val trainingFeature: TrainingFeature,
     private val dialogController: DialogController,
-    private val exerciseExampleFeature: ExerciseExampleFeature,
     private val muscleLoadingUseCase: MuscleLoadingUseCase,
+    private val exerciseSpotlightUseCase: ExerciseSpotlightUseCase,
+    private val trainingStreakUseCase: TrainingStreakUseCase,
+    private val performanceTrendUseCase: PerformanceTrendUseCase,
 ) : BaseViewModel<HomeState, HomeDirection, HomeLoader>(
     HomeState()
 ), HomeContract {
@@ -71,27 +73,8 @@ internal class HomeViewModel(
 
         val monthly = trainings.toMonthlyDigestState(range = DateTimeUtils.trailingMonth())
 
-        val exampleIds = list
-            .flatMap { training -> training.exercises }
-            .map { exercise -> exercise.exerciseExample.id }
-            .toSet()
-
-        val examples: List<ExerciseExampleState> = if (exampleIds.isEmpty()) {
-            emptyList()
-        } else {
-            exerciseExampleFeature
-                .observeExerciseExamples(exampleIds.toList())
-                .first()
-                .toState()
-        }
-
-        val muscleLoadSummary = muscleLoadingUseCase
-            .fromTrainings(trainings.toDomain())
-            .toState()
-
-        val highlight = trainings.toHighlight(
-            exerciseExamples = examples,
-            muscleLoad = muscleLoadSummary
+        val highlight = provideHighlight(
+            trainings = list,
         )
 
         update {
@@ -102,6 +85,22 @@ internal class HomeViewModel(
                 lastTraining = last
             )
         }
+    }
+
+    private suspend fun provideHighlight(trainings: List<Training>): Highlight {
+        val totalDuration = trainings.fold(ZERO) { acc: Duration, item -> acc + item.duration }
+        val spotlight = exerciseSpotlightUseCase.fromTrainings(trainings).toState()
+        val streak = trainingStreakUseCase.fromTrainings(trainings).toState()
+        val performance = performanceTrendUseCase.fromTrainings(trainings).toState()
+        val muscleLoadSummary = muscleLoadingUseCase.fromTrainings(trainings).toState()
+
+        return Highlight(
+            totalDuration = totalDuration,
+            spotlight = spotlight,
+            muscleLoad = muscleLoadSummary,
+            streak = streak,
+            performance = performance,
+        )
     }
 
     override fun onStartTraining() {

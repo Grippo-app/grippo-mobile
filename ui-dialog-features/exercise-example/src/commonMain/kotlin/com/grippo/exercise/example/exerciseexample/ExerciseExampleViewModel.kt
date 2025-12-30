@@ -5,13 +5,13 @@ import com.grippo.data.features.api.achievements.Achievement
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.exercise.metrics.ExerciseMetricsFeature
-import com.grippo.data.features.api.muscle.MuscleLoadingUseCase
+import com.grippo.data.features.api.metrics.MuscleLoadingUseCase
 import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.domain.state.achievements.toState
 import com.grippo.domain.state.exercise.example.toState
-import com.grippo.domain.state.muscles.metrics.toState
+import com.grippo.domain.state.metrics.toState
 import com.grippo.domain.state.training.toState
 import com.grippo.toolkit.calculation.AnalyticsApi
 import kotlinx.collections.immutable.toPersistentList

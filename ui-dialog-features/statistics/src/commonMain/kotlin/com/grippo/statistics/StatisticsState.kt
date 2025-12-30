@@ -2,9 +2,9 @@ package com.grippo.statistics
 
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.examples.ExerciseExampleState
+import com.grippo.core.state.metrics.MuscleLoadSummary
 import com.grippo.core.state.muscles.MuscleGroupState
 import com.grippo.core.state.muscles.MuscleRepresentationState
-import com.grippo.core.state.muscles.metrics.MuscleLoadSummary
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.TrainingMetrics
 import com.grippo.core.state.trainings.TrainingState

@@ -8,8 +8,8 @@ import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.TrainingState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
+import com.grippo.data.features.api.metrics.MuscleLoadingUseCase
 import com.grippo.data.features.api.muscle.MuscleFeature
-import com.grippo.data.features.api.muscle.MuscleLoadingUseCase
 import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
@@ -17,7 +17,7 @@ import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.domain.state.exercise.example.toState
-import com.grippo.domain.state.muscles.metrics.toState
+import com.grippo.domain.state.metrics.toState
 import com.grippo.domain.state.muscles.toState
 import com.grippo.domain.state.training.toState
 import com.grippo.state.domain.training.toDomain
@@ -175,7 +175,7 @@ public class StatisticsViewModel(
         )
 
         val muscleLoad = muscleLoadingUseCase
-            .fromTrainings(trainings.toDomain())
+            .fromSetTrainings(trainings.toDomain())
             .toState()
 
         val heatmap = analytics.heatmapFromTrainings(
