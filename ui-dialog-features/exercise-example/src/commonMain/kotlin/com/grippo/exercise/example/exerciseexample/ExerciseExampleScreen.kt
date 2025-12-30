@@ -24,7 +24,7 @@ import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.core.state.trainings.stubExercises
 import com.grippo.design.components.achievement.AchievementsCard
 import com.grippo.design.components.chart.MetricBarChart
-import com.grippo.design.components.chart.MuscleLoadChart
+import com.grippo.design.components.muscle.MuscleLoading
 import com.grippo.design.components.chip.Chip
 import com.grippo.design.components.chip.ChipLabel
 import com.grippo.design.components.chip.ChipSize
@@ -130,17 +130,18 @@ internal fun ExerciseExampleScreen(
             text = example.value.description,
         )
 
-        state.muscleLoad?.let { summary ->
+        state.muscleLoad
+            ?.perGroup
+            ?.entries
+            ?.takeIf { it.isNotEmpty() }
+            ?.let { entries ->
 
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-            MuscleLoadChart(
-                modifier = Modifier
-                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                    .fillMaxWidth(),
-                value = summary,
-            )
-        }
+                MuscleLoading(
+                    entries = entries
+                )
+            }
 
         if (example.equipments.isNotEmpty()) {
 
