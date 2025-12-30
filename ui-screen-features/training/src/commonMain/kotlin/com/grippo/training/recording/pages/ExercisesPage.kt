@@ -48,7 +48,9 @@ internal fun ColumnScope.ExercisesPage(
     state: TrainingRecordingState,
     contract: TrainingRecordingContract
 ) {
-    val exercises = remember(state.exercises) { state.exercises }
+    val exercises = remember(state.exercises) {
+        state.exercises
+    }
 
     val basePadding = PaddingValues(top = AppTokens.dp.contentPadding.block)
 

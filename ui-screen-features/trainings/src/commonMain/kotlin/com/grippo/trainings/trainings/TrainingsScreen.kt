@@ -86,6 +86,8 @@ internal fun TrainingsScreen(
                 onNext = contract::onSelectNextDate,
                 onPrevious = contract::onSelectPreviousDate
             )
+
+            Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
         }
     )
 
