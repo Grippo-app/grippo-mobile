@@ -5,15 +5,19 @@ import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.profile.ProfileMenu
 import com.grippo.core.state.profile.SettingsMenu
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
+import com.grippo.data.features.api.muscle.MuscleFeature
+import com.grippo.data.features.api.muscle.MuscleLoadingUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
+import com.grippo.domain.state.muscles.metrics.toState
 import com.grippo.domain.state.training.toState
 import com.grippo.domain.state.training.transformation.toHighlight
 import com.grippo.domain.state.training.transformation.toMonthlyDigestState
 import com.grippo.domain.state.training.transformation.toWeeklyDigestState
+import com.grippo.state.domain.training.toDomain
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.coroutines.flow.first
@@ -24,9 +28,15 @@ internal class HomeViewModel(
     private val trainingFeature: TrainingFeature,
     private val dialogController: DialogController,
     private val exerciseExampleFeature: ExerciseExampleFeature,
+    muscleFeature: MuscleFeature,
 ) : BaseViewModel<HomeState, HomeDirection, HomeLoader>(
     HomeState()
 ), HomeContract {
+
+    private val muscleLoadingUseCase = MuscleLoadingUseCase(
+        exerciseExampleFeature = exerciseExampleFeature,
+        muscleFeature = muscleFeature
+    )
 
     init {
         val now = DateTimeUtils.now()
@@ -81,7 +91,14 @@ internal class HomeViewModel(
                 .toState()
         }
 
-        val highlight = trainings.toHighlight(exerciseExamples = examples)
+        val muscleLoadSummary = muscleLoadingUseCase
+            .fromTrainings(trainings.toDomain())
+            .toState()
+
+        val highlight = trainings.toHighlight(
+            exerciseExamples = examples,
+            muscleLoad = muscleLoadSummary
+        )
 
         update {
             it.copy(

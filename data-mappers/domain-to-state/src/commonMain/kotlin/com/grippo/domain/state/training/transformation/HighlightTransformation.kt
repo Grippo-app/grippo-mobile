@@ -1,18 +1,13 @@
 package com.grippo.domain.state.training.transformation
 
 import com.grippo.core.state.examples.ExerciseExampleState
-import com.grippo.core.state.examples.ForceTypeEnumState
 import com.grippo.core.state.formatters.IntensityFormatState
-import com.grippo.core.state.formatters.PercentageFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
-import com.grippo.core.state.muscles.MuscleEnumState
-import com.grippo.core.state.muscles.MuscleGroupEnumState
+import com.grippo.core.state.muscles.metrics.MuscleLoadSummary
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.TrainingState
 import com.grippo.core.state.trainings.highlight.Highlight
-import com.grippo.core.state.trainings.highlight.HighlightMuscleFocus
-import com.grippo.core.state.trainings.highlight.HighlightMuscleFocusSegment
 import com.grippo.core.state.trainings.highlight.HighlightPerformanceMetric
 import com.grippo.core.state.trainings.highlight.HighlightPerformanceStatus
 import com.grippo.core.state.trainings.highlight.HighlightStreak
@@ -37,6 +32,7 @@ import kotlin.time.Duration.Companion.minutes
 
 public fun List<TrainingState>.toHighlight(
     exerciseExamples: List<ExerciseExampleState> = emptyList(),
+    muscleLoad: MuscleLoadSummary? = null,
 ): Highlight {
     val trainings = this
     val totalDuration: Duration = trainings.fold(ZERO) { acc, training -> acc + training.duration }
@@ -45,7 +41,7 @@ public fun List<TrainingState>.toHighlight(
     return Highlight(
         totalDuration = totalDuration,
         focusExercise = trainings.focusExercise(exampleIndex),
-        muscleFocus = trainings.muscleFocus(exampleIndex),
+        muscleLoad = muscleLoad,
         streak = trainings.streak(),
         performance = trainings.performanceMetrics()
     )
@@ -106,148 +102,6 @@ private fun List<TrainingState>.focusExercise(
     return example
 }
 
-private fun List<TrainingState>.muscleFocus(
-    exerciseExamples: Map<String, ExerciseExampleState>,
-): HighlightMuscleFocus? {
-    if (isEmpty()) return null
-
-    val contributions = mutableMapOf<MuscleGroupEnumState, Float>()
-
-    for (training in this) {
-        for (exercise in training.exercises) {
-            val volume = exercise.metrics.volume.value?.takeIf { it > 0f } ?: continue
-            val exampleId = exercise.exerciseExample.id
-            val example = exerciseExamples[exampleId]
-
-            val handled = example?.distributeMuscleLoad(
-                totalVolume = volume,
-                contributions = contributions
-            ) ?: false
-            if (handled) continue
-
-            contributions.addLoad(
-                group = exercise.exerciseExample.forceType.defaultMuscleGroup(),
-                load = volume
-            )
-        }
-    }
-
-    return contributions.toMuscleFocus()
-}
-
-private fun ExerciseExampleState.distributeMuscleLoad(
-    totalVolume: Float,
-    contributions: MutableMap<MuscleGroupEnumState, Float>,
-): Boolean {
-    var totalShare = 0f
-    val shares = mutableListOf<BundleContribution>()
-
-    for (bundle in bundles) {
-        val sharePercent = bundle.percentage.percentValue()
-        if (sharePercent <= 0f) continue
-        val group = bundle.muscle.type.toMuscleGroup()
-        shares += BundleContribution(group = group, sharePercent = sharePercent)
-        totalShare += sharePercent
-    }
-
-    if (shares.isEmpty() || totalShare <= 0f) {
-        return false
-    }
-
-    val volumePerShare = totalVolume / totalShare
-    shares.forEach { entry ->
-        contributions.addLoad(
-            group = entry.group,
-            load = entry.sharePercent * volumePerShare
-        )
-    }
-    return true
-}
-
-private fun Map<MuscleGroupEnumState, Float>.toMuscleFocus(): HighlightMuscleFocus? {
-    if (isEmpty()) return null
-    val totalLoad = values.sum()
-    if (totalLoad <= 0f) return null
-
-    val maxMuscleFocusSegments = 4
-
-    val segments = entries
-        .sortedByDescending { it.value }
-        .take(maxMuscleFocusSegments)
-        .mapNotNull { (group, loadValue) ->
-            val percentage = ((loadValue / totalLoad) * 100).roundToInt()
-            percentage.takeIf { it > 0 }?.let { percent ->
-                HighlightMuscleFocusSegment(
-                    muscleGroup = group,
-                    load = PercentageFormatState.of(percent)
-                )
-            }
-        }
-
-    if (segments.isEmpty()) return null
-
-    return HighlightMuscleFocus(segments = segments)
-}
-
-private fun MutableMap<MuscleGroupEnumState, Float>.addLoad(
-    group: MuscleGroupEnumState,
-    load: Float,
-) {
-    if (load <= 0f) return
-    this[group] = (this[group] ?: 0f) + load
-}
-
-private fun PercentageFormatState.percentValue(): Float {
-    return when (this) {
-        is PercentageFormatState.Valid -> value.toFloat()
-        is PercentageFormatState.Invalid -> value?.toFloat() ?: 0f
-        is PercentageFormatState.Empty -> 0f
-    }
-}
-
-private fun MuscleEnumState.toMuscleGroup(): MuscleGroupEnumState {
-    return when (this) {
-        MuscleEnumState.PECTORALIS_MAJOR_CLAVICULAR,
-        MuscleEnumState.PECTORALIS_MAJOR_STERNOCOSTAL,
-        MuscleEnumState.PECTORALIS_MAJOR_ABDOMINAL -> MuscleGroupEnumState.CHEST_MUSCLES
-
-        MuscleEnumState.TRAPEZIUS,
-        MuscleEnumState.LATISSIMUS_DORSI,
-        MuscleEnumState.RHOMBOIDS,
-        MuscleEnumState.TERES_MAJOR -> MuscleGroupEnumState.BACK_MUSCLES
-
-        MuscleEnumState.RECTUS_ABDOMINIS,
-        MuscleEnumState.OBLIQUES -> MuscleGroupEnumState.ABDOMINAL_MUSCLES
-
-        MuscleEnumState.CALF,
-        MuscleEnumState.GLUTEAL,
-        MuscleEnumState.HAMSTRINGS,
-        MuscleEnumState.QUADRICEPS,
-        MuscleEnumState.ADDUCTORS,
-        MuscleEnumState.ABDUCTORS -> MuscleGroupEnumState.LEGS
-
-        MuscleEnumState.ANTERIOR_DELTOID,
-        MuscleEnumState.LATERAL_DELTOID,
-        MuscleEnumState.POSTERIOR_DELTOID -> MuscleGroupEnumState.SHOULDER_MUSCLES
-
-        MuscleEnumState.BICEPS,
-        MuscleEnumState.TRICEPS,
-        MuscleEnumState.FOREARM -> MuscleGroupEnumState.ARMS_AND_FOREARMS
-    }
-}
-
-private fun ForceTypeEnumState.defaultMuscleGroup(): MuscleGroupEnumState {
-    return when (this) {
-        ForceTypeEnumState.PULL -> MuscleGroupEnumState.BACK_MUSCLES
-        ForceTypeEnumState.PUSH -> MuscleGroupEnumState.CHEST_MUSCLES
-        ForceTypeEnumState.HINGE -> MuscleGroupEnumState.LEGS
-    }
-}
-
-private data class BundleContribution(
-    val group: MuscleGroupEnumState,
-    val sharePercent: Float,
-)
 
 private fun List<TrainingState>.streak(): HighlightStreak {
     val today = DateTimeUtils.now().date

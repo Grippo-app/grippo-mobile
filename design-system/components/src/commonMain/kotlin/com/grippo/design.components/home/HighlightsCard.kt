@@ -25,10 +25,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
+import com.grippo.core.state.muscles.metrics.MuscleLoadBreakdown
 import com.grippo.core.state.trainings.highlight.Highlight
 import com.grippo.core.state.trainings.highlight.HighlightMetric
-import com.grippo.core.state.trainings.highlight.HighlightMuscleFocus
-import com.grippo.core.state.trainings.highlight.HighlightMuscleFocusSegment
 import com.grippo.core.state.trainings.highlight.HighlightPerformanceMetric
 import com.grippo.core.state.trainings.highlight.HighlightPerformanceStatus
 import com.grippo.core.state.trainings.highlight.HighlightStreakMood
@@ -37,6 +36,7 @@ import com.grippo.core.state.trainings.highlight.stubHighlight
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.components.indicators.LineIndicator
+import com.grippo.design.components.muscle.MuscleLoading
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -192,14 +192,17 @@ public fun HighlightsCard(
                 .height(intrinsicSize = IntrinsicSize.Min),
             horizontalArrangement = Arrangement.spacedBy(spacing),
         ) {
-            value.muscleFocus?.let { muscle ->
+            val muscleLoad = value.muscleLoad?.perGroup
+            if (muscleLoad != null && muscleLoad.entries.isNotEmpty()) {
                 HighlightPanel(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight(),
-                    content = { HighlightMuscleFocusPanel(muscle) }
+                    content = { HighlightMuscleLoadPanel(muscleLoad) }
                 )
-            } ?: Spacer(modifier = Modifier.weight(1f))
+            } else {
+                Spacer(modifier = Modifier.weight(1f))
+            }
 
             HighlightPanel(
                 modifier = Modifier
@@ -283,7 +286,7 @@ private fun HighlightPanel(
 }
 
 @Composable
-private fun HighlightMuscleFocusPanel(muscle: HighlightMuscleFocus) {
+private fun HighlightMuscleLoadPanel(breakdown: MuscleLoadBreakdown) {
     Text(
         text = AppTokens.strings.res(Res.string.highlight_muscle_focus),
         style = AppTokens.typography.b12Med(),
@@ -292,89 +295,14 @@ private fun HighlightMuscleFocusPanel(muscle: HighlightMuscleFocus) {
         overflow = TextOverflow.Ellipsis,
     )
 
-    Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)) {
-        muscle.segments.forEachIndexed { index, segment ->
-            HighlightMuscleFocusSegmentRow(
-                segment = segment,
-                isDominant = index == 0
-            )
-        }
+    val segments = remember(breakdown) {
+        breakdown.entries.take(MAX_MUSCLE_SEGMENTS)
     }
+
+    MuscleLoading(entries = segments)
 }
 
-@Composable
-private fun HighlightMuscleFocusSegmentRow(
-    segment: HighlightMuscleFocusSegment,
-    isDominant: Boolean,
-) {
-    val progress = segment.load.value
-        ?.coerceIn(0, 100)
-        ?.toFloat()
-        ?.div(100f) ?: 0f
-    val spacing = if (isDominant) {
-        AppTokens.dp.contentPadding.text
-    } else {
-        AppTokens.dp.contentPadding.text
-    }
-    val labelStyle = if (isDominant) {
-        AppTokens.typography.h5()
-    } else {
-        AppTokens.typography.b13Med()
-    }
-    val valueStyle = if (isDominant) {
-        AppTokens.typography.h5()
-    } else {
-        AppTokens.typography.b13Semi()
-    }
-    val labelColor = if (isDominant) {
-        AppTokens.colors.text.primary
-    } else {
-        AppTokens.colors.text.secondary
-    }
-    val valueColor = if (isDominant) {
-        AppTokens.colors.text.primary
-    } else {
-        AppTokens.colors.text.secondary
-    }
-    val indicatorColors = if (isDominant) {
-        AppTokens.colors.lineIndicator.success
-    } else {
-        AppTokens.colors.lineIndicator.primary
-    }
-
-    Column(
-        verticalArrangement = Arrangement.spacedBy(spacing)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                modifier = Modifier.weight(1f),
-                text = segment.muscleGroup.title().text(),
-                style = labelStyle,
-                color = labelColor,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-
-            Text(
-                text = segment.load.short(),
-                style = valueStyle,
-                color = valueColor,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
-
-        LineIndicator(
-            modifier = Modifier.fillMaxWidth(),
-            progress = progress,
-            colors = indicatorColors
-        )
-    }
-}
+private const val MAX_MUSCLE_SEGMENTS = 4
 
 @Composable
 private fun HighlightStreakPanel(value: Highlight) {
