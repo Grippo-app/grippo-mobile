@@ -32,7 +32,6 @@ import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -65,13 +64,6 @@ internal class TrainingRecordingViewModel(
             .distinctUntilChanged()
             .flatMapLatest(exerciseExampleFeature::observeExerciseExamples)
             .onEach(::provideExerciseExamples)
-            .safeLaunch()
-
-        state
-            .map { Triple(it.exercises, it.examples, it.muscles) }
-            .debounce(200)
-            .distinctUntilChanged()
-            .onEach { generateStatistics() }
             .safeLaunch()
 
         safeLaunch {
@@ -276,63 +268,6 @@ internal class TrainingRecordingViewModel(
             )
 
             trainingFeature.setDraftTraining(draft).getOrThrow()
-        }
-    }
-
-    private suspend fun generateStatistics() {
-        val exercises = state.value.exercises
-        val examples = state.value.examples
-        val muscles = state.value.muscles
-
-        if (exercises.isEmpty()) {
-            update {
-                it.copy(
-                    totalMetrics = null,
-                    exerciseVolume = null,
-                    categoryDistribution = null,
-                    forceTypeDistribution = null,
-                    weightTypeDistribution = null,
-                    muscleLoad = null,
-                )
-            }
-            return
-        }
-
-        val totalMetrics = analytics.metricsFromExercises(
-            exercises = exercises
-        )
-
-        val categoryDistribution = analytics.categoryDistributionFromExercises(
-            exercises = exercises
-        )
-
-        val weightTypeDistribution = analytics.weightTypeDistributionFromExercises(
-            exercises = exercises
-        )
-
-        val forceTypeDistribution = analytics.forceTypeDistributionFromExercises(
-            exercises = exercises
-        )
-
-        val exerciseVolume = analytics.volumeFromExercises(
-            exercises = exercises
-        )
-
-        val muscleLoad = analytics.muscleLoadFromExercises(
-            exercises = exercises,
-            examples = examples,
-            groups = muscles,
-        )
-
-        update {
-            it.copy(
-                totalMetrics = totalMetrics,
-                exerciseVolume = exerciseVolume,
-                categoryDistribution = categoryDistribution,
-                weightTypeDistribution = weightTypeDistribution,
-                forceTypeDistribution = forceTypeDistribution,
-                muscleLoad = muscleLoad,
-            )
         }
     }
 }
