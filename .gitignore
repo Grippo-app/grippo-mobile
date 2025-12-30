@@ -91,3 +91,5 @@ androidApp/release/
 *~
 .*.swp
 .*.swo
+
+/build-logic/convention/bin/
