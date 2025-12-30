@@ -20,6 +20,7 @@ public class ExerciseExampleComponent(
             id = id,
             exerciseExampleFeature = getKoin().get(),
             exerciseMetricsFeature = getKoin().get(),
+            muscleLoadingUseCase = getKoin().get(),
             stringProvider = getKoin().get<StringProvider>(),
             colorProvider = getKoin().get<ColorProvider>(),
         )

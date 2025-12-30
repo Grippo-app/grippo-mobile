@@ -139,6 +139,9 @@ internal fun ExerciseExampleScreen(
                 Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
                 MuscleLoading(
+                    modifier = Modifier
+                        .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                        .fillMaxWidth(),
                     entries = entries
                 )
             }

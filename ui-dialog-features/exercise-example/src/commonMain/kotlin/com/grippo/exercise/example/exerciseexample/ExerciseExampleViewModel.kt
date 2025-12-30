@@ -1,22 +1,19 @@
 package com.grippo.exercise.example.exerciseexample
 
 import com.grippo.core.foundation.BaseViewModel
-import com.grippo.core.state.muscles.metrics.MuscleLoadBreakdown as StateMuscleLoadBreakdown
-import com.grippo.core.state.muscles.metrics.MuscleLoadEntry as StateMuscleLoadEntry
-import com.grippo.core.state.muscles.metrics.MuscleLoadSummary as StateMuscleLoadSummary
 import com.grippo.data.features.api.achievements.Achievement
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.exercise.metrics.ExerciseMetricsFeature
+import com.grippo.data.features.api.muscle.MuscleLoadingUseCase
 import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.domain.state.achievements.toState
 import com.grippo.domain.state.exercise.example.toState
+import com.grippo.domain.state.muscles.metrics.toState
 import com.grippo.domain.state.training.toState
 import com.grippo.toolkit.calculation.AnalyticsApi
-import com.grippo.toolkit.calculation.models.MuscleLoadEntry
-import com.grippo.toolkit.calculation.models.MuscleLoadSummary
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.onEach
 
@@ -24,6 +21,7 @@ public class ExerciseExampleViewModel(
     id: String,
     private val exerciseExampleFeature: ExerciseExampleFeature,
     private val exerciseMetricsFeature: ExerciseMetricsFeature,
+    private val muscleLoadingUseCase: MuscleLoadingUseCase,
     stringProvider: StringProvider,
     colorProvider: ColorProvider,
 ) : BaseViewModel<ExerciseExampleState, ExerciseExampleDirection, ExerciseExampleLoader>(
@@ -71,35 +69,19 @@ public class ExerciseExampleViewModel(
     private suspend fun provideExerciseExample(value: ExerciseExample?) {
         val exampleState = value?.toState() ?: return
 
-        val muscleLoad = analytics.muscleLoadFromExample(
-            example = exampleState
-        )
+        val muscleLoad = muscleLoadingUseCase
+            .fromExerciseExample(exampleState.value.id)
+            .toState()
 
         update { current ->
             current.copy(
                 example = exampleState,
-                muscleLoad = muscleLoad.toStateSummary()
+                muscleLoad = muscleLoad
             )
         }
     }
 
     override fun onDismiss() {
         navigateTo(ExerciseExampleDirection.Back)
-    }
-
-    private fun MuscleLoadSummary.toStateSummary(): StateMuscleLoadSummary {
-        return StateMuscleLoadSummary(
-            perGroup = StateMuscleLoadBreakdown(entries = perGroup.entries.map { it.toStateEntry() }),
-            images = null
-        )
-    }
-
-    private fun MuscleLoadEntry.toStateEntry(): StateMuscleLoadEntry {
-        return StateMuscleLoadEntry(
-            label = label,
-            value = value,
-            color = color,
-            muscles = muscles.toPersistentList()
-        )
     }
 }
