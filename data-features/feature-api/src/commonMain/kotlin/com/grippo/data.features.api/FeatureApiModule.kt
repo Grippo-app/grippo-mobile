@@ -3,6 +3,7 @@ package com.grippo.data.features.api
 import com.grippo.data.features.api.authorization.LoginUseCase
 import com.grippo.data.features.api.authorization.RegisterUseCase
 import com.grippo.data.features.api.exercise.example.UserExerciseExamplesUseCase
+import com.grippo.data.features.api.muscle.MuscleLoadingUseCase
 import com.grippo.data.features.api.training.GenerateTrainingUseCase
 import com.grippo.data.features.api.user.CreateProfileUseCase
 import org.koin.core.annotation.Module
@@ -55,6 +56,13 @@ public class FeatureApiModule {
         single {
             GenerateTrainingUseCase(
                 exerciseExampleFeature = get(),
+            )
+        }
+
+        single {
+            MuscleLoadingUseCase(
+                exerciseExampleFeature = get(),
+                muscleFeature = get(),
             )
         }
     }

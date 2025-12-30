@@ -16,6 +16,7 @@ kotlin {
         implementation(projects.toolkit.calculation)
         implementation(projects.toolkit.dateUtils)
         implementation(projects.dataMappers.domainToState)
+        implementation(projects.dataMappers.stateToDomain)
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.uiDialogFeatures.dialogApi)
         implementation(projects.designSystem.core)

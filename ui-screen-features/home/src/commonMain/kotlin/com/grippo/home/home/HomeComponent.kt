@@ -23,7 +23,7 @@ internal class HomeComponent(
             trainingFeature = getKoin().get(),
             dialogController = getKoin().get(),
             exerciseExampleFeature = getKoin().get(),
-            muscleFeature = getKoin().get(),
+            muscleLoadingUseCase = getKoin().get(),
         )
     }
 

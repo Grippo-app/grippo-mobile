@@ -9,6 +9,7 @@ import com.grippo.core.state.trainings.TrainingState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.muscle.MuscleFeature
+import com.grippo.data.features.api.muscle.MuscleLoadingUseCase
 import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
@@ -16,11 +17,11 @@ import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.domain.state.exercise.example.toState
+import com.grippo.domain.state.muscles.metrics.toState
 import com.grippo.domain.state.muscles.toState
 import com.grippo.domain.state.training.toState
+import com.grippo.state.domain.training.toDomain
 import com.grippo.toolkit.calculation.AnalyticsApi
-import com.grippo.toolkit.calculation.models.MuscleLoadEntry
-import com.grippo.toolkit.calculation.models.MuscleLoadSummary
 import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -33,10 +34,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
-import com.grippo.core.state.muscles.metrics.MuscleImages as StateMuscleImages
-import com.grippo.core.state.muscles.metrics.MuscleLoadBreakdown as StateMuscleLoadBreakdown
-import com.grippo.core.state.muscles.metrics.MuscleLoadEntry as StateMuscleLoadEntry
-import com.grippo.core.state.muscles.metrics.MuscleLoadSummary as StateMuscleLoadSummary
 
 @OptIn(FlowPreview::class)
 public class StatisticsViewModel(
@@ -46,6 +43,7 @@ public class StatisticsViewModel(
     stringProvider: StringProvider,
     private val exerciseExampleFeature: ExerciseExampleFeature,
     private val trainingFeature: TrainingFeature,
+    private val muscleLoadingUseCase: MuscleLoadingUseCase,
 ) : BaseViewModel<StatisticsState, StatisticsDirection, StatisticsLoader>(
     StatisticsState(
         mode = when (config) {
@@ -137,8 +135,6 @@ public class StatisticsViewModel(
 
             is StatisticsMode.Exercises -> provideExerciseStatistics(
                 exercises = mode.exercises,
-                muscles = muscles,
-                examples = examples
             )
         }
     }
@@ -178,12 +174,9 @@ public class StatisticsViewModel(
             range = range
         )
 
-        val muscleLoad = analytics.muscleLoadFromTrainings(
-            trainings = trainings,
-            range = range,
-            examples = examples,
-            groups = muscles
-        )
+        val muscleLoad = muscleLoadingUseCase
+            .fromTrainings(trainings.toDomain())
+            .toState()
 
         val heatmap = analytics.heatmapFromTrainings(
             trainings = trainings,
@@ -199,7 +192,7 @@ public class StatisticsViewModel(
                 categoryDistribution = categoryDistribution,
                 weightTypeDistribution = weightTypeDistribution,
                 forceTypeDistribution = forceTypeDistribution,
-                muscleLoad = muscleLoad.toStateSummary(),
+                muscleLoad = muscleLoad,
                 temporalHeatmap = heatmap,
             )
         }
@@ -207,8 +200,6 @@ public class StatisticsViewModel(
 
     private suspend fun provideExerciseStatistics(
         exercises: ImmutableList<ExerciseState>,
-        muscles: ImmutableList<MuscleGroupState<MuscleRepresentationState.Plain>>,
-        examples: ImmutableList<ExerciseExampleState>,
     ) {
         if (exercises.isEmpty()) {
             clearStatistics()
@@ -234,11 +225,9 @@ public class StatisticsViewModel(
         val exerciseVolume = analytics.volumeFromExercises(
             exercises = exercises
         )
-        val muscleLoad = analytics.muscleLoadFromExercises(
-            exercises = exercises,
-            examples = examples,
-            groups = muscles
-        )
+        val muscleLoad = muscleLoadingUseCase
+            .fromExercises(exercises.toDomain())
+            .toState()
 
         update {
             it.copy(
@@ -247,7 +236,7 @@ public class StatisticsViewModel(
                 categoryDistribution = categoryDistribution,
                 weightTypeDistribution = weightTypeDistribution,
                 forceTypeDistribution = forceTypeDistribution,
-                muscleLoad = muscleLoad.toStateSummary(),
+                muscleLoad = muscleLoad,
                 temporalHeatmap = null,
             )
         }
@@ -305,23 +294,5 @@ public class StatisticsViewModel(
                 )
             )
         }
-    }
-
-    private fun MuscleLoadSummary.toStateSummary(): StateMuscleLoadSummary {
-        return StateMuscleLoadSummary(
-            perGroup = StateMuscleLoadBreakdown(
-                entries = perGroup.entries.map { it.toStateEntry() }
-            ),
-            images = images?.let { StateMuscleImages(front = it.front, back = it.back) }
-        )
-    }
-
-    private fun MuscleLoadEntry.toStateEntry(): StateMuscleLoadEntry {
-        return StateMuscleLoadEntry(
-            label = label,
-            value = value,
-            color = color,
-            muscles = muscles.toPersistentList()
-        )
     }
 }

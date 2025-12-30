@@ -5,7 +5,6 @@ import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.profile.ProfileMenu
 import com.grippo.core.state.profile.SettingsMenu
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
-import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.MuscleLoadingUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
@@ -28,15 +27,10 @@ internal class HomeViewModel(
     private val trainingFeature: TrainingFeature,
     private val dialogController: DialogController,
     private val exerciseExampleFeature: ExerciseExampleFeature,
-    muscleFeature: MuscleFeature,
+    private val muscleLoadingUseCase: MuscleLoadingUseCase,
 ) : BaseViewModel<HomeState, HomeDirection, HomeLoader>(
     HomeState()
 ), HomeContract {
-
-    private val muscleLoadingUseCase = MuscleLoadingUseCase(
-        exerciseExampleFeature = exerciseExampleFeature,
-        muscleFeature = muscleFeature
-    )
 
     init {
         val now = DateTimeUtils.now()

@@ -5,54 +5,9 @@ import com.grippo.core.state.muscles.MuscleEnumState
 import com.grippo.core.state.muscles.MuscleGroupState
 import com.grippo.core.state.muscles.MuscleRepresentationState
 import com.grippo.design.resources.provider.muscles.MuscleColorPreset
-import com.grippo.design.resources.provider.muscles.fullBack
-import com.grippo.design.resources.provider.muscles.fullFront
 import com.grippo.design.resources.provider.providers.ColorProvider
-import com.grippo.toolkit.calculation.models.MuscleColorSource
-import com.grippo.toolkit.calculation.models.MuscleImages
-import com.grippo.toolkit.calculation.models.MuscleLoadBreakdown
 
 internal class MuscleImageBuilder(private val colorProvider: ColorProvider) {
-
-    suspend fun generateImagesFromBreakdown(
-        breakdown: MuscleLoadBreakdown,
-    ): MuscleImages? {
-        val entries = breakdown.entries
-        if (entries.isEmpty()) return null
-
-        return generateImagesFromSources(entries)
-    }
-
-    private suspend fun generateImagesFromSources(
-        sources: List<MuscleColorSource>,
-    ): MuscleImages? {
-        if (sources.isEmpty()) return null
-
-        val preset = buildPreset(sources)
-
-        return MuscleImages(
-            front = fullFront(preset),
-            back = fullBack(preset),
-        )
-    }
-
-    private suspend fun buildPreset(
-        sources: List<MuscleColorSource>,
-    ): MuscleColorPreset {
-        val colors = colorProvider.get()
-
-        val fallback = colors.muscle.inactive
-        val outline = colors.muscle.outline
-        val background = colors.muscle.background
-
-        val colorMap: Map<MuscleEnumState, Color> = sources
-            .flatMap { source ->
-                source.muscles.map { muscle -> muscle to source.color }
-            }
-            .toMap()
-
-        return buildPreset(colorMap, fallback, outline, background)
-    }
 
     suspend fun presetFromSelection(
         group: MuscleGroupState<MuscleRepresentationState.Plain>,

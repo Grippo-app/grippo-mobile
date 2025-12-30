@@ -12,7 +12,6 @@ import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.toolkit.calculation.internal.distribution.DistributionCalculator
 import com.grippo.toolkit.calculation.internal.muscle.MuscleImageBuilder
-import com.grippo.toolkit.calculation.internal.muscle.MuscleLoadCalculator
 import com.grippo.toolkit.calculation.internal.muscle.TemporalHeatmapCalculator
 import com.grippo.toolkit.calculation.internal.strength.Estimated1RMAnalytics
 import com.grippo.toolkit.calculation.internal.training.MetricsAggregator
@@ -22,7 +21,6 @@ import com.grippo.toolkit.calculation.models.DistributionWeighting
 import com.grippo.toolkit.calculation.models.Metric
 import com.grippo.toolkit.calculation.models.MetricSeries
 import com.grippo.toolkit.calculation.models.MuscleLoadMatrix
-import com.grippo.toolkit.calculation.models.MuscleLoadSummary
 import com.grippo.toolkit.date.utils.DateRange
 
 /**
@@ -36,7 +34,6 @@ public class AnalyticsApi(
 ) {
     private val distributionCalculator = DistributionCalculator(stringProvider, colorProvider)
     private val volumeAnalytics = VolumeAnalytics(colorProvider, stringProvider)
-    private val muscleLoadCalculator = MuscleLoadCalculator(stringProvider, colorProvider)
     private val heatmapCalculator = TemporalHeatmapCalculator(stringProvider)
     private val estimated1RMAnalytics = Estimated1RMAnalytics(colorProvider, stringProvider)
     private val metricsAggregator = MetricsAggregator()
@@ -60,62 +57,6 @@ public class AnalyticsApi(
         range: DateRange,
     ): MetricSeries = volumeAnalytics
         .computeVolumeSeriesFromTrainings(trainings, range)
-
-    /**
-     * Aggregates muscle load for the provided [exercises] and returns the group breakdown together with
-     * pre-built front/back muscle images colored by intensity.
-     */
-    public suspend fun muscleLoadFromExercises(
-        exercises: List<ExerciseState>,
-        examples: List<ExerciseExampleState>,
-        groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
-    ): MuscleLoadSummary {
-        val breakdowns = muscleLoadCalculator
-            .computeMuscleLoadBreakdownsFromExercises(exercises, examples, groups)
-        val images = muscleImageBuilder.generateImagesFromBreakdown(breakdowns.perMuscle)
-
-        return MuscleLoadSummary(
-            perGroup = breakdowns.perGroup,
-            images = images,
-        )
-    }
-
-    /**
-     * Aggregates muscle load across [trainings] filtered by [range].
-     * The result contains the group breakdown and ready-to-render images colored by intensity.
-     */
-    public suspend fun muscleLoadFromTrainings(
-        trainings: List<TrainingState>,
-        range: DateRange,
-        examples: List<ExerciseExampleState>,
-        groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
-    ): MuscleLoadSummary {
-        val breakdowns = muscleLoadCalculator
-            .computeMuscleLoadBreakdownsFromTrainings(trainings, range, examples, groups)
-        val images = muscleImageBuilder.generateImagesFromBreakdown(breakdowns.perMuscle)
-
-        return MuscleLoadSummary(
-            perGroup = breakdowns.perGroup,
-            images = images,
-        )
-    }
-
-    /**
-     * Maps a single exercise example into the muscle load representation using bundle percentages.
-     * Handy for dialogs that visualise how an exercise targets the body without loading a training list.
-     */
-    public suspend fun muscleLoadFromExample(
-        example: ExerciseExampleState
-    ): MuscleLoadSummary {
-        val breakdowns = muscleLoadCalculator
-            .computeMuscleLoadBreakdownsFromExample(example)
-        val images = muscleImageBuilder.generateImagesFromBreakdown(breakdowns.perMuscle)
-
-        return MuscleLoadSummary(
-            perGroup = breakdowns.perMuscle,
-            images = images,
-        )
-    }
 
     /**
      * Builds the temporal heatmap matrix for [trainings] using the provided filters.

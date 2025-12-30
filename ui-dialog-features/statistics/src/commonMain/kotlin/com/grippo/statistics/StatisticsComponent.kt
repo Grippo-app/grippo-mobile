@@ -22,6 +22,7 @@ public class StatisticsComponent(
             colorProvider = getKoin().get(),
             stringProvider = getKoin().get(),
             trainingFeature = getKoin().get(),
+            muscleLoadingUseCase = getKoin().get(),
         )
     }
 

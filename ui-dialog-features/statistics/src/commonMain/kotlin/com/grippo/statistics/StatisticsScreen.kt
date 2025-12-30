@@ -234,6 +234,7 @@ internal fun StatisticsScreen(
                     ?.let { entries ->
                         item(key = "muscle_load") {
                             MuscleLoading(
+                                modifier = Modifier.fillMaxWidth(),
                                 entries = entries
                             )
                         }
