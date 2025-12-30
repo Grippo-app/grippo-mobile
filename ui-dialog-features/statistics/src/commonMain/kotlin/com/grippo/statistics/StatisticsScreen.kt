@@ -228,14 +228,12 @@ internal fun StatisticsScreen(
                 }
 
                 state.muscleLoad
-                    ?.perGroup
-                    ?.entries
-                    ?.takeIf { it.isNotEmpty() }
-                    ?.let { entries ->
+                    ?.takeIf { it.perGroup.entries.isNotEmpty() }
+                    ?.let { summary ->
                         item(key = "muscle_load") {
                             MuscleLoading(
                                 modifier = Modifier.fillMaxWidth(),
-                                entries = entries
+                                summary = summary,
                             )
                         }
                     }
@@ -357,7 +355,6 @@ private fun ScreenPreview() {
                     MuscleLoadEntry(
                         label = "Chest",
                         value = 0.78f,
-                        color = Color(0xFF4C83FF),
                         muscles = persistentListOf(
                             MuscleEnumState.PECTORALIS_MAJOR_CLAVICULAR,
                             MuscleEnumState.PECTORALIS_MAJOR_STERNOCOSTAL
@@ -366,7 +363,6 @@ private fun ScreenPreview() {
                     MuscleLoadEntry(
                         label = "Back",
                         value = 0.64f,
-                        color = Color(0xFFE76F51),
                         muscles = persistentListOf(
                             MuscleEnumState.LATISSIMUS_DORSI,
                             MuscleEnumState.TRAPEZIUS
@@ -375,7 +371,6 @@ private fun ScreenPreview() {
                     MuscleLoadEntry(
                         label = "Legs",
                         value = 0.52f,
-                        color = Color(0xFF5AD4A3),
                         muscles = persistentListOf(
                             MuscleEnumState.QUADRICEPS,
                             MuscleEnumState.HAMSTRINGS
@@ -383,7 +378,34 @@ private fun ScreenPreview() {
                     )
                 )
             ),
-            images = null
+            perMuscle = MuscleLoadBreakdown(
+                entries = listOf(
+                    MuscleLoadEntry(
+                        label = "Chest",
+                        value = 0.78f,
+                        muscles = persistentListOf(
+                            MuscleEnumState.PECTORALIS_MAJOR_CLAVICULAR,
+                            MuscleEnumState.PECTORALIS_MAJOR_STERNOCOSTAL
+                        )
+                    ),
+                    MuscleLoadEntry(
+                        label = "Back",
+                        value = 0.64f,
+                        muscles = persistentListOf(
+                            MuscleEnumState.LATISSIMUS_DORSI,
+                            MuscleEnumState.TRAPEZIUS
+                        )
+                    ),
+                    MuscleLoadEntry(
+                        label = "Legs",
+                        value = 0.52f,
+                        muscles = persistentListOf(
+                            MuscleEnumState.QUADRICEPS,
+                            MuscleEnumState.HAMSTRINGS
+                        )
+                    )
+                )
+            ),
         )
 
         val heatmap = MuscleLoadMatrix(

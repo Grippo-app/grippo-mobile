@@ -22,8 +22,8 @@ public class ExerciseExampleViewModel(
     private val exerciseExampleFeature: ExerciseExampleFeature,
     private val exerciseMetricsFeature: ExerciseMetricsFeature,
     private val muscleLoadingUseCase: MuscleLoadingUseCase,
-    stringProvider: StringProvider,
     colorProvider: ColorProvider,
+    stringProvider: StringProvider,
 ) : BaseViewModel<ExerciseExampleState, ExerciseExampleDirection, ExerciseExampleLoader>(
     ExerciseExampleState()
 ), ExerciseExampleContract {

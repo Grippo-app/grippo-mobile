@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
-import com.grippo.core.state.muscles.metrics.MuscleLoadBreakdown
+import com.grippo.core.state.muscles.metrics.MuscleLoadSummary
 import com.grippo.core.state.trainings.highlight.Highlight
 import com.grippo.core.state.trainings.highlight.HighlightMetric
 import com.grippo.core.state.trainings.highlight.HighlightPerformanceMetric
@@ -192,8 +192,9 @@ public fun HighlightsCard(
                 .height(intrinsicSize = IntrinsicSize.Min),
             horizontalArrangement = Arrangement.spacedBy(spacing),
         ) {
-            val muscleLoad = value.muscleLoad?.perGroup
-            if (muscleLoad != null && muscleLoad.entries.isNotEmpty()) {
+            val muscleLoad = value.muscleLoad
+
+            if (muscleLoad != null && muscleLoad.perGroup.entries.isNotEmpty()) {
                 HighlightPanel(
                     modifier = Modifier
                         .weight(1f)
@@ -286,7 +287,7 @@ private fun HighlightPanel(
 }
 
 @Composable
-private fun HighlightMuscleLoadPanel(breakdown: MuscleLoadBreakdown) {
+private fun HighlightMuscleLoadPanel(summary: MuscleLoadSummary) {
     Text(
         text = AppTokens.strings.res(Res.string.highlight_muscle_focus),
         style = AppTokens.typography.b12Med(),
@@ -295,11 +296,10 @@ private fun HighlightMuscleLoadPanel(breakdown: MuscleLoadBreakdown) {
         overflow = TextOverflow.Ellipsis,
     )
 
-    val segments = remember(breakdown) {
-        breakdown.entries.take(MAX_MUSCLE_SEGMENTS)
-    }
-
-    MuscleLoading(entries = segments)
+    MuscleLoading(
+        summary = summary,
+        maxVisibleEntries = MAX_MUSCLE_SEGMENTS
+    )
 }
 
 private const val MAX_MUSCLE_SEGMENTS = 4

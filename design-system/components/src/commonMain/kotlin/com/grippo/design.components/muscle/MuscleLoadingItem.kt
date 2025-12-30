@@ -18,8 +18,9 @@ import com.grippo.design.resources.provider.percent
 import kotlin.math.roundToInt
 
 @Composable
-public fun MuscleLoadingEntry(
+public fun MuscleLoadingItem(
     entry: MuscleLoadEntry,
+    color: Color,
     modifier: Modifier = Modifier,
     dominant: Boolean = false,
 ) {
@@ -31,7 +32,7 @@ public fun MuscleLoadingEntry(
         if (dominant) AppTokens.colors.text.primary else AppTokens.colors.text.secondary
     val valueColor =
         if (dominant) AppTokens.colors.text.primary else AppTokens.colors.text.secondary
-    val indicatorColors = indicatorColorsFor(entry.color)
+    val indicatorColors = indicatorColorsFor(color)
     val percentSymbol = AppTokens.strings.res(Res.string.percent)
     val valueText = "${entry.value.roundToInt()}$percentSymbol"
 

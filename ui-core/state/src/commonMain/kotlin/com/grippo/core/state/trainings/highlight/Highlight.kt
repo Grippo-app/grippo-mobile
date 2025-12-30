@@ -2,7 +2,6 @@ package com.grippo.core.state.trainings.highlight
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.examples.stubExerciseExample
@@ -163,30 +162,55 @@ public fun stubHighlight(): Highlight = Highlight(
                 MuscleLoadEntry(
                     label = "Chest",
                     value = 42f,
-                    color = Color(0xFFFF7F50),
-                    muscles = persistentListOf(MuscleEnumState.PECTORALIS_MAJOR_CLAVICULAR)
+                    muscles = persistentListOf(
+                        MuscleEnumState.PECTORALIS_MAJOR_CLAVICULAR,
+                        MuscleEnumState.PECTORALIS_MAJOR_STERNOCOSTAL
+                    )
                 ),
                 MuscleLoadEntry(
                     label = "Back",
                     value = 27f,
-                    color = Color(0xFF4C83FF),
                     muscles = persistentListOf(MuscleEnumState.LATISSIMUS_DORSI)
                 ),
                 MuscleLoadEntry(
                     label = "Arms",
                     value = 18f,
-                    color = Color(0xFFE76F51),
-                    muscles = persistentListOf(MuscleEnumState.BICEPS)
+                    muscles = persistentListOf(MuscleEnumState.BICEPS, MuscleEnumState.TRICEPS)
                 ),
                 MuscleLoadEntry(
                     label = "Legs",
                     value = 13f,
-                    color = Color(0xFF5AD4A3),
-                    muscles = persistentListOf(MuscleEnumState.QUADRICEPS)
+                    muscles = persistentListOf(
+                        MuscleEnumState.QUADRICEPS,
+                        MuscleEnumState.HAMSTRINGS
+                    )
                 )
             )
         ),
-        images = null
+        perMuscle = MuscleLoadBreakdown(
+            entries = listOf(
+                MuscleLoadEntry(
+                    label = "Pec Major (Clav.)",
+                    value = 52f,
+                    muscles = persistentListOf(MuscleEnumState.PECTORALIS_MAJOR_CLAVICULAR)
+                ),
+                MuscleLoadEntry(
+                    label = "Latissimus",
+                    value = 34f,
+                    muscles = persistentListOf(MuscleEnumState.LATISSIMUS_DORSI)
+                ),
+                MuscleLoadEntry(
+                    label = "Biceps",
+                    value = 21f,
+                    muscles = persistentListOf(MuscleEnumState.BICEPS)
+                ),
+                MuscleLoadEntry(
+                    label = "Quads",
+                    value = 18f,
+                    muscles = persistentListOf(MuscleEnumState.QUADRICEPS)
+                ),
+            )
+        ),
     ),
     streak = HighlightStreak(
         totalActiveDays = 16,

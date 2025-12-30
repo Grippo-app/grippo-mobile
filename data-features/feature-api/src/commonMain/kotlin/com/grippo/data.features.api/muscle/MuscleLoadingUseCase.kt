@@ -7,7 +7,6 @@ import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.data.features.api.muscle.models.MuscleLoadBreakdown
 import com.grippo.data.features.api.muscle.models.MuscleLoadEntry
 import com.grippo.data.features.api.muscle.models.MuscleLoadSummary
-import com.grippo.data.features.api.muscle.models.emptyMuscleLoadSummary
 import com.grippo.data.features.api.training.models.SetExercise
 import com.grippo.data.features.api.training.models.SetIteration
 import com.grippo.data.features.api.training.models.SetTraining
@@ -19,46 +18,34 @@ public class MuscleLoadingUseCase(
 ) {
 
     public suspend fun fromTrainings(trainings: List<SetTraining>): MuscleLoadSummary {
-        if (trainings.isEmpty()) return emptyMuscleLoadSummary()
         val exercises = trainings.flatMap { it.exercises }
         return fromExercises(exercises)
     }
 
     public suspend fun fromExercises(exercises: List<SetExercise>): MuscleLoadSummary {
-        if (exercises.isEmpty()) return emptyMuscleLoadSummary()
-
         val exampleIds = exercises.map { it.exerciseExample.id }.toSet()
         val examples = loadExamples(exampleIds)
         val groups = loadMuscleGroups()
-        if (examples.isEmpty() || groups.isEmpty()) {
-            return emptyMuscleLoadSummary()
-        }
 
         val muscleLoad = computeMuscleLoad(exercises, examples)
         return buildSummary(muscleLoad, groups)
     }
 
     public suspend fun fromExerciseExample(exampleId: String): MuscleLoadSummary {
-        if (exampleId.isEmpty()) return emptyMuscleLoadSummary()
         val examples = loadExamples(setOf(exampleId))
-        val example = examples[exampleId] ?: return emptyMuscleLoadSummary()
         val groups = loadMuscleGroups()
-        if (groups.isEmpty()) return emptyMuscleLoadSummary()
 
-        val muscleLoad = computeExampleLoad(example)
+        val muscleLoad = computeExampleLoad(examples[exampleId])
         return buildSummary(muscleLoad, groups)
     }
 
     private suspend fun loadExamples(ids: Set<String>): Map<String, ExerciseExample> {
-        if (ids.isEmpty()) return emptyMap()
-        ids.forEach { exerciseExampleFeature.getExerciseExampleById(it).getOrNull() }
         return exerciseExampleFeature.observeExerciseExamples(ids.toList())
             .first()
             .associateBy { it.value.id }
     }
 
     private suspend fun loadMuscleGroups(): List<MuscleGroup> {
-        muscleFeature.getMuscles().getOrNull()
         return muscleFeature.observeMuscles().first()
     }
 
@@ -96,8 +83,8 @@ public class MuscleLoadingUseCase(
         return contributions
     }
 
-    private fun computeExampleLoad(example: ExerciseExample): Map<MuscleEnum, Float> {
-        if (example.bundles.isEmpty()) return emptyMap()
+    private fun computeExampleLoad(example: ExerciseExample?): Map<MuscleEnum, Float> {
+        if (example == null || example.bundles.isEmpty()) return emptyMap()
         val totals = mutableMapOf<MuscleEnum, Float>()
         example.bundles.forEach { bundle ->
             val percent = bundle.percentage.coerceAtLeast(0)
@@ -137,10 +124,6 @@ public class MuscleLoadingUseCase(
         muscleLoad: Map<MuscleEnum, Float>,
         groups: List<MuscleGroup>,
     ): MuscleLoadSummary {
-        if (muscleLoad.isEmpty() || groups.isEmpty()) {
-            return emptyMuscleLoadSummary()
-        }
-
         val muscleNames = buildMuscleNameMap(groups)
         val groupByMuscle = buildGroupByMuscleMap(groups)
 

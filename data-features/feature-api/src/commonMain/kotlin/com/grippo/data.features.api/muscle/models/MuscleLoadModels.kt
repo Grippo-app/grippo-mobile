@@ -14,8 +14,3 @@ public data class MuscleLoadSummary(
     val perGroup: MuscleLoadBreakdown,
     val perMuscle: MuscleLoadBreakdown,
 )
-
-public fun emptyMuscleLoadSummary(): MuscleLoadSummary = MuscleLoadSummary(
-    perGroup = MuscleLoadBreakdown(emptyList()),
-    perMuscle = MuscleLoadBreakdown(emptyList()),
-)

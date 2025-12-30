@@ -131,10 +131,8 @@ internal fun ExerciseExampleScreen(
         )
 
         state.muscleLoad
-            ?.perGroup
-            ?.entries
-            ?.takeIf { it.isNotEmpty() }
-            ?.let { entries ->
+            ?.takeIf { it.perGroup.entries.isNotEmpty() }
+            ?.let { summary ->
 
                 Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
@@ -142,7 +140,7 @@ internal fun ExerciseExampleScreen(
                     modifier = Modifier
                         .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                         .fillMaxWidth(),
-                    entries = entries
+                    summary = summary
                 )
             }
 
