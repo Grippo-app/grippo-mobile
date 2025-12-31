@@ -17,8 +17,8 @@ import com.grippo.core.state.metrics.digest.MonthlyDigestState
 import com.grippo.core.state.metrics.digest.WeeklyDigestState
 import com.grippo.core.state.metrics.digest.stubMonthlyDigest
 import com.grippo.core.state.metrics.digest.stubWeeklyDigest
-import com.grippo.design.components.metrics.digest.MonthDigestCard
-import com.grippo.design.components.metrics.digest.WeekDigestCard
+import com.grippo.design.components.metrics.MonthDigestCard
+import com.grippo.design.components.metrics.WeekDigestCard
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -42,7 +42,7 @@ public fun DigestsCard(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
-                modifier = Modifier.size(AppTokens.dp.home.digests.icon),
+                modifier = Modifier.size(AppTokens.dp.metrics.digests.icon),
                 imageVector = AppTokens.icons.LineUp,
                 tint = AppTokens.colors.icon.primary,
                 contentDescription = null

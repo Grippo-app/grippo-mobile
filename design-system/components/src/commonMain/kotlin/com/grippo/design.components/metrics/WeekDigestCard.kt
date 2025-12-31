@@ -1,47 +1,51 @@
-package com.grippo.design.components.metrics.digest
+package com.grippo.design.components.metrics
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.grippo.core.state.metrics.digest.MonthlyDigestState
-import com.grippo.core.state.metrics.digest.stubMonthlyDigest
+import com.grippo.core.state.metrics.digest.WeeklyDigestState
+import com.grippo.core.state.metrics.digest.stubWeeklyDigest
+import com.grippo.design.components.metrics.internal.DigestCardStyle
+import com.grippo.design.components.metrics.internal.DigestMetric
+import com.grippo.design.components.metrics.internal.DigestsSection
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.duration
 import com.grippo.design.resources.provider.icons.Trophy
-import com.grippo.design.resources.provider.monthly
 import com.grippo.design.resources.provider.sets
 import com.grippo.design.resources.provider.trainings
 import com.grippo.design.resources.provider.volume
+import com.grippo.design.resources.provider.weekly
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateTimeUtils
 
 @Composable
-public fun MonthDigestCard(
+public fun WeekDigestCard(
     modifier: Modifier = Modifier,
-    value: MonthlyDigestState,
+    value: WeeklyDigestState,
 ) {
-    val subtitle = remember(value.month) {
-        val monthTitle = DateTimeUtils.format(value.month, DateFormat.DateOnly.MonthFull)
-        "$monthTitle ${value.month.year}"
+    val subtitle = remember(value.weekStart, value.weekEnd) {
+        val from = DateTimeUtils.format(value.weekStart, DateFormat.DateOnly.DateDdMmm)
+        val to = DateTimeUtils.format(value.weekEnd, DateFormat.DateOnly.DateDdMmm)
+        "$from - $to"
     }
 
     val style = DigestCardStyle(
-        radius = AppTokens.dp.digest.month.radius,
-        horizontalPadding = AppTokens.dp.digest.month.horizontalPadding,
-        verticalPadding = AppTokens.dp.digest.month.verticalPadding,
-        iconSize = AppTokens.dp.digest.month.icon,
-        illustrationSize = AppTokens.dp.digest.month.image,
+        radius = AppTokens.dp.digest.week.radius,
+        horizontalPadding = AppTokens.dp.digest.week.horizontalPadding,
+        verticalPadding = AppTokens.dp.digest.week.verticalPadding,
+        iconSize = AppTokens.dp.digest.week.icon,
+        illustrationSize = AppTokens.dp.digest.week.image,
     )
 
-    DigestCard(
+    DigestsSection(
         modifier = modifier,
         style = style,
         icon = AppTokens.icons.Trophy,
-        accentColor = AppTokens.colors.brand.color6,
-        title = AppTokens.strings.res(Res.string.monthly),
+        accentColor = AppTokens.colors.brand.color4,
+        title = AppTokens.strings.res(Res.string.weekly),
         subtitle = subtitle,
         metrics = listOf(
             DigestMetric(
@@ -66,10 +70,10 @@ public fun MonthDigestCard(
 
 @AppPreview
 @Composable
-private fun MonthDigestCardPreview() {
+private fun WeekDigestCardPreview() {
     PreviewContainer {
-        MonthDigestCard(
-            value = stubMonthlyDigest(),
+        WeekDigestCard(
+            value = stubWeeklyDigest(),
         )
     }
 }

@@ -1,4 +1,4 @@
-package com.grippo.design.components.metrics
+package com.grippo.design.components.metrics.internal
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -11,12 +11,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 
 @Composable
-public fun MetricSectionPanel(
+internal fun MetricSectionPanel(
     modifier: Modifier = Modifier,
     decoration: (@Composable BoxScope.() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
@@ -26,7 +29,7 @@ public fun MetricSectionPanel(
             .height(intrinsicSize = IntrinsicSize.Min)
             .background(
                 AppTokens.colors.background.card,
-                shape = RoundedCornerShape(AppTokens.dp.home.highlights.panel.radius)
+                shape = RoundedCornerShape(AppTokens.dp.metrics.panel.radius)
             )
     ) {
         decoration?.invoke(this)
@@ -38,5 +41,25 @@ public fun MetricSectionPanel(
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
             content = content
         )
+    }
+}
+
+@AppPreview
+@Composable
+private fun MetricSectionPanelPreview() {
+    PreviewContainer {
+        MetricSectionPanel {
+            Text(
+                text = "Metric section title",
+                style = AppTokens.typography.b12Med(),
+                color = AppTokens.colors.text.secondary
+            )
+
+            Text(
+                text = "Primary metric value",
+                style = AppTokens.typography.h4(),
+                color = AppTokens.colors.text.primary
+            )
+        }
     }
 }

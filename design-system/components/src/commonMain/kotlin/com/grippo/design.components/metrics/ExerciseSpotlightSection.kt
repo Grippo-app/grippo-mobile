@@ -7,9 +7,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.metrics.ExerciseSpotlight
+import com.grippo.core.state.metrics.stubExerciseSpotlight
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
+import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.highlight_focus_exercise
 
@@ -39,6 +43,17 @@ public fun ExerciseSpotlightSection(
                 onClick = onExampleClickProvider,
                 allowUsageLabel = true
             )
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseSpotlightSectionPreview() {
+    PreviewContainer {
+        ExerciseSpotlightSection(
+            value = stubExerciseSpotlight(),
+            onExampleClick = {}
         )
     }
 }

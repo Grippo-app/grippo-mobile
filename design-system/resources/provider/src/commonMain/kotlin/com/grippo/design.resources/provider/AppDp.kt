@@ -77,11 +77,29 @@ public data object AppDp {
     val home: HomeContent = HomeContent
     val digest: Digest = Digest
     val calendar: Calendar = Calendar
+    val performanceTrend: PerformanceTrend = PerformanceTrend
+    val metrics: Metrics = Metrics
 
     public data object Screen {
         val toolbar: Toolbar = Toolbar
         val horizontalPadding: Dp = padding.extraLarge
         val verticalPadding: Dp = padding.extraLarge
+
+        public data object Toolbar {
+            val height: Dp = size.small
+        }
+    }
+
+    public data object ContentPadding {
+        val block: Dp = padding.extraLarge
+        val content: Dp = padding.medium
+        val subContent: Dp = padding.small
+        val text: Dp = padding.extraSmall
+    }
+
+    public data object BottomSheet {
+        val radius: Dp = AppDp.radius.large
+        val toolbar: Toolbar = Toolbar
 
         public data object Toolbar {
             val height: Dp = size.small
@@ -136,10 +154,44 @@ public data object AppDp {
         }
     }
 
-    public data object HomeContent {
-        val lastTraining: LastTraining = LastTraining
+    public data object PerformanceTrend {
+        val status: Status = Status
+        val icon: Dp = AppDp.icon.extraSmall
+
+        public data object Status {
+            val radius: Dp = AppDp.radius.small
+            val horizontalPadding: Dp = padding.small
+            val verticalPadding: Dp = padding.extraSmall
+        }
+    }
+
+    public data object Metrics {
         val highlights: Highlights = Highlights
         val digests: Digests = Digests
+        val panel: Panel = Panel
+        val status: Status = Status
+
+        public data object Highlights {
+            val icon: Dp = AppDp.icon.medium
+        }
+
+        public data object Status {
+            val radius: Dp = AppDp.radius.small
+            val horizontalPadding: Dp = padding.small
+            val verticalPadding: Dp = padding.extraSmall
+        }
+
+        public data object Panel {
+            val radius: Dp = AppDp.radius.small
+        }
+
+        public data object Digests {
+            val icon: Dp = AppDp.icon.medium
+        }
+    }
+
+    public data object HomeContent {
+        val lastTraining: LastTraining = LastTraining
         val empty: Empty = Empty
 
         public data object Empty {
@@ -151,47 +203,6 @@ public data object AppDp {
             val horizontalPadding: Dp = padding.large
             val verticalPadding: Dp = padding.large
             val image: Dp = icon.xxxxLarge
-        }
-
-        public data object Highlights {
-            val icon: Dp = AppDp.icon.medium
-            val status: Status = Status
-            val performance: Performance = Performance
-            val panel: Panel = Panel
-
-            public data object Panel {
-                val radius: Dp = AppDp.radius.small
-            }
-
-            public data object Status {
-                val radius: Dp = AppDp.radius.small
-                val horizontalPadding: Dp = padding.small
-                val verticalPadding: Dp = padding.extraSmall
-            }
-
-            public data object Performance {
-                val icon: Dp = AppDp.icon.extraSmall
-            }
-        }
-
-        public data object Digests {
-            val icon: Dp = AppDp.icon.medium
-        }
-    }
-
-    public data object ContentPadding {
-        val block: Dp = padding.extraLarge
-        val content: Dp = padding.medium
-        val subContent: Dp = padding.small
-        val text: Dp = padding.extraSmall
-    }
-
-    public data object BottomSheet {
-        val radius: Dp = AppDp.radius.large
-        val toolbar: Toolbar = Toolbar
-
-        public data object Toolbar {
-            val height: Dp = size.small
         }
     }
 

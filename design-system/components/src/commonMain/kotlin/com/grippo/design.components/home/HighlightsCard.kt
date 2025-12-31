@@ -3,6 +3,7 @@ package com.grippo.design.components.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -17,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.metrics.Highlight
 import com.grippo.core.state.metrics.PerformanceMetricState
@@ -71,7 +71,6 @@ public fun HighlightsCard(
             HighlightStoryType.Momentum -> AppTokens.strings.res(Res.string.highlight_type_momentum_hint)
             HighlightStoryType.Comeback -> AppTokens.strings.res(Res.string.highlight_type_comeback_hint)
         }
-        val storyChipShape = RoundedCornerShape(AppTokens.dp.home.highlights.status.radius)
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -79,7 +78,7 @@ public fun HighlightsCard(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
-                modifier = Modifier.size(AppTokens.dp.home.highlights.icon),
+                modifier = Modifier.size(AppTokens.dp.metrics.highlights.icon),
                 imageVector = AppTokens.icons.Intensity,
                 tint = AppTokens.colors.semantic.warning,
                 contentDescription = null
@@ -96,14 +95,13 @@ public fun HighlightsCard(
 
             Text(
                 modifier = Modifier
-                    .clip(storyChipShape)
                     .background(
                         AppTokens.colors.text.primary.copy(alpha = 0.08f),
-                        shape = storyChipShape
+                        shape = RoundedCornerShape(AppTokens.dp.metrics.status.radius)
                     )
                     .padding(
-                        horizontal = AppTokens.dp.home.highlights.status.horizontalPadding,
-                        vertical = AppTokens.dp.home.highlights.status.verticalPadding
+                        horizontal = AppTokens.dp.metrics.status.horizontalPadding,
+                        vertical = AppTokens.dp.metrics.status.verticalPadding
                     ),
                 text = "$storyTitle · $storyHint",
                 style = AppTokens.typography.b12Semi(),
@@ -131,6 +129,7 @@ public fun HighlightsCard(
 
         Row(
             modifier = Modifier
+                .height(intrinsicSize = IntrinsicSize.Max)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(spacing),
         ) {
@@ -151,7 +150,7 @@ public fun HighlightsCard(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight(),
-                value = value
+                value = value.streak
             )
         }
 

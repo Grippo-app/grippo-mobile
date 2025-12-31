@@ -11,6 +11,7 @@ import com.grippo.design.resources.provider.icons.Intensity
 import com.grippo.design.resources.provider.icons.Repeat
 import com.grippo.design.resources.provider.icons.Timer
 import com.grippo.design.resources.provider.icons.Volume
+import kotlin.time.Duration.Companion.minutes
 
 @Immutable
 public enum class PerformanceMetricTypeState {
@@ -87,4 +88,65 @@ public enum class PerformanceTrendStatusState {
     Improved,
     Stable,
     Declined
+}
+
+public fun stubPerformanceMetrics(): List<PerformanceMetricState> {
+    return listOf(
+        PerformanceMetricState.Volume(
+            deltaPercentage = 24,
+            current = VolumeFormatState.of(1_200f),
+            average = VolumeFormatState.of(900f),
+            best = VolumeFormatState.of(1_200f),
+            status = PerformanceTrendStatusState.Record
+        ),
+        PerformanceMetricState.Volume(
+            deltaPercentage = -12,
+            current = VolumeFormatState.of(780f),
+            average = VolumeFormatState.of(890f),
+            best = VolumeFormatState.of(1_050f),
+            status = PerformanceTrendStatusState.Declined
+        ),
+        PerformanceMetricState.Duration(
+            deltaPercentage = -8,
+            current = 65.minutes,
+            average = 70.minutes,
+            best = 75.minutes,
+            status = PerformanceTrendStatusState.Declined
+        ),
+        PerformanceMetricState.Duration(
+            deltaPercentage = 15,
+            current = 72.minutes,
+            average = 68.minutes,
+            best = 80.minutes,
+            status = PerformanceTrendStatusState.Improved
+        ),
+        PerformanceMetricState.Repetitions(
+            deltaPercentage = 12,
+            current = RepetitionsFormatState.of(84),
+            average = RepetitionsFormatState.of(75),
+            best = RepetitionsFormatState.of(92),
+            status = PerformanceTrendStatusState.Improved
+        ),
+        PerformanceMetricState.Repetitions(
+            deltaPercentage = 0,
+            current = RepetitionsFormatState.of(70),
+            average = RepetitionsFormatState.of(70),
+            best = RepetitionsFormatState.of(85),
+            status = PerformanceTrendStatusState.Stable
+        ),
+        PerformanceMetricState.Intensity(
+            deltaPercentage = 3,
+            current = IntensityFormatState.of(36f),
+            average = IntensityFormatState.of(35f),
+            best = IntensityFormatState.of(42f),
+            status = PerformanceTrendStatusState.Stable
+        ),
+        PerformanceMetricState.Intensity(
+            deltaPercentage = 9,
+            current = IntensityFormatState.of(40f),
+            average = IntensityFormatState.of(34f),
+            best = IntensityFormatState.of(43f),
+            status = PerformanceTrendStatusState.Record
+        )
+    )
 }

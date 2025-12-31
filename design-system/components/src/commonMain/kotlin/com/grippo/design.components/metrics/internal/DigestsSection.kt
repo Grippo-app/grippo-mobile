@@ -1,4 +1,4 @@
-package com.grippo.design.components.metrics.digest
+package com.grippo.design.components.metrics.internal
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,9 +27,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import com.grippo.design.components.modifiers.spot
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.icons.Trophy
 
 @Composable
-internal fun DigestCard(
+internal fun DigestsSection(
     modifier: Modifier = Modifier,
     style: DigestCardStyle,
     icon: ImageVector,
@@ -187,7 +190,7 @@ private fun DigestMetricPanel(
     value: String,
     accentColor: Color,
 ) {
-    val shape = RoundedCornerShape(AppTokens.dp.home.highlights.panel.radius)
+    val shape = RoundedCornerShape(AppTokens.dp.metrics.panel.radius)
 
     Column(
         modifier = modifier
@@ -229,3 +232,31 @@ internal data class DigestCardStyle(
     val iconSize: Dp,
     val illustrationSize: Dp,
 )
+
+@AppPreview
+@Composable
+private fun DigestsSectionPreview() {
+    PreviewContainer {
+        val style = DigestCardStyle(
+            radius = AppTokens.dp.digest.week.radius,
+            horizontalPadding = AppTokens.dp.digest.week.horizontalPadding,
+            verticalPadding = AppTokens.dp.digest.week.verticalPadding,
+            iconSize = AppTokens.dp.digest.week.icon,
+            illustrationSize = AppTokens.dp.digest.week.image,
+        )
+
+        DigestsSection(
+            style = style,
+            icon = AppTokens.icons.Trophy,
+            accentColor = AppTokens.colors.brand.color4,
+            title = "Weekly achievements",
+            subtitle = "12-19 Jan",
+            metrics = listOf(
+                DigestMetric(label = "Trainings", value = "5"),
+                DigestMetric(label = "Sets", value = "42"),
+                DigestMetric(label = "Duration", value = "05:40"),
+                DigestMetric(label = "Volume", value = "12k"),
+            )
+        )
+    }
+}

@@ -18,7 +18,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.metrics.PerformanceMetricState
 import com.grippo.core.state.metrics.PerformanceMetricTypeState
 import com.grippo.core.state.metrics.PerformanceTrendStatusState
+import com.grippo.core.state.metrics.stubPerformanceMetrics
+import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.duration
 import com.grippo.design.resources.provider.highlight_best_value
@@ -90,7 +94,7 @@ public fun PerformanceTrendSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                modifier = Modifier.size(AppTokens.dp.home.highlights.performance.icon),
+                modifier = Modifier.size(AppTokens.dp.performanceTrend.icon),
                 imageVector = metric.type.icon(),
                 tint = AppTokens.colors.icon.secondary,
                 contentDescription = null
@@ -154,15 +158,15 @@ private fun PerformanceTrendChip(status: PerformanceTrendStatusState) {
 
     val color = performanceStatusColor(status)
 
-    val shape = RoundedCornerShape(AppTokens.dp.home.highlights.status.radius)
+    val shape = RoundedCornerShape(AppTokens.dp.performanceTrend.status.radius)
 
     Text(
         modifier = Modifier
             .clip(shape)
             .background(color.copy(alpha = 0.2f), shape = shape)
             .padding(
-                horizontal = AppTokens.dp.home.highlights.status.horizontalPadding,
-                vertical = AppTokens.dp.home.highlights.status.verticalPadding
+                horizontal = AppTokens.dp.performanceTrend.status.horizontalPadding,
+                vertical = AppTokens.dp.performanceTrend.status.verticalPadding
             ),
         text = label,
         style = AppTokens.typography.b11Semi(),
@@ -186,5 +190,21 @@ private fun formatTrendDelta(delta: Int): String {
         delta > 0 -> "+${delta}%"
         delta < 0 -> "${delta}%"
         else -> "0%"
+    }
+}
+
+@AppPreview
+@Composable
+private fun PerformanceTrendSectionPreview() {
+    PreviewContainer {
+        PerformanceTrendSection(
+            metric = stubPerformanceMetrics().random()
+        )
+        PerformanceTrendSection(
+            metric = stubPerformanceMetrics().random()
+        )
+        PerformanceTrendSection(
+            metric = stubPerformanceMetrics().random()
+        )
     }
 }

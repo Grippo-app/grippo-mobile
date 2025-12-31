@@ -12,7 +12,7 @@ public data class ExerciseSpotlight(
     val sessionCount: Int,
 )
 
-internal fun stubExerciseSpotlight(): ExerciseSpotlight {
+public fun stubExerciseSpotlight(): ExerciseSpotlight {
     return ExerciseSpotlight(
         exercise = stubExerciseExample(),
         totalVolume = VolumeFormatState.of(1_200f),
