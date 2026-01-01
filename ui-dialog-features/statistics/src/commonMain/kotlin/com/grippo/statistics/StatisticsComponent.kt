@@ -23,6 +23,7 @@ public class StatisticsComponent(
             stringProvider = getKoin().get(),
             trainingFeature = getKoin().get(),
             muscleLoadingUseCase = getKoin().get(),
+            exerciseDistributionUseCase = getKoin().get(),
         )
     }
 

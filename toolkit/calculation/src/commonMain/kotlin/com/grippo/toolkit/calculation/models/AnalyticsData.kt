@@ -28,24 +28,3 @@ public sealed interface Metric {
     public data object TONNAGE : Metric
     public data object REPS : Metric
 }
-
-@Immutable
-public sealed interface DistributionWeighting {
-    public data object Count : DistributionWeighting
-    public data object Sets : DistributionWeighting
-    public data object Reps : DistributionWeighting
-    public data object Volume : DistributionWeighting
-}
-
-@Immutable
-public data class DistributionSlice(
-    val id: String,
-    val label: String,
-    val value: Float,
-    val color: Color,
-)
-
-@Immutable
-public data class DistributionBreakdown(
-    val slices: List<DistributionSlice>,
-)

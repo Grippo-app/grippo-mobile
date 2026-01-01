@@ -8,6 +8,7 @@ import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.TrainingState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
+import com.grippo.data.features.api.metrics.ExerciseDistributionUseCase
 import com.grippo.data.features.api.metrics.MuscleLoadingUseCase
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
@@ -17,7 +18,10 @@ import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.domain.state.exercise.example.toState
+import com.grippo.domain.state.metrics.toCategoryDistributionState
+import com.grippo.domain.state.metrics.toForceTypeDistributionState
 import com.grippo.domain.state.metrics.toState
+import com.grippo.domain.state.metrics.toWeightTypeDistributionState
 import com.grippo.domain.state.muscles.toState
 import com.grippo.domain.state.training.toState
 import com.grippo.state.domain.training.toDomain
@@ -44,6 +48,7 @@ public class StatisticsViewModel(
     private val exerciseExampleFeature: ExerciseExampleFeature,
     private val trainingFeature: TrainingFeature,
     private val muscleLoadingUseCase: MuscleLoadingUseCase,
+    private val exerciseDistributionUseCase: ExerciseDistributionUseCase,
 ) : BaseViewModel<StatisticsState, StatisticsDirection, StatisticsLoader>(
     StatisticsState(
         mode = when (config) {
@@ -154,20 +159,19 @@ public class StatisticsViewModel(
             trainings = trainings
         )
 
-        val categoryDistribution = analytics.categoryDistributionFromTrainings(
-            trainings = trainings,
-            range = range
-        )
+        val setTrainings = trainings.toDomain()
 
-        val weightTypeDistribution = analytics.weightTypeDistributionFromTrainings(
-            trainings = trainings,
-            range = range
-        )
+        val categoryDistribution = exerciseDistributionUseCase
+            .categoriesFromTrainings(setTrainings)
+            .toCategoryDistributionState()
 
-        val forceTypeDistribution = analytics.forceTypeDistributionFromTrainings(
-            trainings = trainings,
-            range = range
-        )
+        val weightTypeDistribution = exerciseDistributionUseCase
+            .weightTypesFromTrainings(setTrainings)
+            .toWeightTypeDistributionState()
+
+        val forceTypeDistribution = exerciseDistributionUseCase
+            .forceTypesFromTrainings(setTrainings)
+            .toForceTypeDistributionState()
 
         val exerciseVolume = analytics.volumeFromTrainings(
             trainings = trainings,
@@ -175,7 +179,7 @@ public class StatisticsViewModel(
         )
 
         val muscleLoad = muscleLoadingUseCase
-            .fromSetTrainings(trainings.toDomain())
+            .fromSetTrainings(setTrainings)
             .toState()
 
         val heatmap = analytics.heatmapFromTrainings(
@@ -210,23 +214,25 @@ public class StatisticsViewModel(
             exercises = exercises
         )
 
-        val categoryDistribution = analytics.categoryDistributionFromExercises(
-            exercises = exercises
-        )
+        val setExercises = exercises.toDomain()
 
-        val weightTypeDistribution = analytics.weightTypeDistributionFromExercises(
-            exercises = exercises
-        )
+        val categoryDistribution = exerciseDistributionUseCase
+            .categoriesFromExercises(setExercises)
+            .toCategoryDistributionState()
 
-        val forceTypeDistribution = analytics.forceTypeDistributionFromExercises(
-            exercises = exercises
-        )
+        val weightTypeDistribution = exerciseDistributionUseCase
+            .weightTypesFromExercises(setExercises)
+            .toWeightTypeDistributionState()
+
+        val forceTypeDistribution = exerciseDistributionUseCase
+            .forceTypesFromExercises(setExercises)
+            .toForceTypeDistributionState()
 
         val exerciseVolume = analytics.volumeFromExercises(
             exercises = exercises
         )
         val muscleLoad = muscleLoadingUseCase
-            .fromExercises(exercises.toDomain())
+            .fromExercises(setExercises)
             .toState()
 
         update {
@@ -295,4 +301,5 @@ public class StatisticsViewModel(
             )
         }
     }
+
 }

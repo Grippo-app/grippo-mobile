@@ -150,6 +150,9 @@
     <string name="statistics">Statistics</string>
     <string name="value_statistics">%1$s statistics</string>
     <string name="trends">Trends</string>
+    <string name="exercise_categories">Exercise categories</string>
+    <string name="exercise_weight_types">Weight types</string>
+    <string name="exercise_force_types">Force types</string>
     <string name="equipments">Equipments</string>
     <string name="muscles">Muscles</string>
     <string name="weight_history">Weight History</string>

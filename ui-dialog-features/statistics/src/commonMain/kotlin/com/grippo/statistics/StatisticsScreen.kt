@@ -21,10 +21,12 @@ import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.metrics.MuscleLoadBreakdown
 import com.grippo.core.state.metrics.MuscleLoadEntry
 import com.grippo.core.state.metrics.MuscleLoadSummary
+import com.grippo.core.state.metrics.stubCategoryDistributionState
+import com.grippo.core.state.metrics.stubForceDistributionState
+import com.grippo.core.state.metrics.stubWeightDistributionState
 import com.grippo.core.state.muscles.MuscleEnumState
 import com.grippo.core.state.trainings.stubMetrics
 import com.grippo.core.state.trainings.stubTraining
-import com.grippo.design.components.chart.DistributionPieChart
 import com.grippo.design.components.chart.MetricBarChart
 import com.grippo.design.components.chart.MuscleHeatmapChart
 import com.grippo.design.components.chip.ChipSize
@@ -35,18 +37,22 @@ import com.grippo.design.components.chip.RepetitionsChipStyle
 import com.grippo.design.components.chip.VolumeChip
 import com.grippo.design.components.chip.VolumeChipStyle
 import com.grippo.design.components.loading.Loader
+import com.grippo.design.components.metrics.ExerciseDistributionChart
+import com.grippo.design.components.metrics.ForceTypeDistributionChart
 import com.grippo.design.components.metrics.MuscleLoading
+import com.grippo.design.components.metrics.WeightTypeDistributionChart
 import com.grippo.design.components.spliter.ContentSpliter
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.exercise_categories
+import com.grippo.design.resources.provider.exercise_force_types
+import com.grippo.design.resources.provider.exercise_weight_types
 import com.grippo.design.resources.provider.muscles
 import com.grippo.design.resources.provider.statistics
 import com.grippo.design.resources.provider.trends
 import com.grippo.design.resources.provider.value_statistics
-import com.grippo.toolkit.calculation.models.DistributionBreakdown
-import com.grippo.toolkit.calculation.models.DistributionSlice
 import com.grippo.toolkit.calculation.models.MetricPoint
 import com.grippo.toolkit.calculation.models.MetricSeries
 import com.grippo.toolkit.calculation.models.MuscleLoadMatrix
@@ -187,35 +193,32 @@ internal fun StatisticsScreen(
                         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
                     ) {
                         state.categoryDistribution
-                            ?.takeIf { it.slices.isNotEmpty() }
-                            ?.let { data ->
-                                DistributionPieChart(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .aspectRatio(1f),
-                                    value = data
+                            ?.takeIf { it.entries.isNotEmpty() }
+                            ?.let { distribution ->
+                                ExerciseDistributionChart(
+                                    modifier = Modifier.weight(1f),
+                                    title = AppTokens.strings.res(Res.string.exercise_categories),
+                                    state = distribution
                                 )
                             }
 
                         state.weightTypeDistribution
-                            ?.takeIf { it.slices.isNotEmpty() }
-                            ?.let { data ->
-                                DistributionPieChart(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .aspectRatio(1f),
-                                    value = data
+                            ?.takeIf { it.entries.isNotEmpty() }
+                            ?.let { distribution ->
+                                WeightTypeDistributionChart(
+                                    modifier = Modifier.weight(1f),
+                                    title = AppTokens.strings.res(Res.string.exercise_weight_types),
+                                    state = distribution
                                 )
                             }
 
                         state.forceTypeDistribution
-                            ?.takeIf { it.slices.isNotEmpty() }
-                            ?.let { data ->
-                                DistributionPieChart(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .aspectRatio(1f),
-                                    value = data
+                            ?.takeIf { it.entries.isNotEmpty() }
+                            ?.let { distribution ->
+                                ForceTypeDistributionChart(
+                                    modifier = Modifier.weight(1f),
+                                    title = AppTokens.strings.res(Res.string.exercise_force_types),
+                                    state = distribution
                                 )
                             }
                     }
@@ -280,74 +283,9 @@ private fun ScreenPreview() {
             )
         )
 
-        val categoryDistribution = DistributionBreakdown(
-            slices = listOf(
-                DistributionSlice(
-                    id = "category_push",
-                    label = "Push",
-                    value = 40f,
-                    color = Color(0xFF4C83FF)
-                ),
-                DistributionSlice(
-                    id = "category_pull",
-                    label = "Pull",
-                    value = 35f,
-                    color = Color(0xFF5AD4A3)
-                ),
-                DistributionSlice(
-                    id = "category_legs",
-                    label = "Legs",
-                    value = 25f,
-                    color = Color(0xFFF6B93C)
-                )
-            )
-        )
-
-        val weightDistribution = DistributionBreakdown(
-            slices = listOf(
-                DistributionSlice(
-                    id = "weight_free",
-                    label = "Free weights",
-                    value = 55f,
-                    color = Color(0xFFE76F51)
-                ),
-                DistributionSlice(
-                    id = "weight_machines",
-                    label = "Machines",
-                    value = 30f,
-                    color = Color(0xFF7B61FF)
-                ),
-                DistributionSlice(
-                    id = "weight_body",
-                    label = "Bodyweight",
-                    value = 15f,
-                    color = Color(0xFF34AADC)
-                )
-            )
-        )
-
-        val forceDistribution = DistributionBreakdown(
-            slices = listOf(
-                DistributionSlice(
-                    id = "force_push",
-                    label = "Push",
-                    value = 50f,
-                    color = Color(0xFF5AD4A3)
-                ),
-                DistributionSlice(
-                    id = "force_pull",
-                    label = "Pull",
-                    value = 30f,
-                    color = Color(0xFF4C83FF)
-                ),
-                DistributionSlice(
-                    id = "force_iso",
-                    label = "Isometric",
-                    value = 20f,
-                    color = Color(0xFFF6B93C)
-                )
-            )
-        )
+        val categoryDistribution = stubCategoryDistributionState()
+        val weightDistribution = stubWeightDistributionState()
+        val forceDistribution = stubForceDistributionState()
 
         val muscleLoad = MuscleLoadSummary(
             perGroup = MuscleLoadBreakdown(

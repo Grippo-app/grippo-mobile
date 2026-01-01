@@ -170,6 +170,7 @@ public data object AppDp {
         val digests: Digests = Digests
         val panel: Panel = Panel
         val status: Status = Status
+        val distribution: Distribution = Distribution
 
         public data object Highlights {
             val icon: Dp = AppDp.icon.medium
@@ -187,6 +188,10 @@ public data object AppDp {
 
         public data object Digests {
             val icon: Dp = AppDp.icon.medium
+        }
+
+        public data object Distribution {
+            val size: Dp = icon.xxxLarge
         }
     }
 

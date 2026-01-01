@@ -10,14 +10,11 @@ import com.grippo.core.state.trainings.TrainingState
 import com.grippo.design.resources.provider.muscles.MuscleColorPreset
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
-import com.grippo.toolkit.calculation.internal.distribution.DistributionCalculator
 import com.grippo.toolkit.calculation.internal.muscle.MuscleImageBuilder
 import com.grippo.toolkit.calculation.internal.muscle.TemporalHeatmapCalculator
 import com.grippo.toolkit.calculation.internal.strength.Estimated1RMAnalytics
 import com.grippo.toolkit.calculation.internal.training.MetricsAggregator
 import com.grippo.toolkit.calculation.internal.training.VolumeAnalytics
-import com.grippo.toolkit.calculation.models.DistributionBreakdown
-import com.grippo.toolkit.calculation.models.DistributionWeighting
 import com.grippo.toolkit.calculation.models.Metric
 import com.grippo.toolkit.calculation.models.MetricSeries
 import com.grippo.toolkit.calculation.models.MuscleLoadMatrix
@@ -32,7 +29,6 @@ public class AnalyticsApi(
     stringProvider: StringProvider,
     colorProvider: ColorProvider,
 ) {
-    private val distributionCalculator = DistributionCalculator(stringProvider, colorProvider)
     private val volumeAnalytics = VolumeAnalytics(colorProvider, stringProvider)
     private val heatmapCalculator = TemporalHeatmapCalculator(stringProvider)
     private val estimated1RMAnalytics = Estimated1RMAnalytics(colorProvider, stringProvider)
@@ -89,63 +85,6 @@ public class AnalyticsApi(
         range: DateRange,
     ): MetricSeries = estimated1RMAnalytics
         .computeEstimated1RmFromTrainings(trainings, range)
-
-    /**
-     * Returns a distribution of exercise categories for the provided [exercises].
-     */
-    public suspend fun categoryDistributionFromExercises(
-        exercises: List<ExerciseState>,
-        weighting: DistributionWeighting = DistributionWeighting.Count,
-    ): DistributionBreakdown = distributionCalculator
-        .calculateCategoryDistributionFromExercises(exercises, weighting)
-
-    /**
-     * Returns a distribution of exercise categories drawn from [trainings] limited by [range].
-     */
-    public suspend fun categoryDistributionFromTrainings(
-        trainings: List<TrainingState>,
-        range: DateRange,
-        weighting: DistributionWeighting = DistributionWeighting.Count,
-    ): DistributionBreakdown = distributionCalculator
-        .calculateCategoryDistributionFromTrainings(trainings, range, weighting)
-
-    /**
-     * Returns a distribution of weight types for the provided [exercises].
-     */
-    public suspend fun weightTypeDistributionFromExercises(
-        exercises: List<ExerciseState>,
-        weighting: DistributionWeighting = DistributionWeighting.Count,
-    ): DistributionBreakdown = distributionCalculator
-        .calculateWeightTypeDistributionFromExercises(exercises, weighting)
-
-    /**
-     * Returns a distribution of weight types collected from [trainings] within [range].
-     */
-    public suspend fun weightTypeDistributionFromTrainings(
-        trainings: List<TrainingState>,
-        range: DateRange,
-        weighting: DistributionWeighting = DistributionWeighting.Count,
-    ): DistributionBreakdown = distributionCalculator
-        .calculateWeightTypeDistributionFromTrainings(trainings, range, weighting)
-
-    /**
-     * Returns a distribution of force types for the provided [exercises].
-     */
-    public suspend fun forceTypeDistributionFromExercises(
-        exercises: List<ExerciseState>,
-        weighting: DistributionWeighting = DistributionWeighting.Count,
-    ): DistributionBreakdown = distributionCalculator
-        .calculateForceTypeDistributionFromExercises(exercises, weighting)
-
-    /**
-     * Returns a distribution of force types gathered from [trainings] within [range].
-     */
-    public suspend fun forceTypeDistributionFromTrainings(
-        trainings: List<TrainingState>,
-        range: DateRange,
-        weighting: DistributionWeighting = DistributionWeighting.Count,
-    ): DistributionBreakdown = distributionCalculator
-        .calculateForceTypeDistributionFromTrainings(trainings, range, weighting)
 
     /**
      * Aggregates training metrics from a list of iterations.

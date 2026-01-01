@@ -150,6 +150,9 @@
     <string name="statistics">Статистика</string>
     <string name="value_statistics">%1$s — статистика</string>
     <string name="trends">Тренди</string>
+    <string name="exercise_categories">Категорії вправ</string>
+    <string name="exercise_weight_types">Типи ваги</string>
+    <string name="exercise_force_types">Типи зусиль</string>
     <string name="equipments">Обладнання</string>
     <string name="muscles">М’язи</string>
     <string name="weight_history">Історія ваги</string>

@@ -1,14 +1,17 @@
 package com.grippo.statistics
 
 import androidx.compose.runtime.Immutable
+import com.grippo.core.state.examples.CategoryEnumState
 import com.grippo.core.state.examples.ExerciseExampleState
+import com.grippo.core.state.examples.ForceTypeEnumState
+import com.grippo.core.state.examples.WeightTypeEnumState
+import com.grippo.core.state.metrics.ExerciseDistributionState
 import com.grippo.core.state.metrics.MuscleLoadSummary
 import com.grippo.core.state.muscles.MuscleGroupState
 import com.grippo.core.state.muscles.MuscleRepresentationState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.TrainingMetrics
 import com.grippo.core.state.trainings.TrainingState
-import com.grippo.toolkit.calculation.models.DistributionBreakdown
 import com.grippo.toolkit.calculation.models.MetricSeries
 import com.grippo.toolkit.calculation.models.MuscleLoadMatrix
 import com.grippo.toolkit.date.utils.DateRange
@@ -32,9 +35,9 @@ public data class StatisticsState(
     val muscleLoad: MuscleLoadSummary? = null,
 
     // === Exercise example distributions (pie) ===
-    val categoryDistribution: DistributionBreakdown? = null,
-    val weightTypeDistribution: DistributionBreakdown? = null,
-    val forceTypeDistribution: DistributionBreakdown? = null,
+    val categoryDistribution: ExerciseDistributionState<CategoryEnumState>? = null,
+    val weightTypeDistribution: ExerciseDistributionState<WeightTypeEnumState>? = null,
+    val forceTypeDistribution: ExerciseDistributionState<ForceTypeEnumState>? = null,
 
     // === Temporal heatmap ===
     val temporalHeatmap: MuscleLoadMatrix? = null,
