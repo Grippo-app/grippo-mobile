@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -14,7 +13,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
@@ -23,11 +21,11 @@ import com.grippo.core.state.metrics.MuscleLoadEntry
 import com.grippo.core.state.metrics.MuscleLoadSummary
 import com.grippo.core.state.metrics.stubCategoryDistributionState
 import com.grippo.core.state.metrics.stubForceDistributionState
+import com.grippo.core.state.metrics.stubVolumeSeriesState
 import com.grippo.core.state.metrics.stubWeightDistributionState
 import com.grippo.core.state.muscles.MuscleEnumState
 import com.grippo.core.state.trainings.stubMetrics
 import com.grippo.core.state.trainings.stubTraining
-import com.grippo.design.components.chart.MetricBarChart
 import com.grippo.design.components.chart.MuscleHeatmapChart
 import com.grippo.design.components.chip.ChipSize
 import com.grippo.design.components.chip.IntensityChip
@@ -40,6 +38,7 @@ import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.ExerciseDistributionChart
 import com.grippo.design.components.metrics.ForceTypeDistributionChart
 import com.grippo.design.components.metrics.MuscleLoading
+import com.grippo.design.components.metrics.VolumeMetricChart
 import com.grippo.design.components.metrics.WeightTypeDistributionChart
 import com.grippo.design.components.spliter.ContentSpliter
 import com.grippo.design.core.AppTokens
@@ -53,8 +52,6 @@ import com.grippo.design.resources.provider.muscles
 import com.grippo.design.resources.provider.statistics
 import com.grippo.design.resources.provider.trends
 import com.grippo.design.resources.provider.value_statistics
-import com.grippo.toolkit.calculation.models.MetricPoint
-import com.grippo.toolkit.calculation.models.MetricSeries
 import com.grippo.toolkit.calculation.models.MuscleLoadMatrix
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableSet
@@ -169,14 +166,12 @@ internal fun StatisticsScreen(
                 }
 
                 state.exerciseVolume
-                    ?.takeIf { it.points.isNotEmpty() }
+                    ?.takeIf { it.entries.isNotEmpty() }
                     ?.let { data ->
                         item(key = "exercise_volume") {
-                            MetricBarChart(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .aspectRatio(1.7f),
-                                value = data,
+                            VolumeMetricChart(
+                                modifier = Modifier.fillMaxWidth(),
+                                state = data,
                             )
                         }
                     }
@@ -271,17 +266,7 @@ private fun ScreenPreview() {
             range = DateTimeUtils.thisWeek()
         )
 
-        val exerciseVolume = MetricSeries(
-            points = listOf(
-                MetricPoint(label = "Mon", value = 12f, color = Color(0xFF7B61FF)),
-                MetricPoint(label = "Tue", value = 18f, color = Color(0xFF5AD4A3)),
-                MetricPoint(label = "Wed", value = 9f, color = Color(0xFFF6B93C)),
-                MetricPoint(label = "Thu", value = 22f, color = Color(0xFF4C83FF)),
-                MetricPoint(label = "Fri", value = 15f, color = Color(0xFFE76F51)),
-                MetricPoint(label = "Sat", value = 11f, color = Color(0xFF34AADC)),
-                MetricPoint(label = "Sun", value = 6f, color = Color(0xFF8E5CF6)),
-            )
-        )
+        val exerciseVolume = stubVolumeSeriesState()
 
         val categoryDistribution = stubCategoryDistributionState()
         val weightDistribution = stubWeightDistributionState()

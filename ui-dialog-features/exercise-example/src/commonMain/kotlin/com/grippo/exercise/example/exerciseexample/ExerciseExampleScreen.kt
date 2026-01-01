@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -23,7 +22,6 @@ import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.core.state.trainings.stubExercises
 import com.grippo.design.components.achievement.AchievementsCard
-import com.grippo.design.components.chart.MetricBarChart
 import com.grippo.design.components.chip.Chip
 import com.grippo.design.components.chip.ChipLabel
 import com.grippo.design.components.chip.ChipSize
@@ -34,6 +32,7 @@ import com.grippo.design.components.example.DescriptionText
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
 import com.grippo.design.components.metrics.MuscleLoading
+import com.grippo.design.components.metrics.VolumeMetricChart
 import com.grippo.design.components.spliter.ContentSpliter
 import com.grippo.design.components.training.ExerciseCard
 import com.grippo.design.components.training.ExerciseCardStyle
@@ -190,14 +189,13 @@ internal fun ExerciseExampleScreen(
                 Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
                 state.exerciseVolume
-                    ?.takeIf { it.points.isNotEmpty() }
+                    ?.takeIf { it.entries.isNotEmpty() }
                     ?.let { data ->
-                        MetricBarChart(
+                        VolumeMetricChart(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                                .aspectRatio(1.7f),
-                            value = data,
+                                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                            state = data,
                         )
 
                         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))

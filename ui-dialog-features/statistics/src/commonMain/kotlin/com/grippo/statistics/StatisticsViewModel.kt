@@ -10,6 +10,7 @@ import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.metrics.ExerciseDistributionUseCase
 import com.grippo.data.features.api.metrics.MuscleLoadingUseCase
+import com.grippo.data.features.api.metrics.VolumeSeriesUseCase
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.data.features.api.training.TrainingFeature
@@ -49,6 +50,7 @@ public class StatisticsViewModel(
     private val trainingFeature: TrainingFeature,
     private val muscleLoadingUseCase: MuscleLoadingUseCase,
     private val exerciseDistributionUseCase: ExerciseDistributionUseCase,
+    private val volumeSeriesUseCase: VolumeSeriesUseCase,
 ) : BaseViewModel<StatisticsState, StatisticsDirection, StatisticsLoader>(
     StatisticsState(
         mode = when (config) {
@@ -173,11 +175,6 @@ public class StatisticsViewModel(
             .forceTypesFromTrainings(setTrainings)
             .toForceTypeDistributionState()
 
-        val exerciseVolume = analytics.volumeFromTrainings(
-            trainings = trainings,
-            range = range
-        )
-
         val muscleLoad = muscleLoadingUseCase
             .fromSetTrainings(setTrainings)
             .toState()
@@ -192,7 +189,6 @@ public class StatisticsViewModel(
         update {
             it.copy(
                 totalMetrics = totalMetrics,
-                exerciseVolume = exerciseVolume,
                 categoryDistribution = categoryDistribution,
                 weightTypeDistribution = weightTypeDistribution,
                 forceTypeDistribution = forceTypeDistribution,
@@ -228,9 +224,6 @@ public class StatisticsViewModel(
             .forceTypesFromExercises(setExercises)
             .toForceTypeDistributionState()
 
-        val exerciseVolume = analytics.volumeFromExercises(
-            exercises = exercises
-        )
         val muscleLoad = muscleLoadingUseCase
             .fromExercises(setExercises)
             .toState()
@@ -238,7 +231,6 @@ public class StatisticsViewModel(
         update {
             it.copy(
                 totalMetrics = totalMetrics,
-                exerciseVolume = exerciseVolume,
                 categoryDistribution = categoryDistribution,
                 weightTypeDistribution = weightTypeDistribution,
                 forceTypeDistribution = forceTypeDistribution,
@@ -273,16 +265,18 @@ public class StatisticsViewModel(
     }
 
     private fun provideTrainings(range: DateRange, list: List<Training>) {
-        val trainings = list
+        val trainings = list.toState().toPersistentList()
+        val volume = volumeSeriesUseCase
+            .fromTrainings(list)
             .toState()
-            .toPersistentList()
 
-        update {
-            it.copy(
+        update { current ->
+            current.copy(
                 mode = StatisticsMode.Trainings(
                     trainings = trainings,
                     range = range
-                )
+                ),
+                exerciseVolume = volume
             )
         }
     }
@@ -293,11 +287,15 @@ public class StatisticsViewModel(
             ?.exercises
             ?: persistentListOf()
 
+        val volume = training
+            ?.let { value -> volumeSeriesUseCase.fromExercises(value.exercises).toState() }
+
         update {
             it.copy(
                 mode = StatisticsMode.Exercises(
                     exercises = exercises
-                )
+                ),
+                exerciseVolume = volume
             )
         }
     }

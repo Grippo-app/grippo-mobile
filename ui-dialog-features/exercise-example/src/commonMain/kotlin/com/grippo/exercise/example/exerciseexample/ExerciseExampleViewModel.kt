@@ -6,14 +6,12 @@ import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.exercise.metrics.ExerciseMetricsFeature
 import com.grippo.data.features.api.metrics.MuscleLoadingUseCase
+import com.grippo.data.features.api.metrics.VolumeSeriesUseCase
 import com.grippo.data.features.api.training.models.Exercise
-import com.grippo.design.resources.provider.providers.ColorProvider
-import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.domain.state.achievements.toState
 import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.metrics.toState
 import com.grippo.domain.state.training.toState
-import com.grippo.toolkit.calculation.AnalyticsApi
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.onEach
 
@@ -22,13 +20,10 @@ public class ExerciseExampleViewModel(
     private val exerciseExampleFeature: ExerciseExampleFeature,
     private val exerciseMetricsFeature: ExerciseMetricsFeature,
     private val muscleLoadingUseCase: MuscleLoadingUseCase,
-    colorProvider: ColorProvider,
-    stringProvider: StringProvider,
+    private val volumeSeriesUseCase: VolumeSeriesUseCase,
 ) : BaseViewModel<ExerciseExampleState, ExerciseExampleDirection, ExerciseExampleLoader>(
     ExerciseExampleState()
 ), ExerciseExampleContract {
-
-    private val analytics = AnalyticsApi(stringProvider, colorProvider)
 
     init {
         exerciseExampleFeature.observeExerciseExample(id)
@@ -50,14 +45,18 @@ public class ExerciseExampleViewModel(
         }
     }
 
-    private suspend fun provideRecentExercises(value: List<Exercise>) {
-        val exercises = value.toState()
+    private fun provideRecentExercises(value: List<Exercise>) {
+        val exercisesState = value.toState()
+        val exerciseVolume = volumeSeriesUseCase
+            .fromExercises(value)
+            .toState()
 
-        val exerciseVolume = analytics.volumeFromExercises(
-            exercises = exercises,
-        )
-
-        update { it.copy(recent = exercises, exerciseVolume = exerciseVolume) }
+        update {
+            it.copy(
+                recent = exercisesState,
+                exerciseVolume = exerciseVolume
+            )
+        }
     }
 
     private fun provideAchievements(value: List<Achievement>) {

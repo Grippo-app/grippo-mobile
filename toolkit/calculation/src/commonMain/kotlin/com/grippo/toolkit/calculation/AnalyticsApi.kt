@@ -14,7 +14,6 @@ import com.grippo.toolkit.calculation.internal.muscle.MuscleImageBuilder
 import com.grippo.toolkit.calculation.internal.muscle.TemporalHeatmapCalculator
 import com.grippo.toolkit.calculation.internal.strength.Estimated1RMAnalytics
 import com.grippo.toolkit.calculation.internal.training.MetricsAggregator
-import com.grippo.toolkit.calculation.internal.training.VolumeAnalytics
 import com.grippo.toolkit.calculation.models.Metric
 import com.grippo.toolkit.calculation.models.MetricSeries
 import com.grippo.toolkit.calculation.models.MuscleLoadMatrix
@@ -29,30 +28,10 @@ public class AnalyticsApi(
     stringProvider: StringProvider,
     colorProvider: ColorProvider,
 ) {
-    private val volumeAnalytics = VolumeAnalytics(colorProvider, stringProvider)
     private val heatmapCalculator = TemporalHeatmapCalculator(stringProvider)
     private val estimated1RMAnalytics = Estimated1RMAnalytics(colorProvider, stringProvider)
     private val metricsAggregator = MetricsAggregator()
     private val muscleImageBuilder = MuscleImageBuilder(colorProvider)
-
-    /**
-     * Builds a volume series for a plain list of exercises.
-     * Each point represents the session tonnage contributed by a single exercise.
-     */
-    public suspend fun volumeFromExercises(
-        exercises: List<ExerciseState>
-    ): MetricSeries = volumeAnalytics
-        .computeVolumeSeriesFromExercises(exercises)
-
-    /**
-     * Builds a volume series for trainings filtered by [range].
-     * The underlying calculator automatically selects the optimal bucket scale.
-     */
-    public suspend fun volumeFromTrainings(
-        trainings: List<TrainingState>,
-        range: DateRange,
-    ): MetricSeries = volumeAnalytics
-        .computeVolumeSeriesFromTrainings(trainings, range)
 
     /**
      * Builds the temporal heatmap matrix for [trainings] using the provided filters.

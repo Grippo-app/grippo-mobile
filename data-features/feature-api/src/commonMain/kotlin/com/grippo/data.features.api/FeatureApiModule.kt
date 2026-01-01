@@ -8,6 +8,7 @@ import com.grippo.data.features.api.metrics.ExerciseSpotlightUseCase
 import com.grippo.data.features.api.metrics.MuscleLoadingUseCase
 import com.grippo.data.features.api.metrics.PerformanceTrendUseCase
 import com.grippo.data.features.api.metrics.TrainingStreakUseCase
+import com.grippo.data.features.api.metrics.VolumeSeriesUseCase
 import com.grippo.data.features.api.training.GenerateTrainingUseCase
 import com.grippo.data.features.api.user.CreateProfileUseCase
 import org.koin.core.annotation.Module
@@ -86,6 +87,10 @@ public class FeatureApiModule {
 
         single {
             PerformanceTrendUseCase()
+        }
+
+        single {
+            VolumeSeriesUseCase()
         }
     }
 }

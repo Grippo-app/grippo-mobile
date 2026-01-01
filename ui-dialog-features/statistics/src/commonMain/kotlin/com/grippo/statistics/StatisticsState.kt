@@ -7,12 +7,12 @@ import com.grippo.core.state.examples.ForceTypeEnumState
 import com.grippo.core.state.examples.WeightTypeEnumState
 import com.grippo.core.state.metrics.ExerciseDistributionState
 import com.grippo.core.state.metrics.MuscleLoadSummary
+import com.grippo.core.state.metrics.VolumeSeriesState
 import com.grippo.core.state.muscles.MuscleGroupState
 import com.grippo.core.state.muscles.MuscleRepresentationState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.TrainingMetrics
 import com.grippo.core.state.trainings.TrainingState
-import com.grippo.toolkit.calculation.models.MetricSeries
 import com.grippo.toolkit.calculation.models.MuscleLoadMatrix
 import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.collections.immutable.ImmutableList
@@ -29,7 +29,7 @@ public data class StatisticsState(
     val totalMetrics: TrainingMetrics? = null,
 
     // === Exercise volume (bar) ===
-    val exerciseVolume: MetricSeries? = null,
+    val exerciseVolume: VolumeSeriesState? = null,
 
     // === Muscle analysis (progress/heatmap) ===
     val muscleLoad: MuscleLoadSummary? = null,
