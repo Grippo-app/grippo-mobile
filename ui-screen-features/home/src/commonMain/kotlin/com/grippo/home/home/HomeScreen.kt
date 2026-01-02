@@ -15,7 +15,10 @@ import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.metrics.digest.stubMonthlyDigest
 import com.grippo.core.state.metrics.digest.stubWeeklyDigest
-import com.grippo.core.state.metrics.stubHighlight
+import com.grippo.core.state.metrics.stubExerciseSpotlight
+import com.grippo.core.state.metrics.stubMuscleLoadSummary
+import com.grippo.core.state.metrics.stubPerformanceMetrics
+import com.grippo.core.state.metrics.stubTrainingStreakStates
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
@@ -37,6 +40,7 @@ import com.grippo.design.resources.provider.start_workout
 import com.grippo.home.home.components.EmptyHomeContent
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
+import kotlin.time.Duration.Companion.hours
 
 @Composable
 internal fun HomeScreen(
@@ -48,8 +52,11 @@ internal fun HomeScreen(
         value = AppTokens.colors.background.screen,
     )
 ) {
+    val hasHighlights = state.totalDuration != null &&
+            state.streak != null
+
     val isEmptyState = state.lastTraining == null &&
-            state.highlight == null &&
+            !hasHighlights &&
             state.weeklyDigest == null &&
             state.monthlyDigest == null
 
@@ -106,11 +113,15 @@ internal fun HomeScreen(
                     }
                 }
 
-                if (state.highlight != null) {
+                if (hasHighlights) {
                     item(key = "highlight") {
                         HighlightsCard(
                             modifier = Modifier.fillMaxWidth(),
-                            value = state.highlight,
+                            totalDuration = state.totalDuration,
+                            spotlight = state.spotlight,
+                            muscleLoad = state.muscleLoad,
+                            streak = state.streak,
+                            performance = state.performance,
                             onViewWorkout = contract::onOpenTrainings,
                             onExampleClick = contract::onOpenExample
                         )
@@ -159,7 +170,11 @@ private fun HomeScreenPreview() {
                 lastTraining = stubTraining(),
                 weeklyDigest = stubWeeklyDigest(),
                 monthlyDigest = stubMonthlyDigest(),
-                highlight = stubHighlight(),
+                totalDuration = 28.hours,
+                spotlight = stubExerciseSpotlight(),
+                muscleLoad = stubMuscleLoadSummary(),
+                streak = stubTrainingStreakStates().first(),
+                performance = stubPerformanceMetrics(),
             ),
             loaders = persistentSetOf(),
             contract = HomeContract.Empty

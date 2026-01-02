@@ -15,7 +15,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.metrics.MuscleLoadEntry
 import com.grippo.core.state.metrics.MuscleLoadSummary
-import com.grippo.core.state.metrics.stubHighlight
 import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.core.state.muscles.MuscleEnumState
 import com.grippo.design.components.indicators.LineIndicator
@@ -276,8 +275,6 @@ private fun MuscleLoadSectionPreview() {
 @Composable
 private fun MuscleLoadingPreview() {
     PreviewContainer {
-        stubHighlight().muscleLoad?.let { summary ->
-            MuscleLoading(summary = summary)
-        }
+        MuscleLoading(summary = stubMuscleLoadSummary())
     }
 }

@@ -19,11 +19,16 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
-import com.grippo.core.state.metrics.HighlightState
+import com.grippo.core.state.metrics.ExerciseSpotlight
+import com.grippo.core.state.metrics.MuscleLoadSummary
 import com.grippo.core.state.metrics.PerformanceMetricState
 import com.grippo.core.state.metrics.PerformanceMetricTypeState
 import com.grippo.core.state.metrics.PerformanceTrendStatusState
-import com.grippo.core.state.metrics.stubHighlight
+import com.grippo.core.state.metrics.TrainingStreakState
+import com.grippo.core.state.metrics.stubExerciseSpotlight
+import com.grippo.core.state.metrics.stubMuscleLoadSummary
+import com.grippo.core.state.metrics.stubPerformanceMetrics
+import com.grippo.core.state.metrics.stubTrainingStreakStates
 import com.grippo.design.components.metrics.ExerciseSpotlightSection
 import com.grippo.design.components.metrics.MuscleLoadSection
 import com.grippo.design.components.metrics.PerformanceTrendSection
@@ -40,17 +45,24 @@ import com.grippo.design.resources.provider.highlight_type_momentum
 import com.grippo.design.resources.provider.highlight_type_momentum_hint
 import com.grippo.design.resources.provider.highlights
 import com.grippo.design.resources.provider.icons.Intensity
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
 
+@Suppress("UNUSED_PARAMETER")
 @Composable
 public fun HighlightsCard(
     modifier: Modifier = Modifier,
-    value: HighlightState,
+    totalDuration: Duration,
+    spotlight: ExerciseSpotlight?,
+    muscleLoad: MuscleLoadSummary?,
+    streak: TrainingStreakState,
+    performance: List<PerformanceMetricState>,
     onViewWorkout: () -> Unit,
     onExampleClick: (id: String) -> Unit,
 ) {
     val storyType = run {
-        val dominantMetric = value.performance.firstOrNull()
-        val streakLength = value.streak.featured.length
+        val dominantMetric = performance.firstOrNull()
+        val streakLength = streak.featured.length
         when {
             streakLength >= 3 -> HighlightStoryType.Consistency
             dominantMetric?.status == PerformanceTrendStatusState.Record ||
@@ -116,84 +128,77 @@ public fun HighlightsCard(
         val spacing = AppTokens.dp.contentPadding.content
 
         fun metricOf(type: PerformanceMetricTypeState): PerformanceMetricState? =
-            value.performance.firstOrNull { it.type == type }
+            performance.firstOrNull { it.type == type }
 
-        value.spotlight?.let { spotlight ->
+        spotlight?.let { spotlightValue ->
             ExerciseSpotlightSection(
                 modifier = Modifier.fillMaxWidth(),
-                value = spotlight,
+                value = spotlightValue,
                 onExampleClick = onExampleClick,
             )
             Spacer(Modifier.height(spacing))
         }
 
-        Row(
-            modifier = Modifier
-                .height(intrinsicSize = IntrinsicSize.Max)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(spacing),
-        ) {
-            val muscleLoad = value.muscleLoad
-
-            if (muscleLoad != null && muscleLoad.perGroup.entries.isNotEmpty()) {
+        val hasMuscleLoad = muscleLoad?.perGroup?.entries?.isNotEmpty() == true
+        if (hasMuscleLoad) {
+            Row(
+                modifier = Modifier
+                    .height(intrinsicSize = IntrinsicSize.Max)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(spacing),
+            ) {
                 MuscleLoadSection(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight(),
                     summary = muscleLoad
                 )
-            } else {
-                Spacer(modifier = Modifier.weight(1f))
-            }
 
+                TrainingStreakSection(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                    value = streak
+                )
+            }
+        } else {
             TrainingStreakSection(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
-                value = value.streak
+                modifier = Modifier.fillMaxWidth(),
+                value = streak
             )
         }
 
-        Spacer(Modifier.height(spacing))
+        val performanceRows = listOf(
+            listOfNotNull(
+                metricOf(PerformanceMetricTypeState.Duration),
+                metricOf(PerformanceMetricTypeState.Volume)
+            ),
+            listOfNotNull(
+                metricOf(PerformanceMetricTypeState.Repetitions),
+                metricOf(PerformanceMetricTypeState.Intensity)
+            ),
+        ).filter { row -> row.isNotEmpty() }
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(spacing),
-        ) {
-            metricOf(PerformanceMetricTypeState.Duration)?.let { metric ->
-                PerformanceTrendSection(
-                    modifier = Modifier.weight(1f),
-                    metric = metric
-                )
-            } ?: Spacer(modifier = Modifier.weight(1f))
+        if (performanceRows.isNotEmpty()) {
+            Spacer(Modifier.height(spacing))
 
-            metricOf(PerformanceMetricTypeState.Volume)?.let { metric ->
-                PerformanceTrendSection(
-                    modifier = Modifier.weight(1f),
-                    metric = metric
-                )
-            } ?: Spacer(modifier = Modifier.weight(1f))
-        }
+            performanceRows.forEachIndexed { index, metrics ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(spacing),
+                ) {
+                    metrics.forEach { metric ->
+                        PerformanceTrendSection(
+                            modifier = Modifier.weight(1f),
+                            metric = metric
+                        )
+                    }
+                }
 
-        Spacer(Modifier.height(spacing))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(spacing),
-        ) {
-            metricOf(PerformanceMetricTypeState.Repetitions)?.let { metric ->
-                PerformanceTrendSection(
-                    modifier = Modifier.weight(1f),
-                    metric = metric
-                )
-            } ?: Spacer(modifier = Modifier.weight(1f))
-
-            metricOf(PerformanceMetricTypeState.Intensity)?.let { metric ->
-                PerformanceTrendSection(
-                    modifier = Modifier.weight(1f),
-                    metric = metric
-                )
-            } ?: Spacer(modifier = Modifier.weight(1f))
+                if (index < performanceRows.lastIndex) {
+                    Spacer(Modifier.height(spacing))
+                }
+            }
         }
     }
 }
@@ -207,10 +212,46 @@ private enum class HighlightStoryType {
 
 @AppPreview
 @Composable
-private fun HighlightsCardPreview() {
+private fun HighlightsCardFullPreview() {
     PreviewContainer {
         HighlightsCard(
-            value = stubHighlight(),
+            totalDuration = 28.hours,
+            spotlight = stubExerciseSpotlight(),
+            muscleLoad = stubMuscleLoadSummary(),
+            streak = stubTrainingStreakStates().first(),
+            performance = stubPerformanceMetrics(),
+            onViewWorkout = {},
+            onExampleClick = {}
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun HighlightsCardSpotlightOnlyPreview() {
+    PreviewContainer {
+        HighlightsCard(
+            totalDuration = 12.hours,
+            spotlight = stubExerciseSpotlight(),
+            muscleLoad = null,
+            streak = stubTrainingStreakStates().first(),
+            performance = stubPerformanceMetrics().take(3),
+            onViewWorkout = {},
+            onExampleClick = {}
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun HighlightsCardMinimalPreview() {
+    PreviewContainer {
+        HighlightsCard(
+            totalDuration = 6.hours,
+            spotlight = null,
+            muscleLoad = null,
+            streak = stubTrainingStreakStates().first(),
+            performance = emptyList(),
             onViewWorkout = {},
             onExampleClick = {}
         )

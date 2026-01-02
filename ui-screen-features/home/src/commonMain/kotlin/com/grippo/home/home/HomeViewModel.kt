@@ -1,7 +1,6 @@
 package com.grippo.home.home
 
 import com.grippo.core.foundation.BaseViewModel
-import com.grippo.core.state.metrics.HighlightState
 import com.grippo.core.state.profile.ProfileMenu
 import com.grippo.core.state.profile.SettingsMenu
 import com.grippo.data.features.api.metrics.ExerciseSpotlightUseCase
@@ -58,7 +57,11 @@ internal class HomeViewModel(
                 it.copy(
                     weeklyDigest = null,
                     monthlyDigest = null,
-                    highlight = null,
+                    totalDuration = null,
+                    spotlight = null,
+                    muscleLoad = null,
+                    streak = null,
+                    performance = emptyList(),
                     lastTraining = null
                 )
             }
@@ -73,34 +76,28 @@ internal class HomeViewModel(
 
         val monthly = trainings.toMonthlyDigestState(range = DateTimeUtils.trailingMonth())
 
-        val highlight = provideHighlight(
-            trainings = list,
-        )
+        val totalDuration = list.fold(ZERO) { acc: Duration, item -> acc + item.duration }
+
+        val spotlight = exerciseSpotlightUseCase.fromTrainings(list).toState()
+
+        val streak = trainingStreakUseCase.fromTrainings(list).toState()
+
+        val performance = performanceTrendUseCase.fromTrainings(list).toState()
+
+        val muscleLoadSummary = muscleLoadingUseCase.fromTrainings(list).toState()
 
         update {
             it.copy(
                 weeklyDigest = weekly,
                 monthlyDigest = monthly,
-                highlight = highlight,
+                totalDuration = totalDuration,
+                spotlight = spotlight,
+                muscleLoad = muscleLoadSummary,
+                streak = streak,
+                performance = performance,
                 lastTraining = last
             )
         }
-    }
-
-    private suspend fun provideHighlight(trainings: List<Training>): HighlightState {
-        val totalDuration = trainings.fold(ZERO) { acc: Duration, item -> acc + item.duration }
-        val spotlight = exerciseSpotlightUseCase.fromTrainings(trainings).toState()
-        val streak = trainingStreakUseCase.fromTrainings(trainings).toState()
-        val performance = performanceTrendUseCase.fromTrainings(trainings).toState()
-        val muscleLoadSummary = muscleLoadingUseCase.fromTrainings(trainings).toState()
-
-        return HighlightState(
-            totalDuration = totalDuration,
-            spotlight = spotlight,
-            muscleLoad = muscleLoadSummary,
-            streak = streak,
-            performance = performance,
-        )
     }
 
     override fun onStartTraining() {
