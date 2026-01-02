@@ -24,15 +24,9 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.chip.ChipSize
-import com.grippo.design.components.chip.IntensityChip
-import com.grippo.design.components.chip.IntensityChipStyle
-import com.grippo.design.components.chip.RepetitionsChip
-import com.grippo.design.components.chip.RepetitionsChipStyle
-import com.grippo.design.components.chip.VolumeChip
-import com.grippo.design.components.chip.VolumeChipStyle
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
+import com.grippo.design.components.metrics.TrainingMetricsSection
 import com.grippo.design.components.spliter.ContentSpliter
 import com.grippo.design.components.training.IterationsCard
 import com.grippo.design.core.AppTokens
@@ -41,7 +35,6 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.ArrowRight
 import com.grippo.design.resources.provider.more
-import com.grippo.design.resources.provider.overview
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 

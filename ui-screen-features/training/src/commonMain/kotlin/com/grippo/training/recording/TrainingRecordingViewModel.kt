@@ -5,9 +5,9 @@ import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.PercentageFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
+import com.grippo.core.state.metrics.TrainingMetricsState
 import com.grippo.core.state.stage.StageState
 import com.grippo.core.state.trainings.ExerciseState
-import com.grippo.core.state.trainings.TrainingMetrics
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.metrics.TrainingMetricsUseCase

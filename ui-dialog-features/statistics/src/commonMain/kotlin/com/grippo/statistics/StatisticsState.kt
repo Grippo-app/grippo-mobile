@@ -7,11 +7,11 @@ import com.grippo.core.state.examples.ForceTypeEnumState
 import com.grippo.core.state.examples.WeightTypeEnumState
 import com.grippo.core.state.metrics.ExerciseDistributionState
 import com.grippo.core.state.metrics.MuscleLoadSummary
+import com.grippo.core.state.metrics.TrainingMetricsState
 import com.grippo.core.state.metrics.VolumeSeriesState
 import com.grippo.core.state.muscles.MuscleGroupState
 import com.grippo.core.state.muscles.MuscleRepresentationState
 import com.grippo.core.state.trainings.ExerciseState
-import com.grippo.core.state.trainings.TrainingMetrics
 import com.grippo.core.state.trainings.TrainingState
 import com.grippo.toolkit.calculation.models.MuscleLoadMatrix
 import com.grippo.toolkit.date.utils.DateRange

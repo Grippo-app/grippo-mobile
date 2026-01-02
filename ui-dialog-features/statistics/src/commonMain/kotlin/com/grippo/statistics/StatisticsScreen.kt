@@ -21,10 +21,10 @@ import com.grippo.core.state.metrics.MuscleLoadEntry
 import com.grippo.core.state.metrics.MuscleLoadSummary
 import com.grippo.core.state.metrics.stubCategoryDistributionState
 import com.grippo.core.state.metrics.stubForceDistributionState
+import com.grippo.core.state.metrics.stubMetrics
 import com.grippo.core.state.metrics.stubVolumeSeriesState
 import com.grippo.core.state.metrics.stubWeightDistributionState
 import com.grippo.core.state.muscles.MuscleEnumState
-import com.grippo.core.state.trainings.stubMetrics
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.chart.MuscleHeatmapChart
 import com.grippo.design.components.loading.Loader
