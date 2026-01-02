@@ -19,7 +19,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
-import com.grippo.core.state.metrics.Highlight
+import com.grippo.core.state.metrics.HighlightState
 import com.grippo.core.state.metrics.PerformanceMetricState
 import com.grippo.core.state.metrics.PerformanceMetricTypeState
 import com.grippo.core.state.metrics.PerformanceTrendStatusState
@@ -44,7 +44,7 @@ import com.grippo.design.resources.provider.icons.Intensity
 @Composable
 public fun HighlightsCard(
     modifier: Modifier = Modifier,
-    value: Highlight,
+    value: HighlightState,
     onViewWorkout: () -> Unit,
     onExampleClick: (id: String) -> Unit,
 ) {

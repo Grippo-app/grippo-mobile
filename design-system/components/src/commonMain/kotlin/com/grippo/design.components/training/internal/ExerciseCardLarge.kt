@@ -13,14 +13,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.stubExercise
 import com.grippo.design.components.chip.ChipSize
-import com.grippo.design.components.chip.IntensityChip
-import com.grippo.design.components.chip.IntensityChipStyle
-import com.grippo.design.components.chip.RepetitionsChip
-import com.grippo.design.components.chip.RepetitionsChipStyle
-import com.grippo.design.components.chip.VolumeChip
-import com.grippo.design.components.chip.VolumeChipStyle
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
+import com.grippo.design.components.metrics.TrainingMetricsSection
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.training.IterationCard
 import com.grippo.design.components.training.IterationCardStyle
@@ -58,32 +53,11 @@ internal fun ExerciseCardLarge(
                     overflow = TextOverflow.Ellipsis
                 )
 
-                FlowRow(
+                TrainingMetricsSection(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-                ) {
-                    VolumeChip(
-                        modifier = Modifier.weight(1f),
-                        value = value.metrics.volume,
-                        style = VolumeChipStyle.SHORT,
-                        size = ChipSize.Small
-                    )
-
-                    IntensityChip(
-                        modifier = Modifier.weight(1f),
-                        value = value.metrics.intensity,
-                        style = IntensityChipStyle.SHORT,
-                        size = ChipSize.Small
-                    )
-
-                    RepetitionsChip(
-                        modifier = Modifier.weight(1f),
-                        value = value.metrics.repetitions,
-                        style = RepetitionsChipStyle.SHORT,
-                        size = ChipSize.Small
-                    )
-                }
+                    state = value.metrics,
+                    chipSize = ChipSize.Small,
+                )
 
                 if (value.iterations.isNotEmpty()) {
                     Text(

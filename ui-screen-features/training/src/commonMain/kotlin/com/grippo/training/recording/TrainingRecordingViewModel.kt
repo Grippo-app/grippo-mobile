@@ -10,6 +10,7 @@ import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.TrainingMetrics
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
+import com.grippo.data.features.api.metrics.TrainingMetricsUseCase
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.data.features.api.training.TrainingFeature
@@ -17,17 +18,16 @@ import com.grippo.data.features.api.training.models.SetDraftTraining
 import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.design.resources.provider.training_progress_lost_description
 import com.grippo.design.resources.provider.training_progress_lost_title
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
+import com.grippo.domain.state.metrics.toState
 import com.grippo.domain.state.muscles.toState
 import com.grippo.domain.state.training.toState
 import com.grippo.state.domain.training.toDomain
-import com.grippo.toolkit.calculation.AnalyticsApi
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
@@ -47,12 +47,10 @@ internal class TrainingRecordingViewModel(
     private val trainingFeature: TrainingFeature,
     private val dialogController: DialogController,
     private val stringProvider: StringProvider,
-    colorProvider: ColorProvider,
+    private val trainingMetricsUseCase: TrainingMetricsUseCase,
 ) : BaseViewModel<TrainingRecordingState, TrainingRecordingDirection, TrainingRecordingLoader>(
     TrainingRecordingState(stage = stage)
 ), TrainingRecordingContract {
-
-    private val analytics = AnalyticsApi(stringProvider, colorProvider)
 
     init {
         muscleFeature.observeMuscles()
@@ -153,7 +151,7 @@ internal class TrainingRecordingViewModel(
                     iterations = persistentListOf(),
                     exerciseExample = example.value,
                     createdAt = DateTimeUtils.now(),
-                    metrics = TrainingMetrics(
+                    metrics = TrainingMetricsState(
                         volume = VolumeFormatState.of(0f),
                         repetitions = RepetitionsFormatState.of(0),
                         intensity = IntensityFormatState.of(0f),
@@ -250,10 +248,13 @@ internal class TrainingRecordingViewModel(
         safeLaunch {
             val exercises = state.value.exercises
             val duration = DateTimeUtils.ago(state.value.startAt)
-            val totals = analytics.metricsFromExercises(exercises)
+            val domainExercises = exercises.toDomain()
+            val totals = trainingMetricsUseCase
+                .fromExercises(domainExercises)
+                .toState()
 
             val training = SetTraining(
-                exercises = exercises.toDomain(),
+                exercises = domainExercises,
                 duration = duration,
                 volume = totals.volume.value ?: 0f,
                 intensity = totals.intensity.value ?: 0f,

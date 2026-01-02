@@ -10,6 +10,7 @@ import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.metrics.ExerciseDistributionUseCase
 import com.grippo.data.features.api.metrics.MuscleLoadingUseCase
+import com.grippo.data.features.api.metrics.TrainingMetricsUseCase
 import com.grippo.data.features.api.metrics.VolumeSeriesUseCase
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
@@ -51,6 +52,7 @@ public class StatisticsViewModel(
     private val muscleLoadingUseCase: MuscleLoadingUseCase,
     private val exerciseDistributionUseCase: ExerciseDistributionUseCase,
     private val volumeSeriesUseCase: VolumeSeriesUseCase,
+    private val trainingMetricsUseCase: TrainingMetricsUseCase,
 ) : BaseViewModel<StatisticsState, StatisticsDirection, StatisticsLoader>(
     StatisticsState(
         mode = when (config) {
@@ -157,11 +159,10 @@ public class StatisticsViewModel(
             return
         }
 
-        val totalMetrics = analytics.metricsFromTrainings(
-            trainings = trainings
-        )
-
         val setTrainings = trainings.toDomain()
+        val totalMetrics = trainingMetricsUseCase
+            .fromTrainings(setTrainings)
+            .toState()
 
         val categoryDistribution = exerciseDistributionUseCase
             .categoriesFromTrainings(setTrainings)
@@ -206,11 +207,10 @@ public class StatisticsViewModel(
             return
         }
 
-        val totalMetrics = analytics.metricsFromExercises(
-            exercises = exercises
-        )
-
         val setExercises = exercises.toDomain()
+        val totalMetrics = trainingMetricsUseCase
+            .fromExercises(setExercises)
+            .toState()
 
         val categoryDistribution = exerciseDistributionUseCase
             .categoriesFromExercises(setExercises)

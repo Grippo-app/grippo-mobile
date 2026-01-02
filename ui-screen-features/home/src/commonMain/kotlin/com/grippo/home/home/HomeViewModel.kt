@@ -1,7 +1,7 @@
 package com.grippo.home.home
 
 import com.grippo.core.foundation.BaseViewModel
-import com.grippo.core.state.metrics.Highlight
+import com.grippo.core.state.metrics.HighlightState
 import com.grippo.core.state.profile.ProfileMenu
 import com.grippo.core.state.profile.SettingsMenu
 import com.grippo.data.features.api.metrics.ExerciseSpotlightUseCase
@@ -56,8 +56,8 @@ internal class HomeViewModel(
         if (list.isEmpty()) {
             update {
                 it.copy(
-                    weeklyDigestState = null,
-                    monthlyDigestState = null,
+                    weeklyDigest = null,
+                    monthlyDigest = null,
                     highlight = null,
                     lastTraining = null
                 )
@@ -79,22 +79,22 @@ internal class HomeViewModel(
 
         update {
             it.copy(
-                weeklyDigestState = weekly,
-                monthlyDigestState = monthly,
+                weeklyDigest = weekly,
+                monthlyDigest = monthly,
                 highlight = highlight,
                 lastTraining = last
             )
         }
     }
 
-    private suspend fun provideHighlight(trainings: List<Training>): Highlight {
+    private suspend fun provideHighlight(trainings: List<Training>): HighlightState {
         val totalDuration = trainings.fold(ZERO) { acc: Duration, item -> acc + item.duration }
         val spotlight = exerciseSpotlightUseCase.fromTrainings(trainings).toState()
         val streak = trainingStreakUseCase.fromTrainings(trainings).toState()
         val performance = performanceTrendUseCase.fromTrainings(trainings).toState()
         val muscleLoadSummary = muscleLoadingUseCase.fromTrainings(trainings).toState()
 
-        return Highlight(
+        return HighlightState(
             totalDuration = totalDuration,
             spotlight = spotlight,
             muscleLoad = muscleLoadSummary,

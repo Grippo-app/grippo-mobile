@@ -50,8 +50,8 @@ internal fun HomeScreen(
 ) {
     val isEmptyState = state.lastTraining == null &&
             state.highlight == null &&
-            state.weeklyDigestState == null &&
-            state.monthlyDigestState == null
+            state.weeklyDigest == null &&
+            state.monthlyDigest == null
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
@@ -117,11 +117,11 @@ internal fun HomeScreen(
                     }
                 }
 
-                if (state.monthlyDigestState != null && state.weeklyDigestState != null) {
+                if (state.monthlyDigest != null && state.weeklyDigest != null) {
                     item(key = "digest_section") {
                         DigestsCard(
-                            weekly = state.weeklyDigestState,
-                            monthly = state.monthlyDigestState,
+                            weekly = state.weeklyDigest,
+                            monthly = state.monthlyDigest,
                             onWeeklyClick = contract::onOpenWeeklyDigest,
                             onMonthlyClick = contract::onOpenMonthlyDigest
                         )
@@ -157,8 +157,8 @@ private fun HomeScreenPreview() {
         HomeScreen(
             state = HomeState(
                 lastTraining = stubTraining(),
-                weeklyDigestState = stubWeeklyDigest(),
-                monthlyDigestState = stubMonthlyDigest(),
+                weeklyDigest = stubWeeklyDigest(),
+                monthlyDigest = stubMonthlyDigest(),
                 highlight = stubHighlight(),
             ),
             loaders = persistentSetOf(),

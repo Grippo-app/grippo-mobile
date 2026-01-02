@@ -172,6 +172,7 @@ public data object AppDp {
         val status: Status = Status
         val distribution: Distribution = Distribution
         val volume: Volume = Volume
+        val summary: Summary = Summary
 
         public data object Highlights {
             val icon: Dp = AppDp.icon.medium
@@ -197,6 +198,10 @@ public data object AppDp {
 
         public data object Volume {
             val height: Dp = icon.xxxLarge
+        }
+
+        public data object Summary {
+            val spacing: Dp = padding.medium
         }
     }
 

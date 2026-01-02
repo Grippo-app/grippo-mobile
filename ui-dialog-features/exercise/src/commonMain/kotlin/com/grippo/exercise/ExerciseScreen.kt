@@ -81,33 +81,12 @@ internal fun ExerciseScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
-        Row(
+        TrainingMetricsSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-        ) {
-            VolumeChip(
-                modifier = Modifier.weight(1f),
-                value = exercise.metrics.volume,
-                style = VolumeChipStyle.SHORT,
-                size = ChipSize.Medium
-            )
-
-            RepetitionsChip(
-                modifier = Modifier.weight(1f),
-                value = exercise.metrics.repetitions,
-                style = RepetitionsChipStyle.SHORT,
-                size = ChipSize.Medium
-            )
-
-            IntensityChip(
-                modifier = Modifier.weight(1f),
-                value = exercise.metrics.intensity,
-                style = IntensityChipStyle.SHORT,
-                size = ChipSize.Medium
-            )
-        }
+            state = exercise.metrics,
+        )
 
         if (exercise.iterations.isNotEmpty()) {
 

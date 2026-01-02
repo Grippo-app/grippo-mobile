@@ -1,4 +1,4 @@
-package com.grippo.core.state.trainings
+package com.grippo.core.state.metrics
 
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.IntensityFormatState
@@ -9,14 +9,14 @@ import kotlin.random.Random
 
 @Immutable
 @Serializable
-public data class TrainingMetrics(
+public data class TrainingMetricsState(
     val repetitions: RepetitionsFormatState,
     val intensity: IntensityFormatState,
     val volume: VolumeFormatState,
 )
 
-public fun stubMetrics(): TrainingMetrics {
-    return TrainingMetrics(
+public fun stubMetrics(): TrainingMetricsState {
+    return TrainingMetricsState(
         volume = VolumeFormatState.of(Random.nextInt(1000, 10000).toFloat()),
         intensity = IntensityFormatState.of(Random.nextInt(20, 100).toFloat()),
         repetitions = RepetitionsFormatState.of(Random.nextInt(20, 100)),

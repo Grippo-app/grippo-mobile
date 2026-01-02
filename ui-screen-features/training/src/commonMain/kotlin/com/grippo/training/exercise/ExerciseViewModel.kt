@@ -1,19 +1,20 @@
 package com.grippo.training.exercise
 
-import com.grippo.toolkit.calculation.AnalyticsApi
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
+import com.grippo.core.state.metrics.TrainingMetricsState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.IterationFocus
 import com.grippo.core.state.trainings.IterationState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
-import com.grippo.design.resources.provider.providers.ColorProvider
-import com.grippo.design.resources.provider.providers.StringProvider
+import com.grippo.data.features.api.metrics.TrainingMetricsUseCase
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
+import com.grippo.domain.state.metrics.toState
+import com.grippo.state.domain.training.toDomain
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.onEach
 import kotlin.uuid.Uuid
@@ -22,16 +23,13 @@ import com.grippo.training.exercise.ExerciseState as ScreenExerciseState
 internal class ExerciseViewModel(
     exercise: ExerciseState,
     exerciseExampleFeature: ExerciseExampleFeature,
-    stringProvider: StringProvider,
-    colorProvider: ColorProvider,
+    private val trainingMetricsUseCase: TrainingMetricsUseCase,
     private val dialogController: DialogController,
 ) : BaseViewModel<ScreenExerciseState, ExerciseDirection, ExerciseLoader>(
     ScreenExerciseState(
         exercise = exercise,
     )
 ), ExerciseContract {
-
-    private val analytics = AnalyticsApi(stringProvider, colorProvider)
 
     init {
         exerciseExampleFeature
@@ -72,7 +70,7 @@ internal class ExerciseViewModel(
                         .toPersistentList()
 
                     // Recompute metrics for this exercise
-                    val metrics = analytics.metricsFromIterations(iterations)
+                    val metrics = recalculateMetrics(iterations)
 
                     val exercise = s.exercise.copy(
                         iterations = iterations,
@@ -98,7 +96,7 @@ internal class ExerciseViewModel(
                 .toPersistentList()
 
             // Recompute metrics after deletion
-            val metrics = analytics.metricsFromIterations(iterations)
+            val metrics = recalculateMetrics(iterations)
 
             val exercise = s.exercise.copy(
                 iterations = iterations,
@@ -130,7 +128,7 @@ internal class ExerciseViewModel(
                         .toPersistentList()
 
                     // Recompute metrics after edit
-                    val metrics = analytics.metricsFromIterations(iterations)
+                    val metrics = recalculateMetrics(iterations)
 
                     val exercise = s.exercise.copy(
                         iterations = iterations,
@@ -166,7 +164,7 @@ internal class ExerciseViewModel(
                         .toPersistentList()
 
                     // Recompute metrics after edit
-                    val metrics = analytics.metricsFromIterations(iterations)
+                    val metrics = recalculateMetrics(iterations)
 
                     val exercise = s.exercise.copy(
                         iterations = iterations,
@@ -188,7 +186,7 @@ internal class ExerciseViewModel(
                 .toPersistentList()
 
             // Recompute metrics after removal
-            val metrics = analytics.metricsFromIterations(iterations)
+            val metrics = recalculateMetrics(iterations)
 
             val exercise = s.exercise.copy(
                 iterations = iterations,
@@ -215,5 +213,13 @@ internal class ExerciseViewModel(
 
     override fun onBack() {
         navigateTo(ExerciseDirection.Back)
+    }
+
+    private fun recalculateMetrics(
+        iterations: List<IterationState>,
+    ): TrainingMetricsState {
+        val domainIterations = iterations.toDomain()
+        val domainMetrics = trainingMetricsUseCase.fromIterations(domainIterations)
+        return domainMetrics.toState()
     }
 }

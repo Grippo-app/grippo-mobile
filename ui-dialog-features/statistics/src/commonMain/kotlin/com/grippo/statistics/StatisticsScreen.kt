@@ -27,17 +27,11 @@ import com.grippo.core.state.muscles.MuscleEnumState
 import com.grippo.core.state.trainings.stubMetrics
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.chart.MuscleHeatmapChart
-import com.grippo.design.components.chip.ChipSize
-import com.grippo.design.components.chip.IntensityChip
-import com.grippo.design.components.chip.IntensityChipStyle
-import com.grippo.design.components.chip.RepetitionsChip
-import com.grippo.design.components.chip.RepetitionsChipStyle
-import com.grippo.design.components.chip.VolumeChip
-import com.grippo.design.components.chip.VolumeChipStyle
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.ExerciseDistributionChart
 import com.grippo.design.components.metrics.ForceTypeDistributionChart
 import com.grippo.design.components.metrics.MuscleLoading
+import com.grippo.design.components.metrics.TrainingMetricsSection
 import com.grippo.design.components.metrics.VolumeMetricChart
 import com.grippo.design.components.metrics.WeightTypeDistributionChart
 import com.grippo.design.components.spliter.ContentSpliter
@@ -119,49 +113,12 @@ internal fun StatisticsScreen(
                 ),
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block)
             ) {
-                item(key = "summary_chips") {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-                    ) {
-                        state
-                            .totalMetrics
-                            ?.volume
-                            ?.takeIf { it.value != null }
-                            ?.let { data ->
-                                VolumeChip(
-                                    modifier = Modifier.weight(1f),
-                                    value = data,
-                                    style = VolumeChipStyle.SHORT,
-                                    size = ChipSize.Medium
-                                )
-                            }
-
-                        state
-                            .totalMetrics
-                            ?.repetitions
-                            ?.takeIf { it.value != null }
-                            ?.let { data ->
-                                RepetitionsChip(
-                                    modifier = Modifier.weight(1f),
-                                    value = data,
-                                    style = RepetitionsChipStyle.SHORT,
-                                    size = ChipSize.Medium
-                                )
-                            }
-
-                        state
-                            .totalMetrics
-                            ?.intensity
-                            ?.takeIf { it.value != null }
-                            ?.let { data ->
-                                IntensityChip(
-                                    modifier = Modifier.weight(1f),
-                                    value = data,
-                                    style = IntensityChipStyle.SHORT,
-                                    size = ChipSize.Medium
-                                )
-                            }
+                state.totalMetrics?.let { metrics ->
+                    item(key = "summary_chips") {
+                        TrainingMetricsSection(
+                            modifier = Modifier.fillMaxWidth(),
+                            state = metrics,
+                        )
                     }
                 }
 

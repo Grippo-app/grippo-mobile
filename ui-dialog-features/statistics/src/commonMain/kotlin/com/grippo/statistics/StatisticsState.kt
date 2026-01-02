@@ -26,7 +26,7 @@ public data class StatisticsState(
     val muscles: ImmutableList<MuscleGroupState<MuscleRepresentationState.Plain>> = persistentListOf(),
 
     // === Basic metrics chips ===
-    val totalMetrics: TrainingMetrics? = null,
+    val totalMetrics: TrainingMetricsState? = null,
 
     // === Exercise volume (bar) ===
     val exerciseVolume: VolumeSeriesState? = null,

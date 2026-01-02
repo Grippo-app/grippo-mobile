@@ -4,8 +4,6 @@ import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.muscles.MuscleGroupState
 import com.grippo.core.state.muscles.MuscleRepresentationState
 import com.grippo.core.state.trainings.ExerciseState
-import com.grippo.core.state.trainings.IterationState
-import com.grippo.core.state.trainings.TrainingMetrics
 import com.grippo.core.state.trainings.TrainingState
 import com.grippo.design.resources.provider.muscles.MuscleColorPreset
 import com.grippo.design.resources.provider.providers.ColorProvider
@@ -13,7 +11,6 @@ import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.toolkit.calculation.internal.muscle.MuscleImageBuilder
 import com.grippo.toolkit.calculation.internal.muscle.TemporalHeatmapCalculator
 import com.grippo.toolkit.calculation.internal.strength.Estimated1RMAnalytics
-import com.grippo.toolkit.calculation.internal.training.MetricsAggregator
 import com.grippo.toolkit.calculation.models.Metric
 import com.grippo.toolkit.calculation.models.MetricSeries
 import com.grippo.toolkit.calculation.models.MuscleLoadMatrix
@@ -30,7 +27,6 @@ public class AnalyticsApi(
 ) {
     private val heatmapCalculator = TemporalHeatmapCalculator(stringProvider)
     private val estimated1RMAnalytics = Estimated1RMAnalytics(colorProvider, stringProvider)
-    private val metricsAggregator = MetricsAggregator()
     private val muscleImageBuilder = MuscleImageBuilder(colorProvider)
 
     /**
@@ -64,30 +60,6 @@ public class AnalyticsApi(
         range: DateRange,
     ): MetricSeries = estimated1RMAnalytics
         .computeEstimated1RmFromTrainings(trainings, range)
-
-    /**
-     * Aggregates training metrics from a list of iterations.
-     */
-    public fun metricsFromIterations(
-        iterations: List<IterationState>
-    ): TrainingMetrics = metricsAggregator
-        .calculateIterations(iterations)
-
-    /**
-     * Aggregates training metrics from a list of exercises.
-     */
-    public fun metricsFromExercises(
-        exercises: List<ExerciseState>
-    ): TrainingMetrics = metricsAggregator
-        .calculateExercises(exercises)
-
-    /**
-     * Aggregates training metrics from a list of trainings.
-     */
-    public fun metricsFromTrainings(
-        trainings: List<TrainingState>
-    ): TrainingMetrics = metricsAggregator
-        .calculateTrainings(trainings)
 
     /**
      * Builds a muscle color preset for a specific [group] with [selectedIds] highlighted.

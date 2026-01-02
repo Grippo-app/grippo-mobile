@@ -5,7 +5,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 
 @Immutable
-public data class Highlight(
+public data class HighlightState(
     val totalDuration: Duration,
     val spotlight: ExerciseSpotlight?,
     val muscleLoad: MuscleLoadSummary?,
@@ -13,7 +13,7 @@ public data class Highlight(
     val performance: List<PerformanceMetricState>,
 )
 
-public fun stubHighlight(): Highlight = Highlight(
+public fun stubHighlight(): HighlightState = HighlightState(
     totalDuration = 28.hours,
     spotlight = stubExerciseSpotlight(),
     muscleLoad = stubMuscleLoadSummary(),

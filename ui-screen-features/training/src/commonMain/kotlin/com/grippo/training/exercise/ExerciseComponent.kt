@@ -19,9 +19,8 @@ internal class ExerciseComponent(
         ExerciseViewModel(
             exercise = exercise,
             exerciseExampleFeature = getKoin().get(),
+            trainingMetricsUseCase = getKoin().get(),
             dialogController = getKoin().get(),
-            stringProvider = getKoin().get(),
-            colorProvider = getKoin().get(),
         )
     }
 

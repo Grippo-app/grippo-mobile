@@ -4,17 +4,15 @@ import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.stage.StageState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
+import com.grippo.data.features.api.metrics.TrainingMetricsUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.data.features.api.training.models.Training
-import com.grippo.design.resources.provider.providers.ColorProvider
-import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.training.toState
 import com.grippo.domain.state.training.transformation.toTrainingListValues
 import com.grippo.state.domain.training.toDomain
-import com.grippo.toolkit.calculation.AnalyticsApi
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.LocalDateTime
@@ -24,15 +22,12 @@ internal class TrainingCompletedViewModel(
     exercises: List<ExerciseState>,
     trainingFeature: TrainingFeature,
     startAt: LocalDateTime,
-    stringProvider: StringProvider,
-    colorProvider: ColorProvider,
+    private val trainingMetricsUseCase: TrainingMetricsUseCase,
     private val dialogController: DialogController,
     private val exerciseExampleFeature: ExerciseExampleFeature
 ) : BaseViewModel<TrainingCompletedState, TrainingCompletedDirection, TrainingCompletedLoader>(
     TrainingCompletedState()
 ), TrainingCompletedContract {
-
-    private val analytics = AnalyticsApi(stringProvider, colorProvider)
 
     init {
         safeLaunch(loader = TrainingCompletedLoader.SaveTraining) {
@@ -40,12 +35,13 @@ internal class TrainingCompletedViewModel(
                 value = startAt
             )
 
-            val totals = analytics.metricsFromExercises(
-                exercises = exercises
-            )
+            val domainExercises = exercises.toDomain()
+            val totals = trainingMetricsUseCase
+                .fromExercises(domainExercises)
+                .toState()
 
             val training = SetTraining(
-                exercises = exercises.toDomain(),
+                exercises = domainExercises,
                 duration = duration,
                 volume = totals.volume.value ?: 0f,
                 intensity = totals.intensity.value ?: 0f,
