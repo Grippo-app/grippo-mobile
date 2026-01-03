@@ -5,10 +5,11 @@ import com.grippo.data.features.api.authorization.RegisterUseCase
 import com.grippo.data.features.api.exercise.example.UserExerciseExamplesUseCase
 import com.grippo.data.features.api.metrics.ExerciseDistributionUseCase
 import com.grippo.data.features.api.metrics.ExerciseSpotlightUseCase
+import com.grippo.data.features.api.metrics.MuscleLoadTimelineUseCase
 import com.grippo.data.features.api.metrics.MuscleLoadingUseCase
 import com.grippo.data.features.api.metrics.PerformanceTrendUseCase
-import com.grippo.data.features.api.metrics.TrainingMetricsUseCase
 import com.grippo.data.features.api.metrics.TrainingStreakUseCase
+import com.grippo.data.features.api.metrics.TrainingTotalUseCase
 import com.grippo.data.features.api.metrics.VolumeSeriesUseCase
 import com.grippo.data.features.api.training.GenerateTrainingUseCase
 import com.grippo.data.features.api.user.CreateProfileUseCase
