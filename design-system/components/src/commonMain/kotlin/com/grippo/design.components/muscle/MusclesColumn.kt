@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.state.muscles.MuscleGroupState
 import com.grippo.core.state.muscles.MuscleRepresentationState
-import com.grippo.core.state.muscles.stubMuscles
+import com.grippo.core.state.muscles.stubMuscleGroup
 import com.grippo.design.components.cards.selectable.ToggleSelectableCard
 import com.grippo.design.components.cards.selectable.ToggleSelectableCardStyle
 import com.grippo.design.core.AppTokens
@@ -63,7 +63,7 @@ public fun MusclesColumn(
 @Composable
 private fun MusclesColumnPreview() {
     PreviewContainer {
-        val group = stubMuscles().random()
+        val group = stubMuscleGroup().random()
 
         MusclesColumn(
             item = group,

@@ -54,6 +54,10 @@ internal fun ProfileMusclesScreen(
         vertical = AppTokens.dp.contentPadding.content
     )
 
+    val selectedMuscleIds = remember(state.selectedMuscleIds) {
+        state.selectedMuscleIds.toSet()
+    }
+
     BottomOverlayContainer(
         modifier = Modifier
             .fillMaxWidth()
@@ -73,7 +77,8 @@ internal fun ProfileMusclesScreen(
                     key = { _, item -> item.id }
                 ) { index, group ->
                     val isEven = index % 2 == 0
-                    val preset = state.musclePresets[group.id] ?: return@itemsIndexed
+
+                    val preset = group.colorPreset(selectedMuscleIds)
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),

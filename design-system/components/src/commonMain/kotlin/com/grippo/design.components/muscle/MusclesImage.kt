@@ -8,7 +8,7 @@ import androidx.compose.ui.graphics.Color
 import com.grippo.core.state.muscles.MuscleGroupEnumState
 import com.grippo.core.state.muscles.MuscleGroupState
 import com.grippo.core.state.muscles.MuscleRepresentationState
-import com.grippo.core.state.muscles.stubMuscles
+import com.grippo.core.state.muscles.stubMuscleGroup
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.muscles.MuscleColorPreset
@@ -44,7 +44,7 @@ public fun MusclesImage(
 @Composable
 private fun MusclesImagePreview() {
     PreviewContainer {
-        val muscleGroup = stubMuscles().first()
+        val muscleGroup = stubMuscleGroup().first()
         val nextColor = {
             Color(
                 red = Random.nextFloat(),

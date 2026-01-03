@@ -1,6 +1,10 @@
 package com.grippo.core.state.muscles
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.graphics.Color
+import com.grippo.design.core.AppTokens
+import com.grippo.design.resources.provider.muscles.MuscleColorPreset
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
@@ -11,9 +15,72 @@ public data class MuscleGroupState<T : MuscleRepresentationState>(
     val id: String,
     val muscles: ImmutableList<T>,
     val type: MuscleGroupEnumState,
-)
+) {
+    @Composable
+    public fun colorPreset(
+        selectedMuscleIds: Set<String>,
+    ): MuscleColorPreset {
+        val colors = AppTokens.colors.muscle
+        val fallback = colors.inactive
+        val outline = colors.outline
+        val background = colors.background
 
-public fun stubMuscles(): PersistentList<MuscleGroupState<MuscleRepresentationState.Plain>> {
+        val colorMap = muscles.associate { muscleState ->
+            val muscle = muscleState.value
+            val isSelected = muscle.id in selectedMuscleIds
+            val color = if (isSelected) colors.active else fallback
+            muscle.type to color
+        }
+
+        return colorMap.toMuscleColorPreset(
+            fallback = fallback,
+            outline = outline,
+            background = background
+        )
+    }
+
+    private fun Map<MuscleEnumState, Color>.toMuscleColorPreset(
+        fallback: Color,
+        outline: Color,
+        background: Color,
+    ): MuscleColorPreset {
+        val resolve: (MuscleEnumState) -> Color = { muscle ->
+            this[muscle] ?: fallback
+        }
+
+        return MuscleColorPreset(
+            biceps = resolve(MuscleEnumState.BICEPS),
+            triceps = resolve(MuscleEnumState.TRICEPS),
+            forearm = resolve(MuscleEnumState.FOREARM),
+            forearmFront = resolve(MuscleEnumState.FOREARM),
+            forearmBack = resolve(MuscleEnumState.FOREARM),
+            lateralDeltoid = resolve(MuscleEnumState.LATERAL_DELTOID),
+            anteriorDeltoid = resolve(MuscleEnumState.ANTERIOR_DELTOID),
+            posteriorDeltoid = resolve(MuscleEnumState.POSTERIOR_DELTOID),
+            pectoralisMajorAbdominal = resolve(MuscleEnumState.PECTORALIS_MAJOR_ABDOMINAL),
+            pectoralisMajorClavicular = resolve(MuscleEnumState.PECTORALIS_MAJOR_CLAVICULAR),
+            pectoralisMajorSternocostal = resolve(MuscleEnumState.PECTORALIS_MAJOR_STERNOCOSTAL),
+            rectusAbdominis = resolve(MuscleEnumState.RECTUS_ABDOMINIS),
+            obliquesAbdominis = resolve(MuscleEnumState.OBLIQUES),
+            rhomboids = resolve(MuscleEnumState.RHOMBOIDS),
+            latissimus = resolve(MuscleEnumState.LATISSIMUS_DORSI),
+            trapezius = resolve(MuscleEnumState.TRAPEZIUS),
+            teresMajor = resolve(MuscleEnumState.TERES_MAJOR),
+            gluteal = resolve(MuscleEnumState.GLUTEAL),
+            hamstrings = resolve(MuscleEnumState.HAMSTRINGS),
+            calf = resolve(MuscleEnumState.CALF),
+            quadriceps = resolve(MuscleEnumState.QUADRICEPS),
+            adductors = resolve(MuscleEnumState.ADDUCTORS),
+            abductors = resolve(MuscleEnumState.ABDUCTORS),
+            other = fallback,
+            outline = outline,
+            backgroundFront = background,
+            backgroundBack = background,
+        )
+    }
+}
+
+public fun stubMuscleGroup(): PersistentList<MuscleGroupState<MuscleRepresentationState.Plain>> {
     return persistentListOf(
         MuscleGroupState(
             id = "4289bf91-51d8-40b0-9aca-66780584a4eb",

@@ -16,7 +16,6 @@ internal class ProfileMusclesComponent(
         ProfileMusclesViewModel(
             muscleFeature = getKoin().get(),
             excludedMusclesFeature = getKoin().get(),
-            colorProvider = getKoin().get(),
         )
     }
 

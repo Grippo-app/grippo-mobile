@@ -19,7 +19,6 @@ kotlin {
         implementation(projects.uiScreenFeatures.screenApi)
         implementation(projects.toolkit.dateUtils)
         implementation(projects.uiCore.state)
-        implementation(projects.toolkit.calculation)
 
         implementation(compose.foundation)
         implementation(compose.runtime)

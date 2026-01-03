@@ -13,12 +13,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
-import com.grippo.core.state.muscles.stubMuscles
+import com.grippo.core.state.muscles.stubMuscleGroup
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
@@ -90,6 +91,10 @@ internal fun ExcludedMusclesScreen(
 
         val basePadding = PaddingValues(horizontal = AppTokens.dp.screen.horizontalPadding)
 
+        val selectedMuscleIds = remember(state.selectedMuscleIds) {
+            state.selectedMuscleIds.toSet()
+        }
+
         BottomOverlayContainer(
             modifier = Modifier
                 .fillMaxWidth()
@@ -109,7 +114,7 @@ internal fun ExcludedMusclesScreen(
                         key = { _, item -> item.id },
                     ) { index, group ->
                         val isEven = index % 2 == 0
-                        val preset = state.musclePresets[group.id] ?: return@itemsIndexed
+                        val preset = group.colorPreset(selectedMuscleIds)
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -173,8 +178,8 @@ private fun ScreenPreviewSelected() {
     PreviewContainer {
         ExcludedMusclesScreen(
             state = ExcludedMusclesState(
-                suggestions = stubMuscles(),
-                selectedMuscleIds = stubMuscles()
+                suggestions = stubMuscleGroup(),
+                selectedMuscleIds = stubMuscleGroup()
                     .map { it.muscles.map { it.value.id } }
                     .flatten()
                     .take(3).toPersistentList()
@@ -191,7 +196,7 @@ private fun ScreenPreviewUnselected() {
     PreviewContainer {
         ExcludedMusclesScreen(
             state = ExcludedMusclesState(
-                suggestions = stubMuscles(),
+                suggestions = stubMuscleGroup(),
                 selectedMuscleIds = persistentListOf()
             ),
             loaders = persistentSetOf(),

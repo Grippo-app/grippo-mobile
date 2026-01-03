@@ -13,7 +13,6 @@ kotlin {
     sourceSets.commonMain.dependencies {
         implementation(projects.uiCore.foundation)
         implementation(projects.uiCore.state)
-        implementation(projects.toolkit.calculation)
         implementation(projects.uiCore.error.errorProvider)
         implementation(projects.toolkit.dateUtils)
         implementation(projects.designSystem.core)

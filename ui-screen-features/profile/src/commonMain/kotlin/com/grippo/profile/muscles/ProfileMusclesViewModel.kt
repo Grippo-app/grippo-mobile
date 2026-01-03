@@ -1,29 +1,21 @@
 package com.grippo.profile.muscles
 
 import com.grippo.core.foundation.BaseViewModel
-import com.grippo.core.state.muscles.MuscleGroupState
-import com.grippo.core.state.muscles.MuscleRepresentationState
 import com.grippo.data.features.api.excluded.muscles.ExcludedMusclesFeature
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.Muscle
 import com.grippo.data.features.api.muscle.models.MuscleGroup
-import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.domain.state.muscles.toState
-import com.grippo.toolkit.calculation.AnalyticsApi
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
-import kotlinx.collections.immutable.toPersistentMap
 import kotlinx.coroutines.flow.combine
 
 internal class ProfileMusclesViewModel(
     muscleFeature: MuscleFeature,
     private val excludedMusclesFeature: ExcludedMusclesFeature,
-    colorProvider: ColorProvider,
 ) : BaseViewModel<ProfileMusclesState, ProfileMusclesDirection, ProfileMusclesLoader>(
     ProfileMusclesState()
 ), ProfileMusclesContract {
-
-    private val analytics = AnalyticsApi(colorProvider)
 
     init {
         combine(
@@ -46,8 +38,6 @@ internal class ProfileMusclesViewModel(
             .toPersistentList()
 
         update { it.copy(suggestions = suggestions, selectedMuscleIds = selectedIds) }
-
-        calculatePresets(suggestions, selectedIds)
     }
 
     override fun onSelect(id: String) {
@@ -57,10 +47,6 @@ internal class ProfileMusclesViewModel(
             .toPersistentList()
 
         update { it.copy(selectedMuscleIds = newList) }
-
-        safeLaunch {
-            calculatePresets(state.value.suggestions, newList)
-        }
     }
 
     override fun onApply() {
@@ -78,17 +64,4 @@ internal class ProfileMusclesViewModel(
         navigateTo(ProfileMusclesDirection.Back)
     }
 
-    private suspend fun calculatePresets(
-        suggestions: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
-        selectedIds: PersistentList<String>,
-    ) {
-        val selectedSet = selectedIds.toSet()
-        val presets = suggestions
-            .associate { group ->
-                group.id to analytics.musclePresetFromSelection(group, selectedSet)
-            }
-            .toPersistentMap()
-
-        update { it.copy(musclePresets = presets) }
-    }
 }

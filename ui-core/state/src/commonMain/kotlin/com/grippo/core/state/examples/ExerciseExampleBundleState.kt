@@ -3,7 +3,7 @@ package com.grippo.core.state.examples
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.PercentageFormatState
 import com.grippo.core.state.muscles.MuscleState
-import com.grippo.core.state.muscles.stubMuscles
+import com.grippo.core.state.muscles.stubMuscleGroup
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.serialization.Serializable
@@ -19,19 +19,21 @@ public data class ExerciseExampleBundleState(
 )
 
 public fun stubExerciseExampleBundles(): ImmutableList<ExerciseExampleBundleState> {
-    return stubMuscles().flatMap { it.muscles }.map { m ->
-        ExerciseExampleBundleState(
-            id = Uuid.random().toString(),
-            muscle = m.value,
-            percentage = PercentageFormatState.of(Random.nextInt(1, 20))
-        )
-    }.toPersistentList()
+    return stubMuscleGroup()
+        .flatMap { it.muscles }
+        .map { m ->
+            ExerciseExampleBundleState(
+                id = Uuid.random().toString(),
+                muscle = m.value,
+                percentage = PercentageFormatState.of(Random.nextInt(1, 20))
+            )
+        }.toPersistentList()
 }
 
 public fun stubExerciseExampleBundle(): ExerciseExampleBundleState {
     return ExerciseExampleBundleState(
         id = Uuid.random().toString(),
-        muscle = stubMuscles().random().muscles.random().value,
+        muscle = stubMuscleGroup().random().muscles.random().value,
         percentage = PercentageFormatState.of(Random.nextInt(1, 20))
     )
 }
