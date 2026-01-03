@@ -3,7 +3,7 @@ package com.grippo.domain.state.metrics
 import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
-import com.grippo.core.state.metrics.TrainingMetricsState as StateTrainingMetrics
+import com.grippo.core.state.metrics.TrainingTotalState as StateTrainingMetrics
 import com.grippo.data.features.api.metrics.models.TrainingMetrics as DomainTrainingMetrics
 
 public fun DomainTrainingMetrics.toState(): StateTrainingMetrics {

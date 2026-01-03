@@ -189,7 +189,7 @@ public class StatisticsViewModel(
 
         update {
             it.copy(
-                totalMetrics = totalMetrics,
+                total = totalMetrics,
                 categoryDistribution = categoryDistribution,
                 weightTypeDistribution = weightTypeDistribution,
                 forceTypeDistribution = forceTypeDistribution,
@@ -230,7 +230,7 @@ public class StatisticsViewModel(
 
         update {
             it.copy(
-                totalMetrics = totalMetrics,
+                total = totalMetrics,
                 categoryDistribution = categoryDistribution,
                 weightTypeDistribution = weightTypeDistribution,
                 forceTypeDistribution = forceTypeDistribution,
@@ -243,7 +243,7 @@ public class StatisticsViewModel(
     private fun clearStatistics() {
         update {
             it.copy(
-                totalMetrics = null,
+                total = null,
                 exerciseVolume = null,
                 categoryDistribution = null,
                 weightTypeDistribution = null,

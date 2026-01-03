@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.grippo.core.state.metrics.TrainingMetricsState
-import com.grippo.core.state.metrics.stubMetrics
+import com.grippo.core.state.metrics.TrainingTotalState
+import com.grippo.core.state.metrics.stubTotal
 import com.grippo.design.components.chip.ChipSize
 import com.grippo.design.components.chip.IntensityChip
 import com.grippo.design.components.chip.IntensityChipStyle
@@ -19,9 +19,9 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
 @Composable
-public fun TrainingMetricsSection(
+public fun TrainingTotalSection(
     modifier: Modifier = Modifier,
-    state: TrainingMetricsState,
+    state: TrainingTotalState,
     chipSize: ChipSize = ChipSize.Medium,
 ) {
     Row(
@@ -65,8 +65,8 @@ public fun TrainingMetricsSection(
 
 @AppPreview
 @Composable
-private fun TrainingMetricsSectionPreview() {
+private fun TrainingTotalSectionPreview() {
     PreviewContainer {
-        TrainingMetricsSection(state = stubMetrics())
+        TrainingTotalSection(state = stubTotal())
     }
 }

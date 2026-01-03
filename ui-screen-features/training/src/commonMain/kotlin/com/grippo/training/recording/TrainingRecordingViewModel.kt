@@ -5,7 +5,7 @@ import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.PercentageFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
-import com.grippo.core.state.metrics.TrainingMetricsState
+import com.grippo.core.state.metrics.TrainingTotalState
 import com.grippo.core.state.stage.StageState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
@@ -151,7 +151,7 @@ internal class TrainingRecordingViewModel(
                     iterations = persistentListOf(),
                     exerciseExample = example.value,
                     createdAt = DateTimeUtils.now(),
-                    metrics = TrainingMetricsState(
+                    total = TrainingTotalState(
                         volume = VolumeFormatState.of(0f),
                         repetitions = RepetitionsFormatState.of(0),
                         intensity = IntensityFormatState.of(0f),

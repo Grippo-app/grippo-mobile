@@ -3,7 +3,7 @@ package com.grippo.training.exercise
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
-import com.grippo.core.state.metrics.TrainingMetricsState
+import com.grippo.core.state.metrics.TrainingTotalState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.IterationFocus
 import com.grippo.core.state.trainings.IterationState
@@ -70,11 +70,11 @@ internal class ExerciseViewModel(
                         .toPersistentList()
 
                     // Recompute metrics for this exercise
-                    val metrics = recalculateMetrics(iterations)
+                    val total = recalculateTotal(iterations)
 
                     val exercise = s.exercise.copy(
                         iterations = iterations,
-                        metrics = metrics
+                        total = total
                     )
                     s.copy(exercise = exercise)
                 }
@@ -96,11 +96,11 @@ internal class ExerciseViewModel(
                 .toPersistentList()
 
             // Recompute metrics after deletion
-            val metrics = recalculateMetrics(iterations)
+            val metrics = recalculateTotal(iterations)
 
             val exercise = s.exercise.copy(
                 iterations = iterations,
-                metrics = metrics
+                total = metrics
             )
             s.copy(exercise = exercise)
         }
@@ -128,11 +128,11 @@ internal class ExerciseViewModel(
                         .toPersistentList()
 
                     // Recompute metrics after edit
-                    val metrics = recalculateMetrics(iterations)
+                    val metrics = recalculateTotal(iterations)
 
                     val exercise = s.exercise.copy(
                         iterations = iterations,
-                        metrics = metrics
+                        total = metrics
                     )
                     s.copy(exercise = exercise)
                 }
@@ -164,11 +164,11 @@ internal class ExerciseViewModel(
                         .toPersistentList()
 
                     // Recompute metrics after edit
-                    val metrics = recalculateMetrics(iterations)
+                    val metrics = recalculateTotal(iterations)
 
                     val exercise = s.exercise.copy(
                         iterations = iterations,
-                        metrics = metrics
+                        total = metrics
                     )
                     s.copy(exercise = exercise)
                 }
@@ -186,11 +186,11 @@ internal class ExerciseViewModel(
                 .toPersistentList()
 
             // Recompute metrics after removal
-            val metrics = recalculateMetrics(iterations)
+            val metrics = recalculateTotal(iterations)
 
             val exercise = s.exercise.copy(
                 iterations = iterations,
-                metrics = metrics
+                total = metrics
             )
             s.copy(exercise = exercise)
         }
@@ -215,9 +215,9 @@ internal class ExerciseViewModel(
         navigateTo(ExerciseDirection.Back)
     }
 
-    private fun recalculateMetrics(
+    private fun recalculateTotal(
         iterations: List<IterationState>,
-    ): TrainingMetricsState {
+    ): TrainingTotalState {
         val domainIterations = iterations.toDomain()
         val domainMetrics = trainingMetricsUseCase.fromIterations(domainIterations)
         return domainMetrics.toState()

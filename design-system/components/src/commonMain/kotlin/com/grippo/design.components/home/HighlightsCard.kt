@@ -48,7 +48,6 @@ import com.grippo.design.resources.provider.icons.Intensity
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 
-@Suppress("UNUSED_PARAMETER")
 @Composable
 public fun HighlightsCard(
     modifier: Modifier = Modifier,

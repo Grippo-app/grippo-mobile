@@ -21,7 +21,7 @@ import com.grippo.core.state.metrics.MuscleLoadEntry
 import com.grippo.core.state.metrics.MuscleLoadSummary
 import com.grippo.core.state.metrics.stubCategoryDistributionState
 import com.grippo.core.state.metrics.stubForceDistributionState
-import com.grippo.core.state.metrics.stubMetrics
+import com.grippo.core.state.metrics.stubTotal
 import com.grippo.core.state.metrics.stubVolumeSeriesState
 import com.grippo.core.state.metrics.stubWeightDistributionState
 import com.grippo.core.state.muscles.MuscleEnumState
@@ -31,7 +31,7 @@ import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.ExerciseDistributionChart
 import com.grippo.design.components.metrics.ForceTypeDistributionChart
 import com.grippo.design.components.metrics.MuscleLoading
-import com.grippo.design.components.metrics.TrainingMetricsSection
+import com.grippo.design.components.metrics.TrainingTotalSection
 import com.grippo.design.components.metrics.VolumeMetricChart
 import com.grippo.design.components.metrics.WeightTypeDistributionChart
 import com.grippo.design.components.spliter.ContentSpliter
@@ -113,9 +113,9 @@ internal fun StatisticsScreen(
                 ),
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block)
             ) {
-                state.totalMetrics?.let { metrics ->
-                    item(key = "summary_chips") {
-                        TrainingMetricsSection(
+                state.total?.let { metrics ->
+                    item(key = "total_chips") {
+                        TrainingTotalSection(
                             modifier = Modifier.fillMaxWidth(),
                             state = metrics,
                         )
@@ -303,7 +303,7 @@ private fun ScreenPreview() {
         StatisticsScreen(
             state = StatisticsState(
                 mode = mode,
-                totalMetrics = stubMetrics(),
+                total = stubTotal(),
                 exerciseVolume = exerciseVolume,
                 categoryDistribution = categoryDistribution,
                 weightTypeDistribution = weightDistribution,

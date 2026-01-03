@@ -7,7 +7,7 @@ import com.grippo.core.state.examples.ForceTypeEnumState
 import com.grippo.core.state.examples.WeightTypeEnumState
 import com.grippo.core.state.metrics.ExerciseDistributionState
 import com.grippo.core.state.metrics.MuscleLoadSummary
-import com.grippo.core.state.metrics.TrainingMetricsState
+import com.grippo.core.state.metrics.TrainingTotalState
 import com.grippo.core.state.metrics.VolumeSeriesState
 import com.grippo.core.state.muscles.MuscleGroupState
 import com.grippo.core.state.muscles.MuscleRepresentationState
@@ -26,7 +26,7 @@ public data class StatisticsState(
     val muscles: ImmutableList<MuscleGroupState<MuscleRepresentationState.Plain>> = persistentListOf(),
 
     // === Basic metrics chips ===
-    val totalMetrics: TrainingMetricsState? = null,
+    val total: TrainingTotalState? = null,
 
     // === Exercise volume (bar) ===
     val exerciseVolume: VolumeSeriesState? = null,

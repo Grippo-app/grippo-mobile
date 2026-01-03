@@ -9,14 +9,14 @@ import kotlin.random.Random
 
 @Immutable
 @Serializable
-public data class TrainingMetricsState(
+public data class TrainingTotalState(
     val repetitions: RepetitionsFormatState,
     val intensity: IntensityFormatState,
     val volume: VolumeFormatState,
 )
 
-public fun stubMetrics(): TrainingMetricsState {
-    return TrainingMetricsState(
+public fun stubTotal(): TrainingTotalState {
+    return TrainingTotalState(
         volume = VolumeFormatState.of(Random.nextInt(1000, 10000).toFloat()),
         intensity = IntensityFormatState.of(Random.nextInt(20, 100).toFloat()),
         repetitions = RepetitionsFormatState.of(Random.nextInt(20, 100)),

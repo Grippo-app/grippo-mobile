@@ -54,7 +54,7 @@ public fun LastTrainingCard(
         DateTimeUtils.format(v, DateFormat.DateOnly.DateMmmDdYyyy)
     }
 
-    val volume = value.metrics.volume.short()
+    val volume = value.total.volume.short()
 
     val string = remember {
         buildString {

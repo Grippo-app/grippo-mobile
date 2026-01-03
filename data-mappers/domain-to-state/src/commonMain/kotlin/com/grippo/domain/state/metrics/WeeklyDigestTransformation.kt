@@ -23,7 +23,7 @@ public fun List<TrainingState>.toWeeklyDigestState(
     val exercisesCount = trainings.sumOf { it.exercises.size }
     val totalDuration: Duration = trainings.fold(ZERO) { acc, training -> acc + training.duration }
     val totalVolume: Float = trainings.fold(0f) { acc, training ->
-        val trainingVolume = when (val volumeState = training.metrics.volume) {
+        val trainingVolume = when (val volumeState = training.total.volume) {
             is VolumeFormatState.Valid -> volumeState.value
             is VolumeFormatState.Invalid -> volumeState.value ?: 0f
             is VolumeFormatState.Empty -> 0f

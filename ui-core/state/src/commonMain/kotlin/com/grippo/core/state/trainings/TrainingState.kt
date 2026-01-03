@@ -1,8 +1,8 @@
 package com.grippo.core.state.trainings
 
 import androidx.compose.runtime.Immutable
-import com.grippo.core.state.metrics.TrainingMetricsState
-import com.grippo.core.state.metrics.stubMetrics
+import com.grippo.core.state.metrics.TrainingTotalState
+import com.grippo.core.state.metrics.stubTotal
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
@@ -19,14 +19,14 @@ public data class TrainingState(
     val duration: Duration,
     val createdAt: LocalDateTime,
     val exercises: ImmutableList<ExerciseState>,
-    val metrics: TrainingMetricsState
+    val total: TrainingTotalState
 )
 
 public fun stubTraining(): TrainingState = TrainingState(
     id = Uuid.random().toString(),
     duration = 10000L.minutes,
     createdAt = DateTimeUtils.thisDay().from,
-    metrics = stubMetrics(),
+    total = stubTotal(),
     exercises = listOf(
         stubExercise(),
         stubExercise(),

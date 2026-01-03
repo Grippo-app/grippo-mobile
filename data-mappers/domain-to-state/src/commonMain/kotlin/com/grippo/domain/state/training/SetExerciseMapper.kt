@@ -3,7 +3,7 @@ package com.grippo.domain.state.training
 import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
-import com.grippo.core.state.metrics.TrainingMetricsState
+import com.grippo.core.state.metrics.TrainingTotalState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.data.features.api.training.models.SetExercise
 import com.grippo.domain.state.exercise.example.toState
@@ -22,7 +22,7 @@ public fun SetExercise.toState(): ExerciseState {
         iterations = iterations.toState(),
         exerciseExample = exerciseExample.toState(),
         createdAt = createdAt,
-        metrics = TrainingMetricsState(
+        total = TrainingTotalState(
             volume = VolumeFormatState.of(volume),
             repetitions = RepetitionsFormatState.of(repetitions),
             intensity = IntensityFormatState.of(intensity),

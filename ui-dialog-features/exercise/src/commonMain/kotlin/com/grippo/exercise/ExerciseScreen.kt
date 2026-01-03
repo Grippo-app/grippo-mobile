@@ -26,7 +26,7 @@ import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
-import com.grippo.design.components.metrics.TrainingMetricsSection
+import com.grippo.design.components.metrics.TrainingTotalSection
 import com.grippo.design.components.spliter.ContentSpliter
 import com.grippo.design.components.training.IterationsCard
 import com.grippo.design.core.AppTokens
@@ -74,11 +74,11 @@ internal fun ExerciseScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
-        TrainingMetricsSection(
+        TrainingTotalSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-            state = exercise.metrics,
+            state = exercise.total,
         )
 
         if (exercise.iterations.isNotEmpty()) {

@@ -12,8 +12,8 @@ public fun TrainingState.toDomain(): SetTraining? {
     return SetTraining(
         exercises = exercises.toDomain(),
         duration = duration,
-        repetitions = metrics.repetitions.value ?: return null,
-        volume = metrics.volume.value ?: return null,
-        intensity = metrics.intensity.value ?: return null
+        repetitions = total.repetitions.value ?: return null,
+        volume = total.volume.value ?: return null,
+        intensity = total.intensity.value ?: return null
     )
 }
