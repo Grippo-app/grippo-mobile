@@ -6,14 +6,14 @@ import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.core.state.formatters.VolumeFormatState
 
 @Immutable
-public data class ExerciseSpotlight(
+public data class ExerciseSpotlightState(
     val exercise: ExerciseExampleState,
     val totalVolume: VolumeFormatState,
     val sessionCount: Int,
 )
 
-public fun stubExerciseSpotlight(): ExerciseSpotlight {
-    return ExerciseSpotlight(
+public fun stubExerciseSpotlight(): ExerciseSpotlightState {
+    return ExerciseSpotlightState(
         exercise = stubExerciseExample(),
         totalVolume = VolumeFormatState.of(1_200f),
         sessionCount = 3,

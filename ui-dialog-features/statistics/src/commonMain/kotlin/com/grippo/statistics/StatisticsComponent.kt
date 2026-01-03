@@ -17,15 +17,12 @@ public class StatisticsComponent(
     override val viewModel: StatisticsViewModel = componentContext.retainedInstance {
         StatisticsViewModel(
             config = config,
-            exerciseExampleFeature = getKoin().get(),
-            muscleFeature = getKoin().get(),
-            colorProvider = getKoin().get(),
-            stringProvider = getKoin().get(),
             trainingFeature = getKoin().get(),
             muscleLoadingUseCase = getKoin().get(),
             exerciseDistributionUseCase = getKoin().get(),
             volumeSeriesUseCase = getKoin().get(),
-            trainingMetricsUseCase = getKoin().get(),
+            trainingTotalUseCase = getKoin().get(),
+            muscleLoadTimelineUseCase = getKoin().get(),
         )
     }
 

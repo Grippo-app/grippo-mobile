@@ -13,8 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
-import com.grippo.core.state.metrics.MuscleLoadEntry
-import com.grippo.core.state.metrics.MuscleLoadSummary
+import com.grippo.core.state.metrics.MuscleLoadEntryState
+import com.grippo.core.state.metrics.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.core.state.muscles.MuscleEnumState
 import com.grippo.design.components.indicators.LineIndicator
@@ -33,7 +33,7 @@ import kotlin.math.roundToInt
 
 @Composable
 public fun MuscleLoadSection(
-    summary: MuscleLoadSummary,
+    summary: MuscleLoadSummaryState,
     modifier: Modifier = Modifier,
 ) {
     MetricSectionPanel(modifier = modifier) {
@@ -54,7 +54,7 @@ public fun MuscleLoadSection(
 
 @Composable
 public fun MuscleLoading(
-    summary: MuscleLoadSummary,
+    summary: MuscleLoadSummaryState,
     modifier: Modifier = Modifier,
     maxVisibleEntries: Int = Int.MAX_VALUE,
 ) {
@@ -78,7 +78,7 @@ public fun MuscleLoading(
 
 @Composable
 private fun MuscleLoadingItem(
-    entry: MuscleLoadEntry,
+    entry: MuscleLoadEntryState,
     color: Color,
     modifier: Modifier = Modifier,
     dominant: Boolean = false,
@@ -137,7 +137,7 @@ private fun indicatorColorsFor(color: Color): AppColor.LineIndicatorColors.Indic
 
 @Composable
 private fun rememberMuscleLoadingAssets(
-    summary: MuscleLoadSummary,
+    summary: MuscleLoadSummaryState,
     maxVisibleEntries: Int,
 ): MuscleLoadingAssets {
     val colors = AppTokens.colors
@@ -163,7 +163,7 @@ private fun rememberMuscleLoadingAssets(
 }
 
 private fun colorizeEntries(
-    entries: List<MuscleLoadEntry>,
+    entries: List<MuscleLoadEntryState>,
     palette: List<Color>,
     maxVisibleEntries: Int = Int.MAX_VALUE,
     colorTransformer: (index: Int, Color) -> Color = { _, color -> color },
@@ -249,7 +249,7 @@ private fun buildPreset(
 }
 
 private data class ColoredEntry(
-    val entry: MuscleLoadEntry,
+    val entry: MuscleLoadEntryState,
     val color: Color,
 )
 

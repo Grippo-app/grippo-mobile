@@ -5,18 +5,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.chart.heatmap.HeatmapData
 import com.grippo.chart.heatmap.Matrix01
+import com.grippo.core.state.metrics.MuscleLoadTimelineState
+import com.grippo.core.state.metrics.stubTemporalHeatmapState
 import com.grippo.design.components.chart.internal.HeatmapChart
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.toolkit.calculation.models.MuscleLoadMatrix
 
 @Composable
 public fun MuscleHeatmapChart(
     modifier: Modifier = Modifier,
-    value: MuscleLoadMatrix,
+    state: MuscleLoadTimelineState,
 ) {
-    val data = remember(value) {
-        value.toHeatmapData()
+    val data = remember(state) {
+        state.toHeatmapData()
     }
 
     HeatmapChart(
@@ -25,7 +26,7 @@ public fun MuscleHeatmapChart(
     )
 }
 
-private fun MuscleLoadMatrix.toHeatmapData(): HeatmapData {
+private fun MuscleLoadTimelineState.toHeatmapData(): HeatmapData {
     val m = Matrix01.fromFlat(
         rows = rows,
         cols = cols,
@@ -43,18 +44,7 @@ private fun MuscleLoadMatrix.toHeatmapData(): HeatmapData {
 private fun MuscleHeatmapChartPreview() {
     PreviewContainer {
         MuscleHeatmapChart(
-            value = MuscleLoadMatrix(
-                rows = 4,
-                cols = 7,
-                values01 = listOf(
-                    0.8f, 0.2f, 0.5f, 0.9f, 0.3f, 0.7f, 0.1f,
-                    0.4f, 0.6f, 0.9f, 0.2f, 0.8f, 0.3f, 0.5f,
-                    0.7f, 0.1f, 0.4f, 0.6f, 0.9f, 0.2f, 0.8f,
-                    0.3f, 0.5f, 0.7f, 0.1f, 0.4f, 0.6f, 0.9f
-                ),
-                rowLabels = listOf("Chest", "Back", "Legs", "Arms"),
-                colLabels = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-            )
+            state = stubTemporalHeatmapState()
         )
     }
 }

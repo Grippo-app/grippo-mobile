@@ -10,7 +10,7 @@ import com.grippo.core.state.stage.StageState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
-import com.grippo.data.features.api.metrics.TrainingMetricsUseCase
+import com.grippo.data.features.api.metrics.TrainingTotalUseCase
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.data.features.api.training.TrainingFeature
@@ -47,7 +47,7 @@ internal class TrainingRecordingViewModel(
     private val trainingFeature: TrainingFeature,
     private val dialogController: DialogController,
     private val stringProvider: StringProvider,
-    private val trainingMetricsUseCase: TrainingMetricsUseCase,
+    private val trainingTotalUseCase: TrainingTotalUseCase,
 ) : BaseViewModel<TrainingRecordingState, TrainingRecordingDirection, TrainingRecordingLoader>(
     TrainingRecordingState(stage = stage)
 ), TrainingRecordingContract {
@@ -249,7 +249,7 @@ internal class TrainingRecordingViewModel(
             val exercises = state.value.exercises
             val duration = DateTimeUtils.ago(state.value.startAt)
             val domainExercises = exercises.toDomain()
-            val totals = trainingMetricsUseCase
+            val totals = trainingTotalUseCase
                 .fromExercises(domainExercises)
                 .toState()
 

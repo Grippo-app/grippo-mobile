@@ -1,23 +1,23 @@
 package com.grippo.data.features.api.metrics
 
-import com.grippo.data.features.api.metrics.models.TrainingMetrics
+import com.grippo.data.features.api.metrics.models.TrainingTotal
 import com.grippo.data.features.api.training.models.SetExercise
 import com.grippo.data.features.api.training.models.SetIteration
 import com.grippo.data.features.api.training.models.SetTraining
 
-public class TrainingMetricsUseCase {
+public class TrainingTotalUseCase {
 
-    public fun fromIterations(iterations: List<SetIteration>): TrainingMetrics {
+    public fun fromIterations(iterations: List<SetIteration>): TrainingTotal {
         return aggregate(iterations)
     }
 
-    public fun fromExercises(exercises: List<SetExercise>): TrainingMetrics {
+    public fun fromExercises(exercises: List<SetExercise>): TrainingTotal {
         if (exercises.isEmpty()) return emptyMetrics()
         val iterations = exercises.flatMap(SetExercise::iterations)
         return aggregate(iterations)
     }
 
-    public fun fromTrainings(trainings: List<SetTraining>): TrainingMetrics {
+    public fun fromTrainings(trainings: List<SetTraining>): TrainingTotal {
         if (trainings.isEmpty()) return emptyMetrics()
         val iterations = trainings.flatMap { training ->
             training.exercises.flatMap(SetExercise::iterations)
@@ -25,7 +25,7 @@ public class TrainingMetricsUseCase {
         return aggregate(iterations)
     }
 
-    private fun aggregate(iterations: List<SetIteration>): TrainingMetrics {
+    private fun aggregate(iterations: List<SetIteration>): TrainingTotal {
         if (iterations.isEmpty()) return emptyMetrics()
 
         var tonnage = 0.0
@@ -59,14 +59,14 @@ public class TrainingMetricsUseCase {
             0f
         }
 
-        return TrainingMetrics(
+        return TrainingTotal(
             volume = safeVolume,
             repetitions = safeRepetitions,
             intensity = intensity.coerceAtLeast(0f),
         )
     }
 
-    private fun emptyMetrics(): TrainingMetrics {
-        return TrainingMetrics(volume = 0f, repetitions = 0, intensity = 0f)
+    private fun emptyMetrics(): TrainingTotal {
+        return TrainingTotal(volume = 0f, repetitions = 0, intensity = 0f)
     }
 }

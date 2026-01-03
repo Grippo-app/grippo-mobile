@@ -1,6 +1,5 @@
 package com.grippo.toolkit.calculation
 
-import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.muscles.MuscleGroupState
 import com.grippo.core.state.muscles.MuscleRepresentationState
 import com.grippo.core.state.trainings.ExerciseState
@@ -9,11 +8,8 @@ import com.grippo.design.resources.provider.muscles.MuscleColorPreset
 import com.grippo.design.resources.provider.providers.ColorProvider
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.toolkit.calculation.internal.muscle.MuscleImageBuilder
-import com.grippo.toolkit.calculation.internal.muscle.TemporalHeatmapCalculator
 import com.grippo.toolkit.calculation.internal.strength.Estimated1RMAnalytics
-import com.grippo.toolkit.calculation.models.Metric
 import com.grippo.toolkit.calculation.models.MetricSeries
-import com.grippo.toolkit.calculation.models.MuscleLoadMatrix
 import com.grippo.toolkit.date.utils.DateRange
 
 /**
@@ -25,23 +21,8 @@ public class AnalyticsApi(
     stringProvider: StringProvider,
     colorProvider: ColorProvider,
 ) {
-    private val heatmapCalculator = TemporalHeatmapCalculator(stringProvider)
     private val estimated1RMAnalytics = Estimated1RMAnalytics(colorProvider, stringProvider)
     private val muscleImageBuilder = MuscleImageBuilder(colorProvider)
-
-    /**
-     * Builds the temporal heatmap matrix for [trainings] using the provided filters.
-     *
-     * @param metric Bucket metric used for the heatmap normalization. Defaults to reps.
-     */
-    public suspend fun heatmapFromTrainings(
-        trainings: List<TrainingState>,
-        range: DateRange,
-        examples: List<ExerciseExampleState>,
-        groups: List<MuscleGroupState<MuscleRepresentationState.Plain>>,
-        metric: Metric = Metric.REPS,
-    ): MuscleLoadMatrix = heatmapCalculator
-        .computeMuscleGroupHeatmap(trainings, range, examples, groups, metric)
 
     /**
      * Produces an estimated 1RM series for the supplied [exercises].

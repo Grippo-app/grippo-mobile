@@ -2,18 +2,15 @@ package com.grippo.statistics
 
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.examples.CategoryEnumState
-import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.examples.ForceTypeEnumState
 import com.grippo.core.state.examples.WeightTypeEnumState
 import com.grippo.core.state.metrics.ExerciseDistributionState
-import com.grippo.core.state.metrics.MuscleLoadSummary
+import com.grippo.core.state.metrics.MuscleLoadSummaryState
+import com.grippo.core.state.metrics.MuscleLoadTimelineState
 import com.grippo.core.state.metrics.TrainingTotalState
 import com.grippo.core.state.metrics.VolumeSeriesState
-import com.grippo.core.state.muscles.MuscleGroupState
-import com.grippo.core.state.muscles.MuscleRepresentationState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.TrainingState
-import com.grippo.toolkit.calculation.models.MuscleLoadMatrix
 import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -22,9 +19,6 @@ import kotlinx.collections.immutable.persistentListOf
 public data class StatisticsState(
     val mode: StatisticsMode,
 
-    val examples: ImmutableList<ExerciseExampleState> = persistentListOf(),
-    val muscles: ImmutableList<MuscleGroupState<MuscleRepresentationState.Plain>> = persistentListOf(),
-
     // === Basic metrics chips ===
     val total: TrainingTotalState? = null,
 
@@ -32,7 +26,7 @@ public data class StatisticsState(
     val exerciseVolume: VolumeSeriesState? = null,
 
     // === Muscle analysis (progress/heatmap) ===
-    val muscleLoad: MuscleLoadSummary? = null,
+    val muscleLoad: MuscleLoadSummaryState? = null,
 
     // === Exercise example distributions (pie) ===
     val categoryDistribution: ExerciseDistributionState<CategoryEnumState>? = null,
@@ -40,7 +34,7 @@ public data class StatisticsState(
     val forceTypeDistribution: ExerciseDistributionState<ForceTypeEnumState>? = null,
 
     // === Temporal heatmap ===
-    val temporalHeatmap: MuscleLoadMatrix? = null,
+    val temporalHeatmap: MuscleLoadTimelineState? = null,
 )
 
 @Immutable

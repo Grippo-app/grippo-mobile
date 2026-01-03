@@ -19,7 +19,7 @@ internal class ExerciseComponent(
         ExerciseViewModel(
             exercise = exercise,
             exerciseExampleFeature = getKoin().get(),
-            trainingMetricsUseCase = getKoin().get(),
+            trainingTotalUseCase = getKoin().get(),
             dialogController = getKoin().get(),
         )
     }

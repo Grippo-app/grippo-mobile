@@ -2,8 +2,8 @@ package com.grippo.domain.state.metrics
 
 import com.grippo.domain.state.muscles.toState
 import kotlinx.collections.immutable.toPersistentList
-import com.grippo.core.state.metrics.MuscleLoadBreakdown as StateMuscleLoadBreakdown
-import com.grippo.core.state.metrics.MuscleLoadEntry as StateMuscleLoadEntry
+import com.grippo.core.state.metrics.MuscleLoadBreakdownState as StateMuscleLoadBreakdown
+import com.grippo.core.state.metrics.MuscleLoadEntryState as StateMuscleLoadEntry
 import com.grippo.data.features.api.metrics.models.MuscleLoadBreakdown as DomainMuscleLoadBreakdown
 import com.grippo.data.features.api.metrics.models.MuscleLoadEntry as DomainMuscleLoadEntry
 

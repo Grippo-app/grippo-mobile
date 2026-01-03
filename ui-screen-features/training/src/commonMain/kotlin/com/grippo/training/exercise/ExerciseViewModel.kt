@@ -9,7 +9,7 @@ import com.grippo.core.state.trainings.IterationFocus
 import com.grippo.core.state.trainings.IterationState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
-import com.grippo.data.features.api.metrics.TrainingMetricsUseCase
+import com.grippo.data.features.api.metrics.TrainingTotalUseCase
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
@@ -23,7 +23,7 @@ import com.grippo.training.exercise.ExerciseState as ScreenExerciseState
 internal class ExerciseViewModel(
     exercise: ExerciseState,
     exerciseExampleFeature: ExerciseExampleFeature,
-    private val trainingMetricsUseCase: TrainingMetricsUseCase,
+    private val trainingTotalUseCase: TrainingTotalUseCase,
     private val dialogController: DialogController,
 ) : BaseViewModel<ScreenExerciseState, ExerciseDirection, ExerciseLoader>(
     ScreenExerciseState(
@@ -219,7 +219,7 @@ internal class ExerciseViewModel(
         iterations: List<IterationState>,
     ): TrainingTotalState {
         val domainIterations = iterations.toDomain()
-        val domainMetrics = trainingMetricsUseCase.fromIterations(domainIterations)
+        val domainMetrics = trainingTotalUseCase.fromIterations(domainIterations)
         return domainMetrics.toState()
     }
 }

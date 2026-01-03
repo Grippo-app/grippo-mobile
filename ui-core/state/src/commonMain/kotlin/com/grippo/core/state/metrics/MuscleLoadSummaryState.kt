@@ -6,28 +6,28 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
-public data class MuscleLoadSummary(
-    val perGroup: MuscleLoadBreakdown,
-    val perMuscle: MuscleLoadBreakdown,
+public data class MuscleLoadSummaryState(
+    val perGroup: MuscleLoadBreakdownState,
+    val perMuscle: MuscleLoadBreakdownState,
 )
 
 @Immutable
-public data class MuscleLoadBreakdown(
-    val entries: List<MuscleLoadEntry>,
+public data class MuscleLoadBreakdownState(
+    val entries: List<MuscleLoadEntryState>,
 )
 
 @Immutable
-public data class MuscleLoadEntry(
+public data class MuscleLoadEntryState(
     val label: String,
     val value: Float,
     val muscles: ImmutableList<MuscleEnumState>,
 )
 
-public fun stubMuscleLoadSummary(): MuscleLoadSummary {
-    return MuscleLoadSummary(
-        perGroup = MuscleLoadBreakdown(
+public fun stubMuscleLoadSummary(): MuscleLoadSummaryState {
+    return MuscleLoadSummaryState(
+        perGroup = MuscleLoadBreakdownState(
             entries = listOf(
-                MuscleLoadEntry(
+                MuscleLoadEntryState(
                     label = "Chest",
                     value = 42f,
                     muscles = persistentListOf(
@@ -35,17 +35,17 @@ public fun stubMuscleLoadSummary(): MuscleLoadSummary {
                         MuscleEnumState.PECTORALIS_MAJOR_STERNOCOSTAL
                     )
                 ),
-                MuscleLoadEntry(
+                MuscleLoadEntryState(
                     label = "Back",
                     value = 27f,
                     muscles = persistentListOf(MuscleEnumState.LATISSIMUS_DORSI)
                 ),
-                MuscleLoadEntry(
+                MuscleLoadEntryState(
                     label = "Arms",
                     value = 18f,
                     muscles = persistentListOf(MuscleEnumState.BICEPS, MuscleEnumState.TRICEPS)
                 ),
-                MuscleLoadEntry(
+                MuscleLoadEntryState(
                     label = "Legs",
                     value = 13f,
                     muscles = persistentListOf(
@@ -55,24 +55,24 @@ public fun stubMuscleLoadSummary(): MuscleLoadSummary {
                 )
             )
         ),
-        perMuscle = MuscleLoadBreakdown(
+        perMuscle = MuscleLoadBreakdownState(
             entries = listOf(
-                MuscleLoadEntry(
+                MuscleLoadEntryState(
                     label = "Pec Major (Clav.)",
                     value = 52f,
                     muscles = persistentListOf(MuscleEnumState.PECTORALIS_MAJOR_CLAVICULAR)
                 ),
-                MuscleLoadEntry(
+                MuscleLoadEntryState(
                     label = "Latissimus",
                     value = 34f,
                     muscles = persistentListOf(MuscleEnumState.LATISSIMUS_DORSI)
                 ),
-                MuscleLoadEntry(
+                MuscleLoadEntryState(
                     label = "Biceps",
                     value = 21f,
                     muscles = persistentListOf(MuscleEnumState.BICEPS)
                 ),
-                MuscleLoadEntry(
+                MuscleLoadEntryState(
                     label = "Quads",
                     value = 18f,
                     muscles = persistentListOf(MuscleEnumState.QUADRICEPS)

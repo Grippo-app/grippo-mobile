@@ -73,6 +73,13 @@ public class FeatureApiModule {
         }
 
         single {
+            MuscleLoadTimelineUseCase(
+                exerciseExampleFeature = get(),
+                muscleFeature = get(),
+            )
+        }
+
+        single {
             ExerciseDistributionUseCase()
         }
 
@@ -95,7 +102,7 @@ public class FeatureApiModule {
         }
 
         single {
-            TrainingMetricsUseCase()
+            TrainingTotalUseCase()
         }
     }
 }

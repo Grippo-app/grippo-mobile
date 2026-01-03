@@ -3,37 +3,10 @@ package com.grippo.toolkit.calculation.internal
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.design.resources.provider.w
-import com.grippo.toolkit.calculation.models.Bucket
 import com.grippo.toolkit.calculation.models.BucketScale
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.datetime.LocalDateTime
-
-// -------- Bucket labelers --------
-
-internal suspend fun defaultLabeler(
-    scale: BucketScale,
-    stringProvider: StringProvider
-): (Bucket) -> String {
-    val w = stringProvider.get(Res.string.w)
-    return when (scale) {
-        BucketScale.DAY -> { b ->
-            DateTimeUtils.format(b.start, DateFormat.DateOnly.WeekdayShort)
-        }
-
-        BucketScale.WEEK -> { b ->
-            "$w${isoWeekNumber(b.start)}-${
-                DateTimeUtils.format(b.start, DateFormat.DateOnly.MonthShort)
-            }"
-        }
-
-        BucketScale.MONTH -> { b ->
-            DateTimeUtils.format(b.start, DateFormat.DateOnly.MonthShort)
-        }
-
-        BucketScale.EXERCISE -> { _ -> "" }
-    }
-}
 
 internal suspend fun LocalDateTime.label(
     scale: BucketScale,
@@ -53,35 +26,6 @@ internal suspend fun LocalDateTime.label(
 
         BucketScale.MONTH -> {
             DateTimeUtils.format(this, DateFormat.DateOnly.MonthShort)
-        }
-    }
-}
-
-// -------- Time labels for heatmaps --------
-
-internal suspend fun defaultTimeLabels(
-    buckets: List<Bucket>,
-    scale: BucketScale,
-    stringProvider: StringProvider
-): List<String> {
-    val w = stringProvider.get(Res.string.w)
-    return when (scale) {
-        BucketScale.DAY -> buckets.map {
-            DateTimeUtils.format(it.start, DateFormat.DateOnly.DateDdMmm) // e.g., "02 Sep"
-        }
-
-        BucketScale.WEEK -> buckets.map {
-            "$w${isoWeekNumber(it.start)}-${
-                DateTimeUtils.format(it.start, DateFormat.DateOnly.MonthShort)
-            }" // e.g., "W36-Sep"
-        }
-
-        BucketScale.MONTH -> buckets.map {
-            DateTimeUtils.format(it.start, DateFormat.DateOnly.MonthShort) // e.g., "Sep"
-        }
-
-        BucketScale.EXERCISE -> buckets.map {
-            DateTimeUtils.format(it.start, DateFormat.DateOnly.DateDdMmm)
         }
     }
 }

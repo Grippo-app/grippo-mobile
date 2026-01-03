@@ -14,17 +14,3 @@ public data class MetricPoint(
 public data class MetricSeries(
     val points: List<MetricPoint>,
 )
-
-@Immutable
-public data class MuscleLoadMatrix(
-    val rows: Int,
-    val cols: Int,
-    val values01: List<Float>,
-    val rowLabels: List<String> = emptyList(),
-    val colLabels: List<String> = emptyList(),
-)
-
-public sealed interface Metric {
-    public data object TONNAGE : Metric
-    public data object REPS : Metric
-}

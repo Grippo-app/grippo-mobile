@@ -16,21 +16,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
-import com.grippo.core.state.metrics.MuscleLoadBreakdown
-import com.grippo.core.state.metrics.MuscleLoadEntry
-import com.grippo.core.state.metrics.MuscleLoadSummary
+import com.grippo.core.state.metrics.MuscleLoadBreakdownState
+import com.grippo.core.state.metrics.MuscleLoadEntryState
+import com.grippo.core.state.metrics.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.stubCategoryDistributionState
 import com.grippo.core.state.metrics.stubForceDistributionState
+import com.grippo.core.state.metrics.stubTemporalHeatmapState
 import com.grippo.core.state.metrics.stubTotal
 import com.grippo.core.state.metrics.stubVolumeSeriesState
 import com.grippo.core.state.metrics.stubWeightDistributionState
 import com.grippo.core.state.muscles.MuscleEnumState
 import com.grippo.core.state.trainings.stubTraining
-import com.grippo.design.components.chart.MuscleHeatmapChart
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.ExerciseDistributionChart
 import com.grippo.design.components.metrics.ForceTypeDistributionChart
 import com.grippo.design.components.metrics.MuscleLoading
+import com.grippo.design.components.metrics.TemporalHeatmapSection
 import com.grippo.design.components.metrics.TrainingTotalSection
 import com.grippo.design.components.metrics.VolumeMetricChart
 import com.grippo.design.components.metrics.WeightTypeDistributionChart
@@ -46,7 +47,6 @@ import com.grippo.design.resources.provider.muscles
 import com.grippo.design.resources.provider.statistics
 import com.grippo.design.resources.provider.trends
 import com.grippo.design.resources.provider.value_statistics
-import com.grippo.toolkit.calculation.models.MuscleLoadMatrix
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
@@ -194,12 +194,12 @@ internal fun StatisticsScreen(
                     }
 
                 state.temporalHeatmap
-                    ?.takeIf { it.values01.isNotEmpty() }
+                    ?.takeIf { it.values01.isNotEmpty() && it.rows > 0 && it.cols > 0 }
                     ?.let { data ->
                         item(key = "temporal_heatmap") {
-                            MuscleHeatmapChart(
+                            TemporalHeatmapSection(
                                 modifier = Modifier.fillMaxWidth(),
-                                value = data,
+                                state = data,
                             )
                         }
                     }
@@ -229,10 +229,10 @@ private fun ScreenPreview() {
         val weightDistribution = stubWeightDistributionState()
         val forceDistribution = stubForceDistributionState()
 
-        val muscleLoad = MuscleLoadSummary(
-            perGroup = MuscleLoadBreakdown(
+        val muscleLoad = MuscleLoadSummaryState(
+            perGroup = MuscleLoadBreakdownState(
                 entries = listOf(
-                    MuscleLoadEntry(
+                    MuscleLoadEntryState(
                         label = "Chest",
                         value = 0.78f,
                         muscles = persistentListOf(
@@ -240,7 +240,7 @@ private fun ScreenPreview() {
                             MuscleEnumState.PECTORALIS_MAJOR_STERNOCOSTAL
                         )
                     ),
-                    MuscleLoadEntry(
+                    MuscleLoadEntryState(
                         label = "Back",
                         value = 0.64f,
                         muscles = persistentListOf(
@@ -248,7 +248,7 @@ private fun ScreenPreview() {
                             MuscleEnumState.TRAPEZIUS
                         )
                     ),
-                    MuscleLoadEntry(
+                    MuscleLoadEntryState(
                         label = "Legs",
                         value = 0.52f,
                         muscles = persistentListOf(
@@ -258,9 +258,9 @@ private fun ScreenPreview() {
                     )
                 )
             ),
-            perMuscle = MuscleLoadBreakdown(
+            perMuscle = MuscleLoadBreakdownState(
                 entries = listOf(
-                    MuscleLoadEntry(
+                    MuscleLoadEntryState(
                         label = "Chest",
                         value = 0.78f,
                         muscles = persistentListOf(
@@ -268,7 +268,7 @@ private fun ScreenPreview() {
                             MuscleEnumState.PECTORALIS_MAJOR_STERNOCOSTAL
                         )
                     ),
-                    MuscleLoadEntry(
+                    MuscleLoadEntryState(
                         label = "Back",
                         value = 0.64f,
                         muscles = persistentListOf(
@@ -276,7 +276,7 @@ private fun ScreenPreview() {
                             MuscleEnumState.TRAPEZIUS
                         )
                     ),
-                    MuscleLoadEntry(
+                    MuscleLoadEntryState(
                         label = "Legs",
                         value = 0.52f,
                         muscles = persistentListOf(
@@ -288,17 +288,7 @@ private fun ScreenPreview() {
             ),
         )
 
-        val heatmap = MuscleLoadMatrix(
-            rows = 3,
-            cols = 4,
-            values01 = listOf(
-                0.15f, 0.65f, 0.35f, 0.80f,
-                0.30f, 0.45f, 0.55f, 0.25f,
-                0.60f, 0.20f, 0.70f, 0.10f
-            ),
-            rowLabels = listOf("Chest", "Back", "Legs"),
-            colLabels = listOf("W1", "W2", "W3", "W4")
-        )
+        val heatmap = stubTemporalHeatmapState()
 
         StatisticsScreen(
             state = StatisticsState(

@@ -1,8 +1,8 @@
 package com.grippo.home.home
 
 import androidx.compose.runtime.Immutable
-import com.grippo.core.state.metrics.ExerciseSpotlight
-import com.grippo.core.state.metrics.MuscleLoadSummary
+import com.grippo.core.state.metrics.ExerciseSpotlightState
+import com.grippo.core.state.metrics.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.PerformanceMetricState
 import com.grippo.core.state.metrics.TrainingStreakState
 import com.grippo.core.state.metrics.digest.MonthlyDigestState
@@ -16,8 +16,8 @@ internal data class HomeState(
     val weeklyDigest: WeeklyDigestState? = null,
     val monthlyDigest: MonthlyDigestState? = null,
     val totalDuration: Duration? = null,
-    val spotlight: ExerciseSpotlight? = null,
-    val muscleLoad: MuscleLoadSummary? = null,
+    val spotlight: ExerciseSpotlightState? = null,
+    val muscleLoad: MuscleLoadSummaryState? = null,
     val streak: TrainingStreakState? = null,
     val performance: List<PerformanceMetricState> = emptyList(),
 )

@@ -1,6 +1,6 @@
 package com.grippo.domain.state.metrics
 
-import com.grippo.core.state.metrics.MuscleLoadSummary as StateMuscleLoadSummary
+import com.grippo.core.state.metrics.MuscleLoadSummaryState as StateMuscleLoadSummary
 import com.grippo.data.features.api.metrics.models.MuscleLoadSummary as DomainMuscleLoadSummary
 
 public fun DomainMuscleLoadSummary.toState(): StateMuscleLoadSummary {

@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
-import com.grippo.core.state.metrics.ExerciseSpotlight
+import com.grippo.core.state.metrics.ExerciseSpotlightState
 import com.grippo.core.state.metrics.stubExerciseSpotlight
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
@@ -19,7 +19,7 @@ import com.grippo.design.resources.provider.highlight_focus_exercise
 
 @Composable
 public fun ExerciseSpotlightSection(
-    value: ExerciseSpotlight,
+    value: ExerciseSpotlightState,
     modifier: Modifier = Modifier,
     onExampleClick: (id: String) -> Unit,
 ) {

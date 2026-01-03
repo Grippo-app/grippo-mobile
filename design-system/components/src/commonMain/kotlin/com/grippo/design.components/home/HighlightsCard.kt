@@ -19,8 +19,8 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
-import com.grippo.core.state.metrics.ExerciseSpotlight
-import com.grippo.core.state.metrics.MuscleLoadSummary
+import com.grippo.core.state.metrics.ExerciseSpotlightState
+import com.grippo.core.state.metrics.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.PerformanceMetricState
 import com.grippo.core.state.metrics.PerformanceMetricTypeState
 import com.grippo.core.state.metrics.PerformanceTrendStatusState
@@ -52,8 +52,8 @@ import kotlin.time.Duration.Companion.hours
 public fun HighlightsCard(
     modifier: Modifier = Modifier,
     totalDuration: Duration,
-    spotlight: ExerciseSpotlight?,
-    muscleLoad: MuscleLoadSummary?,
+    spotlight: ExerciseSpotlightState?,
+    muscleLoad: MuscleLoadSummaryState?,
     streak: TrainingStreakState,
     performance: List<PerformanceMetricState>,
     onViewWorkout: () -> Unit,
