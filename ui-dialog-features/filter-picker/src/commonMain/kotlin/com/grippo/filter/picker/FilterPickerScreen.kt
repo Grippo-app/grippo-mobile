@@ -22,7 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
-import com.grippo.core.state.filters.FilterValue
+import com.grippo.core.state.filters.FilterValueState
 import com.grippo.core.state.filters.stubFilters
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
@@ -88,7 +88,7 @@ internal fun FilterPickerScreen(
                 Spacer(Modifier.height(AppTokens.dp.contentPadding.subContent))
 
                 when (content) {
-                    is FilterValue.Category -> {
+                    is FilterValueState.Category -> {
                         Row(
                             modifier = Modifier
                                 .horizontalScroll(rememberScrollState())
@@ -114,7 +114,7 @@ internal fun FilterPickerScreen(
                         }
                     }
 
-                    is FilterValue.ForceType -> {
+                    is FilterValueState.ForceType -> {
                         Row(
                             modifier = Modifier
                                 .horizontalScroll(rememberScrollState())
@@ -140,7 +140,7 @@ internal fun FilterPickerScreen(
                         }
                     }
 
-                    is FilterValue.WeightType -> {
+                    is FilterValueState.WeightType -> {
                         Row(
                             modifier = Modifier
                                 .horizontalScroll(rememberScrollState())

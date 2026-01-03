@@ -18,7 +18,7 @@ public data class ExerciseDistributionEntryState<T>(
     val value: Float,
 )
 
-public fun stubCategoryDistributionState(): ExerciseDistributionState<CategoryEnumState> {
+public fun stubCategoryDistribution(): ExerciseDistributionState<CategoryEnumState> {
     val entries = listOf(
         ExerciseDistributionEntryState(
             key = CategoryEnumState.COMPOUND,
@@ -32,7 +32,7 @@ public fun stubCategoryDistributionState(): ExerciseDistributionState<CategoryEn
     return ExerciseDistributionState(entries = entries)
 }
 
-public fun stubWeightDistributionState(): ExerciseDistributionState<WeightTypeEnumState> {
+public fun stubWeightDistribution(): ExerciseDistributionState<WeightTypeEnumState> {
     val entries = listOf(
         ExerciseDistributionEntryState(
             key = WeightTypeEnumState.FREE,
@@ -50,7 +50,7 @@ public fun stubWeightDistributionState(): ExerciseDistributionState<WeightTypeEn
     return ExerciseDistributionState(entries = entries)
 }
 
-public fun stubForceDistributionState(): ExerciseDistributionState<ForceTypeEnumState> {
+public fun stubForceDistribution(): ExerciseDistributionState<ForceTypeEnumState> {
     val entries = listOf(
         ExerciseDistributionEntryState(
             key = ForceTypeEnumState.PUSH,

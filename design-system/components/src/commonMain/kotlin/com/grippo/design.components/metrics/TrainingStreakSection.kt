@@ -9,7 +9,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.metrics.TrainingStreakMood
 import com.grippo.core.state.metrics.TrainingStreakState
 import com.grippo.core.state.metrics.TrainingStreakType
-import com.grippo.core.state.metrics.stubTrainingStreakStates
+import com.grippo.core.state.metrics.stubTrainingStreaks
 import com.grippo.design.components.indicators.LineIndicator
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.core.AppTokens
@@ -159,13 +159,13 @@ public fun TrainingStreakSection(
 private fun TrainingStreakSectionPreview() {
     PreviewContainer {
         TrainingStreakSection(
-            value = stubTrainingStreakStates().random(),
+            value = stubTrainingStreaks().random(),
         )
         TrainingStreakSection(
-            value = stubTrainingStreakStates().random(),
+            value = stubTrainingStreaks().random(),
         )
         TrainingStreakSection(
-            value = stubTrainingStreakStates().random(),
+            value = stubTrainingStreaks().random(),
         )
     }
 }

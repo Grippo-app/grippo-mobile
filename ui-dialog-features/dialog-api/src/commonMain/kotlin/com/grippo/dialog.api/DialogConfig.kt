@@ -2,7 +2,7 @@ package com.grippo.dialog.api
 
 import com.grippo.core.state.error.AppErrorState
 import com.grippo.core.state.examples.ExerciseExampleState
-import com.grippo.core.state.filters.FilterValue
+import com.grippo.core.state.filters.FilterValueState
 import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.formatters.HeightFormatState
 import com.grippo.core.state.formatters.WeightFormatState
@@ -108,8 +108,8 @@ public sealed class DialogConfig(
 
     @Serializable
     public data class FilterPicker(
-        val initial: List<FilterValue>,
-        @Transient val onResult: (List<FilterValue>) -> Unit = {},
+        val initial: List<FilterValueState>,
+        @Transient val onResult: (List<FilterValueState>) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true

@@ -16,7 +16,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 @Immutable
-public sealed interface FilterValue {
+public sealed interface FilterValueState {
     public val id: String
 
     public fun isSelected(): Boolean
@@ -29,7 +29,7 @@ public sealed interface FilterValue {
         override val id: String = "filter_value_weight_type",
         val value: WeightTypeEnumState?,
         val available: ImmutableList<WeightTypeEnumState> = WeightTypeEnumState.entries.toPersistentList()
-    ) : FilterValue {
+    ) : FilterValueState {
 
         override fun isSelected(): Boolean {
             return value != null
@@ -46,7 +46,7 @@ public sealed interface FilterValue {
         override val id: String = "filter_value_force_type",
         val value: ForceTypeEnumState?,
         val available: ImmutableList<ForceTypeEnumState> = ForceTypeEnumState.entries.toPersistentList()
-    ) : FilterValue {
+    ) : FilterValueState {
 
         override fun isSelected(): Boolean {
             return value != null
@@ -63,7 +63,7 @@ public sealed interface FilterValue {
         override val id: String = "filter_value_category",
         val value: CategoryEnumState?,
         val available: ImmutableList<CategoryEnumState> = CategoryEnumState.entries.toPersistentList()
-    ) : FilterValue {
+    ) : FilterValueState {
 
         override fun isSelected(): Boolean {
             return value != null
@@ -75,4 +75,4 @@ public sealed interface FilterValue {
     }
 }
 
-public fun stubFilters(): ImmutableList<FilterValue> = ExerciseExampleState.filters
+public fun stubFilters(): ImmutableList<FilterValueState> = ExerciseExampleState.filters

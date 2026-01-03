@@ -2,7 +2,7 @@ package com.grippo.exercise.example.picker
 
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.examples.ExerciseExampleState
-import com.grippo.core.state.filters.FilterValue
+import com.grippo.core.state.filters.FilterValueState
 import com.grippo.core.state.muscles.MuscleGroupState
 import com.grippo.core.state.muscles.MuscleRepresentationState
 import com.grippo.data.features.api.exercise.example.models.ExamplePage
@@ -23,7 +23,7 @@ public data class ExerciseExamplePickerState(
 public data class ManualQueries(
     val name: String = "",
     val selectedMuscleGroupId: String? = null,
-    val filters: ImmutableList<FilterValue> = ExerciseExampleState.filters,
+    val filters: ImmutableList<FilterValueState> = ExerciseExampleState.filters,
     val muscleGroups: ImmutableList<MuscleGroupState<MuscleRepresentationState.Plain>> = persistentListOf(),
 )
 

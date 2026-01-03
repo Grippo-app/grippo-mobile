@@ -47,7 +47,7 @@ public data class TrainingStreakRhythmState(
     val restDays: Int,
 )
 
-public fun stubTrainingStreakStates(): List<TrainingStreakState> {
+public fun stubTrainingStreaks(): List<TrainingStreakState> {
     return listOf(
         TrainingStreakState(
             totalActiveDays = 9,

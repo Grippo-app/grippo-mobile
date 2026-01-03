@@ -1,7 +1,7 @@
 package com.grippo.core.state.examples
 
 import androidx.compose.runtime.Immutable
-import com.grippo.core.state.filters.FilterValue
+import com.grippo.core.state.filters.FilterValueState
 import com.grippo.core.state.profile.ExperienceEnumState
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
@@ -25,10 +25,10 @@ public data class ExerciseExampleValueState(
     val lastUsed: LocalDateTime?,
 ) {
     public companion object {
-        public val filters: ImmutableList<FilterValue> = buildList {
-            add(FilterValue.Category(value = null))
-            add(FilterValue.WeightType(value = null))
-            add(FilterValue.ForceType(value = null))
+        public val filters: ImmutableList<FilterValueState> = buildList {
+            add(FilterValueState.Category(value = null))
+            add(FilterValueState.WeightType(value = null))
+            add(FilterValueState.ForceType(value = null))
         }.toPersistentList()
     }
 }

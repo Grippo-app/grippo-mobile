@@ -15,7 +15,7 @@ public data class VolumeSeriesEntryState(
     val value: Float,
 )
 
-public fun stubVolumeSeriesState(): VolumeSeriesState {
+public fun stubVolumeSeries(): VolumeSeriesState {
     val entries = listOf(
         VolumeSeriesEntryState(label = "Ex1", value = 120f),
         VolumeSeriesEntryState(label = "Ex2", value = 95f),

@@ -1,24 +1,24 @@
 package com.grippo.filter.picker
 
 import com.grippo.core.foundation.BaseViewModel
-import com.grippo.core.state.filters.FilterValue
+import com.grippo.core.state.filters.FilterValueState
 import kotlinx.collections.immutable.toPersistentList
 
 public class FilterPickerViewModel(
-    initial: List<FilterValue>,
+    initial: List<FilterValueState>,
 ) : BaseViewModel<FilterPickerState, FilterPickerDirection, FilterPickerLoader>(
     FilterPickerState(
         list = initial.toPersistentList(),
     )
 ), FilterPickerContract {
 
-    override fun onItemClick(value: FilterValue) {
+    override fun onItemClick(value: FilterValueState) {
         update { state ->
             val list = state.list.map { item ->
                 when (value) {
-                    is FilterValue.WeightType -> if (item is FilterValue.WeightType) value else item
-                    is FilterValue.ForceType -> if (item is FilterValue.ForceType) value else item
-                    is FilterValue.Category -> if (item is FilterValue.Category) value else item
+                    is FilterValueState.WeightType -> if (item is FilterValueState.WeightType) value else item
+                    is FilterValueState.ForceType -> if (item is FilterValueState.ForceType) value else item
+                    is FilterValueState.Category -> if (item is FilterValueState.Category) value else item
                 }
             }
 
@@ -30,9 +30,9 @@ public class FilterPickerViewModel(
         update { state ->
             val list = state.list.map { item ->
                 when (item) {
-                    is FilterValue.WeightType -> item.copy(value = null)
-                    is FilterValue.ForceType -> item.copy(value = null)
-                    is FilterValue.Category -> item.copy(value = null)
+                    is FilterValueState.WeightType -> item.copy(value = null)
+                    is FilterValueState.ForceType -> item.copy(value = null)
+                    is FilterValueState.Category -> item.copy(value = null)
                 }
             }
 

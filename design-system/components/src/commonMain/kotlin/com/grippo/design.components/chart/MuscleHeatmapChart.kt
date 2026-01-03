@@ -6,7 +6,7 @@ import androidx.compose.ui.Modifier
 import com.grippo.chart.heatmap.HeatmapData
 import com.grippo.chart.heatmap.Matrix01
 import com.grippo.core.state.metrics.MuscleLoadTimelineState
-import com.grippo.core.state.metrics.stubTemporalHeatmapState
+import com.grippo.core.state.metrics.stubMuscleLoadTimeline
 import com.grippo.design.components.chart.internal.HeatmapChart
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -44,7 +44,7 @@ private fun MuscleLoadTimelineState.toHeatmapData(): HeatmapData {
 private fun MuscleHeatmapChartPreview() {
     PreviewContainer {
         MuscleHeatmapChart(
-            state = stubTemporalHeatmapState()
+            state = stubMuscleLoadTimeline()
         )
     }
 }

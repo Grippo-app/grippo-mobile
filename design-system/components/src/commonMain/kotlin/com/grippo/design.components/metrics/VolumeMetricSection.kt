@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.Color
 import com.grippo.chart.bar.BarData
 import com.grippo.chart.bar.BarEntry
 import com.grippo.core.state.metrics.VolumeSeriesState
-import com.grippo.core.state.metrics.stubVolumeSeriesState
+import com.grippo.core.state.metrics.stubVolumeSeries
 import com.grippo.design.components.chart.internal.BarChart
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -75,7 +75,7 @@ private fun assignColors(
 private fun VolumeMetricChartPreview() {
     PreviewContainer {
         VolumeMetricChart(
-            state = stubVolumeSeriesState()
+            state = stubVolumeSeries()
         )
     }
 }

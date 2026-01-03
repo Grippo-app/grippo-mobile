@@ -13,7 +13,7 @@ public data class MuscleLoadTimelineState(
     val colLabels: ImmutableList<String>,
 )
 
-public fun stubTemporalHeatmapState(): MuscleLoadTimelineState {
+public fun stubMuscleLoadTimeline(): MuscleLoadTimelineState {
     val rows = 3
     val cols = 4
     val values = listOf(

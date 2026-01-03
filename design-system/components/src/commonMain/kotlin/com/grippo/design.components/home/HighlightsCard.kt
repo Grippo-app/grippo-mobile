@@ -28,7 +28,7 @@ import com.grippo.core.state.metrics.TrainingStreakState
 import com.grippo.core.state.metrics.stubExerciseSpotlight
 import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.stubPerformanceMetrics
-import com.grippo.core.state.metrics.stubTrainingStreakStates
+import com.grippo.core.state.metrics.stubTrainingStreaks
 import com.grippo.design.components.metrics.ExerciseSpotlightSection
 import com.grippo.design.components.metrics.MuscleLoadSection
 import com.grippo.design.components.metrics.PerformanceTrendSection
@@ -217,7 +217,7 @@ private fun HighlightsCardFullPreview() {
             totalDuration = 28.hours,
             spotlight = stubExerciseSpotlight(),
             muscleLoad = stubMuscleLoadSummary(),
-            streak = stubTrainingStreakStates().first(),
+            streak = stubTrainingStreaks().first(),
             performance = stubPerformanceMetrics(),
             onViewWorkout = {},
             onExampleClick = {}
@@ -233,7 +233,7 @@ private fun HighlightsCardSpotlightOnlyPreview() {
             totalDuration = 12.hours,
             spotlight = stubExerciseSpotlight(),
             muscleLoad = null,
-            streak = stubTrainingStreakStates().first(),
+            streak = stubTrainingStreaks().first(),
             performance = stubPerformanceMetrics().take(3),
             onViewWorkout = {},
             onExampleClick = {}
@@ -249,7 +249,7 @@ private fun HighlightsCardMinimalPreview() {
             totalDuration = 6.hours,
             spotlight = null,
             muscleLoad = null,
-            streak = stubTrainingStreakStates().first(),
+            streak = stubTrainingStreaks().first(),
             performance = emptyList(),
             onViewWorkout = {},
             onExampleClick = {}

@@ -17,9 +17,9 @@ import com.grippo.core.state.examples.ForceTypeEnumState
 import com.grippo.core.state.examples.WeightTypeEnumState
 import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.metrics.ExerciseDistributionState
-import com.grippo.core.state.metrics.stubCategoryDistributionState
-import com.grippo.core.state.metrics.stubForceDistributionState
-import com.grippo.core.state.metrics.stubWeightDistributionState
+import com.grippo.core.state.metrics.stubCategoryDistribution
+import com.grippo.core.state.metrics.stubForceDistribution
+import com.grippo.core.state.metrics.stubWeightDistribution
 import com.grippo.design.components.chart.internal.PieChart
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -128,9 +128,9 @@ private fun <T> ExerciseDistributionChartContent(
 @Composable
 private fun ExerciseDistributionPreview() {
     PreviewContainer {
-        val category = stubCategoryDistributionState()
-        val weight = stubWeightDistributionState()
-        val force = stubForceDistributionState()
+        val category = stubCategoryDistribution()
+        val weight = stubWeightDistribution()
+        val force = stubForceDistribution()
 
         Column(
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),

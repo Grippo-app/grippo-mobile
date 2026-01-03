@@ -1,7 +1,7 @@
 package com.grippo.exercise.example.picker
 
 import com.grippo.core.foundation.BaseViewModel
-import com.grippo.core.state.filters.FilterValue
+import com.grippo.core.state.filters.FilterValueState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.UserExerciseExamplesUseCase
 import com.grippo.data.features.api.exercise.example.models.ExamplePage
@@ -51,15 +51,15 @@ public class ExerciseExamplePickerViewModel(
                     queries = ExampleQueries(
                         name = suggestion?.name ?: manual.name.trim(),
                         weightType = if (isManual) manualFilters
-                            .filterIsInstance<FilterValue.WeightType>()
+                            .filterIsInstance<FilterValueState.WeightType>()
                             .firstOrNull()
                             ?.value?.toDomain() else null,
                         forceType = if (isManual) manualFilters
-                            .filterIsInstance<FilterValue.ForceType>()
+                            .filterIsInstance<FilterValueState.ForceType>()
                             .firstOrNull()
                             ?.value?.toDomain() else null,
                         category = if (isManual) manualFilters
-                            .filterIsInstance<FilterValue.Category>()
+                            .filterIsInstance<FilterValueState.Category>()
                             .firstOrNull()
                             ?.value?.toDomain() else null,
                         muscleGroupId = if (isManual) manual.selectedMuscleGroupId else null

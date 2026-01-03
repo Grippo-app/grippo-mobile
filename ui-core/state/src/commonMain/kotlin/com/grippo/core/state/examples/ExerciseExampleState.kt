@@ -3,7 +3,7 @@ package com.grippo.core.state.examples
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.equipments.EquipmentState
 import com.grippo.core.state.equipments.stubEquipments
-import com.grippo.core.state.filters.FilterValue
+import com.grippo.core.state.filters.FilterValueState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.serialization.Serializable
@@ -16,7 +16,7 @@ public data class ExerciseExampleState(
     val equipments: ImmutableList<EquipmentState>,
 ) {
     public companion object {
-        public val filters: ImmutableList<FilterValue> = ExerciseExampleValueState.filters
+        public val filters: ImmutableList<FilterValueState> = ExerciseExampleValueState.filters
     }
 }
 

@@ -19,12 +19,12 @@ import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.metrics.MuscleLoadBreakdownState
 import com.grippo.core.state.metrics.MuscleLoadEntryState
 import com.grippo.core.state.metrics.MuscleLoadSummaryState
-import com.grippo.core.state.metrics.stubCategoryDistributionState
-import com.grippo.core.state.metrics.stubForceDistributionState
-import com.grippo.core.state.metrics.stubTemporalHeatmapState
+import com.grippo.core.state.metrics.stubCategoryDistribution
+import com.grippo.core.state.metrics.stubForceDistribution
+import com.grippo.core.state.metrics.stubMuscleLoadTimeline
 import com.grippo.core.state.metrics.stubTotal
-import com.grippo.core.state.metrics.stubVolumeSeriesState
-import com.grippo.core.state.metrics.stubWeightDistributionState
+import com.grippo.core.state.metrics.stubVolumeSeries
+import com.grippo.core.state.metrics.stubWeightDistribution
 import com.grippo.core.state.muscles.MuscleEnumState
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.loading.Loader
@@ -223,11 +223,11 @@ private fun ScreenPreview() {
             range = DateTimeUtils.thisWeek()
         )
 
-        val exerciseVolume = stubVolumeSeriesState()
+        val exerciseVolume = stubVolumeSeries()
 
-        val categoryDistribution = stubCategoryDistributionState()
-        val weightDistribution = stubWeightDistributionState()
-        val forceDistribution = stubForceDistributionState()
+        val categoryDistribution = stubCategoryDistribution()
+        val weightDistribution = stubWeightDistribution()
+        val forceDistribution = stubForceDistribution()
 
         val muscleLoad = MuscleLoadSummaryState(
             perGroup = MuscleLoadBreakdownState(
@@ -288,7 +288,7 @@ private fun ScreenPreview() {
             ),
         )
 
-        val heatmap = stubTemporalHeatmapState()
+        val heatmap = stubMuscleLoadTimeline()
 
         StatisticsScreen(
             state = StatisticsState(

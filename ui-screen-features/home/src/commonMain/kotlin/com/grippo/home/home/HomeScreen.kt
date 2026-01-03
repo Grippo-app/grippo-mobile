@@ -18,7 +18,7 @@ import com.grippo.core.state.metrics.digest.stubWeeklyDigest
 import com.grippo.core.state.metrics.stubExerciseSpotlight
 import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.stubPerformanceMetrics
-import com.grippo.core.state.metrics.stubTrainingStreakStates
+import com.grippo.core.state.metrics.stubTrainingStreaks
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
@@ -173,7 +173,7 @@ private fun HomeScreenPreview() {
                 totalDuration = 28.hours,
                 spotlight = stubExerciseSpotlight(),
                 muscleLoad = stubMuscleLoadSummary(),
-                streak = stubTrainingStreakStates().first(),
+                streak = stubTrainingStreaks().first(),
                 performance = stubPerformanceMetrics(),
             ),
             loaders = persistentSetOf(),
