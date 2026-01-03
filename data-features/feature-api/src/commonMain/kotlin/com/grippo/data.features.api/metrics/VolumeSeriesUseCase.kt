@@ -61,8 +61,10 @@ public class VolumeSeriesUseCase {
                 if (buckets.isEmpty()) return VolumeSeries(emptyList())
                 val grouped = groupTrainingsByBucket(trainings, scale)
 
-                val entries = buckets.map { bucket ->
-                    val total = grouped[bucket.start].orEmpty()
+                val entries = buckets.mapNotNull { bucket ->
+                    val trainings = grouped[bucket.start] ?: return@mapNotNull null
+                    if (trainings.isEmpty()) return@mapNotNull null
+                    val total = trainings
                         .sumOf { training -> sessionVolume(training) }
                         .toFloat()
                         .coerceAtLeast(0f)
@@ -78,8 +80,7 @@ public class VolumeSeriesUseCase {
     }
 
     private fun exerciseLabel(exercise: Exercise, index: Int): String {
-        val fallback = "$EXERCISE_LABEL_PREFIX${index + 1}"
-        return exercise.name.takeIf { it.isNotBlank() } ?: fallback
+        return exercise.name
     }
 
     private fun exerciseVolume(iterations: List<Iteration>): Float {

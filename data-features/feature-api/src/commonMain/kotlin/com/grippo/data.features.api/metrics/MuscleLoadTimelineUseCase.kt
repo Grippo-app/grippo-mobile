@@ -40,8 +40,6 @@ public class MuscleLoadTimelineUseCase(
         range: DateRange,
         metric: MuscleLoadTimelineMetric = MuscleLoadTimelineMetric.Repetitions,
     ): MuscleLoadTimeline? {
-        if (trainings.isEmpty()) return null
-
         val inRange = trainings.filter { it.createdAt in range }
         if (inRange.isEmpty()) return null
 
@@ -75,7 +73,8 @@ public class MuscleLoadTimelineUseCase(
 
             rowSpec.rows.forEachIndexed { r, row ->
                 val value = row.muscles.fold(0f) { acc, muscle ->
-                    acc + (perMuscle[muscle] ?: 0f)
+                    val muscleValue = perMuscle[muscle] ?: 0f
+                    acc + muscleValue
                 }
                 raw[r * cols + c] = value
             }
@@ -98,7 +97,7 @@ public class MuscleLoadTimelineUseCase(
 
         val timelineBuckets = buckets.mapIndexed { index, bucket ->
             MuscleLoadTimelineBucket(
-                label = labels[index],
+                label = labels.getOrNull(index) ?: "",
                 start = bucket.start,
                 end = bucket.end,
             )
@@ -183,7 +182,8 @@ public class MuscleLoadTimelineUseCase(
                     if (share == 0) return@forEach
                     val ratio = share / totalShare
                     val muscle = bundle.muscle.type
-                    result[muscle] = (result[muscle] ?: 0f) + base * ratio
+                    val currentValue = result[muscle] ?: 0f
+                    result[muscle] = currentValue + base * ratio
                 }
             }
         }
@@ -282,7 +282,8 @@ public class MuscleLoadTimelineUseCase(
         val sorted = values.filter { it.isFinite() && it > 0f }.sorted()
         if (sorted.isEmpty()) return FloatArray(values.size)
         val index = ((sorted.size - 1) * percentile).toInt().coerceIn(0, sorted.lastIndex)
-        val pivot = sorted[index].takeIf { it > 0f } ?: return FloatArray(values.size)
+        val pivot = sorted[index]
+        if (pivot <= 0f) return FloatArray(values.size)
         return FloatArray(values.size) { idx -> (values[idx] / pivot).coerceIn(0f, 1f) }
     }
 

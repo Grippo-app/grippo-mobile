@@ -4,7 +4,7 @@ import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.metrics.models.ExerciseSpotlight
 import com.grippo.data.features.api.training.models.Training
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 
 public class ExerciseSpotlightUseCase(
     private val exerciseExampleFeature: ExerciseExampleFeature,
@@ -14,8 +14,6 @@ public class ExerciseSpotlightUseCase(
     }
 
     public suspend fun fromTrainings(trainings: List<Training>): ExerciseSpotlight? {
-        if (trainings.isEmpty()) return null
-
         val volumes = trainings.flatMap { training ->
             training.exercises.mapNotNull { exercise ->
                 val volume = exercise.volume
@@ -25,16 +23,20 @@ public class ExerciseSpotlightUseCase(
                 )
             }
         }
+
         if (volumes.isEmpty()) return null
 
         val grouped = volumes.groupBy { it.exampleId }
         val topEntry = grouped.maxByOrNull { entry -> entry.value.sumOf { it.volume.toDouble() } }
-            ?: return null
+
+        if (topEntry == null) return null
 
         val totalVolume = topEntry.value.sumOf { it.volume.toDouble() }.toFloat()
         if (totalVolume <= EPS) return null
 
-        val example = loadExample(topEntry.key) ?: return null
+        val exampleId = topEntry.key
+        val example = loadExample(exampleId) ?: return null
+
         return ExerciseSpotlight(
             example = example,
             totalVolume = totalVolume,
@@ -43,7 +45,7 @@ public class ExerciseSpotlightUseCase(
     }
 
     private suspend fun loadExample(id: String): ExerciseExample? {
-        return exerciseExampleFeature.observeExerciseExample(id).first()
+        return exerciseExampleFeature.observeExerciseExample(id).firstOrNull()
     }
 
     private data class ExerciseVolume(

@@ -383,7 +383,8 @@ public class TrainingStreakUseCase {
                 .maxByOrNull { (_, occurrences) -> occurrences }
                 ?.key
             val average = positiveCounts.average().roundToInt().coerceAtLeast(1)
-            (mode ?: average).coerceIn(1, 6)
+            val target = mode ?: average
+            target.coerceIn(1, 6)
         }
 
         val currentWeekStart = today.minus(
@@ -418,16 +419,14 @@ public class TrainingStreakUseCase {
         var streak = 0
         var firstIteration = true
         while (pointer >= earliest) {
-            if (firstIteration && pointer == currentWeekStart && (countsByWeekStart[pointer]
-                    ?: 0) < target
-            ) {
+            val weekCount = countsByWeekStart[pointer] ?: 0
+            if (firstIteration && pointer == currentWeekStart && weekCount < target) {
                 pointer = pointer.minus(DatePeriod(days = 7))
                 firstIteration = false
                 continue
             }
             firstIteration = false
-            val value = countsByWeekStart[pointer] ?: 0
-            if (value >= target) {
+            if (weekCount >= target) {
                 streak++
                 pointer = pointer.minus(DatePeriod(days = 7))
             } else {

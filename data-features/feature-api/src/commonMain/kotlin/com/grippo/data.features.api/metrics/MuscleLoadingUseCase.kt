@@ -104,7 +104,8 @@ public class MuscleLoadingUseCase(
                 if (share == 0) return@forEach
                 val ratio = share / totalShare
                 val muscle = bundle.muscle.type
-                contributions[muscle] = (contributions[muscle] ?: 0f) + load * ratio
+                val currentValue = contributions[muscle] ?: 0f
+                contributions[muscle] = currentValue + load * ratio
             }
         }
 
@@ -118,7 +119,8 @@ public class MuscleLoadingUseCase(
             val percent = bundle.percentage.coerceAtLeast(0)
             if (percent == 0) return@forEach
             val muscle = bundle.muscle.type
-            totals[muscle] = (totals[muscle] ?: 0f) + percent.toFloat()
+            val currentValue = totals[muscle] ?: 0f
+            totals[muscle] = currentValue + percent.toFloat()
         }
         return totals
     }
@@ -197,7 +199,8 @@ public class MuscleLoadingUseCase(
         muscleLoad.forEach { (muscle, value) ->
             val group = groupByMuscle[muscle] ?: return@forEach
             val muscles = group.muscles.map { it.type }
-            totals[group.id] = ((totals[group.id]?.first ?: 0f) + value) to muscles
+            val currentTotal = totals[group.id]?.first ?: 0f
+            totals[group.id] = (currentTotal + value) to muscles
         }
 
         val sum = totals.values.sumOf { it.first.toDouble() }.toFloat()

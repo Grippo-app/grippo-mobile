@@ -15,7 +15,8 @@ public class PerformanceTrendUseCase {
     }
 
     public fun fromTrainings(trainings: List<Training>): List<PerformanceMetric> {
-        val latestTraining = trainings.maxByOrNull { it.createdAt } ?: return emptyList()
+        if (trainings.isEmpty()) return emptyList()
+        val latestTraining = trainings.maxBy { it.createdAt }
         val performance = mutableListOf<PerformanceMetric>()
 
         // Duration (vs average)
@@ -119,10 +120,9 @@ public class PerformanceTrendUseCase {
     private fun determinePerformanceStatus(
         delta: Int,
         current: Double,
-        best: Double?,
+        best: Double,
     ): PerformanceTrendStatus {
-        val bestValue = best ?: current
-        if (current >= bestValue - PERFORMANCE_EPS) {
+        if (current >= best - PERFORMANCE_EPS) {
             return PerformanceTrendStatus.Record
         }
         return when {

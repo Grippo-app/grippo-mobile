@@ -81,7 +81,10 @@ public class EstimatedOneRepMaxUseCase {
                 val grouped = groupTrainingsByBucket(trainings, scale)
 
                 val entries = buckets.mapNotNull { bucket ->
-                    val estimates = grouped[bucket.start].orEmpty()
+                    val trainings = grouped[bucket.start] ?: return@mapNotNull null
+                    if (trainings.isEmpty()) return@mapNotNull null
+
+                    val estimates = trainings
                         .flatMap(Training::exercises)
                         .mapNotNull { exercise ->
                             estimateSessionOneRm(

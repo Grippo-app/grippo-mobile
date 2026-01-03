@@ -106,7 +106,8 @@ public class ExerciseDistributionUseCase {
             val key = keySelector(exercise) ?: return@forEach
             val contribution = weightOfExercise(exercise, weighting)
             if (contribution <= EPS) return@forEach
-            totals[key] = (totals[key] ?: 0f) + contribution
+            val currentValue = totals[key] ?: 0f
+            totals[key] = currentValue + contribution
         }
         return totals
     }
