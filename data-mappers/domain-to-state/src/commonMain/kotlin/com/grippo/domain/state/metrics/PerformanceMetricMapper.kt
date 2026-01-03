@@ -3,18 +3,18 @@ package com.grippo.domain.state.metrics
 import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
-import com.grippo.core.state.metrics.PerformanceMetricState as StatePerformanceMetric
-import com.grippo.core.state.metrics.PerformanceTrendStatusState as StatePerformanceTrendStatus
-import com.grippo.data.features.api.metrics.models.PerformanceMetric as DomainPerformanceMetric
-import com.grippo.data.features.api.metrics.models.PerformanceTrendStatus as DomainPerformanceTrendStatus
+import com.grippo.core.state.metrics.PerformanceMetricState
+import com.grippo.core.state.metrics.PerformanceTrendStatusState
+import com.grippo.data.features.api.metrics.models.PerformanceMetric
+import com.grippo.data.features.api.metrics.models.PerformanceTrendStatus
 
-public fun List<DomainPerformanceMetric>.toState(): List<StatePerformanceMetric> {
+public fun List<PerformanceMetric>.toState(): List<PerformanceMetricState> {
     return map { it.toState() }
 }
 
-private fun DomainPerformanceMetric.toState(): StatePerformanceMetric {
+private fun PerformanceMetric.toState(): PerformanceMetricState {
     return when (this) {
-        is DomainPerformanceMetric.DurationMetric -> StatePerformanceMetric.Duration(
+        is PerformanceMetric.DurationMetric -> PerformanceMetricState.Duration(
             deltaPercentage = deltaPercentage,
             current = current,
             average = average,
@@ -22,7 +22,7 @@ private fun DomainPerformanceMetric.toState(): StatePerformanceMetric {
             status = status.toState(),
         )
 
-        is DomainPerformanceMetric.IntensityMetric -> StatePerformanceMetric.Intensity(
+        is PerformanceMetric.IntensityMetric -> PerformanceMetricState.Intensity(
             deltaPercentage = deltaPercentage,
             current = IntensityFormatState.of(current),
             average = IntensityFormatState.of(average),
@@ -30,7 +30,7 @@ private fun DomainPerformanceMetric.toState(): StatePerformanceMetric {
             status = status.toState(),
         )
 
-        is DomainPerformanceMetric.RepetitionsMetric -> StatePerformanceMetric.Repetitions(
+        is PerformanceMetric.RepetitionsMetric -> PerformanceMetricState.Repetitions(
             deltaPercentage = deltaPercentage,
             current = RepetitionsFormatState.of(current),
             average = RepetitionsFormatState.of(average),
@@ -38,7 +38,7 @@ private fun DomainPerformanceMetric.toState(): StatePerformanceMetric {
             status = status.toState(),
         )
 
-        is DomainPerformanceMetric.VolumeMetric -> StatePerformanceMetric.Volume(
+        is PerformanceMetric.VolumeMetric -> PerformanceMetricState.Volume(
             deltaPercentage = deltaPercentage,
             current = VolumeFormatState.of(current),
             average = VolumeFormatState.of(average),
@@ -48,11 +48,11 @@ private fun DomainPerformanceMetric.toState(): StatePerformanceMetric {
     }
 }
 
-private fun DomainPerformanceTrendStatus.toState(): StatePerformanceTrendStatus {
+private fun PerformanceTrendStatus.toState(): PerformanceTrendStatusState {
     return when (this) {
-        DomainPerformanceTrendStatus.Record -> StatePerformanceTrendStatus.Record
-        DomainPerformanceTrendStatus.Improved -> StatePerformanceTrendStatus.Improved
-        DomainPerformanceTrendStatus.Stable -> StatePerformanceTrendStatus.Stable
-        DomainPerformanceTrendStatus.Declined -> StatePerformanceTrendStatus.Declined
+        PerformanceTrendStatus.Record -> PerformanceTrendStatusState.Record
+        PerformanceTrendStatus.Improved -> PerformanceTrendStatusState.Improved
+        PerformanceTrendStatus.Stable -> PerformanceTrendStatusState.Stable
+        PerformanceTrendStatus.Declined -> PerformanceTrendStatusState.Declined
     }
 }
