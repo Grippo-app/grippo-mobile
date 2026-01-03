@@ -153,6 +153,8 @@
     <string name="exercise_categories">Категории упражнений</string>
     <string name="exercise_weight_types">Типы отягощения</string>
     <string name="exercise_force_types">Типы усилий</string>
+    <string name="estimated_one_rm">Расчётный 1ПМ</string>
+    <string name="estimated_one_rm_peak">Пик %1$s</string>
     <string name="equipments">Оборудование</string>
     <string name="muscles">Мышцы</string>
     <string name="weight_history">История веса</string>

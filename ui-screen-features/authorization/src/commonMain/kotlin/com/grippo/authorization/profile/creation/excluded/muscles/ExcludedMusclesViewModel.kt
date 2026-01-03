@@ -6,7 +6,6 @@ import com.grippo.core.state.muscles.MuscleRepresentationState
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.design.resources.provider.providers.ColorProvider
-import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.domain.state.muscles.toState
 import com.grippo.toolkit.calculation.AnalyticsApi
 import kotlinx.collections.immutable.PersistentList
@@ -16,13 +15,12 @@ import kotlinx.coroutines.flow.onEach
 
 internal class ExcludedMusclesViewModel(
     muscleFeature: MuscleFeature,
-    stringProvider: StringProvider,
     colorProvider: ColorProvider,
 ) : BaseViewModel<ExcludedMusclesState, ExcludedMusclesDirection, ExcludedMusclesLoader>(
     ExcludedMusclesState()
 ), ExcludedMusclesContract {
 
-    private val analytics = AnalyticsApi(stringProvider, colorProvider)
+    private val analytics = AnalyticsApi(colorProvider)
 
     init {
         muscleFeature

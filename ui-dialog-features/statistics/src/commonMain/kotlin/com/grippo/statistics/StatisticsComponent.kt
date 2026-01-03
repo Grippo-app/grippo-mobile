@@ -23,6 +23,7 @@ public class StatisticsComponent(
             volumeSeriesUseCase = getKoin().get(),
             trainingTotalUseCase = getKoin().get(),
             muscleLoadTimelineUseCase = getKoin().get(),
+            estimatedOneRepMaxUseCase = getKoin().get(),
         )
     }
 

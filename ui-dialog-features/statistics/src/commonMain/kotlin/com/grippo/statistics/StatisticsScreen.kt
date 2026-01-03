@@ -20,6 +20,7 @@ import com.grippo.core.state.metrics.MuscleLoadBreakdownState
 import com.grippo.core.state.metrics.MuscleLoadEntryState
 import com.grippo.core.state.metrics.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.stubCategoryDistribution
+import com.grippo.core.state.metrics.stubEstimatedOneRepMax
 import com.grippo.core.state.metrics.stubForceDistribution
 import com.grippo.core.state.metrics.stubMuscleLoadTimeline
 import com.grippo.core.state.metrics.stubTotal
@@ -28,6 +29,7 @@ import com.grippo.core.state.metrics.stubWeightDistribution
 import com.grippo.core.state.muscles.MuscleEnumState
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.loading.Loader
+import com.grippo.design.components.metrics.EstimatedOneRepMaxSection
 import com.grippo.design.components.metrics.ExerciseDistributionChart
 import com.grippo.design.components.metrics.ForceTypeDistributionChart
 import com.grippo.design.components.metrics.MuscleLoading
@@ -129,6 +131,17 @@ internal fun StatisticsScreen(
                             VolumeMetricChart(
                                 modifier = Modifier.fillMaxWidth(),
                                 state = data,
+                            )
+                        }
+                    }
+
+                state.estimatedOneRepMax
+                    ?.takeIf { it.entries.isNotEmpty() }
+                    ?.let { series ->
+                        item(key = "estimated_one_rm") {
+                            EstimatedOneRepMaxSection(
+                                modifier = Modifier.fillMaxWidth(),
+                                state = series,
                             )
                         }
                     }
@@ -299,7 +312,8 @@ private fun ScreenPreview() {
                 weightTypeDistribution = weightDistribution,
                 forceTypeDistribution = forceDistribution,
                 muscleLoad = muscleLoad,
-                temporalHeatmap = heatmap
+                temporalHeatmap = heatmap,
+                estimatedOneRepMax = stubEstimatedOneRepMax()
             ),
             loaders = persistentSetOf(),
             contract = StatisticsContract.Empty

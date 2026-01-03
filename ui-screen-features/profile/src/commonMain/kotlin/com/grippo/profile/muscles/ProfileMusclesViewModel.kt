@@ -1,6 +1,5 @@
 package com.grippo.profile.muscles
 
-import com.grippo.toolkit.calculation.AnalyticsApi
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.muscles.MuscleGroupState
 import com.grippo.core.state.muscles.MuscleRepresentationState
@@ -9,8 +8,8 @@ import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.Muscle
 import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.design.resources.provider.providers.ColorProvider
-import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.domain.state.muscles.toState
+import com.grippo.toolkit.calculation.AnalyticsApi
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.collections.immutable.toPersistentMap
@@ -19,13 +18,12 @@ import kotlinx.coroutines.flow.combine
 internal class ProfileMusclesViewModel(
     muscleFeature: MuscleFeature,
     private val excludedMusclesFeature: ExcludedMusclesFeature,
-    stringProvider: StringProvider,
     colorProvider: ColorProvider,
 ) : BaseViewModel<ProfileMusclesState, ProfileMusclesDirection, ProfileMusclesLoader>(
     ProfileMusclesState()
 ), ProfileMusclesContract {
 
-    private val analytics = AnalyticsApi(stringProvider, colorProvider)
+    private val analytics = AnalyticsApi(colorProvider)
 
     init {
         combine(
@@ -44,7 +42,7 @@ internal class ProfileMusclesViewModel(
         val selectedIds = suggestions
             .flatMap { it.muscles }
             .map { it.value.id }
-            .minus(excluded.map { it.id })
+            .minus(excluded.map { it.id }.toSet())
             .toPersistentList()
 
         update { it.copy(suggestions = suggestions, selectedMuscleIds = selectedIds) }

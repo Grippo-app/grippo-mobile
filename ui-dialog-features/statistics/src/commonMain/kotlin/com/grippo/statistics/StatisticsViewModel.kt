@@ -3,9 +3,10 @@ package com.grippo.statistics
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.core.state.trainings.TrainingState
+import com.grippo.data.features.api.metrics.EstimatedOneRepMaxUseCase
 import com.grippo.data.features.api.metrics.ExerciseDistributionUseCase
-import com.grippo.data.features.api.metrics.MuscleLoadingUseCase
 import com.grippo.data.features.api.metrics.MuscleLoadTimelineUseCase
+import com.grippo.data.features.api.metrics.MuscleLoadingUseCase
 import com.grippo.data.features.api.metrics.TrainingTotalUseCase
 import com.grippo.data.features.api.metrics.VolumeSeriesUseCase
 import com.grippo.data.features.api.training.TrainingFeature
@@ -38,6 +39,7 @@ public class StatisticsViewModel(
     private val volumeSeriesUseCase: VolumeSeriesUseCase,
     private val trainingTotalUseCase: TrainingTotalUseCase,
     private val muscleLoadTimelineUseCase: MuscleLoadTimelineUseCase,
+    private val estimatedOneRepMaxUseCase: EstimatedOneRepMaxUseCase,
 ) : BaseViewModel<StatisticsState, StatisticsDirection, StatisticsLoader>(
     StatisticsState(
         mode = when (config) {
@@ -141,6 +143,10 @@ public class StatisticsViewModel(
                     ?.toState()
             }
 
+        val estimatedOneRepMax = estimatedOneRepMaxUseCase
+            .fromTrainings(domainTrainings)
+            .toState()
+
         update {
             it.copy(
                 total = totalMetrics,
@@ -149,6 +155,7 @@ public class StatisticsViewModel(
                 forceTypeDistribution = forceTypeDistribution,
                 muscleLoad = muscleLoad,
                 temporalHeatmap = heatmap,
+                estimatedOneRepMax = estimatedOneRepMax,
             )
         }
     }
@@ -182,6 +189,10 @@ public class StatisticsViewModel(
             .fromExercises(setExercises)
             .toState()
 
+        val estimatedOneRepMax = estimatedOneRepMaxUseCase
+            .fromSetExercises(setExercises)
+            .toState()
+
         update {
             it.copy(
                 total = totalMetrics,
@@ -190,6 +201,7 @@ public class StatisticsViewModel(
                 forceTypeDistribution = forceTypeDistribution,
                 muscleLoad = muscleLoad,
                 temporalHeatmap = null,
+                estimatedOneRepMax = estimatedOneRepMax,
             )
         }
     }
@@ -204,6 +216,7 @@ public class StatisticsViewModel(
                 forceTypeDistribution = null,
                 muscleLoad = null,
                 temporalHeatmap = null,
+                estimatedOneRepMax = null,
             )
         }
     }

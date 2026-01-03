@@ -3,6 +3,7 @@ package com.grippo.data.features.api
 import com.grippo.data.features.api.authorization.LoginUseCase
 import com.grippo.data.features.api.authorization.RegisterUseCase
 import com.grippo.data.features.api.exercise.example.UserExerciseExamplesUseCase
+import com.grippo.data.features.api.metrics.EstimatedOneRepMaxUseCase
 import com.grippo.data.features.api.metrics.ExerciseDistributionUseCase
 import com.grippo.data.features.api.metrics.ExerciseSpotlightUseCase
 import com.grippo.data.features.api.metrics.MuscleLoadTimelineUseCase
@@ -104,6 +105,10 @@ public class FeatureApiModule {
 
         single {
             TrainingTotalUseCase()
+        }
+
+        single {
+            EstimatedOneRepMaxUseCase()
         }
     }
 }

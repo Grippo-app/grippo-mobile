@@ -173,6 +173,7 @@ public data object AppDp {
         val distribution: Distribution = Distribution
         val volume: Volume = Volume
         val summary: Summary = Summary
+        val strength: Strength = Strength
 
         public data object Highlights {
             val icon: Dp = AppDp.icon.medium
@@ -202,6 +203,10 @@ public data object AppDp {
 
         public data object Summary {
             val spacing: Dp = padding.medium
+        }
+
+        public data object Strength {
+            val height: Dp = icon.xxxLarge
         }
     }
 
