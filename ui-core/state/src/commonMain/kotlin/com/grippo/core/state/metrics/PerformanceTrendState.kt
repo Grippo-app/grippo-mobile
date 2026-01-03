@@ -17,6 +17,7 @@ import kotlin.time.Duration.Companion.minutes
 public enum class PerformanceMetricTypeState {
     Duration,
     Volume,
+    Density,
     Repetitions,
     Intensity;
 
@@ -25,6 +26,7 @@ public enum class PerformanceMetricTypeState {
         return when (this) {
             Duration -> AppTokens.icons.Timer
             Volume -> AppTokens.icons.Volume
+            Density -> AppTokens.icons.Volume
             Repetitions -> AppTokens.icons.Repeat
             Intensity -> AppTokens.icons.Intensity
         }
@@ -46,6 +48,17 @@ public sealed interface PerformanceMetricState {
         override val status: PerformanceTrendStatusState,
     ) : PerformanceMetricState {
         override val type: PerformanceMetricTypeState = PerformanceMetricTypeState.Volume
+    }
+
+    @Immutable
+    public data class Density(
+        override val deltaPercentage: Int,
+        val current: VolumeFormatState,
+        val average: VolumeFormatState,
+        val best: VolumeFormatState,
+        override val status: PerformanceTrendStatusState,
+    ) : PerformanceMetricState {
+        override val type: PerformanceMetricTypeState = PerformanceMetricTypeState.Density
     }
 
     @Immutable
@@ -99,6 +112,13 @@ public fun stubPerformanceMetrics(): List<PerformanceMetricState> {
             best = VolumeFormatState.of(1_200f),
             status = PerformanceTrendStatusState.Record
         ),
+        PerformanceMetricState.Density(
+            deltaPercentage = 10,
+            current = VolumeFormatState.of(22f),
+            average = VolumeFormatState.of(20f),
+            best = VolumeFormatState.of(24f),
+            status = PerformanceTrendStatusState.Improved
+        ),
         PerformanceMetricState.Volume(
             deltaPercentage = -12,
             current = VolumeFormatState.of(780f),
@@ -107,18 +127,11 @@ public fun stubPerformanceMetrics(): List<PerformanceMetricState> {
             status = PerformanceTrendStatusState.Declined
         ),
         PerformanceMetricState.Duration(
-            deltaPercentage = -8,
+            deltaPercentage = 0,
             current = 65.minutes,
             average = 70.minutes,
-            best = 75.minutes,
-            status = PerformanceTrendStatusState.Declined
-        ),
-        PerformanceMetricState.Duration(
-            deltaPercentage = 15,
-            current = 72.minutes,
-            average = 68.minutes,
             best = 80.minutes,
-            status = PerformanceTrendStatusState.Improved
+            status = PerformanceTrendStatusState.Stable
         ),
         PerformanceMetricState.Repetitions(
             deltaPercentage = 12,

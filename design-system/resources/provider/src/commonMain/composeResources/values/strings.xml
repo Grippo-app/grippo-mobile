@@ -36,6 +36,9 @@
     <string name="highlight_streak_daily_target">Goal · Back-to-back days</string>
     <string name="highlight_streak_rhythm">%1$d-on / %2$d-off streak</string>
     <string name="highlight_streak_rhythm_target">Goal · %1$d training days · %2$d rest</string>
+    <string name="highlight_streak_pattern_headline_primary">Pattern streak: %1$d cycles</string>
+    <string name="highlight_streak_pattern_headline_secondary">%1$d trainings / %2$d days</string>
+    <string name="highlight_streak_pattern_target">Goal · %1$d trainings / %2$d days</string>
     <string name="highlight_streak_mood_crushing">🔥 You're unstoppable — keep stacking these wins.</string>
     <string name="highlight_streak_mood_on_track">Momentum is building. Stay with this rhythm.</string>
     <string name="highlight_streak_mood_restart">Every streak starts now. You've got this.</string>
@@ -146,6 +149,7 @@
     <string name="trainings_period_monthly">Monthly</string>
     <string name="training">Training</string>
     <string name="duration">Duration</string>
+    <string name="density">Density</string>
     <string name="sets">Sets</string>
     <string name="statistics">Statistics</string>
     <string name="value_statistics">%1$s statistics</string>

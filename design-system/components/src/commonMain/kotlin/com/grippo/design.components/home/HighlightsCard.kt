@@ -169,7 +169,7 @@ public fun HighlightsCard(
 
         val performanceRows = listOf(
             listOfNotNull(
-                metricOf(PerformanceMetricTypeState.Duration),
+                metricOf(PerformanceMetricTypeState.Density),
                 metricOf(PerformanceMetricTypeState.Volume)
             ),
             listOfNotNull(

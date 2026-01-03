@@ -30,36 +30,70 @@ public class EstimatedOneRepMaxUseCase {
         private const val EXERCISE_LABEL_PREFIX = "Ex"
         private const val WEEK_LABEL_PREFIX = "W"
         private const val TARGET_BUCKETS = 24
-        private const val PERCENTILE = 0.90f
+        private const val TOP_SETS = 3
+    }
+
+    public sealed interface Segment {
+        public data object All : Segment
+        public data class ExerciseExample(val id: String) : Segment
+    }
+
+    public sealed interface Smoothing {
+        public data object None : Smoothing
+        public data class RollingDays(
+            val days: Int,
+            val method: RollingMethod,
+        ) : Smoothing
+    }
+
+    public enum class RollingMethod {
+        Median,
+        Max,
     }
 
     public fun fromSetExercises(exercises: List<SetExercise>): EstimatedOneRepMaxSeries {
-        return buildExerciseSeries(
-            exercises = exercises,
-            estimator = { exercise ->
-                estimateSessionOneRm(
-                    iterations = exercise.iterations,
-                    weightSelector = SetIteration::volume,
-                    repetitionsSelector = SetIteration::repetitions
-                )
-            }
-        )
+        val entries = exercises.mapIndexedNotNull { index, exercise ->
+            val estimate = estimateExerciseSessionOneRm(
+                iterations = exercise.iterations,
+                weightSelector = SetIteration::volume,
+                repetitionsSelector = SetIteration::repetitions,
+            ) ?: return@mapIndexedNotNull null
+
+            EstimatedOneRepMaxEntry(
+                label = exerciseLabel(index),
+                value = estimate.value,
+                confidence = estimate.confidence,
+                start = exercise.createdAt,
+                sampleCount = 1,
+            )
+        }
+        return EstimatedOneRepMaxSeries(entries)
     }
 
     private fun fromExercises(exercises: List<Exercise>): EstimatedOneRepMaxSeries {
-        return buildExerciseSeries(
-            exercises = exercises,
-            estimator = { exercise ->
-                estimateSessionOneRm(
-                    iterations = exercise.iterations,
-                    weightSelector = Iteration::volume,
-                    repetitionsSelector = Iteration::repetitions
-                )
-            }
-        )
+        val entries = exercises.mapIndexedNotNull { index, exercise ->
+            val estimate = estimateExerciseSessionOneRm(
+                iterations = exercise.iterations,
+                weightSelector = Iteration::volume,
+                repetitionsSelector = Iteration::repetitions,
+            ) ?: return@mapIndexedNotNull null
+
+            EstimatedOneRepMaxEntry(
+                label = exerciseLabel(index),
+                value = estimate.value,
+                confidence = estimate.confidence,
+                start = exercise.createdAt,
+                sampleCount = 1,
+            )
+        }
+        return EstimatedOneRepMaxSeries(entries)
     }
 
-    public fun fromTrainings(trainings: List<Training>): EstimatedOneRepMaxSeries {
+    public fun fromTrainings(
+        trainings: List<Training>,
+        segment: Segment = Segment.All,
+        smoothing: Smoothing = Smoothing.RollingDays(days = 7, method = RollingMethod.Median),
+    ): EstimatedOneRepMaxSeries {
         if (trainings.isEmpty()) return EstimatedOneRepMaxSeries(emptyList())
         val start = trainings.minOf { it.createdAt }
         val end = trainings.maxOf { it.createdAt }
@@ -67,7 +101,14 @@ public class EstimatedOneRepMaxUseCase {
 
         return when (val scale = deriveScale(start, end)) {
             BucketScale.Exercise -> {
-                val exercises = trainings.flatMap(Training::exercises)
+                val exercises = trainings
+                    .flatMap(Training::exercises)
+                    .filter { exercise ->
+                        when (segment) {
+                            Segment.All -> true
+                            is Segment.ExerciseExample -> exercise.exerciseExample.id == segment.id
+                        }
+                    }
                 if (exercises.isEmpty()) {
                     EstimatedOneRepMaxSeries(emptyList())
                 } else {
@@ -80,90 +121,113 @@ public class EstimatedOneRepMaxUseCase {
                 if (buckets.isEmpty()) return EstimatedOneRepMaxSeries(emptyList())
                 val grouped = groupTrainingsByBucket(trainings, scale)
 
-                val entries = buckets.mapNotNull { bucket ->
-                    val trainings = grouped[bucket.start] ?: return@mapNotNull null
-                    if (trainings.isEmpty()) return@mapNotNull null
+                val rawEntries = buckets.mapNotNull { bucket ->
+                    val bucketTrainings = grouped[bucket.start] ?: return@mapNotNull null
+                    if (bucketTrainings.isEmpty()) return@mapNotNull null
 
-                    val estimates = trainings
-                        .flatMap(Training::exercises)
-                        .mapNotNull { exercise ->
-                            estimateSessionOneRm(
-                                iterations = exercise.iterations,
-                                weightSelector = Iteration::volume,
-                                repetitionsSelector = Iteration::repetitions
-                            )
-                        }
-                        .filter { it.isFinite() && it > 0f }
-
-                    if (estimates.isEmpty()) {
-                        null
-                    } else {
-                        EstimatedOneRepMaxEntry(
-                            label = bucketLabel(bucket.start, scale),
-                            value = percentile(estimates, PERCENTILE).coerceAtLeast(0f)
-                        )
+                    val estimates = bucketTrainings.mapNotNull { training ->
+                        estimateTrainingOneRm(training = training, segment = segment)
                     }
-                }
+                    if (estimates.isEmpty()) return@mapNotNull null
 
+                    val best = estimates.maxBy { it.value }
+
+                    EstimatedOneRepMaxEntry(
+                        label = bucketLabel(bucket.start, scale),
+                        value = best.value,
+                        confidence = best.confidence,
+                        start = bucket.start,
+                        sampleCount = estimates.size,
+                    )
+                }.sortedBy { it.start }
+
+                val entries = applySmoothing(rawEntries, smoothing)
                 EstimatedOneRepMaxSeries(entries)
             }
         }
-    }
-
-    private fun <T> buildExerciseSeries(
-        exercises: List<T>,
-        estimator: (T) -> Float?,
-    ): EstimatedOneRepMaxSeries {
-        if (exercises.isEmpty()) return EstimatedOneRepMaxSeries(emptyList())
-
-        val entries = exercises.mapIndexedNotNull { index, exercise ->
-            val estimate = estimator(exercise) ?: return@mapIndexedNotNull null
-            EstimatedOneRepMaxEntry(
-                label = exerciseLabel(index),
-                value = estimate.coerceAtLeast(0f)
-            )
-        }
-
-        return EstimatedOneRepMaxSeries(entries)
     }
 
     private fun exerciseLabel(index: Int): String {
         return "$EXERCISE_LABEL_PREFIX${index + 1}"
     }
 
-    private fun <T> estimateSessionOneRm(
+    private data class SessionEstimate(
+        val value: Float,
+        val confidence: Float,
+    )
+
+    private data class SetEstimate(
+        val oneRm: Float,
+        val confidence: Float,
+    )
+
+    private fun <T> estimateExerciseSessionOneRm(
         iterations: List<T>,
         weightSelector: (T) -> Float,
         repetitionsSelector: (T) -> Int,
-    ): Float? {
+    ): SessionEstimate? {
         if (iterations.isEmpty()) return null
 
-        val pairs = mutableListOf<Pair<Float, Float>>()
-        iterations.forEach { iteration ->
+        val setEstimates = iterations.mapNotNull { iteration ->
             val weight = weightSelector(iteration)
-            if (weight <= EPS) return@forEach
-
-            val repsInt = repetitionsSelector(iteration)
-            if (repsInt <= 0) return@forEach
-            val reps = repsInt.toFloat()
-
-            val brzycki = brzycki(weight, reps)
-            val epley = epley(weight, reps)
-            val average = listOfNotNull(brzycki, epley)
-                .takeIf { it.isNotEmpty() }
-                ?.map { it.toDouble() }
-                ?.average()
-                ?.toFloat()
-                ?.takeIf { it.isFinite() && it > 0f }
-                ?: return@forEach
-
-            val quality = qualityWeight(reps)
-            pairs += average to quality
+            if (weight <= EPS) return@mapNotNull null
+            val reps = repetitionsSelector(iteration)
+            estimateSetOneRm(weight = weight, reps = reps)
         }
 
-        if (pairs.isEmpty()) return null
-        val median = weightedMedian(pairs)
-        return median.takeIf { it.isFinite() && it > 0f }
+        if (setEstimates.isEmpty()) return null
+
+        val top = setEstimates
+            .sortedByDescending { it.oneRm }
+            .take(TOP_SETS)
+        if (top.isEmpty()) return null
+
+        val value = top.map { it.oneRm }.average().toFloat()
+        if (!value.isFinite() || value <= 0f) return null
+
+        val coverage = (top.size.toFloat() / TOP_SETS.toFloat()).coerceIn(0f, 1f)
+        val confidence = (top.map { it.confidence }.average().toFloat() * coverage).coerceIn(0f, 1f)
+
+        return SessionEstimate(value = value, confidence = confidence)
+    }
+
+    private fun estimateTrainingOneRm(training: Training, segment: Segment): SessionEstimate? {
+        val exercises = training.exercises.filter { exercise ->
+            when (segment) {
+                Segment.All -> true
+                is Segment.ExerciseExample -> exercise.exerciseExample.id == segment.id
+            }
+        }
+        if (exercises.isEmpty()) return null
+
+        val estimates = exercises.mapNotNull { exercise ->
+            estimateExerciseSessionOneRm(
+                iterations = exercise.iterations,
+                weightSelector = Iteration::volume,
+                repetitionsSelector = Iteration::repetitions,
+            )
+        }
+        if (estimates.isEmpty()) return null
+        return estimates.maxBy { it.value }
+    }
+
+    private fun estimateSetOneRm(weight: Float, reps: Int): SetEstimate? {
+        if (weight <= EPS) return null
+        if (reps <= 0) return null
+
+        val repsF = reps.toFloat()
+        if (repsF !in MIN_VOLUME_REPS..MAX_VOLUME_REPS) return null
+
+        val brzycki = brzycki(weight, repsF)
+        val epley = epley(weight, repsF)
+        val estimates = listOfNotNull(brzycki, epley)
+        if (estimates.isEmpty()) return null
+
+        val oneRm = (estimates.map { it.toDouble() }.average()).toFloat()
+        if (!oneRm.isFinite() || oneRm <= 0f) return null
+
+        val confidence = repsConfidence(repsF)
+        return SetEstimate(oneRm = oneRm, confidence = confidence)
     }
 
     private fun brzycki(weight: Float, reps: Float): Float? {
@@ -178,36 +242,66 @@ public class EstimatedOneRepMaxUseCase {
         return weight * (1f + reps / 30f)
     }
 
-    private fun qualityWeight(reps: Float): Float {
+    /**
+     * Confidence is intentionally lower for higher reps (formulas less stable).
+     * Peaks around ~4 reps.
+     */
+    private fun repsConfidence(reps: Float): Float {
         val diff = reps - 4f
-        return 1f / (1f + diff * diff)
+        val base = 1f / (1f + diff * diff)
+        return base.coerceIn(0f, 1f)
     }
 
-    private fun weightedMedian(values: List<Pair<Float, Float>>): Float {
-        if (values.isEmpty()) return 0f
-        val sorted = values.sortedBy { it.first }
-        val totalWeight = sorted.sumOf { it.second.toDouble() }
-        var acc = 0.0
-        for ((value, weight) in sorted) {
-            acc += weight.toDouble()
-            if (acc >= totalWeight * 0.5) return value
+    private fun applySmoothing(
+        entries: List<EstimatedOneRepMaxEntry>,
+        smoothing: Smoothing,
+    ): List<EstimatedOneRepMaxEntry> {
+        if (entries.isEmpty()) return entries
+        return when (smoothing) {
+            Smoothing.None -> entries
+            is Smoothing.RollingDays -> {
+                val days = smoothing.days.coerceAtLeast(1)
+                entries.map { current ->
+                    val windowFrom = current.start.date.minus(DatePeriod(days = days - 1))
+                    val window =
+                        entries.filter { it.start.date >= windowFrom && it.start <= current.start }
+                    if (window.isEmpty()) return@map current
+
+                    val (value, confidence) = when (smoothing.method) {
+                        RollingMethod.Median -> {
+                            val v = median(window.map { it.value }) ?: return@map current
+                            val c = median(window.map { it.confidence }) ?: return@map current
+                            v to c
+                        }
+
+                        RollingMethod.Max -> {
+                            val best = window.maxBy { it.value }
+                            best.value to best.confidence
+                        }
+                    }
+
+                    EstimatedOneRepMaxEntry(
+                        label = current.label,
+                        value = value,
+                        confidence = confidence,
+                        start = current.start,
+                        sampleCount = window.sumOf { it.sampleCount },
+                    )
+                }
+            }
         }
-        return sorted.last().first
     }
 
-    private fun percentile(values: List<Float>, p: Float): Float {
-        if (values.isEmpty()) return 0f
-        val valid = values.filter { it.isFinite() && it > 0f }
-        if (valid.isEmpty()) return 0f
-
-        val sorted = valid.sorted()
-        val clamped = p.coerceIn(0f, 1f)
-        val idx = ((sorted.size - 1) * clamped)
-        val lo = idx.toInt()
-        val hi = minOf(lo + 1, sorted.lastIndex)
-        val fraction = idx - lo
-        val value = sorted[lo] * (1 - fraction) + sorted[hi] * fraction
-        return if (value.isFinite()) value else 0f
+    private fun median(values: List<Float>): Float? {
+        val sorted = values.filter { it.isFinite() }.sorted()
+        val n = sorted.size
+        if (n == 0) return null
+        val mid = n / 2
+        return if (n % 2 == 1) {
+            sorted[mid]
+        } else {
+            (sorted[mid - 1] + sorted[mid]) / 2f
+        }
     }
 
     private fun groupTrainingsByBucket(
@@ -246,16 +340,7 @@ public class EstimatedOneRepMaxUseCase {
 
     private fun deriveScale(start: LocalDateTime, end: LocalDateTime): BucketScale {
         val days = max(1, start.date.daysUntil(end.date) + 1)
-        return when {
-            days == 1 -> BucketScale.Exercise
-            days == 7 -> BucketScale.Day
-            days in 28..31 -> BucketScale.Week
-            days in 365..366 -> BucketScale.Month
-            else -> deriveCustomScale(days)
-        }
-    }
-
-    private fun deriveCustomScale(days: Int): BucketScale {
+        if (days <= 1) return BucketScale.Exercise
         val weeks = (days + DayOfWeek.entries.size - 1) / DayOfWeek.entries.size
         return when {
             days <= TARGET_BUCKETS -> BucketScale.Day

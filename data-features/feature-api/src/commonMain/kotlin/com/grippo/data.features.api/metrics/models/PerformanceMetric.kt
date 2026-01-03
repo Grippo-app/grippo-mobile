@@ -27,6 +27,23 @@ public sealed interface PerformanceMetric {
         override val type: PerformanceMetricType = PerformanceMetricType.Volume
     }
 
+    /**
+     * Volume per minute.
+     *
+     * Rationale:
+     * - Duration itself is neutral (longer != better)
+     * - Density is a better “efficiency / effort” proxy for highlights.
+     */
+    public data class DensityMetric(
+        override val deltaPercentage: Int,
+        val current: Float,
+        val average: Float,
+        val best: Float,
+        override val status: PerformanceTrendStatus,
+    ) : PerformanceMetric {
+        override val type: PerformanceMetricType = PerformanceMetricType.Density
+    }
+
     public data class RepetitionsMetric(
         override val deltaPercentage: Int,
         val current: Int,
@@ -58,6 +75,7 @@ public enum class PerformanceTrendStatus {
 public enum class PerformanceMetricType {
     Duration,
     Volume,
+    Density,
     Repetitions,
     Intensity,
 }

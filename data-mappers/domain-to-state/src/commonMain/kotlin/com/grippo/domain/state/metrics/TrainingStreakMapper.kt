@@ -3,15 +3,11 @@ package com.grippo.domain.state.metrics
 import com.grippo.core.state.metrics.TrainingStreakFeaturedState as StateTrainingStreakFeatured
 import com.grippo.core.state.metrics.TrainingStreakMood as StateTrainingStreakMood
 import com.grippo.core.state.metrics.TrainingStreakProgressState as StateTrainingStreakProgress
-import com.grippo.core.state.metrics.TrainingStreakRhythmState as StateTrainingStreakRhythm
 import com.grippo.core.state.metrics.TrainingStreakState as StateTrainingStreak
-import com.grippo.core.state.metrics.TrainingStreakType as StateTrainingStreakType
 import com.grippo.data.features.api.metrics.models.TrainingStreak as DomainTrainingStreak
 import com.grippo.data.features.api.metrics.models.TrainingStreakFeatured as DomainTrainingStreakFeatured
 import com.grippo.data.features.api.metrics.models.TrainingStreakMood as DomainTrainingStreakMood
 import com.grippo.data.features.api.metrics.models.TrainingStreakProgressEntry as DomainTrainingStreakProgress
-import com.grippo.data.features.api.metrics.models.TrainingStreakRhythm as DomainTrainingStreakRhythm
-import com.grippo.data.features.api.metrics.models.TrainingStreakType as DomainTrainingStreakType
 
 public fun DomainTrainingStreak.toState(): StateTrainingStreak {
     return StateTrainingStreak(
@@ -22,22 +18,40 @@ public fun DomainTrainingStreak.toState(): StateTrainingStreak {
 }
 
 private fun DomainTrainingStreakFeatured.toState(): StateTrainingStreakFeatured {
-    return StateTrainingStreakFeatured(
-        type = type.toState(),
-        length = length,
-        targetSessionsPerPeriod = targetSessionsPerPeriod,
-        periodLengthDays = periodLengthDays,
-        mood = mood.toState(),
-        progressPercent = progressPercent,
-        rhythm = rhythm?.toState(),
-    )
-}
-
-private fun DomainTrainingStreakType.toState(): StateTrainingStreakType {
     return when (this) {
-        DomainTrainingStreakType.Daily -> StateTrainingStreakType.Daily
-        DomainTrainingStreakType.Weekly -> StateTrainingStreakType.Weekly
-        DomainTrainingStreakType.Rhythm -> StateTrainingStreakType.Rhythm
+        is DomainTrainingStreakFeatured.Daily -> StateTrainingStreakFeatured.Daily(
+            length = length,
+            mood = mood.toState(),
+            progressPercent = progressPercent,
+            confidence = confidence,
+        )
+
+        is DomainTrainingStreakFeatured.Weekly -> StateTrainingStreakFeatured.Weekly(
+            length = length,
+            targetSessionsPerPeriod = targetSessionsPerWeek,
+            mood = mood.toState(),
+            progressPercent = progressPercent,
+            confidence = confidence,
+        )
+
+        is DomainTrainingStreakFeatured.Rhythm -> StateTrainingStreakFeatured.Rhythm(
+            length = length,
+            workDays = workDays,
+            restDays = restDays,
+            mood = mood.toState(),
+            progressPercent = progressPercent,
+            confidence = confidence,
+        )
+
+        is DomainTrainingStreakFeatured.Pattern -> StateTrainingStreakFeatured.Pattern(
+            length = length,
+            targetSessionsPerPeriod = targetSessionsPerPeriod,
+            periodLengthDays = periodLengthDays,
+            mask = mask,
+            mood = mood.toState(),
+            progressPercent = progressPercent,
+            confidence = confidence,
+        )
     }
 }
 
@@ -47,13 +61,6 @@ private fun DomainTrainingStreakMood.toState(): StateTrainingStreakMood {
         DomainTrainingStreakMood.OnTrack -> StateTrainingStreakMood.OnTrack
         DomainTrainingStreakMood.Restart -> StateTrainingStreakMood.Restart
     }
-}
-
-private fun DomainTrainingStreakRhythm.toState(): StateTrainingStreakRhythm {
-    return StateTrainingStreakRhythm(
-        workDays = workDays,
-        restDays = restDays,
-    )
 }
 
 private fun DomainTrainingStreakProgress.toState(): StateTrainingStreakProgress {

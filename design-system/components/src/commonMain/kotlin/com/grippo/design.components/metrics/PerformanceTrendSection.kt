@@ -24,6 +24,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.density
 import com.grippo.design.resources.provider.duration
 import com.grippo.design.resources.provider.highlight_best_value
 import com.grippo.design.resources.provider.highlight_status_declined
@@ -45,6 +46,7 @@ public fun PerformanceTrendSection(
         val label = when (metric.type) {
             PerformanceMetricTypeState.Duration -> AppTokens.strings.res(Res.string.duration)
             PerformanceMetricTypeState.Volume -> AppTokens.strings.res(Res.string.volume)
+            PerformanceMetricTypeState.Density -> AppTokens.strings.res(Res.string.density)
             PerformanceMetricTypeState.Repetitions -> AppTokens.strings.res(Res.string.repetitions)
             PerformanceMetricTypeState.Intensity -> AppTokens.strings.res(Res.string.intensity_chip)
         }
@@ -65,6 +67,14 @@ public fun PerformanceTrendSection(
             }
 
             is PerformanceMetricState.Volume -> {
+                val best = AppTokens.strings.res(
+                    Res.string.highlight_best_value,
+                    metric.best.short()
+                )
+                Triple(metric.current.short(), metric.average.short(), best)
+            }
+
+            is PerformanceMetricState.Density -> {
                 val best = AppTokens.strings.res(
                     Res.string.highlight_best_value,
                     metric.best.short()

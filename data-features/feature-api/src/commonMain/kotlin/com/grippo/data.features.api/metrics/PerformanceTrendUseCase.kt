@@ -9,126 +9,215 @@ import kotlin.time.Duration.Companion.minutes
 public class PerformanceTrendUseCase {
 
     private companion object {
-        private const val PERFORMANCE_EPS: Double = 1e-2
-        private const val IMPROVED_THRESHOLD: Int = 5
-        private const val DECLINED_THRESHOLD: Int = -5
+        private const val RECORD_EPS: Double = 1e-2
+        private const val MIN_DYNAMIC_THRESHOLD_PERCENT: Int = 3
     }
 
     public fun fromTrainings(trainings: List<Training>): List<PerformanceMetric> {
         if (trainings.isEmpty()) return emptyList()
         val latestTraining = trainings.maxBy { it.createdAt }
-        val performance = mutableListOf<PerformanceMetric>()
 
-        // Duration (vs average)
-        run {
-            val values = trainings.map { it.duration.inWholeMinutes.toDouble() }
-            val current = latestTraining.duration.inWholeMinutes.toDouble()
-            if (values.isNotEmpty() && current > 0) {
-                val average = values.average()
-                val best = values.maxOrNull() ?: current
-                val delta = percentageDelta(current, average) ?: 0
-                val status =
-                    determinePerformanceStatus(delta = delta, current = current, best = best)
-                performance += PerformanceMetric.DurationMetric(
-                    deltaPercentage = delta,
-                    current = latestTraining.duration,
-                    average = average.minutes,
-                    best = best.minutes,
-                    status = status
-                )
-            }
+        val sorted = trainings.sortedBy { it.createdAt }
+
+        val metrics = buildList {
+            densityMetric(sorted, latestTraining)?.let(::add)
+            volumeMetric(sorted, latestTraining)?.let(::add)
+            repetitionsMetric(sorted, latestTraining)?.let(::add)
+            intensityMetric(sorted, latestTraining)?.let(::add)
+            durationMetricNeutral(sorted, latestTraining)?.let(::add)
         }
 
-        // Volume (vs average)
-        run {
-            val currentValue = latestTraining.volume.toDouble()
-            val values = trainings.map { it.volume.toDouble() }
-            if (values.isNotEmpty() && currentValue > 0) {
-                val average = values.average()
-                val best = values.maxOrNull() ?: currentValue
-                val delta = percentageDelta(currentValue, average) ?: 0
-                val status = determinePerformanceStatus(
-                    delta = delta,
-                    current = currentValue,
-                    best = best
-                )
-                performance += PerformanceMetric.VolumeMetric(
-                    deltaPercentage = delta,
-                    current = latestTraining.volume,
-                    average = average.toFloat(),
-                    best = best.toFloat(),
-                    status = status
-                )
-            }
-        }
-
-        // Repetitions (vs average)
-        run {
-            val currentValue = latestTraining.repetitions.toDouble()
-            val values = trainings.map { it.repetitions.toDouble() }
-            if (values.isNotEmpty() && currentValue > 0) {
-                val average = values.average()
-                val best = values.maxOrNull() ?: currentValue
-                val delta = percentageDelta(currentValue, average) ?: 0
-                val status = determinePerformanceStatus(
-                    delta = delta,
-                    current = currentValue,
-                    best = best
-                )
-                performance += PerformanceMetric.RepetitionsMetric(
-                    deltaPercentage = delta,
-                    current = latestTraining.repetitions,
-                    average = average.roundToInt(),
-                    best = best.roundToInt(),
-                    status = status
-                )
-            }
-        }
-
-        // Intensity (vs average)
-        run {
-            val currentValue = latestTraining.intensity.toDouble()
-            val values = trainings.map { it.intensity.toDouble() }
-            if (values.isNotEmpty() && currentValue > 0) {
-                val average = values.average()
-                val best = values.maxOrNull() ?: currentValue
-                val delta = percentageDelta(currentValue, average) ?: 0
-                val status = determinePerformanceStatus(
-                    delta = delta,
-                    current = currentValue,
-                    best = best
-                )
-                performance += PerformanceMetric.IntensityMetric(
-                    deltaPercentage = delta,
-                    current = latestTraining.intensity,
-                    average = average.toFloat(),
-                    best = best.toFloat(),
-                    status = status
-                )
-            }
-        }
-
-        return performance
+        return metrics
     }
 
-    private fun percentageDelta(current: Double, average: Double): Int? {
-        if (average == 0.0) return null
-        val delta = ((current - average) / average) * 100
-        return delta.roundToInt()
+    /**
+     * We intentionally avoid fixed “days” windows here.
+     * The caller decides the range by passing the trainings list.
+     *
+     * Baseline = all points except the latest.
+     * Trend = linear regression slope over the whole list (relative to baseline mean).
+     */
+    private fun trendPercent(baselineMean: Double, values: List<Double>): Int? {
+        if (baselineMean <= 0.0) return null
+        if (values.size < 2) return null
+        val slope = linearRegressionSlope(values)
+        val totalChange = slope * (values.size - 1).toDouble()
+        return ((totalChange / baselineMean) * 100.0).roundToInt()
     }
 
-    private fun determinePerformanceStatus(
-        delta: Int,
+    private fun linearRegressionSlope(values: List<Double>): Double {
+        val n = values.size
+        if (n < 2) return 0.0
+        val xs = (0 until n).map { it.toDouble() }
+        val xMean = xs.average()
+        val yMean = values.average()
+        var num = 0.0
+        var den = 0.0
+        for (i in 0 until n) {
+            val dx = xs[i] - xMean
+            num += dx * (values[i] - yMean)
+            den += dx * dx
+        }
+        return if (den == 0.0) 0.0 else num / den
+    }
+
+    private fun stddev(values: List<Double>): Double {
+        if (values.size < 2) return 0.0
+        val mean = values.average()
+        val variance = values.sumOf { (it - mean) * (it - mean) } / (values.size - 1).toDouble()
+        return kotlin.math.sqrt(variance)
+    }
+
+    private fun dynamicThresholdPercent(mean: Double, stddev: Double): Int? {
+        if (mean <= 0.0) return null
+        val percent = ((2.0 * stddev / mean) * 100.0).roundToInt()
+        return maxOf(MIN_DYNAMIC_THRESHOLD_PERCENT, percent)
+    }
+
+    private fun statusFromTrend(
         current: Double,
         best: Double,
+        trendPercent: Int,
+        thresholdPercent: Int,
     ): PerformanceTrendStatus {
-        if (current >= best - PERFORMANCE_EPS) {
-            return PerformanceTrendStatus.Record
-        }
+        if (current >= best - RECORD_EPS) return PerformanceTrendStatus.Record
         return when {
-            delta >= IMPROVED_THRESHOLD -> PerformanceTrendStatus.Improved
-            delta <= DECLINED_THRESHOLD -> PerformanceTrendStatus.Declined
+            trendPercent >= thresholdPercent -> PerformanceTrendStatus.Improved
+            trendPercent <= -thresholdPercent -> PerformanceTrendStatus.Declined
             else -> PerformanceTrendStatus.Stable
         }
+    }
+
+    private fun volumeMetric(
+        trainings: List<Training>,
+        latest: Training,
+    ): PerformanceMetric.VolumeMetric? {
+        val values = trainings.map { it.volume.toDouble() }.filter { it > 0.0 }
+        if (values.size < 2) return null
+        val baselineValues = values.dropLast(1)
+        if (baselineValues.isEmpty()) return null
+
+        val baselineMean = baselineValues.average()
+        val baselineStd = stddev(baselineValues)
+        val trend = trendPercent(baselineMean, values) ?: return null
+        val threshold = dynamicThresholdPercent(baselineMean, baselineStd) ?: return null
+        val best = values.maxOrNull() ?: return null
+        val current = values.last()
+        val status = statusFromTrend(current, best, trend, threshold)
+
+        return PerformanceMetric.VolumeMetric(
+            deltaPercentage = trend,
+            current = latest.volume,
+            average = baselineMean.toFloat(),
+            best = best.toFloat(),
+            status = status,
+        )
+    }
+
+    private fun densityMetric(
+        trainings: List<Training>,
+        latest: Training,
+    ): PerformanceMetric.DensityMetric? {
+        fun densityOf(t: Training): Double {
+            val minutes = t.duration.inWholeMinutes.toDouble()
+            if (minutes <= 0.0) return 0.0
+            val v = t.volume.toDouble()
+            if (v <= 0.0) return 0.0
+            return v / minutes
+        }
+
+        val values = trainings.map { densityOf(it) }.filter { it > 0.0 }
+        if (values.size < 2) return null
+        val baselineValues = values.dropLast(1)
+        if (baselineValues.isEmpty()) return null
+
+        val baselineMean = baselineValues.average()
+        val baselineStd = stddev(baselineValues)
+        val trend = trendPercent(baselineMean, values) ?: return null
+        val threshold = dynamicThresholdPercent(baselineMean, baselineStd) ?: return null
+        val best = values.maxOrNull() ?: return null
+        val current = values.last()
+        val status = statusFromTrend(current, best, trend, threshold)
+
+        return PerformanceMetric.DensityMetric(
+            deltaPercentage = trend,
+            current = densityOf(latest).toFloat(),
+            average = baselineMean.toFloat(),
+            best = best.toFloat(),
+            status = status,
+        )
+    }
+
+    private fun repetitionsMetric(
+        trainings: List<Training>,
+        latest: Training,
+    ): PerformanceMetric.RepetitionsMetric? {
+        val values = trainings.map { it.repetitions.toDouble() }.filter { it > 0.0 }
+        if (values.size < 2) return null
+        val baselineValues = values.dropLast(1)
+        if (baselineValues.isEmpty()) return null
+
+        val baselineMean = baselineValues.average()
+        val baselineStd = stddev(baselineValues)
+        val trend = trendPercent(baselineMean, values) ?: return null
+        val threshold = dynamicThresholdPercent(baselineMean, baselineStd) ?: return null
+        val best = values.maxOrNull() ?: return null
+        val current = values.last()
+        val status = statusFromTrend(current, best, trend, threshold)
+
+        return PerformanceMetric.RepetitionsMetric(
+            deltaPercentage = trend,
+            current = latest.repetitions,
+            average = baselineMean.roundToInt(),
+            best = best.roundToInt(),
+            status = status,
+        )
+    }
+
+    private fun intensityMetric(
+        trainings: List<Training>,
+        latest: Training,
+    ): PerformanceMetric.IntensityMetric? {
+        val values = trainings.map { it.intensity.toDouble() }.filter { it > 0.0 }
+        if (values.size < 2) return null
+        val baselineValues = values.dropLast(1)
+        if (baselineValues.isEmpty()) return null
+
+        val baselineMean = baselineValues.average()
+        val baselineStd = stddev(baselineValues)
+        val trend = trendPercent(baselineMean, values) ?: return null
+        val threshold = dynamicThresholdPercent(baselineMean, baselineStd) ?: return null
+        val best = values.maxOrNull() ?: return null
+        val current = values.last()
+        val status = statusFromTrend(current, best, trend, threshold)
+
+        return PerformanceMetric.IntensityMetric(
+            deltaPercentage = trend,
+            current = latest.intensity,
+            average = baselineMean.toFloat(),
+            best = best.toFloat(),
+            status = status,
+        )
+    }
+
+    private fun durationMetricNeutral(
+        trainings: List<Training>,
+        latest: Training,
+    ): PerformanceMetric.DurationMetric? {
+        val values = trainings.map { it.duration.inWholeMinutes.toDouble() }.filter { it > 0.0 }
+        if (values.size < 2) return null
+        val baselineValues = values.dropLast(1)
+        if (baselineValues.isEmpty()) return null
+
+        val baselineMean = baselineValues.average()
+        val best = values.maxOrNull() ?: return null
+
+        return PerformanceMetric.DurationMetric(
+            deltaPercentage = 0,
+            current = latest.duration,
+            average = baselineMean.minutes,
+            best = best.minutes,
+            status = PerformanceTrendStatus.Stable,
+        )
     }
 }

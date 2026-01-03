@@ -5,6 +5,7 @@ import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.metrics.models.MuscleLoadTimeline
 import com.grippo.data.features.api.metrics.models.MuscleLoadTimelineBucket
 import com.grippo.data.features.api.metrics.models.MuscleLoadTimelineMetric
+import com.grippo.data.features.api.metrics.models.MuscleLoadTimelineNormalization
 import com.grippo.data.features.api.metrics.models.MuscleLoadTimelineRow
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleEnum
@@ -39,6 +40,7 @@ public class MuscleLoadTimelineUseCase(
         trainings: List<Training>,
         range: DateRange,
         metric: MuscleLoadTimelineMetric = MuscleLoadTimelineMetric.Repetitions,
+        normalization: MuscleLoadTimelineNormalization = MuscleLoadTimelineNormalization.PerColumn,
     ): MuscleLoadTimeline? {
         val inRange = trainings.filter { it.createdAt in range }
         if (inRange.isEmpty()) return null
@@ -63,9 +65,11 @@ public class MuscleLoadTimelineUseCase(
 
         val trainingsPerBucket = distributeTrainings(inRange, buckets)
         val raw = FloatArray(rows * cols)
+        val sessionsPerBucket = IntArray(cols)
 
         for (c in buckets.indices) {
             val bucketTrainings = trainingsPerBucket[c]
+            sessionsPerBucket[c] = bucketTrainings.size
             if (bucketTrainings.isEmpty()) continue
 
             val perMuscle = computeBucketMuscleMeasure(bucketTrainings, exampleMap, metric)
@@ -80,11 +84,11 @@ public class MuscleLoadTimelineUseCase(
             }
         }
 
-        val normalized = when (val normalization = chooseNormalization(scale)) {
-            is Normalization.Percentile -> normalizeByPercentile(raw, normalization.p)
-            is Normalization.PerColumnMax -> normalizePerColumnMax(raw, rows, cols)
-        }
-        val values01 = sanitize01(normalized).toList()
+        val maxValue = raw.filter { it.isFinite() }.maxOrNull() ?: 0f
+        if (maxValue <= EPS) return null
+
+        val values = raw.toList()
+        val values01 = normalize(raw, rows, cols, normalization).toList()
         val labels = buildBucketLabels(buckets, scale)
 
         val timelineRows = rowSpec.rows.map { row ->
@@ -97,16 +101,19 @@ public class MuscleLoadTimelineUseCase(
 
         val timelineBuckets = buckets.mapIndexed { index, bucket ->
             MuscleLoadTimelineBucket(
-                label = labels.getOrNull(index) ?: "",
+                label = labels[index],
                 start = bucket.start,
                 end = bucket.end,
+                sessionsCount = sessionsPerBucket[index],
             )
         }
 
         return MuscleLoadTimeline(
             rows = timelineRows,
             buckets = timelineBuckets,
+            values = values,
             values01 = values01,
+            normalization = normalization,
         )
     }
 
@@ -168,6 +175,9 @@ public class MuscleLoadTimelineUseCase(
                     MuscleLoadTimelineMetric.Repetitions -> exercise.iterations.fold(0) { acc, iteration ->
                         acc + iteration.repetitions.coerceAtLeast(0)
                     }.toFloat()
+
+                    MuscleLoadTimelineMetric.Sets -> exercise.iterations.count { it.repetitions > 0 }
+                        .toFloat()
                 }
 
                 if (base <= EPS) return@forEach
@@ -267,54 +277,54 @@ public class MuscleLoadTimelineUseCase(
         }
     }
 
-    private sealed interface Normalization {
-        data class Percentile(val p: Float) : Normalization
-        data object PerColumnMax : Normalization
-    }
-
-    private fun chooseNormalization(scale: BucketScale): Normalization = when (scale) {
-        BucketScale.EXERCISE, BucketScale.DAY -> Normalization.Percentile(0.95f)
-        BucketScale.WEEK, BucketScale.MONTH -> Normalization.PerColumnMax
-    }
-
-    private fun normalizeByPercentile(values: FloatArray, percentile: Float): FloatArray {
-        if (values.isEmpty()) return values
-        val sorted = values.filter { it.isFinite() && it > 0f }.sorted()
-        if (sorted.isEmpty()) return FloatArray(values.size)
-        val index = ((sorted.size - 1) * percentile).toInt().coerceIn(0, sorted.lastIndex)
-        val pivot = sorted[index]
-        if (pivot <= 0f) return FloatArray(values.size)
-        return FloatArray(values.size) { idx -> (values[idx] / pivot).coerceIn(0f, 1f) }
-    }
-
-    private fun normalizePerColumnMax(
+    private fun normalize(
         values: FloatArray,
         rows: Int,
         cols: Int,
+        normalization: MuscleLoadTimelineNormalization,
     ): FloatArray {
-        if (rows == 0 || cols == 0) return values
-        val result = FloatArray(values.size)
-        for (c in 0 until cols) {
-            var maxValue = 0f
-            for (r in 0 until rows) {
-                val value = values[r * cols + c]
-                if (value.isFinite() && value > maxValue) {
-                    maxValue = value
-                }
-            }
-            for (r in 0 until rows) {
-                val value = values[r * cols + c]
-                result[r * cols + c] =
-                    if (maxValue == 0f) 0f else (value / maxValue).coerceIn(0f, 1f)
-            }
-        }
-        return result
-    }
+        if (rows <= 0 || cols <= 0) return FloatArray(values.size)
 
-    private fun sanitize01(values: FloatArray): FloatArray {
-        return FloatArray(values.size) { index ->
-            val value = values[index]
-            if (!value.isFinite()) 0f else value.coerceIn(0f, 1f)
+        fun safe01(v: Float): Float = if (!v.isFinite()) 0f else v.coerceIn(0f, 1f)
+
+        return when (normalization) {
+            MuscleLoadTimelineNormalization.Absolute -> {
+                val maxValue = values.filter { it.isFinite() }.maxOrNull() ?: 0f
+                if (maxValue <= EPS) return FloatArray(values.size)
+                FloatArray(values.size) { idx -> safe01(values[idx] / maxValue) }
+            }
+
+            MuscleLoadTimelineNormalization.PerRow -> {
+                val result = FloatArray(values.size)
+                for (r in 0 until rows) {
+                    var rowMax = 0f
+                    for (c in 0 until cols) {
+                        val v = values[r * cols + c]
+                        if (v.isFinite() && v > rowMax) rowMax = v
+                    }
+                    for (c in 0 until cols) {
+                        val v = values[r * cols + c]
+                        result[r * cols + c] = if (rowMax <= EPS) 0f else safe01(v / rowMax)
+                    }
+                }
+                result
+            }
+
+            MuscleLoadTimelineNormalization.PerColumn -> {
+                val result = FloatArray(values.size)
+                for (c in 0 until cols) {
+                    var colMax = 0f
+                    for (r in 0 until rows) {
+                        val v = values[r * cols + c]
+                        if (v.isFinite() && v > colMax) colMax = v
+                    }
+                    for (r in 0 until rows) {
+                        val v = values[r * cols + c]
+                        result[r * cols + c] = if (colMax <= EPS) 0f else safe01(v / colMax)
+                    }
+                }
+                result
+            }
         }
     }
 

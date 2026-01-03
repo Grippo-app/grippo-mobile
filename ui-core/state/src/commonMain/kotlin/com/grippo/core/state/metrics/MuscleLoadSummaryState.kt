@@ -9,6 +9,9 @@ import kotlinx.collections.immutable.persistentListOf
 public data class MuscleLoadSummaryState(
     val perGroup: MuscleLoadBreakdownState,
     val perMuscle: MuscleLoadBreakdownState,
+    val volumePerGroup: MuscleLoadBreakdownState,
+    val volumePerMuscle: MuscleLoadBreakdownState,
+    val dominance: MuscleLoadDominanceState,
 )
 
 @Immutable
@@ -21,6 +24,12 @@ public data class MuscleLoadEntryState(
     val label: String,
     val value: Float,
     val muscles: ImmutableList<MuscleEnumState>,
+)
+
+@Immutable
+public data class MuscleLoadDominanceState(
+    val top1SharePercent: Float,
+    val top2SharePercent: Float,
 )
 
 public fun stubMuscleLoadSummary(): MuscleLoadSummaryState {
@@ -78,6 +87,12 @@ public fun stubMuscleLoadSummary(): MuscleLoadSummaryState {
                     muscles = persistentListOf(MuscleEnumState.QUADRICEPS)
                 ),
             )
+        ),
+        volumePerGroup = MuscleLoadBreakdownState(entries = emptyList()),
+        volumePerMuscle = MuscleLoadBreakdownState(entries = emptyList()),
+        dominance = MuscleLoadDominanceState(
+            top1SharePercent = 52f,
+            top2SharePercent = 74f,
         ),
     )
 }

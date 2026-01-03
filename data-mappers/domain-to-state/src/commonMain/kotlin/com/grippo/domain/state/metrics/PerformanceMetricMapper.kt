@@ -45,6 +45,14 @@ private fun PerformanceMetric.toState(): PerformanceMetricState {
             best = VolumeFormatState.of(best),
             status = status.toState(),
         )
+
+        is PerformanceMetric.DensityMetric -> PerformanceMetricState.Density(
+            deltaPercentage = deltaPercentage,
+            current = VolumeFormatState.of(current),
+            average = VolumeFormatState.of(average),
+            best = VolumeFormatState.of(best),
+            status = status.toState(),
+        )
     }
 }
 

@@ -111,16 +111,7 @@ public class VolumeSeriesUseCase {
 
     private fun deriveScale(start: LocalDateTime, end: LocalDateTime): BucketScale {
         val days = max(1, start.date.daysUntil(end.date) + 1)
-        return when {
-            days == 1 -> BucketScale.Exercise
-            days == 7 -> BucketScale.Day
-            days in 28..31 -> BucketScale.Week
-            days in 365..366 -> BucketScale.Month
-            else -> deriveCustomScale(days)
-        }
-    }
-
-    private fun deriveCustomScale(days: Int): BucketScale {
+        if (days <= 1) return BucketScale.Exercise
         val weeks = (days + DayOfWeek.entries.size - 1) / DayOfWeek.entries.size
         return when {
             days <= TARGET_BUCKETS -> BucketScale.Day

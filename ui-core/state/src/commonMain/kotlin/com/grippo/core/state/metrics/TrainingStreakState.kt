@@ -10,21 +10,59 @@ public data class TrainingStreakState(
 )
 
 @Immutable
-public data class TrainingStreakFeaturedState(
-    val type: TrainingStreakType,
-    val length: Int,
-    val targetSessionsPerPeriod: Int,
-    val periodLengthDays: Int,
-    val mood: TrainingStreakMood,
-    val progressPercent: Int,
-    val rhythm: TrainingStreakRhythmState? = null,
-)
+public sealed interface TrainingStreakFeaturedState {
+    public val length: Int
+    public val targetSessionsPerPeriod: Int
+    public val periodLengthDays: Int
+    public val mood: TrainingStreakMood
+    public val progressPercent: Int
+    public val confidence: Float
 
-@Immutable
-public enum class TrainingStreakType {
-    Daily,
-    Weekly,
-    Rhythm,
+    @Immutable
+    public data class Daily(
+        override val length: Int,
+        override val mood: TrainingStreakMood,
+        override val progressPercent: Int,
+        override val confidence: Float,
+    ) : TrainingStreakFeaturedState {
+        override val targetSessionsPerPeriod: Int = 1
+        override val periodLengthDays: Int = 1
+    }
+
+    @Immutable
+    public data class Weekly(
+        override val length: Int,
+        override val targetSessionsPerPeriod: Int,
+        override val mood: TrainingStreakMood,
+        override val progressPercent: Int,
+        override val confidence: Float,
+    ) : TrainingStreakFeaturedState {
+        override val periodLengthDays: Int = 7
+    }
+
+    @Immutable
+    public data class Rhythm(
+        override val length: Int,
+        val workDays: Int,
+        val restDays: Int,
+        override val mood: TrainingStreakMood,
+        override val progressPercent: Int,
+        override val confidence: Float,
+    ) : TrainingStreakFeaturedState {
+        override val targetSessionsPerPeriod: Int = workDays
+        override val periodLengthDays: Int = workDays + restDays
+    }
+
+    @Immutable
+    public data class Pattern(
+        override val length: Int,
+        override val targetSessionsPerPeriod: Int,
+        override val periodLengthDays: Int,
+        val mask: List<Boolean>,
+        override val mood: TrainingStreakMood,
+        override val progressPercent: Int,
+        override val confidence: Float,
+    ) : TrainingStreakFeaturedState
 }
 
 @Immutable
@@ -41,23 +79,15 @@ public data class TrainingStreakProgressState(
     val targetSessions: Int,
 )
 
-@Immutable
-public data class TrainingStreakRhythmState(
-    val workDays: Int,
-    val restDays: Int,
-)
-
 public fun stubTrainingStreaks(): List<TrainingStreakState> {
     return listOf(
         TrainingStreakState(
             totalActiveDays = 9,
-            featured = TrainingStreakFeaturedState(
-                type = TrainingStreakType.Daily,
+            featured = TrainingStreakFeaturedState.Daily(
                 length = 5,
-                targetSessionsPerPeriod = 1,
-                periodLengthDays = 1,
                 mood = TrainingStreakMood.OnTrack,
                 progressPercent = 60,
+                confidence = 0.8f,
             ),
             timeline = listOf(
                 TrainingStreakProgressState(
@@ -79,13 +109,12 @@ public fun stubTrainingStreaks(): List<TrainingStreakState> {
         ),
         TrainingStreakState(
             totalActiveDays = 14,
-            featured = TrainingStreakFeaturedState(
-                type = TrainingStreakType.Weekly,
+            featured = TrainingStreakFeaturedState.Weekly(
                 length = 3,
                 targetSessionsPerPeriod = 4,
-                periodLengthDays = 7,
                 mood = TrainingStreakMood.Restart,
                 progressPercent = 40,
+                confidence = 0.7f,
             ),
             timeline = listOf(
                 TrainingStreakProgressState(
@@ -107,14 +136,13 @@ public fun stubTrainingStreaks(): List<TrainingStreakState> {
         ),
         TrainingStreakState(
             totalActiveDays = 16,
-            featured = TrainingStreakFeaturedState(
-                type = TrainingStreakType.Rhythm,
+            featured = TrainingStreakFeaturedState.Rhythm(
                 length = 4,
-                targetSessionsPerPeriod = 2,
-                periodLengthDays = 3,
+                workDays = 2,
+                restDays = 1,
                 mood = TrainingStreakMood.CrushingIt,
                 progressPercent = 80,
-                rhythm = TrainingStreakRhythmState(workDays = 2, restDays = 1),
+                confidence = 0.9f,
             ),
             timeline = listOf(
                 TrainingStreakProgressState(

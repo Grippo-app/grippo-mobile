@@ -11,6 +11,7 @@ public fun EstimatedOneRepMaxSeries?.toState(): EstimatedOneRepMaxState? {
             EstimatedOneRepMaxEntryState(
                 label = entry.label,
                 value = entry.value,
+                confidence = entry.confidence,
             )
         }
         ?.toPersistentList()

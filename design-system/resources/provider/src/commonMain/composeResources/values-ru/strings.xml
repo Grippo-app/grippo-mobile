@@ -36,6 +36,9 @@
     <string name="highlight_streak_daily_target">Цель · Дни подряд</string>
     <string name="highlight_streak_rhythm">Серия: %1$d трен. / %2$d отдых</string>
     <string name="highlight_streak_rhythm_target">Цель · %1$d трен. дней · %2$d отдых</string>
+    <string name="highlight_streak_pattern_headline_primary">Паттерн: %1$d циклов</string>
+    <string name="highlight_streak_pattern_headline_secondary">%1$d тренировок / %2$d дней</string>
+    <string name="highlight_streak_pattern_target">Цель · %1$d тренировок / %2$d дней</string>
     <string name="highlight_streak_mood_crushing">🔥 Вы неудержимы — продолжайте собирать эти победы.</string>
     <string name="highlight_streak_mood_on_track">Импульс растёт. Держитесь этого ритма.</string>
     <string name="highlight_streak_mood_restart">Каждая серия начинается сейчас. У вас получится.</string>
@@ -146,6 +149,7 @@
     <string name="trainings_period_monthly">Месяц</string>
     <string name="training">Тренировка</string>
     <string name="duration">Длительность</string>
+    <string name="density">Плотность</string>
     <string name="sets">Подходы</string>
     <string name="statistics">Статистика</string>
     <string name="value_statistics">%1$s — статистика</string>

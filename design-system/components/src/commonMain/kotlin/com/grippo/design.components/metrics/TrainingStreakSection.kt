@@ -6,9 +6,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
+import com.grippo.core.state.metrics.TrainingStreakFeaturedState
 import com.grippo.core.state.metrics.TrainingStreakMood
 import com.grippo.core.state.metrics.TrainingStreakState
-import com.grippo.core.state.metrics.TrainingStreakType
 import com.grippo.core.state.metrics.stubTrainingStreaks
 import com.grippo.design.components.indicators.LineIndicator
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
@@ -22,6 +22,9 @@ import com.grippo.design.resources.provider.highlight_streak_daily_target
 import com.grippo.design.resources.provider.highlight_streak_mood_crushing
 import com.grippo.design.resources.provider.highlight_streak_mood_on_track
 import com.grippo.design.resources.provider.highlight_streak_mood_restart
+import com.grippo.design.resources.provider.highlight_streak_pattern_headline_primary
+import com.grippo.design.resources.provider.highlight_streak_pattern_headline_secondary
+import com.grippo.design.resources.provider.highlight_streak_pattern_target
 import com.grippo.design.resources.provider.highlight_streak_rhythm
 import com.grippo.design.resources.provider.highlight_streak_rhythm_target
 import com.grippo.design.resources.provider.highlight_streak_weekly_headline_primary
@@ -36,44 +39,56 @@ public fun TrainingStreakSection(
 ) {
     MetricSectionPanel(modifier = modifier) {
         val title = AppTokens.strings.res(Res.string.highlight_streaks)
-        val (headlinePrimary, headlineSecondary) = when (value.featured.type) {
-            TrainingStreakType.Daily -> AppTokens.strings.res(
+
+        val (headlinePrimary, headlineSecondary) = when (val featured = value.featured) {
+            is TrainingStreakFeaturedState.Daily -> AppTokens.strings.res(
                 Res.string.highlight_streak,
-                value.featured.length
+                featured.length
             ) to null
 
-            TrainingStreakType.Weekly -> AppTokens.strings.res(
+            is TrainingStreakFeaturedState.Weekly -> AppTokens.strings.res(
                 Res.string.highlight_streak_weekly_headline_primary,
-                value.featured.length
+                featured.length
             ) to AppTokens.strings.res(
                 Res.string.highlight_streak_weekly_headline_secondary,
-                value.featured.targetSessionsPerPeriod
+                featured.targetSessionsPerPeriod
             )
 
-            TrainingStreakType.Rhythm -> {
-                val rhythm = value.featured.rhythm ?: return@MetricSectionPanel
-                AppTokens.strings.res(
-                    Res.string.highlight_streak_rhythm,
-                    rhythm.workDays,
-                    rhythm.restDays
-                ) to null
-            }
+            is TrainingStreakFeaturedState.Rhythm -> AppTokens.strings.res(
+                Res.string.highlight_streak_rhythm,
+                featured.workDays,
+                featured.restDays
+            ) to null
+
+            is TrainingStreakFeaturedState.Pattern -> AppTokens.strings.res(
+                Res.string.highlight_streak_pattern_headline_primary,
+                featured.length
+            ) to AppTokens.strings.res(
+                Res.string.highlight_streak_pattern_headline_secondary,
+                featured.targetSessionsPerPeriod,
+                featured.periodLengthDays,
+            )
         }
-        val cadenceLabel = when (value.featured.type) {
-            TrainingStreakType.Daily -> AppTokens.strings.res(Res.string.highlight_streak_daily_target)
-            TrainingStreakType.Weekly -> AppTokens.strings.res(
+        val cadenceLabel = when (val featured = value.featured) {
+            is TrainingStreakFeaturedState.Daily ->
+                AppTokens.strings.res(Res.string.highlight_streak_daily_target)
+
+            is TrainingStreakFeaturedState.Weekly -> AppTokens.strings.res(
                 Res.string.highlight_streak_weekly_target,
-                value.featured.targetSessionsPerPeriod
+                featured.targetSessionsPerPeriod
             )
 
-            TrainingStreakType.Rhythm -> {
-                val rhythm = value.featured.rhythm ?: return@MetricSectionPanel
-                AppTokens.strings.res(
-                    Res.string.highlight_streak_rhythm_target,
-                    rhythm.workDays,
-                    rhythm.restDays
-                )
-            }
+            is TrainingStreakFeaturedState.Rhythm -> AppTokens.strings.res(
+                Res.string.highlight_streak_rhythm_target,
+                featured.workDays,
+                featured.restDays
+            )
+
+            is TrainingStreakFeaturedState.Pattern -> AppTokens.strings.res(
+                Res.string.highlight_streak_pattern_target,
+                featured.targetSessionsPerPeriod,
+                featured.periodLengthDays,
+            )
         }
 
         val progressValue =

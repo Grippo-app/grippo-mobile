@@ -4,8 +4,6 @@ import com.grippo.data.features.api.metrics.models.TrainingStreak
 import com.grippo.data.features.api.metrics.models.TrainingStreakFeatured
 import com.grippo.data.features.api.metrics.models.TrainingStreakMood
 import com.grippo.data.features.api.metrics.models.TrainingStreakProgressEntry
-import com.grippo.data.features.api.metrics.models.TrainingStreakRhythm
-import com.grippo.data.features.api.metrics.models.TrainingStreakType
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.datetime.DatePeriod
@@ -45,12 +43,18 @@ public class TrainingStreakUseCase {
         val dayBlocks = sessionsByDay.keys.sorted().toDayBlocks()
         val rhythmPattern = detectRhythmPattern(dayBlocks)
 
+        val patternComputation = computePatternStreak(
+            sessionsByDay = sessionsByDay,
+            today = today,
+        )
+
         val shouldFeatureWeekly = weeklyData.targetSessions > 0 &&
                 (weeklyData.streakLength > 0 ||
                         weekBuckets.size >= 3 ||
                         dailyData.currentStreak < 3)
 
         val computation = when {
+            patternComputation != null -> patternComputation
             rhythmPattern != null -> computeRhythmStreak(
                 pattern = rhythmPattern,
                 blocks = dayBlocks
@@ -78,13 +82,11 @@ public class TrainingStreakUseCase {
     private fun emptyStreak(today: LocalDate): TrainingStreak {
         return TrainingStreak(
             totalActiveDays = 0,
-            featured = TrainingStreakFeatured(
-                type = TrainingStreakType.Daily,
+            featured = TrainingStreakFeatured.Daily(
                 length = 0,
-                targetSessionsPerPeriod = 1,
-                periodLengthDays = 1,
                 mood = TrainingStreakMood.Restart,
-                progressPercent = 0
+                progressPercent = 0,
+                confidence = 0f,
             ),
             timeline = buildDailyTimeline(today, emptyMap())
         )
@@ -99,13 +101,13 @@ public class TrainingStreakUseCase {
         weeklyData: WeeklyStreakData,
         today: LocalDate,
     ): StreakComputation {
-        val featured = TrainingStreakFeatured(
-            type = TrainingStreakType.Weekly,
+        val confidence = (weeklyData.countsByWeekStart.size.toFloat() / 4f).coerceIn(0f, 1f)
+        val featured = TrainingStreakFeatured.Weekly(
             length = weeklyData.streakLength,
-            targetSessionsPerPeriod = weeklyData.targetSessions,
-            periodLengthDays = 7,
+            targetSessionsPerWeek = weeklyData.targetSessions,
             mood = determineStreakMood(weeklyData.streakLength),
-            progressPercent = weeklyData.progressPercent
+            progressPercent = weeklyData.progressPercent,
+            confidence = confidence,
         )
 
         val timeline = buildWeeklyTimeline(
@@ -122,13 +124,12 @@ public class TrainingStreakUseCase {
         today: LocalDate,
         sessionsByDay: Map<LocalDate, Int>,
     ): StreakComputation {
-        val featured = TrainingStreakFeatured(
-            type = TrainingStreakType.Daily,
+        val confidence = (sessionsByDay.size.toFloat() / 7f).coerceIn(0f, 1f)
+        val featured = TrainingStreakFeatured.Daily(
             length = dailyData.currentStreak,
-            targetSessionsPerPeriod = 1,
-            periodLengthDays = 1,
             mood = determineStreakMood(dailyData.currentStreak),
-            progressPercent = dailyData.progressPercent
+            progressPercent = dailyData.progressPercent,
+            confidence = confidence,
         )
 
         val timeline = buildDailyTimeline(
@@ -145,17 +146,13 @@ public class TrainingStreakUseCase {
     ): StreakComputation {
         if (blocks.isEmpty()) {
             return StreakComputation(
-                featured = TrainingStreakFeatured(
-                    type = TrainingStreakType.Rhythm,
+                featured = TrainingStreakFeatured.Rhythm(
                     length = 0,
-                    targetSessionsPerPeriod = pattern.workDays,
-                    periodLengthDays = pattern.workDays + pattern.restDays,
+                    workDays = pattern.workDays,
+                    restDays = pattern.restDays,
                     mood = TrainingStreakMood.Restart,
                     progressPercent = 0,
-                    rhythm = TrainingStreakRhythm(
-                        workDays = pattern.workDays,
-                        restDays = pattern.restDays
-                    )
+                    confidence = 0f,
                 ),
                 timeline = emptyList()
             )
@@ -190,17 +187,13 @@ public class TrainingStreakUseCase {
             }
         }
 
-        val featured = TrainingStreakFeatured(
-            type = TrainingStreakType.Rhythm,
+        val featured = TrainingStreakFeatured.Rhythm(
             length = streak,
-            targetSessionsPerPeriod = pattern.workDays,
-            periodLengthDays = pattern.workDays + pattern.restDays,
+            workDays = pattern.workDays,
+            restDays = pattern.restDays,
             mood = determineStreakMood(streak),
             progressPercent = blockProgress,
-            rhythm = TrainingStreakRhythm(
-                workDays = pattern.workDays,
-                restDays = pattern.restDays
-            )
+            confidence = pattern.confidence,
         )
 
         val timeline = buildRhythmTimeline(
@@ -214,6 +207,7 @@ public class TrainingStreakUseCase {
     private data class RhythmPattern(
         val workDays: Int,
         val restDays: Int,
+        val confidence: Float,
     )
 
     private data class DayBlock(
@@ -270,7 +264,8 @@ public class TrainingStreakUseCase {
         val restDays = restMode.value.coerceIn(1, RHYTHM_MAX_REST_DAYS)
         if (workDays + restDays > RHYTHM_MAX_CYCLE_LENGTH) return null
 
-        return RhythmPattern(workDays = workDays, restDays = restDays)
+        val confidence = (runConfidence * restConfidence * multiDayFraction).coerceIn(0f, 1f)
+        return RhythmPattern(workDays = workDays, restDays = restDays, confidence = confidence)
     }
 
     private data class ModeValue(
@@ -521,5 +516,150 @@ public class TrainingStreakUseCase {
                 targetSessions = 1
             )
         }
+    }
+
+    private data class PatternCandidate(
+        val periodDays: Int,
+        val shift: Int,
+        val mask: List<Boolean>,
+        val expectedTrainingDays: Int,
+        val confidence: Float,
+    )
+
+    private fun computePatternStreak(
+        sessionsByDay: Map<LocalDate, Int>,
+        today: LocalDate,
+        horizonDays: Int = 56,
+        maxPeriodDays: Int = 28,
+        minCycles: Int = 3,
+        minConfidence: Float = 0.6f,
+    ): StreakComputation? {
+        if (sessionsByDay.isEmpty()) return null
+
+        val series = (0 until horizonDays).map { offset ->
+            val date = today.minus(DatePeriod(days = offset))
+            val trained = (sessionsByDay[date] ?: 0) > 0
+            trained
+        }
+        // Need enough history to support at least minCycles of some period.
+        if (series.count { it } < 3) return null
+
+        val candidate = detectBestPattern(
+            series = series,
+            maxPeriodDays = maxPeriodDays,
+            minCycles = minCycles,
+        ) ?: return null
+
+        if (candidate.confidence < minConfidence) return null
+
+        val target = candidate.expectedTrainingDays
+        if (target <= 0) return null
+
+        // Cycle index: 0 is current cycle (may be partial), increasing into the past.
+        fun cycleIndex(dayIndex: Int): Int = (dayIndex + candidate.shift) / candidate.periodDays
+        fun posIndex(dayIndex: Int): Int = (dayIndex + candidate.shift) % candidate.periodDays
+
+        val cycles = (0 until horizonDays).groupBy(::cycleIndex)
+        val currentCycleDays = cycles.getValue(0)
+
+        val achievedInCurrent = currentCycleDays.count { idx ->
+            series[idx] && candidate.mask[posIndex(idx)]
+        }
+        val currentProgress =
+            ((achievedInCurrent.toFloat() / target.toFloat()).coerceIn(0f, 1f) * 100).roundToInt()
+
+        val streakCycles = generateSequence(1) { it + 1 }
+            .mapNotNull { c -> cycles[c]?.let { c to it } }
+            .takeWhile { (_, indices) -> indices.size >= candidate.periodDays }
+            .takeWhile { (_, indices) ->
+                val achieved = indices.count { idx -> series[idx] && candidate.mask[posIndex(idx)] }
+                achieved >= target
+            }
+            .count()
+
+        val timeline = (3 downTo 0).mapNotNull { cycle ->
+            val indices = cycles[cycle] ?: return@mapNotNull null
+            if (indices.isEmpty()) return@mapNotNull null
+            val achieved = indices.count { idx -> series[idx] && candidate.mask[posIndex(idx)] }
+            val percent =
+                ((achieved.toFloat() / target.toFloat()).coerceIn(0f, 1f) * 100).roundToInt()
+            TrainingStreakProgressEntry(
+                progressPercent = percent,
+                achievedSessions = achieved,
+                targetSessions = target,
+            )
+        }
+
+        val featured = TrainingStreakFeatured.Pattern(
+            length = streakCycles,
+            targetSessionsPerPeriod = target,
+            periodLengthDays = candidate.periodDays,
+            mask = candidate.mask,
+            mood = determineStreakMood(streakCycles),
+            progressPercent = currentProgress,
+            confidence = candidate.confidence,
+        )
+
+        return StreakComputation(
+            featured = featured,
+            timeline = timeline,
+        )
+    }
+
+    private fun detectBestPattern(
+        series: List<Boolean>,
+        maxPeriodDays: Int,
+        minCycles: Int,
+    ): PatternCandidate? {
+        if (series.isEmpty()) return null
+
+        val horizon = series.size
+        val candidates = buildList {
+            for (period in 2..maxPeriodDays) {
+                if (horizon < period * minCycles) continue
+                for (shift in 0 until period) {
+                    val obs = IntArray(period)
+                    val trains = IntArray(period)
+
+                    for (i in 0 until horizon) {
+                        val pos = (i + shift) % period
+                        obs[pos]++
+                        if (series[i]) trains[pos]++
+                    }
+
+                    val probs = (0 until period).map { p ->
+                        if (obs[p] == 0) 0f else trains[p].toFloat() / obs[p].toFloat()
+                    }
+                    val mask = probs.map { it > 0.5f }
+                    val expected = mask.count { it }
+                    if (expected == 0 || expected == period) continue
+
+                    val matches = (0 until horizon).count { i ->
+                        val expectedTrain = mask[(i + shift) % period]
+                        expectedTrain == series[i]
+                    }
+                    val accuracy = matches.toFloat() / horizon.toFloat()
+                    val stability =
+                        probs.map { kotlin.math.abs(it - 0.5f) * 2f }.average().toFloat()
+                    val coverage =
+                        (horizon.toFloat() / (period * minCycles).toFloat()).coerceIn(0f, 1f)
+                    val confidence = (accuracy * stability * coverage).coerceIn(0f, 1f)
+
+                    add(
+                        PatternCandidate(
+                            periodDays = period,
+                            shift = shift,
+                            mask = mask,
+                            expectedTrainingDays = expected,
+                            confidence = confidence,
+                        )
+                    )
+                }
+            }
+        }
+
+        return candidates
+            .maxWithOrNull(compareBy<PatternCandidate> { it.confidence }
+                .thenBy { it.periodDays })
     }
 }

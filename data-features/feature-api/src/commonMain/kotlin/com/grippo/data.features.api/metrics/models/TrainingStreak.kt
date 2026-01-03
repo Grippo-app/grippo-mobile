@@ -6,20 +6,49 @@ public data class TrainingStreak(
     val timeline: List<TrainingStreakProgressEntry>,
 )
 
-public data class TrainingStreakFeatured(
-    val type: TrainingStreakType,
-    val length: Int,
-    val targetSessionsPerPeriod: Int,
-    val periodLengthDays: Int,
-    val mood: TrainingStreakMood,
-    val progressPercent: Int,
-    val rhythm: TrainingStreakRhythm? = null,
-)
+public sealed interface TrainingStreakFeatured {
+    public val length: Int
+    public val mood: TrainingStreakMood
+    public val progressPercent: Int
 
-public enum class TrainingStreakType {
-    Daily,
-    Weekly,
-    Rhythm,
+    /**
+     * 0..1 confidence of the featured streak.
+     */
+    public val confidence: Float
+
+    public data class Daily(
+        override val length: Int,
+        override val mood: TrainingStreakMood,
+        override val progressPercent: Int,
+        override val confidence: Float,
+    ) : TrainingStreakFeatured
+
+    public data class Weekly(
+        override val length: Int,
+        val targetSessionsPerWeek: Int,
+        override val mood: TrainingStreakMood,
+        override val progressPercent: Int,
+        override val confidence: Float,
+    ) : TrainingStreakFeatured
+
+    public data class Rhythm(
+        override val length: Int,
+        val workDays: Int,
+        val restDays: Int,
+        override val mood: TrainingStreakMood,
+        override val progressPercent: Int,
+        override val confidence: Float,
+    ) : TrainingStreakFeatured
+
+    public data class Pattern(
+        override val length: Int,
+        val targetSessionsPerPeriod: Int,
+        val periodLengthDays: Int,
+        val mask: List<Boolean>,
+        override val mood: TrainingStreakMood,
+        override val progressPercent: Int,
+        override val confidence: Float,
+    ) : TrainingStreakFeatured
 }
 
 public enum class TrainingStreakMood {
@@ -32,9 +61,4 @@ public data class TrainingStreakProgressEntry(
     val progressPercent: Int,
     val achievedSessions: Int,
     val targetSessions: Int,
-)
-
-public data class TrainingStreakRhythm(
-    val workDays: Int,
-    val restDays: Int,
 )

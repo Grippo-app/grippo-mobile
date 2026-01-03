@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.metrics.MuscleLoadBreakdownState
+import com.grippo.core.state.metrics.MuscleLoadDominanceState
 import com.grippo.core.state.metrics.MuscleLoadEntryState
 import com.grippo.core.state.metrics.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.stubCategoryDistribution
@@ -298,6 +299,12 @@ private fun ScreenPreview() {
                         )
                     )
                 )
+            ),
+            volumePerGroup = MuscleLoadBreakdownState(entries = emptyList()),
+            volumePerMuscle = MuscleLoadBreakdownState(entries = emptyList()),
+            dominance = MuscleLoadDominanceState(
+                top1SharePercent = 52f,
+                top2SharePercent = 74f,
             ),
         )
 
