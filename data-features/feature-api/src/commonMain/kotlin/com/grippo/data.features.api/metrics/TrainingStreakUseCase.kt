@@ -1,11 +1,14 @@
 package com.grippo.data.features.api.metrics
 
+import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
 import com.grippo.data.features.api.metrics.models.TrainingStreak
 import com.grippo.data.features.api.metrics.models.TrainingStreakFeatured
 import com.grippo.data.features.api.metrics.models.TrainingStreakMood
 import com.grippo.data.features.api.metrics.models.TrainingStreakProgressEntry
 import com.grippo.data.features.api.training.models.Training
+import com.grippo.data.features.api.user.UserFeature
 import com.grippo.toolkit.date.utils.DateTimeUtils
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
@@ -15,22 +18,27 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlin.math.roundToInt
 
-public class TrainingStreakUseCase {
+public class TrainingStreakUseCase(
+    private val userFeature: UserFeature,
+) {
 
     private companion object {
-        private const val RHYTHM_MIN_BLOCKS = 3
-        private const val RHYTHM_MIN_CONFIDENCE = 0.5f
         private const val RHYTHM_TOLERANCE_DAYS = 1
         private const val RHYTHM_MAX_WORK_DAYS = 5
         private const val RHYTHM_MAX_REST_DAYS = 4
         private const val RHYTHM_MAX_CYCLE_LENGTH = 8
+        private const val DEFAULT_PATTERN_MAX_PERIOD_DAYS = 28
+        private const val MIN_WEEKS_FOR_HISTORY_TARGET = 3
+        private const val RECENT_WEEKS_FOR_TARGET = 8
     }
 
-    public fun fromTrainings(trainings: List<Training>): TrainingStreak {
+    public suspend fun fromTrainings(trainings: List<Training>): TrainingStreak {
         val today = DateTimeUtils.now().date
         if (trainings.isEmpty()) {
             return emptyStreak(today)
         }
+        val experience = resolveExperience() ?: return emptyStreak(today)
+        val adaptation = experience.trainingStreakAdaptation()
 
         val sessionsByDay = trainings.groupingBy { it.createdAt.date }.eachCount()
         if (sessionsByDay.isEmpty()) {
@@ -38,14 +46,22 @@ public class TrainingStreakUseCase {
         }
 
         val weekBuckets = trainings.buildWeekBuckets()
-        val weeklyData = weekBuckets.weeklyData(today)
+        val weeklyData = weekBuckets.weeklyData(today = today)
         val dailyData = sessionsByDay.dailyData(today)
         val dayBlocks = sessionsByDay.keys.sorted().toDayBlocks()
-        val rhythmPattern = detectRhythmPattern(dayBlocks)
+        val rhythmPattern = detectRhythmPattern(
+            blocks = dayBlocks,
+            minBlocks = adaptation.rhythmMinBlocks,
+            minConfidence = adaptation.rhythmMinConfidence,
+        )
 
         val patternComputation = computePatternStreak(
             sessionsByDay = sessionsByDay,
             today = today,
+            horizonDays = adaptation.patternHorizonDays,
+            maxPeriodDays = DEFAULT_PATTERN_MAX_PERIOD_DAYS,
+            minCycles = adaptation.patternMinCycles,
+            minConfidence = adaptation.patternMinConfidence,
         )
 
         val shouldFeatureWeekly = weeklyData.targetSessions > 0 &&
@@ -238,11 +254,17 @@ public class TrainingStreakUseCase {
         return blocks
     }
 
-    private fun detectRhythmPattern(blocks: List<DayBlock>): RhythmPattern? {
-        if (blocks.size < RHYTHM_MIN_BLOCKS) return null
+    private fun detectRhythmPattern(
+        blocks: List<DayBlock>,
+        minBlocks: Int,
+        minConfidence: Float,
+    ): RhythmPattern? {
+        val confidenceThreshold = minConfidence.coerceIn(0f, 1f)
+        val effectiveMinBlocks = minBlocks.coerceAtLeast(1)
+        if (blocks.size < effectiveMinBlocks) return null
         val runLengths = blocks.map { it.length }
         val restLengths = blocks.restLengths()
-        if (restLengths.size < RHYTHM_MIN_BLOCKS - 1) return null
+        if (restLengths.size < effectiveMinBlocks - 1) return null
 
         val runMode = runLengths.modeOrNull() ?: return null
         val restMode = restLengths.modeOrNull() ?: return null
@@ -253,8 +275,8 @@ public class TrainingStreakUseCase {
         val restConfidence = restMode.count.toFloat() / restLengths.size
         val multiDayFraction = runLengths.count { it >= 2 }.toFloat() / runLengths.size
 
-        if (runConfidence < RHYTHM_MIN_CONFIDENCE ||
-            restConfidence < RHYTHM_MIN_CONFIDENCE ||
+        if (runConfidence < confidenceThreshold ||
+            restConfidence < confidenceThreshold ||
             multiDayFraction < 0.4f
         ) {
             return null
@@ -357,7 +379,9 @@ public class TrainingStreakUseCase {
             else ((currentWeekCount.toFloat() / targetSessions).coerceIn(0f, 1f) * 100).roundToInt()
     }
 
-    private fun List<WeekBucket>.weeklyData(today: LocalDate): WeeklyStreakData {
+    private fun List<WeekBucket>.weeklyData(
+        today: LocalDate,
+    ): WeeklyStreakData {
         if (isEmpty()) {
             return WeeklyStreakData(
                 targetSessions = 0,
@@ -368,19 +392,7 @@ public class TrainingStreakUseCase {
         }
 
         val countsByWeek = associate { it.start to it.count }
-        val positiveCounts = map { it.count }.filter { it > 0 }
-        val weeklyTarget = if (positiveCounts.isEmpty()) {
-            0
-        } else {
-            val mode = positiveCounts
-                .groupingBy { it }
-                .eachCount()
-                .maxByOrNull { (_, occurrences) -> occurrences }
-                ?.key
-            val average = positiveCounts.average().roundToInt().coerceAtLeast(1)
-            val target = mode ?: average
-            target.coerceIn(1, 6)
-        }
+        val weeklyTarget = deriveWeeklyTarget()
 
         val currentWeekStart = today.minus(
             DatePeriod(days = today.dayOfWeek.isoDayNumber - DayOfWeek.MONDAY.isoDayNumber)
@@ -661,5 +673,76 @@ public class TrainingStreakUseCase {
         return candidates
             .maxWithOrNull(compareBy<PatternCandidate> { it.confidence }
                 .thenBy { it.periodDays })
+    }
+
+    private suspend fun resolveExperience(): ExperienceEnum? {
+        return userFeature.observeUser().firstOrNull()?.experience
+    }
+
+    private fun List<WeekBucket>.deriveWeeklyTarget(): Int {
+        if (isEmpty()) return 0
+        val positiveCounts = map { it.count }.filter { it > 0 }
+        if (positiveCounts.isEmpty()) return 0
+        val recent = positiveCounts.takeLast(RECENT_WEEKS_FOR_TARGET)
+        val sorted = recent.sorted()
+        val median = sorted[sorted.size / 2]
+        val mode = recent
+            .groupingBy { it }
+            .eachCount()
+            .maxByOrNull { it.value }
+            ?.key
+        val mean = recent.average().roundToInt().coerceAtLeast(1)
+        val lastWeek = recent.last()
+        val blended = ((median + lastWeek) / 2.0).roundToInt().coerceAtLeast(1)
+        val stableCandidate = if (recent.size >= MIN_WEEKS_FOR_HISTORY_TARGET) {
+            mode ?: median
+        } else {
+            blended
+        }
+        return (stableCandidate ?: mean).coerceIn(1, 10)
+    }
+
+    private data class TrainingStreakAdaptation(
+        val patternHorizonDays: Int,
+        val patternMinCycles: Int,
+        val patternMinConfidence: Float,
+        val rhythmMinBlocks: Int,
+        val rhythmMinConfidence: Float,
+    )
+
+    private fun ExperienceEnum.trainingStreakAdaptation(): TrainingStreakAdaptation {
+        return when (this) {
+            ExperienceEnum.BEGINNER -> TrainingStreakAdaptation(
+                patternHorizonDays = 42,
+                patternMinCycles = 2,
+                patternMinConfidence = 0.5f,
+                rhythmMinBlocks = 2,
+                rhythmMinConfidence = 0.45f,
+            )
+
+            ExperienceEnum.INTERMEDIATE -> TrainingStreakAdaptation(
+                patternHorizonDays = 56,
+                patternMinCycles = 3,
+                patternMinConfidence = 0.55f,
+                rhythmMinBlocks = 3,
+                rhythmMinConfidence = 0.5f,
+            )
+
+            ExperienceEnum.ADVANCED -> TrainingStreakAdaptation(
+                patternHorizonDays = 63,
+                patternMinCycles = 3,
+                patternMinConfidence = 0.6f,
+                rhythmMinBlocks = 3,
+                rhythmMinConfidence = 0.55f,
+            )
+
+            ExperienceEnum.PRO -> TrainingStreakAdaptation(
+                patternHorizonDays = 70,
+                patternMinCycles = 4,
+                patternMinConfidence = 0.65f,
+                rhythmMinBlocks = 4,
+                rhythmMinConfidence = 0.6f,
+            )
+        }
     }
 }

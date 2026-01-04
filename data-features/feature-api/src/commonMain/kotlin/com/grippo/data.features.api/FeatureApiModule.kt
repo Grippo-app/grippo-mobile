@@ -94,7 +94,9 @@ public class FeatureApiModule {
         }
 
         single {
-            TrainingStreakUseCase()
+            TrainingStreakUseCase(
+                userFeature = get(),
+            )
         }
 
         single {
@@ -106,7 +108,9 @@ public class FeatureApiModule {
         }
 
         single {
-            PerformanceTrendUseCase()
+            PerformanceTrendUseCase(
+                userFeature = get(),
+            )
         }
 
         single {
