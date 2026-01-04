@@ -219,7 +219,7 @@ internal class ExerciseViewModel(
         iterations: List<IterationState>,
     ): TrainingTotalState {
         val domainIterations = iterations.toDomain()
-        val domainMetrics = trainingTotalUseCase.fromIterations(domainIterations)
+        val domainMetrics = trainingTotalUseCase.fromSetIterations(domainIterations)
         return domainMetrics.toState()
     }
 }

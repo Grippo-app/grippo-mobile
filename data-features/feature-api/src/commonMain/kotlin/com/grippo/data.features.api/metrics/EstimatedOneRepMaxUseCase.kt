@@ -4,8 +4,6 @@ import com.grippo.data.features.api.metrics.models.EstimatedOneRepMaxEntry
 import com.grippo.data.features.api.metrics.models.EstimatedOneRepMaxSeries
 import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.data.features.api.training.models.Iteration
-import com.grippo.data.features.api.training.models.SetExercise
-import com.grippo.data.features.api.training.models.SetIteration
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateTimeUtils
@@ -39,7 +37,9 @@ public class EstimatedOneRepMaxUseCase {
     }
 
     public sealed interface Smoothing {
+
         public data object None : Smoothing
+
         public data class RollingDays(
             val days: Int,
             val method: RollingMethod,
@@ -51,26 +51,7 @@ public class EstimatedOneRepMaxUseCase {
         Max,
     }
 
-    public fun fromSetExercises(exercises: List<SetExercise>): EstimatedOneRepMaxSeries {
-        val entries = exercises.mapIndexedNotNull { index, exercise ->
-            val estimate = estimateExerciseSessionOneRm(
-                iterations = exercise.iterations,
-                weightSelector = SetIteration::volume,
-                repetitionsSelector = SetIteration::repetitions,
-            ) ?: return@mapIndexedNotNull null
-
-            EstimatedOneRepMaxEntry(
-                label = exerciseLabel(index),
-                value = estimate.value,
-                confidence = estimate.confidence,
-                start = exercise.createdAt,
-                sampleCount = 1,
-            )
-        }
-        return EstimatedOneRepMaxSeries(entries)
-    }
-
-    private fun fromExercises(exercises: List<Exercise>): EstimatedOneRepMaxSeries {
+    public fun fromExercises(exercises: List<Exercise>): EstimatedOneRepMaxSeries {
         val entries = exercises.mapIndexedNotNull { index, exercise ->
             val estimate = estimateExerciseSessionOneRm(
                 iterations = exercise.iterations,

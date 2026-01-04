@@ -9,9 +9,8 @@ import com.grippo.data.features.api.metrics.models.MuscleLoadSummary
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleEnum
 import com.grippo.data.features.api.muscle.models.MuscleGroup
-import com.grippo.data.features.api.training.models.SetExercise
-import com.grippo.data.features.api.training.models.SetIteration
-import com.grippo.data.features.api.training.models.SetTraining
+import com.grippo.data.features.api.training.models.Exercise
+import com.grippo.data.features.api.training.models.Iteration
 import com.grippo.data.features.api.training.models.Training
 import kotlinx.coroutines.flow.first
 
@@ -24,34 +23,17 @@ public class MuscleLoadingUseCase(
     }
 
     @Deprecated("be better to use `public suspend fun fromTrainings(trainings: List<Training>)`")
-    public suspend fun fromSetTrainings(trainings: List<SetTraining>): MuscleLoadSummary {
+    public suspend fun fromSetTrainings(trainings: List<Training>): MuscleLoadSummary {
         val exercises = trainings.flatMap { it.exercises }
         return fromExercises(exercises)
     }
 
     public suspend fun fromTrainings(trainings: List<Training>): MuscleLoadSummary {
-        val exercises: List<SetExercise> = trainings.flatMap { training ->
-            training.exercises.map { exercise ->
-                SetExercise(
-                    name = exercise.name,
-                    iterations = exercise.iterations.map { iteration ->
-                        SetIteration(
-                            volume = iteration.volume,
-                            repetitions = iteration.repetitions
-                        )
-                    },
-                    exerciseExample = exercise.exerciseExample,
-                    repetitions = exercise.repetitions,
-                    intensity = exercise.intensity,
-                    volume = exercise.volume,
-                    createdAt = exercise.createdAt,
-                )
-            }
-        }
+        val exercises: List<Exercise> = trainings.flatMap { training -> training.exercises }
         return fromExercises(exercises)
     }
 
-    public suspend fun fromExercises(exercises: List<SetExercise>): MuscleLoadSummary {
+    public suspend fun fromExercises(exercises: List<Exercise>): MuscleLoadSummary {
         val exampleIds = exercises.map { it.exerciseExample.id }.toSet()
         val examples = loadExamples(exampleIds)
         val groups = loadMuscleGroups()
@@ -81,9 +63,9 @@ public class MuscleLoadingUseCase(
     }
 
     private fun computeMuscleLoad(
-        exercises: List<SetExercise>,
+        exercises: List<Exercise>,
         exampleMap: Map<String, ExerciseExample>,
-        baseLoad: (List<SetIteration>) -> Float,
+        baseLoad: (List<Iteration>) -> Float,
     ): Map<MuscleEnum, Float> {
         if (exercises.isEmpty()) return emptyMap()
 
@@ -128,7 +110,7 @@ public class MuscleLoadingUseCase(
         return totals
     }
 
-    private fun exerciseStimulus(iterations: List<SetIteration>): Float {
+    private fun exerciseStimulus(iterations: List<Iteration>): Float {
         if (iterations.isEmpty()) return 0f
         return iterations
             .sumOf { it.repetitions.coerceAtLeast(0).toDouble() }
@@ -136,7 +118,7 @@ public class MuscleLoadingUseCase(
             .coerceAtLeast(0f)
     }
 
-    private fun exerciseVolume(iterations: List<SetIteration>): Float {
+    private fun exerciseVolume(iterations: List<Iteration>): Float {
         if (iterations.isEmpty()) return 0f
         return iterations
             .sumOf { iteration ->

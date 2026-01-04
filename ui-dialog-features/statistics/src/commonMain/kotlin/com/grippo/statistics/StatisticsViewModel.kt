@@ -1,8 +1,6 @@
 package com.grippo.statistics
 
 import com.grippo.core.foundation.BaseViewModel
-import com.grippo.core.state.trainings.ExerciseState
-import com.grippo.core.state.trainings.TrainingState
 import com.grippo.data.features.api.metrics.EstimatedOneRepMaxUseCase
 import com.grippo.data.features.api.metrics.ExerciseDistributionUseCase
 import com.grippo.data.features.api.metrics.MuscleLoadTimelineUseCase
@@ -16,21 +14,9 @@ import com.grippo.domain.state.metrics.toCategoryDistributionState
 import com.grippo.domain.state.metrics.toForceTypeDistributionState
 import com.grippo.domain.state.metrics.toState
 import com.grippo.domain.state.metrics.toWeightTypeDistributionState
-import com.grippo.domain.state.training.toState
-import com.grippo.state.domain.training.toDomain
-import com.grippo.state.domain.training.toDomainTrainings
 import com.grippo.toolkit.date.utils.DateRange
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.onEach
 
-@OptIn(FlowPreview::class)
 public class StatisticsViewModel(
     config: DialogConfig.Statistics,
     private val trainingFeature: TrainingFeature,
@@ -47,108 +33,83 @@ public class StatisticsViewModel(
                 range = config.range
             )
 
-            is DialogConfig.Statistics.Training -> StatisticsMode.Exercises()
+            is DialogConfig.Statistics.Training -> StatisticsMode.Exercises
         }
     )
 ), StatisticsContract {
 
     init {
         when (config) {
-            is DialogConfig.Statistics.Trainings -> observeTrainings(config.range)
-            is DialogConfig.Statistics.Training -> observeTraining(config.id)
-        }
+            is DialogConfig.Statistics.Trainings -> {
+                trainingFeature.observeTrainings(config.range.from, config.range.to)
+                    .mapLatest { trainings -> provideTrainingStatistics(config.range, trainings) }
+                    .safeLaunch(loader = StatisticsLoader.Charts)
 
-        state
-            .map { it.mode }
-            .debounce(200)
-            .distinctUntilChanged()
-            .mapLatest { _ -> generateStatistics() }
-            .safeLaunch(loader = StatisticsLoader.Charts)
+                safeLaunch {
+                    trainingFeature.getTrainings(
+                        start = config.range.from,
+                        end = config.range.to
+                    ).getOrThrow()
+                }
+            }
+
+            is DialogConfig.Statistics.Training -> {
+                trainingFeature.observeTraining(config.id)
+                    .mapLatest { training -> provideExerciseStatistics(training) }
+                    .safeLaunch(loader = StatisticsLoader.Charts)
+            }
+        }
     }
 
     override fun onBack() {
         navigateTo(StatisticsDirection.Back)
     }
 
-    private fun observeTrainings(range: DateRange) {
-        trainingFeature.observeTrainings(range.from, range.to)
-            .onEach { provideTrainings(range, it) }
-            .safeLaunch()
-
-        safeLaunch {
-            trainingFeature.getTrainings(
-                start = range.from,
-                end = range.to
-            ).getOrThrow()
-        }
-    }
-
-    private fun observeTraining(id: String) {
-        trainingFeature.observeTraining(id)
-            .onEach(::provideTraining)
-            .safeLaunch()
-    }
-
-    private suspend fun generateStatistics() {
-        when (val mode = state.value.mode) {
-            is StatisticsMode.Trainings -> {
-                provideTrainingStatistics(
-                    trainings = mode.trainings,
-                    range = mode.range,
-                )
-            }
-
-            is StatisticsMode.Exercises -> provideExerciseStatistics(
-                exercises = mode.exercises,
-            )
-        }
-    }
-
     private suspend fun provideTrainingStatistics(
-        trainings: ImmutableList<TrainingState>,
         range: DateRange,
+        trainings: List<Training>,
     ) {
         if (trainings.isEmpty()) {
-            clearStatistics()
+            clearStatistics(mode = StatisticsMode.Trainings(range))
             return
         }
 
-        val setTrainings = trainings.toDomain()
-        val domainTrainings = trainings.toDomainTrainings()
         val totalMetrics = trainingTotalUseCase
-            .fromTrainings(setTrainings)
+            .fromTrainings(trainings)
             .toState()
 
         val categoryDistribution = exerciseDistributionUseCase
-            .categoriesFromTrainings(setTrainings)
+            .categoriesFromTrainings(trainings)
             .toCategoryDistributionState()
 
         val weightTypeDistribution = exerciseDistributionUseCase
-            .weightTypesFromTrainings(setTrainings)
+            .weightTypesFromTrainings(trainings)
             .toWeightTypeDistributionState()
 
         val forceTypeDistribution = exerciseDistributionUseCase
-            .forceTypesFromTrainings(setTrainings)
+            .forceTypesFromTrainings(trainings)
             .toForceTypeDistributionState()
 
         val muscleLoad = muscleLoadingUseCase
-            .fromSetTrainings(setTrainings)
+            .fromTrainings(trainings)
             .toState()
 
-        val heatmap = domainTrainings
-            .takeIf { it.isNotEmpty() }
-            ?.let { list ->
-                muscleLoadTimelineUseCase
-                    .fromTrainings(list, range)
-                    ?.toState()
-            }
+        val heatmap = muscleLoadTimelineUseCase
+            .fromTrainings(trainings, range)
+            ?.toState()
 
         val estimatedOneRepMax = estimatedOneRepMaxUseCase
-            .fromTrainings(domainTrainings)
+            .fromTrainings(trainings)
+            .toState()
+
+        val volume = volumeSeriesUseCase
+            .fromTrainings(trainings)
             .toState()
 
         update {
             it.copy(
+                mode = StatisticsMode.Trainings(range = range),
+                exerciseVolume = volume,
                 total = totalMetrics,
                 categoryDistribution = categoryDistribution,
                 weightTypeDistribution = weightTypeDistribution,
@@ -160,41 +121,44 @@ public class StatisticsViewModel(
         }
     }
 
-    private suspend fun provideExerciseStatistics(
-        exercises: ImmutableList<ExerciseState>,
-    ) {
-        if (exercises.isEmpty()) {
-            clearStatistics()
+    private suspend fun provideExerciseStatistics(training: Training?) {
+        if (training == null) {
+            clearStatistics(mode = StatisticsMode.Exercises)
             return
         }
 
-        val setExercises = exercises.toDomain()
         val totalMetrics = trainingTotalUseCase
-            .fromExercises(setExercises)
+            .fromExercises(training.exercises)
             .toState()
 
         val categoryDistribution = exerciseDistributionUseCase
-            .categoriesFromExercises(setExercises)
+            .categoriesFromExercises(training.exercises)
             .toCategoryDistributionState()
 
         val weightTypeDistribution = exerciseDistributionUseCase
-            .weightTypesFromExercises(setExercises)
+            .weightTypesFromExercises(training.exercises)
             .toWeightTypeDistributionState()
 
         val forceTypeDistribution = exerciseDistributionUseCase
-            .forceTypesFromExercises(setExercises)
+            .forceTypesFromExercises(training.exercises)
             .toForceTypeDistributionState()
 
         val muscleLoad = muscleLoadingUseCase
-            .fromExercises(setExercises)
+            .fromExercises(training.exercises)
             .toState()
 
         val estimatedOneRepMax = estimatedOneRepMaxUseCase
-            .fromSetExercises(setExercises)
+            .fromExercises(training.exercises)
+            .toState()
+
+        val volume = volumeSeriesUseCase
+            .fromExercises(training.exercises)
             .toState()
 
         update {
             it.copy(
+                mode = StatisticsMode.Exercises,
+                exerciseVolume = volume,
                 total = totalMetrics,
                 categoryDistribution = categoryDistribution,
                 weightTypeDistribution = weightTypeDistribution,
@@ -206,9 +170,10 @@ public class StatisticsViewModel(
         }
     }
 
-    private fun clearStatistics() {
+    private fun clearStatistics(mode: StatisticsMode? = null) {
         update {
             it.copy(
+                mode = mode ?: it.mode,
                 total = null,
                 exerciseVolume = null,
                 categoryDistribution = null,
@@ -217,42 +182,6 @@ public class StatisticsViewModel(
                 muscleLoad = null,
                 temporalHeatmap = null,
                 estimatedOneRepMax = null,
-            )
-        }
-    }
-
-    private fun provideTrainings(range: DateRange, list: List<Training>) {
-        val trainings = list.toState().toPersistentList()
-        val volume = volumeSeriesUseCase
-            .fromTrainings(list)
-            .toState()
-
-        update { current ->
-            current.copy(
-                mode = StatisticsMode.Trainings(
-                    trainings = trainings,
-                    range = range
-                ),
-                exerciseVolume = volume
-            )
-        }
-    }
-
-    private fun provideTraining(training: Training?) {
-        val exercises = training
-            ?.toState()
-            ?.exercises
-            ?: persistentListOf()
-
-        val volume = training
-            ?.let { value -> volumeSeriesUseCase.fromExercises(value.exercises).toState() }
-
-        update {
-            it.copy(
-                mode = StatisticsMode.Exercises(
-                    exercises = exercises
-                ),
-                exerciseVolume = volume
             )
         }
     }

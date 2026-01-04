@@ -6,9 +6,9 @@ import com.grippo.data.features.api.exercise.example.models.WeightTypeEnum
 import com.grippo.data.features.api.metrics.models.DistributionWeighting
 import com.grippo.data.features.api.metrics.models.ExerciseDistribution
 import com.grippo.data.features.api.metrics.models.ExerciseDistributionEntry
-import com.grippo.data.features.api.training.models.SetExercise
-import com.grippo.data.features.api.training.models.SetIteration
-import com.grippo.data.features.api.training.models.SetTraining
+import com.grippo.data.features.api.training.models.Exercise
+import com.grippo.data.features.api.training.models.Iteration
+import com.grippo.data.features.api.training.models.Training
 
 public class ExerciseDistributionUseCase {
 
@@ -17,15 +17,15 @@ public class ExerciseDistributionUseCase {
     }
 
     public fun categoriesFromTrainings(
-        trainings: List<SetTraining>,
+        trainings: List<Training>,
         weighting: DistributionWeighting = DistributionWeighting.Count,
     ): ExerciseDistribution<CategoryEnum> {
-        val exercises = trainings.flatMap(SetTraining::exercises)
+        val exercises = trainings.flatMap(Training::exercises)
         return categoriesFromExercises(exercises, weighting)
     }
 
     public fun categoriesFromExercises(
-        exercises: List<SetExercise>,
+        exercises: List<Exercise>,
         weighting: DistributionWeighting = DistributionWeighting.Count,
     ): ExerciseDistribution<CategoryEnum> {
         return buildDistribution(
@@ -37,15 +37,15 @@ public class ExerciseDistributionUseCase {
     }
 
     public fun weightTypesFromTrainings(
-        trainings: List<SetTraining>,
+        trainings: List<Training>,
         weighting: DistributionWeighting = DistributionWeighting.Count,
     ): ExerciseDistribution<WeightTypeEnum> {
-        val exercises = trainings.flatMap(SetTraining::exercises)
+        val exercises = trainings.flatMap(Training::exercises)
         return weightTypesFromExercises(exercises, weighting)
     }
 
     public fun weightTypesFromExercises(
-        exercises: List<SetExercise>,
+        exercises: List<Exercise>,
         weighting: DistributionWeighting = DistributionWeighting.Count,
     ): ExerciseDistribution<WeightTypeEnum> {
         return buildDistribution(
@@ -57,15 +57,15 @@ public class ExerciseDistributionUseCase {
     }
 
     public fun forceTypesFromTrainings(
-        trainings: List<SetTraining>,
+        trainings: List<Training>,
         weighting: DistributionWeighting = DistributionWeighting.Count,
     ): ExerciseDistribution<ForceTypeEnum> {
-        val exercises = trainings.flatMap(SetTraining::exercises)
+        val exercises = trainings.flatMap(Training::exercises)
         return forceTypesFromExercises(exercises, weighting)
     }
 
     public fun forceTypesFromExercises(
-        exercises: List<SetExercise>,
+        exercises: List<Exercise>,
         weighting: DistributionWeighting = DistributionWeighting.Count,
     ): ExerciseDistribution<ForceTypeEnum> {
         return buildDistribution(
@@ -77,10 +77,10 @@ public class ExerciseDistributionUseCase {
     }
 
     private fun <K : Enum<K>> buildDistribution(
-        exercises: List<SetExercise>,
+        exercises: List<Exercise>,
         weighting: DistributionWeighting,
         ordered: List<K>,
-        keySelector: (SetExercise) -> K?,
+        keySelector: (Exercise) -> K?,
     ): ExerciseDistribution<K> {
         if (exercises.isEmpty()) return ExerciseDistribution(emptyList())
         val totals = aggregateTotals(exercises, weighting, keySelector)
@@ -97,9 +97,9 @@ public class ExerciseDistributionUseCase {
     }
 
     private fun <K : Enum<K>> aggregateTotals(
-        exercises: List<SetExercise>,
+        exercises: List<Exercise>,
         weighting: DistributionWeighting,
-        keySelector: (SetExercise) -> K?,
+        keySelector: (Exercise) -> K?,
     ): Map<K, Float> {
         val totals = HashMap<K, Float>(8)
         exercises.forEach { exercise ->
@@ -113,7 +113,7 @@ public class ExerciseDistributionUseCase {
     }
 
     private fun weightOfExercise(
-        exercise: SetExercise,
+        exercise: Exercise,
         weighting: DistributionWeighting,
     ): Float = when (weighting) {
         DistributionWeighting.Count -> 1f
@@ -126,7 +126,7 @@ public class ExerciseDistributionUseCase {
         DistributionWeighting.Volume -> exercise.iterations.computeVolume()
     }.coerceAtLeast(0f)
 
-    private fun List<SetIteration>.computeVolume(): Float {
+    private fun List<Iteration>.computeVolume(): Float {
         if (isEmpty()) return 0f
         val total = fold(0.0) { acc, iteration ->
             val reps = iteration.repetitions

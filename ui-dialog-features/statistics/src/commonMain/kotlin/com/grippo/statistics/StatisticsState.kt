@@ -10,11 +10,7 @@ import com.grippo.core.state.metrics.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.MuscleLoadTimelineState
 import com.grippo.core.state.metrics.TrainingTotalState
 import com.grippo.core.state.metrics.VolumeSeriesState
-import com.grippo.core.state.trainings.ExerciseState
-import com.grippo.core.state.trainings.TrainingState
 import com.grippo.toolkit.date.utils.DateRange
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 public data class StatisticsState(
@@ -45,12 +41,9 @@ public data class StatisticsState(
 public sealed interface StatisticsMode {
     @Immutable
     public data class Trainings(
-        val trainings: ImmutableList<TrainingState> = persistentListOf(),
         val range: DateRange
     ) : StatisticsMode
 
     @Immutable
-    public data class Exercises(
-        val exercises: ImmutableList<ExerciseState> = persistentListOf(),
-    ) : StatisticsMode
+    public data object Exercises : StatisticsMode
 }

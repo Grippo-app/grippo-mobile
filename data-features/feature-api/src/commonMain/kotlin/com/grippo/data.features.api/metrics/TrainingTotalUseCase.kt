@@ -1,28 +1,50 @@
 package com.grippo.data.features.api.metrics
 
 import com.grippo.data.features.api.metrics.models.TrainingTotal
+import com.grippo.data.features.api.training.models.Exercise
+import com.grippo.data.features.api.training.models.Iteration
 import com.grippo.data.features.api.training.models.SetExercise
 import com.grippo.data.features.api.training.models.SetIteration
-import com.grippo.data.features.api.training.models.SetTraining
+import com.grippo.data.features.api.training.models.Training
 
 public class TrainingTotalUseCase {
 
-    public fun fromIterations(iterations: List<SetIteration>): TrainingTotal {
+    public fun fromSetIterations(iterations: List<SetIteration>): TrainingTotal {
         return aggregate(iterations)
     }
 
-    public fun fromExercises(exercises: List<SetExercise>): TrainingTotal {
+    public fun fromSetExercises(exercises: List<SetExercise>): TrainingTotal {
         if (exercises.isEmpty()) return emptyMetrics()
         val iterations = exercises.flatMap(SetExercise::iterations)
         return aggregate(iterations)
     }
 
-    public fun fromTrainings(trainings: List<SetTraining>): TrainingTotal {
+    public fun fromIterations(iterations: List<Iteration>): TrainingTotal {
+        if (iterations.isEmpty()) return emptyMetrics()
+        return aggregate(iterations.toSetIterations())
+    }
+
+    public fun fromExercises(exercises: List<Exercise>): TrainingTotal {
+        if (exercises.isEmpty()) return emptyMetrics()
+        val iterations = exercises.flatMap(Exercise::iterations)
+        return fromIterations(iterations)
+    }
+
+    public fun fromTrainings(trainings: List<Training>): TrainingTotal {
         if (trainings.isEmpty()) return emptyMetrics()
         val iterations = trainings.flatMap { training ->
-            training.exercises.flatMap(SetExercise::iterations)
+            training.exercises.flatMap(Exercise::iterations)
         }
-        return aggregate(iterations)
+        return fromIterations(iterations)
+    }
+
+    private fun List<Iteration>.toSetIterations(): List<SetIteration> {
+        return map { iteration ->
+            SetIteration(
+                volume = iteration.volume,
+                repetitions = iteration.repetitions,
+            )
+        }
     }
 
     private fun aggregate(iterations: List<SetIteration>): TrainingTotal {

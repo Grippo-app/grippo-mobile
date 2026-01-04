@@ -5,7 +5,7 @@ import kotlin.time.Duration
 
 public data class Training(
     val id: String,
-    val exercises: List<Exercise> = emptyList(),
+    val exercises: List<Exercise>,
     val duration: Duration,
     val createdAt: LocalDateTime,
     val volume: Float,

@@ -250,7 +250,7 @@ internal class TrainingRecordingViewModel(
             val duration = DateTimeUtils.ago(state.value.startAt)
             val domainExercises = exercises.toDomain()
             val totals = trainingTotalUseCase
-                .fromExercises(domainExercises)
+                .fromSetExercises(domainExercises)
                 .toState()
 
             val training = SetTraining(

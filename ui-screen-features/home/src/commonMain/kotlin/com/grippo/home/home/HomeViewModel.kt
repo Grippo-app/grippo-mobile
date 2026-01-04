@@ -47,24 +47,15 @@ internal class HomeViewModel(
             .safeLaunch()
 
         safeLaunch {
-            trainingFeature.getTrainings(start = range.from, end = range.to).getOrThrow()
+            trainingFeature
+                .getTrainings(start = range.from, end = range.to)
+                .getOrThrow()
         }
     }
 
     private suspend fun provideTrainings(list: List<Training>) {
         if (list.isEmpty()) {
-            update {
-                it.copy(
-                    weeklyDigest = null,
-                    monthlyDigest = null,
-                    totalDuration = null,
-                    spotlight = null,
-                    muscleLoad = null,
-                    streak = null,
-                    performance = emptyList(),
-                    lastTraining = null
-                )
-            }
+            clearHome()
             return
         }
 
@@ -154,5 +145,20 @@ internal class HomeViewModel(
 
     override fun onBack() {
         navigateTo(HomeDirection.Back)
+    }
+
+    private fun clearHome() {
+        update {
+            it.copy(
+                weeklyDigest = null,
+                monthlyDigest = null,
+                totalDuration = null,
+                spotlight = null,
+                muscleLoad = null,
+                streak = null,
+                performance = emptyList(),
+                lastTraining = null
+            )
+        }
     }
 }

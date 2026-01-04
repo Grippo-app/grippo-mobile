@@ -37,8 +37,9 @@ internal class TrainingCompletedViewModel(
             )
 
             val domainExercises = exercises.toDomain()
+
             val totals = trainingTotalUseCase
-                .fromExercises(domainExercises)
+                .fromSetExercises(domainExercises)
                 .toState()
 
             val training = SetTraining(

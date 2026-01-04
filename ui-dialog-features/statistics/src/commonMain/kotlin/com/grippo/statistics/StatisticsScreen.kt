@@ -28,7 +28,6 @@ import com.grippo.core.state.metrics.stubTotal
 import com.grippo.core.state.metrics.stubVolumeSeries
 import com.grippo.core.state.metrics.stubWeightDistribution
 import com.grippo.core.state.muscles.MuscleEnumState
-import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.EstimatedOneRepMaxSection
 import com.grippo.design.components.metrics.ExerciseDistributionChart
@@ -233,7 +232,6 @@ internal fun StatisticsScreen(
 private fun ScreenPreview() {
     PreviewContainer {
         val mode = StatisticsMode.Trainings(
-            trainings = persistentListOf(stubTraining(), stubTraining(), stubTraining()),
             range = DateTimeUtils.thisWeek()
         )
 
