@@ -24,7 +24,6 @@ public class VolumeSeriesUseCase {
         private const val EPS = 1e-3f
         private const val TARGET_BUCKETS = 24
         private const val WEEK_LABEL_PREFIX = "W"
-        private const val EXERCISE_LABEL_PREFIX = "Ex"
     }
 
     public fun fromExercises(exercises: List<Exercise>): VolumeSeries {
@@ -80,7 +79,7 @@ public class VolumeSeriesUseCase {
     }
 
     private fun exerciseLabel(exercise: Exercise, index: Int): String {
-        return exercise.name
+        return exercise.name.take(3)
     }
 
     private fun exerciseVolume(iterations: List<Iteration>): Float {

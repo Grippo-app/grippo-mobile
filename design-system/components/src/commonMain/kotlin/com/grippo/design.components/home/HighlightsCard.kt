@@ -232,7 +232,7 @@ private fun HighlightsCardSpotlightOnlyPreview() {
         HighlightsCard(
             totalDuration = 12.hours,
             spotlight = stubExerciseSpotlight(),
-            muscleLoad = null,
+            muscleLoad = stubMuscleLoadSummary(),
             streak = stubTrainingStreaks().first(),
             performance = stubPerformanceMetrics().take(3),
             onViewWorkout = {},
