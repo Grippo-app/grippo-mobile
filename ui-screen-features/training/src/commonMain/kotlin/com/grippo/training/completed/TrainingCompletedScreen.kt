@@ -7,7 +7,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,6 +35,7 @@ import com.grippo.core.state.trainings.stubDailyTrainingTimeline
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.konfetti.KonfettiParade
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.toolbar.Toolbar
@@ -98,14 +98,14 @@ internal fun TrainingCompletedScreen(
     ) {
         Column(
             modifier = Modifier
-                .navigationBarsPadding()
                 .fillMaxSize()
                 .padding(
                     horizontal = AppTokens.dp.screen.horizontalPadding,
-                    vertical = AppTokens.dp.contentPadding.content
                 ).imePadding(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
             Text(
                 modifier = Modifier.fillMaxWidth(),
@@ -118,57 +118,61 @@ internal fun TrainingCompletedScreen(
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
             if (cardVisible.value) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .offset(y = offsetY)
-                        .alpha(alpha),
-                    contentPadding = PaddingValues(
-                        vertical = AppTokens.dp.contentPadding.content
-                    ),
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    items(
-                        items = state.timeline,
-                        key = { it.key },
-                        contentType = { it::class }
-                    ) { value ->
-                        val exercise = remember(value.key) { value.exercise() }
-
-                        if (exercise != null) {
-                            val clickProvider = remember(exercise.id) {
-                                { contract.onExerciseClick(exercise.id) }
-                            }
-
-                            ExerciseCard(
-                                modifier = Modifier
-                                    .padding(vertical = AppTokens.dp.contentPadding.subContent)
-                                    .fillMaxWidth(),
-                                value = exercise,
-                                style = ExerciseCardStyle.Medium(clickProvider)
-                            )
-                        }
-                    }
-                }
-            } else {
-                Spacer(
+                BottomOverlayContainer(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
+                    content = { containerModifier, resolvedPadding ->
+                        LazyColumn(
+                            modifier = containerModifier
+                                .fillMaxSize()
+                                .offset(y = offsetY)
+                                .alpha(alpha),
+                            contentPadding = resolvedPadding,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            items(
+                                items = state.timeline,
+                                key = { it.key },
+                                contentType = { it::class }
+                            ) { value ->
+                                val exercise = remember(value.key) { value.exercise() }
+
+                                if (exercise != null) {
+                                    val clickProvider = remember(exercise.id) {
+                                        { contract.onExerciseClick(exercise.id) }
+                                    }
+
+                                    ExerciseCard(
+                                        modifier = Modifier
+                                            .padding(vertical = AppTokens.dp.contentPadding.subContent)
+                                            .fillMaxWidth(),
+                                        value = exercise,
+                                        style = ExerciseCardStyle.Medium(clickProvider)
+                                    )
+                                }
+                            }
+                        }
+                    },
+                    overlay = AppTokens.colors.background.screen,
+                    bottom = {
+                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+                        Button(
+                            modifier = Modifier.fillMaxWidth(),
+                            content = ButtonContent.Text(
+                                text = AppTokens.strings.res(Res.string.complete),
+                            ),
+                            style = ButtonStyle.Primary,
+                            onClick = contract::onBack
+                        )
+
+                        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+
+                        Spacer(modifier = Modifier.navigationBarsPadding())
+                    }
                 )
             }
-
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                content = ButtonContent.Text(
-                    text = AppTokens.strings.res(Res.string.complete),
-                ),
-                style = ButtonStyle.Primary,
-                onClick = contract::onBack
-            )
         }
 
         if (cardVisible.value && cardVisible.value) {

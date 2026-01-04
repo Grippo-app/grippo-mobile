@@ -102,7 +102,7 @@ internal fun DraftTrainingScreen(
                 .fillMaxWidth()
                 .weight(1f, false),
             contentPadding = PaddingValues(0.dp),
-            overlay = AppTokens.colors.background.screen,
+            overlay = AppTokens.colors.background.dialog,
             content = { containerModifier, resolvedPadding ->
                 LazyColumn(
                     modifier = containerModifier
