@@ -24,7 +24,7 @@ public enum class TrainingPosition {
 }
 
 @Immutable
-public sealed interface TrainingListValue {
+public sealed interface TimelineState {
     public val key: String
     public val position: TrainingPosition
 
@@ -32,7 +32,7 @@ public sealed interface TrainingListValue {
      * Items that belong to the daily timeline representation.
      */
     @Immutable
-    public sealed interface Daily : TrainingListValue {
+    public sealed interface Daily : TimelineState {
         /**
          * A header-level daily item (e.g. digest, date block).
          */
@@ -49,7 +49,8 @@ public sealed interface TrainingListValue {
          * Entries that carry exercises.
          */
         @Immutable
-        public sealed interface Exercise : Item {
+        public sealed interface Exercise :
+            Item {
             public val exerciseState: ExerciseState
             public val indexInTraining: Int
         }
@@ -59,13 +60,13 @@ public sealed interface TrainingListValue {
      * Weekly nodes, capable of representing a summary and a full training entry.
      */
     @Immutable
-    public sealed interface Weekly : TrainingListValue
+    public sealed interface Weekly : TimelineState
 
     /**
      * Monthly nodes, capable of representing monthly summary and per-day training buckets.
      */
     @Immutable
-    public sealed interface Monthly : TrainingListValue {
+    public sealed interface Monthly : TimelineState {
         public val month: LocalDate
     }
 
@@ -154,19 +155,19 @@ public sealed interface TrainingListValue {
         override val position: TrainingPosition,
     ) : Monthly
 
-    public companion object {
-        public fun TrainingListValue.index(): Int? = (this as? Daily.Exercise)?.indexInTraining
+    public companion object Companion {
+        public fun TimelineState.index(): Int? = (this as? Daily.Exercise)?.indexInTraining
 
-        public fun TrainingListValue.exercise(): ExerciseState? =
+        public fun TimelineState.exercise(): ExerciseState? =
             (this as? Daily.Exercise)?.exerciseState
     }
 }
 
-public fun stubDailyTrainingTimeline(): ImmutableList<TrainingListValue> {
+public fun stubDailyTrainingTimeline(): ImmutableList<TimelineState> {
     val trainings = listOf(stubTraining(), stubTraining())
     if (trainings.isEmpty()) return persistentListOf()
 
-    val values = mutableListOf<TrainingListValue>()
+    val values = mutableListOf<TimelineState>()
     trainings.forEachIndexed { index, training ->
         val position = when {
             trainings.size == 1 -> TrainingPosition.SINGLE
@@ -175,7 +176,7 @@ public fun stubDailyTrainingTimeline(): ImmutableList<TrainingListValue> {
             else -> TrainingPosition.MIDDLE
         }
 
-        values += TrainingListValue.DateTime(
+        values += TimelineState.DateTime(
             createAt = training.createdAt,
             duration = training.duration,
             trainingId = training.id,
@@ -188,13 +189,13 @@ public fun stubDailyTrainingTimeline(): ImmutableList<TrainingListValue> {
     return values.toPersistentList()
 }
 
-public fun stubMonthlyTrainingTimeline(): ImmutableList<TrainingListValue> {
+public fun stubMonthlyTrainingTimeline(): ImmutableList<TimelineState> {
     val monthRange = DateTimeUtils.thisMonth()
     val monthReference = LocalDate(monthRange.from.year, monthRange.from.month, 1)
     val digest = stubMonthlyDigest()
-    val values = mutableListOf<TrainingListValue>()
+    val values = mutableListOf<TimelineState>()
 
-    values += TrainingListValue.MonthlyDigest(
+    values += TimelineState.MonthlyDigest(
         summary = digest,
         month = monthReference,
         key = "stub-monthly-digest",
@@ -211,7 +212,7 @@ public fun stubMonthlyTrainingTimeline(): ImmutableList<TrainingListValue> {
             else -> TrainingPosition.MIDDLE
         }
 
-        TrainingListValue.MonthlyTrainingsDay(
+        TimelineState.MonthlyTrainingsDay(
             date = date,
             month = monthReference,
             trainings = trainings,
@@ -226,13 +227,13 @@ public fun stubMonthlyTrainingTimeline(): ImmutableList<TrainingListValue> {
 
 private fun TrainingState.toPreviewTrainingListValues(
     position: TrainingPosition,
-): List<TrainingListValue> {
+): List<TimelineState> {
     if (exercises.isEmpty()) return emptyList()
-    val result = mutableListOf<TrainingListValue>()
+    val result = mutableListOf<TimelineState>()
     when (exercises.size) {
         1 -> {
             val exercise = exercises.first()
-            result += TrainingListValue.SingleExercise(
+            result += TimelineState.SingleExercise(
                 exerciseState = exercise,
                 position = position,
                 key = "stub-single-$id-${exercise.id}",
@@ -243,17 +244,17 @@ private fun TrainingState.toPreviewTrainingListValues(
         2 -> {
             val first = exercises.first()
             val last = exercises.last()
-            result += TrainingListValue.FirstExercise(
+            result += TimelineState.FirstExercise(
                 exerciseState = first,
                 position = position,
                 key = "stub-first-$id-${first.id}",
                 indexInTraining = 1,
             )
-            result += TrainingListValue.BetweenExercises(
+            result += TimelineState.BetweenExercises(
                 position = position,
                 key = "stub-between-$id-${first.id}-${last.id}",
             )
-            result += TrainingListValue.LastExercise(
+            result += TimelineState.LastExercise(
                 exerciseState = last,
                 position = position,
                 key = "stub-last-$id-${last.id}",
@@ -266,21 +267,21 @@ private fun TrainingState.toPreviewTrainingListValues(
             val last = exercises.last()
             val middle = exercises.subList(1, exercises.lastIndex)
 
-            result += TrainingListValue.FirstExercise(
+            result += TimelineState.FirstExercise(
                 exerciseState = first,
                 position = position,
                 key = "stub-first-$id-${first.id}",
                 indexInTraining = 1,
             )
 
-            result += TrainingListValue.BetweenExercises(
+            result += TimelineState.BetweenExercises(
                 position = position,
                 key = "stub-between-$id-${first.id}-${middle.first().id}",
             )
 
             middle.forEachIndexed { index, exercise ->
                 val indexInTraining = index + 2
-                result += TrainingListValue.MiddleExercise(
+                result += TimelineState.MiddleExercise(
                     exerciseState = exercise,
                     position = position,
                     key = "stub-middle-$id-${exercise.id}",
@@ -288,13 +289,13 @@ private fun TrainingState.toPreviewTrainingListValues(
                 )
 
                 val next = middle.getOrNull(index + 1) ?: last
-                result += TrainingListValue.BetweenExercises(
+                result += TimelineState.BetweenExercises(
                     position = position,
                     key = "stub-between-$id-${exercise.id}-${next.id}",
                 )
             }
 
-            result += TrainingListValue.LastExercise(
+            result += TimelineState.LastExercise(
                 exerciseState = last,
                 position = position,
                 key = "stub-last-$id-${last.id}",

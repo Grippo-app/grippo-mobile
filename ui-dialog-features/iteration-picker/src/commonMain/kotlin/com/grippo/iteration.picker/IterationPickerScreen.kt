@@ -25,7 +25,7 @@ import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
-import com.grippo.core.state.trainings.IterationFocus
+import com.grippo.core.state.trainings.IterationFocusState
 import com.grippo.core.state.trainings.stubExercises
 import com.grippo.core.state.trainings.stubIteration
 import com.grippo.design.components.button.Button
@@ -67,15 +67,15 @@ internal fun IterationPickerScreen(
         delay(250.milliseconds)
 
         when (state.focus) {
-            IterationFocus.VOLUME -> {
+            IterationFocusState.VOLUME -> {
                 volumeRequester.requestFocus()
             }
 
-            IterationFocus.REPETITIONS -> {
+            IterationFocusState.REPETITIONS -> {
                 repetitionsRequester.requestFocus()
             }
 
-            IterationFocus.UNIDENTIFIED -> {}
+            IterationFocusState.UNIDENTIFIED -> {}
         }
     }
 
@@ -184,7 +184,7 @@ private fun ScreenPreview() {
                 value = stubIteration(),
                 number = 2,
                 suggestions = stubExercises().random().iterations,
-                focus = IterationFocus.UNIDENTIFIED
+                focus = IterationFocusState.UNIDENTIFIED
             ),
             loaders = persistentSetOf(),
             contract = IterationPickerContract.Empty

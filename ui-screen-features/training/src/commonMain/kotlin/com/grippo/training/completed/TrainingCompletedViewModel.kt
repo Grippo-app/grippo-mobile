@@ -12,7 +12,7 @@ import com.grippo.data.features.api.training.models.Training
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.metrics.toState
-import com.grippo.domain.state.training.timeline.toState
+import com.grippo.domain.state.training.toState
 import com.grippo.state.domain.training.toDomain
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.coroutines.flow.firstOrNull

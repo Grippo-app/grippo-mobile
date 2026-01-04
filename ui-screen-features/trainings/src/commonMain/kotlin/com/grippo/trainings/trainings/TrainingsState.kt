@@ -2,7 +2,7 @@ package com.grippo.trainings.trainings
 
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.UiText
-import com.grippo.core.state.trainings.TrainingListValue
+import com.grippo.core.state.trainings.TimelineState
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.delete_btn
 import com.grippo.design.resources.provider.details
@@ -31,7 +31,7 @@ internal data class TrainingsState(
         val nextYear = DateTimeUtils.shift(currentYear, DatePeriod(years = 1))
         DateRange(from = previousYear.from, to = nextYear.to)
     },
-    val timeline: ImmutableList<TrainingListValue> = persistentListOf(),
+    val timeline: ImmutableList<TimelineState> = persistentListOf(),
 )
 
 @Immutable

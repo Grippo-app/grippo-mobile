@@ -31,7 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
-import com.grippo.core.state.trainings.TrainingListValue.Companion.exercise
+import com.grippo.core.state.trainings.TimelineState.Companion.exercise
 import com.grippo.core.state.trainings.stubDailyTrainingTimeline
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent

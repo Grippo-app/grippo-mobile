@@ -13,7 +13,7 @@ import com.grippo.design.resources.provider.select_date
 import com.grippo.design.resources.provider.select_month
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
-import com.grippo.domain.state.training.timeline.toState
+import com.grippo.domain.state.training.toState
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.trainings.trainings.TrainingsDirection.Back

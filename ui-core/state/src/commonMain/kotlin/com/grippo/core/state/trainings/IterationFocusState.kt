@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 
 @Immutable
 @Serializable
-public enum class IterationFocus {
+public enum class IterationFocusState {
     VOLUME,
     REPETITIONS,
     UNIDENTIFIED;

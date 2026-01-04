@@ -1,33 +1,32 @@
-package com.grippo.domain.state.training.timeline
+package com.grippo.domain.state.training
 
-import com.grippo.core.state.trainings.TrainingListValue
+import com.grippo.core.state.trainings.TimelineState
 import com.grippo.core.state.trainings.TrainingPosition
 import com.grippo.data.features.api.training.models.TrainingTimeline
 import com.grippo.data.features.api.training.models.TrainingTimelinePosition
 import com.grippo.data.features.api.training.models.TrainingTimelineValue
 import com.grippo.domain.state.metrics.toState
-import com.grippo.domain.state.training.toState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 
-public fun TrainingTimeline.toState(): ImmutableList<TrainingListValue> {
+public fun TrainingTimeline.toState(): ImmutableList<TimelineState> {
     if (values.isEmpty()) return persistentListOf()
     return values.toState()
 }
 
-public fun List<TrainingTimelineValue>.toState(): ImmutableList<TrainingListValue> {
+public fun List<TrainingTimelineValue>.toState(): ImmutableList<TimelineState> {
     if (isEmpty()) return persistentListOf()
     return map { it.toStateValue() }.toPersistentList()
 }
 
-private fun TrainingTimelineValue.toStateValue(): TrainingListValue = when (this) {
-    is TrainingTimelineValue.BetweenExercises -> TrainingListValue.BetweenExercises(
+private fun TrainingTimelineValue.toStateValue(): TimelineState = when (this) {
+    is TrainingTimelineValue.BetweenExercises -> TimelineState.BetweenExercises(
         position = position.toState(),
         key = key,
     )
 
-    is TrainingTimelineValue.DateTime -> TrainingListValue.DateTime(
+    is TrainingTimelineValue.DateTime -> TimelineState.DateTime(
         createAt = createdAt,
         duration = duration,
         trainingId = trainingId,
@@ -35,42 +34,42 @@ private fun TrainingTimelineValue.toStateValue(): TrainingListValue = when (this
         key = key,
     )
 
-    is TrainingTimelineValue.FirstExercise -> TrainingListValue.FirstExercise(
+    is TrainingTimelineValue.FirstExercise -> TimelineState.FirstExercise(
         exerciseState = exercise.toState(),
         position = position.toState(),
         key = key,
         indexInTraining = indexInTraining,
     )
 
-    is TrainingTimelineValue.LastExercise -> TrainingListValue.LastExercise(
+    is TrainingTimelineValue.LastExercise -> TimelineState.LastExercise(
         exerciseState = exercise.toState(),
         position = position.toState(),
         key = key,
         indexInTraining = indexInTraining,
     )
 
-    is TrainingTimelineValue.MiddleExercise -> TrainingListValue.MiddleExercise(
+    is TrainingTimelineValue.MiddleExercise -> TimelineState.MiddleExercise(
         exerciseState = exercise.toState(),
         position = position.toState(),
         key = key,
         indexInTraining = indexInTraining,
     )
 
-    is TrainingTimelineValue.SingleExercise -> TrainingListValue.SingleExercise(
+    is TrainingTimelineValue.SingleExercise -> TimelineState.SingleExercise(
         exerciseState = exercise.toState(),
         position = position.toState(),
         key = key,
         indexInTraining = indexInTraining,
     )
 
-    is TrainingTimelineValue.MonthSummary -> TrainingListValue.MonthlyDigest(
+    is TrainingTimelineValue.MonthSummary -> TimelineState.MonthlyDigest(
         summary = summary.toState(),
         month = month,
         key = key,
         position = position.toState(),
     )
 
-    is TrainingTimelineValue.MonthlyTrainingsDay -> TrainingListValue.MonthlyTrainingsDay(
+    is TrainingTimelineValue.MonthlyTrainingsDay -> TimelineState.MonthlyTrainingsDay(
         date = date,
         month = month,
         trainings = trainings.toState(),
@@ -78,13 +77,13 @@ private fun TrainingTimelineValue.toStateValue(): TrainingListValue = when (this
         position = position.toState(),
     )
 
-    is TrainingTimelineValue.WeeklySummary -> TrainingListValue.WeeklySummary(
+    is TrainingTimelineValue.WeeklySummary -> TimelineState.WeeklySummary(
         summary = summary.toState(),
         key = key,
         position = position.toState(),
     )
 
-    is TrainingTimelineValue.WeeklyTrainingsDay -> TrainingListValue.WeeklyTrainingsDay(
+    is TrainingTimelineValue.WeeklyTrainingsDay -> TimelineState.WeeklyTrainingsDay(
         date = date,
         trainings = trainings.toState(),
         position = position.toState(),

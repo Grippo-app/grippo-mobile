@@ -15,8 +15,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.grippo.core.state.trainings.TrainingListValue
-import com.grippo.core.state.trainings.TrainingListValue.Companion.exercise
+import com.grippo.core.state.trainings.TimelineState
+import com.grippo.core.state.trainings.TimelineState.Companion.exercise
 import com.grippo.core.state.trainings.stubDailyTrainingTimeline
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
@@ -40,7 +40,7 @@ import kotlinx.collections.immutable.persistentListOf
 @Composable
 internal fun DailyTrainingsPage(
     modifier: Modifier = Modifier,
-    timeline: ImmutableList<TrainingListValue>,
+    timeline: ImmutableList<TimelineState>,
     contentPadding: PaddingValues,
     onViewStatsClick: () -> Unit,
     onTrainingMenuClick: (String) -> Unit,
@@ -49,7 +49,7 @@ internal fun DailyTrainingsPage(
     val listState = rememberLazyListState()
 
     val timelineItems = remember(timeline) {
-        timeline.filterIsInstance<TrainingListValue.Daily.Item>()
+        timeline.filterIsInstance<TimelineState.Daily.Item>()
     }
 
     if (timelineItems.isEmpty()) {
@@ -80,7 +80,7 @@ internal fun DailyTrainingsPage(
 
 @Composable
 private fun DailyTimelineItem(
-    value: TrainingListValue.Daily.Item,
+    value: TimelineState.Daily.Item,
     onTrainingMenuClick: (String) -> Unit,
     onExerciseClick: (String) -> Unit,
 ) {
@@ -91,7 +91,7 @@ private fun DailyTimelineItem(
         modifier = Modifier.fillMaxWidth(),
         style = style
     ) {
-        if (value is TrainingListValue.DateTime) {
+        if (value is TimelineState.DateTime) {
             val clickProvider = remember(value.trainingId) {
                 { onTrainingMenuClick(value.trainingId) }
             }

@@ -33,7 +33,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.grippo.core.state.trainings.TrainingListValue
+import com.grippo.core.state.trainings.TimelineState
 import com.grippo.core.state.trainings.stubMonthlyTrainingTimeline
 import com.grippo.design.components.metrics.MonthDigestCard
 import com.grippo.design.components.modifiers.scalableClick
@@ -55,7 +55,7 @@ import kotlinx.datetime.plus
 @Composable
 internal fun MonthlyTrainingsPage(
     modifier: Modifier = Modifier,
-    timeline: ImmutableList<TrainingListValue>,
+    timeline: ImmutableList<TimelineState>,
     contentPadding: PaddingValues,
     month: LocalDate? = null,
     onDigestClick: () -> Unit,
@@ -256,21 +256,21 @@ private fun MonthCalendarDayCell(
 
 @Immutable
 private data class MonthlyCalendarContent(
-    val digest: TrainingListValue.MonthlyDigest?,
-    val days: ImmutableList<TrainingListValue.MonthlyTrainingsDay>,
+    val digest: TimelineState.MonthlyDigest?,
+    val days: ImmutableList<TimelineState.MonthlyTrainingsDay>,
 )
 
-private fun ImmutableList<TrainingListValue>.monthlyContent(): MonthlyCalendarContent {
-    var digest: TrainingListValue.MonthlyDigest? = null
-    val days = mutableListOf<TrainingListValue.MonthlyTrainingsDay>()
+private fun ImmutableList<TimelineState>.monthlyContent(): MonthlyCalendarContent {
+    var digest: TimelineState.MonthlyDigest? = null
+    val days = mutableListOf<TimelineState.MonthlyTrainingsDay>()
 
     for (value in this) {
         when (value) {
-            is TrainingListValue.MonthlyDigest -> if (digest == null) {
+            is TimelineState.MonthlyDigest -> if (digest == null) {
                 digest = value
             }
 
-            is TrainingListValue.MonthlyTrainingsDay -> days += value
+            is TimelineState.MonthlyTrainingsDay -> days += value
             else -> Unit
         }
     }
@@ -283,7 +283,7 @@ private fun ImmutableList<TrainingListValue>.monthlyContent(): MonthlyCalendarCo
 
 private fun buildMonthCalendar(
     monthReference: LocalDate,
-    days: List<TrainingListValue.MonthlyTrainingsDay>,
+    days: List<TimelineState.MonthlyTrainingsDay>,
 ): List<List<MonthlyCalendarDay>> {
     val trainingsByDate = days.associateBy { it.date }
     val startOfMonth = LocalDate(monthReference.year, monthReference.month, 1)
@@ -307,7 +307,7 @@ private fun buildMonthCalendar(
 private data class MonthlyCalendarDay(
     val date: LocalDate,
     val isCurrentMonth: Boolean,
-    val trainingDay: TrainingListValue.MonthlyTrainingsDay?,
+    val trainingDay: TimelineState.MonthlyTrainingsDay?,
 )
 
 @AppPreview

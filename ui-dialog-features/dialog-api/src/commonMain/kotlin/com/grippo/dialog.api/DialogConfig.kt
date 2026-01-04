@@ -9,7 +9,7 @@ import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.menu.MenuItemState
 import com.grippo.core.state.profile.ProfileMenu
 import com.grippo.core.state.profile.SettingsMenu
-import com.grippo.core.state.trainings.IterationFocus
+import com.grippo.core.state.trainings.IterationFocusState
 import com.grippo.core.state.trainings.IterationState
 import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.serialization.Serializable
@@ -50,7 +50,7 @@ public sealed class DialogConfig(
     public data class Iteration(
         val initial: IterationState,
         val number: Int,
-        val focus: IterationFocus,
+        val focus: IterationFocusState,
         val suggestions: List<IterationState>,
         @Transient val onResult: (iteration: IterationState) -> Unit = { },
     ) : DialogConfig(

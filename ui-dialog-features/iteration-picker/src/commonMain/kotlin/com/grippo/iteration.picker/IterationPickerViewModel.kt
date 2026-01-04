@@ -3,7 +3,7 @@ package com.grippo.iteration.picker
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
-import com.grippo.core.state.trainings.IterationFocus
+import com.grippo.core.state.trainings.IterationFocusState
 import com.grippo.core.state.trainings.IterationState
 import kotlinx.collections.immutable.toPersistentList
 
@@ -11,7 +11,7 @@ public class IterationPickerViewModel(
     initial: IterationState,
     suggestions: List<IterationState>,
     number: Int,
-    focus: IterationFocus
+    focus: IterationFocusState
 ) : BaseViewModel<IterationPickerState, IterationPickerDirection, IterationPickerLoader>(
     IterationPickerState(
         value = initial,

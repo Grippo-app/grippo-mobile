@@ -5,7 +5,7 @@ import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.TrainingTotalState
 import com.grippo.core.state.trainings.ExerciseState
-import com.grippo.core.state.trainings.IterationFocus
+import com.grippo.core.state.trainings.IterationFocusState
 import com.grippo.core.state.trainings.IterationState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
@@ -60,7 +60,7 @@ internal class ExerciseViewModel(
             initial = value,
             number = number,
             suggestions = suggestions,
-            focus = IterationFocus.UNIDENTIFIED,
+            focus = IterationFocusState.UNIDENTIFIED,
             onResult = { iteration ->
                 update { s ->
                     // Build new iterations
@@ -118,7 +118,7 @@ internal class ExerciseViewModel(
             initial = value,
             suggestions = suggestions,
             number = number,
-            focus = IterationFocus.VOLUME,
+            focus = IterationFocusState.VOLUME,
             onResult = { iteration ->
                 update { s ->
                     // Replace updated iteration
@@ -154,7 +154,7 @@ internal class ExerciseViewModel(
             initial = value,
             suggestions = suggestions,
             number = number,
-            focus = IterationFocus.REPETITIONS,
+            focus = IterationFocusState.REPETITIONS,
             onResult = { iteration ->
                 update { s ->
                     // Replace updated iteration
