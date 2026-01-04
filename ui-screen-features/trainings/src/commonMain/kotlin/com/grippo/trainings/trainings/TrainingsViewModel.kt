@@ -59,7 +59,10 @@ internal class TrainingsViewModel(
     private fun provideTrainings(range: DateRange, list: List<Training>) {
         val trainings = list
             .toState()
-            .transformToTrainingListValue(range = range)
+            .transformToTrainingListValue(
+                range = range,
+                sourceTrainings = list,
+            )
 
         update { it.copy(trainings = trainings) }
     }

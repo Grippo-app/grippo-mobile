@@ -63,9 +63,9 @@ internal class HomeViewModel(
 
         val last = trainings.first()
 
-        val weekly = trainings.toWeeklyDigestState(range = DateTimeUtils.trailingWeek())
+        val weekly = list.toWeeklyDigestState(range = DateTimeUtils.trailingWeek())
 
-        val monthly = trainings.toMonthlyDigestState(range = DateTimeUtils.trailingMonth())
+        val monthly = list.toMonthlyDigestState(range = DateTimeUtils.trailingMonth())
 
         val totalDuration = list.fold(ZERO) { acc: Duration, item -> acc + item.duration }
 

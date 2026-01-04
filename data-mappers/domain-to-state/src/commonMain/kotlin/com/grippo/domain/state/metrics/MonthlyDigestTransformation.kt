@@ -2,14 +2,13 @@ package com.grippo.domain.state.metrics
 
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.digest.MonthlyDigestState
-import com.grippo.core.state.trainings.TrainingState
+import com.grippo.data.features.api.training.models.Training
 import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.datetime.LocalDate
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
 
-// TODO change List<TrainingState> to List<Training>
-public fun List<TrainingState>.toMonthlyDigestState(
+public fun List<Training>.toMonthlyDigestState(
     range: DateRange?,
 ): MonthlyDigestState {
     val trainings = this
@@ -22,13 +21,7 @@ public fun List<TrainingState>.toMonthlyDigestState(
     val exercisesCount = trainings.sumOf { it.exercises.size }
     val totalDuration: Duration = trainings.fold(ZERO) { acc, training -> acc + training.duration }
     val totalVolume: Float = trainings.fold(0f) { acc, training ->
-        val trainingVolume = when (val volumeState = training.total.volume) {
-            is VolumeFormatState.Valid -> volumeState.value
-            is VolumeFormatState.Invalid -> volumeState.value ?: 0f
-            is VolumeFormatState.Empty -> 0f
-        }
-
-        acc + trainingVolume
+        acc + training.volume
     }
     val totalSets: Int = trainings.sumOf { training ->
         training.exercises.sumOf { it.iterations.size }

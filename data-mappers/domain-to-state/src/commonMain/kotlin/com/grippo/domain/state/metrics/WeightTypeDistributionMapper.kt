@@ -8,7 +8,7 @@ import com.grippo.data.features.api.metrics.models.ExerciseDistribution
 import com.grippo.domain.state.exercise.example.toState
 import kotlinx.collections.immutable.toPersistentList
 
-public fun ExerciseDistribution<WeightTypeEnum>.toWeightTypeDistributionState(): ExerciseDistributionState<WeightTypeEnumState> {
+public fun ExerciseDistribution<WeightTypeEnum>.toState(): ExerciseDistributionState<WeightTypeEnumState> {
     val entries = entries.mapNotNull { entry ->
         val value = entry.value
         if (value <= 0f) {

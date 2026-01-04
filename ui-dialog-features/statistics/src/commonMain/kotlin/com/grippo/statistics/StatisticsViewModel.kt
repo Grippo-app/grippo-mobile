@@ -10,10 +10,7 @@ import com.grippo.data.features.api.metrics.VolumeSeriesUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.dialog.api.DialogConfig
-import com.grippo.domain.state.metrics.toCategoryDistributionState
-import com.grippo.domain.state.metrics.toForceTypeDistributionState
 import com.grippo.domain.state.metrics.toState
-import com.grippo.domain.state.metrics.toWeightTypeDistributionState
 import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.coroutines.flow.mapLatest
 
@@ -80,15 +77,15 @@ public class StatisticsViewModel(
 
         val categoryDistribution = exerciseDistributionUseCase
             .categoriesFromTrainings(trainings)
-            .toCategoryDistributionState()
+            .toState()
 
         val weightTypeDistribution = exerciseDistributionUseCase
             .weightTypesFromTrainings(trainings)
-            .toWeightTypeDistributionState()
+            .toState()
 
         val forceTypeDistribution = exerciseDistributionUseCase
             .forceTypesFromTrainings(trainings)
-            .toForceTypeDistributionState()
+            .toState()
 
         val muscleLoad = muscleLoadingUseCase
             .fromTrainings(trainings)
@@ -133,15 +130,15 @@ public class StatisticsViewModel(
 
         val categoryDistribution = exerciseDistributionUseCase
             .categoriesFromExercises(training.exercises)
-            .toCategoryDistributionState()
+            .toState()
 
         val weightTypeDistribution = exerciseDistributionUseCase
             .weightTypesFromExercises(training.exercises)
-            .toWeightTypeDistributionState()
+            .toState()
 
         val forceTypeDistribution = exerciseDistributionUseCase
             .forceTypesFromExercises(training.exercises)
-            .toForceTypeDistributionState()
+            .toState()
 
         val muscleLoad = muscleLoadingUseCase
             .fromExercises(training.exercises)
