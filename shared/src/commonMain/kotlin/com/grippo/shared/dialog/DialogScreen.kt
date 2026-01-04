@@ -73,7 +73,7 @@ private fun BottomSheet(
     val isSwipeRef = rememberUpdatedState(isSwipeDismissEnabled)
 
     val showBackButton = stack.size > 1
-    val programmaticDismiss = phase == SheetPhase.DISMISSING
+    val programmaticDismiss = phase == SheetPhase.Dismissing
 
     val programmaticDismissRef = rememberUpdatedState(programmaticDismiss)
 
@@ -113,7 +113,7 @@ private fun BottomSheet(
     // If VM says PRESENT but the sheet is Hidden (e.g., new content after a prior hide),
     // explicitly open it. This does not affect in-sheet Push/Pop when already visible.
     LaunchedEffect(phase, config) {
-        if (phase == SheetPhase.PRESENT) {
+        if (phase == SheetPhase.Present) {
             withFrameNanos { /* next frame */ }
 
             val animInProgress = sheetState.currentValue != sheetState.targetValue

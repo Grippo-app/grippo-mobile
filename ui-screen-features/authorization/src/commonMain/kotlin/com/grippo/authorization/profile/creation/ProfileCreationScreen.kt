@@ -13,8 +13,8 @@ import com.arkivanov.decompose.extensions.compose.experimental.stack.ChildStack 
 @Composable
 internal fun ProfileCreationScreen(
     component: ProfileCreationComponent,
-    state: RegistrationState,
-    loaders: ImmutableSet<RegistrationLoader>,
+    state: ProfileCreationState,
+    loaders: ImmutableSet<ProfileCreationLoader>,
     contract: ProfileCreationContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.screen)) {
     ChildStackCompose(

@@ -6,7 +6,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
-internal data class RegistrationState(
+internal data class ProfileCreationState(
     val name: String = "",
     val weight: Float = 0F,
     val height: Int = 0,

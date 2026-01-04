@@ -44,7 +44,7 @@ internal fun DialogContentScreen(
     }
 
     val holder = rememberSaveableStateHolder()
-    holder.retainStates(stackState.items.mapTo(HashSet(), Child<*, *>::keyHashString))
+    holder.RetainStates(stackState.items.mapTo(HashSet(), Child<*, *>::keyHashString))
 
     AnimatedContent(
         modifier = Modifier.fillMaxWidth(),
@@ -65,9 +65,8 @@ internal fun DialogContentScreen(
  * Prevents memory leaks by cleaning up obsolete child screen states.
  * Used in conjunction with Decompose ChildStack + SaveableStateHolder.
  */
-@Suppress("ComposableNaming")
 @Composable
-private fun SaveableStateHolder.retainStates(currentKeys: Set<String>) {
+private fun SaveableStateHolder.RetainStates(currentKeys: Set<String>) {
     val keys = remember(this) { Keys(currentKeys) }
 
     DisposableEffect(this, currentKeys) {

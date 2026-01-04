@@ -6,7 +6,7 @@ import com.grippo.dialog.api.DialogConfig
 @Immutable
 internal data class DialogState(
     val stack: List<DialogEntry> = emptyList(),
-    val phase: SheetPhase = SheetPhase.RELEASED,
+    val phase: SheetPhase = SheetPhase.Released,
 )
 
 @Immutable
@@ -18,11 +18,11 @@ internal data class DialogEntry(
 @Immutable
 internal sealed class SheetPhase {
     @Immutable
-    data object PRESENT : SheetPhase()
+    data object Present : SheetPhase()
 
     @Immutable
-    data object DISMISSING : SheetPhase()
+    data object Dismissing : SheetPhase()
 
     @Immutable
-    data object RELEASED : SheetPhase()
+    data object Released : SheetPhase()
 }

@@ -23,7 +23,7 @@ internal class DialogViewModel(
 
         val updatedTop = oldStack.last().copy(pendingResult = pendingResult)
         val newStack = oldStack.dropLast(1) + updatedTop
-        val nextPhase = if (newStack.size == 1) SheetPhase.DISMISSING else SheetPhase.PRESENT
+        val nextPhase = if (newStack.size == 1) SheetPhase.Dismissing else SheetPhase.Present
 
         update { it.copy(stack = newStack, phase = nextPhase) }
 
@@ -36,19 +36,19 @@ internal class DialogViewModel(
         if (state.value.stack.isEmpty()) {
             return
         }
-        update { it.copy(stack = emptyList(), phase = SheetPhase.DISMISSING) }
+        update { it.copy(stack = emptyList(), phase = SheetPhase.Dismissing) }
     }
 
     override fun onRelease(config: DialogConfig) {
         val current = state.value
-        if (current.phase == SheetPhase.RELEASED) {
+        if (current.phase == SheetPhase.Released) {
             return
         }
 
         current.stack.lastOrNull()?.pendingResult?.invoke()
         config.onDismiss?.invoke()
 
-        update { prev -> prev.copy(stack = emptyList(), phase = SheetPhase.RELEASED) }
+        update { prev -> prev.copy(stack = emptyList(), phase = SheetPhase.Released) }
 
         navigateTo(DialogDirection.Dismiss)
     }
@@ -59,10 +59,10 @@ internal class DialogViewModel(
         val newStack = stack + DialogEntry(config, pendingResult = null)
 
         val destination =
-            if (state.value.phase == SheetPhase.RELEASED) DialogDirection.Activate(config)
+            if (state.value.phase == SheetPhase.Released) DialogDirection.Activate(config)
             else DialogDirection.Push(config)
 
-        update { it.copy(stack = newStack, phase = SheetPhase.PRESENT) }
+        update { it.copy(stack = newStack, phase = SheetPhase.Present) }
 
         navigateTo(destination)
     }
@@ -76,7 +76,7 @@ internal class DialogViewModel(
         val last = stack.last()
         val newStack = stack.dropLast(1)
 
-        update { it.copy(stack = newStack, phase = SheetPhase.PRESENT) }
+        update { it.copy(stack = newStack, phase = SheetPhase.Present) }
         navigateTo(DialogDirection.Pop(last.pendingResult))
     }
 }
