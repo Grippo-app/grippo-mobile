@@ -31,7 +31,7 @@ internal data class TrainingsState(
         val nextYear = DateTimeUtils.shift(currentYear, DatePeriod(years = 1))
         DateRange(from = previousYear.from, to = nextYear.to)
     },
-    val trainings: ImmutableList<TrainingListValue> = persistentListOf(),
+    val timeline: ImmutableList<TrainingListValue> = persistentListOf(),
 )
 
 @Immutable

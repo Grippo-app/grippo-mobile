@@ -14,6 +14,7 @@ import com.grippo.data.features.api.metrics.TrainingStreakUseCase
 import com.grippo.data.features.api.metrics.TrainingTotalUseCase
 import com.grippo.data.features.api.metrics.VolumeSeriesUseCase
 import com.grippo.data.features.api.training.GenerateTrainingUseCase
+import com.grippo.data.features.api.training.TrainingTimelineUseCase
 import com.grippo.data.features.api.user.CreateProfileUseCase
 import org.koin.core.annotation.Module
 import org.koin.dsl.module
@@ -98,6 +99,10 @@ public class FeatureApiModule {
 
         single {
             TrainingDigestUseCase()
+        }
+
+        single {
+            TrainingTimelineUseCase()
         }
 
         single {

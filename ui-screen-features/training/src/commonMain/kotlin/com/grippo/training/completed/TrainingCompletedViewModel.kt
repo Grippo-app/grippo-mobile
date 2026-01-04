@@ -6,13 +6,13 @@ import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.metrics.TrainingTotalUseCase
 import com.grippo.data.features.api.training.TrainingFeature
+import com.grippo.data.features.api.training.TrainingTimelineUseCase
 import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.metrics.toState
-import com.grippo.domain.state.training.toState
-import com.grippo.domain.state.training.transformation.toTrainingListValues
+import com.grippo.domain.state.training.timeline.toState
 import com.grippo.state.domain.training.toDomain
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.coroutines.flow.firstOrNull
@@ -25,7 +25,8 @@ internal class TrainingCompletedViewModel(
     startAt: LocalDateTime,
     private val trainingTotalUseCase: TrainingTotalUseCase,
     private val dialogController: DialogController,
-    private val exerciseExampleFeature: ExerciseExampleFeature
+    private val exerciseExampleFeature: ExerciseExampleFeature,
+    private val trainingTimelineUseCase: TrainingTimelineUseCase,
 ) : BaseViewModel<TrainingCompletedState, TrainingCompletedDirection, TrainingCompletedLoader>(
     TrainingCompletedState()
 ), TrainingCompletedContract {
@@ -77,8 +78,10 @@ internal class TrainingCompletedViewModel(
     }
 
     private fun provideTraining(value: Training?) {
-        val training = value?.toState()?.toTrainingListValues() ?: return
-        update { it.copy(training = training) }
+        value ?: return
+        val timeline = trainingTimelineUseCase.trainingExercises(value)
+        val state = timeline.toState()
+        update { it.copy(timeline = state) }
     }
 
     override fun onExerciseClick(id: String) {

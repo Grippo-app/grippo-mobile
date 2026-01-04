@@ -17,7 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.trainings.TrainingListValue
 import com.grippo.core.state.trainings.TrainingListValue.Companion.exercise
-import com.grippo.core.state.trainings.stubTraining
+import com.grippo.core.state.trainings.stubDailyTrainingTimeline
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
@@ -31,7 +31,6 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.icons.Menu
-import com.grippo.domain.state.training.transformation.transformToTrainingListValue
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.trainings.factory.timelineStyle
@@ -41,7 +40,7 @@ import kotlinx.collections.immutable.persistentListOf
 @Composable
 internal fun DailyTrainingsPage(
     modifier: Modifier = Modifier,
-    trainings: ImmutableList<TrainingListValue>,
+    timeline: ImmutableList<TrainingListValue>,
     contentPadding: PaddingValues,
     onViewStatsClick: () -> Unit,
     onTrainingMenuClick: (String) -> Unit,
@@ -49,8 +48,8 @@ internal fun DailyTrainingsPage(
 ) {
     val listState = rememberLazyListState()
 
-    val timelineItems = remember(trainings) {
-        trainings.filterIsInstance<TrainingListValue.Daily.Item>()
+    val timelineItems = remember(timeline) {
+        timeline.filterIsInstance<TrainingListValue.Daily.Item>()
     }
 
     if (timelineItems.isEmpty()) {
@@ -161,12 +160,7 @@ private fun DailyTimelineItem(
 private fun DailyTrainingsPagePreview() {
     PreviewContainer {
         DailyTrainingsPage(
-            trainings = listOf(
-                stubTraining(),
-                stubTraining(),
-            ).transformToTrainingListValue(
-                range = DateTimeUtils.thisDay()
-            ),
+            timeline = stubDailyTrainingTimeline(),
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
             onViewStatsClick = {},
             onTrainingMenuClick = {},
@@ -180,7 +174,7 @@ private fun DailyTrainingsPagePreview() {
 private fun DailyTrainingsEmptyPagePreview() {
     PreviewContainer {
         DailyTrainingsPage(
-            trainings = persistentListOf(),
+            timeline = persistentListOf(),
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
             onViewStatsClick = {},
             onTrainingMenuClick = {},

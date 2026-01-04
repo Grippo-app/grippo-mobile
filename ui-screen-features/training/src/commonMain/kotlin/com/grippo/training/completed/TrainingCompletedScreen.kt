@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.trainings.TrainingListValue.Companion.exercise
-import com.grippo.core.state.trainings.stubTraining
+import com.grippo.core.state.trainings.stubDailyTrainingTimeline
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
@@ -48,7 +48,6 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.complete
 import com.grippo.design.resources.provider.workout_saved
-import com.grippo.domain.state.training.transformation.toTrainingListValues
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -69,9 +68,9 @@ internal fun TrainingCompletedScreen(
 
     val cardVisible = remember { mutableStateOf(false) }
 
-    LaunchedEffect(state.training, loaders) {
+    LaunchedEffect(state.timeline, loaders) {
         val hasLoader = loaders.contains(TrainingCompletedLoader.SaveTraining)
-        val hasTraining = state.training.isNotEmpty()
+        val hasTraining = state.timeline.isNotEmpty()
         cardVisible.value = hasTraining && hasLoader.not()
     }
 
@@ -131,7 +130,7 @@ internal fun TrainingCompletedScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     items(
-                        items = state.training,
+                        items = state.timeline,
                         key = { it.key },
                         contentType = { it::class }
                     ) { value ->
@@ -184,7 +183,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         TrainingCompletedScreen(
             state = TrainingCompletedState(
-                training = stubTraining().toTrainingListValues()
+                timeline = stubDailyTrainingTimeline()
             ),
             loaders = persistentSetOf(),
             contract = TrainingCompletedContract.Empty

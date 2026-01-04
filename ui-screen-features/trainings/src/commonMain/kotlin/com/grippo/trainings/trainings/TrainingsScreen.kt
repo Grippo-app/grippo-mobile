@@ -12,8 +12,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
-import com.grippo.core.state.metrics.stubMonthlyDigest
-import com.grippo.core.state.trainings.stubTraining
+import com.grippo.core.state.trainings.stubDailyTrainingTimeline
+import com.grippo.core.state.trainings.stubMonthlyTrainingTimeline
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
@@ -31,12 +31,10 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.start_workout
 import com.grippo.design.resources.provider.trainings
-import com.grippo.domain.state.training.transformation.transformToTrainingListValue
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.trainings.trainings.components.DailyTrainingsPage
 import com.grippo.trainings.trainings.components.MonthlyTrainingsPage
 import kotlinx.collections.immutable.ImmutableSet
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 
@@ -109,7 +107,7 @@ internal fun TrainingsScreen(
                     modifier = containerModifier
                         .fillMaxWidth()
                         .weight(1f),
-                    trainings = state.trainings,
+                    timeline = state.timeline,
                     contentPadding = resolvedPadding,
                     onViewStatsClick = contract::onDailyDigestViewStats,
                     onTrainingMenuClick = contract::onTrainingMenuClick,
@@ -120,7 +118,7 @@ internal fun TrainingsScreen(
                     modifier = containerModifier
                         .fillMaxWidth()
                         .weight(1f),
-                    trainings = state.trainings,
+                    timeline = state.timeline,
                     contentPadding = resolvedPadding,
                     month = state.date.from.date,
                     onDigestClick = contract::onDailyDigestViewStats,
@@ -157,12 +155,7 @@ private fun DailyScreenPreview() {
             state = TrainingsState(
                 period = TrainingsTimelinePeriod.Daily,
                 date = TrainingsTimelinePeriod.Daily.defaultRange(),
-                trainings = persistentListOf(
-                    stubTraining(),
-                    stubTraining(),
-                ).transformToTrainingListValue(
-                    range = TrainingsTimelinePeriod.Daily.defaultRange()
-                ),
+                timeline = stubDailyTrainingTimeline(),
             ),
             loaders = persistentSetOf(),
             contract = TrainingsContract.Empty
@@ -178,13 +171,7 @@ private fun MonthlyScreenPreview() {
             state = TrainingsState(
                 period = TrainingsTimelinePeriod.Monthly,
                 date = TrainingsTimelinePeriod.Monthly.defaultRange(),
-                trainings = persistentListOf(
-                    stubTraining(),
-                    stubTraining(),
-                ).transformToTrainingListValue(
-                    range = TrainingsTimelinePeriod.Monthly.defaultRange(),
-                    monthlyDigest = stubMonthlyDigest(),
-                ),
+                timeline = stubMonthlyTrainingTimeline(),
             ),
             loaders = persistentSetOf(),
             contract = TrainingsContract.Empty

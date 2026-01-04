@@ -7,5 +7,5 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 internal data class TrainingCompletedState(
-    val training: ImmutableList<TrainingListValue> = persistentListOf()
+    val timeline: ImmutableList<TrainingListValue> = persistentListOf()
 )

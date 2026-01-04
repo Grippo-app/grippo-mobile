@@ -5,6 +5,7 @@ import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.menu.MenuItemState
 import com.grippo.data.features.api.metrics.TrainingDigestUseCase
 import com.grippo.data.features.api.training.TrainingFeature
+import com.grippo.data.features.api.training.TrainingTimelineUseCase
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.providers.StringProvider
@@ -12,9 +13,7 @@ import com.grippo.design.resources.provider.select_date
 import com.grippo.design.resources.provider.select_month
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
-import com.grippo.domain.state.metrics.toState
-import com.grippo.domain.state.training.toState
-import com.grippo.domain.state.training.transformation.transformToTrainingListValue
+import com.grippo.domain.state.training.timeline.toState
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.trainings.trainings.TrainingsDirection.Back
@@ -23,7 +22,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.daysUntil
@@ -33,24 +31,30 @@ internal class TrainingsViewModel(
     private val dialogController: DialogController,
     private val stringProvider: StringProvider,
     private val trainingDigestUseCase: TrainingDigestUseCase,
+    private val trainingTimelineUseCase: TrainingTimelineUseCase,
 ) : BaseViewModel<TrainingsState, TrainingsDirection, TrainingsLoader>(
     TrainingsState()
 ), TrainingsContract {
 
     init {
-        state
+        val rangeFlow = state
             .map { it.date to it.limitations }
             .distinctUntilChanged()
-            .flatMapLatest { (date, limitations) ->
-                val range = date.coerceWithin(limitations)
+            .map { (date, limitations) -> date.coerceWithin(limitations) }
+
+        rangeFlow
+            .onEach { range ->
+                trainingFeature.getTrainings(
+                    start = range.from,
+                    end = range.to
+                ).getOrThrow()
+            }
+            .safeLaunch()
+
+        rangeFlow
+            .flatMapLatest { range ->
                 trainingFeature
                     .observeTrainings(start = range.from, end = range.to)
-                    .onStart {
-                        trainingFeature.getTrainings(
-                            start = range.from,
-                            end = range.to
-                        ).getOrThrow()
-                    }
                     .map { trainings -> range to trainings }
             }
             .onEach { (range, trainings) ->
@@ -60,28 +64,26 @@ internal class TrainingsViewModel(
     }
 
     private fun provideTrainings(range: DateRange, list: List<Training>) {
-        val stateTrainings = list.toState()
-
-        val days = range.from.date.daysUntil(range.to.date) + 1
-
-        val weeklyDigest = if (days in 2..7) {
-            trainingDigestUseCase.weeklyDigest(list, range).toState()
-        } else {
-            null
-        }
-        val monthlyDigest = if (days > 7) {
-            trainingDigestUseCase.monthlyDigest(list, range).toState()
+        val weeklyDigest = if (range.range() == DateRange.Range.WEEKLY) {
+            trainingDigestUseCase.weeklyDigest(list, range)
         } else {
             null
         }
 
-        val trainings = stateTrainings.transformToTrainingListValue(
+        val monthlyDigest = if (range.range() == DateRange.Range.MONTHLY) {
+            trainingDigestUseCase.monthlyDigest(list, range)
+        } else {
+            null
+        }
+
+        val timeline = trainingTimelineUseCase.trainingTimeline(
+            trainings = list,
             range = range,
             weeklyDigest = weeklyDigest,
             monthlyDigest = monthlyDigest,
         )
 
-        update { it.copy(trainings = trainings) }
+        update { it.copy(timeline = timeline.toState()) }
     }
 
     override fun onTrainingMenuClick(id: String) {
@@ -224,7 +226,6 @@ internal class TrainingsViewModel(
             val days = from.date.daysUntil(to.date) + 1
             if (days <= 0) 1 else days
         }
-        // Monthly view always jumps exactly one calendar month regardless of range span.
         val shiftPeriod = when (current.period) {
             TrainingsTimelinePeriod.Monthly -> DatePeriod(months = direction)
             TrainingsTimelinePeriod.Daily -> DatePeriod(days = span * direction)

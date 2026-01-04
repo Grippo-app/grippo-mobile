@@ -13,8 +13,7 @@ public class TrainingDigestUseCase {
     public fun weeklyDigest(
         trainings: List<Training>,
         range: DateRange,
-    ): WeeklyDigest? {
-        if (trainings.isEmpty()) return null
+    ): WeeklyDigest {
         val stats = trainings.aggregate()
         val weekStart = range.from.date
         val weekEnd = range.to.date
@@ -33,8 +32,7 @@ public class TrainingDigestUseCase {
     public fun monthlyDigest(
         trainings: List<Training>,
         range: DateRange,
-    ): MonthlyDigest? {
-        if (trainings.isEmpty()) return null
+    ): MonthlyDigest {
         val stats = trainings.aggregate()
         val referenceDate = range.from.date
         val month = LocalDate(referenceDate.year, referenceDate.month, 1)

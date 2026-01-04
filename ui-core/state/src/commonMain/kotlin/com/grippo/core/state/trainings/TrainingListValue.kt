@@ -3,9 +3,15 @@ package com.grippo.core.state.trainings
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.metrics.MonthlyDigestState
 import com.grippo.core.state.metrics.WeeklyDigestState
+import com.grippo.core.state.metrics.stubMonthlyDigest
+import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
+import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.plus
 import kotlin.time.Duration
 
 @Immutable
@@ -154,4 +160,148 @@ public sealed interface TrainingListValue {
         public fun TrainingListValue.exercise(): ExerciseState? =
             (this as? Daily.Exercise)?.exerciseState
     }
+}
+
+public fun stubDailyTrainingTimeline(): ImmutableList<TrainingListValue> {
+    val trainings = listOf(stubTraining(), stubTraining())
+    if (trainings.isEmpty()) return persistentListOf()
+
+    val values = mutableListOf<TrainingListValue>()
+    trainings.forEachIndexed { index, training ->
+        val position = when {
+            trainings.size == 1 -> TrainingPosition.SINGLE
+            index == 0 -> TrainingPosition.FIRST
+            index == trainings.lastIndex -> TrainingPosition.LAST
+            else -> TrainingPosition.MIDDLE
+        }
+
+        values += TrainingListValue.DateTime(
+            createAt = training.createdAt,
+            duration = training.duration,
+            trainingId = training.id,
+            position = position,
+            key = "stub-date-${training.id}",
+        )
+        values += training.toPreviewTrainingListValues(position)
+    }
+
+    return values.toPersistentList()
+}
+
+public fun stubMonthlyTrainingTimeline(): ImmutableList<TrainingListValue> {
+    val monthRange = DateTimeUtils.thisMonth()
+    val monthReference = LocalDate(monthRange.from.year, monthRange.from.month, 1)
+    val digest = stubMonthlyDigest()
+    val values = mutableListOf<TrainingListValue>()
+
+    values += TrainingListValue.MonthlyDigest(
+        summary = digest,
+        month = monthReference,
+        key = "stub-monthly-digest",
+    )
+
+    val dayOffsets = listOf(0, 3, 10, 18)
+    val days = dayOffsets.mapIndexed { index, offset ->
+        val date = monthReference.plus(DatePeriod(days = offset))
+        val trainings = List(index % 2 + 1) { stubTraining() }.toPersistentList()
+        val position = when {
+            dayOffsets.size == 1 -> TrainingPosition.SINGLE
+            index == 0 -> TrainingPosition.FIRST
+            index == dayOffsets.lastIndex -> TrainingPosition.LAST
+            else -> TrainingPosition.MIDDLE
+        }
+
+        TrainingListValue.MonthlyTrainingsDay(
+            date = date,
+            month = monthReference,
+            trainings = trainings,
+            key = "stub-monthly-day-$date",
+            position = position,
+        )
+    }
+
+    values += days
+    return values.toPersistentList()
+}
+
+private fun TrainingState.toPreviewTrainingListValues(
+    position: TrainingPosition,
+): List<TrainingListValue> {
+    if (exercises.isEmpty()) return emptyList()
+    val result = mutableListOf<TrainingListValue>()
+    when (exercises.size) {
+        1 -> {
+            val exercise = exercises.first()
+            result += TrainingListValue.SingleExercise(
+                exerciseState = exercise,
+                position = position,
+                key = "stub-single-$id-${exercise.id}",
+                indexInTraining = 1,
+            )
+        }
+
+        2 -> {
+            val first = exercises.first()
+            val last = exercises.last()
+            result += TrainingListValue.FirstExercise(
+                exerciseState = first,
+                position = position,
+                key = "stub-first-$id-${first.id}",
+                indexInTraining = 1,
+            )
+            result += TrainingListValue.BetweenExercises(
+                position = position,
+                key = "stub-between-$id-${first.id}-${last.id}",
+            )
+            result += TrainingListValue.LastExercise(
+                exerciseState = last,
+                position = position,
+                key = "stub-last-$id-${last.id}",
+                indexInTraining = 2,
+            )
+        }
+
+        else -> {
+            val first = exercises.first()
+            val last = exercises.last()
+            val middle = exercises.subList(1, exercises.lastIndex)
+
+            result += TrainingListValue.FirstExercise(
+                exerciseState = first,
+                position = position,
+                key = "stub-first-$id-${first.id}",
+                indexInTraining = 1,
+            )
+
+            result += TrainingListValue.BetweenExercises(
+                position = position,
+                key = "stub-between-$id-${first.id}-${middle.first().id}",
+            )
+
+            middle.forEachIndexed { index, exercise ->
+                val indexInTraining = index + 2
+                result += TrainingListValue.MiddleExercise(
+                    exerciseState = exercise,
+                    position = position,
+                    key = "stub-middle-$id-${exercise.id}",
+                    indexInTraining = indexInTraining,
+                )
+
+                val next = middle.getOrNull(index + 1) ?: last
+                result += TrainingListValue.BetweenExercises(
+                    position = position,
+                    key = "stub-between-$id-${exercise.id}-${next.id}",
+                )
+            }
+
+            result += TrainingListValue.LastExercise(
+                exerciseState = last,
+                position = position,
+                key = "stub-last-$id-${last.id}",
+                indexInTraining = exercises.size,
+            )
+        }
+    }
+
+    return result
 }

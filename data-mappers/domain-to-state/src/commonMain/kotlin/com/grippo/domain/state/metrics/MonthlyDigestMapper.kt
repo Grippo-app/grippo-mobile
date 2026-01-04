@@ -4,15 +4,13 @@ import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.metrics.MonthlyDigestState
 import com.grippo.data.features.api.metrics.models.MonthlyDigest
 
-public fun MonthlyDigest?.toState(): MonthlyDigestState? {
-    return this?.let { digest ->
-        MonthlyDigestState(
-            month = digest.month,
-            exercisesCount = digest.exercisesCount,
-            trainingsCount = digest.trainingsCount,
-            duration = digest.duration,
-            total = VolumeFormatState.of(digest.totalVolume),
-            totalSets = digest.totalSets,
-        )
-    }
+public fun MonthlyDigest.toState(): MonthlyDigestState {
+    return MonthlyDigestState(
+        month = this.month,
+        exercisesCount = this.exercisesCount,
+        trainingsCount = this.trainingsCount,
+        duration = this.duration,
+        total = VolumeFormatState.of(this.totalVolume),
+        totalSets = this.totalSets,
+    )
 }

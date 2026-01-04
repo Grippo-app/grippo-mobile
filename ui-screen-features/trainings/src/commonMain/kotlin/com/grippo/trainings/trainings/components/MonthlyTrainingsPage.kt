@@ -33,15 +33,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.grippo.core.state.metrics.stubMonthlyDigest
 import com.grippo.core.state.trainings.TrainingListValue
-import com.grippo.core.state.trainings.stubTraining
+import com.grippo.core.state.trainings.stubMonthlyTrainingTimeline
 import com.grippo.design.components.metrics.MonthDigestCard
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.domain.state.training.transformation.transformToTrainingListValue
 import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
@@ -57,7 +55,7 @@ import kotlinx.datetime.plus
 @Composable
 internal fun MonthlyTrainingsPage(
     modifier: Modifier = Modifier,
-    trainings: ImmutableList<TrainingListValue>,
+    timeline: ImmutableList<TrainingListValue>,
     contentPadding: PaddingValues,
     month: LocalDate? = null,
     onDigestClick: () -> Unit,
@@ -65,8 +63,8 @@ internal fun MonthlyTrainingsPage(
 ) {
     val scrollState = rememberScrollState()
 
-    val monthlyContent = remember(trainings) {
-        trainings.monthlyContent()
+    val monthlyContent = remember(timeline) {
+        timeline.monthlyContent()
     }
     val digest = monthlyContent.digest
     val days = monthlyContent.days
@@ -317,13 +315,7 @@ private data class MonthlyCalendarDay(
 private fun MonthlyTrainingsPagePreview() {
     PreviewContainer {
         MonthlyTrainingsPage(
-            trainings = listOf(
-                stubTraining(),
-                stubTraining(),
-            ).transformToTrainingListValue(
-                range = DateTimeUtils.thisMonth(),
-                monthlyDigest = stubMonthlyDigest(),
-            ),
+            timeline = stubMonthlyTrainingTimeline(),
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
             month = DateTimeUtils.thisMonth().from.date,
             onDigestClick = {},
@@ -337,7 +329,7 @@ private fun MonthlyTrainingsPagePreview() {
 private fun MonthlyTrainingsEmptyPagePreview() {
     PreviewContainer {
         MonthlyTrainingsPage(
-            trainings = persistentListOf(),
+            timeline = persistentListOf(),
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
             month = DateTimeUtils.thisMonth().from.date,
             onDigestClick = {},
