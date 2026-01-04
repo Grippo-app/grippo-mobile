@@ -49,15 +49,11 @@ internal fun DailyTrainingsPage(
 ) {
     val listState = rememberLazyListState()
 
-    val digests = remember(trainings) {
-        trainings.filterIsInstance<TrainingListValue.DailyDigest>()
-    }
-
     val timelineItems = remember(trainings) {
         trainings.filterIsInstance<TrainingListValue.Daily.Item>()
     }
 
-    if (digests.isEmpty() && timelineItems.isEmpty()) {
+    if (timelineItems.isEmpty()) {
         EmptyState(
             modifier = modifier.fillMaxSize()
         )

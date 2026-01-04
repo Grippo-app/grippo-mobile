@@ -6,14 +6,13 @@ import com.grippo.core.state.profile.SettingsMenu
 import com.grippo.data.features.api.metrics.ExerciseSpotlightUseCase
 import com.grippo.data.features.api.metrics.MuscleLoadingUseCase
 import com.grippo.data.features.api.metrics.PerformanceTrendUseCase
+import com.grippo.data.features.api.metrics.TrainingDigestUseCase
 import com.grippo.data.features.api.metrics.TrainingStreakUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
-import com.grippo.domain.state.metrics.toMonthlyDigestState
 import com.grippo.domain.state.metrics.toState
-import com.grippo.domain.state.metrics.toWeeklyDigestState
 import com.grippo.domain.state.training.toState
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
@@ -29,6 +28,7 @@ internal class HomeViewModel(
     private val exerciseSpotlightUseCase: ExerciseSpotlightUseCase,
     private val trainingStreakUseCase: TrainingStreakUseCase,
     private val performanceTrendUseCase: PerformanceTrendUseCase,
+    private val trainingDigestUseCase: TrainingDigestUseCase,
 ) : BaseViewModel<HomeState, HomeDirection, HomeLoader>(
     HomeState()
 ), HomeContract {
@@ -61,21 +61,33 @@ internal class HomeViewModel(
 
         val trainings = list.toState()
 
-        val last = trainings.first()
-
-        val weekly = list.toWeeklyDigestState(range = DateTimeUtils.trailingWeek())
-
-        val monthly = list.toMonthlyDigestState(range = DateTimeUtils.trailingMonth())
+        val last = trainings.firstOrNull() ?: return
 
         val totalDuration = list.fold(ZERO) { acc: Duration, item -> acc + item.duration }
 
-        val spotlight = exerciseSpotlightUseCase.fromTrainings(list).toState()
+        val weekly = trainingDigestUseCase
+            .weeklyDigest(list, range = DateTimeUtils.trailingWeek())
+            .toState()
 
-        val streak = trainingStreakUseCase.fromTrainings(list).toState()
+        val monthly = trainingDigestUseCase
+            .monthlyDigest(list, range = DateTimeUtils.trailingMonth())
+            .toState()
 
-        val performance = performanceTrendUseCase.fromTrainings(list).toState()
+        val spotlight = exerciseSpotlightUseCase
+            .fromTrainings(list)
+            .toState()
 
-        val muscleLoadSummary = muscleLoadingUseCase.fromTrainings(list).toState()
+        val streak = trainingStreakUseCase
+            .fromTrainings(list)
+            .toState()
+
+        val performance = performanceTrendUseCase
+            .fromTrainings(list)
+            .toState()
+
+        val muscleLoadSummary = muscleLoadingUseCase
+            .fromTrainings(list)
+            .toState()
 
         update {
             it.copy(

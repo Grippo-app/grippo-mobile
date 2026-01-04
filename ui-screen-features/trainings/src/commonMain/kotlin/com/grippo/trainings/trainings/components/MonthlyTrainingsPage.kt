@@ -33,6 +33,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.grippo.core.state.metrics.stubMonthlyDigest
 import com.grippo.core.state.trainings.TrainingListValue
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.metrics.MonthDigestCard
@@ -320,7 +321,8 @@ private fun MonthlyTrainingsPagePreview() {
                 stubTraining(),
                 stubTraining(),
             ).transformToTrainingListValue(
-                range = DateTimeUtils.thisMonth()
+                range = DateTimeUtils.thisMonth(),
+                monthlyDigest = stubMonthlyDigest(),
             ),
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
             month = DateTimeUtils.thisMonth().from.date,

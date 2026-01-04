@@ -13,10 +13,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
-import com.grippo.core.state.metrics.digest.MonthlyDigestState
-import com.grippo.core.state.metrics.digest.WeeklyDigestState
-import com.grippo.core.state.metrics.digest.stubMonthlyDigest
-import com.grippo.core.state.metrics.digest.stubWeeklyDigest
+import com.grippo.core.state.metrics.MonthlyDigestState
+import com.grippo.core.state.metrics.WeeklyDigestState
+import com.grippo.core.state.metrics.stubMonthlyDigest
+import com.grippo.core.state.metrics.stubWeeklyDigest
 import com.grippo.design.components.metrics.MonthDigestCard
 import com.grippo.design.components.metrics.WeekDigestCard
 import com.grippo.design.components.modifiers.scalableClick

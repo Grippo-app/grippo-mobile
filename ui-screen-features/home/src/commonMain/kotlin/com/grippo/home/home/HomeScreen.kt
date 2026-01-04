@@ -13,12 +13,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
-import com.grippo.core.state.metrics.digest.stubMonthlyDigest
-import com.grippo.core.state.metrics.digest.stubWeeklyDigest
 import com.grippo.core.state.metrics.stubExerciseSpotlight
+import com.grippo.core.state.metrics.stubMonthlyDigest
 import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.stubPerformanceMetrics
 import com.grippo.core.state.metrics.stubTrainingStreaks
+import com.grippo.core.state.metrics.stubWeeklyDigest
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent

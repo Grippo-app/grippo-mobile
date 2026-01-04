@@ -2,11 +2,11 @@ package com.grippo.home.home
 
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.metrics.ExerciseSpotlightState
+import com.grippo.core.state.metrics.MonthlyDigestState
 import com.grippo.core.state.metrics.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.PerformanceMetricState
 import com.grippo.core.state.metrics.TrainingStreakState
-import com.grippo.core.state.metrics.digest.MonthlyDigestState
-import com.grippo.core.state.metrics.digest.WeeklyDigestState
+import com.grippo.core.state.metrics.WeeklyDigestState
 import com.grippo.core.state.trainings.TrainingState
 import kotlin.time.Duration
 

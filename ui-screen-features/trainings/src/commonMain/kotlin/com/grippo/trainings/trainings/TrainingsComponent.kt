@@ -19,6 +19,7 @@ internal class TrainingsComponent(
             trainingFeature = getKoin().get(),
             dialogController = getKoin().get(),
             stringProvider = getKoin().get(),
+            trainingDigestUseCase = getKoin().get(),
         )
     }
 

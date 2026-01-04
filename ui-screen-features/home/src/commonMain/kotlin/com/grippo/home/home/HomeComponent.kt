@@ -26,6 +26,7 @@ internal class HomeComponent(
             exerciseSpotlightUseCase = getKoin().get(),
             trainingStreakUseCase = getKoin().get(),
             performanceTrendUseCase = getKoin().get(),
+            trainingDigestUseCase = getKoin().get(),
         )
     }
 

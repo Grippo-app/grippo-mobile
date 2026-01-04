@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.metrics.stubMonthlyDigest
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
@@ -181,7 +182,8 @@ private fun MonthlyScreenPreview() {
                     stubTraining(),
                     stubTraining(),
                 ).transformToTrainingListValue(
-                    range = TrainingsTimelinePeriod.Monthly.defaultRange()
+                    range = TrainingsTimelinePeriod.Monthly.defaultRange(),
+                    monthlyDigest = stubMonthlyDigest(),
                 ),
             ),
             loaders = persistentSetOf(),

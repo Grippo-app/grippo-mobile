@@ -3,8 +3,8 @@ package com.grippo.design.components.metrics
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.grippo.core.state.metrics.digest.MonthlyDigestState
-import com.grippo.core.state.metrics.digest.stubMonthlyDigest
+import com.grippo.core.state.metrics.MonthlyDigestState
+import com.grippo.core.state.metrics.stubMonthlyDigest
 import com.grippo.design.components.metrics.internal.DigestCardStyle
 import com.grippo.design.components.metrics.internal.DigestMetric
 import com.grippo.design.components.metrics.internal.DigestsSection

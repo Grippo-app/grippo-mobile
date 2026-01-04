@@ -1,4 +1,4 @@
-package com.grippo.core.state.metrics.digest
+package com.grippo.core.state.metrics
 
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.VolumeFormatState

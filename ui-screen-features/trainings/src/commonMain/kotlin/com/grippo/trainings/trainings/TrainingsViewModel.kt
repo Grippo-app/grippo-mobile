@@ -3,6 +3,7 @@ package com.grippo.trainings.trainings
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.menu.MenuItemState
+import com.grippo.data.features.api.metrics.TrainingDigestUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.design.resources.provider.Res
@@ -11,6 +12,7 @@ import com.grippo.design.resources.provider.select_date
 import com.grippo.design.resources.provider.select_month
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
+import com.grippo.domain.state.metrics.toState
 import com.grippo.domain.state.training.toState
 import com.grippo.domain.state.training.transformation.transformToTrainingListValue
 import com.grippo.toolkit.date.utils.DateRange
@@ -29,7 +31,8 @@ import kotlinx.datetime.daysUntil
 internal class TrainingsViewModel(
     private val trainingFeature: TrainingFeature,
     private val dialogController: DialogController,
-    private val stringProvider: StringProvider
+    private val stringProvider: StringProvider,
+    private val trainingDigestUseCase: TrainingDigestUseCase,
 ) : BaseViewModel<TrainingsState, TrainingsDirection, TrainingsLoader>(
     TrainingsState()
 ), TrainingsContract {
@@ -57,12 +60,26 @@ internal class TrainingsViewModel(
     }
 
     private fun provideTrainings(range: DateRange, list: List<Training>) {
-        val trainings = list
-            .toState()
-            .transformToTrainingListValue(
-                range = range,
-                sourceTrainings = list,
-            )
+        val stateTrainings = list.toState()
+
+        val days = range.from.date.daysUntil(range.to.date) + 1
+
+        val weeklyDigest = if (days in 2..7) {
+            trainingDigestUseCase.weeklyDigest(list, range).toState()
+        } else {
+            null
+        }
+        val monthlyDigest = if (days > 7) {
+            trainingDigestUseCase.monthlyDigest(list, range).toState()
+        } else {
+            null
+        }
+
+        val trainings = stateTrainings.transformToTrainingListValue(
+            range = range,
+            weeklyDigest = weeklyDigest,
+            monthlyDigest = monthlyDigest,
+        )
 
         update { it.copy(trainings = trainings) }
     }

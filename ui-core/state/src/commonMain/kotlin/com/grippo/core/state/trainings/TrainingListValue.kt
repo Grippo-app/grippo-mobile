@@ -1,9 +1,8 @@
 package com.grippo.core.state.trainings
 
 import androidx.compose.runtime.Immutable
-import com.grippo.core.state.metrics.digest.DailyDigestState
-import com.grippo.core.state.metrics.digest.MonthlyDigestState
-import com.grippo.core.state.metrics.digest.WeeklyDigestState
+import com.grippo.core.state.metrics.MonthlyDigestState
+import com.grippo.core.state.metrics.WeeklyDigestState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -63,13 +62,6 @@ public sealed interface TrainingListValue {
     public sealed interface Monthly : TrainingListValue {
         public val month: LocalDate
     }
-
-    @Immutable
-    public data class DailyDigest(
-        val state: DailyDigestState,
-        override val key: String,
-        override val position: TrainingPosition = TrainingPosition.EMPTY,
-    ) : Daily.Header
 
     @Immutable
     public data class FirstExercise(

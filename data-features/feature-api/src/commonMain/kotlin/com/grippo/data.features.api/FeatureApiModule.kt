@@ -9,6 +9,7 @@ import com.grippo.data.features.api.metrics.ExerciseSpotlightUseCase
 import com.grippo.data.features.api.metrics.MuscleLoadTimelineUseCase
 import com.grippo.data.features.api.metrics.MuscleLoadingUseCase
 import com.grippo.data.features.api.metrics.PerformanceTrendUseCase
+import com.grippo.data.features.api.metrics.TrainingDigestUseCase
 import com.grippo.data.features.api.metrics.TrainingStreakUseCase
 import com.grippo.data.features.api.metrics.TrainingTotalUseCase
 import com.grippo.data.features.api.metrics.VolumeSeriesUseCase
@@ -93,6 +94,10 @@ public class FeatureApiModule {
 
         single {
             TrainingStreakUseCase()
+        }
+
+        single {
+            TrainingDigestUseCase()
         }
 
         single {
