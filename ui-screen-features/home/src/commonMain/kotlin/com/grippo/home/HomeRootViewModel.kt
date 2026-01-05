@@ -51,6 +51,10 @@ public class HomeRootViewModel(
         navigateTo(HomeRootDirection.WeightHistory)
     }
 
+    override fun toExperience() {
+        navigateTo(HomeRootDirection.Experience)
+    }
+
     override fun toDebug() {
         navigateTo(HomeRootDirection.Debug)
     }

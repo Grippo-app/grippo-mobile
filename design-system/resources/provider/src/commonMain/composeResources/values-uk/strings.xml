@@ -142,6 +142,7 @@
 
     <string name="profile_menu_excluded_muscles">М’язи</string>
     <string name="profile_menu_missing_equipment">Обладнання</string>
+    <string name="profile_menu_experience">Досвід</string>
 
     <string name="trainings">Тренування</string>
     <string name="trainings_period_daily">День</string>

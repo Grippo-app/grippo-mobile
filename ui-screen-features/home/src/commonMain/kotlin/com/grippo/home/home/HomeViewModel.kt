@@ -113,6 +113,7 @@ internal class HomeViewModel(
                 when (it) {
                     ProfileMenu.Muscles -> navigateTo(HomeDirection.ExcludedMuscles)
                     ProfileMenu.Equipment -> navigateTo(HomeDirection.MissingEquipment)
+                    ProfileMenu.Experience -> navigateTo(HomeDirection.Experience)
                 }
             },
             onSettingsResult = {

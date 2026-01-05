@@ -103,6 +103,10 @@ public class RootComponent(
                 RootRouter.Profile(ProfileRouter.Muscles)
             )
 
+            RootDirection.Experience -> navigation.push(
+                RootRouter.Profile(ProfileRouter.Experience)
+            )
+
             RootDirection.Trainings -> navigation.push(
                 RootRouter.Trainings
             )
@@ -130,6 +134,7 @@ public class RootComponent(
                     toWeightHistory = viewModel::toWeightHistory,
                     toMissingEquipment = viewModel::toMissingEquipment,
                     toExcludedMuscles = viewModel::toExcludedMuscles,
+                    toExperience = viewModel::toExperience,
                     toDebug = viewModel::toDebug,
                     toTraining = viewModel::toTraining,
                     toTrainings = viewModel::toTrainings,

@@ -11,9 +11,11 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.profile.ProfileComponent.Child.Equipments
+import com.grippo.profile.ProfileComponent.Child.Experience
 import com.grippo.profile.ProfileComponent.Child.Muscles
 import com.grippo.profile.ProfileComponent.Child.WeightHistory
 import com.grippo.profile.equipments.ProfileEquipmentsComponent
+import com.grippo.profile.experience.ProfileExperienceComponent
 import com.grippo.profile.muscles.ProfileMusclesComponent
 import com.grippo.profile.weight.history.WeightHistoryComponent
 import com.grippo.screen.api.ProfileRouter
@@ -73,6 +75,13 @@ public class ProfileComponent(
                     back = viewModel::onBack
                 )
             )
+
+            ProfileRouter.Experience -> Experience(
+                ProfileExperienceComponent(
+                    componentContext = context,
+                    back = viewModel::onBack
+                )
+            )
         }
     }
 
@@ -87,5 +96,6 @@ public class ProfileComponent(
         data class Muscles(override val component: ProfileMusclesComponent) : Child(component)
         data class Equipments(override val component: ProfileEquipmentsComponent) : Child(component)
         data class WeightHistory(override val component: WeightHistoryComponent) : Child(component)
+        data class Experience(override val component: ProfileExperienceComponent) : Child(component)
     }
 }

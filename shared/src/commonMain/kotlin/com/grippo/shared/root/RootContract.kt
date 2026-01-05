@@ -14,6 +14,7 @@ public interface RootContract {
     public fun toWeightHistory()
     public fun toMissingEquipment()
     public fun toExcludedMuscles()
+    public fun toExperience()
     public fun onBack()
 
     @Immutable
@@ -27,6 +28,7 @@ public interface RootContract {
         override fun toWeightHistory() {}
         override fun toMissingEquipment() {}
         override fun toExcludedMuscles() {}
+        override fun toExperience() {}
         override fun onBack() {}
     }
 }

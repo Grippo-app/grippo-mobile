@@ -8,6 +8,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.activity
 import com.grippo.design.resources.provider.icons.Edit
 import com.grippo.design.resources.provider.profile_menu_excluded_muscles
+import com.grippo.design.resources.provider.profile_menu_experience
 import com.grippo.design.resources.provider.profile_menu_missing_equipment
 import kotlinx.serialization.Serializable
 
@@ -15,7 +16,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 public enum class ProfileMenu {
     Muscles,
-    Equipment;
+    Equipment,
+    Experience;
 
     public companion object Companion {
         @Composable
@@ -29,6 +31,7 @@ public enum class ProfileMenu {
         return when (this) {
             Muscles -> AppTokens.strings.res(Res.string.profile_menu_excluded_muscles)
             Equipment -> AppTokens.strings.res(Res.string.profile_menu_missing_equipment)
+            Experience -> AppTokens.strings.res(Res.string.profile_menu_experience)
         }
     }
 
@@ -37,6 +40,7 @@ public enum class ProfileMenu {
         return when (this) {
             Muscles -> AppTokens.icons.Edit
             Equipment -> AppTokens.icons.Edit
+            Experience -> AppTokens.icons.Edit
         }
     }
 }

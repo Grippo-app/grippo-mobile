@@ -13,4 +13,7 @@ public sealed class ProfileRouter : BaseRouter {
 
     @Serializable
     public data object WeightHistory : ProfileRouter()
+
+    @Serializable
+    public data object Experience : ProfileRouter()
 }

@@ -7,6 +7,7 @@ public sealed interface HomeRootDirection : BaseDirection {
     public data object ExcludedMuscles : HomeRootDirection
     public data object MissingEquipment : HomeRootDirection
     public data object WeightHistory : HomeRootDirection
+    public data object Experience : HomeRootDirection
     public data object Debug : HomeRootDirection
     public data object Trainings : HomeRootDirection
     public data object AddTraining : HomeRootDirection

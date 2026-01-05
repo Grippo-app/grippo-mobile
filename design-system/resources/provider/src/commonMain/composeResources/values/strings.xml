@@ -142,6 +142,7 @@
 
     <string name="profile_menu_excluded_muscles">Muscles</string>
     <string name="profile_menu_missing_equipment">Equipment</string>
+    <string name="profile_menu_experience">Experience</string>
 
     <string name="trainings">Trainings</string>
     <string name="trainings_period_daily">Daily</string>

@@ -142,6 +142,7 @@
 
     <string name="profile_menu_excluded_muscles">Мышцы</string>
     <string name="profile_menu_missing_equipment">Оборудование</string>
+    <string name="profile_menu_experience">Опыт</string>
 
     <string name="trainings">Тренировки</string>
     <string name="trainings_period_daily">День</string>

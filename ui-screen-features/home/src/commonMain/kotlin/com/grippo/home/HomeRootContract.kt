@@ -8,6 +8,7 @@ internal interface HomeRootContract {
     fun toExcludedMuscles()
     fun toMissingEquipment()
     fun toWeightHistory()
+    fun toExperience()
     fun toDebug()
     fun toTrainings()
     fun toAddTraining()
@@ -18,6 +19,7 @@ internal interface HomeRootContract {
         override fun toExcludedMuscles() {}
         override fun toMissingEquipment() {}
         override fun toWeightHistory() {}
+        override fun toExperience() {}
         override fun toDebug() {}
         override fun toTrainings() {}
         override fun toAddTraining() {}

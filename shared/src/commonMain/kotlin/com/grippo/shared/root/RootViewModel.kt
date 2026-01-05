@@ -68,6 +68,10 @@ public class RootViewModel(
         navigateTo(RootDirection.ExcludedMuscles)
     }
 
+    override fun toExperience() {
+        navigateTo(RootDirection.Experience)
+    }
+
     override fun onBack() {
         navigateTo(RootDirection.Back)
     }
