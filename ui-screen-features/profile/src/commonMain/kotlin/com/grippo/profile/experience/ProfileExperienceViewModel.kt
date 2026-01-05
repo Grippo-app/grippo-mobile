@@ -5,6 +5,7 @@ import com.grippo.core.state.profile.ExperienceEnumState
 import com.grippo.data.features.api.user.UserFeature
 import com.grippo.data.features.api.user.models.User
 import com.grippo.domain.state.user.toState
+import com.grippo.state.domain.user.toDomain
 import kotlinx.coroutines.flow.onEach
 
 internal class ProfileExperienceViewModel(
@@ -33,11 +34,11 @@ internal class ProfileExperienceViewModel(
     }
 
     override fun onApply() {
-        state.value.selected ?: return
+        val selected = state.value.selected ?: return
 
         safeLaunch(loader = ProfileExperienceLoader.ApplyButton) {
-//            userFeature.setExperience(selected.toDomain()).getOrThrow()
-//            navigateTo(ProfileExperienceDirection.Back)
+            userFeature.setExperience(selected.toDomain()).getOrThrow()
+            navigateTo(ProfileExperienceDirection.Back)
         }
     }
 

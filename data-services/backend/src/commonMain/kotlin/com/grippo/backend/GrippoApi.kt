@@ -17,6 +17,7 @@ import com.grippo.backend.dto.training.ExerciseResponse
 import com.grippo.backend.dto.training.TrainingBody
 import com.grippo.backend.dto.training.TrainingResponse
 import com.grippo.backend.dto.user.CreateProfileBody
+import com.grippo.backend.dto.user.ExperienceBody
 import com.grippo.backend.dto.user.IdsBody
 import com.grippo.backend.dto.user.UserResponse
 import com.grippo.backend.dto.user.WeightHistoryResponse
@@ -78,6 +79,14 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         return request(
             method = HttpMethod.Post,
             path = "/users",
+            body = body
+        )
+    }
+
+    public suspend fun updateExperience(body: ExperienceBody): Result<UserResponse> {
+        return request(
+            method = HttpMethod.Post,
+            path = "/users/experience",
             body = body
         )
     }

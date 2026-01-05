@@ -1,5 +1,6 @@
 package com.grippo.data.features.user.domain
 
+import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
 import com.grippo.data.features.api.user.UserFeature
 import com.grippo.data.features.api.user.models.CreateUserProfile
 import com.grippo.data.features.api.user.models.User
@@ -21,5 +22,9 @@ internal class UserFeatureImpl(
 
     override suspend fun createProfile(profile: CreateUserProfile): Result<Boolean> {
         return repository.createProfile(profile)
+    }
+
+    override suspend fun setExperience(experience: ExperienceEnum): Result<Boolean> {
+        return repository.setExperience(experience)
     }
 }

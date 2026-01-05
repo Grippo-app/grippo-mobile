@@ -1,6 +1,8 @@
 package com.grippo.data.features.user.data
 
 import com.grippo.backend.GrippoApi
+import com.grippo.backend.dto.user.ExperienceBody
+import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
 import com.grippo.data.features.api.user.models.CreateUserProfile
 import com.grippo.data.features.api.user.models.User
 import com.grippo.data.features.user.domain.UserRepository
@@ -42,6 +44,18 @@ internal class UserRepositoryImpl(
 
     override suspend fun createProfile(profile: CreateUserProfile): Result<Boolean> {
         val response = api.createProfile(profile.toBody())
+
+        return response.map { dto ->
+            val user = dto.toEntityOrNull() ?: return@map false
+            userDao.insertOrUpdate(user)
+            true
+        }
+    }
+
+    override suspend fun setExperience(experience: ExperienceEnum): Result<Boolean> {
+        val response = api.updateExperience(
+            ExperienceBody(experience = experience.key)
+        )
 
         return response.map { dto ->
             val user = dto.toEntityOrNull() ?: return@map false
