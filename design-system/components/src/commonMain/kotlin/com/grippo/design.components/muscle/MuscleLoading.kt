@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -25,6 +26,7 @@ import com.grippo.design.resources.provider.muscles.fullFront
 import com.grippo.design.resources.provider.percent
 import kotlin.math.roundToInt
 
+@Immutable
 public enum class MuscleLoadingMode {
     Collapsed,
     Expanded,
