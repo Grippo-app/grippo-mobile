@@ -32,11 +32,11 @@ import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.EstimatedOneRepMaxSection
 import com.grippo.design.components.metrics.ExerciseDistributionChart
 import com.grippo.design.components.metrics.ForceTypeDistributionChart
-import com.grippo.design.components.metrics.MuscleLoading
 import com.grippo.design.components.metrics.TemporalHeatmapSection
 import com.grippo.design.components.metrics.TrainingTotalSection
 import com.grippo.design.components.metrics.VolumeMetricChart
 import com.grippo.design.components.metrics.WeightTypeDistributionChart
+import com.grippo.design.components.muscle.MuscleLoading
 import com.grippo.design.components.spliter.ContentSpliter
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
