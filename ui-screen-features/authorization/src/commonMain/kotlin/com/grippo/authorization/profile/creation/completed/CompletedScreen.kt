@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
@@ -93,12 +94,8 @@ internal fun CompletedScreen(
     ) {
         Column(
             modifier = Modifier
-                .navigationBarsPadding()
                 .fillMaxSize()
-                .padding(
-                    horizontal = AppTokens.dp.screen.horizontalPadding,
-                    vertical = AppTokens.dp.contentPadding.content
-                ).imePadding(),
+                .padding(horizontal = AppTokens.dp.screen.horizontalPadding).imePadding(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
@@ -136,6 +133,10 @@ internal fun CompletedScreen(
                 style = ButtonStyle.Primary,
                 onClick = contract::onCompleteClick
             )
+
+            Spacer(Modifier.height(AppTokens.dp.screen.verticalPadding))
+
+            Spacer(Modifier.navigationBarsPadding())
         }
 
         if (state.user != null && cardVisible.value) {

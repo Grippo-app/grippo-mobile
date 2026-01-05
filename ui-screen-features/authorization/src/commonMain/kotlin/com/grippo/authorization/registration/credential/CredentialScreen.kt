@@ -3,6 +3,7 @@ package com.grippo.authorization.registration.credential
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -55,13 +56,10 @@ internal fun CredentialScreen(
 
     Column(
         modifier = Modifier
-            .navigationBarsPadding()
             .fillMaxWidth()
             .weight(1f)
-            .padding(
-                horizontal = AppTokens.dp.screen.horizontalPadding,
-                vertical = AppTokens.dp.contentPadding.content
-            ).imePadding(),
+            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+            .imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
@@ -119,6 +117,10 @@ internal fun CredentialScreen(
             style = ButtonStyle.Primary,
             onClick = contract::onNextClick
         )
+
+        Spacer(Modifier.height(AppTokens.dp.screen.verticalPadding))
+
+        Spacer(Modifier.navigationBarsPadding())
     }
 }
 

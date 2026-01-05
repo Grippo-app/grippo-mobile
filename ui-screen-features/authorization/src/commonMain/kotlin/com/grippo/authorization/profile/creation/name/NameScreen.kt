@@ -3,6 +3,7 @@ package com.grippo.authorization.profile.creation.name
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -52,13 +53,10 @@ internal fun NameScreen(
 
     Column(
         modifier = Modifier
-            .navigationBarsPadding()
             .fillMaxWidth()
             .weight(1f)
-            .padding(
-                horizontal = AppTokens.dp.screen.horizontalPadding,
-                vertical = AppTokens.dp.contentPadding.content
-            ).imePadding(),
+            .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+            .imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
@@ -107,6 +105,10 @@ internal fun NameScreen(
             onClick = contract::onNextClick
         )
     }
+
+    Spacer(Modifier.height(AppTokens.dp.screen.verticalPadding))
+
+    Spacer(Modifier.navigationBarsPadding())
 }
 
 @AppPreview

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -164,9 +165,9 @@ internal fun ExcludedMusclesScreen(
                     onClick = contract::onNextClick
                 )
 
-                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+                Spacer(Modifier.height(AppTokens.dp.screen.verticalPadding))
 
-                Spacer(modifier = Modifier.navigationBarsPadding())
+                Spacer(Modifier.navigationBarsPadding())
             }
         )
     }

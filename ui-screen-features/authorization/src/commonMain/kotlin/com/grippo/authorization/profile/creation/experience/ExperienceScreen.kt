@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -148,9 +149,9 @@ internal fun ExperienceScreen(
                     onClick = contract::onNextClick
                 )
 
-                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+                Spacer(Modifier.height(AppTokens.dp.screen.verticalPadding))
 
-                Spacer(modifier = Modifier.navigationBarsPadding())
+                Spacer(Modifier.navigationBarsPadding())
             }
         )
     }
