@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.SolidColor
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.examples.stubExerciseExample
+import com.grippo.core.state.metrics.stubEstimatedOneRepMax
 import com.grippo.core.state.trainings.stubExercises
 import com.grippo.design.components.achievement.AchievementsCard
 import com.grippo.design.components.chip.Chip
@@ -31,6 +32,7 @@ import com.grippo.design.components.equipment.EquipmentsCard
 import com.grippo.design.components.example.DescriptionText
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
+import com.grippo.design.components.metrics.EstimatedOneRepMaxSection
 import com.grippo.design.components.metrics.VolumeMetricChart
 import com.grippo.design.components.muscle.MuscleLoading
 import com.grippo.design.components.spliter.ContentSpliter
@@ -175,6 +177,17 @@ internal fun ExerciseExampleScreen(
                     value = state.achievements,
                     contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
                 )
+
+                if (state.estimatedOneRepMax != null) {
+                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+                    EstimatedOneRepMaxSection(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                        state = state.estimatedOneRepMax,
+                    )
+                }
             }
         }
 
@@ -247,7 +260,8 @@ private fun ScreenPreview2() {
         ExerciseExampleScreen(
             state = ExerciseExampleState(
                 example = stubExerciseExample(),
-                recent = stubExercises()
+                recent = stubExercises(),
+                estimatedOneRepMax = stubEstimatedOneRepMax()
             ),
             contract = ExerciseExampleContract.Empty,
             loaders = persistentSetOf()

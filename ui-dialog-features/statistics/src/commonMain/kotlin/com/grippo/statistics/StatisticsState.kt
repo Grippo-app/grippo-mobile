@@ -4,7 +4,6 @@ import androidx.compose.runtime.Immutable
 import com.grippo.core.state.examples.CategoryEnumState
 import com.grippo.core.state.examples.ForceTypeEnumState
 import com.grippo.core.state.examples.WeightTypeEnumState
-import com.grippo.core.state.metrics.EstimatedOneRepMaxState
 import com.grippo.core.state.metrics.ExerciseDistributionState
 import com.grippo.core.state.metrics.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.MuscleLoadTimelineState
@@ -32,9 +31,6 @@ public data class StatisticsState(
 
     // === Temporal heatmap ===
     val temporalHeatmap: MuscleLoadTimelineState? = null,
-
-    // === Strength trend ===
-    val estimatedOneRepMax: EstimatedOneRepMaxState? = null,
 )
 
 @Immutable

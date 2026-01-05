@@ -1,7 +1,6 @@
 package com.grippo.statistics
 
 import com.grippo.core.foundation.BaseViewModel
-import com.grippo.data.features.api.metrics.EstimatedOneRepMaxUseCase
 import com.grippo.data.features.api.metrics.ExerciseDistributionUseCase
 import com.grippo.data.features.api.metrics.MuscleLoadTimelineUseCase
 import com.grippo.data.features.api.metrics.MuscleLoadingUseCase
@@ -22,7 +21,6 @@ public class StatisticsViewModel(
     private val volumeSeriesUseCase: VolumeSeriesUseCase,
     private val trainingTotalUseCase: TrainingTotalUseCase,
     private val muscleLoadTimelineUseCase: MuscleLoadTimelineUseCase,
-    private val estimatedOneRepMaxUseCase: EstimatedOneRepMaxUseCase,
 ) : BaseViewModel<StatisticsState, StatisticsDirection, StatisticsLoader>(
     StatisticsState(
         mode = when (config) {
@@ -95,10 +93,6 @@ public class StatisticsViewModel(
             .fromTrainings(trainings, range)
             ?.toState()
 
-        val estimatedOneRepMax = estimatedOneRepMaxUseCase
-            .fromTrainings(trainings)
-            .toState()
-
         val volume = volumeSeriesUseCase
             .fromTrainings(trainings)
             .toState()
@@ -113,7 +107,6 @@ public class StatisticsViewModel(
                 forceTypeDistribution = forceTypeDistribution,
                 muscleLoad = muscleLoad,
                 temporalHeatmap = heatmap,
-                estimatedOneRepMax = estimatedOneRepMax,
             )
         }
     }
@@ -144,10 +137,6 @@ public class StatisticsViewModel(
             .fromExercises(training.exercises)
             .toState()
 
-        val estimatedOneRepMax = estimatedOneRepMaxUseCase
-            .fromExercises(training.exercises)
-            .toState()
-
         val volume = volumeSeriesUseCase
             .fromExercises(training.exercises)
             .toState()
@@ -162,7 +151,6 @@ public class StatisticsViewModel(
                 forceTypeDistribution = forceTypeDistribution,
                 muscleLoad = muscleLoad,
                 temporalHeatmap = null,
-                estimatedOneRepMax = estimatedOneRepMax,
             )
         }
     }
@@ -178,7 +166,6 @@ public class StatisticsViewModel(
                 forceTypeDistribution = null,
                 muscleLoad = null,
                 temporalHeatmap = null,
-                estimatedOneRepMax = null,
             )
         }
     }

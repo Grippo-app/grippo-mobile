@@ -5,6 +5,7 @@ import com.grippo.data.features.api.achievements.Achievement
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.exercise.metrics.ExerciseMetricsFeature
+import com.grippo.data.features.api.metrics.EstimatedOneRepMaxUseCase
 import com.grippo.data.features.api.metrics.MuscleLoadingUseCase
 import com.grippo.data.features.api.metrics.VolumeSeriesUseCase
 import com.grippo.data.features.api.training.models.Exercise
@@ -21,6 +22,7 @@ public class ExerciseExampleViewModel(
     private val exerciseMetricsFeature: ExerciseMetricsFeature,
     private val muscleLoadingUseCase: MuscleLoadingUseCase,
     private val volumeSeriesUseCase: VolumeSeriesUseCase,
+    private val estimatedOneRepMaxUseCase: EstimatedOneRepMaxUseCase
 ) : BaseViewModel<ExerciseExampleState, ExerciseExampleDirection, ExerciseExampleLoader>(
     ExerciseExampleState()
 ), ExerciseExampleContract {
@@ -47,14 +49,20 @@ public class ExerciseExampleViewModel(
 
     private fun provideRecentExercises(value: List<Exercise>) {
         val exercisesState = value.toState()
+
         val exerciseVolume = volumeSeriesUseCase
+            .fromExercises(value)
+            .toState()
+
+        val oneRepMax = estimatedOneRepMaxUseCase
             .fromExercises(value)
             .toState()
 
         update {
             it.copy(
                 recent = exercisesState,
-                exerciseVolume = exerciseVolume
+                exerciseVolume = exerciseVolume,
+                estimatedOneRepMax = oneRepMax
             )
         }
     }
