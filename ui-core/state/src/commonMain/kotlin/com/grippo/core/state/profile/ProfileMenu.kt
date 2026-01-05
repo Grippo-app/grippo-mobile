@@ -5,8 +5,10 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.activity
-import com.grippo.design.resources.provider.icons.Edit
+import com.grippo.design.resources.provider.icons.Pro
+import com.grippo.design.resources.provider.icons.User
+import com.grippo.design.resources.provider.icons.Volume
+import com.grippo.design.resources.provider.profile
 import com.grippo.design.resources.provider.profile_menu_excluded_muscles
 import com.grippo.design.resources.provider.profile_menu_experience
 import com.grippo.design.resources.provider.profile_menu_missing_equipment
@@ -15,14 +17,14 @@ import kotlinx.serialization.Serializable
 @Immutable
 @Serializable
 public enum class ProfileMenu {
+    Experience,
     Muscles,
-    Equipment,
-    Experience;
+    Equipment;
 
     public companion object Companion {
         @Composable
         public fun title(): String {
-            return AppTokens.strings.res(Res.string.activity)
+            return AppTokens.strings.res(Res.string.profile)
         }
     }
 
@@ -38,9 +40,9 @@ public enum class ProfileMenu {
     @Composable
     public fun icon(): ImageVector {
         return when (this) {
-            Muscles -> AppTokens.icons.Edit
-            Equipment -> AppTokens.icons.Edit
-            Experience -> AppTokens.icons.Edit
+            Muscles -> AppTokens.icons.User
+            Equipment -> AppTokens.icons.Volume
+            Experience -> AppTokens.icons.Pro
         }
     }
 }

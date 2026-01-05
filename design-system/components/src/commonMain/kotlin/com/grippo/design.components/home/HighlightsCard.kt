@@ -234,7 +234,7 @@ private fun HighlightsCardSpotlightOnlyPreview() {
             spotlight = stubExerciseSpotlight(),
             muscleLoad = stubMuscleLoadSummary(),
             streak = stubTrainingStreaks().first(),
-            performance = stubPerformanceMetrics().take(3),
+            performance = stubPerformanceMetrics().take(5),
             onViewWorkout = {},
             onExampleClick = {}
         )

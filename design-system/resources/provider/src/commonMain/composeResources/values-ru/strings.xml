@@ -127,6 +127,8 @@
 
     <string name="period_picker_title">Выберите период</string>
 
+    <string name="profile">Профиль</string>
+
     <string name="weight_picker_title">Выберите свой вес</string>
     <string name="weight_picker_description">Используется для расчёта показателей вроде ИМТ и оптимизации тренировок.</string>
 

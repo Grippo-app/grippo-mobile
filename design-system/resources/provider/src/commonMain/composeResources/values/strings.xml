@@ -127,6 +127,8 @@
 
     <string name="period_picker_title">Select period</string>
 
+    <string name="profile">Profile</string>
+
     <string name="weight_picker_title">Select your weight</string>
     <string name="weight_picker_description">Used for calculating stats like BMI and optimizing your workouts.</string>
 
