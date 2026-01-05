@@ -22,7 +22,8 @@ internal class ProfileMusclesViewModel(
             flow = muscleFeature.observeMuscles(),
             flow2 = excludedMusclesFeature.observeExcludedMuscles(),
             transform = ::provideMuscles
-        ).safeLaunch()
+        )
+            .safeLaunch()
 
         safeLaunch {
             excludedMusclesFeature.getExcludedMuscles().getOrThrow()

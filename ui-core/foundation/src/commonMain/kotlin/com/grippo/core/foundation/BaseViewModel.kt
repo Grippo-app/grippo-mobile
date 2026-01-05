@@ -71,6 +71,8 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
 
     // ------------ COROUTINE API ------------
 
+    protected enum class Processing { WhileActive, Infinity }
+
     private val coroutineScope: CoroutineScope = CoroutineScope(
         context = SupervisorJob() + Dispatchers.Default
     )
@@ -81,21 +83,24 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
 
     protected fun <T> Flow<T>.safeLaunch(
         dispatcher: CoroutineDispatcher = Dispatchers.Default,
+        processing: Processing = Processing.WhileActive,
         loader: LOADER? = null,
         onError: (() -> Unit) = {},
     ): Job {
         addLoader(loader)
 
+        val flow = when (processing) {
+            Processing.WhileActive -> operationManager.whileActive(this@safeLaunch, activation)
+            Processing.Infinity -> this@safeLaunch
+        }
+
         val job = operationManager.launch(
             dispatcher = dispatcher,
             onError = { t -> sendError(t, onError) },
             block = {
-                operationManager.whileActive(
-                    this@safeLaunch,
-                    activation
-                ).onEach {
-                    removeLoader(loader)
-                }.collect()
+                flow
+                    .onEach { removeLoader(loader) }
+                    .collect()
             }
         )
 
@@ -106,6 +111,7 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
 
     protected fun safeLaunch(
         dispatcher: CoroutineDispatcher = Dispatchers.Default,
+        processing: Processing = Processing.Infinity,
         loader: LOADER? = null,
         onError: (() -> Unit) = {},
         block: suspend CoroutineScope.() -> Unit,
@@ -116,7 +122,10 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
             dispatcher = dispatcher,
             onError = { t -> sendError(t, onError) }
         ) {
-            block()
+            when (processing) {
+                Processing.WhileActive,
+                Processing.Infinity -> block()
+            }
         }
 
         job.invokeOnCompletion { removeLoader(loader) }

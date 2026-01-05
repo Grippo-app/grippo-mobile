@@ -12,7 +12,7 @@ internal class DialogViewModel(
     init {
         dialogProvider.dialog
             .onEach(::show)
-            .safeLaunch()
+            .safeLaunch(processing = Processing.Infinity)
     }
 
     override fun onDismiss(pendingResult: (() -> Unit)?) {

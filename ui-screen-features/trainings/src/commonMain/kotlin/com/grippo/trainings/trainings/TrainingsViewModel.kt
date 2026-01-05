@@ -210,8 +210,10 @@ internal class TrainingsViewModel(
         dialogController.show(config)
     }
 
-    private fun deleteTraining(id: String) = safeLaunch {
-        trainingFeature.deleteTraining(id).getOrThrow()
+    private fun deleteTraining(id: String) {
+        safeLaunch {
+            trainingFeature.deleteTraining(id).getOrThrow()
+        }
     }
 
     override fun onBack() {

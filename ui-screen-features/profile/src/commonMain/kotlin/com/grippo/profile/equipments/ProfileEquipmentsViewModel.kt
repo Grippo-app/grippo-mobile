@@ -22,7 +22,8 @@ internal class ProfileEquipmentsViewModel(
             flow = equipmentFeature.observeEquipments(),
             flow2 = excludedEquipmentsFeature.observeExcludedEquipments(),
             transform = ::provideEquipments
-        ).safeLaunch()
+        )
+            .safeLaunch()
 
         safeLaunch {
             excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
