@@ -35,6 +35,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.dashboard
 import com.grippo.design.resources.provider.icons.User
 import com.grippo.design.resources.provider.start_workout
 import com.grippo.home.home.components.EmptyHomeContent
@@ -63,7 +64,7 @@ internal fun HomeScreen(
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         style = ToolbarStyle.Transparent,
-        title = "Grippo",
+        title = AppTokens.strings.res(Res.string.dashboard),
         trailing = {
             Button(
                 modifier = Modifier.padding(end = AppTokens.dp.contentPadding.subContent),

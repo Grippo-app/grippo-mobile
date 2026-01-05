@@ -12,6 +12,7 @@
     <string name="plus_value_more">+ %1$s more</string>
     <string name="view_workout">View Workout</string>
     <string name="last_workout">Last workout</string>
+    <string name="dashboard">Dashboard</string>
     <string name="highlights">Highlights</string>
     <string name="highlight_type_consistency">Consistency win</string>
     <string name="highlight_type_momentum">Momentum boost</string>

@@ -12,6 +12,7 @@
     <string name="plus_value_more">+ ще %1$s</string>
     <string name="view_workout">Переглянути тренування</string>
     <string name="last_workout">Останнє тренування</string>
+    <string name="dashboard">Головна</string>
     <string name="highlights">Хайлайти</string>
     <string name="highlight_type_consistency">Перемога в регулярності</string>
     <string name="highlight_type_momentum">Прискорення прогресу</string>
