@@ -140,6 +140,14 @@ private data class MuscleLoadingImages(
 @Composable
 private fun MuscleLoadingCardPreview() {
     PreviewContainer {
-        MuscleLoadingCard(summary = stubMuscleLoadSummary())
+        MuscleLoadingImagesRow(
+            summary = stubMuscleLoadSummary(),
+            mode = MuscleLoadingImagesMode.Expanded
+        )
+
+        MuscleLoadingImagesRow(
+            summary = stubMuscleLoadSummary(),
+            mode = MuscleLoadingImagesMode.Collapsed
+        )
     }
 }

@@ -1,5 +1,7 @@
 package com.grippo.design.components.metrics
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
@@ -22,16 +24,21 @@ public fun MuscleLoading(
     modifier: Modifier = Modifier,
     mode: MuscleLoadingMode,
 ) {
-    when (mode) {
-        MuscleLoadingMode.Collapsed -> MuscleLoadingCollapsed(
-            modifier = modifier,
-            summary = summary,
-        )
+    AnimatedContent(
+        modifier = modifier,
+        targetState = mode
+    ) { s ->
+        when (s) {
+            MuscleLoadingMode.Collapsed -> MuscleLoadingCollapsed(
+                modifier = Modifier.fillMaxSize(),
+                summary = summary,
+            )
 
-        MuscleLoadingMode.Expanded -> MuscleLoadingExpanded(
-            modifier = modifier,
-            summary = summary,
-        )
+            MuscleLoadingMode.Expanded -> MuscleLoadingExpanded(
+                modifier = Modifier.fillMaxSize(),
+                summary = summary,
+            )
+        }
     }
 }
 
