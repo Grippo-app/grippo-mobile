@@ -1,4 +1,4 @@
-package com.grippo.design.components.home
+package com.grippo.design.components.metrics
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -30,10 +30,6 @@ import com.grippo.core.state.metrics.stubExerciseSpotlight
 import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.stubPerformanceMetrics
 import com.grippo.core.state.metrics.stubTrainingStreaks
-import com.grippo.design.components.metrics.ExerciseSpotlightCard
-import com.grippo.design.components.metrics.MuscleLoadingCard
-import com.grippo.design.components.metrics.PerformanceTrendCard
-import com.grippo.design.components.metrics.TrainingStreakCard
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview

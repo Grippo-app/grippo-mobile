@@ -1,4 +1,4 @@
-package com.grippo.design.components.home
+package com.grippo.design.components.metrics
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,8 +17,6 @@ import com.grippo.core.state.metrics.MonthlyDigestState
 import com.grippo.core.state.metrics.WeeklyDigestState
 import com.grippo.core.state.metrics.stubMonthlyDigest
 import com.grippo.core.state.metrics.stubWeeklyDigest
-import com.grippo.design.components.metrics.DigestMonthCard
-import com.grippo.design.components.metrics.DigestWeekCard
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview

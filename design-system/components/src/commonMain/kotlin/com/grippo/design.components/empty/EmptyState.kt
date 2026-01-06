@@ -44,8 +44,9 @@ public fun EmptyState(modifier: Modifier = Modifier) {
             Spacer(Modifier.weight(0.7f))
 
             EmptyIllustration(
-                modifier = Modifier.size(AppTokens.dp.home.empty.image * 0.55f)
+                modifier = Modifier.size(AppTokens.dp.empty.image * 0.55f)
             )
+
             Text(
                 text = text,
                 style = AppTokens.typography.h6(),
@@ -54,7 +55,6 @@ public fun EmptyState(modifier: Modifier = Modifier) {
             )
 
             Spacer(Modifier.weight(1f))
-
         }
     }
 }

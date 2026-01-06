@@ -39,7 +39,7 @@ private data class EmptyIcon(
 
 @Composable
 public fun EmptyDecorations(modifier: Modifier = Modifier) {
-    val largeIconSize = AppTokens.dp.home.empty.image
+    val largeIconSize = AppTokens.dp.empty.image
     val dumbbell = AppTokens.drawables.res(Res.drawable.dumbbell)
     val barbell = AppTokens.drawables.res(Res.drawable.barbell)
     val plate = AppTokens.drawables.res(Res.drawable.plate)

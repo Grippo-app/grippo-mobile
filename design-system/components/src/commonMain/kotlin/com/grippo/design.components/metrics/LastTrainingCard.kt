@@ -1,4 +1,4 @@
-package com.grippo.design.components.home
+package com.grippo.design.components.metrics
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -69,18 +69,18 @@ public fun LastTrainingCard(
     Box(
         modifier = modifier
             .height(intrinsicSize = IntrinsicSize.Max)
-            .clip(RoundedCornerShape(AppTokens.dp.home.lastTraining.radius))
+            .clip(RoundedCornerShape(AppTokens.dp.metrics.lastTraining.radius))
             .background(
                 AppTokens.colors.background.card,
-                shape = RoundedCornerShape(AppTokens.dp.home.lastTraining.radius)
+                shape = RoundedCornerShape(AppTokens.dp.metrics.lastTraining.radius)
             )
     ) {
         Image(
             modifier = Modifier
                 .spot(color = AppTokens.colors.brand.color5)
                 .align(Alignment.CenterEnd)
-                .offset(x = (AppTokens.dp.home.lastTraining.image / 2))
-                .size(AppTokens.dp.home.lastTraining.image)
+                .offset(x = (AppTokens.dp.metrics.lastTraining.image / 2))
+                .size(AppTokens.dp.metrics.lastTraining.image)
                 .scale(2f),
             painter = AppTokens.drawables.res(Res.drawable.plate),
             contentDescription = null,
@@ -91,8 +91,8 @@ public fun LastTrainingCard(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(
-                    vertical = AppTokens.dp.home.lastTraining.verticalPadding,
-                    horizontal = AppTokens.dp.home.lastTraining.horizontalPadding
+                    vertical = AppTokens.dp.metrics.lastTraining.verticalPadding,
+                    horizontal = AppTokens.dp.metrics.lastTraining.horizontalPadding
                 )
         ) {
             Text(

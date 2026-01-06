@@ -26,9 +26,9 @@ import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
-import com.grippo.design.components.home.DigestsCard
-import com.grippo.design.components.home.HighlightsCard
-import com.grippo.design.components.home.LastTrainingCard
+import com.grippo.design.components.metrics.DigestsCard
+import com.grippo.design.components.metrics.HighlightsCard
+import com.grippo.design.components.metrics.LastTrainingCard
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
