@@ -21,7 +21,6 @@ import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
-import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -30,12 +29,9 @@ import com.grippo.design.preview.PreviewContainer
 internal fun ExerciseExampleCardSmall(
     modifier: Modifier,
     value: ExerciseExampleState,
-    onCardClick: () -> Unit,
 ) {
     Row(
-        modifier = modifier
-            .scalableClick(onClick = onCardClick)
-            .fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
     ) {
         ExerciseExampleImage(
@@ -101,7 +97,7 @@ private fun ExerciseExampleCardSmallPreview() {
         ExerciseExampleCard(
             modifier = Modifier.fillMaxWidth(),
             value = stubExerciseExample(),
-            style = ExerciseExampleCardStyle.Small({}),
+            style = ExerciseExampleCardStyle.Small,
         )
     }
 }

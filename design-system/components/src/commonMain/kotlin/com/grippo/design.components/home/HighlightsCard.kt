@@ -16,6 +16,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -33,6 +34,7 @@ import com.grippo.design.components.metrics.ExerciseSpotlightSection
 import com.grippo.design.components.metrics.MuscleLoadSection
 import com.grippo.design.components.metrics.PerformanceTrendSection
 import com.grippo.design.components.metrics.TrainingStreakSection
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -56,8 +58,8 @@ public fun HighlightsCard(
     muscleLoad: MuscleLoadSummaryState?,
     streak: TrainingStreakState,
     performance: List<PerformanceMetricState>,
-    onViewWorkout: () -> Unit,
     onExampleClick: (id: String) -> Unit,
+    onMuscleLoadingClick: () -> Unit
 ) {
     val storyType = run {
         val dominantMetric = performance.firstOrNull()
@@ -130,11 +132,17 @@ public fun HighlightsCard(
             performance.firstOrNull { it.type == type }
 
         spotlight?.let { spotlightValue ->
+            val onExampleClickProvider = remember(spotlightValue.exercise.value.id) {
+                { onExampleClick.invoke(spotlightValue.exercise.value.id) }
+            }
+
             ExerciseSpotlightSection(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .scalableClick(onClick = onExampleClickProvider),
                 value = spotlightValue,
-                onExampleClick = onExampleClick,
             )
+
             Spacer(Modifier.height(spacing))
         }
 
@@ -149,7 +157,8 @@ public fun HighlightsCard(
                 MuscleLoadSection(
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxHeight(),
+                        .fillMaxHeight()
+                        .scalableClick(onClick = onMuscleLoadingClick),
                     summary = muscleLoad
                 )
 
@@ -219,8 +228,8 @@ private fun HighlightsCardFullPreview() {
             muscleLoad = stubMuscleLoadSummary(),
             streak = stubTrainingStreaks().first(),
             performance = stubPerformanceMetrics(),
-            onViewWorkout = {},
-            onExampleClick = {}
+            onExampleClick = {},
+            onMuscleLoadingClick = {}
         )
     }
 }
@@ -235,8 +244,8 @@ private fun HighlightsCardSpotlightOnlyPreview() {
             muscleLoad = stubMuscleLoadSummary(),
             streak = stubTrainingStreaks().first(),
             performance = stubPerformanceMetrics().take(5),
-            onViewWorkout = {},
-            onExampleClick = {}
+            onExampleClick = {},
+            onMuscleLoadingClick = {}
         )
     }
 }
@@ -251,8 +260,8 @@ private fun HighlightsCardMinimalPreview() {
             muscleLoad = null,
             streak = stubTrainingStreaks().first(),
             performance = emptyList(),
-            onViewWorkout = {},
-            onExampleClick = {}
+            onExampleClick = {},
+            onMuscleLoadingClick = {}
         )
     }
 }

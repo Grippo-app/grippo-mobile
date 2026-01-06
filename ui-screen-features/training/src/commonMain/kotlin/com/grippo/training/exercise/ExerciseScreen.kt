@@ -33,6 +33,7 @@ import com.grippo.design.components.empty.EmptyState
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.swipe.SwipeToReveal
 import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
@@ -75,10 +76,9 @@ internal fun ExerciseScreen(
                             end = AppTokens.dp.screen.horizontalPadding,
                             bottom = AppTokens.dp.contentPadding.block,
                             top = AppTokens.dp.contentPadding.content,
-                        ),
-                    style = ExerciseExampleCardStyle.Small(
-                        onClick = contract::onExampleClick,
-                    ),
+                        )
+                        .scalableClick(onClick = contract::onExampleClick),
+                    style = ExerciseExampleCardStyle.Small,
                     value = example
                 )
             }

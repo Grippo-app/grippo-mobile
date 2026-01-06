@@ -157,6 +157,8 @@
     <string name="sets">Sets</string>
     <string name="statistics">Statistics</string>
     <string name="value_statistics">%1$s statistics</string>
+    <string name="value_muscle_loading">%1$s muscle loading</string>
+    <string name="muscle_loading">Muscle loading</string>
     <string name="trends">Trends</string>
     <string name="exercise_categories">Exercise categories</string>
     <string name="exercise_weight_types">Weight types</string>

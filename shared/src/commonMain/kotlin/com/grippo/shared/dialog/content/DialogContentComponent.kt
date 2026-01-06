@@ -24,6 +24,7 @@ import com.grippo.height.picker.HeightPickerComponent
 import com.grippo.iteration.picker.IterationPickerComponent
 import com.grippo.menu.picker.MenuPickerComponent
 import com.grippo.month.picker.MonthPickerComponent
+import com.grippo.muscle.loading.MuscleLoadingComponent
 import com.grippo.statistics.StatisticsComponent
 import com.grippo.weight.picker.WeightPickerComponent
 
@@ -100,6 +101,14 @@ internal class DialogContentComponent(
                 ExerciseComponent(
                     componentContext = context,
                     id = router.id,
+                    back = { viewModel.onBack(null) }
+                )
+            )
+
+            is DialogConfig.MuscleLoading -> Child.MuscleLoading(
+                MuscleLoadingComponent(
+                    componentContext = context,
+                    range = router.range,
                     back = { viewModel.onBack(null) }
                 )
             )
@@ -238,6 +247,9 @@ internal class DialogContentComponent(
             Child(component)
 
         data class Exercise(override val component: ExerciseComponent) :
+            Child(component)
+
+        data class MuscleLoading(override val component: MuscleLoadingComponent) :
             Child(component)
 
         data class DatePicker(override val component: DatePickerComponent) :

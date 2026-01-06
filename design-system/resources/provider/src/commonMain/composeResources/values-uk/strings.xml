@@ -156,6 +156,8 @@
     <string name="sets">Підходи</string>
     <string name="statistics">Статистика</string>
     <string name="value_statistics">%1$s — статистика</string>
+    <string name="value_muscle_loading">%1$s — м’язове навантаження</string>
+    <string name="muscle_loading">М’язове навантаження</string>
     <string name="trends">Тренди</string>
     <string name="exercise_categories">Категорії вправ</string>
     <string name="exercise_weight_types">Типи ваги</string>

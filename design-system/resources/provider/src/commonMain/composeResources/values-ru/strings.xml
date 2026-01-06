@@ -157,6 +157,8 @@
     <string name="sets">Подходы</string>
     <string name="statistics">Статистика</string>
     <string name="value_statistics">%1$s — статистика</string>
+    <string name="value_muscle_loading">%1$s — мышечная нагрузка</string>
+    <string name="muscle_loading">Мышечная нагрузка</string>
     <string name="trends">Тренды</string>
     <string name="exercise_categories">Категории упражнений</string>
     <string name="exercise_weight_types">Типы отягощения</string>

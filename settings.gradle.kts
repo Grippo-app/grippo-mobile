@@ -92,6 +92,7 @@ include(":ui-dialog-features:exercise-example-picker")
 include(":ui-dialog-features:menu-picker")
 include(":ui-dialog-features:profile")
 include(":ui-dialog-features:statistics")
+include(":ui-dialog-features:muscle-loading")
 
 include(":toolkit:context")
 include(":toolkit:localization")

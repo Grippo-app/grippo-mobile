@@ -34,15 +34,10 @@ internal class HomeViewModel(
 ), HomeContract {
 
     init {
-        val now = DateTimeUtils.now()
-
-        val range = DateRange(
-            from = DateTimeUtils.minus(now, 90.days),
-            to = now
-        )
+        val range = defaultRange()
 
         trainingFeature
-            .observeTrainings(start = range.from, end = range.to)
+            .observeTrainings(start = defaultRange().from, end = range.to)
             .onEach(::provideTrainings)
             .safeLaunch()
 
@@ -107,6 +102,13 @@ internal class HomeViewModel(
         navigateTo(HomeDirection.AddTraining)
     }
 
+    override fun onOpenMuscleLoading() {
+        val dialog = DialogConfig.MuscleLoading(
+            range = defaultRange()
+        )
+        dialogController.show(dialog)
+    }
+
     override fun onOpenProfile() {
         val dialog = DialogConfig.Profile(
             onProfileResult = {
@@ -158,6 +160,17 @@ internal class HomeViewModel(
 
     override fun onBack() {
         navigateTo(HomeDirection.Back)
+    }
+
+    private fun defaultRange(): DateRange {
+        val now = DateTimeUtils.now()
+
+        val range = DateRange(
+            from = DateTimeUtils.minus(now, 90.days),
+            to = now
+        )
+
+        return range
     }
 
     private fun clearHome() {

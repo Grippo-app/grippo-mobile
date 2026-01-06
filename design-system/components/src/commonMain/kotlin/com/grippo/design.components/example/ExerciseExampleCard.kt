@@ -16,13 +16,10 @@ import com.grippo.design.preview.PreviewContainer
 @Immutable
 public sealed interface ExerciseExampleCardStyle {
     @Immutable
-    public data class Small(
-        val onClick: () -> Unit,
-    ) : ExerciseExampleCardStyle
+    public data object Small : ExerciseExampleCardStyle
 
     @Immutable
     public data class Medium(
-        val onClick: () -> Unit,
         val allowUsageLabel: Boolean
     ) : ExerciseExampleCardStyle
 }
@@ -37,13 +34,11 @@ public fun ExerciseExampleCard(
         is ExerciseExampleCardStyle.Small -> ExerciseExampleCardSmall(
             modifier = modifier,
             value = value,
-            onCardClick = style.onClick
         )
 
         is ExerciseExampleCardStyle.Medium -> ExerciseExampleCardMedium(
             modifier = modifier,
             value = value,
-            onCardClick = style.onClick,
             allowUsageLabel = style.allowUsageLabel
         )
     }
@@ -56,13 +51,13 @@ private fun ExerciseExampleCardSMediumPreview() {
         ExerciseExampleCard(
             modifier = Modifier.size(250.dp),
             value = stubExerciseExample(),
-            style = ExerciseExampleCardStyle.Medium({}, allowUsageLabel = true),
+            style = ExerciseExampleCardStyle.Medium(allowUsageLabel = true),
         )
 
         ExerciseExampleCard(
             modifier = Modifier.size(250.dp),
             value = stubExerciseExample(),
-            style = ExerciseExampleCardStyle.Medium({}, allowUsageLabel = false),
+            style = ExerciseExampleCardStyle.Medium(allowUsageLabel = false),
         )
     }
 }
@@ -74,7 +69,7 @@ private fun ExerciseExampleCardSmallPreview() {
         ExerciseExampleCard(
             modifier = Modifier.fillMaxWidth(),
             value = stubExerciseExample(),
-            style = ExerciseExampleCardStyle.Small({}),
+            style = ExerciseExampleCardStyle.Small,
         )
     }
 }

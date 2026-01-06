@@ -37,6 +37,7 @@ import com.grippo.design.components.empty.EmptyState
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -166,12 +167,11 @@ internal fun ExerciseExamplePickerScreen(
                                     }
 
                                     ExerciseExampleCard(
-                                        modifier = Modifier.fillMaxWidth(),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .scalableClick(onClick = selectClickProvider),
                                         value = item,
-                                        style = ExerciseExampleCardStyle.Medium(
-                                            onClick = selectClickProvider,
-                                            allowUsageLabel = true
-                                        ),
+                                        style = ExerciseExampleCardStyle.Medium(allowUsageLabel = true),
                                     )
                                 }
                             }

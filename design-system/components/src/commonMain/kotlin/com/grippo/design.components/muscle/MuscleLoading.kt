@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -15,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
 import com.grippo.core.state.metrics.MuscleLoadEntryState
 import com.grippo.core.state.metrics.MuscleLoadSummaryState
 import com.grippo.core.state.muscles.MuscleEnumState
@@ -49,14 +47,14 @@ public fun MuscleLoading(
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
     ) {
         if (mode == MuscleLoadingMode.Expanded) {
-            Row {
+            Row(modifier = Modifier.fillMaxWidth()) {
                 Image(
-                    modifier = Modifier.size(100.dp),
+                    modifier = Modifier.weight(1f),
                     imageVector = assets.images.front,
                     contentDescription = null
                 )
                 Image(
-                    modifier = Modifier.size(100.dp),
+                    modifier = Modifier.weight(1f),
                     imageVector = assets.images.back,
                     contentDescription = null
                 )

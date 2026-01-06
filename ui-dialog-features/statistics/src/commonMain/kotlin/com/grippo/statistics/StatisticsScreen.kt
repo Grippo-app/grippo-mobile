@@ -66,15 +66,10 @@ internal fun StatisticsScreen(
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = when (val mode = state.mode) {
-                is StatisticsMode.Exercises -> AppTokens.strings.res(
-                    Res.string.statistics
-                )
-
+                is StatisticsMode.Exercises -> AppTokens.strings.res(Res.string.statistics)
                 is StatisticsMode.Trainings -> mode.range.label()?.let {
                     AppTokens.strings.res(Res.string.value_statistics, it)
-                } ?: AppTokens.strings.res(
-                    Res.string.statistics
-                )
+                } ?: AppTokens.strings.res(Res.string.statistics)
             },
             style = AppTokens.typography.h3(),
             color = AppTokens.colors.text.primary,
