@@ -5,11 +5,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.grippo.chart.pie.PieData
 import com.grippo.chart.pie.PieSlice
 import com.grippo.core.state.examples.CategoryEnumState
@@ -139,19 +141,19 @@ private fun ExerciseDistributionPreview() {
             ExerciseDistributionChart(
                 title = AppTokens.strings.res(Res.string.exercise_categories),
                 state = category,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.size(200.dp)
             )
 
             WeightTypeDistributionChart(
                 title = AppTokens.strings.res(Res.string.exercise_weight_types),
                 state = weight,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.size(200.dp)
             )
 
             ForceTypeDistributionChart(
                 title = AppTokens.strings.res(Res.string.exercise_force_types),
                 state = force,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.size(200.dp)
             )
         }
     }
