@@ -24,13 +24,13 @@ public fun MuscleLoading(
 ) {
     when (mode) {
         MuscleLoadingMode.Collapsed -> MuscleLoadingCollapsed(
-            summary = summary,
             modifier = modifier,
+            summary = summary,
         )
 
         MuscleLoadingMode.Expanded -> MuscleLoadingExpanded(
-            summary = summary,
             modifier = modifier,
+            summary = summary,
         )
     }
 }

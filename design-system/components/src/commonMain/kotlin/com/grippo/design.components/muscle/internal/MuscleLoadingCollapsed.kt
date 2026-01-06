@@ -14,8 +14,8 @@ import com.grippo.design.preview.PreviewContainer
 
 @Composable
 internal fun MuscleLoadingCollapsed(
+    modifier: Modifier = Modifier,
     summary: MuscleLoadSummaryState,
-    modifier: Modifier,
 ) {
     val palette = AppTokens.colors.muscle.palette6MuscleCalm
     val successColor = AppTokens.colors.semantic.success

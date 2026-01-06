@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
@@ -17,8 +18,8 @@ import com.grippo.design.preview.PreviewContainer
 
 @Composable
 internal fun MuscleLoadingExpanded(
+    modifier: Modifier = Modifier,
     summary: MuscleLoadSummaryState,
-    modifier: Modifier,
 ) {
     val palette = AppTokens.colors.muscle.palette6MuscleCalm
 
@@ -59,18 +60,26 @@ internal fun MuscleLoadingExpanded(
 }
 
 @Composable
-private fun MuscleLoadingImagesRow(images: MuscleLoadingImages) {
-    Row(modifier = Modifier.fillMaxWidth()) {
+private fun MuscleLoadingImagesRow(
+    modifier: Modifier = Modifier,
+    images: MuscleLoadingImages
+) {
+    Row(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Spacer(Modifier.weight(0.2f))
         Image(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(0.8f),
             imageVector = images.front,
             contentDescription = null
         )
         Image(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(0.8f),
             imageVector = images.back,
             contentDescription = null
         )
+
+        Spacer(Modifier.weight(0.2f))
     }
 }
 
