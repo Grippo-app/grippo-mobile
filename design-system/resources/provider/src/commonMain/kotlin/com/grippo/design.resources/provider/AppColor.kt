@@ -195,7 +195,6 @@ public interface AppColor {
         public val inactive: Color
         public val background: Color
         public val outline: Color
-
         public val palette6MuscleCalm: List<Color>
     }
 
