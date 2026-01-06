@@ -159,6 +159,13 @@
     <string name="value_statistics">%1$s statistics</string>
     <string name="value_muscle_loading">%1$s muscle loading</string>
     <string name="muscle_loading">Muscle loading</string>
+    <string name="value_training_streak">%1$s training streak</string>
+    <string name="training_streak">Training streak</string>
+    <string name="training_streak_confidence_title">Consistency insight</string>
+    <string name="training_streak_confidence_value">%1$d% confidence</string>
+    <string name="training_streak_timeline_title">Timeline progress</string>
+    <string name="training_streak_period_label">Cycle %1$d</string>
+    <string name="training_streak_period_value">%1$d of %2$d sessions completed</string>
     <string name="trends">Trends</string>
     <string name="exercise_categories">Exercise categories</string>
     <string name="exercise_weight_types">Weight types</string>

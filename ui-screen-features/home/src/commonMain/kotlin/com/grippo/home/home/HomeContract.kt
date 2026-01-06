@@ -9,6 +9,7 @@ internal interface HomeContract {
     fun onOpenTrainings()
     fun onOpenExample(id: String)
     fun onOpenMuscleLoading()
+    fun onOpenTrainingStreak()
     fun onOpenWeeklyDigest()
     fun onOpenMonthlyDigest()
     fun onBack()
@@ -19,6 +20,7 @@ internal interface HomeContract {
         override fun onStartTraining() {}
         override fun onOpenTrainings() {}
         override fun onOpenMuscleLoading() {}
+        override fun onOpenTrainingStreak() {}
         override fun onOpenExample(id: String) {}
         override fun onOpenWeeklyDigest() {}
         override fun onOpenMonthlyDigest() {}

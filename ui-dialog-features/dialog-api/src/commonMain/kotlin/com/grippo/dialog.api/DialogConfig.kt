@@ -55,6 +55,14 @@ public sealed class DialogConfig(
     )
 
     @Serializable
+    public data class TrainingStreak(
+        val range: DateRange,
+    ) : DialogConfig(
+        onDismiss = null,
+        dismissBySwipe = true
+    )
+
+    @Serializable
     public data class Iteration(
         val initial: IterationState,
         val number: Int,

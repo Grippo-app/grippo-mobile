@@ -59,6 +59,7 @@ public fun HighlightsCard(
     streak: TrainingStreakState,
     performance: List<PerformanceMetricState>,
     onExampleClick: (id: String) -> Unit,
+    onStreakClick: () -> Unit,
     onMuscleLoadingClick: () -> Unit
 ) {
     val storyType = run {
@@ -165,7 +166,8 @@ public fun HighlightsCard(
                 TrainingStreakSection(
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxHeight(),
+                        .fillMaxHeight()
+                        .scalableClick(onClick = onStreakClick),
                     value = streak
                 )
             }
@@ -229,6 +231,7 @@ private fun HighlightsCardFullPreview() {
             streak = stubTrainingStreaks().first(),
             performance = stubPerformanceMetrics(),
             onExampleClick = {},
+            onStreakClick = {},
             onMuscleLoadingClick = {}
         )
     }
@@ -245,6 +248,7 @@ private fun HighlightsCardSpotlightOnlyPreview() {
             streak = stubTrainingStreaks().first(),
             performance = stubPerformanceMetrics().take(5),
             onExampleClick = {},
+            onStreakClick = {},
             onMuscleLoadingClick = {}
         )
     }
@@ -261,7 +265,8 @@ private fun HighlightsCardMinimalPreview() {
             streak = stubTrainingStreaks().first(),
             performance = emptyList(),
             onExampleClick = {},
-            onMuscleLoadingClick = {}
+            onMuscleLoadingClick = {},
+            onStreakClick = {},
         )
     }
 }

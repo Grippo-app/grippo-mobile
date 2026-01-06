@@ -158,6 +158,13 @@
     <string name="value_statistics">%1$s — статистика</string>
     <string name="value_muscle_loading">%1$s — м’язове навантаження</string>
     <string name="muscle_loading">М’язове навантаження</string>
+    <string name="value_training_streak">%1$s — серія тренувань</string>
+    <string name="training_streak">Серія тренувань</string>
+    <string name="training_streak_confidence_title">Стабільність стрика</string>
+    <string name="training_streak_confidence_value">%1$d% упевненості</string>
+    <string name="training_streak_timeline_title">Прогрес за періодами</string>
+    <string name="training_streak_period_label">Цикл %1$d</string>
+    <string name="training_streak_period_value">%1$d з %2$d тренувань виконано</string>
     <string name="trends">Тренди</string>
     <string name="exercise_categories">Категорії вправ</string>
     <string name="exercise_weight_types">Типи ваги</string>

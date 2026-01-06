@@ -81,6 +81,7 @@ kotlin {
         implementation(projects.uiDialogFeatures.menuPicker)
         implementation(projects.uiDialogFeatures.statistics)
         implementation(projects.uiDialogFeatures.muscleLoading)
+        implementation(projects.uiDialogFeatures.trainingStreak)
 
         implementation(libs.datetime)
         implementation(libs.immutable.collections)

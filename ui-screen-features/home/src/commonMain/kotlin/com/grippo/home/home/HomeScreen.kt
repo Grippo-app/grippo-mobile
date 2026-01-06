@@ -124,7 +124,8 @@ internal fun HomeScreen(
                             streak = state.streak,
                             performance = state.performance,
                             onExampleClick = contract::onOpenExample,
-                            onMuscleLoadingClick = contract::onOpenMuscleLoading
+                            onMuscleLoadingClick = contract::onOpenMuscleLoading,
+                            onStreakClick = contract::onOpenTrainingStreak
                         )
                     }
                 }

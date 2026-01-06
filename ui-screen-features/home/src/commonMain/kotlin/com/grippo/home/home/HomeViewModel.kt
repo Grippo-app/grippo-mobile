@@ -140,6 +140,14 @@ internal class HomeViewModel(
         dialogController.show(dialog)
     }
 
+    override fun onOpenTrainingStreak() {
+        val dialog = DialogConfig.TrainingStreak(
+            range = defaultRange()
+        )
+
+        dialogController.show(dialog)
+    }
+
     override fun onOpenMonthlyDigest() {
         val range = DateTimeUtils.trailingMonth()
         val config = DialogConfig.Statistics.Trainings(

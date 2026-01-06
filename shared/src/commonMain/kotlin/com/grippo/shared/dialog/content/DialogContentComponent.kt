@@ -26,6 +26,7 @@ import com.grippo.menu.picker.MenuPickerComponent
 import com.grippo.month.picker.MonthPickerComponent
 import com.grippo.muscle.loading.MuscleLoadingComponent
 import com.grippo.statistics.StatisticsComponent
+import com.grippo.training.streak.TrainingStreakComponent
 import com.grippo.weight.picker.WeightPickerComponent
 
 internal class DialogContentComponent(
@@ -107,6 +108,14 @@ internal class DialogContentComponent(
 
             is DialogConfig.MuscleLoading -> Child.MuscleLoading(
                 MuscleLoadingComponent(
+                    componentContext = context,
+                    range = router.range,
+                    back = { viewModel.onBack(null) }
+                )
+            )
+
+            is DialogConfig.TrainingStreak -> Child.TrainingStreak(
+                TrainingStreakComponent(
                     componentContext = context,
                     range = router.range,
                     back = { viewModel.onBack(null) }
@@ -250,6 +259,9 @@ internal class DialogContentComponent(
             Child(component)
 
         data class MuscleLoading(override val component: MuscleLoadingComponent) :
+            Child(component)
+
+        data class TrainingStreak(override val component: TrainingStreakComponent) :
             Child(component)
 
         data class DatePicker(override val component: DatePickerComponent) :
