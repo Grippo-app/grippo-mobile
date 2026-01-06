@@ -13,7 +13,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
 @Composable
-internal fun MuscleLoadingExpanded(
+internal fun MuscleLoadingPerMuscle(
     modifier: Modifier = Modifier,
     summary: MuscleLoadSummaryState,
 ) {
@@ -48,9 +48,9 @@ internal fun MuscleLoadingExpanded(
 
 @AppPreview
 @Composable
-private fun MuscleLoadingExpandedInternalPreview() {
+private fun MuscleLoadingPerMusclePreview() {
     PreviewContainer {
-        MuscleLoadingExpanded(
+        MuscleLoadingPerMuscle(
             summary = stubMuscleLoadSummary(),
             modifier = Modifier,
         )

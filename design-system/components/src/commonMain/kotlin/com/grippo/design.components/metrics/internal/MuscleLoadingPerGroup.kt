@@ -13,19 +13,17 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
 @Composable
-internal fun MuscleLoadingCollapsed(
+internal fun MuscleLoadingPerGroup(
     modifier: Modifier = Modifier,
     summary: MuscleLoadSummaryState,
 ) {
     val palette = AppTokens.colors.muscle.palette6MuscleCalm
-    val successColor = AppTokens.colors.semantic.success
-    val restColor = AppTokens.colors.static.white
 
-    val entries = remember(summary, palette, successColor, restColor) {
+    val entries = remember(summary, palette) {
         colorizeEntries(
             entries = summary.perGroup.entries,
             palette = palette,
-        ) { index, _ -> if (index == 0) successColor else restColor }
+        )
     }
 
     Column(
@@ -46,9 +44,9 @@ internal fun MuscleLoadingCollapsed(
 
 @AppPreview
 @Composable
-private fun MuscleLoadingCollapsedInternalPreview() {
+private fun MuscleLoadingPerGroupPreview() {
     PreviewContainer {
-        MuscleLoadingCollapsed(
+        MuscleLoadingPerGroup(
             summary = stubMuscleLoadSummary(),
             modifier = Modifier,
         )

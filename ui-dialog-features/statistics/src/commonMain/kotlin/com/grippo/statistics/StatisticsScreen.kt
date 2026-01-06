@@ -179,7 +179,7 @@ internal fun StatisticsScreen(
                             MuscleLoading(
                                 modifier = Modifier.fillMaxWidth(),
                                 summary = summary,
-                                mode = MuscleLoadingMode.Collapsed
+                                mode = MuscleLoadingMode.PerGroup
                             )
                         }
                     }

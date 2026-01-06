@@ -94,17 +94,28 @@ internal fun colorizeEntries(
     palette: List<Color>,
     colorTransformer: (index: Int, Color) -> Color = { _, color -> color },
 ): List<ColoredEntry> {
+    if (entries.isEmpty()) return emptyList()
+
+    val maxValue = entries.maxOf { it.value }
+    val minValue = entries.minOf { it.value }
+    val range = (maxValue - minValue).takeIf { it > 0f } ?: 1f
+
     return entries.mapIndexed { index, entry ->
-        val baseColor = colorByPercentage(entry.value, palette)
+        val baseColor = colorByValue(entry.value, minValue, range, palette)
         val color = colorTransformer(index, baseColor)
         ColoredEntry(entry = entry, color = color)
     }
 }
 
-private fun colorByPercentage(value: Float, palette: List<Color>): Color {
-    val normalized = value.coerceIn(0f, 100f)
-    val bandWidth = 100f / palette.size
-    val index = (normalized / bandWidth).toInt().coerceIn(0, palette.size - 1)
+private fun colorByValue(
+    value: Float,
+    minValue: Float,
+    range: Float,
+    palette: List<Color>,
+): Color {
+    if (palette.isEmpty()) return Color.Unspecified
+    val normalized = ((value - minValue) / range).coerceIn(0f, 1f)
+    val index = (normalized * (palette.size - 1)).roundToInt().coerceIn(0, palette.size - 1)
     return palette[index]
 }
 

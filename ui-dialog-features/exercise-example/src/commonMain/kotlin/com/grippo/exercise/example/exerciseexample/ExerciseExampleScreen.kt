@@ -143,7 +143,7 @@ internal fun ExerciseExampleScreen(
                         .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                         .fillMaxWidth(),
                     summary = summary,
-                    mode = MuscleLoadingMode.Collapsed
+                    mode = MuscleLoadingMode.PerGroup
                 )
             }
 

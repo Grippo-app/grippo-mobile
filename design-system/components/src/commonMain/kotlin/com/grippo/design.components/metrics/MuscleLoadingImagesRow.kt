@@ -24,8 +24,8 @@ import com.grippo.design.resources.provider.muscles.fullFront
 
 @Immutable
 public enum class MuscleLoadingImagesMode {
-    Collapsed,
-    Expanded,
+    PerGroup,
+    PerMuscle,
 }
 
 @Composable
@@ -35,14 +35,20 @@ public fun MuscleLoadingImagesRow(
     mode: MuscleLoadingImagesMode
 ) {
     val muscleColors = AppTokens.colors.muscle
-
     val palette = AppTokens.colors.muscle.palette6MuscleCalm
 
-    val muscleEntries = remember(summary, palette) {
-        colorizeEntries(
-            entries = summary.perMuscle.entries,
-            palette = palette
-        )
+    val muscleEntries = remember(summary, palette, mode) {
+        when (mode) {
+            MuscleLoadingImagesMode.PerGroup -> colorizeEntries(
+                entries = summary.perGroup.entries,
+                palette = palette,
+            )
+
+            MuscleLoadingImagesMode.PerMuscle -> colorizeEntries(
+                entries = summary.perMuscle.entries,
+                palette = palette,
+            )
+        }
     }
 
     val images = remember(muscleEntries, muscleColors) {
@@ -90,9 +96,7 @@ private fun buildPreset(
     background: Color,
 ): MuscleColorPreset {
     val colorMap: Map<MuscleEnumState, Color> = sources
-        .flatMap { source ->
-            source.entry.muscles.map { muscle -> muscle to source.color }
-        }
+        .flatMap { source -> source.entry.muscles.map { muscle -> muscle to source.color } }
         .toMap()
 
     val resolve: (MuscleEnumState) -> Color = { muscle ->
@@ -142,12 +146,12 @@ private fun MuscleLoadingCardPreview() {
     PreviewContainer {
         MuscleLoadingImagesRow(
             summary = stubMuscleLoadSummary(),
-            mode = MuscleLoadingImagesMode.Expanded
+            mode = MuscleLoadingImagesMode.PerMuscle
         )
 
         MuscleLoadingImagesRow(
             summary = stubMuscleLoadSummary(),
-            mode = MuscleLoadingImagesMode.Collapsed
+            mode = MuscleLoadingImagesMode.PerGroup
         )
     }
 }

@@ -104,8 +104,8 @@ internal fun MuscleLoadingScreen(
                     item(key = "images") {
                         val mode = remember(state.mode) {
                             when (state.mode) {
-                                MuscleLoadingShowingMode.PerGroup -> MuscleLoadingImagesMode.Collapsed
-                                MuscleLoadingShowingMode.PerMuscle -> MuscleLoadingImagesMode.Expanded
+                                MuscleLoadingShowingMode.PerGroup -> MuscleLoadingImagesMode.PerGroup
+                                MuscleLoadingShowingMode.PerMuscle -> MuscleLoadingImagesMode.PerMuscle
                             }
                         }
 
@@ -119,8 +119,8 @@ internal fun MuscleLoadingScreen(
                     item(key = "summary") {
                         val mode = remember(state.mode) {
                             when (state.mode) {
-                                MuscleLoadingShowingMode.PerGroup -> MuscleLoadingMode.Collapsed
-                                MuscleLoadingShowingMode.PerMuscle -> MuscleLoadingMode.Expanded
+                                MuscleLoadingShowingMode.PerGroup -> MuscleLoadingMode.PerGroup
+                                MuscleLoadingShowingMode.PerMuscle -> MuscleLoadingMode.PerMuscle
                             }
                         }
 
