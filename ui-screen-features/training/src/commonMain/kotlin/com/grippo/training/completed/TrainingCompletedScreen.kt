@@ -46,8 +46,8 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.complete
-import com.grippo.design.resources.provider.workout_saved
+import com.grippo.design.resources.provider.go_to_dashboard
+import com.grippo.design.resources.provider.workout_summary
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -109,7 +109,7 @@ internal fun TrainingCompletedScreen(
 
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = AppTokens.strings.res(Res.string.workout_saved),
+                text = AppTokens.strings.res(Res.string.workout_summary),
                 style = AppTokens.typography.h1(),
                 color = AppTokens.colors.text.primary,
                 textAlign = TextAlign.Center
@@ -161,7 +161,7 @@ internal fun TrainingCompletedScreen(
                         Button(
                             modifier = Modifier.fillMaxWidth(),
                             content = ButtonContent.Text(
-                                text = AppTokens.strings.res(Res.string.complete),
+                                text = AppTokens.strings.res(Res.string.go_to_dashboard),
                             ),
                             style = ButtonStyle.Primary,
                             onClick = contract::onBack

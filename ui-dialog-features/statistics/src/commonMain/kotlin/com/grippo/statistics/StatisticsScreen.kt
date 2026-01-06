@@ -40,9 +40,6 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.exercise_categories
-import com.grippo.design.resources.provider.exercise_force_types
-import com.grippo.design.resources.provider.exercise_weight_types
 import com.grippo.design.resources.provider.muscles
 import com.grippo.design.resources.provider.statistics
 import com.grippo.design.resources.provider.trends
@@ -144,7 +141,6 @@ internal fun StatisticsScreen(
                             ?.let { distribution ->
                                 ExerciseDistributionChart(
                                     modifier = Modifier.weight(1f),
-                                    title = AppTokens.strings.res(Res.string.exercise_categories),
                                     state = distribution
                                 )
                             }
@@ -154,7 +150,6 @@ internal fun StatisticsScreen(
                             ?.let { distribution ->
                                 WeightTypeDistributionChart(
                                     modifier = Modifier.weight(1f),
-                                    title = AppTokens.strings.res(Res.string.exercise_weight_types),
                                     state = distribution
                                 )
                             }
@@ -164,7 +159,6 @@ internal fun StatisticsScreen(
                             ?.let { distribution ->
                                 ForceTypeDistributionChart(
                                     modifier = Modifier.weight(1f),
-                                    title = AppTokens.strings.res(Res.string.exercise_force_types),
                                     state = distribution
                                 )
                             }
@@ -192,6 +186,8 @@ internal fun StatisticsScreen(
                     ?.takeIf { it.values01.isNotEmpty() && it.rows > 0 && it.cols > 0 }
                     ?.let { data ->
                         item(key = "temporal_heatmap") {
+                            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
                             TemporalHeatmapSection(
                                 modifier = Modifier.fillMaxWidth(),
                                 state = data,

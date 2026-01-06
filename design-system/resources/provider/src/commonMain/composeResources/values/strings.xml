@@ -80,6 +80,8 @@
     <string name="add_exercise_btn">Add exercise</string>
     <string name="save_btn">Save</string>
     <string name="workout_saved">Workout saved</string>
+    <string name="workout_summary">Workout summary</string>
+    <string name="go_to_dashboard">Go to dashboard</string>
     <string name="add_set_btn">Add Set</string>
     <string name="or">OR</string>
     <string name="email_placeholder">Enter email</string>

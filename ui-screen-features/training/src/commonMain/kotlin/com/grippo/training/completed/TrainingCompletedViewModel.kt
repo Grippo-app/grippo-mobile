@@ -33,9 +33,7 @@ internal class TrainingCompletedViewModel(
 
     init {
         safeLaunch(loader = TrainingCompletedLoader.SaveTraining) {
-            val duration = DateTimeUtils.ago(
-                value = startAt
-            )
+            val duration = DateTimeUtils.ago(value = startAt)
 
             val domainExercises = exercises.toDomain()
 
@@ -85,9 +83,7 @@ internal class TrainingCompletedViewModel(
     }
 
     override fun onExerciseClick(id: String) {
-        val dialog = DialogConfig.Exercise(
-            id = id,
-        )
+        val dialog = DialogConfig.Exercise(id = id)
 
         dialogController.show(dialog)
     }

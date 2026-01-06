@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,19 +25,13 @@ import com.grippo.design.components.chart.internal.PieChart
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.exercise_categories
-import com.grippo.design.resources.provider.exercise_force_types
-import com.grippo.design.resources.provider.exercise_weight_types
 
 @Composable
 public fun ExerciseDistributionChart(
-    title: String,
     state: ExerciseDistributionState<CategoryEnumState>,
     modifier: Modifier = Modifier,
 ) {
     ExerciseDistributionChartContent(
-        title = title,
         state = state,
         modifier = modifier,
         labelProvider = { it.title() },
@@ -48,12 +41,10 @@ public fun ExerciseDistributionChart(
 
 @Composable
 public fun WeightTypeDistributionChart(
-    title: String,
     state: ExerciseDistributionState<WeightTypeEnumState>,
     modifier: Modifier = Modifier,
 ) {
     ExerciseDistributionChartContent(
-        title = title,
         state = state,
         modifier = modifier,
         labelProvider = { it.title() },
@@ -63,12 +54,10 @@ public fun WeightTypeDistributionChart(
 
 @Composable
 public fun ForceTypeDistributionChart(
-    title: String,
     state: ExerciseDistributionState<ForceTypeEnumState>,
     modifier: Modifier = Modifier,
 ) {
     ExerciseDistributionChartContent(
-        title = title,
         state = state,
         modifier = modifier,
         labelProvider = { it.title() },
@@ -78,7 +67,6 @@ public fun ForceTypeDistributionChart(
 
 @Composable
 private fun <T> ExerciseDistributionChartContent(
-    title: String,
     state: ExerciseDistributionState<T>,
     modifier: Modifier = Modifier,
     labelProvider: (T) -> UiText,
@@ -91,12 +79,6 @@ private fun <T> ExerciseDistributionChartContent(
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = title,
-            style = AppTokens.typography.b12Med(),
-            color = AppTokens.colors.text.secondary,
-            maxLines = 1
-        )
 
         val chartMinSize = AppTokens.dp.metrics.distribution.size
 
@@ -139,19 +121,16 @@ private fun ExerciseDistributionPreview() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             ExerciseDistributionChart(
-                title = AppTokens.strings.res(Res.string.exercise_categories),
                 state = category,
                 modifier = Modifier.size(200.dp)
             )
 
             WeightTypeDistributionChart(
-                title = AppTokens.strings.res(Res.string.exercise_weight_types),
                 state = weight,
                 modifier = Modifier.size(200.dp)
             )
 
             ForceTypeDistributionChart(
-                title = AppTokens.strings.res(Res.string.exercise_force_types),
                 state = force,
                 modifier = Modifier.size(200.dp)
             )

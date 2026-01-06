@@ -80,6 +80,8 @@
     <string name="add_exercise_btn">Добавить упражнение</string>
     <string name="save_btn">Сохранить</string>
     <string name="workout_saved">Тренировка сохранена</string>
+    <string name="workout_summary">Сводка тренировки</string>
+    <string name="go_to_dashboard">Перейти на панель</string>
     <string name="add_set_btn">Добавить подход</string>
     <string name="or">ИЛИ</string>
     <string name="email_placeholder">Введите email</string>
