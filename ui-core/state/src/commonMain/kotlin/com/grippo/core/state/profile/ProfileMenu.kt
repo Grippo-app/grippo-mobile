@@ -5,6 +5,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.icons.Filter
 import com.grippo.design.resources.provider.icons.Pro
 import com.grippo.design.resources.provider.icons.User
 import com.grippo.design.resources.provider.icons.Volume
@@ -12,6 +13,7 @@ import com.grippo.design.resources.provider.profile
 import com.grippo.design.resources.provider.profile_menu_excluded_muscles
 import com.grippo.design.resources.provider.profile_menu_experience
 import com.grippo.design.resources.provider.profile_menu_missing_equipment
+import com.grippo.design.resources.provider.settings
 import kotlinx.serialization.Serializable
 
 @Immutable
@@ -19,7 +21,8 @@ import kotlinx.serialization.Serializable
 public enum class ProfileMenu {
     Experience,
     Muscles,
-    Equipment;
+    Equipment,
+    Settings;
 
     public companion object Companion {
         @Composable
@@ -34,6 +37,7 @@ public enum class ProfileMenu {
             Muscles -> AppTokens.strings.res(Res.string.profile_menu_excluded_muscles)
             Equipment -> AppTokens.strings.res(Res.string.profile_menu_missing_equipment)
             Experience -> AppTokens.strings.res(Res.string.profile_menu_experience)
+            Settings -> AppTokens.strings.res(Res.string.settings)
         }
     }
 
@@ -43,6 +47,7 @@ public enum class ProfileMenu {
             Muscles -> AppTokens.icons.User
             Equipment -> AppTokens.icons.Volume
             Experience -> AppTokens.icons.Pro
+            Settings -> AppTokens.icons.Filter
         }
     }
 }

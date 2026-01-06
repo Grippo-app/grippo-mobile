@@ -39,5 +39,5 @@ public sealed class AppError(
         val description: String?,
     ) : AppError(null)
 
-    public data object Unknown : AppError(null)
+    public class Unknown : AppError(null)
 }

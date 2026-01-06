@@ -10,5 +10,6 @@ internal interface UserRepository {
 
     suspend fun getUser(): Result<Boolean>
     suspend fun createProfile(profile: CreateUserProfile): Result<Boolean>
+    suspend fun deleteProfile(): Result<Unit>
     suspend fun setExperience(experience: ExperienceEnum): Result<Boolean>
 }

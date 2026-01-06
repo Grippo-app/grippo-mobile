@@ -12,4 +12,5 @@ internal sealed interface HomeDirection : BaseDirection {
     data object WeightHistory : HomeDirection
     data object Experience : HomeDirection
     data object Debug : HomeDirection
+    data object Settings : HomeDirection
 }

@@ -68,6 +68,7 @@
     <string name="details">Деталі</string>
     <string name="cancel_btn">Скасувати</string>
     <string name="logout_btn">Вийти</string>
+    <string name="delete_account">Видалити акаунт</string>
     <string name="loading">Завантаження..</string>
     <string name="submit_btn">Надіслати</string>
     <string name="delete_btn">Видалити</string>

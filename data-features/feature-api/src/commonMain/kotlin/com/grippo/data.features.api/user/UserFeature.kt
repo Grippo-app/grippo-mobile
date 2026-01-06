@@ -10,5 +10,6 @@ public interface UserFeature {
 
     public suspend fun getUser(): Result<Boolean>
     public suspend fun createProfile(profile: CreateUserProfile): Result<Boolean>
+    public suspend fun deleteProfile(): Result<Unit>
     public suspend fun setExperience(experience: ExperienceEnum): Result<Boolean>
 }

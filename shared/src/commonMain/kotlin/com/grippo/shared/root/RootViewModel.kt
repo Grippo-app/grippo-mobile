@@ -72,6 +72,10 @@ public class RootViewModel(
         navigateTo(RootDirection.Experience)
     }
 
+    override fun toSettings() {
+        navigateTo(RootDirection.Settings)
+    }
+
     override fun onBack() {
         navigateTo(RootDirection.Back)
     }

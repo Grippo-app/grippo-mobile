@@ -66,4 +66,8 @@ public class HomeRootViewModel(
     override fun toAddTraining() {
         navigateTo(HomeRootDirection.AddTraining)
     }
+
+    override fun toSettings() {
+        navigateTo(HomeRootDirection.Settings)
+    }
 }

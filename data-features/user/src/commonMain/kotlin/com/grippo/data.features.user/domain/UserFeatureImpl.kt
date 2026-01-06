@@ -24,6 +24,10 @@ internal class UserFeatureImpl(
         return repository.createProfile(profile)
     }
 
+    override suspend fun deleteProfile(): Result<Unit> {
+        return repository.deleteProfile()
+    }
+
     override suspend fun setExperience(experience: ExperienceEnum): Result<Boolean> {
         return repository.setExperience(experience)
     }

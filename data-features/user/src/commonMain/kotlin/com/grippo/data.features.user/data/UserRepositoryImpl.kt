@@ -6,12 +6,14 @@ import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
 import com.grippo.data.features.api.user.models.CreateUserProfile
 import com.grippo.data.features.api.user.models.User
 import com.grippo.data.features.user.domain.UserRepository
+import com.grippo.database.dao.TokenDao
 import com.grippo.database.dao.UserActiveDao
 import com.grippo.database.dao.UserDao
 import com.grippo.domain.dto.user.toBody
 import com.grippo.dto.entity.user.toEntityOrNull
 import com.grippo.entity.domain.user.toDomain
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -21,6 +23,7 @@ import org.koin.core.annotation.Single
 internal class UserRepositoryImpl(
     private val api: GrippoApi,
     private val userDao: UserDao,
+    private val tokenDao: TokenDao,
     private val userActiveDao: UserActiveDao
 ) : UserRepository {
 
@@ -49,6 +52,15 @@ internal class UserRepositoryImpl(
             val user = dto.toEntityOrNull() ?: return@map false
             userDao.insertOrUpdate(user)
             true
+        }
+    }
+
+    override suspend fun deleteProfile(): Result<Unit> {
+        val response = api.deleteUser()
+
+        return response.map {
+            val activeId = userActiveDao.get().firstOrNull() ?: return@map
+            tokenDao.delete(activeId)
         }
     }
 

@@ -16,4 +16,7 @@ public sealed class ProfileRouter : BaseRouter {
 
     @Serializable
     public data object Experience : ProfileRouter()
+
+    @Serializable
+    public data object Settings : ProfileRouter()
 }

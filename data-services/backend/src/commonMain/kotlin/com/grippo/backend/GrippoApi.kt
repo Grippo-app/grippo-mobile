@@ -75,6 +75,13 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         )
     }
 
+    public suspend fun deleteUser(): Result<Unit> {
+        return request(
+            method = HttpMethod.Delete,
+            path = "/users"
+        )
+    }
+
     public suspend fun createProfile(body: CreateProfileBody): Result<UserResponse> {
         return request(
             method = HttpMethod.Post,

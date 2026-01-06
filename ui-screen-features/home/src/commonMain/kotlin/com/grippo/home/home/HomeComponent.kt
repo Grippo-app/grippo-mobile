@@ -17,6 +17,7 @@ internal class HomeComponent(
     private val toDebug: () -> Unit,
     private val toAddTraining: () -> Unit,
     private val toTrainings: () -> Unit,
+    private val toSettings: () -> Unit,
 ) : BaseComponent<HomeDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
@@ -47,6 +48,7 @@ internal class HomeComponent(
             HomeDirection.WeightHistory -> toWeightHistory.invoke()
             HomeDirection.Experience -> toExperience.invoke()
             HomeDirection.Trainings -> toTrainings.invoke()
+            HomeDirection.Settings -> toSettings.invoke()
         }
     }
 
