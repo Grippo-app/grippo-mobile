@@ -4,7 +4,6 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -30,14 +29,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.core.state.trainings.TimelineState.Companion.exercise
 import com.grippo.core.state.trainings.stubDailyTrainingTimeline
+import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.konfetti.KonfettiParade
 import com.grippo.design.components.loading.Loader
+import com.grippo.design.components.metrics.TrainingSummaryCard
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.components.training.ExerciseCard
@@ -129,8 +131,17 @@ internal fun TrainingCompletedScreen(
                                 .offset(y = offsetY)
                                 .alpha(alpha),
                             contentPadding = resolvedPadding,
-                            verticalArrangement = Arrangement.Center
                         ) {
+                            item(key = "training_summary") {
+                                TrainingSummaryCard(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    training = stubTraining(),
+                                    summary = stubMuscleLoadSummary()
+                                )
+
+                                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+                            }
+
                             items(
                                 items = state.timeline,
                                 key = { it.key },

@@ -82,6 +82,8 @@
     <string name="workout_saved">Тренування збережено</string>
     <string name="workout_summary">Підсумок тренування</string>
     <string name="go_to_dashboard">Перейти до панелі</string>
+    <string name="total">Всього</string>
+    <string name="total_value">Всього %1$s</string>
     <string name="add_set_btn">Додати підхід</string>
     <string name="or">АБО</string>
     <string name="email_placeholder">Введіть електронну адресу</string>
