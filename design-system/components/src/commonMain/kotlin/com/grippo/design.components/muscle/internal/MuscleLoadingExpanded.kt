@@ -20,8 +20,7 @@ internal fun MuscleLoadingExpanded(
     summary: MuscleLoadSummaryState,
     modifier: Modifier,
 ) {
-    val colors = AppTokens.colors
-    val palette = colors.palette.palette7BlueGrowth
+    val palette = AppTokens.colors.palette.palette6MuscleCalm
 
     val muscleEntries = remember(summary, palette) {
         colorizeEntries(
@@ -32,7 +31,9 @@ internal fun MuscleLoadingExpanded(
     val displayedEntries = remember(muscleEntries) {
         muscleEntries
     }
-    val muscleColors = colors.muscle
+
+    val muscleColors = AppTokens.colors.muscle
+
     val images = remember(muscleEntries, muscleColors) {
         generateMuscleImages(muscleEntries, muscleColors)
     }
@@ -41,7 +42,9 @@ internal fun MuscleLoadingExpanded(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
     ) {
-        MuscleLoadingImagesRow(images)
+        MuscleLoadingImagesRow(
+            images = images
+        )
 
         displayedEntries.forEachIndexed { index, colored ->
             key(index) {

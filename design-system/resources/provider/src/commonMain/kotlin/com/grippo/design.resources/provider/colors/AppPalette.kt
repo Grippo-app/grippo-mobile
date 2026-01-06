@@ -1,6 +1,7 @@
 package com.grippo.design.resources.provider.colors
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 
 internal object AppPalette {
 
@@ -86,12 +87,12 @@ internal object AppPalette {
         )
 
         val Palette6MuscleCalm: List<Color> = listOf(
-            Unique.Clay,     // warm neutral
-            Unique.Copper,   // rosy copper
-            Unique.Brown,    // earthy brown
-            Unique.Cocoa,    // deep cocoa
-            Unique.Burgundy, // muted burgundy
-            Unique.Purple,   // soft purple accent
+            lerp(Unique.Green, Common.White, 0.8f),   // subtle green
+            lerp(Unique.Green, Common.White, 0.6f),   // pale green
+            lerp(Unique.Green, Common.White, 0.4f),   // soft green
+            lerp(Unique.Green, Common.White, 0.2f),   // lighter green
+            Unique.Green,    // brand success
+            Unique.Emerald,  // deep success
         )
     }
 }

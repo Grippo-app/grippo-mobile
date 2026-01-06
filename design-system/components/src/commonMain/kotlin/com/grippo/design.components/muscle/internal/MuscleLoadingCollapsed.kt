@@ -17,10 +17,9 @@ internal fun MuscleLoadingCollapsed(
     summary: MuscleLoadSummaryState,
     modifier: Modifier,
 ) {
-    val colors = AppTokens.colors
-    val palette = colors.palette.palette5OrangeRedGrowth
-    val successColor = colors.semantic.success
-    val restColor = colors.static.white
+    val palette = AppTokens.colors.palette.palette6MuscleCalm
+    val successColor = AppTokens.colors.semantic.success
+    val restColor = AppTokens.colors.static.white
 
     val entries = remember(summary, palette, successColor, restColor) {
         colorizeEntries(

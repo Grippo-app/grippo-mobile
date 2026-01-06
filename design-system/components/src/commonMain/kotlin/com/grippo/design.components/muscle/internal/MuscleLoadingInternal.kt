@@ -99,8 +99,7 @@ internal fun colorizeEntries(
     palette: List<Color>,
     colorTransformer: (index: Int, Color) -> Color = { _, color -> color },
 ): List<ColoredEntry> {
-    val visible = entries
-    return visible.mapIndexed { index, entry ->
+    return entries.mapIndexed { index, entry ->
         val baseColor = colorByPercentage(entry.value, palette)
         val color = colorTransformer(index, baseColor)
         ColoredEntry(entry = entry, color = color)
