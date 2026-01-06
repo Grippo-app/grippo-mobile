@@ -232,9 +232,12 @@ public object DarkColor : AppColor {
 
     override val muscle: AppColor.MuscleColors = object : AppColor.MuscleColors {
         override val active = AppPalette.Unique.Green
-        override val inactive = AppPalette.NeutralDark.N300.copy(alpha = 0.90f)
-        override val background = AppPalette.NeutralDark.N200
-        override val outline = AppPalette.NeutralDark.N150
+        override val inactive = AppPalette.NeutralDark.N400.copy(alpha = 0.90f)
+        override val background = AppPalette.NeutralDark.N250.copy(0.45f)
+        override val outline = Color.Transparent
+
+        override val palette6MuscleCalm: List<Color> =
+            AppPalette.Gradient.Palette6MuscleCalm
     }
 
     override val charts: AppColor.Charts = object : AppColor.Charts {
@@ -266,7 +269,5 @@ public object DarkColor : AppColor {
             AppPalette.Gradient.Palette7BlueGrowth
         override val palette5OrangeRedGrowth: List<Color> =
             AppPalette.Gradient.Palette5OrangeRedGrowth
-        override val palette6MuscleCalm: List<Color> =
-            AppPalette.Gradient.Palette6MuscleCalm
     }
 }

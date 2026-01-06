@@ -17,7 +17,7 @@ internal fun MuscleLoadingCollapsed(
     summary: MuscleLoadSummaryState,
     modifier: Modifier,
 ) {
-    val palette = AppTokens.colors.palette.palette6MuscleCalm
+    val palette = AppTokens.colors.muscle.palette6MuscleCalm
     val successColor = AppTokens.colors.semantic.success
     val restColor = AppTokens.colors.static.white
 

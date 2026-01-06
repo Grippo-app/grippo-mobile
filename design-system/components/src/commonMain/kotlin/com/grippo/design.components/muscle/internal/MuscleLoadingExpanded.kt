@@ -20,7 +20,7 @@ internal fun MuscleLoadingExpanded(
     summary: MuscleLoadSummaryState,
     modifier: Modifier,
 ) {
-    val palette = AppTokens.colors.palette.palette6MuscleCalm
+    val palette = AppTokens.colors.muscle.palette6MuscleCalm
 
     val muscleEntries = remember(summary, palette) {
         colorizeEntries(

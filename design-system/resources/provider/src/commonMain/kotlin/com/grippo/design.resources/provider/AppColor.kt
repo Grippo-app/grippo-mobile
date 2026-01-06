@@ -195,6 +195,8 @@ public interface AppColor {
         public val inactive: Color
         public val background: Color
         public val outline: Color
+
+        public val palette6MuscleCalm: List<Color>
     }
 
     public interface SegmentColors {
@@ -284,6 +286,5 @@ public interface AppColor {
     public interface PaletteColors {
         public val palette5OrangeRedGrowth: List<Color>
         public val palette7BlueGrowth: List<Color>
-        public val palette6MuscleCalm: List<Color>
     }
 }
