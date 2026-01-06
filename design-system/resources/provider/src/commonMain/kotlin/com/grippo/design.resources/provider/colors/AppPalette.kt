@@ -67,21 +67,6 @@ internal object AppPalette {
     }
 
     object Gradient {
-        val Palette12BlueWave: List<Color> = listOf(
-            Blue.P300,
-            Blue.P400,
-            Blue.P500,
-            Blue.P600,
-            Blue.P700,
-            Blue.P800,
-            Blue.P900,
-            Blue.P800,
-            Blue.P700,
-            Blue.P600,
-            Blue.P500,
-            Blue.P400,
-        )
-
         val Palette7BlueGrowth: List<Color> = listOf(
             Blue.P300,
             Blue.P400,
@@ -92,35 +77,21 @@ internal object AppPalette {
             Blue.P900,
         )
 
-        val Palette20ColorfulRandom: List<Color> = listOf(
-            Unique.Red,
-            Unique.Orange,
-            Unique.Coral,
-            Unique.Amber,
-            Unique.Green,
-            Unique.Emerald,
-            Unique.Teal,
-            Unique.Sky,
-            Unique.Blue,
-            Unique.Indigo,
-            Unique.Purple,
-            Unique.Violet,
-            Unique.Magenta,
-            Unique.Brown,
-            Unique.Cocoa,
-            Unique.Copper,
-            Unique.Clay,
-            Unique.Burgundy,
-            Unique.Olive,
-            Unique.Cyan,
-        )
-
         val Palette5OrangeRedGrowth: List<Color> = listOf(
             Unique.Amber,     // light warm yellow-orange
             Unique.Coral,     // soft orange-red
             Unique.Orange,    // saturated orange
             Unique.Red,       // bright red
             Unique.Burgundy   // deep dark red
+        )
+
+        val Palette6MuscleCalm: List<Color> = listOf(
+            Unique.Clay,     // warm neutral
+            Unique.Copper,   // rosy copper
+            Unique.Brown,    // earthy brown
+            Unique.Cocoa,    // deep cocoa
+            Unique.Burgundy, // muted burgundy
+            Unique.Purple,   // soft purple accent
         )
     }
 }

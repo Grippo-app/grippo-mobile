@@ -154,8 +154,6 @@ public object DarkColor : AppColor {
     }
 
     override val segment: AppColor.SegmentColors = object : AppColor.SegmentColors {
-        override val active = AppPalette.NeutralDark.N800
-        override val inactive = AppPalette.NeutralDark.N500
         override val selector = AppPalette.Common.White
     }
 
@@ -244,9 +242,6 @@ public object DarkColor : AppColor {
             override val lineA = AppPalette.Blue.P400
             override val lineB = AppPalette.Unique.Green
             override val fillBase = AppPalette.Blue.P400
-            override val dot = AppPalette.Blue.P400
-            override val min = AppPalette.Unique.Green
-            override val max = AppPalette.Unique.Green
         }
         override val area = object : AppColor.Charts.AreaColors {
             override val lineA = AppPalette.Unique.Green
@@ -267,14 +262,11 @@ public object DarkColor : AppColor {
     }
 
     override val palette: AppColor.PaletteColors = object : AppColor.PaletteColors {
-        override val palette12BlueWave: List<Color> =
-            AppPalette.Gradient.Palette12BlueWave
         override val palette7BlueGrowth: List<Color> =
             AppPalette.Gradient.Palette7BlueGrowth
-        override val palette20ColorfulRandom: List<Color> =
-            AppPalette.Gradient.Palette20ColorfulRandom
         override val palette5OrangeRedGrowth: List<Color> =
             AppPalette.Gradient.Palette5OrangeRedGrowth
+        override val palette6MuscleCalm: List<Color> =
+            AppPalette.Gradient.Palette6MuscleCalm
     }
-
 }

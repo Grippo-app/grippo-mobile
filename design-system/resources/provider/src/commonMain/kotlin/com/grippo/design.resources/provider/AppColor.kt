@@ -198,8 +198,6 @@ public interface AppColor {
     }
 
     public interface SegmentColors {
-        public val active: Color
-        public val inactive: Color
         public val selector: Color
     }
 
@@ -260,9 +258,6 @@ public interface AppColor {
             public val lineA: Color
             public val lineB: Color
             public val fillBase: Color
-            public val dot: Color
-            public val min: Color
-            public val max: Color
         }
 
         public interface RadarColors {
@@ -288,8 +283,7 @@ public interface AppColor {
 
     public interface PaletteColors {
         public val palette5OrangeRedGrowth: List<Color>
-        public val palette12BlueWave: List<Color>
         public val palette7BlueGrowth: List<Color>
-        public val palette20ColorfulRandom: List<Color>
+        public val palette6MuscleCalm: List<Color>
     }
 }
