@@ -44,6 +44,7 @@ internal fun MuscleLoadingExpanded(
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
     ) {
         MuscleLoadingImagesRow(
+            modifier = Modifier.fillMaxWidth(),
             images = images
         )
 
@@ -64,9 +65,7 @@ private fun MuscleLoadingImagesRow(
     modifier: Modifier = Modifier,
     images: MuscleLoadingImages
 ) {
-    Row(
-        modifier = modifier.fillMaxWidth()
-    ) {
+    Row(modifier = modifier) {
         Spacer(Modifier.weight(0.2f))
         Image(
             modifier = Modifier.weight(0.8f),
