@@ -10,7 +10,6 @@ import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.core.state.trainings.TrainingState
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
-import com.grippo.design.components.muscle.MuscleLoading
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -51,6 +50,7 @@ public fun TrainingSummaryCard(
         MuscleLoading(
             modifier = Modifier.fillMaxWidth(),
             summary = summary,
+            mode = MuscleLoadingMode.Collapsed
         )
     }
 }

@@ -30,11 +30,12 @@ import com.grippo.core.state.muscles.MuscleEnumState
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.ExerciseDistributionChart
 import com.grippo.design.components.metrics.ForceTypeDistributionChart
+import com.grippo.design.components.metrics.MuscleLoading
+import com.grippo.design.components.metrics.MuscleLoadingMode
 import com.grippo.design.components.metrics.MuscleTemporalHeatmapCard
 import com.grippo.design.components.metrics.TrainingTotalSection
 import com.grippo.design.components.metrics.VolumeMetricChart
 import com.grippo.design.components.metrics.WeightTypeDistributionChart
-import com.grippo.design.components.muscle.MuscleLoading
 import com.grippo.design.components.spliter.ContentSpliter
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -178,6 +179,7 @@ internal fun StatisticsScreen(
                             MuscleLoading(
                                 modifier = Modifier.fillMaxWidth(),
                                 summary = summary,
+                                mode = MuscleLoadingMode.Collapsed
                             )
                         }
                     }

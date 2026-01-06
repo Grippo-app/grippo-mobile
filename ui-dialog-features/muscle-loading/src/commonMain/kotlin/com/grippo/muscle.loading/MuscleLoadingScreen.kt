@@ -17,8 +17,10 @@ import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.design.components.loading.Loader
-import com.grippo.design.components.muscle.MuscleLoading
-import com.grippo.design.components.muscle.MuscleLoadingMode
+import com.grippo.design.components.metrics.MuscleLoading
+import com.grippo.design.components.metrics.MuscleLoadingImagesMode
+import com.grippo.design.components.metrics.MuscleLoadingImagesRow
+import com.grippo.design.components.metrics.MuscleLoadingMode
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -75,6 +77,14 @@ internal fun MuscleLoadingScreen(
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block)
             ) {
                 state.summary?.let { summary ->
+                    item(key = "images") {
+                        MuscleLoadingImagesRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            summary = summary,
+                            mode = MuscleLoadingImagesMode.Collapsed
+                        )
+                    }
+
                     item(key = "summary") {
                         MuscleLoading(
                             modifier = Modifier.fillMaxWidth(),

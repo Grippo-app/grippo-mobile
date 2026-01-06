@@ -8,7 +8,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.metrics.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
-import com.grippo.design.components.muscle.MuscleLoading
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -37,6 +36,7 @@ public fun MuscleLoadingCard(
 
         MuscleLoading(
             summary = clippedData,
+            mode = MuscleLoadingMode.Collapsed
         )
     }
 }
@@ -45,14 +45,8 @@ public fun MuscleLoadingCard(
 @Composable
 private fun MuscleLoadingCardPreview() {
     PreviewContainer {
-        MuscleLoadingCard(summary = stubMuscleLoadSummary())
-    }
-}
-
-@AppPreview
-@Composable
-private fun MuscleLoadingPreview() {
-    PreviewContainer {
-        MuscleLoading(summary = stubMuscleLoadSummary())
+        MuscleLoadingCard(
+            summary = stubMuscleLoadSummary(),
+        )
     }
 }

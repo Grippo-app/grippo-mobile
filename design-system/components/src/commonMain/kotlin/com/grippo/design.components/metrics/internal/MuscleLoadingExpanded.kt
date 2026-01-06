@@ -1,11 +1,7 @@
-package com.grippo.design.components.muscle.internal
+package com.grippo.design.components.metrics.internal
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
@@ -29,25 +25,15 @@ internal fun MuscleLoadingExpanded(
             palette = palette
         )
     }
+
     val displayedEntries = remember(muscleEntries) {
         muscleEntries
-    }
-
-    val muscleColors = AppTokens.colors.muscle
-
-    val images = remember(muscleEntries, muscleColors) {
-        generateMuscleImages(muscleEntries, muscleColors)
     }
 
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
     ) {
-        MuscleLoadingImagesRow(
-            modifier = Modifier.fillMaxWidth(),
-            images = images
-        )
-
         displayedEntries.forEachIndexed { index, colored ->
             key(index) {
                 MuscleLoadingItem(
@@ -57,28 +43,6 @@ internal fun MuscleLoadingExpanded(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun MuscleLoadingImagesRow(
-    modifier: Modifier = Modifier,
-    images: MuscleLoadingImages
-) {
-    Row(modifier = modifier) {
-        Spacer(Modifier.weight(0.2f))
-        Image(
-            modifier = Modifier.weight(0.8f),
-            imageVector = images.front,
-            contentDescription = null
-        )
-        Image(
-            modifier = Modifier.weight(0.8f),
-            imageVector = images.back,
-            contentDescription = null
-        )
-
-        Spacer(Modifier.weight(0.2f))
     }
 }
 

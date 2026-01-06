@@ -1,12 +1,12 @@
-package com.grippo.design.components.muscle
+package com.grippo.design.components.metrics
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.metrics.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.stubMuscleLoadSummary
-import com.grippo.design.components.muscle.internal.MuscleLoadingCollapsed
-import com.grippo.design.components.muscle.internal.MuscleLoadingExpanded
+import com.grippo.design.components.metrics.internal.MuscleLoadingCollapsed
+import com.grippo.design.components.metrics.internal.MuscleLoadingExpanded
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
@@ -20,7 +20,7 @@ public enum class MuscleLoadingMode {
 public fun MuscleLoading(
     summary: MuscleLoadSummaryState,
     modifier: Modifier = Modifier,
-    mode: MuscleLoadingMode = MuscleLoadingMode.Collapsed,
+    mode: MuscleLoadingMode,
 ) {
     when (mode) {
         MuscleLoadingMode.Collapsed -> MuscleLoadingCollapsed(
