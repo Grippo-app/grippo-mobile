@@ -83,6 +83,8 @@
     <string name="workout_summary">Workout summary</string>
     <string name="go_to_dashboard">Go to dashboard</string>
     <string name="total">Total</string>
+    <string name="per_group">Per Group</string>
+    <string name="per_muscle">Per muscle</string>
     <string name="total_value">Total %1$s</string>
     <string name="add_set_btn">Add Set</string>
     <string name="or">OR</string>

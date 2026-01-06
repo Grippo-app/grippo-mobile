@@ -39,4 +39,8 @@ public class MuscleLoadingViewModel(
 
         update { it.copy(summary = summary) }
     }
+
+    override fun onSelectMode(value: MuscleLoadingShowingMode) {
+        update { it.copy(mode = value) }
+    }
 }

@@ -83,6 +83,8 @@
     <string name="workout_summary">Сводка тренировки</string>
     <string name="go_to_dashboard">Перейти на панель</string>
     <string name="total">Всего</string>
+    <string name="per_group">По группам</string>
+    <string name="per_muscle">По мышцам</string>
     <string name="total_value">Всего %1$s</string>
     <string name="add_set_btn">Добавить подход</string>
     <string name="or">ИЛИ</string>

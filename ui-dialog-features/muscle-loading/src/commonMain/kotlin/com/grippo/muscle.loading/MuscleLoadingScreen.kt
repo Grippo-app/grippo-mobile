@@ -7,10 +7,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
@@ -21,6 +23,9 @@ import com.grippo.design.components.metrics.MuscleLoading
 import com.grippo.design.components.metrics.MuscleLoadingImagesMode
 import com.grippo.design.components.metrics.MuscleLoadingImagesRow
 import com.grippo.design.components.metrics.MuscleLoadingMode
+import com.grippo.design.components.segment.Segment
+import com.grippo.design.components.segment.SegmentStyle
+import com.grippo.design.components.segment.SegmentWidth
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -30,6 +35,7 @@ import com.grippo.design.resources.provider.value_muscle_loading
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun MuscleLoadingScreen(
@@ -64,6 +70,24 @@ internal fun MuscleLoadingScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
+        val segmentItems = remember {
+            MuscleLoadingShowingMode.entries.map { it to it.text }
+                .toPersistentList()
+        }
+
+        Segment(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+            items = segmentItems,
+            selected = state.mode,
+            onSelect = contract::onSelectMode,
+            segmentWidth = SegmentWidth.EqualFill,
+            style = SegmentStyle.Fill
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
         if (loaders.contains(MuscleLoadingLoader.Content)) {
             Loader(modifier = Modifier.fillMaxWidth().weight(1f))
         } else {
@@ -78,18 +102,32 @@ internal fun MuscleLoadingScreen(
             ) {
                 state.summary?.let { summary ->
                     item(key = "images") {
+                        val mode = remember(state.mode) {
+                            when (state.mode) {
+                                MuscleLoadingShowingMode.PerGroup -> MuscleLoadingImagesMode.Collapsed
+                                MuscleLoadingShowingMode.PerMuscle -> MuscleLoadingImagesMode.Expanded
+                            }
+                        }
+
                         MuscleLoadingImagesRow(
                             modifier = Modifier.fillMaxWidth(),
                             summary = summary,
-                            mode = MuscleLoadingImagesMode.Collapsed
+                            mode = mode
                         )
                     }
 
                     item(key = "summary") {
+                        val mode = remember(state.mode) {
+                            when (state.mode) {
+                                MuscleLoadingShowingMode.PerGroup -> MuscleLoadingMode.Collapsed
+                                MuscleLoadingShowingMode.PerMuscle -> MuscleLoadingMode.Expanded
+                            }
+                        }
+
                         MuscleLoading(
                             modifier = Modifier.fillMaxWidth(),
                             summary = summary,
-                            mode = MuscleLoadingMode.Expanded
+                            mode = mode
                         )
                     }
                 }
@@ -106,12 +144,29 @@ internal fun MuscleLoadingScreen(
 
 @AppPreview
 @Composable
-private fun ScreenPreview() {
+private fun ScreenPerGroupPreview() {
     PreviewContainer {
         MuscleLoadingScreen(
             state = MuscleLoadingState(
                 range = DateTimeUtils.trailingWeek(),
-                summary = stubMuscleLoadSummary()
+                summary = stubMuscleLoadSummary(),
+                mode = MuscleLoadingShowingMode.PerGroup
+            ),
+            loaders = persistentSetOf(),
+            contract = MuscleLoadingContract.Empty
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ScreenPerMusclePreview() {
+    PreviewContainer {
+        MuscleLoadingScreen(
+            state = MuscleLoadingState(
+                range = DateTimeUtils.trailingWeek(),
+                summary = stubMuscleLoadSummary(),
+                mode = MuscleLoadingShowingMode.PerMuscle
             ),
             loaders = persistentSetOf(),
             contract = MuscleLoadingContract.Empty
