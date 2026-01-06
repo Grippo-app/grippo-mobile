@@ -47,7 +47,6 @@ internal fun CredentialScreen(
         value = AppTokens.colors.background.screen
     )
 ) {
-
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
         leading = Leading.Back(contract::onBack),
