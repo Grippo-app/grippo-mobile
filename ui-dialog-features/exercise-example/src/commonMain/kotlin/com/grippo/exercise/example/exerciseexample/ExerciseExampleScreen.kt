@@ -32,7 +32,7 @@ import com.grippo.design.components.equipment.EquipmentsCard
 import com.grippo.design.components.example.DescriptionText
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
-import com.grippo.design.components.metrics.EstimatedOneRepMaxSection
+import com.grippo.design.components.metrics.EstimatedOneRepMaxCard
 import com.grippo.design.components.metrics.VolumeMetricChart
 import com.grippo.design.components.muscle.MuscleLoading
 import com.grippo.design.components.spliter.ContentSpliter
@@ -181,7 +181,7 @@ internal fun ExerciseExampleScreen(
                 if (state.estimatedOneRepMax != null) {
                     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-                    EstimatedOneRepMaxSection(
+                    EstimatedOneRepMaxCard(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),

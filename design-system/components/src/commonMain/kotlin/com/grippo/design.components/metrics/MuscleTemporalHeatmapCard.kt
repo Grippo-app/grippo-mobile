@@ -14,7 +14,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
 @Composable
-public fun TemporalHeatmapSection(
+public fun MuscleTemporalHeatmapCard(
     state: MuscleLoadTimelineState,
     modifier: Modifier = Modifier,
     title: String? = null,
@@ -40,9 +40,9 @@ public fun TemporalHeatmapSection(
 
 @AppPreview
 @Composable
-private fun TemporalHeatmapSectionPreview() {
+private fun MuscleTemporalHeatmapCardPreview() {
     PreviewContainer {
-        TemporalHeatmapSection(
+        MuscleTemporalHeatmapCard(
             state = stubMuscleLoadTimeline(),
             modifier = Modifier.fillMaxWidth(),
             title = "Heatmap"

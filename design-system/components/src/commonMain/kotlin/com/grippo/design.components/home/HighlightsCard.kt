@@ -30,10 +30,10 @@ import com.grippo.core.state.metrics.stubExerciseSpotlight
 import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.stubPerformanceMetrics
 import com.grippo.core.state.metrics.stubTrainingStreaks
-import com.grippo.design.components.metrics.ExerciseSpotlightSection
-import com.grippo.design.components.metrics.MuscleLoadSection
-import com.grippo.design.components.metrics.PerformanceTrendSection
-import com.grippo.design.components.metrics.TrainingStreakSection
+import com.grippo.design.components.metrics.ExerciseSpotlightCard
+import com.grippo.design.components.metrics.MuscleLoadingCard
+import com.grippo.design.components.metrics.PerformanceTrendCard
+import com.grippo.design.components.metrics.TrainingStreakCard
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -137,7 +137,7 @@ public fun HighlightsCard(
                 { onExampleClick.invoke(spotlightValue.exercise.value.id) }
             }
 
-            ExerciseSpotlightSection(
+            ExerciseSpotlightCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .scalableClick(onClick = onExampleClickProvider),
@@ -155,7 +155,7 @@ public fun HighlightsCard(
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(spacing),
             ) {
-                MuscleLoadSection(
+                MuscleLoadingCard(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
@@ -163,7 +163,7 @@ public fun HighlightsCard(
                     summary = muscleLoad
                 )
 
-                TrainingStreakSection(
+                TrainingStreakCard(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
@@ -172,7 +172,7 @@ public fun HighlightsCard(
                 )
             }
         } else {
-            TrainingStreakSection(
+            TrainingStreakCard(
                 modifier = Modifier.fillMaxWidth(),
                 value = streak
             )
@@ -198,7 +198,7 @@ public fun HighlightsCard(
                     horizontalArrangement = Arrangement.spacedBy(spacing),
                 ) {
                     metrics.forEach { metric ->
-                        PerformanceTrendSection(
+                        PerformanceTrendCard(
                             modifier = Modifier.weight(1f),
                             metric = metric
                         )

@@ -38,7 +38,7 @@ import com.grippo.design.resources.provider.volume
 import com.grippo.toolkit.date.utils.DateTimeUtils
 
 @Composable
-public fun PerformanceTrendSection(
+public fun PerformanceTrendCard(
     metric: PerformanceMetricState,
     modifier: Modifier = Modifier,
 ) {
@@ -205,15 +205,15 @@ private fun formatTrendDelta(delta: Int): String {
 
 @AppPreview
 @Composable
-private fun PerformanceTrendSectionPreview() {
+private fun PerformanceTrendCardPreview() {
     PreviewContainer {
-        PerformanceTrendSection(
+        PerformanceTrendCard(
             metric = stubPerformanceMetrics().random()
         )
-        PerformanceTrendSection(
+        PerformanceTrendCard(
             metric = stubPerformanceMetrics().random()
         )
-        PerformanceTrendSection(
+        PerformanceTrendCard(
             metric = stubPerformanceMetrics().random()
         )
     }

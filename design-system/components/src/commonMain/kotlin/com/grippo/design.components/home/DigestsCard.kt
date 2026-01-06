@@ -17,8 +17,8 @@ import com.grippo.core.state.metrics.MonthlyDigestState
 import com.grippo.core.state.metrics.WeeklyDigestState
 import com.grippo.core.state.metrics.stubMonthlyDigest
 import com.grippo.core.state.metrics.stubWeeklyDigest
-import com.grippo.design.components.metrics.MonthDigestCard
-import com.grippo.design.components.metrics.WeekDigestCard
+import com.grippo.design.components.metrics.DigestMonthCard
+import com.grippo.design.components.metrics.DigestWeekCard
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -60,7 +60,7 @@ public fun DigestsCard(
 
         Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
 
-        MonthDigestCard(
+        DigestMonthCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .scalableClick(onClick = onMonthlyClick),
@@ -69,7 +69,7 @@ public fun DigestsCard(
 
         Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
 
-        WeekDigestCard(
+        DigestWeekCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .scalableClick(onClick = onWeeklyClick),

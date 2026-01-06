@@ -30,7 +30,7 @@ import com.grippo.core.state.muscles.MuscleEnumState
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.ExerciseDistributionChart
 import com.grippo.design.components.metrics.ForceTypeDistributionChart
-import com.grippo.design.components.metrics.TemporalHeatmapSection
+import com.grippo.design.components.metrics.MuscleTemporalHeatmapCard
 import com.grippo.design.components.metrics.TrainingTotalSection
 import com.grippo.design.components.metrics.VolumeMetricChart
 import com.grippo.design.components.metrics.WeightTypeDistributionChart
@@ -188,7 +188,7 @@ internal fun StatisticsScreen(
                         item(key = "temporal_heatmap") {
                             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-                            TemporalHeatmapSection(
+                            MuscleTemporalHeatmapCard(
                                 modifier = Modifier.fillMaxWidth(),
                                 state = data,
                             )

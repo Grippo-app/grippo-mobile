@@ -17,7 +17,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.highlight_focus_exercise
 
 @Composable
-public fun ExerciseSpotlightSection(
+public fun ExerciseSpotlightCard(
     value: ExerciseSpotlightState,
     modifier: Modifier = Modifier,
 ) {
@@ -42,9 +42,9 @@ public fun ExerciseSpotlightSection(
 
 @AppPreview
 @Composable
-private fun ExerciseSpotlightSectionPreview() {
+private fun ExerciseSpotlightCardPreview() {
     PreviewContainer {
-        ExerciseSpotlightSection(
+        ExerciseSpotlightCard(
             value = stubExerciseSpotlight(),
         )
     }

@@ -1,18 +1,13 @@
 package com.grippo.design.components.metrics
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.metrics.TrainingStreakFeaturedState
 import com.grippo.core.state.metrics.TrainingStreakMood
-import com.grippo.core.state.metrics.TrainingStreakProgressState
 import com.grippo.core.state.metrics.TrainingStreakState
 import com.grippo.core.state.metrics.stubTrainingStreaks
 import com.grippo.design.components.indicators.LineIndicator
@@ -36,17 +31,11 @@ import com.grippo.design.resources.provider.highlight_streak_weekly_headline_pri
 import com.grippo.design.resources.provider.highlight_streak_weekly_headline_secondary
 import com.grippo.design.resources.provider.highlight_streak_weekly_target
 import com.grippo.design.resources.provider.highlight_streaks
-import com.grippo.design.resources.provider.training_streak_confidence_title
-import com.grippo.design.resources.provider.training_streak_confidence_value
-import com.grippo.design.resources.provider.training_streak_period_label
-import com.grippo.design.resources.provider.training_streak_period_value
-import com.grippo.design.resources.provider.training_streak_timeline_title
-import kotlin.math.roundToInt
 
 @Composable
-public fun TrainingStreakSection(
-    value: TrainingStreakState,
+public fun TrainingStreakCard(
     modifier: Modifier = Modifier,
+    value: TrainingStreakState,
 ) {
     MetricSectionPanel(modifier = modifier) {
         val title = AppTokens.strings.res(Res.string.highlight_streaks)
@@ -180,125 +169,12 @@ public fun TrainingStreakSection(
     }
 }
 
-@Composable
-public fun TrainingStreakInsights(
-    value: TrainingStreakState,
-    modifier: Modifier = Modifier,
-) {
-    val confidencePercent = (value.featured.confidence * 100).roundToInt()
-
-    Column(
-        modifier = modifier
-            .background(
-                color = AppTokens.colors.background.card,
-                shape = RoundedCornerShape(AppTokens.dp.metrics.panel.radius)
-            )
-            .padding(AppTokens.dp.contentPadding.block),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
-    ) {
-        Text(
-            text = AppTokens.strings.res(Res.string.training_streak_confidence_title),
-            style = AppTokens.typography.b12Med(),
-            color = AppTokens.colors.text.secondary
-        )
-
-        Text(
-            text = AppTokens.strings.res(Res.string.highlight_active_days, value.totalActiveDays),
-            style = AppTokens.typography.b14Semi(),
-            color = AppTokens.colors.text.primary
-        )
-
-        Text(
-            text = AppTokens.strings.res(
-                Res.string.training_streak_confidence_value,
-                confidencePercent
-            ),
-            style = AppTokens.typography.b13Med(),
-            color = AppTokens.colors.text.secondary
-        )
-    }
-}
-
-@Composable
-public fun TrainingStreakTimeline(
-    entries: List<TrainingStreakProgressState>,
-    modifier: Modifier = Modifier,
-) {
-    if (entries.isEmpty()) return
-
-    Column(
-        modifier = modifier
-            .background(
-                color = AppTokens.colors.background.card,
-                shape = RoundedCornerShape(AppTokens.dp.metrics.panel.radius)
-            )
-            .padding(AppTokens.dp.contentPadding.block),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-    ) {
-        Text(
-            text = AppTokens.strings.res(Res.string.training_streak_timeline_title),
-            style = AppTokens.typography.b12Med(),
-            color = AppTokens.colors.text.secondary
-        )
-
-        entries.asReversed().forEachIndexed { index, entry ->
-            val cycleNumber = entries.size - index
-            TrainingStreakTimelineRow(
-                cycleNumber = cycleNumber,
-                entry = entry
-            )
-        }
-    }
-}
-
-@Composable
-private fun TrainingStreakTimelineRow(
-    cycleNumber: Int,
-    entry: TrainingStreakProgressState,
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)) {
-        Text(
-            text = AppTokens.strings.res(Res.string.training_streak_period_label, cycleNumber),
-            style = AppTokens.typography.b13Med(),
-            color = AppTokens.colors.text.primary
-        )
-
-        Text(
-            text = AppTokens.strings.res(
-                Res.string.training_streak_period_value,
-                entry.achievedSessions,
-                entry.targetSessions
-            ),
-            style = AppTokens.typography.b13Med(),
-            color = AppTokens.colors.text.secondary
-        )
-
-        val progressColors = when {
-            entry.progressPercent >= 80 -> AppTokens.colors.lineIndicator.success
-            entry.progressPercent >= 40 -> AppTokens.colors.lineIndicator.info
-            else -> AppTokens.colors.lineIndicator.warning
-        }
-
-        LineIndicator(
-            modifier = Modifier.fillMaxWidth(),
-            progress = (entry.progressPercent.coerceIn(0, 100)) / 100f,
-            colors = progressColors
-        )
-    }
-}
-
 @AppPreview
 @Composable
-private fun TrainingStreakSectionPreview() {
+private fun TrainingStreakCardPreviewCardPreview() {
     PreviewContainer {
-        TrainingStreakSection(
+        TrainingStreakCard(
             value = stubTrainingStreaks().random(),
-        )
-        TrainingStreakInsights(
-            value = stubTrainingStreaks().random()
-        )
-        TrainingStreakTimeline(
-            entries = stubTrainingStreaks().random().timeline
         )
     }
 }

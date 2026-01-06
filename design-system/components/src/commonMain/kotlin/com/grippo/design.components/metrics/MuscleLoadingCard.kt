@@ -16,7 +16,7 @@ import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.highlight_muscle_focus
 
 @Composable
-public fun MuscleLoadSection(
+public fun MuscleLoadingCard(
     summary: MuscleLoadSummaryState,
     modifier: Modifier = Modifier,
 ) {
@@ -43,9 +43,9 @@ public fun MuscleLoadSection(
 
 @AppPreview
 @Composable
-private fun MuscleLoadSectionPreview() {
+private fun MuscleLoadingCardPreview() {
     PreviewContainer {
-        MuscleLoadSection(summary = stubMuscleLoadSummary())
+        MuscleLoadingCard(summary = stubMuscleLoadSummary())
     }
 }
 

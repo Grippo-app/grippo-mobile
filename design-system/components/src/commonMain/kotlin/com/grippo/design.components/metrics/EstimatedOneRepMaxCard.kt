@@ -22,7 +22,7 @@ import com.grippo.design.resources.provider.kg
 import kotlin.math.roundToInt
 
 @Composable
-public fun EstimatedOneRepMaxSection(
+public fun EstimatedOneRepMaxCard(
     state: EstimatedOneRepMaxState,
     modifier: Modifier = Modifier,
 ) {
@@ -72,9 +72,9 @@ public fun EstimatedOneRepMaxSection(
 
 @AppPreview
 @Composable
-private fun EstimatedOneRepMaxSectionPreview() {
+private fun EstimatedOneRepMaxCardPreview() {
     PreviewContainer {
-        EstimatedOneRepMaxSection(
+        EstimatedOneRepMaxCard(
             state = stubEstimatedOneRepMax()
         )
     }

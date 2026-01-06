@@ -17,9 +17,9 @@ import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.metrics.stubTrainingStreaks
 import com.grippo.design.components.loading.Loader
-import com.grippo.design.components.metrics.TrainingStreakInsights
-import com.grippo.design.components.metrics.TrainingStreakSection
-import com.grippo.design.components.metrics.TrainingStreakTimeline
+import com.grippo.design.components.metrics.TrainingStreakCard
+import com.grippo.design.components.metrics.TrainingStreakInsightsCard
+import com.grippo.design.components.metrics.TrainingStreakTimelineCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -77,21 +77,21 @@ internal fun TrainingStreakScreen(
             ) {
                 state.streak?.let { streak ->
                     item(key = "summary") {
-                        TrainingStreakSection(
+                        TrainingStreakCard(
                             modifier = Modifier.fillMaxWidth(),
                             value = streak
                         )
                     }
 
                     item(key = "insights") {
-                        TrainingStreakInsights(
+                        TrainingStreakInsightsCard(
                             modifier = Modifier.fillMaxWidth(),
                             value = streak
                         )
                     }
 
                     item(key = "timeline") {
-                        TrainingStreakTimeline(
+                        TrainingStreakTimelineCard(
                             modifier = Modifier.fillMaxWidth(),
                             entries = streak.timeline
                         )

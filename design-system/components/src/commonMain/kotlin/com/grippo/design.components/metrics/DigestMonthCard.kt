@@ -22,7 +22,7 @@ import com.grippo.toolkit.date.utils.DateFormat
 import com.grippo.toolkit.date.utils.DateTimeUtils
 
 @Composable
-public fun MonthDigestCard(
+public fun DigestMonthCard(
     modifier: Modifier = Modifier,
     value: MonthlyDigestState,
 ) {
@@ -69,9 +69,9 @@ public fun MonthDigestCard(
 
 @AppPreview
 @Composable
-private fun MonthDigestCardPreview() {
+private fun DigestMonthCardPreview() {
     PreviewContainer {
-        MonthDigestCard(
+        DigestMonthCard(
             value = stubMonthlyDigest(),
         )
     }
