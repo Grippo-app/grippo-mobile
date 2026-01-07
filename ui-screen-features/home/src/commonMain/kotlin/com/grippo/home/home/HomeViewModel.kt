@@ -3,6 +3,7 @@ package com.grippo.home.home
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.profile.ProfileMenu
 import com.grippo.core.state.profile.SettingsMenu
+import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.metrics.ExerciseSpotlightUseCase
 import com.grippo.data.features.api.metrics.MuscleLoadingSummaryUseCase
 import com.grippo.data.features.api.metrics.PerformanceTrendUseCase
@@ -29,6 +30,7 @@ internal class HomeViewModel(
     private val trainingStreakUseCase: TrainingStreakUseCase,
     private val performanceTrendUseCase: PerformanceTrendUseCase,
     private val trainingDigestUseCase: TrainingDigestUseCase,
+    private val exerciseExampleFeature: ExerciseExampleFeature,
 ) : BaseViewModel<HomeState, HomeDirection, HomeLoader>(
     HomeState()
 ), HomeContract {
@@ -41,10 +43,14 @@ internal class HomeViewModel(
             .onEach(::provideTrainings)
             .safeLaunch()
 
-        safeLaunch {
+        safeLaunch(loader = HomeLoader.Trainings) {
             trainingFeature
                 .getTrainings(start = range.from, end = range.to)
                 .getOrThrow()
+        }
+
+        safeLaunch {
+            exerciseExampleFeature.getExerciseExamples()
         }
     }
 

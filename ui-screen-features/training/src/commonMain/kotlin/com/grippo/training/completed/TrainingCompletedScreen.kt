@@ -143,6 +143,20 @@ internal fun TrainingCompletedScreen(
                                 }
                             }
 
+                            if (state.message != null) {
+                                item(key = "message") {
+                                    Text(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        text = state.message,
+                                        style = AppTokens.typography.h4(),
+                                        color = AppTokens.colors.text.primary,
+
+                                        )
+
+                                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+                                }
+                            }
+
                             items(
                                 items = state.timeline,
                                 key = { it.key },

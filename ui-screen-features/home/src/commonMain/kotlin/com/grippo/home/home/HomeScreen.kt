@@ -26,6 +26,7 @@ import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
+import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.DigestsCard
 import com.grippo.design.components.metrics.HighlightsCard
 import com.grippo.design.components.metrics.LastTrainingCard
@@ -75,7 +76,13 @@ internal fun HomeScreen(
             )
         },
     )
-    if (isEmptyState) {
+
+    if (isEmptyState && loaders.contains(HomeLoader.Trainings)) {
+        Loader(modifier = Modifier.fillMaxWidth().weight(1f))
+        return@BaseComposeScreen
+    }
+
+    if (isEmptyState && loaders.contains(HomeLoader.Trainings).not()) {
         EmptyHomeContent(
             modifier = Modifier
                 .fillMaxWidth()
