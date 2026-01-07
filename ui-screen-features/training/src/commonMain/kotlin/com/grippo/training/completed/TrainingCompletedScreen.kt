@@ -136,22 +136,9 @@ internal fun TrainingCompletedScreen(
                                     TrainingSummaryCard(
                                         modifier = Modifier.fillMaxWidth(),
                                         training = state.training,
-                                        summary = state.summary
+                                        summary = state.summary,
+                                        onClick = contract::onSummaryClick
                                     )
-
-                                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-                                }
-                            }
-
-                            if (state.message != null) {
-                                item(key = "message") {
-                                    Text(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        text = state.message,
-                                        style = AppTokens.typography.h4(),
-                                        color = AppTokens.colors.text.primary,
-
-                                        )
 
                                     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
                                 }

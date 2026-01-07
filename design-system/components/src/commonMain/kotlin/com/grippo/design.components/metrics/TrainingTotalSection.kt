@@ -26,7 +26,7 @@ public fun TrainingTotalSection(
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.metrics.summary.spacing)
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
         state.volume
             .takeIf { it.value != null }

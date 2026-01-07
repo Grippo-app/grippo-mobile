@@ -12,5 +12,4 @@ internal data class TrainingCompletedState(
     val timeline: ImmutableList<TimelineState> = persistentListOf(),
     val training: TrainingState? = null,
     val summary: MuscleLoadSummaryState? = null,
-    val message: String? = null,
 )

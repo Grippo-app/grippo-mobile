@@ -10,6 +10,7 @@ import com.grippo.core.state.metrics.stubExerciseSpotlight
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
+import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -21,7 +22,10 @@ public fun ExerciseSpotlightCard(
     value: ExerciseSpotlightState,
     modifier: Modifier = Modifier,
 ) {
-    MetricSectionPanel(modifier = modifier) {
+    MetricSectionPanel(
+        modifier = modifier,
+        style = MetricSectionPanelStyle.Small,
+    ) {
         Text(
             text = AppTokens.strings.res(Res.string.highlight_focus_exercise),
             style = AppTokens.typography.b12Med(),

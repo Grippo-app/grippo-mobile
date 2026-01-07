@@ -37,7 +37,6 @@ public fun DigestWeekCard(
         horizontalPadding = AppTokens.dp.digest.week.horizontalPadding,
         verticalPadding = AppTokens.dp.digest.week.verticalPadding,
         iconSize = AppTokens.dp.digest.week.icon,
-        illustrationSize = AppTokens.dp.digest.week.image,
     )
 
     DigestsSection(

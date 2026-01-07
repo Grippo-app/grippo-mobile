@@ -9,6 +9,7 @@ import com.grippo.core.state.metrics.MuscleLoadTimelineState
 import com.grippo.core.state.metrics.stubMuscleLoadTimeline
 import com.grippo.design.components.chart.MuscleHeatmapChart
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
+import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -19,7 +20,10 @@ public fun MuscleTemporalHeatmapCard(
     modifier: Modifier = Modifier,
     title: String? = null,
 ) {
-    MetricSectionPanel(modifier = modifier) {
+    MetricSectionPanel(
+        modifier = modifier,
+        style = MetricSectionPanelStyle.Small,
+    ) {
         title?.let {
             Text(
                 text = it,

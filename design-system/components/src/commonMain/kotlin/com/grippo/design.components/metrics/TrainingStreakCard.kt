@@ -12,6 +12,7 @@ import com.grippo.core.state.metrics.TrainingStreakState
 import com.grippo.core.state.metrics.stubTrainingStreaks
 import com.grippo.design.components.indicators.LineIndicator
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
+import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -37,7 +38,10 @@ public fun TrainingStreakCard(
     modifier: Modifier = Modifier,
     value: TrainingStreakState,
 ) {
-    MetricSectionPanel(modifier = modifier) {
+    MetricSectionPanel(
+        modifier = modifier,
+        style = MetricSectionPanelStyle.Small,
+    ) {
         val title = AppTokens.strings.res(Res.string.highlight_streaks)
 
         val (headlinePrimary, headlineSecondary) = when (val featured = value.featured) {

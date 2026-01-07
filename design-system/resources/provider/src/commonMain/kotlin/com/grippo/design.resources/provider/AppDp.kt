@@ -133,23 +133,21 @@ public data object AppDp {
 
         public data object Layout {
             val radius: Dp = AppDp.radius.small
-            val horizontalPadding: Dp = padding.small
-            val verticalPadding: Dp = padding.extraSmall
+            val horizontalPadding: Dp = padding.medium
+            val verticalPadding: Dp = padding.small
         }
 
         public data object Week {
-            val radius: Dp = AppDp.radius.small
+            val radius: Dp = AppDp.radius.medium
             val horizontalPadding: Dp = padding.medium
             val verticalPadding: Dp = padding.medium
-            val image: Dp = AppDp.icon.xxxLarge
             val icon: Dp = AppDp.icon.large
         }
 
         public data object Month {
-            val radius: Dp = AppDp.radius.small
+            val radius: Dp = AppDp.radius.medium
             val horizontalPadding: Dp = padding.medium
             val verticalPadding: Dp = padding.medium
-            val image: Dp = AppDp.icon.xxxLarge
             val icon: Dp = AppDp.icon.large
         }
     }
@@ -172,9 +170,9 @@ public data object AppDp {
         val status: Status = Status
         val distribution: Distribution = Distribution
         val volume: Volume = Volume
-        val summary: Summary = Summary
         val strength: Strength = Strength
         val lastTraining: LastTraining = LastTraining
+        val trainingSummary: TrainingSummary = TrainingSummary
 
         public data object Highlights {
             val icon: Dp = AppDp.icon.medium
@@ -187,7 +185,22 @@ public data object AppDp {
         }
 
         public data object Panel {
-            val radius: Dp = AppDp.radius.small
+            val small: Small = Small
+            val large: Large = Large
+
+            public data object Small {
+                val radius: Dp = AppDp.radius.small
+                val horizontalPadding: Dp = padding.medium
+                val verticalPadding: Dp = padding.medium
+                val spacer: Dp = padding.small
+            }
+
+            public data object Large {
+                val radius: Dp = AppDp.radius.medium
+                val horizontalPadding: Dp = padding.large
+                val verticalPadding: Dp = padding.large
+                val spacer: Dp = padding.medium
+            }
         }
 
         public data object Digests {
@@ -202,10 +215,6 @@ public data object AppDp {
             val height: Dp = icon.xxxLarge
         }
 
-        public data object Summary {
-            val spacing: Dp = padding.medium
-        }
-
         public data object Strength {
             val height: Dp = icon.xxxLarge
         }
@@ -215,6 +224,10 @@ public data object AppDp {
             val horizontalPadding: Dp = padding.large
             val verticalPadding: Dp = padding.large
             val image: Dp = icon.xxxxLarge
+        }
+
+        public data object TrainingSummary {
+            val spot: Dp = icon.xxxxLarge
         }
     }
 

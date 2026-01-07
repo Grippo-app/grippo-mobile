@@ -8,6 +8,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.metrics.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
+import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -19,7 +20,10 @@ public fun MuscleLoadingCard(
     summary: MuscleLoadSummaryState,
     modifier: Modifier = Modifier,
 ) {
-    MetricSectionPanel(modifier = modifier) {
+    MetricSectionPanel(
+        modifier = modifier,
+        style = MetricSectionPanelStyle.Small,
+    ) {
         Text(
             text = AppTokens.strings.res(Res.string.highlight_muscle_focus),
             style = AppTokens.typography.b12Med(),

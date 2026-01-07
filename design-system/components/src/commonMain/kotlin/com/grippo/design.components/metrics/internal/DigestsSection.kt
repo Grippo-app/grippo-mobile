@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,13 +18,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
-import com.grippo.design.components.modifiers.spot
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -50,17 +47,6 @@ internal fun DigestsSection(
                 shape = RoundedCornerShape(style.radius)
             )
     ) {
-        Icon(
-            modifier = Modifier
-                .spot(color = accentColor)
-                .align(Alignment.CenterEnd)
-                .offset(x = (style.illustrationSize / 2))
-                .size(style.illustrationSize)
-                .alpha(0.15f),
-            imageVector = icon,
-            contentDescription = null,
-        )
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -68,7 +54,7 @@ internal fun DigestsSection(
                     horizontal = style.horizontalPadding,
                     vertical = style.verticalPadding
                 ),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
         ) {
             DigestCardHeader(
                 icon = icon,
@@ -190,17 +176,9 @@ private fun DigestMetricPanel(
     value: String,
     accentColor: Color,
 ) {
-    val shape = RoundedCornerShape(AppTokens.dp.metrics.panel.radius)
-
-    Column(
-        modifier = modifier
-            .clip(shape)
-            .background(
-                color = accentColor.copy(alpha = 0.08f),
-                shape = shape
-            )
-            .padding(AppTokens.dp.contentPadding.content),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
+    MetricSectionPanel(
+        modifier = modifier,
+        style = MetricSectionPanelStyle.Small,
     ) {
         Text(
             text = label,
@@ -230,7 +208,6 @@ internal data class DigestCardStyle(
     val horizontalPadding: Dp,
     val verticalPadding: Dp,
     val iconSize: Dp,
-    val illustrationSize: Dp,
 )
 
 @AppPreview
@@ -242,7 +219,6 @@ private fun DigestsSectionPreview() {
             horizontalPadding = AppTokens.dp.digest.week.horizontalPadding,
             verticalPadding = AppTokens.dp.digest.week.verticalPadding,
             iconSize = AppTokens.dp.digest.week.icon,
-            illustrationSize = AppTokens.dp.digest.week.image,
         )
 
         DigestsSection(

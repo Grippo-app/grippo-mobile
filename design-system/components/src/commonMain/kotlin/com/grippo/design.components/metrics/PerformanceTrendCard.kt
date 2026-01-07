@@ -20,6 +20,7 @@ import com.grippo.core.state.metrics.PerformanceMetricTypeState
 import com.grippo.core.state.metrics.PerformanceTrendStatusState
 import com.grippo.core.state.metrics.stubPerformanceMetrics
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
+import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -42,7 +43,10 @@ public fun PerformanceTrendCard(
     metric: PerformanceMetricState,
     modifier: Modifier = Modifier,
 ) {
-    MetricSectionPanel(modifier = modifier) {
+    MetricSectionPanel(
+        modifier = modifier,
+        style = MetricSectionPanelStyle.Small,
+    ) {
         val label = when (metric.type) {
             PerformanceMetricTypeState.Duration -> AppTokens.strings.res(Res.string.duration)
             PerformanceMetricTypeState.Volume -> AppTokens.strings.res(Res.string.volume)

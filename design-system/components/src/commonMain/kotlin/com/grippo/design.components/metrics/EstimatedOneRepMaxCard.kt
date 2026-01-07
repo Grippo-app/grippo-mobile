@@ -12,6 +12,7 @@ import com.grippo.core.state.metrics.EstimatedOneRepMaxState
 import com.grippo.core.state.metrics.stubEstimatedOneRepMax
 import com.grippo.design.components.chart.internal.Sparkline
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
+import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -26,7 +27,10 @@ public fun EstimatedOneRepMaxCard(
     state: EstimatedOneRepMaxState,
     modifier: Modifier = Modifier,
 ) {
-    MetricSectionPanel(modifier = modifier) {
+    MetricSectionPanel(
+        modifier = modifier,
+        style = MetricSectionPanelStyle.Large,
+    ) {
         val title = AppTokens.strings.res(Res.string.estimated_one_rm)
         val kg = AppTokens.strings.res(Res.string.kg)
         val latest = state.entries.lastOrNull()?.value ?: 0f

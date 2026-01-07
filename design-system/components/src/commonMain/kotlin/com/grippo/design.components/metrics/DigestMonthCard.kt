@@ -36,7 +36,6 @@ public fun DigestMonthCard(
         horizontalPadding = AppTokens.dp.digest.month.horizontalPadding,
         verticalPadding = AppTokens.dp.digest.month.verticalPadding,
         iconSize = AppTokens.dp.digest.month.icon,
-        illustrationSize = AppTokens.dp.digest.month.image,
     )
 
     DigestsSection(

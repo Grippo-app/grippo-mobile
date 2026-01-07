@@ -1,17 +1,16 @@
 package com.grippo.design.components.metrics
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.metrics.TrainingStreakProgressState
 import com.grippo.core.state.metrics.stubTrainingStreaks
 import com.grippo.design.components.indicators.LineIndicator
+import com.grippo.design.components.metrics.internal.MetricSectionPanel
+import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -27,14 +26,9 @@ public fun TrainingStreakTimelineCard(
 ) {
     if (entries.isEmpty()) return
 
-    Column(
-        modifier = modifier
-            .background(
-                color = AppTokens.colors.background.card,
-                shape = RoundedCornerShape(AppTokens.dp.metrics.panel.radius)
-            )
-            .padding(AppTokens.dp.contentPadding.block),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+    MetricSectionPanel(
+        modifier = modifier,
+        style = MetricSectionPanelStyle.Small,
     ) {
         Text(
             text = AppTokens.strings.res(Res.string.training_streak_timeline_title),
