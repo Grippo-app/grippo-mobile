@@ -99,9 +99,15 @@ internal fun colorizeEntries(
     val maxValue = entries.maxOf { it.value }
     val minValue = entries.minOf { it.value }
     val range = (maxValue - minValue).takeIf { it > 0f } ?: 1f
+    val useMaxColor = entries.size == 1
+    val maxPaletteColor = palette.lastOrNull() ?: Color.Unspecified
 
     return entries.mapIndexed { index, entry ->
-        val baseColor = colorByValue(entry.value, minValue, range, palette)
+        val baseColor = if (useMaxColor) {
+            maxPaletteColor
+        } else {
+            colorByValue(entry.value, minValue, range, palette)
+        }
         val color = colorTransformer(index, baseColor)
         ColoredEntry(entry = entry, color = color)
     }
