@@ -182,7 +182,7 @@ internal class HomeViewModel(
 
         val range = DateRange(
             from = DateTimeUtils.minus(now, 90.days),
-            to = now
+            to = DateTimeUtils.plus(now, 1.days)
         )
 
         return range
