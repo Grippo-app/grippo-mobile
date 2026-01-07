@@ -124,7 +124,7 @@ public fun LastTrainingCard(
 
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = "✓ ${it.name}",
+                    text = "✓ ${it.exerciseExample.name}",
                     style = AppTokens.typography.b13Semi(),
                     color = AppTokens.colors.text.secondary
                 )

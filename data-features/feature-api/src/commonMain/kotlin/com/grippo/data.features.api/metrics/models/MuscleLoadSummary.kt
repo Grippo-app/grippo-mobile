@@ -1,6 +1,7 @@
 package com.grippo.data.features.api.metrics.models
 
 import com.grippo.data.features.api.muscle.models.MuscleEnum
+import com.grippo.data.features.api.muscle.models.MuscleGroupEnum
 
 public data class MuscleLoadSummary(
     val perGroup: MuscleLoadBreakdown,
@@ -21,7 +22,7 @@ public data class MuscleLoadBreakdown(
 )
 
 public data class MuscleLoadEntry(
-    val label: String,
+    val group: MuscleGroupEnum,
     val percentage: Float,
     val muscles: List<MuscleEnum>,
 )

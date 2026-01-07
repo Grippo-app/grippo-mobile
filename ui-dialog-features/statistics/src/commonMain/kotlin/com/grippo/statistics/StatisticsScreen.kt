@@ -16,17 +16,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
-import com.grippo.core.state.metrics.MuscleLoadBreakdownState
-import com.grippo.core.state.metrics.MuscleLoadDominanceState
-import com.grippo.core.state.metrics.MuscleLoadEntryState
-import com.grippo.core.state.metrics.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.stubCategoryDistribution
 import com.grippo.core.state.metrics.stubForceDistribution
+import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.stubMuscleLoadTimeline
 import com.grippo.core.state.metrics.stubTotal
 import com.grippo.core.state.metrics.stubVolumeSeries
 import com.grippo.core.state.metrics.stubWeightDistribution
-import com.grippo.core.state.muscles.MuscleEnumState
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.ExerciseDistributionChart
 import com.grippo.design.components.metrics.ForceTypeDistributionChart
@@ -47,7 +43,6 @@ import com.grippo.design.resources.provider.trends
 import com.grippo.design.resources.provider.value_statistics
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableSet
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
@@ -211,93 +206,16 @@ internal fun StatisticsScreen(
 @Composable
 private fun ScreenPreview() {
     PreviewContainer {
-        val mode = StatisticsMode.Trainings(
-            range = DateTimeUtils.thisWeek()
-        )
-
-        val exerciseVolume = stubVolumeSeries()
-
-        val categoryDistribution = stubCategoryDistribution()
-        val weightDistribution = stubWeightDistribution()
-        val forceDistribution = stubForceDistribution()
-
-        val muscleLoad = MuscleLoadSummaryState(
-            perGroup = MuscleLoadBreakdownState(
-                entries = listOf(
-                    MuscleLoadEntryState(
-                        label = "Chest",
-                        value = 0.78f,
-                        muscles = persistentListOf(
-                            MuscleEnumState.PECTORALIS_MAJOR_CLAVICULAR,
-                            MuscleEnumState.PECTORALIS_MAJOR_STERNOCOSTAL
-                        )
-                    ),
-                    MuscleLoadEntryState(
-                        label = "Back",
-                        value = 0.64f,
-                        muscles = persistentListOf(
-                            MuscleEnumState.LATISSIMUS_DORSI,
-                            MuscleEnumState.TRAPEZIUS
-                        )
-                    ),
-                    MuscleLoadEntryState(
-                        label = "Legs",
-                        value = 0.52f,
-                        muscles = persistentListOf(
-                            MuscleEnumState.QUADRICEPS,
-                            MuscleEnumState.HAMSTRINGS
-                        )
-                    )
-                )
-            ),
-            perMuscle = MuscleLoadBreakdownState(
-                entries = listOf(
-                    MuscleLoadEntryState(
-                        label = "Chest",
-                        value = 0.78f,
-                        muscles = persistentListOf(
-                            MuscleEnumState.PECTORALIS_MAJOR_CLAVICULAR,
-                            MuscleEnumState.PECTORALIS_MAJOR_STERNOCOSTAL
-                        )
-                    ),
-                    MuscleLoadEntryState(
-                        label = "Back",
-                        value = 0.64f,
-                        muscles = persistentListOf(
-                            MuscleEnumState.LATISSIMUS_DORSI,
-                            MuscleEnumState.TRAPEZIUS
-                        )
-                    ),
-                    MuscleLoadEntryState(
-                        label = "Legs",
-                        value = 0.52f,
-                        muscles = persistentListOf(
-                            MuscleEnumState.QUADRICEPS,
-                            MuscleEnumState.HAMSTRINGS
-                        )
-                    )
-                )
-            ),
-            volumePerGroup = MuscleLoadBreakdownState(entries = emptyList()),
-            volumePerMuscle = MuscleLoadBreakdownState(entries = emptyList()),
-            dominance = MuscleLoadDominanceState(
-                top1SharePercent = 52f,
-                top2SharePercent = 74f,
-            ),
-        )
-
-        val heatmap = stubMuscleLoadTimeline()
-
         StatisticsScreen(
             state = StatisticsState(
-                mode = mode,
+                mode = StatisticsMode.Trainings(range = DateTimeUtils.thisWeek()),
                 total = stubTotal(),
-                exerciseVolume = exerciseVolume,
-                categoryDistribution = categoryDistribution,
-                weightTypeDistribution = weightDistribution,
-                forceTypeDistribution = forceDistribution,
-                muscleLoad = muscleLoad,
-                temporalHeatmap = heatmap,
+                exerciseVolume = stubVolumeSeries(),
+                categoryDistribution = stubCategoryDistribution(),
+                weightTypeDistribution = stubWeightDistribution(),
+                forceTypeDistribution = stubForceDistribution(),
+                muscleLoad = stubMuscleLoadSummary(),
+                temporalHeatmap = stubMuscleLoadTimeline(),
             ),
             loaders = persistentSetOf(),
             contract = StatisticsContract.Empty

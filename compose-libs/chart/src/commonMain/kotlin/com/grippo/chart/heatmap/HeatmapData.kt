@@ -40,7 +40,7 @@ public data class HeatmapData(
 }
 
 @Immutable
-public data class Matrix01 private constructor(
+public data class Matrix01(
     val rows: Int,
     val cols: Int,
     val values: List<Float>,

@@ -35,6 +35,7 @@ internal fun MuscleLoadingPerGroup(
                 MuscleLoadingItem(
                     entry = colored.entry,
                     color = colored.color,
+                    label = colored.entry.group.title().text(),
                     dominant = index == 0
                 )
             }

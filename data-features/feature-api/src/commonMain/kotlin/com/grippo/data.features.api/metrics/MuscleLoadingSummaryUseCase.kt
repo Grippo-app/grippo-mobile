@@ -58,7 +58,8 @@ public class MuscleLoadingSummaryUseCase(
     }
 
     private suspend fun loadMuscleGroups(): List<MuscleGroup> {
-        return muscleFeature.observeMuscles().first()
+        return muscleFeature.observeMuscles()
+            .first()
     }
 
     private fun computeMuscleLoad(
@@ -137,13 +138,12 @@ public class MuscleLoadingSummaryUseCase(
         volumeLoad: Map<MuscleEnum, Float>,
         groups: List<MuscleGroup>,
     ): MuscleLoadSummary {
-        val muscleNames = buildMuscleNameMap(groups)
         val groupByMuscle = buildGroupByMuscleMap(groups)
 
-        val perMuscleEntries = buildPerMuscleBreakdown(stimulusLoad, muscleNames)
+        val perMuscleEntries = buildPerMuscleBreakdown(stimulusLoad, groupByMuscle)
         val perGroupEntries = buildPerGroupBreakdown(stimulusLoad, groups, groupByMuscle)
 
-        val volumePerMuscleEntries = buildPerMuscleBreakdown(volumeLoad, muscleNames)
+        val volumePerMuscleEntries = buildPerMuscleBreakdown(volumeLoad, groupByMuscle)
         val volumePerGroupEntries = buildPerGroupBreakdown(volumeLoad, groups, groupByMuscle)
 
         val dominance = buildDominance(stimulusLoad)
@@ -176,7 +176,7 @@ public class MuscleLoadingSummaryUseCase(
 
     private fun buildPerMuscleBreakdown(
         muscleLoad: Map<MuscleEnum, Float>,
-        muscleNames: Map<MuscleEnum, String>,
+        groupByMuscle: Map<MuscleEnum, MuscleGroup>,
     ): List<MuscleLoadEntry> {
         if (muscleLoad.isEmpty()) return emptyList()
         val maxValue = muscleLoad.values.maxOrNull() ?: return emptyList()
@@ -184,11 +184,12 @@ public class MuscleLoadingSummaryUseCase(
 
         return muscleLoad.entries
             .sortedByDescending { it.value }
-            .map { (muscle, value) ->
-                val label = muscleNames[muscle] ?: muscle.name.lowercase()
+            .mapNotNull { (muscle, value) ->
+                val group = groupByMuscle[muscle] ?: return@mapNotNull null
                 val normalized = (value / maxValue) * 100f
+
                 MuscleLoadEntry(
-                    label = label,
+                    group = group.type,
                     percentage = normalized.coerceIn(0f, 100f),
                     muscles = listOf(muscle),
                 )
@@ -216,22 +217,17 @@ public class MuscleLoadingSummaryUseCase(
 
         return totals.entries
             .sortedByDescending { it.value.first }
-            .map { (groupId, valuePair) ->
+            .mapNotNull { (groupId, valuePair) ->
                 val group = groups.firstOrNull { it.id == groupId }
-                val label = group?.name ?: groupId
+                val groupType = group?.type ?: return@mapNotNull null
                 val percent = (valuePair.first / sum) * 100f
+
                 MuscleLoadEntry(
-                    label = label,
+                    group = groupType,
                     percentage = percent.coerceIn(0f, 100f),
                     muscles = valuePair.second
                 )
             }
-    }
-
-    private fun buildMuscleNameMap(groups: List<MuscleGroup>): Map<MuscleEnum, String> {
-        return groups
-            .flatMap { group -> group.muscles.map { it.type to it.name } }
-            .toMap()
     }
 
     private fun buildGroupByMuscleMap(groups: List<MuscleGroup>): Map<MuscleEnum, MuscleGroup> {

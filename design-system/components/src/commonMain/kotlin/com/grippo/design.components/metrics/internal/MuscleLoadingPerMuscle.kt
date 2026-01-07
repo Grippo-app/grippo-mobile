@@ -39,6 +39,7 @@ internal fun MuscleLoadingPerMuscle(
                 MuscleLoadingItem(
                     entry = colored.entry,
                     color = colored.color,
+                    label = colored.entry.muscles.firstOrNull()?.title()?.text() ?: "-",
                     dominant = index == 0
                 )
             }

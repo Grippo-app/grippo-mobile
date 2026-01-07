@@ -22,6 +22,7 @@ import kotlin.math.roundToInt
 internal fun MuscleLoadingItem(
     entry: MuscleLoadEntryState,
     color: Color,
+    label: String,
     modifier: Modifier = Modifier,
     dominant: Boolean = false,
 ) {
@@ -60,7 +61,7 @@ internal fun MuscleLoadingItem(
         ) {
             Text(
                 modifier = Modifier.weight(1f),
-                text = entry.label,
+                text = label,
                 style = labelStyle,
                 color = labelColor,
                 maxLines = 1
