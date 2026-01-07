@@ -22,14 +22,13 @@ public class MuscleLoadingUseCase(
         private const val EPS = 1e-3f
     }
 
-    @Deprecated("be better to use `public suspend fun fromTrainings(trainings: List<Training>)`")
-    public suspend fun fromSetTrainings(trainings: List<Training>): MuscleLoadSummary {
-        val exercises = trainings.flatMap { it.exercises }
+    public suspend fun fromTrainings(trainings: List<Training>): MuscleLoadSummary {
+        val exercises: List<Exercise> = trainings.flatMap { training -> training.exercises }
         return fromExercises(exercises)
     }
 
-    public suspend fun fromTrainings(trainings: List<Training>): MuscleLoadSummary {
-        val exercises: List<Exercise> = trainings.flatMap { training -> training.exercises }
+    public suspend fun fromTraining(training: Training): MuscleLoadSummary {
+        val exercises: List<Exercise> = training.exercises
         return fromExercises(exercises)
     }
 

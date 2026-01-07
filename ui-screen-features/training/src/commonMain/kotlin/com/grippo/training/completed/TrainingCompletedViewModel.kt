@@ -4,6 +4,7 @@ import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.stage.StageState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
+import com.grippo.data.features.api.metrics.MuscleLoadingUseCase
 import com.grippo.data.features.api.metrics.TrainingTotalUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.TrainingTimelineUseCase
@@ -27,6 +28,7 @@ internal class TrainingCompletedViewModel(
     private val dialogController: DialogController,
     private val exerciseExampleFeature: ExerciseExampleFeature,
     private val trainingTimelineUseCase: TrainingTimelineUseCase,
+    private val muscleLoadingUseCase: MuscleLoadingUseCase,
 ) : BaseViewModel<TrainingCompletedState, TrainingCompletedDirection, TrainingCompletedLoader>(
     TrainingCompletedState()
 ), TrainingCompletedContract {
@@ -75,11 +77,25 @@ internal class TrainingCompletedViewModel(
         }
     }
 
-    private fun provideTraining(value: Training?) {
+    private suspend fun provideTraining(value: Training?) {
         value ?: return
-        val timeline = trainingTimelineUseCase.trainingExercises(value)
-        val state = timeline.toState()
-        update { it.copy(timeline = state) }
+        val timeline = trainingTimelineUseCase
+            .trainingExercises(value)
+            .toState()
+
+        val training = value.toState()
+
+        val summary = muscleLoadingUseCase
+            .fromTraining(value)
+            .toState()
+
+        update {
+            it.copy(
+                timeline = timeline,
+                training = training,
+                summary = summary
+            )
+        }
     }
 
     override fun onExerciseClick(id: String) {
