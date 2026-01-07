@@ -18,7 +18,9 @@ public fun MuscleEntity.toDomain(): Muscle? {
     return Muscle(
         id = id,
         name = name,
-        recoveryTime = Duration.parse("${recoveryTimeHours}h"),
-        type = mappedType
+        recovery = Duration.parse("${recovery}h"),
+        type = mappedType,
+        size = size,
+        sensitivity = sensitivity
     )
 }

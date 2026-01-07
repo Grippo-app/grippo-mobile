@@ -33,8 +33,16 @@ public fun MuscleResponse.toEntityOrNull(): MuscleEntity? {
         "MuscleResponse.updatedAt is null"
     } ?: return null
 
-    val entityRecoveryTimeHours = AppLogger.Mapping.log(recoveryTimeHours) {
-        "MuscleResponse.recoveryTimeHours is null"
+    val entityRecovery = AppLogger.Mapping.log(recovery) {
+        "MuscleResponse.recovery is null"
+    } ?: return null
+
+    val entitySensitivity = AppLogger.Mapping.log(sensitivity) {
+        "MuscleResponse.sensitivity is null"
+    } ?: return null
+
+    val entitySize = AppLogger.Mapping.log(size) {
+        "MuscleResponse.size is null"
     } ?: return null
 
     return MuscleEntity(
@@ -44,6 +52,8 @@ public fun MuscleResponse.toEntityOrNull(): MuscleEntity? {
         type = entityType,
         createdAt = entityCreatedAt,
         updatedAt = entityUpdatedAt,
-        recoveryTimeHours = entityRecoveryTimeHours
+        recovery = entityRecovery,
+        sensitivity = entitySensitivity,
+        size = entitySize
     )
 }

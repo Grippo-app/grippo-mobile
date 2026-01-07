@@ -282,7 +282,7 @@ internal class PredictionSignalsBuilder(
 
             tr.exercises.forEach { ex ->
                 ex.muscles.forEach { share ->
-                    val rh = share.recoveryTimeHours ?: return@forEach
+                    val rh = share.recovery ?: return@forEach
                     if (rh <= 0) return@forEach
 
                     val decay = 1.0 - (hoursSince.toDouble() / rh.toDouble())

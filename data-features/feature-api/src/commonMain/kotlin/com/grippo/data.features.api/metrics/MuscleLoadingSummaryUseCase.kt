@@ -13,6 +13,7 @@ import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.data.features.api.training.models.Iteration
 import com.grippo.data.features.api.training.models.Training
 import kotlinx.coroutines.flow.first
+import kotlin.math.ln
 
 public class MuscleLoadingSummaryUseCase(
     private val exerciseExampleFeature: ExerciseExampleFeature,
@@ -20,6 +21,10 @@ public class MuscleLoadingSummaryUseCase(
 ) {
     private companion object Companion {
         private const val EPS = 1e-3f
+
+        private const val COMPLEXITY_SHARE_THRESHOLD_PERCENT = 5f
+        private const val COMPLEXITY_K = 0.20f
+        private const val COMPLEXITY_MAX_FACTOR = 1.30f
     }
 
     public suspend fun fromTrainings(trainings: List<Training>): MuscleLoadSummary {
@@ -37,8 +42,20 @@ public class MuscleLoadingSummaryUseCase(
         val examples = loadExamples(exampleIds)
         val groups = loadMuscleGroups()
 
-        val stimulusLoad = computeMuscleLoad(exercises, examples, ::exerciseStimulus)
-        val volumeLoad = computeMuscleLoad(exercises, examples, ::exerciseVolume)
+        val stimulusLoad = computeMuscleLoad(
+            exercises = exercises,
+            exampleMap = examples,
+            baseLoad = ::exerciseStimulus,
+            applyComplexityFactor = true,
+        )
+
+        val volumeLoad = computeMuscleLoad(
+            exercises = exercises,
+            exampleMap = examples,
+            baseLoad = ::exerciseVolume,
+            applyComplexityFactor = false,
+        )
+
         return buildSummary(stimulusLoad, volumeLoad, groups)
     }
 
@@ -66,6 +83,7 @@ public class MuscleLoadingSummaryUseCase(
         exercises: List<Exercise>,
         exampleMap: Map<String, ExerciseExample>,
         baseLoad: (List<Iteration>) -> Float,
+        applyComplexityFactor: Boolean,
     ): Map<MuscleEnum, Float> {
         if (exercises.isEmpty()) return emptyMap()
 
@@ -73,22 +91,47 @@ public class MuscleLoadingSummaryUseCase(
 
         exercises.forEach { exercise ->
             val exampleId = exercise.exerciseExample.id
-            val load = baseLoad(exercise.iterations)
-            if (load <= EPS) return@forEach
+
+            val rawLoad = baseLoad(exercise.iterations)
+            if (rawLoad <= EPS) return@forEach
 
             val example = exampleMap[exampleId] ?: return@forEach
-
             val bundles = example.bundles
-            val totalShare = bundles.fold(0f) { acc, bundle ->
-                acc + bundle.percentage.coerceAtLeast(0).toFloat()
-            }
+            if (bundles.isEmpty()) return@forEach
+
+            val totalShare = bundles.sumOf { it.percentage.coerceAtLeast(0).toDouble() }.toFloat()
             if (totalShare <= EPS) return@forEach
 
+            val load = if (applyComplexityFactor) {
+                val percentages = bundles
+                    .map { it.percentage.coerceAtLeast(0).toFloat() }
+                    .filter { it > EPS }
+
+                val enm = effectiveMuscleCount(
+                    percentages = percentages,
+                    shareThresholdPercent = COMPLEXITY_SHARE_THRESHOLD_PERCENT,
+                )
+
+                val factor = complexityFactorFromEnm(
+                    enm = enm,
+                    k = COMPLEXITY_K,
+                    maxFactor = COMPLEXITY_MAX_FACTOR,
+                )
+
+                rawLoad * factor
+            } else {
+                rawLoad
+            }
+
+            if (load <= EPS) return@forEach
+
             bundles.forEach { bundle ->
-                val share = bundle.percentage.coerceAtLeast(0)
-                if (share == 0) return@forEach
+                val share = bundle.percentage.coerceAtLeast(0).toFloat()
+                if (share <= EPS) return@forEach
+
                 val ratio = share / totalShare
                 val muscle = bundle.muscle.type
+
                 val currentValue = contributions[muscle] ?: 0f
                 contributions[muscle] = currentValue + load * ratio
             }
@@ -131,6 +174,40 @@ public class MuscleLoadingSummaryUseCase(
             }
             .toFloat()
             .coerceAtLeast(0f)
+    }
+
+    private fun effectiveMuscleCount(
+        percentages: List<Float>,
+        shareThresholdPercent: Float,
+    ): Float {
+        if (percentages.isEmpty()) return 1f
+
+        val filtered = percentages.filter { it >= shareThresholdPercent }
+        val chosen = if (filtered.size >= 2) filtered else percentages
+
+        val total = chosen.sum()
+        if (total <= EPS) return 1f
+
+        var sumSq = 0f
+        chosen.forEach { s ->
+            val p = s / total
+            sumSq += p * p
+        }
+
+        if (sumSq <= EPS) return 1f
+
+        val enm = 1f / sumSq
+        return if (enm.isFinite() && enm >= 1f) enm else 1f
+    }
+
+    private fun complexityFactorFromEnm(
+        enm: Float,
+        k: Float,
+        maxFactor: Float,
+    ): Float {
+        val safeEnm = enm.coerceAtLeast(1f)
+        val factor = 1f + k * ln(safeEnm.toDouble()).toFloat()
+        return factor.coerceIn(1f, maxFactor)
     }
 
     private fun buildSummary(
@@ -203,29 +280,33 @@ public class MuscleLoadingSummaryUseCase(
     ): List<MuscleLoadEntry> {
         if (muscleLoad.isEmpty()) return emptyList()
 
-        val totals = mutableMapOf<String, Pair<Float, List<MuscleEnum>>>()
+        val totalsByGroupId = mutableMapOf<String, Float>()
+        val contributedMusclesByGroupId = mutableMapOf<String, MutableSet<MuscleEnum>>()
 
         muscleLoad.forEach { (muscle, value) ->
             val group = groupByMuscle[muscle] ?: return@forEach
-            val muscles = group.muscles.map { it.type }
-            val currentTotal = totals[group.id]?.first ?: 0f
-            totals[group.id] = (currentTotal + value) to muscles
+            totalsByGroupId[group.id] = (totalsByGroupId[group.id] ?: 0f) + value
+            contributedMusclesByGroupId.getOrPut(group.id) { mutableSetOf() }.add(muscle)
         }
 
-        val sum = totals.values.sumOf { it.first.toDouble() }.toFloat()
+        val sum = totalsByGroupId.values.sum()
         if (sum <= EPS) return emptyList()
 
-        return totals.entries
-            .sortedByDescending { it.value.first }
-            .mapNotNull { (groupId, valuePair) ->
-                val group = groups.firstOrNull { it.id == groupId }
-                val groupType = group?.type ?: return@mapNotNull null
-                val percent = (valuePair.first / sum) * 100f
+        val groupById = groups.associateBy { it.id }
+
+        return totalsByGroupId.entries
+            .sortedByDescending { it.value }
+            .mapNotNull { (groupId, totalValue) ->
+                val group = groupById[groupId] ?: return@mapNotNull null
+                val percent = (totalValue / sum) * 100f
 
                 MuscleLoadEntry(
-                    group = groupType,
+                    group = group.type,
                     percentage = percent.coerceIn(0f, 100f),
-                    muscles = valuePair.second
+                    muscles = contributedMusclesByGroupId[groupId]
+                        ?.toList()
+                        ?.sortedBy { it.name }
+                        ?: emptyList(),
                 )
             }
     }

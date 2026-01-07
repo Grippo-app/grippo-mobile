@@ -67,14 +67,14 @@ internal class ExampleCatalogLoader(
             val id: String,
             val name: String,
             val percentage: Int,
-            val recoveryTimeHours: Int?
+            val recovery: Int?
         )
 
         val rawShares = bundles.mapNotNull { pack ->
             val pct = pack.bundle.percentage
             val id = pack.muscle.id
             val name = pack.muscle.name
-            val rh: Int = pack.muscle.recoveryTimeHours
+            val rh: Int = pack.muscle.recovery
             if (pct > 0 && id.isNotBlank() && name.isNotBlank()) {
                 RawShare(id, name, pct, rh)
             } else null
@@ -83,12 +83,12 @@ internal class ExampleCatalogLoader(
         if (rawShares.isEmpty()) return null
 
         val primary = rawShares.first()
-        val primaryRh = primary.recoveryTimeHours
+        val primaryRh = primary.recovery
         if (primaryRh == null || primaryRh <= 0) return null
 
         val merged = buildMap<String, Pair<String, Int>> {
             rawShares.forEach { s ->
-                val rh = s.recoveryTimeHours
+                val rh = s.recovery
                 if (rh != null && rh > 0) {
                     val prev = this[s.id]
                     val newPct = (prev?.second ?: 0) + s.percentage
@@ -112,7 +112,7 @@ internal class ExampleCatalogLoader(
                         id = id,
                         name = name,
                         percentage = pct,
-                        recoveryTimeHours = if (id == primary.id) primaryRh else rawShares.firstOrNull { it.id == id }?.recoveryTimeHours
+                        recovery = if (id == primary.id) primaryRh else rawShares.firstOrNull { it.id == id }?.recovery
                     )
                 )
             }

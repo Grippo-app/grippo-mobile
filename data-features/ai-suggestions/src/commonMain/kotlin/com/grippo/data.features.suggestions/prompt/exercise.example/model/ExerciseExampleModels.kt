@@ -32,7 +32,7 @@ internal data class MuscleShare(
     val id: String,
     val name: String,
     val percentage: Int,
-    val recoveryTimeHours: Int? = null
+    val recovery: Int? = null
 )
 
 internal data class PredictionSignals(

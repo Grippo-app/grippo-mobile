@@ -11,8 +11,12 @@ public data class MuscleResponse(
     val muscleGroupId: String? = null,
     @SerialName("name")
     val name: String? = null,
-    @SerialName("recoveryTimeHours")
-    val recoveryTimeHours: Int? = null,
+    @SerialName("recovery")
+    val recovery: Int? = null,
+    @SerialName("size")
+    val size: Float? = null,
+    @SerialName("sensitivity")
+    val sensitivity: Float? = null,
     @SerialName("type")
     val type: String? = null,
     @SerialName("updatedAt")
