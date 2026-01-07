@@ -175,7 +175,7 @@ public class RootComponent(
                 TrainingComponent(
                     componentContext = context,
                     initial = TrainingRouter.Recording(router.stage),
-                    close = viewModel::toHome
+                    close = viewModel::onBack
                 )
             )
         }
