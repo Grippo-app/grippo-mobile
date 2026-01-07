@@ -6,7 +6,7 @@ import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.exercise.metrics.ExerciseMetricsFeature
 import com.grippo.data.features.api.metrics.EstimatedOneRepMaxUseCase
-import com.grippo.data.features.api.metrics.MuscleLoadingUseCase
+import com.grippo.data.features.api.metrics.MuscleLoadingSummaryUseCase
 import com.grippo.data.features.api.metrics.VolumeSeriesUseCase
 import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.domain.state.achievements.toState
@@ -20,7 +20,7 @@ public class ExerciseExampleViewModel(
     id: String,
     private val exerciseExampleFeature: ExerciseExampleFeature,
     private val exerciseMetricsFeature: ExerciseMetricsFeature,
-    private val muscleLoadingUseCase: MuscleLoadingUseCase,
+    private val muscleLoadingSummaryUseCase: MuscleLoadingSummaryUseCase,
     private val volumeSeriesUseCase: VolumeSeriesUseCase,
     private val estimatedOneRepMaxUseCase: EstimatedOneRepMaxUseCase
 ) : BaseViewModel<ExerciseExampleState, ExerciseExampleDirection, ExerciseExampleLoader>(
@@ -76,7 +76,7 @@ public class ExerciseExampleViewModel(
     private suspend fun provideExerciseExample(value: ExerciseExample?) {
         val exampleState = value?.toState() ?: return
 
-        val muscleLoad = muscleLoadingUseCase
+        val muscleLoad = muscleLoadingSummaryUseCase
             .fromExerciseExample(exampleState.value.id)
             .toState()
 

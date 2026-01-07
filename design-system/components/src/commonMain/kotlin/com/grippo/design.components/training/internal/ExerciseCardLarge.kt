@@ -46,7 +46,7 @@ internal fun ExerciseCardLarge(
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
             ) {
                 Text(
-                    text = value.name,
+                    text = value.exerciseExample.name,
                     style = AppTokens.typography.h4(),
                     color = AppTokens.colors.text.primary,
                     maxLines = 2,

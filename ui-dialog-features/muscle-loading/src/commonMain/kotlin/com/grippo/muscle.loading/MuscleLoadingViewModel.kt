@@ -1,7 +1,7 @@
 package com.grippo.muscle.loading
 
 import com.grippo.core.foundation.BaseViewModel
-import com.grippo.data.features.api.metrics.MuscleLoadingUseCase
+import com.grippo.data.features.api.metrics.MuscleLoadingSummaryUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.domain.state.metrics.toState
@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.onEach
 public class MuscleLoadingViewModel(
     range: DateRange,
     trainingFeature: TrainingFeature,
-    private val muscleLoadingUseCase: MuscleLoadingUseCase,
+    private val muscleLoadingSummaryUseCase: MuscleLoadingSummaryUseCase,
 ) : BaseViewModel<MuscleLoadingState, MuscleLoadingDirection, MuscleLoadingLoader>(
     MuscleLoadingState(range = range)
 ), MuscleLoadingContract {
@@ -33,7 +33,7 @@ public class MuscleLoadingViewModel(
             return
         }
 
-        val summary = muscleLoadingUseCase
+        val summary = muscleLoadingSummaryUseCase
             .fromTrainings(trainings)
             .toState()
 

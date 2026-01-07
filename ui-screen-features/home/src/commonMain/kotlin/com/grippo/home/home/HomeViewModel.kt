@@ -4,7 +4,7 @@ import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.profile.ProfileMenu
 import com.grippo.core.state.profile.SettingsMenu
 import com.grippo.data.features.api.metrics.ExerciseSpotlightUseCase
-import com.grippo.data.features.api.metrics.MuscleLoadingUseCase
+import com.grippo.data.features.api.metrics.MuscleLoadingSummaryUseCase
 import com.grippo.data.features.api.metrics.PerformanceTrendUseCase
 import com.grippo.data.features.api.metrics.TrainingDigestUseCase
 import com.grippo.data.features.api.metrics.TrainingStreakUseCase
@@ -24,7 +24,7 @@ import kotlin.time.Duration.Companion.days
 internal class HomeViewModel(
     private val trainingFeature: TrainingFeature,
     private val dialogController: DialogController,
-    private val muscleLoadingUseCase: MuscleLoadingUseCase,
+    private val muscleLoadingSummaryUseCase: MuscleLoadingSummaryUseCase,
     private val exerciseSpotlightUseCase: ExerciseSpotlightUseCase,
     private val trainingStreakUseCase: TrainingStreakUseCase,
     private val performanceTrendUseCase: PerformanceTrendUseCase,
@@ -80,7 +80,7 @@ internal class HomeViewModel(
             .fromTrainings(list)
             .toState()
 
-        val muscleLoadSummary = muscleLoadingUseCase
+        val muscleLoadSummary = muscleLoadingSummaryUseCase
             .fromTrainings(list)
             .toState()
 

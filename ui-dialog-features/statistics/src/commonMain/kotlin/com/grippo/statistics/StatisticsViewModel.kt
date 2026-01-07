@@ -3,7 +3,7 @@ package com.grippo.statistics
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.metrics.ExerciseDistributionUseCase
 import com.grippo.data.features.api.metrics.MuscleLoadTimelineUseCase
-import com.grippo.data.features.api.metrics.MuscleLoadingUseCase
+import com.grippo.data.features.api.metrics.MuscleLoadingSummaryUseCase
 import com.grippo.data.features.api.metrics.TrainingTotalUseCase
 import com.grippo.data.features.api.metrics.VolumeSeriesUseCase
 import com.grippo.data.features.api.training.TrainingFeature
@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.mapLatest
 public class StatisticsViewModel(
     config: DialogConfig.Statistics,
     private val trainingFeature: TrainingFeature,
-    private val muscleLoadingUseCase: MuscleLoadingUseCase,
+    private val muscleLoadingSummaryUseCase: MuscleLoadingSummaryUseCase,
     private val exerciseDistributionUseCase: ExerciseDistributionUseCase,
     private val volumeSeriesUseCase: VolumeSeriesUseCase,
     private val trainingTotalUseCase: TrainingTotalUseCase,
@@ -85,7 +85,7 @@ public class StatisticsViewModel(
             .forceTypesFromTrainings(trainings)
             .toState()
 
-        val muscleLoad = muscleLoadingUseCase
+        val muscleLoad = muscleLoadingSummaryUseCase
             .fromTrainings(trainings)
             .toState()
 
@@ -133,7 +133,7 @@ public class StatisticsViewModel(
             .forceTypesFromExercises(training.exercises)
             .toState()
 
-        val muscleLoad = muscleLoadingUseCase
+        val muscleLoad = muscleLoadingSummaryUseCase
             .fromExercises(training.exercises)
             .toState()
 

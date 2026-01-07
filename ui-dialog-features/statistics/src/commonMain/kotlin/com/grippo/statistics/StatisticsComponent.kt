@@ -18,7 +18,7 @@ public class StatisticsComponent(
         StatisticsViewModel(
             config = config,
             trainingFeature = getKoin().get(),
-            muscleLoadingUseCase = getKoin().get(),
+            muscleLoadingSummaryUseCase = getKoin().get(),
             exerciseDistributionUseCase = getKoin().get(),
             volumeSeriesUseCase = getKoin().get(),
             trainingTotalUseCase = getKoin().get(),

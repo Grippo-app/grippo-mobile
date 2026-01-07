@@ -18,7 +18,7 @@ public class MuscleLoadingComponent(
         MuscleLoadingViewModel(
             range = range,
             trainingFeature = getKoin().get(),
-            muscleLoadingUseCase = getKoin().get()
+            muscleLoadingSummaryUseCase = getKoin().get()
         )
     }
 

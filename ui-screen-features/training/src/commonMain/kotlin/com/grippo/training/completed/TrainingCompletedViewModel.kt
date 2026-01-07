@@ -4,7 +4,7 @@ import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.stage.StageState
 import com.grippo.core.state.trainings.ExerciseState
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
-import com.grippo.data.features.api.metrics.MuscleLoadingUseCase
+import com.grippo.data.features.api.metrics.MuscleLoadingSummaryUseCase
 import com.grippo.data.features.api.metrics.TrainingTotalUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.TrainingTimelineUseCase
@@ -28,7 +28,7 @@ internal class TrainingCompletedViewModel(
     private val dialogController: DialogController,
     private val exerciseExampleFeature: ExerciseExampleFeature,
     private val trainingTimelineUseCase: TrainingTimelineUseCase,
-    private val muscleLoadingUseCase: MuscleLoadingUseCase,
+    private val muscleLoadingSummaryUseCase: MuscleLoadingSummaryUseCase,
 ) : BaseViewModel<TrainingCompletedState, TrainingCompletedDirection, TrainingCompletedLoader>(
     TrainingCompletedState()
 ), TrainingCompletedContract {
@@ -85,7 +85,7 @@ internal class TrainingCompletedViewModel(
 
         val training = value.toState()
 
-        val summary = muscleLoadingUseCase
+        val summary = muscleLoadingSummaryUseCase
             .fromTraining(value)
             .toState()
 

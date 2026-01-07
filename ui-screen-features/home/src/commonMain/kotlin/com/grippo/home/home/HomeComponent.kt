@@ -24,7 +24,7 @@ internal class HomeComponent(
         HomeViewModel(
             trainingFeature = getKoin().get(),
             dialogController = getKoin().get(),
-            muscleLoadingUseCase = getKoin().get(),
+            muscleLoadingSummaryUseCase = getKoin().get(),
             exerciseSpotlightUseCase = getKoin().get(),
             trainingStreakUseCase = getKoin().get(),
             performanceTrendUseCase = getKoin().get(),

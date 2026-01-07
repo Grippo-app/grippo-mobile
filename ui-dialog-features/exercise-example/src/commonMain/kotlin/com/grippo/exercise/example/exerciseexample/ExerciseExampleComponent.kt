@@ -18,7 +18,7 @@ public class ExerciseExampleComponent(
             id = id,
             exerciseExampleFeature = getKoin().get(),
             exerciseMetricsFeature = getKoin().get(),
-            muscleLoadingUseCase = getKoin().get(),
+            muscleLoadingSummaryUseCase = getKoin().get(),
             volumeSeriesUseCase = getKoin().get(),
             estimatedOneRepMaxUseCase = getKoin().get()
         )

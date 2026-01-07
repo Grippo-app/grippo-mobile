@@ -14,7 +14,7 @@ import com.grippo.data.features.api.training.models.Iteration
 import com.grippo.data.features.api.training.models.Training
 import kotlinx.coroutines.flow.first
 
-public class MuscleLoadingUseCase(
+public class MuscleLoadingSummaryUseCase(
     private val exerciseExampleFeature: ExerciseExampleFeature,
     private val muscleFeature: MuscleFeature,
 ) {
@@ -243,6 +243,4 @@ public class MuscleLoadingUseCase(
         }
         return map
     }
-
-    // Intentionally stateless: no caches, only pure computations.
 }
