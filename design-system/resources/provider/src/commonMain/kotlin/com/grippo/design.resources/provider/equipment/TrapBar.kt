@@ -1,6 +1,7 @@
 package com.grippo.design.resources.provider.equipment
 
 import androidx.compose.ui.graphics.Color
+import com.grippo.design.resources.provider.colors.AppPalette
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
@@ -24,9 +25,9 @@ public val TrapBar: ImageVector
             viewportHeight = 204f
         ).apply {
             path(
-                fill = SolidColor(Color(0xFFAAAAAA)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF7F7F7F)),
+                stroke = SolidColor(AppPalette.NeutralDark.N600),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -42,9 +43,9 @@ public val TrapBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -60,9 +61,9 @@ public val TrapBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -78,9 +79,9 @@ public val TrapBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -96,9 +97,9 @@ public val TrapBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -116,7 +117,7 @@ public val TrapBar: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -131,7 +132,7 @@ public val TrapBar: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -144,7 +145,7 @@ public val TrapBar: ImageVector
                 curveTo(51.0473f, 19.6572f, 68.1326f, 5.8328f, 68.293f, 36.2091f)
             }
             path(
-                fill = SolidColor(Color(0xFFAAAAAA)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -165,7 +166,7 @@ public val TrapBar: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF9F9D9D)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -181,7 +182,7 @@ public val TrapBar: ImageVector
                 lineTo(46.5535f, 53.7145f)
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -214,7 +215,7 @@ public val TrapBar: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF9F9D9D)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -245,9 +246,9 @@ public val TrapBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF9F9D9D)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -271,9 +272,9 @@ public val TrapBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF9F9D9D)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -289,9 +290,9 @@ public val TrapBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF9F9D9D)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -307,7 +308,7 @@ public val TrapBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -326,9 +327,9 @@ public val TrapBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF9F9D9D)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -351,9 +352,9 @@ public val TrapBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFAAAAAA)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -370,7 +371,7 @@ public val TrapBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -388,9 +389,9 @@ public val TrapBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF9F9D9D)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -414,9 +415,9 @@ public val TrapBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFAAAAAA)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -432,7 +433,7 @@ public val TrapBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -453,7 +454,7 @@ public val TrapBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -474,7 +475,7 @@ public val TrapBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -494,9 +495,9 @@ public val TrapBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -512,9 +513,9 @@ public val TrapBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -530,9 +531,9 @@ public val TrapBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -548,9 +549,9 @@ public val TrapBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -566,9 +567,9 @@ public val TrapBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -584,9 +585,9 @@ public val TrapBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFAAAAAA)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF7F7F7F)),
+                stroke = SolidColor(AppPalette.NeutralDark.N600),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -606,7 +607,7 @@ public val TrapBar: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA09D9D)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -618,9 +619,9 @@ public val TrapBar: ImageVector
                 curveTo(276.195f, 171.51f, 275.296f, 164.394f, 284.332f, 164.103f)
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF7F7F7F)),
+                stroke = SolidColor(AppPalette.NeutralDark.N600),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -636,9 +637,9 @@ public val TrapBar: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Butt,

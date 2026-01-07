@@ -1,6 +1,7 @@
 package com.grippo.design.resources.provider.equipment
 
 import androidx.compose.ui.graphics.Color
+import com.grippo.design.resources.provider.colors.AppPalette
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
@@ -18,7 +19,7 @@ public val AbductorMachine: ImageVector
             viewportWidth = 161f,
             viewportHeight = 278f
         ).apply {
-            path(fill = SolidColor(Color(0xFFBEBEBE))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(0f, 269.79f)
                 verticalLineTo(255.07f)
                 lineTo(14.73f, 263.19f)
@@ -26,7 +27,7 @@ public val AbductorMachine: ImageVector
                 lineTo(0f, 269.79f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFA0A0A0))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N700)) {
                 moveTo(14.73f, 277.41f)
                 verticalLineTo(263.19f)
                 lineTo(130.5f, 196.17f)
@@ -34,7 +35,7 @@ public val AbductorMachine: ImageVector
                 lineTo(14.73f, 277.41f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFD9D9D9))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(14.73f, 263.14f)
                 lineTo(0f, 255.02f)
                 lineTo(117.3f, 187.53f)
@@ -42,7 +43,7 @@ public val AbductorMachine: ImageVector
                 lineTo(14.73f, 263.14f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFA0A0A0))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N700)) {
                 moveTo(130.5f, 196.16f)
                 verticalLineTo(6.5f)
                 lineTo(118.31f, 13.61f)
@@ -50,7 +51,7 @@ public val AbductorMachine: ImageVector
                 lineTo(130.5f, 196.16f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFD9D9D9))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(106.64f, 193.63f)
                 lineTo(107.82f, 9.09f)
                 lineTo(119.5f, 3f)
@@ -59,8 +60,8 @@ public val AbductorMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF252C32)),
-                stroke = SolidColor(Color(0xFF0F1317)),
+                fill = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N050),
                 strokeLineWidth = 8f
             ) {
                 moveTo(93.3f, 190.2f)
@@ -70,7 +71,7 @@ public val AbductorMachine: ImageVector
                 lineTo(93.3f, 190.2f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF0F1317))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N050)) {
                 moveTo(125.93f, 197.69f)
                 verticalLineTo(206.83f)
                 lineTo(93.43f, 185.5f)
@@ -79,8 +80,8 @@ public val AbductorMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF252C32)),
-                stroke = SolidColor(Color(0xFF0F1317)),
+                fill = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N050),
                 strokeLineWidth = 8f
             ) {
                 moveTo(93.3f, 179.03f)
@@ -90,7 +91,7 @@ public val AbductorMachine: ImageVector
                 lineTo(93.3f, 179.03f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF0F1317))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N050)) {
                 moveTo(125.93f, 186.52f)
                 verticalLineTo(195.66f)
                 lineTo(93.43f, 174.33f)
@@ -99,8 +100,8 @@ public val AbductorMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF252C32)),
-                stroke = SolidColor(Color(0xFF0F1317)),
+                fill = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N050),
                 strokeLineWidth = 8f
             ) {
                 moveTo(93.3f, 167.86f)
@@ -110,7 +111,7 @@ public val AbductorMachine: ImageVector
                 lineTo(93.3f, 167.86f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF0F1317))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N050)) {
                 moveTo(125.93f, 175.35f)
                 verticalLineTo(184.49f)
                 lineTo(93.43f, 163.16f)
@@ -119,8 +120,8 @@ public val AbductorMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF252C32)),
-                stroke = SolidColor(Color(0xFF0F1317)),
+                fill = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N050),
                 strokeLineWidth = 8f
             ) {
                 moveTo(93.3f, 156.69f)
@@ -130,7 +131,7 @@ public val AbductorMachine: ImageVector
                 lineTo(93.3f, 156.69f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF0F1317))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N050)) {
                 moveTo(125.93f, 164.18f)
                 verticalLineTo(173.32f)
                 lineTo(93.43f, 151.99f)
@@ -139,8 +140,8 @@ public val AbductorMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF252C32)),
-                stroke = SolidColor(Color(0xFF0F1317)),
+                fill = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N050),
                 strokeLineWidth = 8f
             ) {
                 moveTo(93.3f, 145.52f)
@@ -150,7 +151,7 @@ public val AbductorMachine: ImageVector
                 lineTo(93.3f, 145.52f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF0F1317))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N050)) {
                 moveTo(125.93f, 153.01f)
                 verticalLineTo(162.15f)
                 lineTo(93.43f, 140.82f)
@@ -158,7 +159,7 @@ public val AbductorMachine: ImageVector
                 lineTo(125.93f, 153.01f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF252C32))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N200)) {
                 moveTo(125.93f, 153.01f)
                 lineTo(33.01f, 206.83f)
                 lineTo(0.51f, 185.5f)
@@ -167,8 +168,8 @@ public val AbductorMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF252C32)),
-                stroke = SolidColor(Color(0xFF0F1317)),
+                fill = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N050),
                 strokeLineWidth = 8f
             ) {
                 moveTo(88.14f, 141.84f)
@@ -178,7 +179,7 @@ public val AbductorMachine: ImageVector
                 lineTo(88.14f, 141.84f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF0F1317))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N050)) {
                 moveTo(115.77f, 146.4f)
                 verticalLineTo(155.19f)
                 lineTo(91.4f, 138.79f)
@@ -186,7 +187,7 @@ public val AbductorMachine: ImageVector
                 lineTo(115.77f, 146.4f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF252C32))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N200)) {
                 moveTo(115.78f, 146.4f)
                 lineTo(37.15f, 191.36f)
                 lineTo(12.77f, 175.43f)
@@ -195,8 +196,8 @@ public val AbductorMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF252C32)),
-                stroke = SolidColor(Color(0xFF0F1317)),
+                fill = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N050),
                 strokeLineWidth = 7f
             ) {
                 moveTo(84.69f, 138.82f)
@@ -206,7 +207,7 @@ public val AbductorMachine: ImageVector
                 lineTo(84.69f, 138.82f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF0F1317))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N050)) {
                 moveTo(105.09f, 141.32f)
                 verticalLineTo(148.03f)
                 lineTo(91.16f, 138.89f)
@@ -214,7 +215,7 @@ public val AbductorMachine: ImageVector
                 lineTo(105.09f, 141.32f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF252C32))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N200)) {
                 moveTo(105.11f, 141.32f)
                 lineTo(40.11f, 177.88f)
                 lineTo(25.9f, 168.74f)
@@ -222,7 +223,7 @@ public val AbductorMachine: ImageVector
                 lineTo(105.11f, 141.32f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFBEBEBE))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(52.3f, 160.15f)
                 verticalLineTo(65.88f)
                 lineTo(57.89f, 63.7f)
@@ -230,7 +231,7 @@ public val AbductorMachine: ImageVector
                 curveTo(55.86f, 162.25f, 52.81f, 161.2f, 52.3f, 160.15f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFA0A0A0))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N700)) {
                 moveTo(54.84f, 161.37f)
                 verticalLineTo(64.86f)
                 lineTo(57.89f, 63.46f)
@@ -238,7 +239,7 @@ public val AbductorMachine: ImageVector
                 curveTo(57.89f, 160.92f, 55.86f, 161.37f, 54.84f, 161.37f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFBEBEBE))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(76.68f, 150.34f)
                 verticalLineTo(56.26f)
                 lineTo(82.26f, 54.17f)
@@ -246,7 +247,7 @@ public val AbductorMachine: ImageVector
                 curveTo(80.23f, 152.45f, 77.18f, 151.4f, 76.68f, 150.34f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFA0A0A0))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N700)) {
                 moveTo(79.21f, 151.56f)
                 verticalLineTo(55.28f)
                 lineTo(82.26f, 54f)
@@ -254,7 +255,7 @@ public val AbductorMachine: ImageVector
                 curveTo(82.26f, 151.11f, 80.23f, 151.56f, 79.21f, 151.56f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFA0A0A0))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N700)) {
                 moveTo(26.4f, 256.59f)
                 verticalLineTo(67.69f)
                 lineTo(14.73f, 74f)
@@ -262,7 +263,7 @@ public val AbductorMachine: ImageVector
                 lineTo(26.4f, 256.59f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFBEBEBE))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(0f, 255.58f)
                 lineTo(0f, 65.89f)
                 lineTo(14.73f, 73f)
@@ -270,7 +271,7 @@ public val AbductorMachine: ImageVector
                 lineTo(0f, 255.58f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFBEBEBE))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(0f, 80.23f)
                 verticalLineTo(65.5f)
                 lineTo(14.73f, 73.63f)
@@ -278,7 +279,7 @@ public val AbductorMachine: ImageVector
                 lineTo(0f, 80.23f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFA0A0A0))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N700)) {
                 moveTo(14.73f, 87.85f)
                 verticalLineTo(73.63f)
                 lineTo(130.5f, 6.6f)
@@ -286,7 +287,7 @@ public val AbductorMachine: ImageVector
                 lineTo(14.73f, 87.85f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFD9D9D9))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(14.73f, 73.58f)
                 lineTo(0f, 65.45f)
                 lineTo(116.28f, 0f)
@@ -294,7 +295,7 @@ public val AbductorMachine: ImageVector
                 lineTo(14.73f, 73.58f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFBEBEBE))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(74.1f, 242f)
                 verticalLineTo(44f)
                 horizontalLineTo(86.1f)
@@ -302,7 +303,7 @@ public val AbductorMachine: ImageVector
                 lineTo(74.1f, 242f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFA0A0A0))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N700)) {
                 moveTo(93.6f, 242.5f)
                 lineTo(86.1f, 247f)
                 curveTo(86.06f, 152.69f, 86.06f, 137.31f, 86.02f, 43f)
@@ -310,7 +311,7 @@ public val AbductorMachine: ImageVector
                 lineTo(93.6f, 242.5f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFD9D9D9))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(93f, 38.5f)
                 lineTo(81.5f, 34.5f)
                 lineTo(73.94f, 39.06f)
@@ -318,7 +319,7 @@ public val AbductorMachine: ImageVector
                 lineTo(93f, 38.5f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFBEBEBE))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(74f, 54.1f)
                 lineTo(74f, 39f)
                 lineTo(86f, 43f)
@@ -326,7 +327,7 @@ public val AbductorMachine: ImageVector
                 lineTo(74f, 54.1f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFD9D9D9))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(145f, 259f)
                 lineTo(93.5f, 232.5f)
                 lineTo(86f, 237f)
@@ -334,7 +335,7 @@ public val AbductorMachine: ImageVector
                 lineTo(145f, 259f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFBEBEBE))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(75.5f, 242f)
                 lineTo(77f, 232.5f)
                 lineTo(139f, 264f)
@@ -342,7 +343,7 @@ public val AbductorMachine: ImageVector
                 lineTo(75.5f, 242f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFA0A0A0))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N700)) {
                 moveTo(145f, 259f)
                 lineTo(139f, 263.5f)
                 verticalLineTo(274f)
@@ -350,7 +351,7 @@ public val AbductorMachine: ImageVector
                 lineTo(145f, 259f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF252C32))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N200)) {
                 moveTo(93.5f, 240.5f)
                 lineTo(100f, 236f)
                 curveTo(128.4f, 228.8f, 129.5f, 242f, 126.5f, 249.5f)
@@ -358,7 +359,7 @@ public val AbductorMachine: ImageVector
                 curveTo(85.2f, 265.7f, 87.83f, 249.83f, 93.5f, 240.5f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFD9D9D9))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(108.84f, 185.74f)
                 lineTo(105.14f, 187.33f)
                 lineTo(134.39f, 185.14f)
@@ -366,7 +367,7 @@ public val AbductorMachine: ImageVector
                 lineTo(108.84f, 185.74f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFA0A0A0))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N700)) {
                 moveTo(135.65f, 189.5f)
                 lineTo(134.39f, 185.14f)
                 lineTo(137.49f, 183.41f)
@@ -374,7 +375,7 @@ public val AbductorMachine: ImageVector
                 lineTo(135.65f, 189.5f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFBEBEBE))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(107.72f, 191.35f)
                 lineTo(106.65f, 187.07f)
                 lineTo(134.5f, 185.11f)
@@ -382,7 +383,7 @@ public val AbductorMachine: ImageVector
                 lineTo(107.72f, 191.35f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFA0A0A0))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N700)) {
                 moveTo(110.48f, 190.99f)
                 lineTo(93.4f, 198.34f)
                 lineTo(91.96f, 194.39f)
@@ -390,7 +391,7 @@ public val AbductorMachine: ImageVector
                 lineTo(110.48f, 190.99f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFD9D9D9))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(92.28f, 192.47f)
                 lineTo(90.28f, 195.57f)
                 lineTo(111.8f, 185.63f)
@@ -398,7 +399,7 @@ public val AbductorMachine: ImageVector
                 lineTo(92.28f, 192.47f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF252C32))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N200)) {
                 moveTo(137.5f, 184.33f)
                 curveTo(136.61f, 184.2f, 134.96f, 185.97f, 136.67f, 187.72f)
                 lineTo(151.47f, 186.6f)
@@ -406,13 +407,13 @@ public val AbductorMachine: ImageVector
                 curveTo(147.26f, 184.23f, 138.38f, 184.46f, 137.5f, 184.33f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF0F1317))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N050)) {
                 moveTo(151.47f, 186.6f)
                 curveTo(150.36f, 186.44f, 150.49f, 184.55f, 151.58f, 184.11f)
                 curveTo(152.3f, 184.63f, 152.63f, 185.51f, 151.47f, 186.6f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF2F2A2D))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N250)) {
                 moveTo(80.44f, 211.46f)
                 lineTo(111.5f, 215.5f)
                 lineTo(122.64f, 209.2f)
@@ -422,7 +423,7 @@ public val AbductorMachine: ImageVector
                 lineTo(80.44f, 211.46f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF393337))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N300)) {
                 moveTo(80.91f, 203.88f)
                 lineTo(111.37f, 208.99f)
                 lineTo(122.5f, 203f)
@@ -430,7 +431,7 @@ public val AbductorMachine: ImageVector
                 lineTo(80.91f, 203.88f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFD9D9D9))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(53.17f, 209.25f)
                 lineTo(74.61f, 197.91f)
                 lineTo(79.52f, 198.29f)
@@ -438,7 +439,7 @@ public val AbductorMachine: ImageVector
                 lineTo(53.17f, 209.25f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFA0A0A0))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N700)) {
                 moveTo(80.63f, 202.14f)
                 lineTo(79.31f, 198.44f)
                 lineTo(59.03f, 209.3f)
@@ -446,7 +447,7 @@ public val AbductorMachine: ImageVector
                 lineTo(80.63f, 202.14f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF2F2A2D))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N250)) {
                 moveTo(78f, 199.5f)
                 lineTo(78f, 126.5f)
                 lineTo(99f, 121f)
@@ -456,7 +457,7 @@ public val AbductorMachine: ImageVector
                 lineTo(78f, 199.5f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF393337))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N300)) {
                 moveTo(84.5f, 201.5f)
                 lineTo(84.5f, 128.5f)
                 lineTo(105.5f, 123f)
@@ -464,7 +465,7 @@ public val AbductorMachine: ImageVector
                 lineTo(84.5f, 201.5f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFD9D9D9))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(58.83f, 206.19f)
                 lineTo(53.18f, 209.27f)
                 lineTo(90.48f, 210.99f)
@@ -472,7 +473,7 @@ public val AbductorMachine: ImageVector
                 lineTo(58.83f, 206.19f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFA0A0A0))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N700)) {
                 moveTo(92.5f, 216f)
                 lineTo(90.5f, 210.5f)
                 lineTo(94.5f, 208.5f)
@@ -480,7 +481,7 @@ public val AbductorMachine: ImageVector
                 lineTo(92.5f, 216f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF252C32))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N200)) {
                 moveTo(94.77f, 210.43f)
                 curveTo(93.64f, 210.26f, 91.33f, 212.21f, 93.33f, 214.24f)
                 lineTo(112.46f, 213.38f)
@@ -488,13 +489,13 @@ public val AbductorMachine: ImageVector
                 curveTo(107.32f, 210.59f, 95.89f, 210.6f, 94.77f, 210.43f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF0F1317))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N050)) {
                 moveTo(112.46f, 213.38f)
                 curveTo(111.06f, 213.17f, 111.44f, 211.04f, 112.89f, 210.56f)
                 curveTo(113.76f, 211.17f, 114.08f, 212.18f, 112.46f, 213.38f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFBEBEBE))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(55.31f, 215.24f)
                 lineTo(53.17f, 209.25f)
                 lineTo(90.56f, 210.55f)
@@ -502,7 +503,7 @@ public val AbductorMachine: ImageVector
                 lineTo(55.31f, 215.24f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF3C3C3C))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N300)) {
                 moveTo(97.5f, 53f)
                 curveTo(102.76f, 53f, 103f, 59f, 103f, 59f)
                 curveTo(103f, 59f, 103.16f, 64f, 97.5f, 64f)
@@ -511,8 +512,8 @@ public val AbductorMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF3C3C3C)),
-                stroke = SolidColor(Color(0xFF717171)),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
+                stroke = SolidColor(AppPalette.NeutralDark.N550),
                 strokeLineWidth = 0.2f
             ) {
                 moveTo(96.5f, 53f)
@@ -522,7 +523,7 @@ public val AbductorMachine: ImageVector
                 curveTo(91.5f, 57f, 91.5f, 53f, 96.5f, 53f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFA0A0A0))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N700)) {
                 moveTo(94.81f, 63.5f)
                 horizontalLineTo(89.5f)
                 curveTo(89.5f, 63.5f, 88f, 60.54f, 88f, 58.5f)
@@ -532,7 +533,7 @@ public val AbductorMachine: ImageVector
                 curveTo(101.7f, 63.46f, 97.39f, 63.5f, 94.81f, 63.5f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF3C3C3C))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N300)) {
                 moveTo(97f, 57f)
                 curveTo(98.2f, 56.6f, 98.5f, 57.83f, 98.5f, 58.5f)
                 curveTo(98.33f, 59f, 97.8f, 59.5f, 97f, 59.5f)
@@ -540,7 +541,7 @@ public val AbductorMachine: ImageVector
                 curveTo(95.81f, 58.81f, 95.8f, 57.4f, 97f, 57f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFBEBEBE))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(103f, 255f)
                 curveTo(97f, 258.6f, 94.17f, 253.5f, 93.5f, 250.5f)
                 verticalLineTo(228f)
@@ -548,13 +549,13 @@ public val AbductorMachine: ImageVector
                 verticalLineTo(255f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFD9D9D9))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(93.5f, 228.5f)
                 curveTo(95.67f, 225.67f, 100.6f, 222.4f, 103f, 232f)
                 curveTo(100f, 232.83f, 93.9f, 233.3f, 93.5f, 228.5f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFBEBEBE))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(126f, 241.49f)
                 curveTo(121.58f, 244.86f, 119.49f, 240.09f, 119f, 237.29f)
                 verticalLineTo(216.26f)
@@ -562,13 +563,13 @@ public val AbductorMachine: ImageVector
                 verticalLineTo(241.49f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFD9D9D9))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(119f, 216.72f)
                 curveTo(120.6f, 214.07f, 124.23f, 211.02f, 126f, 219.99f)
                 curveTo(123.79f, 220.77f, 119.29f, 221.21f, 119f, 216.72f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFBEBEBE))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(121f, 222.77f)
                 curveTo(122.68f, 225.97f, 129.05f, 228.9f, 141.11f, 215f)
                 lineTo(160.77f, 244.26f)
@@ -578,7 +579,7 @@ public val AbductorMachine: ImageVector
                 verticalLineTo(222.77f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFD9D9D9))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(141f, 215f)
                 lineTo(141.5f, 216.5f)
                 curveTo(133.5f, 225.37f, 126.66f, 226.13f, 124.37f, 225.37f)
@@ -586,7 +587,7 @@ public val AbductorMachine: ImageVector
                 curveTo(132f, 224.5f, 137.49f, 218.51f, 141f, 215f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFD9D9D9))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(141.29f, 222.46f)
                 lineTo(157.5f, 247f)
                 lineTo(155.5f, 246.5f)
@@ -594,7 +595,7 @@ public val AbductorMachine: ImageVector
                 lineTo(141.29f, 222.46f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF252C32))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N200)) {
                 moveTo(155.16f, 244.5f)
                 lineTo(151.5f, 247f)
                 curveTo(151.13f, 248.03f, 151.29f, 248.42f, 152.46f, 248.66f)
@@ -602,7 +603,7 @@ public val AbductorMachine: ImageVector
                 curveTo(156.58f, 245.67f, 155.87f, 244.85f, 155.16f, 244.5f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF393337))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N300)) {
                 moveTo(133.76f, 207f)
                 horizontalLineTo(131f)
                 lineTo(144.03f, 233.84f)
@@ -611,7 +612,7 @@ public val AbductorMachine: ImageVector
                 lineTo(133.76f, 207f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF2F2A2D))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N250)) {
                 moveTo(144.03f, 215.68f)
                 lineTo(131.79f, 207.79f)
                 lineTo(131f, 207f)
@@ -620,7 +621,7 @@ public val AbductorMachine: ImageVector
                 verticalLineTo(215.68f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF393337))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N300)) {
                 moveTo(120.13f, 214f)
                 horizontalLineTo(117f)
                 lineTo(131.76f, 245f)
@@ -629,7 +630,7 @@ public val AbductorMachine: ImageVector
                 lineTo(120.13f, 214f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF2F2A2D))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N250)) {
                 moveTo(132f, 224.03f)
                 lineTo(117.91f, 214.91f)
                 lineTo(117f, 214f)
@@ -638,7 +639,7 @@ public val AbductorMachine: ImageVector
                 verticalLineTo(224.03f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF252C32))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N200)) {
                 moveTo(146.5f, 253f)
                 lineTo(142.5f, 255f)
                 lineTo(143.5f, 258f)
@@ -647,7 +648,7 @@ public val AbductorMachine: ImageVector
                 curveTo(147.56f, 253.06f, 146.5f, 253f, 146.5f, 253f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFBEBEBE))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(100f, 234.5f)
                 curveTo(101.83f, 238f, 108.8f, 241.2f, 122f, 226f)
                 lineTo(143.5f, 258f)
@@ -657,7 +658,7 @@ public val AbductorMachine: ImageVector
                 verticalLineTo(234.5f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFD9D9D9))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(122f, 234.5f)
                 lineTo(123f, 236f)
                 curveTo(113f, 244.8f, 105.5f, 245.33f, 103f, 244.5f)
@@ -665,7 +666,7 @@ public val AbductorMachine: ImageVector
                 curveTo(108.7f, 245.4f, 118.17f, 238.33f, 122f, 234.5f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFD9D9D9))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(124.5f, 226.5f)
                 lineTo(146f, 258f)
                 horizontalLineTo(143.5f)
@@ -673,7 +674,7 @@ public val AbductorMachine: ImageVector
                 lineTo(124.5f, 226.5f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFA0A0A0))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N700)) {
                 moveTo(142.5f, 261f)
                 horizontalLineTo(139.5f)
                 lineTo(143.5f, 258f)

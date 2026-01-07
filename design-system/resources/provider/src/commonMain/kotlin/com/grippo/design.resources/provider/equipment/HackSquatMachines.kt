@@ -1,6 +1,7 @@
 package com.grippo.design.resources.provider.equipment
 
 import androidx.compose.ui.graphics.Color
+import com.grippo.design.resources.provider.colors.AppPalette
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
@@ -19,8 +20,8 @@ public val HackSquatMachines: ImageVector
             viewportHeight = 253f
         ).apply {
             path(
-                fill = SolidColor(Color(0xFFAAAAAA)),
-                stroke = SolidColor(Color(0xFF7F7F7F)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
+                stroke = SolidColor(AppPalette.NeutralDark.N600),
                 strokeLineWidth = 1f
             ) {
                 moveTo(135.21f, 34.29f)
@@ -31,8 +32,8 @@ public val HackSquatMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
-                stroke = SolidColor(Color(0xFF262C31)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeLineWidth = 1.5f
             ) {
                 moveTo(119.03f, 55.66f)
@@ -43,8 +44,8 @@ public val HackSquatMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
-                stroke = SolidColor(Color(0xFF262C31)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeLineWidth = 1.5f
             ) {
                 moveTo(115.27f, 58.37f)
@@ -55,8 +56,8 @@ public val HackSquatMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
-                stroke = SolidColor(Color(0xFF262C31)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeLineWidth = 1.5f
             ) {
                 moveTo(111.29f, 60.34f)
@@ -67,8 +68,8 @@ public val HackSquatMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
-                stroke = SolidColor(Color(0xFF262C31)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeLineWidth = 1.5f
             ) {
                 moveTo(107.75f, 61.78f)
@@ -79,7 +80,7 @@ public val HackSquatMachines: ImageVector
                 close()
             }
             path(
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeLineWidth = 1f
             ) {
                 moveTo(108.41f, 59.48f)
@@ -87,14 +88,14 @@ public val HackSquatMachines: ImageVector
                 curveTo(97.59f, 39.63f, 96.75f, 26.62f, 111.24f, 34.57f)
             }
             path(
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeLineWidth = 1f
             ) {
                 moveTo(112.99f, 35.91f)
                 curveTo(115.08f, 37.41f, 119.73f, 41.99f, 121.58f, 48.26f)
                 curveTo(123.81f, 55.76f, 124.66f, 68.78f, 110.16f, 60.82f)
             }
-            path(fill = SolidColor(Color(0xFFBEBEBE))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(66.41f, 124.59f)
                 lineTo(195.9f, 198.33f)
                 verticalLineTo(206.72f)
@@ -102,7 +103,7 @@ public val HackSquatMachines: ImageVector
                 verticalLineTo(124.59f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFBEBEBE))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(66.41f, 3.7f)
                 verticalLineTo(133.58f)
                 lineTo(74.2f, 137.18f)
@@ -110,7 +111,7 @@ public val HackSquatMachines: ImageVector
                 lineTo(66.41f, 3.7f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFD9D9D9))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(79.98f, 126.5f)
                 lineTo(72.58f, 129.59f)
                 lineTo(195.3f, 198.33f)
@@ -118,7 +119,7 @@ public val HackSquatMachines: ImageVector
                 lineTo(79.98f, 126.5f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFA0A0A0))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N700)) {
                 moveTo(80.2f, 126.39f)
                 lineTo(74.2f, 128.79f)
                 verticalLineTo(0.49f)
@@ -126,7 +127,7 @@ public val HackSquatMachines: ImageVector
                 lineTo(80.2f, 126.39f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFD9D9D9))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(195.9f, 198.33f)
                 horizontalLineTo(202.49f)
                 lineTo(79.98f, 2.47f)
@@ -134,7 +135,7 @@ public val HackSquatMachines: ImageVector
                 lineTo(195.9f, 198.33f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFBEBEBE))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(77.35f, 1.24f)
                 lineTo(195.9f, 198.33f)
                 lineTo(182.71f, 192.93f)
@@ -142,7 +143,7 @@ public val HackSquatMachines: ImageVector
                 lineTo(77.35f, 1.24f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFA0A0A0))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N700)) {
                 moveTo(195.9f, 206.72f)
                 verticalLineTo(198.33f)
                 lineTo(202.49f, 197.13f)
@@ -150,7 +151,7 @@ public val HackSquatMachines: ImageVector
                 lineTo(195.9f, 206.72f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFBEBEBE))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(161.44f, 243.74f)
                 horizontalLineTo(143.54f)
                 lineTo(131.2f, 225.23f)
@@ -164,7 +165,7 @@ public val HackSquatMachines: ImageVector
                 lineTo(161.44f, 243.74f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFA0A0A0))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N700)) {
                 moveTo(190.44f, 246.83f)
                 verticalLineTo(253f)
                 lineTo(229.32f, 231.4f)
@@ -172,7 +173,7 @@ public val HackSquatMachines: ImageVector
                 lineTo(190.44f, 246.83f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFD9D9D9))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(163.29f, 236.96f)
                 lineTo(144.78f, 235.72f)
                 lineTo(133.05f, 220.91f)
@@ -184,7 +185,7 @@ public val HackSquatMachines: ImageVector
                 lineTo(163.29f, 236.96f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFA0A0A0))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N700)) {
                 moveTo(175.37f, 205.24f)
                 lineTo(170.92f, 220.66f)
                 curveTo(175.87f, 236.86f, 193.46f, 230.81f, 196.33f, 226.07f)
@@ -192,7 +193,7 @@ public val HackSquatMachines: ImageVector
                 lineTo(175.37f, 205.24f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFBEBEBE))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(174.8f, 204.99f)
                 lineTo(170.38f, 220.28f)
                 curveTo(170.3f, 229.47f, 185.57f, 234.91f, 188.1f, 230.12f)
@@ -200,7 +201,7 @@ public val HackSquatMachines: ImageVector
                 lineTo(174.8f, 204.99f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFD9D9D9))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(67.02f, 1.23f)
                 lineTo(5.32f, 28.39f)
                 lineTo(15.81f, 30.24f)
@@ -208,7 +209,7 @@ public val HackSquatMachines: ImageVector
                 lineTo(67.02f, 1.23f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFD9D9D9))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(93.56f, 138.22f)
                 lineTo(30.62f, 169.7f)
                 lineTo(44.19f, 177.72f)
@@ -216,7 +217,7 @@ public val HackSquatMachines: ImageVector
                 lineTo(93.56f, 138.22f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFA0A0A0))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N700)) {
                 moveTo(49.75f, 180.8f)
                 lineTo(44.19f, 177.72f)
                 lineTo(103.43f, 145.63f)
@@ -224,7 +225,7 @@ public val HackSquatMachines: ImageVector
                 lineTo(49.75f, 180.8f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFA0A0A0))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N700)) {
                 moveTo(15.19f, 33.32f)
                 lineTo(13.96f, 30.24f)
                 lineTo(78.13f, 0f)
@@ -232,7 +233,7 @@ public val HackSquatMachines: ImageVector
                 lineTo(15.19f, 33.32f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF2F2A2D))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N250)) {
                 moveTo(72.7f, 63.74f)
                 lineTo(90.66f, 36.46f)
                 lineTo(105.99f, 29f)
@@ -241,7 +242,7 @@ public val HackSquatMachines: ImageVector
                 lineTo(72.7f, 63.74f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF393337))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N300)) {
                 moveTo(76.69f, 66.4f)
                 lineTo(94.65f, 39.13f)
                 lineTo(107.07f, 32.97f)
@@ -250,7 +251,7 @@ public val HackSquatMachines: ImageVector
                 verticalLineTo(66.4f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF2F2A2D))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N250)) {
                 moveTo(50.7f, 72.58f)
                 lineTo(69.1f, 44.64f)
                 lineTo(84.79f, 37f)
@@ -259,7 +260,7 @@ public val HackSquatMachines: ImageVector
                 lineTo(50.7f, 72.58f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF393337))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N300)) {
                 moveTo(54.79f, 75.31f)
                 lineTo(73.18f, 47.37f)
                 lineTo(85.9f, 41.07f)
@@ -268,7 +269,7 @@ public val HackSquatMachines: ImageVector
                 verticalLineTo(75.31f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFBEBEBE))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(4.7f, 160.44f)
                 lineTo(137.99f, 236.34f)
                 verticalLineTo(244.98f)
@@ -276,7 +277,7 @@ public val HackSquatMachines: ImageVector
                 verticalLineTo(160.44f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFBEBEBE))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(4.7f, 29f)
                 verticalLineTo(169.7f)
                 lineTo(12.72f, 173.4f)
@@ -284,7 +285,7 @@ public val HackSquatMachines: ImageVector
                 lineTo(4.7f, 29f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFD9D9D9))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(18.89f, 162.29f)
                 lineTo(12.1f, 164.76f)
                 lineTo(137.37f, 236.34f)
@@ -292,7 +293,7 @@ public val HackSquatMachines: ImageVector
                 lineTo(18.89f, 162.29f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFA0A0A0))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N700)) {
                 moveTo(18.89f, 162.29f)
                 lineTo(12.1f, 164.76f)
                 lineTo(12.72f, 32.71f)
@@ -300,7 +301,7 @@ public val HackSquatMachines: ImageVector
                 lineTo(18.89f, 162.29f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFD9D9D9))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(137.99f, 236.34f)
                 lineTo(144.78f, 235.1f)
                 lineTo(17.04f, 28.39f)
@@ -308,7 +309,7 @@ public val HackSquatMachines: ImageVector
                 lineTo(137.99f, 236.34f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFBEBEBE))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(13.96f, 29.62f)
                 lineTo(137.99f, 236.34f)
                 lineTo(124.41f, 230.79f)
@@ -316,7 +317,7 @@ public val HackSquatMachines: ImageVector
                 lineTo(13.96f, 29.62f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFA0A0A0))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N700)) {
                 moveTo(137.99f, 244.98f)
                 verticalLineTo(236.34f)
                 lineTo(144.78f, 235.1f)
@@ -324,7 +325,7 @@ public val HackSquatMachines: ImageVector
                 lineTo(137.99f, 244.98f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFF2F2A2D))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N250)) {
                 moveTo(70.43f, 126f)
                 lineTo(43.7f, 79.98f)
                 lineTo(45.37f, 74.96f)
@@ -335,8 +336,8 @@ public val HackSquatMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF393337)),
-                stroke = SolidColor(Color(0xFF2F2A2D)),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
+                stroke = SolidColor(AppPalette.NeutralDark.N250),
                 strokeLineWidth = 1f
             ) {
                 moveTo(75.03f, 121f)
@@ -347,8 +348,8 @@ public val HackSquatMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
-                stroke = SolidColor(Color(0xFF262C31)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeLineWidth = 1.5f
             ) {
                 moveTo(35.47f, 101.82f)
@@ -359,8 +360,8 @@ public val HackSquatMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
-                stroke = SolidColor(Color(0xFF262C31)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeLineWidth = 1.5f
             ) {
                 moveTo(30.65f, 102.86f)
@@ -371,8 +372,8 @@ public val HackSquatMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
-                stroke = SolidColor(Color(0xFF262C31)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeLineWidth = 1.5f
             ) {
                 moveTo(26.6f, 103.75f)
@@ -383,8 +384,8 @@ public val HackSquatMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
-                stroke = SolidColor(Color(0xFF262C31)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeLineWidth = 1.5f
             ) {
                 moveTo(22.51f, 104.06f)
@@ -395,8 +396,8 @@ public val HackSquatMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
-                stroke = SolidColor(Color(0xFF262C31)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeLineWidth = 1f
             ) {
                 moveTo(23.31f, 99.88f)
@@ -407,8 +408,8 @@ public val HackSquatMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFAAAAAA)),
-                stroke = SolidColor(Color(0xFF7F7F7F)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
+                stroke = SolidColor(AppPalette.NeutralDark.N600),
                 strokeLineWidth = 1f
             ) {
                 moveTo(19.74f, 90.53f)
@@ -421,15 +422,15 @@ public val HackSquatMachines: ImageVector
                 close()
             }
             path(
-                stroke = SolidColor(Color(0xFFA09D9D)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeLineWidth = 2f
             ) {
                 moveTo(19.97f, 90.55f)
                 curveTo(22.13f, 90.82f, 25.83f, 92.46f, 23.34f, 96.91f)
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
-                stroke = SolidColor(Color(0xFF7F7F7F)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
+                stroke = SolidColor(AppPalette.NeutralDark.N600),
                 strokeLineWidth = 1f
             ) {
                 moveTo(15.59f, 100.38f)
@@ -440,8 +441,8 @@ public val HackSquatMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeLineWidth = 2f
             ) {
                 moveTo(14.27f, 97.72f)
@@ -467,8 +468,8 @@ public val HackSquatMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF101317)),
-                stroke = SolidColor(Color(0xFF101317)),
+                fill = SolidColor(AppPalette.NeutralDark.N050),
+                stroke = SolidColor(AppPalette.NeutralDark.N050),
                 strokeLineWidth = 1f
             ) {
                 moveTo(216.97f, 199.32f)
@@ -480,8 +481,8 @@ public val HackSquatMachines: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF262C31)),
-                stroke = SolidColor(Color(0xFF101317)),
+                fill = SolidColor(AppPalette.NeutralDark.N200),
+                stroke = SolidColor(AppPalette.NeutralDark.N050),
                 strokeLineWidth = 1f
             ) {
                 moveTo(216.35f, 195f)

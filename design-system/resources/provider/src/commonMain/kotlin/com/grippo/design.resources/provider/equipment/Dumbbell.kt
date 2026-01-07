@@ -1,6 +1,7 @@
 package com.grippo.design.resources.provider.equipment
 
 import androidx.compose.ui.graphics.Color
+import com.grippo.design.resources.provider.colors.AppPalette
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
@@ -24,9 +25,9 @@ public val Dumbbell: ImageVector
             viewportHeight = 233f
         ).apply {
             path(
-                fill = SolidColor(Color(0xFFAAAAAA)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF7F7F7F)),
+                stroke = SolidColor(AppPalette.NeutralDark.N600),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -42,9 +43,9 @@ public val Dumbbell: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -60,9 +61,9 @@ public val Dumbbell: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -78,9 +79,9 @@ public val Dumbbell: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -96,9 +97,9 @@ public val Dumbbell: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -116,7 +117,7 @@ public val Dumbbell: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -131,7 +132,7 @@ public val Dumbbell: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -144,9 +145,9 @@ public val Dumbbell: ImageVector
                 curveTo(60.4077f, 20.5659f, 78.2831f, 6.1022f, 78.4509f, 37.8831f)
             }
             path(
-                fill = SolidColor(Color(0xFFAAAAAA)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF7F7F7F)),
+                stroke = SolidColor(AppPalette.NeutralDark.N600),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -166,7 +167,7 @@ public val Dumbbell: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA09D9D)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -178,7 +179,7 @@ public val Dumbbell: ImageVector
                 curveTo(60.6197f, 53.0761f, 59.6531f, 45.4213f, 69.3718f, 45.1078f)
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -196,9 +197,9 @@ public val Dumbbell: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -214,9 +215,9 @@ public val Dumbbell: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -232,9 +233,9 @@ public val Dumbbell: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -250,9 +251,9 @@ public val Dumbbell: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -268,9 +269,9 @@ public val Dumbbell: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -286,9 +287,9 @@ public val Dumbbell: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFAAAAAA)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF7F7F7F)),
+                stroke = SolidColor(AppPalette.NeutralDark.N600),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -308,7 +309,7 @@ public val Dumbbell: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA09D9D)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -320,9 +321,9 @@ public val Dumbbell: ImageVector
                 curveTo(138.196f, 97.5106f, 137.297f, 90.3941f, 146.332f, 90.1027f)
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF7F7F7F)),
+                stroke = SolidColor(AppPalette.NeutralDark.N600),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -338,9 +339,9 @@ public val Dumbbell: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -369,9 +370,9 @@ public val Dumbbell: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFAAAAAA)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF7F7F7F)),
+                stroke = SolidColor(AppPalette.NeutralDark.N600),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -387,9 +388,9 @@ public val Dumbbell: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -405,9 +406,9 @@ public val Dumbbell: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -423,9 +424,9 @@ public val Dumbbell: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -441,9 +442,9 @@ public val Dumbbell: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -461,7 +462,7 @@ public val Dumbbell: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -476,7 +477,7 @@ public val Dumbbell: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -489,9 +490,9 @@ public val Dumbbell: ImageVector
                 curveTo(53.4077f, 123.566f, 71.2831f, 109.102f, 71.4509f, 140.883f)
             }
             path(
-                fill = SolidColor(Color(0xFFAAAAAA)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF7F7F7F)),
+                stroke = SolidColor(AppPalette.NeutralDark.N600),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -511,7 +512,7 @@ public val Dumbbell: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA09D9D)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -523,7 +524,7 @@ public val Dumbbell: ImageVector
                 curveTo(53.6197f, 156.076f, 52.6531f, 148.421f, 62.3718f, 148.108f)
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -541,9 +542,9 @@ public val Dumbbell: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -559,9 +560,9 @@ public val Dumbbell: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -577,9 +578,9 @@ public val Dumbbell: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -595,9 +596,9 @@ public val Dumbbell: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -613,9 +614,9 @@ public val Dumbbell: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -631,9 +632,9 @@ public val Dumbbell: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFAAAAAA)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF7F7F7F)),
+                stroke = SolidColor(AppPalette.NeutralDark.N600),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -653,7 +654,7 @@ public val Dumbbell: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA09D9D)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -665,9 +666,9 @@ public val Dumbbell: ImageVector
                 curveTo(131.196f, 200.511f, 130.297f, 193.394f, 139.332f, 193.103f)
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF7F7F7F)),
+                stroke = SolidColor(AppPalette.NeutralDark.N600),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -683,9 +684,9 @@ public val Dumbbell: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Butt,

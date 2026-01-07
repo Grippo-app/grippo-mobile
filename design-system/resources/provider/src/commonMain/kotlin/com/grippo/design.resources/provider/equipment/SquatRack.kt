@@ -1,6 +1,7 @@
 package com.grippo.design.resources.provider.equipment
 
 import androidx.compose.ui.graphics.Color
+import com.grippo.design.resources.provider.colors.AppPalette
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
@@ -25,9 +26,9 @@ public val SquatRack: ImageVector
             viewportHeight = 346f
         ).apply {
             path(
-                fill = SolidColor(Color(0xFFAAAAAA)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF7F7F7F)),
+                stroke = SolidColor(AppPalette.NeutralDark.N600),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -43,9 +44,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -61,9 +62,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -79,9 +80,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -97,9 +98,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -117,7 +118,7 @@ public val SquatRack: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -132,7 +133,7 @@ public val SquatRack: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -145,7 +146,7 @@ public val SquatRack: ImageVector
                 curveTo(215.335f, 151.243f, 207.893f, 166.137f, 197.029f, 148.04f)
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -163,7 +164,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -181,7 +182,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -199,7 +200,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -217,7 +218,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -235,7 +236,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -253,7 +254,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -271,7 +272,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -289,7 +290,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -307,7 +308,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF757575)),
+                fill = SolidColor(AppPalette.NeutralDark.N600),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -325,7 +326,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF585757)),
+                fill = SolidColor(AppPalette.NeutralDark.N500),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -343,7 +344,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF757575)),
+                fill = SolidColor(AppPalette.NeutralDark.N600),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -361,7 +362,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF585757)),
+                fill = SolidColor(AppPalette.NeutralDark.N500),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -379,7 +380,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF757575)),
+                fill = SolidColor(AppPalette.NeutralDark.N600),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -397,7 +398,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF585757)),
+                fill = SolidColor(AppPalette.NeutralDark.N500),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -415,7 +416,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF585757)),
+                fill = SolidColor(AppPalette.NeutralDark.N500),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -433,7 +434,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -451,7 +452,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF434343)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -469,7 +470,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF585757)),
+                fill = SolidColor(AppPalette.NeutralDark.N500),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -487,7 +488,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -505,7 +506,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF434343)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -523,7 +524,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -541,7 +542,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -559,7 +560,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -578,7 +579,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -596,7 +597,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -614,7 +615,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -632,7 +633,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -650,7 +651,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF757575)),
+                fill = SolidColor(AppPalette.NeutralDark.N600),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -668,7 +669,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF585757)),
+                fill = SolidColor(AppPalette.NeutralDark.N500),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -686,7 +687,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -704,7 +705,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -722,7 +723,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -740,7 +741,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -758,7 +759,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -776,7 +777,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -794,7 +795,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -812,9 +813,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF000000)),
+                fill = SolidColor(AppPalette.Common.Black),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -830,9 +831,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF000000)),
+                fill = SolidColor(AppPalette.Common.Black),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -848,9 +849,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF000000)),
+                fill = SolidColor(AppPalette.Common.Black),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -866,9 +867,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF000000)),
+                fill = SolidColor(AppPalette.Common.Black),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -884,9 +885,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF000000)),
+                fill = SolidColor(AppPalette.Common.Black),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -902,9 +903,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF000000)),
+                fill = SolidColor(AppPalette.Common.Black),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -920,9 +921,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF000000)),
+                fill = SolidColor(AppPalette.Common.Black),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -938,9 +939,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF000000)),
+                fill = SolidColor(AppPalette.Common.Black),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -956,9 +957,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF000000)),
+                fill = SolidColor(AppPalette.Common.Black),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -974,9 +975,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF000000)),
+                fill = SolidColor(AppPalette.Common.Black),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -992,9 +993,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF000000)),
+                fill = SolidColor(AppPalette.Common.Black),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1010,9 +1011,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF000000)),
+                fill = SolidColor(AppPalette.Common.Black),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1028,9 +1029,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF000000)),
+                fill = SolidColor(AppPalette.Common.Black),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1046,9 +1047,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF000000)),
+                fill = SolidColor(AppPalette.Common.Black),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1064,9 +1065,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF000000)),
+                fill = SolidColor(AppPalette.Common.Black),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1082,9 +1083,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF000000)),
+                fill = SolidColor(AppPalette.Common.Black),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1100,9 +1101,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF000000)),
+                fill = SolidColor(AppPalette.Common.Black),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1118,9 +1119,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF000000)),
+                fill = SolidColor(AppPalette.Common.Black),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1136,9 +1137,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF000000)),
+                fill = SolidColor(AppPalette.Common.Black),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1154,9 +1155,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF000000)),
+                fill = SolidColor(AppPalette.Common.Black),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1172,9 +1173,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF000000)),
+                fill = SolidColor(AppPalette.Common.Black),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1190,9 +1191,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF000000)),
+                fill = SolidColor(AppPalette.Common.Black),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1208,9 +1209,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF000000)),
+                fill = SolidColor(AppPalette.Common.Black),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1226,9 +1227,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF000000)),
+                fill = SolidColor(AppPalette.Common.Black),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1244,9 +1245,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF000000)),
+                fill = SolidColor(AppPalette.Common.Black),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1262,9 +1263,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF000000)),
+                fill = SolidColor(AppPalette.Common.Black),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1280,9 +1281,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFAAAAAA)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF7F7F7F)),
+                stroke = SolidColor(AppPalette.NeutralDark.N600),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1302,7 +1303,7 @@ public val SquatRack: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA09D9D)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1314,7 +1315,7 @@ public val SquatRack: ImageVector
                 curveTo(204.012f, 130.015f, 207.952f, 134.538f, 201.813f, 138.95f)
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1332,9 +1333,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFAAAAAA)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1350,9 +1351,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFAAAAAA)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1368,9 +1369,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1386,9 +1387,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1404,9 +1405,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1422,9 +1423,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1440,9 +1441,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1458,9 +1459,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFAAAAAA)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF7F7F7F)),
+                stroke = SolidColor(AppPalette.NeutralDark.N600),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1480,7 +1481,7 @@ public val SquatRack: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA09D9D)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1492,9 +1493,9 @@ public val SquatRack: ImageVector
                 curveTo(33.8352f, 142.56f, 36.8918f, 146.175f, 32.1859f, 149.562f)
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF7F7F7F)),
+                stroke = SolidColor(AppPalette.NeutralDark.N600),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1510,9 +1511,9 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -1547,7 +1548,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1565,7 +1566,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1583,7 +1584,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF585757)),
+                fill = SolidColor(AppPalette.NeutralDark.N500),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1601,7 +1602,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1619,7 +1620,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF434343)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1637,7 +1638,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF585757)),
+                fill = SolidColor(AppPalette.NeutralDark.N500),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1655,7 +1656,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1673,7 +1674,7 @@ public val SquatRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF434343)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,

@@ -1,6 +1,7 @@
 package com.grippo.design.resources.provider.equipment
 
 import androidx.compose.ui.graphics.Color
+import com.grippo.design.resources.provider.colors.AppPalette
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
@@ -24,7 +25,7 @@ public val FlatBenchWithRack: ImageVector
             viewportHeight = 265f
         ).apply {
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -42,9 +43,9 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -60,7 +61,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -78,7 +79,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -96,7 +97,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -114,7 +115,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -132,7 +133,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -150,7 +151,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -168,7 +169,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -186,7 +187,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -204,7 +205,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -222,7 +223,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -241,7 +242,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -259,7 +260,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -277,7 +278,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -295,7 +296,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -313,7 +314,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -331,7 +332,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -349,7 +350,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -367,7 +368,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -385,9 +386,9 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF393337)),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF2F2A2D)),
+                stroke = SolidColor(AppPalette.NeutralDark.N250),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -403,7 +404,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF2F2A2D)),
+                fill = SolidColor(AppPalette.NeutralDark.N250),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -421,7 +422,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF2F2A2D)),
+                fill = SolidColor(AppPalette.NeutralDark.N250),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -439,7 +440,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -457,7 +458,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -475,7 +476,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -493,7 +494,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -511,9 +512,9 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 0.2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -529,7 +530,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -547,7 +548,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -565,7 +566,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -583,7 +584,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -601,7 +602,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -619,7 +620,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -637,7 +638,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -655,7 +656,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -673,7 +674,7 @@ public val FlatBenchWithRack: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,

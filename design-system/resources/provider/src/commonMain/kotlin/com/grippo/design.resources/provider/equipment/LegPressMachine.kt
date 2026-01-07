@@ -1,6 +1,7 @@
 package com.grippo.design.resources.provider.equipment
 
 import androidx.compose.ui.graphics.Color
+import com.grippo.design.resources.provider.colors.AppPalette
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
@@ -24,9 +25,9 @@ public val LegPressMachine: ImageVector
             viewportHeight = 253f
         ).apply {
             path(
-                fill = SolidColor(Color(0xFFAAAAAA)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF7F7F7F)),
+                stroke = SolidColor(AppPalette.NeutralDark.N600),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -42,9 +43,9 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -60,9 +61,9 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -78,9 +79,9 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -96,9 +97,9 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -116,7 +117,7 @@ public val LegPressMachine: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -131,7 +132,7 @@ public val LegPressMachine: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -144,7 +145,7 @@ public val LegPressMachine: ImageVector
                 curveTo(149.113f, 105.763f, 149.958f, 118.776f, 135.464f, 110.822f)
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -162,7 +163,7 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -180,7 +181,7 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -198,7 +199,7 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -216,7 +217,7 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -234,7 +235,7 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -252,7 +253,7 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -270,7 +271,7 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -294,7 +295,7 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -312,7 +313,7 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -334,7 +335,7 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -352,7 +353,7 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -370,7 +371,7 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -388,7 +389,7 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -406,7 +407,7 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -424,7 +425,7 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -442,7 +443,7 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF101317)),
+                fill = SolidColor(AppPalette.NeutralDark.N050),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -461,7 +462,7 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF262C31)),
+                fill = SolidColor(AppPalette.NeutralDark.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -480,7 +481,7 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF2F2A2D)),
+                fill = SolidColor(AppPalette.NeutralDark.N250),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -499,9 +500,9 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF393337)),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF2F2A2D)),
+                stroke = SolidColor(AppPalette.NeutralDark.N250),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -517,9 +518,9 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF2F2A2D)),
+                fill = SolidColor(AppPalette.NeutralDark.N250),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF2F2A2D)),
+                stroke = SolidColor(AppPalette.NeutralDark.N250),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -536,9 +537,9 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF393337)),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF2F2A2D)),
+                stroke = SolidColor(AppPalette.NeutralDark.N250),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -554,7 +555,7 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -572,7 +573,7 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -590,7 +591,7 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -608,7 +609,7 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -626,7 +627,7 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -644,7 +645,7 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -662,7 +663,7 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -680,9 +681,9 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -698,9 +699,9 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -716,9 +717,9 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -734,9 +735,9 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.5f,
                 strokeLineCap = StrokeCap.Butt,
@@ -752,9 +753,9 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF262C31)),
+                stroke = SolidColor(AppPalette.NeutralDark.N200),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -770,9 +771,9 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFAAAAAA)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF7F7F7F)),
+                stroke = SolidColor(AppPalette.NeutralDark.N600),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -792,7 +793,7 @@ public val LegPressMachine: ImageVector
             path(
                 fill = null,
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA09D9D)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Butt,
@@ -804,9 +805,9 @@ public val LegPressMachine: ImageVector
                 curveTo(47.4349f, 140.818f, 51.1329f, 142.462f, 48.6354f, 146.909f)
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF7F7F7F)),
+                stroke = SolidColor(AppPalette.NeutralDark.N600),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 1.0f,
                 strokeLineCap = StrokeCap.Butt,
@@ -822,9 +823,9 @@ public val LegPressMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFFA0A0A0)),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Butt,

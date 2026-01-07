@@ -1,6 +1,7 @@
 package com.grippo.design.resources.provider.equipment
 
 import androidx.compose.ui.graphics.Color
+import com.grippo.design.resources.provider.colors.AppPalette
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
@@ -24,7 +25,7 @@ public val LegExtensionMachine: ImageVector
             viewportHeight = 343f
         ).apply {
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -42,7 +43,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -60,7 +61,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -78,7 +79,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -96,7 +97,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -114,9 +115,9 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF252C32)),
+                fill = SolidColor(AppPalette.NeutralDark.N200),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF0F1317)),
+                stroke = SolidColor(AppPalette.NeutralDark.N050),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 8f,
                 strokeLineCap = StrokeCap.Butt,
@@ -132,7 +133,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF0F1317)),
+                fill = SolidColor(AppPalette.NeutralDark.N050),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -150,9 +151,9 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF252C32)),
+                fill = SolidColor(AppPalette.NeutralDark.N200),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF0F1317)),
+                stroke = SolidColor(AppPalette.NeutralDark.N050),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 8f,
                 strokeLineCap = StrokeCap.Butt,
@@ -168,7 +169,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF0F1317)),
+                fill = SolidColor(AppPalette.NeutralDark.N050),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -186,9 +187,9 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF252C32)),
+                fill = SolidColor(AppPalette.NeutralDark.N200),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF0F1317)),
+                stroke = SolidColor(AppPalette.NeutralDark.N050),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 8f,
                 strokeLineCap = StrokeCap.Butt,
@@ -204,7 +205,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF0F1317)),
+                fill = SolidColor(AppPalette.NeutralDark.N050),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -222,9 +223,9 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF252C32)),
+                fill = SolidColor(AppPalette.NeutralDark.N200),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF0F1317)),
+                stroke = SolidColor(AppPalette.NeutralDark.N050),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 8f,
                 strokeLineCap = StrokeCap.Butt,
@@ -240,7 +241,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF0F1317)),
+                fill = SolidColor(AppPalette.NeutralDark.N050),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -258,9 +259,9 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF252C32)),
+                fill = SolidColor(AppPalette.NeutralDark.N200),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF0F1317)),
+                stroke = SolidColor(AppPalette.NeutralDark.N050),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 8f,
                 strokeLineCap = StrokeCap.Butt,
@@ -276,7 +277,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF0F1317)),
+                fill = SolidColor(AppPalette.NeutralDark.N050),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -294,7 +295,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF252C32)),
+                fill = SolidColor(AppPalette.NeutralDark.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -312,9 +313,9 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF252C32)),
+                fill = SolidColor(AppPalette.NeutralDark.N200),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF0F1317)),
+                stroke = SolidColor(AppPalette.NeutralDark.N050),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 8f,
                 strokeLineCap = StrokeCap.Butt,
@@ -330,7 +331,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF0F1317)),
+                fill = SolidColor(AppPalette.NeutralDark.N050),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -348,7 +349,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF252C32)),
+                fill = SolidColor(AppPalette.NeutralDark.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -366,9 +367,9 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF252C32)),
+                fill = SolidColor(AppPalette.NeutralDark.N200),
                 fillAlpha = 1.0f,
-                stroke = SolidColor(Color(0xFF0F1317)),
+                stroke = SolidColor(AppPalette.NeutralDark.N050),
                 strokeAlpha = 1.0f,
                 strokeLineWidth = 7f,
                 strokeLineCap = StrokeCap.Butt,
@@ -384,7 +385,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF0F1317)),
+                fill = SolidColor(AppPalette.NeutralDark.N050),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -402,7 +403,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF252C32)),
+                fill = SolidColor(AppPalette.NeutralDark.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -420,7 +421,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -438,7 +439,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -456,7 +457,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -474,7 +475,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -492,7 +493,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -510,7 +511,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -528,7 +529,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -546,7 +547,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -564,7 +565,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -582,7 +583,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF393337)),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -601,7 +602,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF393337)),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -619,7 +620,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF2F2A2D)),
+                fill = SolidColor(AppPalette.NeutralDark.N250),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -637,7 +638,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF231E21)),
+                fill = SolidColor(AppPalette.NeutralDark.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -655,7 +656,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -673,7 +674,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -691,7 +692,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -709,7 +710,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF393337)),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -728,7 +729,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF393337)),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -746,7 +747,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF2F2A2D)),
+                fill = SolidColor(AppPalette.NeutralDark.N250),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -764,7 +765,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF231E21)),
+                fill = SolidColor(AppPalette.NeutralDark.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -782,7 +783,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF393337)),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -801,7 +802,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF393337)),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -819,7 +820,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF2F2A2D)),
+                fill = SolidColor(AppPalette.NeutralDark.N250),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -837,7 +838,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF231E21)),
+                fill = SolidColor(AppPalette.NeutralDark.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -855,7 +856,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -873,7 +874,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF393337)),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -892,7 +893,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF393337)),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -910,7 +911,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF2F2A2D)),
+                fill = SolidColor(AppPalette.NeutralDark.N250),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -928,7 +929,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF231E21)),
+                fill = SolidColor(AppPalette.NeutralDark.N200),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -946,7 +947,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -964,7 +965,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -982,7 +983,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1000,7 +1001,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF393337)),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1018,7 +1019,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF2F2A2D)),
+                fill = SolidColor(AppPalette.NeutralDark.N250),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1036,7 +1037,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF2F2A2D)),
+                fill = SolidColor(AppPalette.NeutralDark.N250),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1054,7 +1055,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF393337)),
+                fill = SolidColor(AppPalette.NeutralDark.N300),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1072,7 +1073,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF2F2A2D)),
+                fill = SolidColor(AppPalette.NeutralDark.N250),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1090,7 +1091,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF2F2A2D)),
+                fill = SolidColor(AppPalette.NeutralDark.N250),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1108,7 +1109,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFD9D9D9)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1126,7 +1127,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1144,7 +1145,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1162,7 +1163,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1180,7 +1181,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1198,7 +1199,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFA0A0A0)),
+                fill = SolidColor(AppPalette.NeutralDark.N700),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,
@@ -1216,7 +1217,7 @@ public val LegExtensionMachine: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFFBEBEBE)),
+                fill = SolidColor(AppPalette.NeutralDark.N800),
                 fillAlpha = 1.0f,
                 stroke = null,
                 strokeAlpha = 1.0f,

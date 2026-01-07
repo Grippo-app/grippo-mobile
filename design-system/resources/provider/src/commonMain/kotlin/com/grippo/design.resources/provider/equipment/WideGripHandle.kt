@@ -1,6 +1,7 @@
 package com.grippo.design.resources.provider.equipment
 
 import androidx.compose.ui.graphics.Color
+import com.grippo.design.resources.provider.colors.AppPalette
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
@@ -18,7 +19,7 @@ public val WideGripHandle: ImageVector
             viewportWidth = 279f,
             viewportHeight = 181f
         ).apply {
-            path(fill = SolidColor(Color(0xFFD9D9D9))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N800)) {
                 moveTo(46.63f, 13f)
                 lineTo(245.63f, 129.5f)
                 lineTo(268.5f, 172f)
@@ -31,8 +32,8 @@ public val WideGripHandle: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
-                stroke = SolidColor(Color(0xFFAAAAAA)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeLineWidth = 1f
             ) {
                 moveTo(53.5f, 32f)
@@ -43,8 +44,8 @@ public val WideGripHandle: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
-                stroke = SolidColor(Color(0xFFAAAAAA)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeLineWidth = 1f
             ) {
                 moveTo(5.91f, 29.5f)
@@ -55,8 +56,8 @@ public val WideGripHandle: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
-                stroke = SolidColor(Color(0xFFAAAAAA)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeLineWidth = 1f
             ) {
                 moveTo(174f, 102.5f)
@@ -67,8 +68,8 @@ public val WideGripHandle: ImageVector
                 close()
             }
             path(
-                fill = SolidColor(Color(0xFF424346)),
-                stroke = SolidColor(Color(0xFFAAAAAA)),
+                fill = SolidColor(AppPalette.NeutralDark.N400),
+                stroke = SolidColor(AppPalette.NeutralDark.N700),
                 strokeLineWidth = 1f
             ) {
                 moveTo(268.5f, 172.5f)
@@ -78,7 +79,7 @@ public val WideGripHandle: ImageVector
                 lineTo(268.5f, 172.5f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFA0A0A0))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N700)) {
                 moveTo(117.5f, 69.39f)
                 curveTo(117.9f, 66.19f, 122.46f, 60.72f, 124.13f, 59.39f)
                 curveTo(128.52f, 58.59f, 138.13f, 63.39f, 141.63f, 65.39f)
@@ -90,7 +91,7 @@ public val WideGripHandle: ImageVector
                 curveTo(140.33f, 84.33f, 117.1f, 72.59f, 117.5f, 69.39f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFA0A0A0))) {
+            path(fill = SolidColor(AppPalette.NeutralDark.N700)) {
                 moveTo(158f, 92.5f)
                 curveTo(159f, 89.57f, 160.63f, 83.89f, 163.12f, 82.39f)
                 curveTo(161.58f, 78.19f, 151.94f, 71.51f, 149.12f, 68.89f)
