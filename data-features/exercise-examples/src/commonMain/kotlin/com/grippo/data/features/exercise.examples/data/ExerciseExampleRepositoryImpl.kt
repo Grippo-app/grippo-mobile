@@ -1,6 +1,5 @@
 package com.grippo.data.features.exercise.examples.data
 
-import com.grippo.backend.GrippoApi
 import com.grippo.data.features.api.exercise.example.models.ExamplePage
 import com.grippo.data.features.api.exercise.example.models.ExampleQueries
 import com.grippo.data.features.api.exercise.example.models.ExampleSortingEnum
@@ -8,7 +7,6 @@ import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
 import com.grippo.data.features.api.exercise.example.models.UserExerciseExampleRules
 import com.grippo.data.features.exercise.examples.domain.ExerciseExampleRepository
-import com.grippo.database.dao.ExerciseExampleDao
 import com.grippo.dto.entity.example.toEntities
 import com.grippo.dto.entity.example.toEntityOrNull
 import com.grippo.entity.domain.equipment.toDomain
@@ -18,8 +16,8 @@ import org.koin.core.annotation.Single
 
 @Single(binds = [ExerciseExampleRepository::class])
 internal class ExerciseExampleRepositoryImpl(
-    private val api: GrippoApi,
-    private val exerciseExampleDao: ExerciseExampleDao,
+    private val api: com.grippo.services.backend.GrippoApi,
+    private val exerciseExampleDao: com.grippo.services.database.dao.ExerciseExampleDao,
 ) : ExerciseExampleRepository {
 
     override fun observeExerciseExamples(

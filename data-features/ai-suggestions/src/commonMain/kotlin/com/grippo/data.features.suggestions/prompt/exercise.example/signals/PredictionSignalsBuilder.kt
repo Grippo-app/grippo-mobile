@@ -13,10 +13,6 @@ import com.grippo.data.features.suggestions.prompt.exercise.example.model.Predic
 import com.grippo.data.features.suggestions.prompt.exercise.example.model.SessionHabit
 import com.grippo.data.features.suggestions.prompt.exercise.example.model.TrainingSummary
 import com.grippo.data.features.suggestions.prompt.exercise.example.utils.PromptMath
-import com.grippo.database.dao.DraftTrainingDao
-import com.grippo.database.dao.TrainingDao
-import com.grippo.database.models.DraftTrainingPack
-import com.grippo.database.models.TrainingPack
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.DateTimeUnit
@@ -34,8 +30,8 @@ import kotlin.time.Duration.Companion.days
  */
 @Single
 internal class PredictionSignalsBuilder(
-    private val draftTrainingDao: DraftTrainingDao,
-    private val trainingDao: TrainingDao
+    private val draftTrainingDao: com.grippo.services.database.dao.DraftTrainingDao,
+    private val trainingDao: com.grippo.services.database.dao.TrainingDao
 ) {
 
     private companion object {
@@ -103,7 +99,7 @@ internal class PredictionSignalsBuilder(
         )
     }
 
-    private fun DraftTrainingPack.toSessionSummaries(
+    private fun com.grippo.services.database.models.DraftTrainingPack.toSessionSummaries(
         exampleContextMap: Map<String, ExampleContext>
     ): List<ExerciseSummary> {
         return exercises.mapNotNull { pack ->
@@ -129,7 +125,7 @@ internal class PredictionSignalsBuilder(
         }
     }
 
-    private fun TrainingPack.toSummary(
+    private fun com.grippo.services.database.models.TrainingPack.toSummary(
         exampleContextMap: Map<String, ExampleContext>
     ): TrainingSummary {
         val performedAt = DateTimeUtils.toLocalDateTime(training.createdAt)

@@ -1,14 +1,12 @@
 package com.grippo.dto.entity.user
 
-import com.grippo.backend.dto.user.WeightHistoryResponse
-import com.grippo.database.entity.WeightHistoryEntity
 import com.grippo.toolkit.logger.AppLogger
 
-public fun List<WeightHistoryResponse>.toEntities(): List<WeightHistoryEntity> {
+public fun List<com.grippo.services.backend.dto.user.WeightHistoryResponse>.toEntities(): List<com.grippo.services.database.entity.WeightHistoryEntity> {
     return mapNotNull { it.toEntityOrNull() }
 }
 
-public fun WeightHistoryResponse.toEntityOrNull(): WeightHistoryEntity? {
+public fun com.grippo.services.backend.dto.user.WeightHistoryResponse.toEntityOrNull(): com.grippo.services.database.entity.WeightHistoryEntity? {
     val entityId = AppLogger.Mapping.log(id) {
         "WeightHistoryResponse.id is null"
     } ?: return null
@@ -25,7 +23,7 @@ public fun WeightHistoryResponse.toEntityOrNull(): WeightHistoryEntity? {
         "WeightHistoryResponse.updatedAt is null"
     } ?: return null
 
-    return WeightHistoryEntity(
+    return _root_ide_package_.com.grippo.services.database.entity.WeightHistoryEntity(
         id = entityId,
         weight = entityWeight,
         createdAt = created,

@@ -1,7 +1,5 @@
 package com.grippo.shared
 
-import com.grippo.ai.agent.AiAgentModule
-import com.grippo.backend.BackendModule
 import com.grippo.core.error.provider.impl.ErrorModule
 import com.grippo.core.foundation.CoreModule
 import com.grippo.data.features.api.FeatureApiModule
@@ -16,9 +14,10 @@ import com.grippo.data.features.suggestions.AiSuggestionsFeatureModule
 import com.grippo.data.features.trainings.TrainingsFeatureModule
 import com.grippo.data.features.user.UserFeatureModule
 import com.grippo.data.features.weight.history.WeightHistoryFeatureModule
-import com.grippo.database.DatabaseModule
 import com.grippo.design.resources.provider.impl.ResourcesProviderModule
 import com.grippo.dialog.api.DialogModule
+import com.grippo.services.ai.agent.AiAgentModule
+import com.grippo.services.database.DatabaseModule
 import com.grippo.services.google.auth.GoogleAuthModule
 import com.grippo.toolkit.connectivity.ConnectivityModule
 import com.grippo.toolkit.context.ContextModule
@@ -38,7 +37,7 @@ public object Koin {
         modules(
             ContextModule().module,
             DatabaseModule().module,
-            BackendModule().module,
+            _root_ide_package_.com.grippo.services.backend.BackendModule().module,
             GoogleAuthModule().module,
             CoreModule().module,
             DialogModule().module,

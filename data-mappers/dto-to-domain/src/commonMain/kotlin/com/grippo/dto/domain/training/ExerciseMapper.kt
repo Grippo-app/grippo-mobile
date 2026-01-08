@@ -1,16 +1,15 @@
 package com.grippo.dto.domain.training
 
-import com.grippo.backend.dto.training.ExerciseResponse
 import com.grippo.data.features.api.exercise.example.models.ExerciseExampleValue
 import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.toolkit.logger.AppLogger
 
-public fun List<ExerciseResponse>.toDomain(example: ExerciseExampleValue): List<Exercise> {
+public fun List<com.grippo.services.backend.dto.training.ExerciseResponse>.toDomain(example: ExerciseExampleValue): List<Exercise> {
     return mapNotNull { it.toDomainOrNull(example) }
 }
 
-public fun ExerciseResponse.toDomainOrNull(example: ExerciseExampleValue): Exercise? {
+public fun com.grippo.services.backend.dto.training.ExerciseResponse.toDomainOrNull(example: ExerciseExampleValue): Exercise? {
     val domainId = AppLogger.Mapping.log(this@toDomainOrNull.id) {
         "ExerciseResponse.id is null"
     } ?: return null

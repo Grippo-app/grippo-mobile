@@ -1,16 +1,10 @@
 package com.grippo.data.features.trainings.data
 
-import com.grippo.backend.GrippoApi
-import com.grippo.backend.dto.training.TrainingResponse
 import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.data.features.api.training.models.SetDraftTraining
 import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.data.features.trainings.domain.TrainingRepository
-import com.grippo.database.dao.DraftTrainingDao
-import com.grippo.database.dao.TrainingDao
-import com.grippo.database.dao.UserActiveDao
-import com.grippo.database.dao.UserDao
 import com.grippo.domain.dto.training.toBody
 import com.grippo.domain.entity.training.toEntity
 import com.grippo.dto.entity.training.toEntities
@@ -26,11 +20,11 @@ import org.koin.core.annotation.Single
 
 @Single(binds = [TrainingRepository::class])
 internal class TrainingRepositoryImpl(
-    private val api: GrippoApi,
-    private val trainingDao: TrainingDao,
-    private val draftTrainingDao: DraftTrainingDao,
-    private val userActiveDao: UserActiveDao,
-    private val userDao: UserDao,
+    private val api: com.grippo.services.backend.GrippoApi,
+    private val trainingDao: com.grippo.services.database.dao.TrainingDao,
+    private val draftTrainingDao: com.grippo.services.database.dao.DraftTrainingDao,
+    private val userActiveDao: com.grippo.services.database.dao.UserActiveDao,
+    private val userDao: com.grippo.services.database.dao.UserDao,
 ) : TrainingRepository {
 
     override fun observeTraining(id: String): Flow<Training?> {
@@ -103,7 +97,7 @@ internal class TrainingRepositoryImpl(
         return response
     }
 
-    private suspend fun provideTraining(value: TrainingResponse) {
+    private suspend fun provideTraining(value: com.grippo.services.backend.dto.training.TrainingResponse) {
         val training = value.toEntityOrNull() ?: return
         val exercises = value.exercises.toEntities()
         val iterations = value.exercises.flatMap { f -> f.iterations }.toEntities()

@@ -2,15 +2,14 @@ package com.grippo.entity.domain.muscles
 
 import com.grippo.data.features.api.muscle.models.Muscle
 import com.grippo.data.features.api.muscle.models.MuscleEnum
-import com.grippo.database.entity.MuscleEntity
 import com.grippo.toolkit.logger.AppLogger
 import kotlin.time.Duration
 
-public fun List<MuscleEntity>.toDomain(): List<Muscle> {
+public fun List<com.grippo.services.database.entity.MuscleEntity>.toDomain(): List<Muscle> {
     return mapNotNull { it.toDomain() }
 }
 
-public fun MuscleEntity.toDomain(): Muscle? {
+public fun com.grippo.services.database.entity.MuscleEntity.toDomain(): Muscle? {
     val mappedType = AppLogger.Mapping.log(MuscleEnum.of(type)) {
         "MuscleEntity $id has unrecognized type: $type"
     } ?: return null

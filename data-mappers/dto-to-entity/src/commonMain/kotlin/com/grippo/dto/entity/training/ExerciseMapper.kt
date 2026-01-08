@@ -1,14 +1,12 @@
 package com.grippo.dto.entity.training
 
-import com.grippo.backend.dto.training.ExerciseResponse
-import com.grippo.database.entity.ExerciseEntity
 import com.grippo.toolkit.logger.AppLogger
 
-public fun List<ExerciseResponse>.toEntities(): List<ExerciseEntity> {
+public fun List<com.grippo.services.backend.dto.training.ExerciseResponse>.toEntities(): List<com.grippo.services.database.entity.ExerciseEntity> {
     return mapNotNull { it.toEntityOrNull() }
 }
 
-public fun ExerciseResponse.toEntityOrNull(): ExerciseEntity? {
+public fun com.grippo.services.backend.dto.training.ExerciseResponse.toEntityOrNull(): com.grippo.services.database.entity.ExerciseEntity? {
     val entityId = AppLogger.Mapping.log(id) {
         "ExerciseResponse.id is null"
     } ?: return null
@@ -45,7 +43,7 @@ public fun ExerciseResponse.toEntityOrNull(): ExerciseEntity? {
         "ExerciseResponse.exerciseExampleId is null"
     } ?: return null
 
-    return ExerciseEntity(
+    return _root_ide_package_.com.grippo.services.database.entity.ExerciseEntity(
         id = entityId,
         trainingId = entityTrainingId,
         exerciseExampleId = exerciseExampleId,

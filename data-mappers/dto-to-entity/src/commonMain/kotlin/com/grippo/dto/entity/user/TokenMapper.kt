@@ -1,10 +1,8 @@
 package com.grippo.dto.entity.user
 
-import com.grippo.backend.dto.auth.TokenResponse
-import com.grippo.database.entity.TokenEntity
 import com.grippo.toolkit.logger.AppLogger
 
-public fun TokenResponse.toEntityOrNull(): TokenEntity? {
+public fun com.grippo.services.backend.dto.auth.TokenResponse.toEntityOrNull(): com.grippo.services.database.entity.TokenEntity? {
     val entityAccess = AppLogger.Mapping.log(accessToken) {
         "TokenResponse.accessToken is null"
     } ?: return null
@@ -17,7 +15,7 @@ public fun TokenResponse.toEntityOrNull(): TokenEntity? {
         "TokenResponse.refreshToken is null"
     } ?: return null
 
-    return TokenEntity(
+    return _root_ide_package_.com.grippo.services.database.entity.TokenEntity(
         id = id,
         access = entityAccess,
         refresh = refresh

@@ -1,14 +1,12 @@
 package com.grippo.dto.entity.example
 
-import com.grippo.backend.dto.exercise.example.ExerciseExampleEquipmentRefResponse
-import com.grippo.database.entity.ExerciseExampleEquipmentEntity
 import com.grippo.toolkit.logger.AppLogger
 
-public fun List<ExerciseExampleEquipmentRefResponse>.toEntities(): List<ExerciseExampleEquipmentEntity> {
+public fun List<com.grippo.services.backend.dto.exercise.example.ExerciseExampleEquipmentRefResponse>.toEntities(): List<com.grippo.services.database.entity.ExerciseExampleEquipmentEntity> {
     return mapNotNull { it.toEntityOrNull() }
 }
 
-public fun ExerciseExampleEquipmentRefResponse.toEntityOrNull(): ExerciseExampleEquipmentEntity? {
+public fun com.grippo.services.backend.dto.exercise.example.ExerciseExampleEquipmentRefResponse.toEntityOrNull(): com.grippo.services.database.entity.ExerciseExampleEquipmentEntity? {
     val entityId = AppLogger.Mapping.log(id) {
         "ExerciseExampleEquipmentRefResponse.id is null"
     } ?: return null
@@ -29,7 +27,7 @@ public fun ExerciseExampleEquipmentRefResponse.toEntityOrNull(): ExerciseExample
         "ExerciseExampleEquipmentRefResponse.updatedAt is null"
     } ?: return null
 
-    return ExerciseExampleEquipmentEntity(
+    return _root_ide_package_.com.grippo.services.database.entity.ExerciseExampleEquipmentEntity(
         id = entityId,
         equipmentId = entityEquipmentId,
         exerciseExampleId = entityExerciseExampleId,

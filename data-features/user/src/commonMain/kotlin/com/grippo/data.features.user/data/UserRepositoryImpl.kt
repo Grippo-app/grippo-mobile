@@ -1,14 +1,9 @@
 package com.grippo.data.features.user.data
 
-import com.grippo.backend.GrippoApi
-import com.grippo.backend.dto.user.ExperienceBody
 import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
 import com.grippo.data.features.api.user.models.CreateUserProfile
 import com.grippo.data.features.api.user.models.User
 import com.grippo.data.features.user.domain.UserRepository
-import com.grippo.database.dao.TokenDao
-import com.grippo.database.dao.UserActiveDao
-import com.grippo.database.dao.UserDao
 import com.grippo.domain.dto.user.toBody
 import com.grippo.dto.entity.user.toEntityOrNull
 import com.grippo.entity.domain.user.toDomain
@@ -21,10 +16,10 @@ import org.koin.core.annotation.Single
 
 @Single(binds = [UserRepository::class])
 internal class UserRepositoryImpl(
-    private val api: GrippoApi,
-    private val userDao: UserDao,
-    private val tokenDao: TokenDao,
-    private val userActiveDao: UserActiveDao
+    private val api: com.grippo.services.backend.GrippoApi,
+    private val userDao: com.grippo.services.database.dao.UserDao,
+    private val tokenDao: com.grippo.services.database.dao.TokenDao,
+    private val userActiveDao: com.grippo.services.database.dao.UserActiveDao
 ) : UserRepository {
 
     override fun observeUser(): Flow<User?> {
@@ -66,7 +61,7 @@ internal class UserRepositoryImpl(
 
     override suspend fun setExperience(experience: ExperienceEnum): Result<Boolean> {
         val response = api.updateExperience(
-            ExperienceBody(experience = experience.key)
+            com.grippo.services.backend.dto.user.ExperienceBody(experience = experience.key)
         )
 
         return response.map { dto ->

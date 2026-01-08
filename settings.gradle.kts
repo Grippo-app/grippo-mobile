@@ -45,7 +45,7 @@ include(":design-system:resources:provider-impl")
 include(":design-system:components")
 
 include(":data-services:google-auth")
-
+include(":data-services:firebase")
 include(":data-services:backend")
 include(":data-services:database")
 include(":data-services:ai-agent")

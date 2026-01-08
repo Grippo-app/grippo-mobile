@@ -2,16 +2,13 @@ package com.grippo.data.features.suggestions.prompt.exercise.example.sections
 
 import com.grippo.data.features.suggestions.prompt.exercise.example.utils.formatOneDecimal
 import com.grippo.data.features.suggestions.prompt.exercise.example.utils.formatTitleLabel
-import com.grippo.database.dao.UserActiveDao
-import com.grippo.database.dao.UserDao
-import com.grippo.database.entity.UserEntity
 import kotlinx.coroutines.flow.firstOrNull
 import org.koin.core.annotation.Single
 
 @Single
 internal class SystemSection(
-    private val userDao: UserDao,
-    private val userActiveDao: UserActiveDao,
+    private val userDao: com.grippo.services.database.dao.UserDao,
+    private val userActiveDao: com.grippo.services.database.dao.UserActiveDao,
 ) {
 
     suspend fun build(): String {
@@ -31,7 +28,7 @@ internal class SystemSection(
         }
     }
 
-    private suspend fun loadUserProfile(): UserEntity? {
+    private suspend fun loadUserProfile(): com.grippo.services.database.entity.UserEntity? {
         val userId = userActiveDao.get().firstOrNull() ?: return null
         val user = userDao.getById(userId).firstOrNull() ?: return null
         return user

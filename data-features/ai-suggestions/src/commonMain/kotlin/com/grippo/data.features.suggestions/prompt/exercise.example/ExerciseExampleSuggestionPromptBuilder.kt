@@ -1,6 +1,5 @@
 package com.grippo.data.features.suggestions.prompt.exercise.example
 
-import com.grippo.ai.agent.AiAgentApi
 import com.grippo.core.error.provider.AppError
 import com.grippo.data.features.api.suggestion.models.ExerciseExampleSuggestion
 import com.grippo.data.features.suggestions.prompt.exercise.example.catalog.ExampleCatalogLoader
@@ -8,6 +7,7 @@ import com.grippo.data.features.suggestions.prompt.exercise.example.parser.Sugge
 import com.grippo.data.features.suggestions.prompt.exercise.example.sections.SystemSection
 import com.grippo.data.features.suggestions.prompt.exercise.example.selection.CandidateSelector
 import com.grippo.data.features.suggestions.prompt.exercise.example.signals.PredictionSignalsBuilder
+import com.grippo.services.ai.agent.AiAgentApi
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import com.grippo.toolkit.localization.AppLocale
 import kotlinx.datetime.LocalDateTime

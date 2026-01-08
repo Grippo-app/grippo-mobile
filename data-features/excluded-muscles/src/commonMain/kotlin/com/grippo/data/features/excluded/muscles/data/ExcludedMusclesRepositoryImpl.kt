@@ -1,11 +1,7 @@
 package com.grippo.data.features.excluded.muscles.data
 
-import com.grippo.backend.GrippoApi
-import com.grippo.backend.dto.user.IdsBody
 import com.grippo.data.features.api.muscle.models.Muscle
 import com.grippo.data.features.excluded.muscles.domain.ExcludedMusclesRepository
-import com.grippo.database.dao.UserActiveDao
-import com.grippo.database.dao.UserDao
 import com.grippo.entity.domain.muscles.toDomain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
@@ -16,9 +12,9 @@ import org.koin.core.annotation.Single
 
 @Single(binds = [ExcludedMusclesRepository::class])
 internal class ExcludedMusclesRepositoryImpl(
-    private val api: GrippoApi,
-    private val userDao: UserDao,
-    private val userActiveDao: UserActiveDao,
+    private val api: com.grippo.services.backend.GrippoApi,
+    private val userDao: com.grippo.services.database.dao.UserDao,
+    private val userActiveDao: com.grippo.services.database.dao.UserActiveDao,
 ) : ExcludedMusclesRepository {
 
     override fun observeExcludedMuscles(): Flow<List<Muscle>> {
@@ -44,7 +40,7 @@ internal class ExcludedMusclesRepositoryImpl(
     }
 
     override suspend fun setExcludedMuscles(ids: List<String>): Result<Unit> {
-        val response = api.postExcludedMuscles(IdsBody(ids))
+        val response = api.postExcludedMuscles(com.grippo.services.backend.dto.user.IdsBody(ids))
 
         response.onSuccess {
             val profileId = getActiveProfileId() ?: return@onSuccess

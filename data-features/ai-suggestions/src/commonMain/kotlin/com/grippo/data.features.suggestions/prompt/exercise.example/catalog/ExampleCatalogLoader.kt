@@ -4,10 +4,6 @@ import com.grippo.data.features.api.exercise.example.models.ExampleSortingEnum
 import com.grippo.data.features.suggestions.prompt.exercise.example.model.ExampleCatalog
 import com.grippo.data.features.suggestions.prompt.exercise.example.model.ExampleContext
 import com.grippo.data.features.suggestions.prompt.exercise.example.model.MuscleShare
-import com.grippo.database.dao.ExerciseExampleDao
-import com.grippo.database.dao.UserActiveDao
-import com.grippo.database.dao.UserDao
-import com.grippo.database.models.ExerciseExamplePack
 import com.grippo.entity.domain.equipment.toDomain
 import kotlinx.coroutines.flow.firstOrNull
 import org.koin.core.annotation.Single
@@ -19,9 +15,9 @@ import org.koin.core.annotation.Single
  */
 @Single
 internal class ExampleCatalogLoader(
-    private val exerciseExampleDao: ExerciseExampleDao,
-    private val userDao: UserDao,
-    private val userActiveDao: UserActiveDao
+    private val exerciseExampleDao: com.grippo.services.database.dao.ExerciseExampleDao,
+    private val userDao: com.grippo.services.database.dao.UserDao,
+    private val userActiveDao: com.grippo.services.database.dao.UserActiveDao
 ) {
 
     suspend fun load(): ExampleCatalog? {
@@ -59,7 +55,7 @@ internal class ExampleCatalogLoader(
         )
     }
 
-    private fun ExerciseExamplePack.toContextOrNullStrict(): ExampleContext? {
+    private fun com.grippo.services.database.models.ExerciseExamplePack.toContextOrNullStrict(): ExampleContext? {
         val value = example.toDomain() ?: return null
         if (value.id.isBlank() || value.name.isBlank()) return null
 

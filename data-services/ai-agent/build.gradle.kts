@@ -9,29 +9,27 @@ kotlin {
         namespace = "com.grippo.data.services.ai.agent"
     }
 
-    sourceSets {
-        commonMain.dependencies {
-            implementation(projects.toolkit.httpClient)
+    sourceSets.commonMain.dependencies {
+        implementation(projects.toolkit.httpClient)
 
-            implementation(libs.ktor.client.core)
+        implementation(libs.ktor.client.core)
 
-            // Issue https://youtrack.jetbrains.com/issue/KG-303/Packaging-issue-with-netty
-            val koogAgent = libs.koog.agent.get()
-            val googleClient = libs.google.client.get()
+        // Issue https://youtrack.jetbrains.com/issue/KG-303/Packaging-issue-with-netty
+        val koogAgent = libs.koog.agent.get()
+        val googleClient = libs.google.client.get()
 
-            val koogAgentNotation =
-                "${koogAgent.module.group}:${koogAgent.module.name}:${koogAgent.versionConstraint.requiredVersion}"
-            val koogPromptNotation =
-                "${googleClient.module.group}:${googleClient.module.name}:${googleClient.versionConstraint.requiredVersion}"
+        val koogAgentNotation =
+            "${koogAgent.module.group}:${koogAgent.module.name}:${koogAgent.versionConstraint.requiredVersion}"
+        val koogPromptNotation =
+            "${googleClient.module.group}:${googleClient.module.name}:${googleClient.versionConstraint.requiredVersion}"
 
-            implementation(koogAgentNotation) {
-                exclude(group = "io.netty")
-                exclude(group = "io.vertx")
-            }
-            implementation(koogPromptNotation) {
-                exclude(group = "io.netty")
-                exclude(group = "io.vertx")
-            }
+        implementation(koogAgentNotation) {
+            exclude(group = "io.netty")
+            exclude(group = "io.vertx")
+        }
+        implementation(koogPromptNotation) {
+            exclude(group = "io.netty")
+            exclude(group = "io.vertx")
         }
     }
 }

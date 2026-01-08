@@ -1,14 +1,12 @@
 package com.grippo.dto.entity.training
 
-import com.grippo.backend.dto.training.IterationResponse
-import com.grippo.database.entity.IterationEntity
 import com.grippo.toolkit.logger.AppLogger
 
-public fun List<IterationResponse>.toEntities(): List<IterationEntity> {
+public fun List<com.grippo.services.backend.dto.training.IterationResponse>.toEntities(): List<com.grippo.services.database.entity.IterationEntity> {
     return mapNotNull { it.toEntityOrNull() }
 }
 
-public fun IterationResponse.toEntityOrNull(): IterationEntity? {
+public fun com.grippo.services.backend.dto.training.IterationResponse.toEntityOrNull(): com.grippo.services.database.entity.IterationEntity? {
     val entityId = AppLogger.Mapping.log(id) {
         "IterationResponse.id is null"
     } ?: return null
@@ -33,7 +31,7 @@ public fun IterationResponse.toEntityOrNull(): IterationEntity? {
         "IterationResponse.updatedAt is null"
     } ?: return null
 
-    return IterationEntity(
+    return _root_ide_package_.com.grippo.services.database.entity.IterationEntity(
         id = entityId,
         exerciseId = entityExerciseId,
         volume = entityWeight,

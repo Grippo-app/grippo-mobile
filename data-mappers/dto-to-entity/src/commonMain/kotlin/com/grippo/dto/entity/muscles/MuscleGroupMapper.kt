@@ -1,14 +1,12 @@
 package com.grippo.dto.entity.muscles
 
-import com.grippo.backend.dto.muscle.MuscleGroupResponse
-import com.grippo.database.entity.MuscleGroupEntity
 import com.grippo.toolkit.logger.AppLogger
 
-public fun List<MuscleGroupResponse>.toEntities(): List<MuscleGroupEntity> {
+public fun List<com.grippo.services.backend.dto.muscle.MuscleGroupResponse>.toEntities(): List<com.grippo.services.database.entity.MuscleGroupEntity> {
     return mapNotNull { it.toEntityOrNull() }
 }
 
-public fun MuscleGroupResponse.toEntityOrNull(): MuscleGroupEntity? {
+public fun com.grippo.services.backend.dto.muscle.MuscleGroupResponse.toEntityOrNull(): com.grippo.services.database.entity.MuscleGroupEntity? {
     val entityId = AppLogger.Mapping.log(id) {
         "MuscleGroupResponse.id is null"
     } ?: return null
@@ -29,7 +27,7 @@ public fun MuscleGroupResponse.toEntityOrNull(): MuscleGroupEntity? {
         "MuscleGroupResponse.updatedAt is null"
     } ?: return null
 
-    return MuscleGroupEntity(
+    return _root_ide_package_.com.grippo.services.database.entity.MuscleGroupEntity(
         id = entityId,
         name = entityName,
         type = entityType,

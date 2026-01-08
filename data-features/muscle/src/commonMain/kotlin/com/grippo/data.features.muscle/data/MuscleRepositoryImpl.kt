@@ -1,19 +1,17 @@
 package com.grippo.data.features.muscle.data
 
-import com.grippo.backend.GrippoApi
 import com.grippo.data.features.api.muscle.models.MuscleGroup
 import com.grippo.data.features.muscle.domain.MuscleRepository
-import com.grippo.database.dao.MuscleDao
-import com.grippo.entity.domain.muscles.toDomain
 import com.grippo.dto.entity.muscles.toEntities
+import com.grippo.entity.domain.muscles.toDomain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
 
 @Single(binds = [MuscleRepository::class])
 internal class MuscleRepositoryImpl(
-    private val api: GrippoApi,
-    private val muscleDao: MuscleDao,
+    private val api: com.grippo.services.backend.GrippoApi,
+    private val muscleDao: com.grippo.services.database.dao.MuscleDao,
 ) : MuscleRepository {
 
     override fun observeMuscles(): Flow<List<MuscleGroup>> {
