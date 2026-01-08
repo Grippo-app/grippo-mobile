@@ -354,4 +354,57 @@
     <string name="iteration_focus_volume">Обсяг</string>
     <string name="iteration_focus_repetitions">Повторення</string>
     <string name="iteration_focus_unidentified">Невизначено</string>
+
+
+    <!-- Equipment hints -->
+    <string name="equipment_hint_dumbbells">Вкажи сумарну вагу двох гантелей (2×20 → 40). Для почергових повторів усе одно пиши сумарну вагу пари.</string>
+    <string name="equipment_hint_barbell">Вкажи загальну вагу на штанзі (диски + гриф, якщо рахуєш). Головне — однаково завжди.</string>
+    <string name="equipment_hint_v_bar">Вкажи вагу зі стека/навантаження, яке тягнеш. Орієнтуйся на цифру на тренажері.</string>
+    <string name="equipment_hint_wide_grip_handle">Вкажи вагу зі стека/навантаження, яке тягнеш. Орієнтуйся на цифру на тренажері.</string>
+    <string name="equipment_hint_close_grip_handle">Вкажи вагу зі стека/навантаження, яке тягнеш. Орієнтуйся на цифру на тренажері.</string>
+    <string name="equipment_hint_ez_bar">Вкажи загальну вагу на EZ-грифі (диски + гриф, якщо рахуєш). Головне — однаково завжди.</string>
+    <string name="equipment_hint_trap_bar">Вкажи загальну вагу на трап-грифі (усі диски + гриф, якщо рахуєш). Головне — однаково завжди.</string>
+    <string name="equipment_hint_rope">Вкажи вагу зі стека на блочному тренажері.</string>
+    <string name="equipment_hint_straight_bar">Вкажи вагу зі стека на блочному тренажері.</string>
+    <string name="equipment_hint_cord_handles">Вкажи вагу зі стека. Якщо дві рукоятки на двох стеках — вкажи вагу на одну сторону.</string>
+
+    <string name="equipment_hint_ab_machines">Вкажи вагу, яку показує тренажер (стек або диски).</string>
+    <string name="equipment_hint_butterfly">Вкажи вагу на тренажері. Якщо дві незалежні руки/стеки — вкажи вагу на одну сторону.</string>
+    <string name="equipment_hint_butterfly_reverse">Вкажи вагу на тренажері. Якщо дві незалежні руки/стеки — вкажи вагу на одну сторону.</string>
+    <string name="equipment_hint_leg_extension_machines">Вкажи вагу, яку показує тренажер (стек або диски).</string>
+    <string name="equipment_hint_leg_curl_machines">Вкажи вагу, яку показує тренажер (стек або диски).</string>
+    <string name="equipment_hint_chest_press_machines">Вкажи вагу на тренажері. Якщо дві незалежні руки/стеки — вкажи вагу на одну сторону.</string>
+    <string name="equipment_hint_biceps_machines">Вкажи вагу, яку показує тренажер (стек або диски).</string>
+    <string name="equipment_hint_smith_machines">Вкажи сумарну вагу дисків (і гриф, якщо рахуєш). Вага грифа Сміта різна — будь послідовним.</string>
+    <string name="equipment_hint_hack_squat_machines">Вкажи сумарну вагу дисків. Вага платформи/саней різна — будь послідовним.</string>
+    <string name="equipment_hint_leg_press_machine">Вкажи сумарну вагу дисків. Вага платформи/саней різна — будь послідовним.</string>
+    <string name="equipment_hint_deadlift_machines">Вкажи сумарну вагу дисків. Важіль тренажера змінює відчуття — будь послідовним.</string>
+    <string name="equipment_hint_shoulder_press_machines">Вкажи вагу, яку показує тренажер (стек або диски).</string>
+    <string name="equipment_hint_lateral_raise_machines">Вкажи вагу, яку показує тренажер (стек або диски).</string>
+    <string name="equipment_hint_triceps_machines">Вкажи вагу, яку показує тренажер (стек або диски).</string>
+    <string name="equipment_hint_calf_raise_machines">Вкажи вагу, яку показує тренажер (диски або стек). Головне — однаково завжди.</string>
+    <string name="equipment_hint_glute_machines">Вкажи вагу, яку показує тренажер (стек або диски).</string>
+
+    <string name="equipment_hint_lat_pulldown">Вкажи вагу зі стека. Насадка на рукоятці не змінює те, що ти вводиш.</string>
+    <string name="equipment_hint_cable">Вкажи вагу зі стека. Якщо чіпляєш 2 троси на одну рукоятку, відчуття змінюються — використовуй цифру стека як орієнтир і будь послідовним.</string>
+    <string name="equipment_hint_cable_crossover">Вкажи вагу на одну сторону (кожен стек). Якщо працюєш однією стороною — вкажи вагу цього стека.</string>
+    <string name="equipment_hint_row_cable">Вкажи вагу зі стека на тренажері.</string>
+
+    <string name="equipment_hint_pull_up_bar">Вкажи лише додаткову вагу (пояс/гантель/жилет). Якщо без ваги — 0.</string>
+    <string name="equipment_hint_dip_bars">Вкажи лише додаткову вагу (пояс/гантель/жилет). Якщо без ваги — 0.</string>
+    <string name="equipment_hint_romain_chair">Вкажи лише додаткову вагу. Якщо лише вага тіла — 0.</string>
+    <string name="equipment_hint_glute_ham_raise_bench">Вкажи лише додаткову вагу (диск/жилет). Якщо без ваги — 0.</string>
+
+    <string name="equipment_hint_flat_bench">Лава — це місце. Вкажи вагу гантелей/штанги, з якими працюєш.</string>
+    <string name="equipment_hint_adjustable_bench">Лава — це місце. Вкажи вагу гантелей/штанги, з якими працюєш.</string>
+    <string name="equipment_hint_adductor_machine">Вкажи вагу, яку показує тренажер (стек або диски).</string>
+    <string name="equipment_hint_abductor_machine">Вкажи вагу, яку показує тренажер (стек або диски).</string>
+    <string name="equipment_hint_decline_bench">Лава — це місце. Вкажи вагу гантелей/штанги, з якими працюєш.</string>
+    <string name="equipment_hint_flat_bench_with_rack">Вкажи загальну вагу штанги (диски + гриф, якщо рахуєш). Головне — однаково завжди.</string>
+    <string name="equipment_hint_incline_bench_with_rack">Вкажи загальну вагу штанги (диски + гриф, якщо рахуєш). Головне — однаково завжди.</string>
+    <string name="equipment_hint_decline_bench_with_rack">Вкажи загальну вагу штанги (диски + гриф, якщо рахуєш). Головне — однаково завжди.</string>
+    <string name="equipment_hint_squat_rack">Вкажи загальну вагу штанги в рамі (диски + гриф, якщо рахуєш). Головне — однаково завжди.</string>
+    <string name="equipment_hint_preacher_curl_bench">Вкажи вагу, яку піднімаєш (гантель/EZ/штанга), а не вагу лави.</string>
+    <string name="equipment_hint_row_bench">Вкажи вагу, яку піднімаєш (гантель/штанга/диски), а не вагу лави.</string>
+
 </resources>

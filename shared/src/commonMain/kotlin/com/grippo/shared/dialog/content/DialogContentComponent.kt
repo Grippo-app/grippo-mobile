@@ -128,6 +128,7 @@ internal class DialogContentComponent(
                     initial = router.initial,
                     number = router.number,
                     focus = router.focus,
+                    example = router.example,
                     suggestions = router.suggestions,
                     onResult = { iteration -> viewModel.onBack { router.onResult.invoke(iteration) } },
                     back = { viewModel.onBack(null) }

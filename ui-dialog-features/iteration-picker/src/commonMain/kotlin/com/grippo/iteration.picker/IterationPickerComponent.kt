@@ -6,11 +6,13 @@ import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
+import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.trainings.IterationFocusState
 import com.grippo.core.state.trainings.IterationState
 
 public class IterationPickerComponent(
     componentContext: ComponentContext,
+    private val example: ExerciseExampleState,
     private val focus: IterationFocusState,
     private val number: Int,
     private val initial: IterationState,
@@ -22,9 +24,11 @@ public class IterationPickerComponent(
     override val viewModel: IterationPickerViewModel = componentContext.retainedInstance {
         IterationPickerViewModel(
             initial = initial,
+            example = example,
             number = number,
             suggestions = suggestions,
-            focus = focus
+            focus = focus,
+            stringProvider = getKoin().get()
         )
     }
 

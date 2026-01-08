@@ -56,11 +56,14 @@ internal class ExerciseViewModel(
             .reversed()
             .distinctBy { it.volume.value to it.repetitions.value }
 
+        val example = state.value.exerciseExample ?: return
+
         val dialog = DialogConfig.Iteration(
             initial = value,
             number = number,
             suggestions = suggestions,
             focus = IterationFocusState.UNIDENTIFIED,
+            example = example,
             onResult = { iteration ->
                 update { s ->
                     // Build new iterations
@@ -114,11 +117,14 @@ internal class ExerciseViewModel(
             .reversed()
             .distinctBy { it.volume.value to it.repetitions.value }
 
+        val example = state.value.exerciseExample ?: return
+
         val dialog = DialogConfig.Iteration(
             initial = value,
             suggestions = suggestions,
             number = number,
             focus = IterationFocusState.VOLUME,
+            example = example,
             onResult = { iteration ->
                 update { s ->
                     // Replace updated iteration
@@ -150,10 +156,13 @@ internal class ExerciseViewModel(
             .reversed()
             .distinctBy { it.volume.value to it.repetitions.value }
 
+        val example = state.value.exerciseExample ?: return
+
         val dialog = DialogConfig.Iteration(
             initial = value,
             suggestions = suggestions,
             number = number,
+            example = example,
             focus = IterationFocusState.REPETITIONS,
             onResult = { iteration ->
                 update { s ->
@@ -222,4 +231,6 @@ internal class ExerciseViewModel(
         val domainMetrics = trainingTotalUseCase.fromSetIterations(domainIterations)
         return domainMetrics.toState()
     }
+
+
 }

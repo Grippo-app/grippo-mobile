@@ -355,4 +355,56 @@
     <string name="iteration_focus_volume">Объём</string>
     <string name="iteration_focus_repetitions">Повторения</string>
     <string name="iteration_focus_unidentified">Не определено</string>
+
+    <!-- Equipment hints -->
+    <string name="equipment_hint_dumbbells">Укажи суммарный вес двух гантелей (2×20 → 40). При поочерёдных повторах всё равно пиши суммарный вес пары.</string>
+    <string name="equipment_hint_barbell">Укажи общий вес на штанге (блины + гриф, если считаешь). Главное — одинаково всегда.</string>
+    <string name="equipment_hint_v_bar">Укажи вес по стеку/нагрузке, который тянешь. Ориентируйся на цифру на тренажёре.</string>
+    <string name="equipment_hint_wide_grip_handle">Укажи вес по стеку/нагрузке, который тянешь. Ориентируйся на цифру на тренажёре.</string>
+    <string name="equipment_hint_close_grip_handle">Укажи вес по стеку/нагрузке, который тянешь. Ориентируйся на цифру на тренажёре.</string>
+    <string name="equipment_hint_ez_bar">Укажи общий вес на EZ-грифе (блины + гриф, если считаешь). Главное — одинаково всегда.</string>
+    <string name="equipment_hint_trap_bar">Укажи общий вес на трап-грифе (все блины + гриф, если считаешь). Главное — одинаково всегда.</string>
+    <string name="equipment_hint_rope">Укажи вес по стеку на блочном тренажёре.</string>
+    <string name="equipment_hint_straight_bar">Укажи вес по стеку на блочном тренажёре.</string>
+    <string name="equipment_hint_cord_handles">Укажи вес по стеку. Если две рукоятки на двух стеках — укажи вес на одну сторону.</string>
+
+    <string name="equipment_hint_ab_machines">Укажи вес, который показывает тренажёр (стек или блины).</string>
+    <string name="equipment_hint_butterfly">Укажи вес на тренажёре. Если две независимые руки/стеки — укажи вес на одну сторону.</string>
+    <string name="equipment_hint_butterfly_reverse">Укажи вес на тренажёре. Если две независимые руки/стеки — укажи вес на одну сторону.</string>
+    <string name="equipment_hint_leg_extension_machines">Укажи вес, который показывает тренажёр (стек или блины).</string>
+    <string name="equipment_hint_leg_curl_machines">Укажи вес, который показывает тренажёр (стек или блины).</string>
+    <string name="equipment_hint_chest_press_machines">Укажи вес на тренажёре. Если две независимые руки/стеки — укажи вес на одну сторону.</string>
+    <string name="equipment_hint_biceps_machines">Укажи вес, который показывает тренажёр (стек или блины).</string>
+    <string name="equipment_hint_smith_machines">Укажи суммарный вес блинов (и гриф, если считаешь). Вес грифа Смита бывает разный — держи единый подход.</string>
+    <string name="equipment_hint_hack_squat_machines">Укажи суммарный вес блинов. Вес платформы/саней бывает разный — держи единый подход.</string>
+    <string name="equipment_hint_leg_press_machine">Укажи суммарный вес блинов. Вес платформы/саней бывает разный — держи единый подход.</string>
+    <string name="equipment_hint_deadlift_machines">Укажи суммарный вес блинов. Рычаг тренажёра меняет ощущения — держи единый подход.</string>
+    <string name="equipment_hint_shoulder_press_machines">Укажи вес, который показывает тренажёр (стек или блины).</string>
+    <string name="equipment_hint_lateral_raise_machines">Укажи вес, который показывает тренажёр (стек или блины).</string>
+    <string name="equipment_hint_triceps_machines">Укажи вес, который показывает тренажёр (стек или блины).</string>
+    <string name="equipment_hint_calf_raise_machines">Укажи вес, который показывает тренажёр (блины или стек). Главное — одинаково всегда.</string>
+    <string name="equipment_hint_glute_machines">Укажи вес, который показывает тренажёр (стек или блины).</string>
+
+    <string name="equipment_hint_lat_pulldown">Укажи вес по стеку. Насадка на рукоятке не меняет то, что ты вводишь.</string>
+    <string name="equipment_hint_cable">Укажи вес по стеку. Если цепляешь 2 троса на одну рукоятку, ощущения меняются — используй цифру стека как ориентир и будь последовательным.</string>
+    <string name="equipment_hint_cable_crossover">Укажи вес на одну сторону (каждый стек). Если работаешь одной стороной — укажи вес этого стека.</string>
+    <string name="equipment_hint_row_cable">Укажи вес по стеку на тренажёре.</string>
+
+    <string name="equipment_hint_pull_up_bar">Укажи только дополнительный вес (пояс/гантель/жилет). Если без веса — 0.</string>
+    <string name="equipment_hint_dip_bars">Укажи только дополнительный вес (пояс/гантель/жилет). Если без веса — 0.</string>
+    <string name="equipment_hint_romain_chair">Укажи только дополнительный вес. Если только вес тела — 0.</string>
+    <string name="equipment_hint_glute_ham_raise_bench">Укажи только дополнительный вес (блин/жилет). Если без веса — 0.</string>
+
+    <string name="equipment_hint_flat_bench">Скамья — это место. Укажи вес гантелей/штанги, с которыми работаешь.</string>
+    <string name="equipment_hint_adjustable_bench">Скамья — это место. Укажи вес гантелей/штанги, с которыми работаешь.</string>
+    <string name="equipment_hint_adductor_machine">Укажи вес, который показывает тренажёр (стек или блины).</string>
+    <string name="equipment_hint_abductor_machine">Укажи вес, который показывает тренажёр (стек или блины).</string>
+    <string name="equipment_hint_decline_bench">Скамья — это место. Укажи вес гантелей/штанги, с которыми работаешь.</string>
+    <string name="equipment_hint_flat_bench_with_rack">Укажи общий вес штанги (блины + гриф, если считаешь). Главное — одинаково всегда.</string>
+    <string name="equipment_hint_incline_bench_with_rack">Укажи общий вес штанги (блины + гриф, если считаешь). Главное — одинаково всегда.</string>
+    <string name="equipment_hint_decline_bench_with_rack">Укажи общий вес штанги (блины + гриф, если считаешь). Главное — одинаково всегда.</string>
+    <string name="equipment_hint_squat_rack">Укажи общий вес штанги в раме (блины + гриф, если считаешь). Главное — одинаково всегда.</string>
+    <string name="equipment_hint_preacher_curl_bench">Укажи вес, который поднимаешь (гантель/EZ/штанга), а не вес скамьи.</string>
+    <string name="equipment_hint_row_bench">Укажи вес, который поднимаешь (гантель/штанга/блины), а не вес скамьи.</string>
+
 </resources>

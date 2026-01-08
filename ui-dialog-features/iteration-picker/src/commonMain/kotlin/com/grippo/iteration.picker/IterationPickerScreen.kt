@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.trainings.IterationFocusState
@@ -184,7 +185,8 @@ private fun ScreenPreview() {
                 value = stubIteration(),
                 number = 2,
                 suggestions = stubExercises().random().iterations,
-                focus = IterationFocusState.UNIDENTIFIED
+                focus = IterationFocusState.UNIDENTIFIED,
+                example = stubExerciseExample()
             ),
             loaders = persistentSetOf(),
             contract = IterationPickerContract.Empty
