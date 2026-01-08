@@ -38,6 +38,7 @@ import com.grippo.design.components.chip.ChipLabel
 import com.grippo.design.components.chip.ChipSize
 import com.grippo.design.components.chip.ChipStype
 import com.grippo.design.components.chip.ChipTrailing
+import com.grippo.design.components.equipment.EquipmentsCard
 import com.grippo.design.components.inputs.InputRepetitions
 import com.grippo.design.components.inputs.InputVolume
 import com.grippo.design.core.AppTokens
@@ -88,6 +89,27 @@ internal fun IterationPickerScreen(
         style = AppTokens.typography.h3(),
         color = AppTokens.colors.text.primary,
         textAlign = TextAlign.Center
+    )
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
+
+    state.example.hint()?.let { hint ->
+        Text(
+            modifier = Modifier
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                .fillMaxWidth(),
+            text = hint,
+            style = AppTokens.typography.b14Semi(),
+            color = AppTokens.colors.text.secondary,
+            textAlign = TextAlign.Center
+        )
+    }
+
+    Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
+
+    EquipmentsCard(
+        modifier = Modifier.fillMaxWidth(),
+        value = state.example.equipments
     )
 
     Spacer(Modifier.size(AppTokens.dp.contentPadding.block))

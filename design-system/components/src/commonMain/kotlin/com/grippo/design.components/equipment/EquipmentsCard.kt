@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.grippo.core.state.equipments.EquipmentState
@@ -23,7 +24,10 @@ public fun EquipmentsCard(
 ) {
     LazyRow(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block),
+        horizontalArrangement = Arrangement.spacedBy(
+            AppTokens.dp.contentPadding.block,
+            Alignment.CenterHorizontally
+        ),
         contentPadding = contentPadding
     ) {
         items(items = value, key = { it.id }) { item ->

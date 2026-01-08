@@ -7,9 +7,9 @@ public fun EquipmentEnum.toState(): EquipmentEnumState {
     return when (this) {
         EquipmentEnum.DUMBBELLS -> EquipmentEnumState.DUMBBELLS
         EquipmentEnum.BARBELL -> EquipmentEnumState.BARBELL
-        EquipmentEnum.VBar -> EquipmentEnumState.V_BAR
-        EquipmentEnum.WideGripHandle -> EquipmentEnumState.WIDE_GRIP_HANDLE
-        EquipmentEnum.CloseGripHandle -> EquipmentEnumState.CLOSE_GRIP_HANDLE
+        EquipmentEnum.V_BAR -> EquipmentEnumState.V_BAR
+        EquipmentEnum.WIDE_GRIP_HANDLE -> EquipmentEnumState.WIDE_GRIP_HANDLE
+        EquipmentEnum.CLOSE_GRIP_HANDLE -> EquipmentEnumState.CLOSE_GRIP_HANDLE
         EquipmentEnum.EZ_BAR -> EquipmentEnumState.EZ_BAR
         EquipmentEnum.TRAP_BAR -> EquipmentEnumState.TRAP_BAR
         EquipmentEnum.ROPE -> EquipmentEnumState.ROPE

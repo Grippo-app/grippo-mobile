@@ -28,7 +28,6 @@ public class IterationPickerComponent(
             number = number,
             suggestions = suggestions,
             focus = focus,
-            stringProvider = getKoin().get()
         )
     }
 

@@ -1,13 +1,11 @@
 package com.grippo.iteration.picker
 
 import com.grippo.core.foundation.BaseViewModel
-import com.grippo.core.state.equipments.EquipmentEnumState
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.trainings.IterationFocusState
 import com.grippo.core.state.trainings.IterationState
-import com.grippo.design.resources.provider.providers.StringProvider
 import kotlinx.collections.immutable.toPersistentList
 
 public class IterationPickerViewModel(
@@ -16,7 +14,6 @@ public class IterationPickerViewModel(
     suggestions: List<IterationState>,
     number: Int,
     focus: IterationFocusState,
-    private val stringProvider: StringProvider
 ) : BaseViewModel<IterationPickerState, IterationPickerDirection, IterationPickerLoader>(
     IterationPickerState(
         value = initial,
@@ -57,22 +54,6 @@ public class IterationPickerViewModel(
             value = state.value.value
         )
         navigateTo(direction)
-    }
-
-    private suspend fun generateHintByExerciseExample(value: ExerciseExampleState?): String? {
-        value ?: return null
-
-        val equipments: List<EquipmentEnumState> = value.equipments
-            .map { it.type }
-            .distinct()
-
-        if (equipments.isEmpty()) return null
-
-        val hints: List<String> = equipments
-            .map { equipment -> equipment.hint().text(stringProvider) }
-            .distinct()
-
-        return hints.joinToString(separator = "\n")
     }
 
     override fun onBack() {
