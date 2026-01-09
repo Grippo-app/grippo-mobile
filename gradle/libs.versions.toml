@@ -46,10 +46,6 @@ kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", v
 compose-gradle-plugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 ksp-plugin-api = { module = "com.google.devtools.ksp:symbol-processing-gradle-plugin", version.ref = "ksp" }
 
-#Firebase
-android-firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
-android-firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
-
 #Koog
 koog-agent = { module = "ai.koog:koog-agents", version.ref = "koog" }
 google-client = { module = "ai.koog:prompt-executor-google-client", version.ref = "koog" }

@@ -7,18 +7,28 @@
   <img src="https://img.shields.io/badge/iOS-000000?style=for-the-badge&logo=apple&logoColor=white" alt="iOS">
 </div>
 
+```agsl
+rm -rf shared/build .gradle/configuration-cache && ./gradlew :shared:assembleSharedDebugXCFramework --no-configuration-cache --no-build-cache
+```
+
 ## Overview
-Grippo is a fitness companion app built from scratch with Kotlin Multiplatform and Compose Multiplatform.  
-The goal is to provide athletes and gym enthusiasts with **smart workout tracking**, **AI-based exercise suggestions**, and a **unified UX** across Android and iOS.
+
+Grippo is a fitness companion app built from scratch with Kotlin Multiplatform and Compose
+Multiplatform.  
+The goal is to provide athletes and gym enthusiasts with **smart workout tracking**, **AI-based
+exercise suggestions**, and a **unified UX** across Android and iOS.
 
 ###
+
 This project demonstrates:
+
 - ⚙️ Advanced **modular KMP architecture** with feature-based layers
 - 🧠 Integration of **AI agent service** for dynamic exercise guidance
 - 🎨 Fully custom **design system** built on Compose Multiplatform
 - 📦 Shared **data, networking, and caching** between platforms
 
 ### Screenshots
+
 <div align="center">
   <h4>iOS</h4>
   <a href="https://github.com/user-attachments/assets/6004f07c-9873-400d-a499-86561329c0f2"><img src="https://github.com/user-attachments/assets/6004f07c-9873-400d-a499-86561329c0f2" alt="iOS 1" width="110"></a>
@@ -37,28 +47,32 @@ This project demonstrates:
    <a href="https://github.com/user-attachments/assets/50d2c598-a58b-4e85-9859-78ef8c5a491d"><img src="https://github.com/user-attachments/assets/50d2c598-a58b-4e85-9859-78ef8c5a491d" alt="Android 1" width="110"></a>
 </div>
 
-
 ### Stack & Highlights
-| Area | Tools / Summary |
-|---|---|
-| UI | Compose Multiplatform (shared UI for Android & iOS) |
-| Architecture | Modular by feature/layer; Clean-style boundaries; Decompose navigation |
-| DI | Koin (KSP) |
-| Networking | Ktor HTTP client (multiplatform) |
-| Persistence | Room (multiplatform) |
-| Toolkit | HTTP client, serialization, image loader, connectivity, date utils, logger |
-| Design System | Tokens, resources provider, reusable components |
-| AI | Dedicated AI agent service integrated in data layer |
+
+| Area          | Tools / Summary                                                            |
+|---------------|----------------------------------------------------------------------------|
+| UI            | Compose Multiplatform (shared UI for Android & iOS)                        |
+| Architecture  | Modular by feature/layer; Clean-style boundaries; Decompose navigation     |
+| DI            | Koin (KSP)                                                                 |
+| Networking    | Ktor HTTP client (multiplatform)                                           |
+| Persistence   | Room (multiplatform)                                                       |
+| Toolkit       | HTTP client, serialization, image loader, connectivity, date utils, logger |
+| Design System | Tokens, resources provider, reusable components                            |
+| AI            | Dedicated AI agent service integrated in data layer                        |
 
 ### Architecture at a glance
+
 - **App shells**: `androidApp`, `iosApp`
 - **Shared core**: `shared` (bootstraps DI, wires features)
-- **UI**: `ui-screen-features/*`, `ui-dialog-features/*`, `ui-core/*`, `design-system/*`, `compose-libs/*`
+- **UI**: `ui-screen-features/*`, `ui-dialog-features/*`, `ui-core/*`, `design-system/*`,
+  `compose-libs/*`
 - **Data**: `data-features/*`, `data-services/*` (backend, database, ai-agent), `data-mappers/*`
-- **Toolkit**: `toolkit/*` (http-client, serialization, logger, connectivity, date-utils, theme, localization)
+- **Toolkit**: `toolkit/*` (http-client, serialization, logger, connectivity, date-utils, theme,
+  localization)
 - **Build logic**: `build-logic/*`
 
 ### Engineering Highlights
+
 - Designed a scalable modular KMP architecture with isolated feature modules
 - Integrated Room database for both Android and iOS targets
 - Unified dependency injection and DI graph across native platforms
@@ -67,6 +81,7 @@ This project demonstrates:
 - Implemented AI-powered data layer using Ktor and serialization
 
 ### Setup
+
 1. Clone the repository
 2. Open in Android Studio (Kotlin Multiplatform enabled)
 3. Build Android: `./gradlew :androidApp:assembleDebug`
@@ -74,6 +89,7 @@ This project demonstrates:
 5. Run iOS project via Xcode
 
 ### Author
+
 **Max Voitenko**  
 📫 [voitenko.dev@gmail.com](mailto:voitenko.dev@gmail.com)  
 💼 [LinkedIn](https://www.linkedin.com/in/max-voitenko) | [GitHub](https://github.com/voitenkodev)
