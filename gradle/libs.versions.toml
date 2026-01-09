@@ -49,7 +49,6 @@ ksp-plugin-api = { module = "com.google.devtools.ksp:symbol-processing-gradle-pl
 #Firebase
 android-firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 android-firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
-android-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 
 #Koog
 koog-agent = { module = "ai.koog:koog-agents", version.ref = "koog" }

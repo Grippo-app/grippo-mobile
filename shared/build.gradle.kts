@@ -40,7 +40,7 @@ kotlin {
         implementation(projects.dataServices.backend)
         implementation(projects.dataServices.aiAgent)
         implementation(projects.dataServices.googleAuth)
-//        implementation(projects.dataServices.firebase)
+        api(projects.dataServices.firebase)
 
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.dataFeatures.authorization)

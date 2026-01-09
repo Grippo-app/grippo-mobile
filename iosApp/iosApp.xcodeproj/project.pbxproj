@@ -3,32 +3,18 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557BA273AAA24004C7B11 /* Assets.xcassets */; };
 		058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */; };
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
+		BA0148F42F1116CA008F2B92 /* IosFirebaseAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0148F32F1116CA008F2B92 /* IosFirebaseAnalytics.swift */; };
 		BA853F4A2DC657D900A34846 /* AppDeletage.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA853F492DC657D300A34846 /* AppDeletage.swift */; };
 		BA853F4C2DC658B000A34846 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA853F4B2DC658AF00A34846 /* RootView.swift */; };
 		D3D0B9802FA23C2C00AA1234 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D3D0B97F2FA23C2C00AA1234 /* libsqlite3.tbd */; };
-		E9F6C5C82FE1F0E300A1C8A1 /* shared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9F6C5C72FE1F0E300A1C8A1 /* shared.xcframework */; };
-		E9F6C5C92FE1F0E300A1C8A1 /* shared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E9F6C5C72FE1F0E300A1C8A1 /* shared.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
-
-/* Begin PBXFileReference section */
-		058557BA273AAA24004C7B11 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		2152FB032600AC8F00CF470E /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; };
-		7555FF7B242A565900829871 /* Grippo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Grippo.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		BA853F492DC657D300A34846 /* AppDeletage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDeletage.swift; sourceTree = "<group>"; };
-		BA853F4B2DC658AF00A34846 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
-		D3D0B97F2FA23C2C00AA1234 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
-		F0054F872EE5B3C300F40B1C /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
-		E9F6C5C72FE1F0E300A1C8A1 /* shared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = shared.xcframework; path = ../shared/build/XCFrameworks/debug/shared.xcframework; sourceTree = SOURCE_ROOT; };
-/* End PBXFileReference section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		E9F6C5CA2FE1F0E300A1C8A1 /* Embed Frameworks */ = {
@@ -37,12 +23,24 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				E9F6C5C92FE1F0E300A1C8A1 /* shared.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		058557BA273AAA24004C7B11 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		2152FB032600AC8F00CF470E /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; };
+		7555FF7B242A565900829871 /* Grippo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Grippo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BA0148F32F1116CA008F2B92 /* IosFirebaseAnalytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IosFirebaseAnalytics.swift; sourceTree = "<group>"; };
+		BA853F492DC657D300A34846 /* AppDeletage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDeletage.swift; sourceTree = "<group>"; };
+		BA853F4B2DC658AF00A34846 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		D3D0B97F2FA23C2C00AA1234 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		F0054F872EE5B3C300F40B1C /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+/* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		22C4659C9711D113BD9C1DBA /* Frameworks */ = {
@@ -50,7 +48,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				D3D0B9802FA23C2C00AA1234 /* libsqlite3.tbd in Frameworks */,
-				E9F6C5C82FE1F0E300A1C8A1 /* shared.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -86,6 +83,7 @@
 		7555FF7D242A565900829871 /* iosApp */ = {
 			isa = PBXGroup;
 			children = (
+				BA0148F32F1116CA008F2B92 /* IosFirebaseAnalytics.swift */,
 				BA853F4B2DC658AF00A34846 /* RootView.swift */,
 				BA853F492DC657D300A34846 /* AppDeletage.swift */,
 				058557BA273AAA24004C7B11 /* Assets.xcassets */,
@@ -100,7 +98,6 @@
 			isa = PBXGroup;
 			children = (
 				D3D0B97F2FA23C2C00AA1234 /* libsqlite3.tbd */,
-				E9F6C5C72FE1F0E300A1C8A1 /* shared.xcframework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -184,6 +181,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BA0148F42F1116CA008F2B92 /* IosFirebaseAnalytics.swift in Sources */,
 				BA853F4C2DC658B000A34846 /* RootView.swift in Sources */,
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
 				BA853F4A2DC657D900A34846 /* AppDeletage.swift in Sources */,
