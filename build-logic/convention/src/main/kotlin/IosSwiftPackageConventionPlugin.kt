@@ -52,6 +52,8 @@ class IosSwiftPackageConventionPlugin : Plugin<Project> {
                             ).forEach { exportedDep ->
                                 export(exportedDep)
                             }
+
+                            export(project(":data-services:firebase"))
                         }
                     }
             }

@@ -8,8 +8,9 @@ kotlin {
         namespace = "com.grippo.data.services.firebase"
     }
 
-    sourceSets.commonMain.dependencies {
-        implementation("dev.gitlive:firebase-installations:2.4.0")
-        implementation("dev.gitlive:firebase-analytics:2.4.0")
+    sourceSets.androidMain.dependencies {
+        implementation(project.dependencies.platform(libs.android.firebase.bom))
+        implementation(libs.android.firebase.analytics)
+        implementation(libs.android.firebase.crashlytics)
     }
 }
