@@ -7,6 +7,8 @@ import com.grippo.data.features.api.user.UserFeature
 import com.grippo.data.features.api.user.models.CreateUserProfile
 import com.grippo.data.features.api.user.models.User
 import com.grippo.domain.state.user.toState
+import com.grippo.services.firebase.FirebaseProvider
+import com.grippo.services.firebase.FirebaseProvider.Event
 import com.grippo.state.domain.user.toDomain
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.onEach
@@ -25,6 +27,8 @@ internal class CompletedViewModel(
 ), CompletedContract {
 
     init {
+        FirebaseProvider.logEvent(Event.REGISTRATION_COMPLETED)
+
         userFeature
             .observeUser()
             .onEach(::provideUser)

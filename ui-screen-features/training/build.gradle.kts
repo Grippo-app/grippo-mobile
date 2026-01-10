@@ -16,6 +16,7 @@ kotlin {
         implementation(projects.uiCore.error.errorProvider)
         implementation(projects.toolkit.dateUtils)
         implementation(projects.designSystem.core)
+        implementation(projects.dataServices.firebase)
         implementation(projects.designSystem.resources.provider)
         implementation(projects.designSystem.preview)
         implementation(projects.designSystem.components)

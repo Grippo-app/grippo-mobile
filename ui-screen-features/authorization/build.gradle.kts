@@ -21,6 +21,7 @@ kotlin {
         implementation(projects.uiScreenFeatures.screenApi)
         implementation(projects.dataFeatures.featureApi)
         implementation(projects.dataServices.googleAuth)
+        implementation(projects.dataServices.firebase)
         implementation(projects.designSystem.core)
         implementation(projects.designSystem.resources.provider)
         implementation(projects.designSystem.components)

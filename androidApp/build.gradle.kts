@@ -1,8 +1,9 @@
 plugins {
+    id("android.application.convention")
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.jetbrains.compose)
-    id("android.application.convention")
     alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 android {

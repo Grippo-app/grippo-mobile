@@ -27,11 +27,11 @@ import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.metrics.toState
 import com.grippo.domain.state.muscles.toState
 import com.grippo.domain.state.training.toState
+import com.grippo.services.firebase.FirebaseProvider
 import com.grippo.state.domain.training.toDomain
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -39,7 +39,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlin.uuid.Uuid
 
-@OptIn(FlowPreview::class)
 internal class TrainingRecordingViewModel(
     stage: StageState,
     muscleFeature: MuscleFeature,
@@ -53,6 +52,8 @@ internal class TrainingRecordingViewModel(
 ), TrainingRecordingContract {
 
     init {
+        FirebaseProvider.logEvent(FirebaseProvider.Event.WORKOUT_STARTED)
+
         muscleFeature.observeMuscles()
             .onEach(::provideMuscles)
             .safeLaunch()
