@@ -5,6 +5,7 @@ import com.grippo.core.error.provider.ErrorProvider
 import com.grippo.core.foundation.internal.operation.OperationManager
 import com.grippo.core.foundation.models.BaseDirection
 import com.grippo.core.foundation.models.BaseLoader
+import com.grippo.services.firebase.FirebaseProvider
 import com.grippo.toolkit.logger.AppLogger
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -159,6 +160,7 @@ public abstract class BaseViewModel<STATE, DIRECTION : BaseDirection, LOADER : B
             append("└──────────────────────────")
         }
         AppLogger.General.error(log)
+        FirebaseProvider.recordException(exception)
         errorProvider.provide(exception, callback = onError)
     }
 

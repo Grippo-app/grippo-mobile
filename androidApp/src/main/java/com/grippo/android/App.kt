@@ -2,7 +2,9 @@ package com.grippo.android
 
 import android.app.Application
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.grippo.services.firebase.AndroidFirebaseAnalytics
+import com.grippo.services.firebase.AndroidFirebaseCrashlytics
 import com.grippo.services.firebase.FirebaseProvider
 import com.grippo.shared.Koin
 import org.koin.android.ext.koin.androidContext
@@ -20,7 +22,10 @@ class App : Application() {
 
         FirebaseProvider.setup(
             analytics = AndroidFirebaseAnalytics(
-                firebase = FirebaseAnalytics.getInstance(this)
+                core = FirebaseAnalytics.getInstance(this)
+            ),
+            crashlytics = AndroidFirebaseCrashlytics(
+                core = FirebaseCrashlytics.getInstance()
             )
         )
     }

@@ -19,6 +19,7 @@
 		BA853F4C2DC658B000A34846 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA853F4B2DC658AF00A34846 /* RootView.swift */; };
 		BAB5713F2F1164EF00147ABC /* shared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BAB5713E2F1164EF00147ABC /* shared.xcframework */; };
 		BAB571402F1164EF00147ABC /* shared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BAB5713E2F1164EF00147ABC /* shared.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BACA7A892F124F4E003B6963 /* IosFirebaseCrashlytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BACA7A882F124F4E003B6963 /* IosFirebaseCrashlytics.swift */; };
 		BAFDC8BD2F11697600971CAB /* IosFirebaseAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFDC8BC2F11697600971CAB /* IosFirebaseAnalytics.swift */; };
 		BAFDC8C02F116A8C00971CAB /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = BAFDC8BF2F116A8C00971CAB /* FirebaseAnalytics */; };
 		BAFDC8C22F116A8C00971CAB /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = BAFDC8C12F116A8C00971CAB /* FirebaseAnalyticsCore */; };
@@ -50,6 +51,7 @@
 		BA853F492DC657D300A34846 /* AppDeletage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDeletage.swift; sourceTree = "<group>"; };
 		BA853F4B2DC658AF00A34846 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		BAB5713E2F1164EF00147ABC /* shared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = shared.xcframework; path = ../shared/build/XCFrameworks/debug/shared.xcframework; sourceTree = "<group>"; };
+		BACA7A882F124F4E003B6963 /* IosFirebaseCrashlytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IosFirebaseCrashlytics.swift; sourceTree = "<group>"; };
 		BAFDC8BC2F11697600971CAB /* IosFirebaseAnalytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IosFirebaseAnalytics.swift; sourceTree = "<group>"; };
 		D3D0B97F2FA23C2C00AA1234 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		F0054F872EE5B3C300F40B1C /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
@@ -105,6 +107,7 @@
 		7555FF7D242A565900829871 /* iosApp */ = {
 			isa = PBXGroup;
 			children = (
+				BACA7A882F124F4E003B6963 /* IosFirebaseCrashlytics.swift */,
 				BAFDC8BC2F11697600971CAB /* IosFirebaseAnalytics.swift */,
 				BA853F4B2DC658AF00A34846 /* RootView.swift */,
 				BA853F492DC657D300A34846 /* AppDeletage.swift */,
@@ -212,6 +215,7 @@
 				BA853F4C2DC658B000A34846 /* RootView.swift in Sources */,
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
 				BA853F4A2DC657D900A34846 /* AppDeletage.swift in Sources */,
+				BACA7A892F124F4E003B6963 /* IosFirebaseCrashlytics.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

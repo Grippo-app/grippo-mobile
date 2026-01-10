@@ -12,7 +12,10 @@ struct iOSApp: App {
         Koin().doInit(appDeclaration: { _ in })
 
         FirebaseApp.configure()
-        FirebaseProvider.shared.setup(analytics: IosFirebaseAnalytics())
+        FirebaseProvider.shared.setup(
+            analytics: IosFirebaseAnalytics(),
+            crashlytics: IosFirebaseCrashlytics()
+        )
     }
 
     var body: some Scene {
