@@ -11,6 +11,10 @@
 rm -rf shared/build .gradle/configuration-cache && ./gradlew :shared:assembleSharedDebugXCFramework --no-configuration-cache --no-build-cache
 ```
 
+```agsl
+./gradlew syncSecureConfigs
+```
+
 ## Overview
 
 Grippo is a fitness companion app built from scratch with Kotlin Multiplatform and Compose
