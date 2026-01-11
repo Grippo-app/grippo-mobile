@@ -179,25 +179,25 @@ internal fun ExerciseExamplePickerScreen(
                         bottom = {
                             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-                            val buttonState = remember(loaders) {
-                                when {
-                                    loaders.contains(ExerciseExamplePickerLoader.SuggestExample) -> ButtonState.Loading
-                                    else -> ButtonState.Enabled
-                                }
-                            }
-
-                            Button(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                                content = ButtonContent.Text(
-                                    startIcon = ButtonIcon.Icon(AppTokens.icons.Molecule),
-                                    text = AppTokens.strings.res(Res.string.ai_suggestion_btn)
-                                ),
-                                state = buttonState,
-                                style = ButtonStyle.Primary,
-                                onClick = contract::onSuggestClick
-                            )
+//                            val buttonState = remember(loaders) {
+//                                when {
+//                                    loaders.contains(ExerciseExamplePickerLoader.SuggestExample) -> ButtonState.Loading
+//                                    else -> ButtonState.Enabled
+//                                }
+//                            }
+//
+//                            Button(
+//                                modifier = Modifier
+//                                    .fillMaxWidth()
+//                                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+//                                content = ButtonContent.Text(
+//                                    startIcon = ButtonIcon.Icon(AppTokens.icons.Molecule),
+//                                    text = AppTokens.strings.res(Res.string.ai_suggestion_btn)
+//                                ),
+//                                state = buttonState,
+//                                style = ButtonStyle.Primary,
+//                                onClick = contract::onSuggestClick
+//                            )
 
                             Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
 
