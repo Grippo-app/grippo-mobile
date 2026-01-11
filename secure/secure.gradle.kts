@@ -122,9 +122,9 @@ abstract class SyncSecureConfigs : DefaultTask() {
     }
 
     private object Keys {
-        const val webClientId = "WEB_CLIENT_ID"
-        const val androidClientId = "ANDROID_CLIENT_ID"
-        const val iosClientId = "IOS_CLIENT_ID"
+        const val webClientId = "GOOGLE_CLIENT_ID_WEB"
+        const val androidClientId = "GOOGLE_CLIENT_ID_ANDROID"
+        const val iosClientId = "GOOGLE_CLIENT_ID_IOS"
     }
 
     private object Patterns {
