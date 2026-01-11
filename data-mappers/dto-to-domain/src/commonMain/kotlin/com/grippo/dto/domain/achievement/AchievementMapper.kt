@@ -1,9 +1,15 @@
 package com.grippo.dto.domain.achievement
 
 import com.grippo.data.features.api.achievements.Achievement
+import com.grippo.services.backend.dto.achievements.AchievementResponse
+import com.grippo.services.backend.dto.achievements.BestTonnage
+import com.grippo.services.backend.dto.achievements.BestWeight
+import com.grippo.services.backend.dto.achievements.LifetimeVolume
+import com.grippo.services.backend.dto.achievements.MaxRepetitions
+import com.grippo.services.backend.dto.achievements.PeakIntensity
 import com.grippo.toolkit.logger.AppLogger
 
-public fun com.grippo.services.backend.dto.achievements.AchievementResponse.toDomain(): List<Achievement> {
+public fun AchievementResponse.toDomain(): List<Achievement> {
     return buildList {
         bestTonnage?.toDomainOrNull()?.let(::add)
         bestWeight?.toDomainOrNull()?.let(::add)
@@ -13,7 +19,7 @@ public fun com.grippo.services.backend.dto.achievements.AchievementResponse.toDo
     }
 }
 
-private fun com.grippo.services.backend.dto.achievements.BestTonnage.toDomainOrNull(): Achievement.BestTonnage? {
+private fun BestTonnage.toDomainOrNull(): Achievement.BestTonnage? {
     val exampleId = AppLogger.Mapping.log(exerciseExampleId) {
         "BestTonnage.exerciseExampleId is null"
     } ?: return null
@@ -33,7 +39,7 @@ private fun com.grippo.services.backend.dto.achievements.BestTonnage.toDomainOrN
     )
 }
 
-private fun com.grippo.services.backend.dto.achievements.BestWeight.toDomainOrNull(): Achievement.BestWeight? {
+private fun BestWeight.toDomainOrNull(): Achievement.BestWeight? {
     val exampleId = AppLogger.Mapping.log(exerciseExampleId) {
         "BestWeight.exerciseExampleId is null"
     } ?: return null
@@ -58,7 +64,7 @@ private fun com.grippo.services.backend.dto.achievements.BestWeight.toDomainOrNu
     )
 }
 
-private fun com.grippo.services.backend.dto.achievements.LifetimeVolume.toDomainOrNull(): Achievement.LifetimeVolume? {
+private fun LifetimeVolume.toDomainOrNull(): Achievement.LifetimeVolume? {
     val exampleId = AppLogger.Mapping.log(exerciseExampleId) {
         "LifetimeVolume.exerciseExampleId is null"
     } ?: return null
@@ -78,7 +84,7 @@ private fun com.grippo.services.backend.dto.achievements.LifetimeVolume.toDomain
     )
 }
 
-private fun com.grippo.services.backend.dto.achievements.MaxRepetitions.toDomainOrNull(): Achievement.MaxRepetitions? {
+private fun MaxRepetitions.toDomainOrNull(): Achievement.MaxRepetitions? {
     val exampleId = AppLogger.Mapping.log(exerciseExampleId) {
         "MaxRepetitions.exerciseExampleId is null"
     } ?: return null
@@ -108,7 +114,7 @@ private fun com.grippo.services.backend.dto.achievements.MaxRepetitions.toDomain
     )
 }
 
-private fun com.grippo.services.backend.dto.achievements.PeakIntensity.toDomainOrNull(): Achievement.PeakIntensity? {
+private fun PeakIntensity.toDomainOrNull(): Achievement.PeakIntensity? {
     val exampleId = AppLogger.Mapping.log(exerciseExampleId) {
         "PeakIntensity.exerciseExampleId is null"
     } ?: return null

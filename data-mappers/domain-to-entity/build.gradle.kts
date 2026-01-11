@@ -14,7 +14,6 @@ kotlin {
         implementation(projects.toolkit.logger)
         implementation(projects.toolkit.dateUtils)
 
-        implementation(libs.immutable.collections)
         implementation(libs.datetime)
     }
 }

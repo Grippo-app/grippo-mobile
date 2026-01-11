@@ -1,12 +1,14 @@
 package com.grippo.dto.entity.equipment
 
+import com.grippo.services.backend.dto.equipment.EquipmentResponse
+import com.grippo.services.database.entity.EquipmentEntity
 import com.grippo.toolkit.logger.AppLogger
 
-public fun List<com.grippo.services.backend.dto.equipment.EquipmentResponse>.toEntities(): List<com.grippo.services.database.entity.EquipmentEntity> {
+public fun List<EquipmentResponse>.toEntities(): List<EquipmentEntity> {
     return mapNotNull { it.toEntityOrNull() }
 }
 
-public fun com.grippo.services.backend.dto.equipment.EquipmentResponse.toEntityOrNull(): com.grippo.services.database.entity.EquipmentEntity? {
+public fun EquipmentResponse.toEntityOrNull(): EquipmentEntity? {
     val entityId = AppLogger.Mapping.log(id) {
         "EquipmentResponse.id is null"
     } ?: return null
@@ -31,7 +33,7 @@ public fun com.grippo.services.backend.dto.equipment.EquipmentResponse.toEntityO
         "EquipmentResponse.updatedAt is null"
     } ?: return null
 
-    return _root_ide_package_.com.grippo.services.database.entity.EquipmentEntity(
+    return EquipmentEntity(
         id = entityId,
         equipmentGroupId = entityEquipmentGroupId,
         name = entityName,

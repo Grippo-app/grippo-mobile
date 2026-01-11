@@ -13,7 +13,6 @@ kotlin {
         implementation(projects.dataServices.backend)
         implementation(projects.toolkit.logger)
 
-        implementation(libs.immutable.collections)
         implementation(libs.datetime)
     }
 }

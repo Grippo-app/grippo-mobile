@@ -3,14 +3,16 @@ package com.grippo.entity.domain.training
 import com.grippo.data.features.api.training.models.SetDraftTraining
 import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.data.features.api.training.models.Training
+import com.grippo.services.database.models.DraftTrainingPack
+import com.grippo.services.database.models.TrainingPack
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlin.time.Duration.Companion.minutes
 
-public fun List<com.grippo.services.database.models.TrainingPack>.toDomain(): List<Training> {
+public fun List<TrainingPack>.toDomain(): List<Training> {
     return map { it.toDomain() }
 }
 
-public fun com.grippo.services.database.models.TrainingPack.toDomain(): Training {
+public fun TrainingPack.toDomain(): Training {
     return Training(
         id = training.id,
         exercises = exercises.toDomain(),
@@ -22,7 +24,7 @@ public fun com.grippo.services.database.models.TrainingPack.toDomain(): Training
     )
 }
 
-public fun com.grippo.services.database.models.DraftTrainingPack.toSetDomain(): SetDraftTraining {
+public fun DraftTrainingPack.toSetDomain(): SetDraftTraining {
     val training = SetTraining(
         exercises = exercises.toSetDomain(),
         volume = training.volume,

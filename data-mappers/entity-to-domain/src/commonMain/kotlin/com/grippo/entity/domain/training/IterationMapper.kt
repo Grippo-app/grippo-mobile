@@ -2,12 +2,14 @@ package com.grippo.entity.domain.training
 
 import com.grippo.data.features.api.training.models.Iteration
 import com.grippo.data.features.api.training.models.SetIteration
+import com.grippo.services.database.entity.DraftIterationEntity
+import com.grippo.services.database.entity.IterationEntity
 
-public fun List<com.grippo.services.database.entity.IterationEntity>.toDomain(): List<Iteration> {
+public fun List<IterationEntity>.toDomain(): List<Iteration> {
     return map { it.toDomain() }
 }
 
-public fun com.grippo.services.database.entity.IterationEntity.toDomain(): Iteration {
+public fun IterationEntity.toDomain(): Iteration {
     return Iteration(
         id = id,
         volume = volume,
@@ -15,11 +17,11 @@ public fun com.grippo.services.database.entity.IterationEntity.toDomain(): Itera
     )
 }
 
-public fun List<com.grippo.services.database.entity.DraftIterationEntity>.toSetDomain(): List<SetIteration> {
+public fun List<DraftIterationEntity>.toSetDomain(): List<SetIteration> {
     return map { it.toSetDomain() }
 }
 
-public fun com.grippo.services.database.entity.DraftIterationEntity.toSetDomain(): SetIteration {
+public fun DraftIterationEntity.toSetDomain(): SetIteration {
     return SetIteration(
         volume = volume,
         repetitions = repetitions

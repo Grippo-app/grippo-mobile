@@ -1,15 +1,15 @@
 package com.grippo.domain.entity.training
 
 import com.grippo.data.features.api.training.models.SetDraftTraining
+import com.grippo.services.database.entity.DraftTrainingEntity
+import com.grippo.services.database.models.DraftTrainingPack
 import kotlin.uuid.Uuid
 
-public fun SetDraftTraining.toEntity(
-    profileId: String
-): com.grippo.services.database.models.DraftTrainingPack {
+public fun SetDraftTraining.toEntity(profileId: String): DraftTrainingPack {
 
     val id = Uuid.random().toString()
 
-    val training = _root_ide_package_.com.grippo.services.database.entity.DraftTrainingEntity(
+    val training = DraftTrainingEntity(
         id = id,
         profileId = profileId,
         trainingId = trainingId,
@@ -19,7 +19,7 @@ public fun SetDraftTraining.toEntity(
         intensity = training.intensity,
     )
 
-    return _root_ide_package_.com.grippo.services.database.models.DraftTrainingPack(
+    return DraftTrainingPack(
         training = training,
         exercises = this.training.exercises.map { it.toEntity(id) }
     )

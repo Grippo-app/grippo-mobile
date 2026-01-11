@@ -1,12 +1,14 @@
 package com.grippo.dto.entity.example
 
+import com.grippo.services.backend.dto.exercise.example.ExerciseExampleBundleResponse
+import com.grippo.services.database.entity.ExerciseExampleBundleEntity
 import com.grippo.toolkit.logger.AppLogger
 
-public fun List<com.grippo.services.backend.dto.exercise.example.ExerciseExampleBundleResponse>.toEntities(): List<com.grippo.services.database.entity.ExerciseExampleBundleEntity> {
+public fun List<ExerciseExampleBundleResponse>.toEntities(): List<ExerciseExampleBundleEntity> {
     return mapNotNull { it.toEntityOrNull() }
 }
 
-public fun com.grippo.services.backend.dto.exercise.example.ExerciseExampleBundleResponse.toEntityOrNull(): com.grippo.services.database.entity.ExerciseExampleBundleEntity? {
+public fun ExerciseExampleBundleResponse.toEntityOrNull(): ExerciseExampleBundleEntity? {
     val entityId = AppLogger.Mapping.log(id) {
         "ExerciseExampleBundleResponse.id is null"
     } ?: return null
@@ -31,7 +33,7 @@ public fun com.grippo.services.backend.dto.exercise.example.ExerciseExampleBundl
         "ExerciseExampleBundleResponse.updatedAt is null"
     } ?: return null
 
-    return _root_ide_package_.com.grippo.services.database.entity.ExerciseExampleBundleEntity(
+    return ExerciseExampleBundleEntity(
         id = entityId,
         exerciseExampleId = entityExerciseExampleId,
         muscleId = entityMuscleId,

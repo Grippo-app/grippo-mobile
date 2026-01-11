@@ -1,12 +1,14 @@
 package com.grippo.dto.entity.user
 
+import com.grippo.services.backend.dto.user.UserResponse
+import com.grippo.services.database.entity.UserEntity
 import com.grippo.toolkit.logger.AppLogger
 
-public fun List<com.grippo.services.backend.dto.user.UserResponse>.toEntities(): List<com.grippo.services.database.entity.UserEntity> {
+public fun List<UserResponse>.toEntities(): List<UserEntity> {
     return mapNotNull { it.toEntityOrNull() }
 }
 
-public fun com.grippo.services.backend.dto.user.UserResponse.toEntityOrNull(): com.grippo.services.database.entity.UserEntity? {
+public fun UserResponse.toEntityOrNull(): UserEntity? {
     val entityId = AppLogger.Mapping.log(id) {
         "UserResponse.id is null"
     } ?: return null
@@ -47,7 +49,7 @@ public fun com.grippo.services.backend.dto.user.UserResponse.toEntityOrNull(): c
         "UserResponse.updatedAt is null"
     } ?: return null
 
-    return _root_ide_package_.com.grippo.services.database.entity.UserEntity(
+    return UserEntity(
         id = entityId,
         profileId = entityProfileId,
         weight = entityWeight,
