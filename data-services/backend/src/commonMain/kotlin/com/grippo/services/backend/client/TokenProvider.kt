@@ -1,5 +1,10 @@
 package com.grippo.services.backend.client
 
+import com.grippo.services.backend.dto.auth.RefreshBody
+import com.grippo.services.backend.dto.auth.TokenResponse
+import com.grippo.services.database.dao.TokenDao
+import com.grippo.services.database.dao.UserActiveDao
+import com.grippo.services.database.entity.TokenEntity
 import com.grippo.toolkit.logger.AppLogger
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -27,8 +32,8 @@ import kotlin.coroutines.cancellation.CancellationException
 
 @Single
 internal class TokenProvider(
-    private val tokenDao: com.grippo.services.database.dao.TokenDao,
-    private val userActiveDao: com.grippo.services.database.dao.UserActiveDao,
+    private val tokenDao: TokenDao,
+    private val userActiveDao: UserActiveDao,
 ) : AuthProvider {
 
     private val refreshMutex = Mutex()
@@ -138,7 +143,7 @@ internal class TokenProvider(
                             ?: return@withLock false
 
                         tokenDao.insertOrUpdate(
-                            _root_ide_package_.com.grippo.services.database.entity.TokenEntity(
+                            TokenEntity(
                                 id = newId,
                                 access = refresh.accessToken,
                                 refresh = refresh.refreshToken
@@ -162,7 +167,7 @@ internal class TokenProvider(
     private suspend fun performTokenRefresh(
         client: HttpClient,
         refreshToken: String
-    ): com.grippo.services.backend.dto.auth.TokenResponse {
+    ): TokenResponse {
         logDebug { "Requesting token refresh..." }
 
         return client.submitForm {
@@ -170,11 +175,7 @@ internal class TokenProvider(
             url {
                 method = HttpMethod.Post
                 path("/auth/refresh")
-                setBody(
-                    _root_ide_package_.com.grippo.services.backend.dto.auth.RefreshBody(
-                        refreshToken = refreshToken
-                    )
-                )
+                setBody(RefreshBody(refreshToken = refreshToken))
             }
         }.also {
             logDebug { "Refresh response received: ${it.status.value}" }
@@ -220,22 +221,22 @@ internal class TokenProvider(
         throw e
     }
 
-    private suspend fun getCurrentToken(): com.grippo.services.database.entity.TokenEntity? {
+    private suspend fun getCurrentToken(): TokenEntity? {
         return userActiveDao.get().firstOrNull()?.let { tokenDao.getById(it).firstOrNull() }
     }
 
-    private suspend fun getCurrentUserAndToken(): Pair<String, com.grippo.services.database.entity.TokenEntity>? {
+    private suspend fun getCurrentUserAndToken(): Pair<String, TokenEntity>? {
         val userId = userActiveDao.get().firstOrNull() ?: return null
         val token = tokenDao.getById(userId).firstOrNull() ?: return null
         return userId to token
     }
 
-    private fun com.grippo.services.database.entity.TokenEntity?.requireAccess(): String {
+    private fun TokenEntity?.requireAccess(): String {
         return this?.access?.takeIf { it.isNotBlank() }
             ?: throw IllegalStateException("Access token is missing")
     }
 
-    private fun com.grippo.services.database.entity.TokenEntity?.requireRefresh(): String {
+    private fun TokenEntity?.requireRefresh(): String {
         return this?.refresh?.takeIf { it.isNotBlank() }
             ?: throw IllegalStateException("Refresh token is missing")
     }

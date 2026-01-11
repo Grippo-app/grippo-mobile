@@ -1,17 +1,38 @@
 package com.grippo.services.backend
 
+import com.grippo.services.backend.client.BackendClient
+import com.grippo.services.backend.dto.IdResponse
+import com.grippo.services.backend.dto.achievements.AchievementResponse
+import com.grippo.services.backend.dto.auth.EmailAuthBody
+import com.grippo.services.backend.dto.auth.GoogleBody
+import com.grippo.services.backend.dto.auth.RefreshBody
+import com.grippo.services.backend.dto.auth.RegisterBody
+import com.grippo.services.backend.dto.auth.TokenResponse
+import com.grippo.services.backend.dto.equipment.EquipmentGroupResponse
+import com.grippo.services.backend.dto.equipment.EquipmentResponse
+import com.grippo.services.backend.dto.exercise.example.GetExerciseExampleResponse
+import com.grippo.services.backend.dto.muscle.MuscleGroupResponse
+import com.grippo.services.backend.dto.muscle.MuscleResponse
+import com.grippo.services.backend.dto.training.ExerciseResponse
+import com.grippo.services.backend.dto.training.TrainingBody
+import com.grippo.services.backend.dto.training.TrainingResponse
+import com.grippo.services.backend.dto.user.CreateProfileBody
+import com.grippo.services.backend.dto.user.ExperienceBody
+import com.grippo.services.backend.dto.user.IdsBody
+import com.grippo.services.backend.dto.user.UserResponse
+import com.grippo.services.backend.dto.user.WeightHistoryResponse
 import io.ktor.client.call.body
 import io.ktor.http.HttpMethod
 import org.koin.core.annotation.Single
 
 @Single
-public class GrippoApi internal constructor(private val client: com.grippo.services.backend.client.BackendClient) {
+public class GrippoApi internal constructor(private val client: BackendClient) {
 
     /* * * * * * * * * * * * * * * * *
      * Auth service
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun login(body: com.grippo.services.backend.dto.auth.EmailAuthBody): Result<com.grippo.services.backend.dto.auth.TokenResponse> {
+    public suspend fun login(body: EmailAuthBody): Result<TokenResponse> {
         return request(
             method = HttpMethod.Post,
             path = "/auth/login",
@@ -19,7 +40,7 @@ public class GrippoApi internal constructor(private val client: com.grippo.servi
         )
     }
 
-    public suspend fun google(body: com.grippo.services.backend.dto.auth.GoogleBody): Result<com.grippo.services.backend.dto.auth.TokenResponse> {
+    public suspend fun google(body: GoogleBody): Result<TokenResponse> {
         return request(
             method = HttpMethod.Post,
             path = "/auth/google",
@@ -27,7 +48,7 @@ public class GrippoApi internal constructor(private val client: com.grippo.servi
         )
     }
 
-    public suspend fun register(body: com.grippo.services.backend.dto.auth.RegisterBody): Result<com.grippo.services.backend.dto.auth.TokenResponse> {
+    public suspend fun register(body: RegisterBody): Result<TokenResponse> {
         return request(
             method = HttpMethod.Post,
             path = "/auth/register",
@@ -35,7 +56,7 @@ public class GrippoApi internal constructor(private val client: com.grippo.servi
         )
     }
 
-    public suspend fun refresh(body: com.grippo.services.backend.dto.auth.RefreshBody): Result<com.grippo.services.backend.dto.auth.TokenResponse> {
+    public suspend fun refresh(body: RefreshBody): Result<TokenResponse> {
         return request(
             method = HttpMethod.Post,
             path = "/auth/refresh",
@@ -47,7 +68,7 @@ public class GrippoApi internal constructor(private val client: com.grippo.servi
      * User service
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun getUser(): Result<com.grippo.services.backend.dto.user.UserResponse> {
+    public suspend fun getUser(): Result<UserResponse> {
         return request(
             method = HttpMethod.Get,
             path = "/users"
@@ -61,7 +82,7 @@ public class GrippoApi internal constructor(private val client: com.grippo.servi
         )
     }
 
-    public suspend fun createProfile(body: com.grippo.services.backend.dto.user.CreateProfileBody): Result<com.grippo.services.backend.dto.user.UserResponse> {
+    public suspend fun createProfile(body: CreateProfileBody): Result<UserResponse> {
         return request(
             method = HttpMethod.Post,
             path = "/users",
@@ -69,7 +90,7 @@ public class GrippoApi internal constructor(private val client: com.grippo.servi
         )
     }
 
-    public suspend fun updateExperience(body: com.grippo.services.backend.dto.user.ExperienceBody): Result<com.grippo.services.backend.dto.user.UserResponse> {
+    public suspend fun updateExperience(body: ExperienceBody): Result<UserResponse> {
         return request(
             method = HttpMethod.Post,
             path = "/users/experience",
@@ -77,14 +98,14 @@ public class GrippoApi internal constructor(private val client: com.grippo.servi
         )
     }
 
-    public suspend fun getExcludedEquipments(): Result<List<com.grippo.services.backend.dto.equipment.EquipmentResponse>> {
+    public suspend fun getExcludedEquipments(): Result<List<EquipmentResponse>> {
         return request(
             method = HttpMethod.Get,
             path = "/users/excluded-equipments"
         )
     }
 
-    public suspend fun postExcludedEquipments(body: com.grippo.services.backend.dto.user.IdsBody): Result<Unit> {
+    public suspend fun postExcludedEquipments(body: IdsBody): Result<Unit> {
         return request(
             method = HttpMethod.Post,
             path = "/users/excluded-equipments",
@@ -92,14 +113,14 @@ public class GrippoApi internal constructor(private val client: com.grippo.servi
         )
     }
 
-    public suspend fun getExcludedMuscles(): Result<List<com.grippo.services.backend.dto.muscle.MuscleResponse>> {
+    public suspend fun getExcludedMuscles(): Result<List<MuscleResponse>> {
         return request(
             method = HttpMethod.Get,
             path = "/users/excluded-muscles"
         )
     }
 
-    public suspend fun postExcludedMuscles(body: com.grippo.services.backend.dto.user.IdsBody): Result<Unit> {
+    public suspend fun postExcludedMuscles(body: IdsBody): Result<Unit> {
         return request(
             method = HttpMethod.Post,
             path = "/users/excluded-muscles",
@@ -111,7 +132,7 @@ public class GrippoApi internal constructor(private val client: com.grippo.servi
      * Muscle service
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun getMuscles(): Result<List<com.grippo.services.backend.dto.muscle.MuscleGroupResponse>> {
+    public suspend fun getMuscles(): Result<List<MuscleGroupResponse>> {
         return request(
             method = HttpMethod.Get,
             path = "/muscles"
@@ -122,7 +143,7 @@ public class GrippoApi internal constructor(private val client: com.grippo.servi
      * Equipment service
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun getEquipments(): Result<List<com.grippo.services.backend.dto.equipment.EquipmentGroupResponse>> {
+    public suspend fun getEquipments(): Result<List<EquipmentGroupResponse>> {
         return request(
             method = HttpMethod.Get,
             path = "/equipments"
@@ -133,11 +154,11 @@ public class GrippoApi internal constructor(private val client: com.grippo.servi
      * Weight history service
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun updateWeightHistory(value: Float): Result<com.grippo.services.backend.dto.user.WeightHistoryResponse> {
+    public suspend fun updateWeightHistory(value: Float): Result<WeightHistoryResponse> {
         return request(
             method = HttpMethod.Post,
             path = "/weight-history",
-            body = _root_ide_package_.com.grippo.services.backend.dto.user.WeightHistoryResponse(
+            body = WeightHistoryResponse(
                 weight = value
             )
         )
@@ -150,7 +171,7 @@ public class GrippoApi internal constructor(private val client: com.grippo.servi
         )
     }
 
-    public suspend fun getWeightHistory(): Result<List<com.grippo.services.backend.dto.user.WeightHistoryResponse>> {
+    public suspend fun getWeightHistory(): Result<List<WeightHistoryResponse>> {
         return request(
             method = HttpMethod.Get,
             path = "/weight-history"
@@ -164,7 +185,7 @@ public class GrippoApi internal constructor(private val client: com.grippo.servi
     public suspend fun getTrainings(
         start: String,
         end: String
-    ): Result<List<com.grippo.services.backend.dto.training.TrainingResponse>> {
+    ): Result<List<TrainingResponse>> {
         return request(
             method = HttpMethod.Get,
             path = "/trainings",
@@ -172,7 +193,7 @@ public class GrippoApi internal constructor(private val client: com.grippo.servi
         )
     }
 
-    public suspend fun setTraining(body: com.grippo.services.backend.dto.training.TrainingBody): Result<com.grippo.services.backend.dto.IdResponse> {
+    public suspend fun setTraining(body: TrainingBody): Result<IdResponse> {
         return request(
             method = HttpMethod.Post,
             path = "/trainings",
@@ -180,10 +201,7 @@ public class GrippoApi internal constructor(private val client: com.grippo.servi
         )
     }
 
-    public suspend fun updateTraining(
-        id: String,
-        body: com.grippo.services.backend.dto.training.TrainingBody
-    ): Result<Unit> {
+    public suspend fun updateTraining(id: String, body: TrainingBody): Result<Unit> {
         return request(
             method = HttpMethod.Put,
             path = "/trainings",
@@ -199,7 +217,7 @@ public class GrippoApi internal constructor(private val client: com.grippo.servi
         )
     }
 
-    public suspend fun getTraining(id: String): Result<com.grippo.services.backend.dto.training.TrainingResponse> {
+    public suspend fun getTraining(id: String): Result<TrainingResponse> {
         return request(
             method = HttpMethod.Get,
             path = "/trainings/$id"
@@ -210,28 +228,28 @@ public class GrippoApi internal constructor(private val client: com.grippo.servi
      * Exercise examples
      * * * * * * * * * * * * * * * * */
 
-    public suspend fun getExerciseExamples(): Result<List<com.grippo.services.backend.dto.exercise.example.GetExerciseExampleResponse>> {
+    public suspend fun getExerciseExamples(): Result<List<GetExerciseExampleResponse>> {
         return request(
             method = HttpMethod.Get,
             path = "/exercise-examples",
         )
     }
 
-    public suspend fun getExerciseExample(id: String): Result<com.grippo.services.backend.dto.exercise.example.GetExerciseExampleResponse> {
+    public suspend fun getExerciseExample(id: String): Result<GetExerciseExampleResponse> {
         return request(
             method = HttpMethod.Get,
             path = "/exercise-examples/$id"
         )
     }
 
-    public suspend fun getRecentExercisesByExampleId(id: String): Result<List<com.grippo.services.backend.dto.training.ExerciseResponse>> {
+    public suspend fun getRecentExercisesByExampleId(id: String): Result<List<ExerciseResponse>> {
         return request(
             method = HttpMethod.Get,
             path = "exercise-metrics/exercise-example/${id}/recent"
         )
     }
 
-    public suspend fun getAchievementsByExampleId(id: String): Result<com.grippo.services.backend.dto.achievements.AchievementResponse> {
+    public suspend fun getAchievementsByExampleId(id: String): Result<AchievementResponse> {
         return request(
             method = HttpMethod.Get,
             path = "exercise-metrics/exercise-example/${id}/achievements"
