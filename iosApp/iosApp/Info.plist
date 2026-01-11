@@ -53,13 +53,11 @@
             <string>UIInterfaceOrientationLandscapeRight</string>
         </array>
         <key>GIDClientID</key>
-        <string>197674600409-a4vk6v5pngj9djjac2e6imvia56jcims.apps.googleusercontent.com</string>
+        <string>YOUR_GID_CLIENT_ID</string>
         <key>GIDServerClientID</key>
-        <string>197674600409-kje4iull5fm15r95fj38ka4atsa0nbes.apps.googleusercontent.com</string>
+        <string>YOUR_GID_SERVER_CLIENT_ID</string>
         <key>GIDRedirectURI</key>
-        <string>
-            com.googleusercontent.apps.197674600409-a4vk6v5pngj9djjac2e6imvia56jcims:/oauthredirect
-        </string>
+        <string>YOUR_GID_REDIRECT_URI</string>
         <key>CFBundleURLTypes</key>
         <array>
             <dict>
@@ -67,9 +65,7 @@
                 <string>Editor</string>
                 <key>CFBundleURLSchemes</key>
                 <array>
-                    <string>
-                        com.googleusercontent.apps.197674600409-a4vk6v5pngj9djjac2e6imvia56jcims
-                    </string>
+                    <string>YOUR_GID_REVERSED_CLIENT_ID</string>
                 </array>
             </dict>
         </array>

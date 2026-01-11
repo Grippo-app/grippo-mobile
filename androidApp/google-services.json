@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "219092892396",
-    "project_id": "grippo-e3960",
-    "storage_bucket": "grippo-e3960.firebasestorage.app"
+    "project_number": "YOUR_PROJECT_NUMBER",
+    "project_id": "YOUR_PROJECT_ID",
+    "storage_bucket": "YOUR_STORAGE_BUCKET"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:219092892396:android:e0baf15fe10881202583c9",
+        "mobilesdk_app_id": "YOUR_MOBILE_SDK_APP_ID",
         "android_client_info": {
-          "package_name": "com.grippo.android"
+          "package_name": "YOUR_APPLICATION_ID"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCqlyTq2GSjpYUBvM90SPY_yu8HqsVfcHA"
+          "current_key": "YOUR_API_KEY"
         }
       ],
       "services": {

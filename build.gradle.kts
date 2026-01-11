@@ -11,3 +11,5 @@ plugins {
     alias(libs.plugins.room).apply(false)
     alias(libs.plugins.ksp).apply(false)
 }
+
+apply(from = "secure/secure.gradle.kts")
