@@ -17,20 +17,12 @@ android {
         manifestPlaceholders["GOOGLE_SERVER_CLIENT_ID"] = "YOUR_GOOGLE_SERVER_CLIENT_ID"
     }
 
-    signingConfigs.create("release") {
-        storeFile = file("YOUR_STORE_FILE")
-        storePassword = "YOUR_STORE_PASSWORD"
-        keyAlias = "YOUR_KEY_ALIAS"
-        keyPassword = "YOUR_KEY_PASSWORD"
-    }
-
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
             val default = getDefaultProguardFile("proguard-android-optimize.txt")
             proguardFiles(default, "proguard-rules.pro")
-            signingConfig = signingConfigs["release"]
         }
     }
 }

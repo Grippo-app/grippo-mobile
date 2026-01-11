@@ -14,10 +14,6 @@ abstract class SyncSecureConfigs : DefaultTask() {
 
     @get:InputFile
     @get:PathSensitive(PathSensitivity.RELATIVE)
-    abstract val keystoreProps: RegularFileProperty
-
-    @get:InputFile
-    @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val androidFirebaseSource: RegularFileProperty
 
     @get:InputFile
@@ -49,13 +45,6 @@ abstract class SyncSecureConfigs : DefaultTask() {
         logger.lifecycle("secure: ✅ using ${propsFile.path}")
         val googleProps = loadProps(propsFile)
 
-        val keystorePropsFile = keystoreProps.get().asFile
-        if (!keystorePropsFile.exists()) {
-            error("secure: ❌ Missing keystore properties file: ${keystorePropsFile.path}")
-        }
-        logger.lifecycle("secure: ✅ using ${keystorePropsFile.path}")
-        val keystoreProps = loadProps(keystorePropsFile)
-
         val androidFirebaseSourceFile = androidFirebaseSource.get().asFile
         val androidFirebaseTargetFile = androidFirebaseTarget.get().asFile
         if (!androidFirebaseSourceFile.exists()) {
@@ -80,12 +69,6 @@ abstract class SyncSecureConfigs : DefaultTask() {
         val gidRedirectUri = buildGidRedirectUri(iosClientId)
         val gidReversedClientId = buildGidRedirectUri(iosClientId)
 
-        logger.lifecycle("secure: ✅ applying Android signing config")
-        val storeFile = requireProp(keystoreProps, Keys.storeFile, keystorePropsFile)
-        val storePassword = requireProp(keystoreProps, Keys.storePassword, keystorePropsFile)
-        val keyAlias = requireProp(keystoreProps, Keys.keyAlias, keystorePropsFile)
-        val keyPassword = requireProp(keystoreProps, Keys.keyPassword, keystorePropsFile)
-
         val androidAppGradleFile = androidAppGradle.get().asFile
         replaceOrError(
             androidAppGradleFile,
@@ -93,18 +76,6 @@ abstract class SyncSecureConfigs : DefaultTask() {
             "manifestPlaceholders[\"GOOGLE_SERVER_CLIENT_ID\"]"
         ) { match ->
             "${match.groupValues[1]}$webClientId${match.groupValues[3]}"
-        }
-        replaceOrError(androidAppGradleFile, Patterns.storeFile, "storeFile") { match ->
-            "${match.groupValues[1]}$storeFile${match.groupValues[3]}"
-        }
-        replaceOrError(androidAppGradleFile, Patterns.storePassword, "storePassword") { match ->
-            "${match.groupValues[1]}$storePassword${match.groupValues[3]}"
-        }
-        replaceOrError(androidAppGradleFile, Patterns.keyAlias, "keyAlias") { match ->
-            "${match.groupValues[1]}$keyAlias${match.groupValues[3]}"
-        }
-        replaceOrError(androidAppGradleFile, Patterns.keyPassword, "keyPassword") { match ->
-            "${match.groupValues[1]}$keyPassword${match.groupValues[3]}"
         }
 
         val iosInfoPlistFile = iosInfoPlist.get().asFile
@@ -154,19 +125,11 @@ abstract class SyncSecureConfigs : DefaultTask() {
         const val webClientId = "GOOGLE_CLIENT_ID_WEB"
         const val androidClientId = "GOOGLE_CLIENT_ID_ANDROID"
         const val iosClientId = "GOOGLE_CLIENT_ID_IOS"
-        const val storeFile = "STORE_FILE"
-        const val storePassword = "STORE_PASSWORD"
-        const val keyAlias = "KEY_ALIAS"
-        const val keyPassword = "KEY_PASSWORD"
     }
 
     private object Patterns {
         val googleServerClientId =
             Regex("(manifestPlaceholders\\[\\\"GOOGLE_SERVER_CLIENT_ID\\\"\\]\\s*=\\s*\\\")([^\"]*)(\\\")")
-        val storeFile = Regex("(storeFile\\s*=\\s*file\\(\\\")([^\"]*)(\\\"\\))")
-        val storePassword = Regex("(storePassword\\s*=\\s*\\\")([^\"]*)(\\\")")
-        val keyAlias = Regex("(keyAlias\\s*=\\s*\\\")([^\"]*)(\\\")")
-        val keyPassword = Regex("(keyPassword\\s*=\\s*\\\")([^\"]*)(\\\")")
         val gidClientId =
             Regex("(<key>GIDClientID</key>\\s*<string>)(.*?)(</string>)", RegexOption.DOT_MATCHES_ALL)
         val gidServerClientId =
@@ -186,7 +149,6 @@ tasks.register<SyncSecureConfigs>("syncSecureConfigs") {
     description = "Copies Firebase configs and Google Sign-In identifiers into app files."
 
     googleAuthProps.set(layout.projectDirectory.file("secure/google/google-auth.properties"))
-    keystoreProps.set(layout.projectDirectory.file("secure/keystore/keystore.properties"))
     androidFirebaseSource.set(layout.projectDirectory.file("secure/firebase/google-services.json"))
     iosFirebaseSource.set(layout.projectDirectory.file("secure/firebase/GoogleService-Info.plist"))
     androidFirebaseTarget.set(layout.projectDirectory.file("androidApp/google-services.json"))
