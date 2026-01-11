@@ -31,20 +31,20 @@ This project demonstrates:
 
 <div align="center">
   <h4>Part 1</h4>
-  <a href="https://github.com/user-attachments/assets/6004f07c-9873-400d-a499-86561329c0f2"><img src="https://github.com/user-attachments/assets/6004f07c-9873-400d-a499-86561329c0f2" alt="iOS 1" width="110"></a>
-  <a href="https://github.com/user-attachments/assets/168fa3a0-e2a9-42a8-b9a2-9f8d2292646b"><img src="https://github.com/user-attachments/assets/168fa3a0-e2a9-42a8-b9a2-9f8d2292646b" alt="iOS 2" width="110"></a>
-  <a href="https://github.com/user-attachments/assets/7093f392-1a1d-4e3a-9f54-adaf4a8c07b7"><img src="https://github.com/user-attachments/assets/7093f392-1a1d-4e3a-9f54-adaf4a8c07b7" alt="iOS 4" width="110"></a>
-  <a href="https://github.com/user-attachments/assets/e14437ff-ce3c-413e-b10a-5c02030fa69e"><img src="https://github.com/user-attachments/assets/e14437ff-ce3c-413e-b10a-5c02030fa69e" alt="iOS 6" width="110"></a>
-  <a href="https://github.com/user-attachments/assets/15f6e5d1-ffa4-4897-bc31-d3875f28a108"><img src="https://github.com/user-attachments/assets/15f6e5d1-ffa4-4897-bc31-d3875f28a108" alt="iOS 5" width="110"></a>
-  <a href="https://github.com/user-attachments/assets/9fa692fb-f4ff-4824-9a01-75423982cad3"><img src="https://github.com/user-attachments/assets/9fa692fb-f4ff-4824-9a01-75423982cad3" alt="iOS 5" width="110"></a>
+  <a href="https://github.com/user-attachments/assets/b08d0d64-08a3-483b-a04c-08cdb23777de"><img src="https://github.com/user-attachments/assets/b08d0d64-08a3-483b-a04c-08cdb23777de" alt="Screen 1" width="110"></a>
+  <a href="https://github.com/user-attachments/assets/51c653ac-f93e-4377-a71b-02c24996c283"><img src="https://github.com/user-attachments/assets/51c653ac-f93e-4377-a71b-02c24996c283" alt="Screen 2" width="110"></a>
+  <a href="https://github.com/user-attachments/assets/290e2b39-6bf7-456c-a865-fd4ff362bc97"><img src="https://github.com/user-attachments/assets/290e2b39-6bf7-456c-a865-fd4ff362bc97" alt="Screen 3" width="110"></a>
+  <a href="https://github.com/user-attachments/assets/2d34868a-b4fe-42b4-86de-fe99a4ae0c00"><img src="https://github.com/user-attachments/assets/2d34868a-b4fe-42b4-86de-fe99a4ae0c00" alt="Screen 4" width="110"></a>
+  <a href="https://github.com/user-attachments/assets/615ceafd-cf07-4bfd-b134-03b0d044b709"><img src="https://github.com/user-attachments/assets/615ceafd-cf07-4bfd-b134-03b0d044b709" alt="Screen 5" width="110"></a>
+  <a href="https://github.com/user-attachments/assets/bd31147f-7502-4a30-8c3f-a0191e458b49"><img src="https://github.com/user-attachments/assets/bd31147f-7502-4a30-8c3f-a0191e458b49" alt="Screen 6" width="110"></a>
   <br/>
   <h4>Part 2</h4>
-  <a href="https://github.com/user-attachments/assets/2d29dfa6-08ad-4335-8700-9641b4b29d35"><img src="https://github.com/user-attachments/assets/2d29dfa6-08ad-4335-8700-9641b4b29d35" alt="Android 3" width="110"></a>
-  <a href="https://github.com/user-attachments/assets/1d33863e-7faa-41fd-8b2c-83818e00475a"><img src="https://github.com/user-attachments/assets/1d33863e-7faa-41fd-8b2c-83818e00475a" alt="Android 5" width="110"></a>
-   <a href="https://github.com/user-attachments/assets/60d7869d-469c-4c59-b11a-ea7b6ff2b612"><img src="https://github.com/user-attachments/assets/60d7869d-469c-4c59-b11a-ea7b6ff2b612" alt="Android 4" width="110"></a>
-  <a href="https://github.com/user-attachments/assets/e0d0544b-eb56-4339-8c0f-a1ac1aa53882"><img src="https://github.com/user-attachments/assets/e0d0544b-eb56-4339-8c0f-a1ac1aa53882" alt="Android 2" width="110"></a>
-  <a href="https://github.com/user-attachments/assets/5fbcc87b-0dd7-4379-9437-a60032db982c"><img src="https://github.com/user-attachments/assets/5fbcc87b-0dd7-4379-9437-a60032db982c" alt="Android 4" width="110"></a>
-   <a href="https://github.com/user-attachments/assets/50d2c598-a58b-4e85-9859-78ef8c5a491d"><img src="https://github.com/user-attachments/assets/50d2c598-a58b-4e85-9859-78ef8c5a491d" alt="Android 1" width="110"></a>
+  <a href="https://github.com/user-attachments/assets/2667be13-ec39-4b09-a030-829ca48653e9"><img src="https://github.com/user-attachments/assets/2667be13-ec39-4b09-a030-829ca48653e9" alt="Screen 7" width="110"></a>
+  <a href="https://github.com/user-attachments/assets/915cdf11-f944-485d-b565-ae3d2fbd11ed"><img src="https://github.com/user-attachments/assets/915cdf11-f944-485d-b565-ae3d2fbd11ed" alt="Screen 8" width="110"></a>
+  <a href="https://github.com/user-attachments/assets/9ee14de9-d856-4da5-9ca8-b0ba5cf0656f"><img src="https://github.com/user-attachments/assets/9ee14de9-d856-4da5-9ca8-b0ba5cf0656f" alt="Screen 9" width="110"></a>
+  <a href="https://github.com/user-attachments/assets/fd18ed10-d218-4f71-a88d-2275cd0c70f2"><img src="https://github.com/user-attachments/assets/fd18ed10-d218-4f71-a88d-2275cd0c70f2" alt="Screen 10" width="110"></a>
+  <a href="https://github.com/user-attachments/assets/d802a8e4-2d97-4b49-a13b-dd24343515cf"><img src="https://github.com/user-attachments/assets/d802a8e4-2d97-4b49-a13b-dd24343515cf" alt="Screen 11" width="110"></a>
+   <a href="https://github.com/user-attachments/assets/b9fcdde0-176e-4abb-8338-05133b171dab"><img src="https://github.com/user-attachments/assets/b9fcdde0-176e-4abb-8338-05133b171dab" alt="Screen 12" width="110"></a>
 </div>
 
 ### Stack & Highlights
