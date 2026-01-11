@@ -42,9 +42,7 @@ internal class TrainingFeatureImpl(
         return repository.deleteTraining(id)
     }
 
-    override suspend fun setDraftTraining(
-        training: SetDraftTraining
-    ): Result<Unit> {
+    override suspend fun setDraftTraining(training: SetDraftTraining): Result<Unit> {
         return repository.setDraftTraining(training)
     }
 

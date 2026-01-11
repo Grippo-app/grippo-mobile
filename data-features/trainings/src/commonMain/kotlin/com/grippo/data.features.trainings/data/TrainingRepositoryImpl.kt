@@ -11,6 +11,12 @@ import com.grippo.dto.entity.training.toEntities
 import com.grippo.dto.entity.training.toEntityOrNull
 import com.grippo.entity.domain.training.toDomain
 import com.grippo.entity.domain.training.toSetDomain
+import com.grippo.services.backend.GrippoApi
+import com.grippo.services.backend.dto.training.TrainingResponse
+import com.grippo.services.database.dao.DraftTrainingDao
+import com.grippo.services.database.dao.TrainingDao
+import com.grippo.services.database.dao.UserActiveDao
+import com.grippo.services.database.dao.UserDao
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
@@ -20,11 +26,11 @@ import org.koin.core.annotation.Single
 
 @Single(binds = [TrainingRepository::class])
 internal class TrainingRepositoryImpl(
-    private val api: com.grippo.services.backend.GrippoApi,
-    private val trainingDao: com.grippo.services.database.dao.TrainingDao,
-    private val draftTrainingDao: com.grippo.services.database.dao.DraftTrainingDao,
-    private val userActiveDao: com.grippo.services.database.dao.UserActiveDao,
-    private val userDao: com.grippo.services.database.dao.UserDao,
+    private val api: GrippoApi,
+    private val trainingDao: TrainingDao,
+    private val draftTrainingDao: DraftTrainingDao,
+    private val userActiveDao: UserActiveDao,
+    private val userDao: UserDao,
 ) : TrainingRepository {
 
     override fun observeTraining(id: String): Flow<Training?> {
@@ -63,7 +69,7 @@ internal class TrainingRepositoryImpl(
             body = training.toBody()
         )
 
-        response.onSuccess { r ->
+        response.onSuccess {
             val training = api.getTraining(id).getOrNull() ?: return@onSuccess
             provideTraining(training)
         }
@@ -86,18 +92,16 @@ internal class TrainingRepositoryImpl(
     }
 
     override suspend fun deleteTraining(id: String): Result<Unit> {
-        val response = api.deleteTraining(
-            id = id,
-        )
+        val response = api.deleteTraining(id = id)
 
-        response.onSuccess { r ->
+        response.onSuccess {
             trainingDao.deleteById(id)
         }
 
         return response
     }
 
-    private suspend fun provideTraining(value: com.grippo.services.backend.dto.training.TrainingResponse) {
+    private suspend fun provideTraining(value: TrainingResponse) {
         val training = value.toEntityOrNull() ?: return
         val exercises = value.exercises.toEntities()
         val iterations = value.exercises.flatMap { f -> f.iterations }.toEntities()

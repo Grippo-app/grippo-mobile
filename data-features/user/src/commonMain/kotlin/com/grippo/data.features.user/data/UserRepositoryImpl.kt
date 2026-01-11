@@ -7,6 +7,10 @@ import com.grippo.data.features.user.domain.UserRepository
 import com.grippo.domain.dto.user.toBody
 import com.grippo.dto.entity.user.toEntityOrNull
 import com.grippo.entity.domain.user.toDomain
+import com.grippo.services.backend.GrippoApi
+import com.grippo.services.database.dao.TokenDao
+import com.grippo.services.database.dao.UserActiveDao
+import com.grippo.services.database.dao.UserDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -16,10 +20,10 @@ import org.koin.core.annotation.Single
 
 @Single(binds = [UserRepository::class])
 internal class UserRepositoryImpl(
-    private val api: com.grippo.services.backend.GrippoApi,
-    private val userDao: com.grippo.services.database.dao.UserDao,
-    private val tokenDao: com.grippo.services.database.dao.TokenDao,
-    private val userActiveDao: com.grippo.services.database.dao.UserActiveDao
+    private val api: GrippoApi,
+    private val userDao: UserDao,
+    private val tokenDao: TokenDao,
+    private val userActiveDao: UserActiveDao
 ) : UserRepository {
 
     override fun observeUser(): Flow<User?> {

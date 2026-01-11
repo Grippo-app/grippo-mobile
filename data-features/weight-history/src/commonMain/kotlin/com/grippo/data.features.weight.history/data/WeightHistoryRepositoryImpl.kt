@@ -4,14 +4,16 @@ import com.grippo.data.features.api.weight.history.models.WeightHistory
 import com.grippo.data.features.weight.history.domain.WeightHistoryRepository
 import com.grippo.dto.entity.user.toEntities
 import com.grippo.entity.domain.user.toDomain
+import com.grippo.services.backend.GrippoApi
+import com.grippo.services.database.dao.WeightHistoryDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
 
 @Single(binds = [WeightHistoryRepository::class])
 internal class WeightHistoryRepositoryImpl(
-    private val api: com.grippo.services.backend.GrippoApi,
-    private val weightHistoryDao: com.grippo.services.database.dao.WeightHistoryDao,
+    private val api: GrippoApi,
+    private val weightHistoryDao: WeightHistoryDao,
 ) : WeightHistoryRepository {
 
     override fun observeWeightHistory(): Flow<List<WeightHistory>> {
