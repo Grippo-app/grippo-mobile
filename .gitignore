@@ -5,9 +5,9 @@ build/
 captures/
 .externalNativeBuild/
 .cxx/
-secure/firebase
-secure/keystore
-secure/google
+secure/firebase/
+secure/keystore/
+secure/google/
 
 # Local configuration file
 local.properties
