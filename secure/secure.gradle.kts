@@ -62,11 +62,12 @@ abstract class SyncSecureConfigs : DefaultTask() {
         logger.lifecycle("secure: ✅ firebase ios -> ${iosFirebaseTargetFile.path}")
 
         logger.lifecycle("secure: ✅ applying Google Sign-In identifiers")
-        val googleServerClientId = requireProp(googleProps, Keys.googleServerClientId, propsFile)
-        val gidClientId = requireProp(googleProps, Keys.gidClientId, propsFile)
-        val gidServerClientId = requireProp(googleProps, Keys.gidServerClientId, propsFile)
-        val gidRedirectUri = requireProp(googleProps, Keys.gidRedirectUri, propsFile)
-        val gidReversedClientId = requireProp(googleProps, Keys.gidReversedClientId, propsFile)
+        val webClientId = requireProp(googleProps, Keys.webClientId, propsFile)
+        val iosClientId = requireProp(googleProps, Keys.iosClientId, propsFile)
+        requireProp(googleProps, Keys.androidClientId, propsFile)
+        val gidServerClientId = webClientId
+        val gidRedirectUri = buildGidRedirectUri(iosClientId)
+        val gidReversedClientId = buildGidRedirectUri(iosClientId)
 
         val androidAppGradleFile = androidAppGradle.get().asFile
         replaceOrError(
@@ -74,12 +75,12 @@ abstract class SyncSecureConfigs : DefaultTask() {
             Patterns.googleServerClientId,
             "manifestPlaceholders[\"GOOGLE_SERVER_CLIENT_ID\"]"
         ) { match ->
-            "${match.groupValues[1]}$googleServerClientId${match.groupValues[3]}"
+            "${match.groupValues[1]}$webClientId${match.groupValues[3]}"
         }
 
         val iosInfoPlistFile = iosInfoPlist.get().asFile
         replaceOrError(iosInfoPlistFile, Patterns.gidClientId, "GIDClientID") { match ->
-            "${match.groupValues[1]}$gidClientId${match.groupValues[3]}"
+            "${match.groupValues[1]}$iosClientId${match.groupValues[3]}"
         }
         replaceOrError(iosInfoPlistFile, Patterns.gidServerClientId, "GIDServerClientID") { match ->
             "${match.groupValues[1]}$gidServerClientId${match.groupValues[3]}"
@@ -102,6 +103,12 @@ abstract class SyncSecureConfigs : DefaultTask() {
         props.getProperty(key)?.trim()?.takeIf { it.isNotBlank() }
             ?: error("Missing $key in ${propsFile.path}")
 
+    private fun buildGidRedirectUri(clientId: String): String {
+        val suffix = ".apps.googleusercontent.com"
+        val baseId = clientId.removeSuffix(suffix)
+        return "com.googleusercontent.apps.$baseId:/oauthredirect"
+    }
+
     private fun replaceOrError(
         file: File,
         regex: Regex,
@@ -115,11 +122,9 @@ abstract class SyncSecureConfigs : DefaultTask() {
     }
 
     private object Keys {
-        const val googleServerClientId = "GOOGLE_SERVER_CLIENT_ID"
-        const val gidClientId = "GID_CLIENT_ID"
-        const val gidServerClientId = "GID_SERVER_CLIENT_ID"
-        const val gidRedirectUri = "GID_REDIRECT_URI"
-        const val gidReversedClientId = "GID_REVERSED_CLIENT_ID"
+        const val webClientId = "WEB_CLIENT_ID"
+        const val androidClientId = "ANDROID_CLIENT_ID"
+        const val iosClientId = "IOS_CLIENT_ID"
     }
 
     private object Patterns {
