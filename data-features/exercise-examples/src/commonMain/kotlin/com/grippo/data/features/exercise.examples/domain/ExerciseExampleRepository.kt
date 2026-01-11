@@ -9,6 +9,7 @@ import com.grippo.data.features.api.exercise.example.models.UserExerciseExampleR
 import kotlinx.coroutines.flow.Flow
 
 internal interface ExerciseExampleRepository {
+
     fun observeExerciseExamples(
         queries: ExampleQueries,
         sorting: ExampleSortingEnum,

@@ -9,6 +9,7 @@ import org.koin.core.annotation.Single
 internal class ExerciseMetricsFeatureImpl(
     private val repository: ExerciseMetricsRepository
 ) : ExerciseMetricsFeature {
+
     override suspend fun getRecentExercisesByExampleId(id: String): Result<List<Exercise>> {
         return repository.getRecentExercisesByExampleId(id)
     }

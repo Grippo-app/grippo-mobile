@@ -3,6 +3,10 @@ package com.grippo.data.features.excluded.muscles.data
 import com.grippo.data.features.api.muscle.models.Muscle
 import com.grippo.data.features.excluded.muscles.domain.ExcludedMusclesRepository
 import com.grippo.entity.domain.muscles.toDomain
+import com.grippo.services.backend.GrippoApi
+import com.grippo.services.backend.dto.user.IdsBody
+import com.grippo.services.database.dao.UserActiveDao
+import com.grippo.services.database.dao.UserDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -12,9 +16,9 @@ import org.koin.core.annotation.Single
 
 @Single(binds = [ExcludedMusclesRepository::class])
 internal class ExcludedMusclesRepositoryImpl(
-    private val api: com.grippo.services.backend.GrippoApi,
-    private val userDao: com.grippo.services.database.dao.UserDao,
-    private val userActiveDao: com.grippo.services.database.dao.UserActiveDao,
+    private val api: GrippoApi,
+    private val userDao: UserDao,
+    private val userActiveDao: UserActiveDao,
 ) : ExcludedMusclesRepository {
 
     override fun observeExcludedMuscles(): Flow<List<Muscle>> {
@@ -30,9 +34,7 @@ internal class ExcludedMusclesRepositoryImpl(
 
         response.onSuccess {
             val profileId = getActiveProfileId() ?: return@onSuccess
-
             val ids = it.mapNotNull { m -> m.id }
-
             userDao.insertOrReplaceExcludedMuscles(profileId, ids)
         }
 
@@ -40,16 +42,12 @@ internal class ExcludedMusclesRepositoryImpl(
     }
 
     override suspend fun setExcludedMuscles(ids: List<String>): Result<Unit> {
-        val response = api.postExcludedMuscles(com.grippo.services.backend.dto.user.IdsBody(ids))
+        val response = api.postExcludedMuscles(IdsBody(ids))
 
         response.onSuccess {
             val profileId = getActiveProfileId() ?: return@onSuccess
-
-            val ids = api.getExcludedMuscles()
-                .getOrNull()
-                ?.mapNotNull { it.id }
-                ?: return@onSuccess
-
+            val muscles = api.getExcludedMuscles().getOrNull() ?: return@onSuccess
+            val ids = muscles.mapNotNull { it.id }
             userDao.insertOrReplaceExcludedMuscles(profileId, ids)
         }
 

@@ -7,13 +7,15 @@ import com.grippo.data.features.exercise.metrics.domain.ExerciseMetricsRepositor
 import com.grippo.dto.domain.achievement.toDomain
 import com.grippo.dto.domain.training.toDomain
 import com.grippo.entity.domain.equipment.toDomain
+import com.grippo.services.backend.GrippoApi
+import com.grippo.services.database.dao.ExerciseExampleDao
 import kotlinx.coroutines.flow.firstOrNull
 import org.koin.core.annotation.Single
 
 @Single(binds = [ExerciseMetricsRepository::class])
 internal class ExerciseMetricsRepositoryImpl(
-    private val api: com.grippo.services.backend.GrippoApi,
-    private val exampleDao: com.grippo.services.database.dao.ExerciseExampleDao,
+    private val api: GrippoApi,
+    private val exampleDao: ExerciseExampleDao,
 ) : ExerciseMetricsRepository {
 
     override suspend fun getRecentExercisesByExampleId(id: String): Result<List<Exercise>> {

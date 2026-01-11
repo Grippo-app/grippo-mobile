@@ -8,6 +8,7 @@ import org.koin.core.annotation.Single
 internal class AiSuggestionsFeatureImpl(
     private val repository: AiSuggestionsRepository
 ) : AiSuggestionFeature {
+
     override suspend fun predictExerciseExample(): Result<ExerciseExampleSuggestion?> {
         return repository.predictExerciseExample()
     }

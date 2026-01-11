@@ -1,8 +1,10 @@
 package com.grippo.data.features.authorization
 
+import com.grippo.services.backend.BackendModule
+import com.grippo.services.database.DatabaseModule
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
 
-@Module(includes = [com.grippo.services.backend.BackendModule::class, com.grippo.services.database.DatabaseModule::class])
+@Module(includes = [BackendModule::class, DatabaseModule::class])
 @ComponentScan
 public class AuthorizationFeatureModule

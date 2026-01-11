@@ -1,7 +1,7 @@
 package com.grippo.data.features.api.exercise.example.models
 
 public enum class ExampleSortingEnum(public val key: String) {
-    MostlyUsed("MostlyUsed"),
-    RecentlyUsed("RecentlyUsed"),
-    NewAdded("NewAdded")
+    MostlyUsed("mostly_used"),
+    RecentlyUsed("recently_used"),
+    NewAdded("new_added")
 }

@@ -19,12 +19,13 @@ import com.grippo.data.features.api.user.CreateProfileUseCase
 import org.koin.core.annotation.Module
 import org.koin.dsl.module
 import kotlin.jvm.JvmName
+import org.koin.core.module.Module as ModuleObject
 
 @Module
 public class FeatureApiModule {
 
     @get:JvmName("module")
-    public val module: org.koin.core.module.Module = module {
+    public val module: ModuleObject = module {
         single {
             LoginUseCase(
                 authorizationFeature = get(),

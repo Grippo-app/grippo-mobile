@@ -10,14 +10,16 @@ import com.grippo.data.features.exercise.examples.domain.ExerciseExampleReposito
 import com.grippo.dto.entity.example.toEntities
 import com.grippo.dto.entity.example.toEntityOrNull
 import com.grippo.entity.domain.equipment.toDomain
+import com.grippo.services.backend.GrippoApi
+import com.grippo.services.database.dao.ExerciseExampleDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
 
 @Single(binds = [ExerciseExampleRepository::class])
 internal class ExerciseExampleRepositoryImpl(
-    private val api: com.grippo.services.backend.GrippoApi,
-    private val exerciseExampleDao: com.grippo.services.database.dao.ExerciseExampleDao,
+    private val api: GrippoApi,
+    private val exerciseExampleDao: ExerciseExampleDao,
 ) : ExerciseExampleRepository {
 
     override fun observeExerciseExamples(

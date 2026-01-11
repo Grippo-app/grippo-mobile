@@ -92,9 +92,9 @@ public interface ExerciseExampleDao {
       )
 
     ORDER BY
-      CASE WHEN :sorting = 'NewAdded'     THEN ee.createdAt END DESC,
-      CASE WHEN :sorting = 'RecentlyUsed' THEN ee.lastUsed END DESC,
-      CASE WHEN :sorting = 'MostlyUsed'   THEN ee.usageCount END DESC,
+      CASE WHEN :sorting = 'new_added'     THEN ee.createdAt END DESC,
+      CASE WHEN :sorting = 'recently_used' THEN ee.lastUsed END DESC,
+      CASE WHEN :sorting = 'mostly_used'   THEN ee.usageCount END DESC,
       ee.name ASC
     LIMIT CASE WHEN :limits IS NULL THEN -1 ELSE :limits END
     OFFSET CASE

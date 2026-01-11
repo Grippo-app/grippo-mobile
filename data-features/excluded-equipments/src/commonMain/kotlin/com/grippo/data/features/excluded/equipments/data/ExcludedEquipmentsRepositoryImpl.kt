@@ -3,6 +3,10 @@ package com.grippo.data.features.excluded.equipments.data
 import com.grippo.data.features.api.equipment.models.Equipment
 import com.grippo.data.features.excluded.equipments.domain.ExcludedEquipmentsRepository
 import com.grippo.entity.domain.equipment.toDomain
+import com.grippo.services.backend.GrippoApi
+import com.grippo.services.backend.dto.user.IdsBody
+import com.grippo.services.database.dao.UserActiveDao
+import com.grippo.services.database.dao.UserDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -12,9 +16,9 @@ import org.koin.core.annotation.Single
 
 @Single(binds = [ExcludedEquipmentsRepository::class])
 internal class ExcludedEquipmentsRepositoryImpl(
-    private val api: com.grippo.services.backend.GrippoApi,
-    private val userDao: com.grippo.services.database.dao.UserDao,
-    private val userActiveDao: com.grippo.services.database.dao.UserActiveDao
+    private val api: GrippoApi,
+    private val userDao: UserDao,
+    private val userActiveDao: UserActiveDao
 ) : ExcludedEquipmentsRepository {
 
     override fun observeExcludedEquipments(): Flow<List<Equipment>> {
@@ -30,9 +34,7 @@ internal class ExcludedEquipmentsRepositoryImpl(
 
         response.onSuccess {
             val profileId = getActiveProfileId() ?: return@onSuccess
-
             val ids = it.mapNotNull { m -> m.id }
-
             userDao.insertOrReplaceExcludedEquipments(profileId, ids)
         }
 
@@ -40,16 +42,12 @@ internal class ExcludedEquipmentsRepositoryImpl(
     }
 
     override suspend fun setExcludedEquipments(ids: List<String>): Result<Unit> {
-        val response = api.postExcludedEquipments(com.grippo.services.backend.dto.user.IdsBody(ids))
+        val response = api.postExcludedEquipments(IdsBody(ids))
 
         response.onSuccess {
             val profileId = getActiveProfileId() ?: return@onSuccess
-
-            val ids = api.getExcludedEquipments()
-                .getOrNull()
-                ?.mapNotNull { it.id }
-                ?: return@onSuccess
-
+            val equipments = api.getExcludedEquipments().getOrNull() ?: return@onSuccess
+            val ids = equipments.mapNotNull { it.id }
             userDao.insertOrReplaceExcludedEquipments(profileId, ids)
         }
 

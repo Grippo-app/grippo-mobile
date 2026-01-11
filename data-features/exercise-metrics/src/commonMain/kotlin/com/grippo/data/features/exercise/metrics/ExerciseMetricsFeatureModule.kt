@@ -1,8 +1,9 @@
 package com.grippo.data.features.exercise.metrics
 
+import com.grippo.services.backend.BackendModule
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
 
-@Module(includes = [com.grippo.services.backend.BackendModule::class])
+@Module(includes = [BackendModule::class])
 @ComponentScan
 public class ExerciseMetricsFeatureModule
