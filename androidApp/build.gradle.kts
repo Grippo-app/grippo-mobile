@@ -16,10 +16,10 @@ android {
     }
 
     signingConfigs.create("release") {
-        storeFile = file("$rootDir/build-logic/keys/developer")
-        storePassword = "qwerty123"
-        keyAlias = "developer"
-        keyPassword = "qwerty123"
+        storeFile = file("YOUR_STORE_FILE")
+        storePassword = "YOUR_STORE_PASSWORD"
+        keyAlias = "YOUR_KEY_ALIAS"
+        keyPassword = "YOUR_KEY_PASSWORD"
     }
 
     buildTypes {
