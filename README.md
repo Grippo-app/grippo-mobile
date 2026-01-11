@@ -8,7 +8,7 @@
 </div>
 
 
-### Build project
+#### Requirements to build
 ```agsl
 ./gradlew syncSecureConfigs
 ```
