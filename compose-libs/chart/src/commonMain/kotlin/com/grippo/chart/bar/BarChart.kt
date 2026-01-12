@@ -484,7 +484,7 @@ public fun BarChart(
                         val tail = bounds[selected.last()] ?: break
                         if (lastB.left >= tail.right + minGapPx) break
                         if (selected.size == 1) break
-                        selected.removeLast()
+                        selected.removeAt(selected.lastIndex)
                     }
                     selected.add(lastIdx)
                 }

@@ -269,7 +269,7 @@ public fun AreaChart(
                         val tail = bounds[selected.last()] ?: break
                         if (lastB.left >= tail.right + minGapPx) break
                         if (selected.size == 1) break // keep the very first if it's the only one
-                        selected.removeLast()
+                        selected.removeAt(selected.lastIndex)
                     }
                     selected.add(lastIdx)
                 }

@@ -385,7 +385,7 @@ private fun DrawScope.drawHeatmap(
                 while (selected.isNotEmpty()) {
                     val tail = boxes[selected.last()]
                     if (lastB.left >= tail.right + minGapPx) break
-                    selected.removeLast()
+                    selected.removeAt(selected.lastIndex)
                 }
                 selected.add(boxes.lastIndex)
             }
