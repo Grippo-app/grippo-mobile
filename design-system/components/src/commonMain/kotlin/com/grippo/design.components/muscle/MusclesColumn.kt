@@ -34,7 +34,7 @@ public fun MusclesColumn(
             modifier = Modifier.fillMaxWidth(),
             text = item.type.title().text(),
             style = AppTokens.typography.h4(),
-            color = AppTokens.colors.text.tertiary,
+            color = AppTokens.colors.text.secondary,
             textAlign = TextAlign.Center
         )
 

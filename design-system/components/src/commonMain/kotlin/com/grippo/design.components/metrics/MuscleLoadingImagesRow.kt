@@ -63,6 +63,9 @@ public fun MuscleLoadingImagesRow(
             imageVector = images.front,
             contentDescription = null
         )
+
+        Spacer(Modifier.weight(0.2f))
+
         Image(
             modifier = Modifier.weight(0.8f),
             imageVector = images.back,
