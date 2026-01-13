@@ -76,9 +76,7 @@ internal fun PerformanceTrendScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                contentPadding = PaddingValues(
-                    horizontal = AppTokens.dp.dialog.horizontalPadding,
-                ),
+                contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
             ) {
                 item(key = "chart") {

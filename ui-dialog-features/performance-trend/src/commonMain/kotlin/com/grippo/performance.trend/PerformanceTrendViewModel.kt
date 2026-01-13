@@ -19,7 +19,10 @@ public class PerformanceTrendViewModel(
     trainingFeature: TrainingFeature,
     private val performanceTrendUseCase: PerformanceTrendUseCase,
 ) : BaseViewModel<PerformanceTrendDialogState, PerformanceTrendDirection, PerformanceTrendLoader>(
-    PerformanceTrendDialogState(range = range, metricType = metricType)
+    PerformanceTrendDialogState(
+        range = range,
+        metricType = metricType
+    )
 ), PerformanceTrendContract {
 
     private companion object {

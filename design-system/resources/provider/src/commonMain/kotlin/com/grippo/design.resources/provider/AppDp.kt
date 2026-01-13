@@ -173,7 +173,6 @@ public data object AppDp {
         val strength: Strength = Strength
         val lastTraining: LastTraining = LastTraining
         val trainingSummary: TrainingSummary = TrainingSummary
-        val performanceTrend: PerformanceTrend = PerformanceTrend
 
         public data object Highlights {
             val icon: Dp = AppDp.icon.medium
@@ -210,10 +209,6 @@ public data object AppDp {
 
         public data object Distribution {
             val size: Dp = icon.xxxLarge
-        }
-
-        public data object PerformanceTrend {
-            val height: Dp = icon.xxxLarge
         }
 
         public data object Volume {

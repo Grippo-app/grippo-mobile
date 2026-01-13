@@ -54,7 +54,9 @@ public fun PerformanceTrendCard(
             PerformanceMetricTypeState.Repetitions -> AppTokens.strings.res(Res.string.repetitions)
             PerformanceMetricTypeState.Intensity -> AppTokens.strings.res(Res.string.intensity_chip)
         }
+
         val delta = formatTrendDelta(metric.deltaPercentage)
+
         val vsAverage = AppTokens.strings.res(Res.string.highlight_vs_average)
 
         val (current, average, bestLabel) = when (metric) {
