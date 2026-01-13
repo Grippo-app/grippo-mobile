@@ -7,6 +7,7 @@ import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.formatters.HeightFormatState
 import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.menu.MenuItemState
+import com.grippo.core.state.metrics.PerformanceMetricTypeState
 import com.grippo.core.state.profile.ProfileMenu
 import com.grippo.core.state.profile.SettingsMenu
 import com.grippo.core.state.trainings.IterationFocusState
@@ -57,6 +58,15 @@ public sealed class DialogConfig(
     @Serializable
     public data class TrainingStreak(
         val range: DateRange,
+    ) : DialogConfig(
+        onDismiss = null,
+        dismissBySwipe = true
+    )
+
+    @Serializable
+    public data class PerformanceTrend(
+        val range: DateRange,
+        val metricType: PerformanceMetricTypeState,
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true

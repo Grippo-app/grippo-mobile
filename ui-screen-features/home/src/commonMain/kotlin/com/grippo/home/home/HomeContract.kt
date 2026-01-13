@@ -1,6 +1,7 @@
 package com.grippo.home.home
 
 import androidx.compose.runtime.Immutable
+import com.grippo.core.state.metrics.PerformanceMetricTypeState
 
 @Immutable
 internal interface HomeContract {
@@ -10,6 +11,7 @@ internal interface HomeContract {
     fun onOpenExample(id: String)
     fun onOpenMuscleLoading()
     fun onOpenTrainingStreak()
+    fun onPerformanceMetricClick(type: PerformanceMetricTypeState)
     fun onOpenWeeklyDigest()
     fun onOpenMonthlyDigest()
     fun onBack()
@@ -21,6 +23,7 @@ internal interface HomeContract {
         override fun onOpenTrainings() {}
         override fun onOpenMuscleLoading() {}
         override fun onOpenTrainingStreak() {}
+        override fun onPerformanceMetricClick(type: PerformanceMetricTypeState) {}
         override fun onOpenExample(id: String) {}
         override fun onOpenWeeklyDigest() {}
         override fun onOpenMonthlyDigest() {}

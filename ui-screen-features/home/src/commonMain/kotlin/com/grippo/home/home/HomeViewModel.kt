@@ -1,6 +1,7 @@
 package com.grippo.home.home
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.metrics.PerformanceMetricTypeState
 import com.grippo.core.state.profile.ProfileMenu
 import com.grippo.core.state.profile.SettingsMenu
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
@@ -106,6 +107,15 @@ internal class HomeViewModel(
 
     override fun onStartTraining() {
         navigateTo(HomeDirection.AddTraining)
+    }
+
+    override fun onPerformanceMetricClick(type: PerformanceMetricTypeState) {
+        val dialog = DialogConfig.PerformanceTrend(
+            range = defaultRange(),
+            metricType = type
+        )
+
+        dialogController.show(dialog)
     }
 
     override fun onOpenMuscleLoading() {

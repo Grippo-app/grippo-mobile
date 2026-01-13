@@ -132,7 +132,8 @@ internal fun HomeScreen(
                             performance = state.performance,
                             onExampleClick = contract::onOpenExample,
                             onMuscleLoadingClick = contract::onOpenMuscleLoading,
-                            onStreakClick = contract::onOpenTrainingStreak
+                            onStreakClick = contract::onOpenTrainingStreak,
+                            onPerformanceMetricClick = contract::onPerformanceMetricClick
                         )
                     }
                 }

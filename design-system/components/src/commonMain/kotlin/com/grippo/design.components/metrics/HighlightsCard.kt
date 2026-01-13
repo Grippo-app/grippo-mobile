@@ -56,7 +56,8 @@ public fun HighlightsCard(
     performance: List<PerformanceMetricState>,
     onExampleClick: (id: String) -> Unit,
     onStreakClick: () -> Unit,
-    onMuscleLoadingClick: () -> Unit
+    onMuscleLoadingClick: () -> Unit,
+    onPerformanceMetricClick: (type: PerformanceMetricTypeState) -> Unit
 ) {
     val storyType = run {
         val dominantMetric = performance.firstOrNull()
@@ -194,8 +195,13 @@ public fun HighlightsCard(
                     horizontalArrangement = Arrangement.spacedBy(spacing),
                 ) {
                     metrics.forEach { metric ->
+                        val onPerformanceMetricClickProvider = remember {
+                            { onPerformanceMetricClick.invoke(metric.type) }
+                        }
                         PerformanceTrendCard(
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier
+                                .weight(1f)
+                                .scalableClick(onClick = onPerformanceMetricClickProvider),
                             metric = metric
                         )
                     }
@@ -228,7 +234,8 @@ private fun HighlightsCardFullPreview() {
             performance = stubPerformanceMetrics(),
             onExampleClick = {},
             onStreakClick = {},
-            onMuscleLoadingClick = {}
+            onMuscleLoadingClick = {},
+            onPerformanceMetricClick = {},
         )
     }
 }
@@ -245,7 +252,8 @@ private fun HighlightsCardSpotlightOnlyPreview() {
             performance = stubPerformanceMetrics().take(5),
             onExampleClick = {},
             onStreakClick = {},
-            onMuscleLoadingClick = {}
+            onMuscleLoadingClick = {},
+            onPerformanceMetricClick = {},
         )
     }
 }
@@ -263,6 +271,7 @@ private fun HighlightsCardMinimalPreview() {
             onExampleClick = {},
             onMuscleLoadingClick = {},
             onStreakClick = {},
+            onPerformanceMetricClick = {},
         )
     }
 }
