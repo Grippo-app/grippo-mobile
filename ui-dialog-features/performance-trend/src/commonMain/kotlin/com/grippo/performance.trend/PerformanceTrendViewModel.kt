@@ -26,7 +26,7 @@ public class PerformanceTrendViewModel(
 ), PerformanceTrendContract {
 
     private companion object {
-        private const val HISTORY_LIMIT = 6
+        private const val HISTORY_LIMIT = 10
     }
 
     init {

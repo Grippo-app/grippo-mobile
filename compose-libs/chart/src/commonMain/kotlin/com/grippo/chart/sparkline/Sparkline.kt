@@ -20,8 +20,24 @@ public fun Sparkline(
         val ptsIn = data.points
         if (ptsIn.isEmpty()) return@Canvas
 
-        // Bounds (no external padding)
-        val chart = Rect(0f, 0f, size.width, size.height)
+        val dotsPadding = when (val d = style.dots) {
+            is SparklineStyle.Dots.None -> 0f
+            is SparklineStyle.Dots.Visible -> d.radius.toPx()
+        }
+        val extremesPadding = when (val ex = style.extremes) {
+            is SparklineStyle.Extremes.None -> 0f
+            is SparklineStyle.Extremes.Visible -> ex.radius.toPx()
+        }
+        val padding = max(dotsPadding, extremesPadding)
+
+        // Bounds with internal padding for dots/extremes
+        val chart = Rect(
+            padding,
+            padding,
+            size.width - padding,
+            size.height - padding
+        )
+
         if (chart.width <= 0f || chart.height <= 0f) return@Canvas
 
         // Domain
