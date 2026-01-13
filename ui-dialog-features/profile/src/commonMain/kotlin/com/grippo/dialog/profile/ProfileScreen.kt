@@ -77,27 +77,28 @@ internal fun ProfileScreen(
             items = profileMenu,
             onClick = contract::onProfileMenuClick
         )
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        val settingsMenu = SettingsMenu.entries.map {
-            it to MenuItem(UiText.Str(it.text()), it.icon())
-        }.toPersistentList()
-
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = AppTokens.dp.contentPadding.subContent),
-            text = SettingsMenu.title(),
-            style = AppTokens.typography.b14Semi(),
-            color = AppTokens.colors.text.secondary
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-        Menu(
-            items = settingsMenu,
-            onClick = contract::onSettingsMenuClick
-        )
+//        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+//
+//        val settingsMenu = SettingsMenu.entries.map {
+//            it to MenuItem(UiText.Str(it.text()), it.icon())
+//        }.toPersistentList()
+//
+//        Text(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(start = AppTokens.dp.contentPadding.subContent),
+//            text = SettingsMenu.title(),
+//            style = AppTokens.typography.b14Semi(),
+//            color = AppTokens.colors.text.secondary
+//        )
+//
+//        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+//
+//        Menu(
+//            items = settingsMenu,
+//            onClick = contract::onSettingsMenuClick
+//        )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
