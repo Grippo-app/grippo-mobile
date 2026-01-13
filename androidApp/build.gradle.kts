@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.grippo.android"
-        versionCode = 2
+        versionCode = 3
         versionName = "1.0"
         multiDexEnabled = true
         manifestPlaceholders["GOOGLE_SERVER_CLIENT_ID"] = "YOUR_GOOGLE_SERVER_CLIENT_ID"
