@@ -2,7 +2,6 @@ package com.grippo.statistics
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.metrics.ExerciseDistributionUseCase
-import com.grippo.data.features.api.metrics.MuscleLoadTimelineUseCase
 import com.grippo.data.features.api.metrics.MuscleLoadingSummaryUseCase
 import com.grippo.data.features.api.metrics.TrainingTotalUseCase
 import com.grippo.data.features.api.metrics.VolumeSeriesUseCase
@@ -20,7 +19,6 @@ public class StatisticsViewModel(
     private val exerciseDistributionUseCase: ExerciseDistributionUseCase,
     private val volumeSeriesUseCase: VolumeSeriesUseCase,
     private val trainingTotalUseCase: TrainingTotalUseCase,
-    private val muscleLoadTimelineUseCase: MuscleLoadTimelineUseCase,
 ) : BaseViewModel<StatisticsState, StatisticsDirection, StatisticsLoader>(
     StatisticsState(
         mode = when (config) {
@@ -89,10 +87,6 @@ public class StatisticsViewModel(
             .fromTrainings(trainings)
             .toState()
 
-        val heatmap = muscleLoadTimelineUseCase
-            .fromTrainings(trainings, range)
-            ?.toState()
-
         val volume = volumeSeriesUseCase
             .fromTrainings(trainings)
             .toState()
@@ -106,7 +100,6 @@ public class StatisticsViewModel(
                 weightTypeDistribution = weightTypeDistribution,
                 forceTypeDistribution = forceTypeDistribution,
                 muscleLoad = muscleLoad,
-                temporalHeatmap = heatmap,
             )
         }
     }
@@ -150,7 +143,6 @@ public class StatisticsViewModel(
                 weightTypeDistribution = weightTypeDistribution,
                 forceTypeDistribution = forceTypeDistribution,
                 muscleLoad = muscleLoad,
-                temporalHeatmap = null,
             )
         }
     }
@@ -165,7 +157,6 @@ public class StatisticsViewModel(
                 weightTypeDistribution = null,
                 forceTypeDistribution = null,
                 muscleLoad = null,
-                temporalHeatmap = null,
             )
         }
     }

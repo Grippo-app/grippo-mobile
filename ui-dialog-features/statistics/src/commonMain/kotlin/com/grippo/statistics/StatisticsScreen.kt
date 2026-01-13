@@ -19,7 +19,6 @@ import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.metrics.stubCategoryDistribution
 import com.grippo.core.state.metrics.stubForceDistribution
 import com.grippo.core.state.metrics.stubMuscleLoadSummary
-import com.grippo.core.state.metrics.stubMuscleLoadTimeline
 import com.grippo.core.state.metrics.stubTotal
 import com.grippo.core.state.metrics.stubVolumeSeries
 import com.grippo.core.state.metrics.stubWeightDistribution
@@ -28,7 +27,6 @@ import com.grippo.design.components.metrics.ExerciseDistributionChart
 import com.grippo.design.components.metrics.ForceTypeDistributionChart
 import com.grippo.design.components.metrics.MuscleLoading
 import com.grippo.design.components.metrics.MuscleLoadingMode
-import com.grippo.design.components.metrics.MuscleTemporalHeatmapCard
 import com.grippo.design.components.metrics.TrainingTotalSection
 import com.grippo.design.components.metrics.VolumeMetricChart
 import com.grippo.design.components.metrics.WeightTypeDistributionChart
@@ -179,19 +177,6 @@ internal fun StatisticsScreen(
                         }
                     }
 
-                state.temporalHeatmap
-                    ?.takeIf { it.values01.isNotEmpty() && it.rows > 0 && it.cols > 0 }
-                    ?.let { data ->
-                        item(key = "temporal_heatmap") {
-                            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
-                            MuscleTemporalHeatmapCard(
-                                modifier = Modifier.fillMaxWidth(),
-                                state = data,
-                            )
-                        }
-                    }
-
                 item("bottom_space") {
                     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
 
@@ -215,7 +200,6 @@ private fun ScreenPreview() {
                 weightTypeDistribution = stubWeightDistribution(),
                 forceTypeDistribution = stubForceDistribution(),
                 muscleLoad = stubMuscleLoadSummary(),
-                temporalHeatmap = stubMuscleLoadTimeline(),
             ),
             loaders = persistentSetOf(),
             contract = StatisticsContract.Empty
