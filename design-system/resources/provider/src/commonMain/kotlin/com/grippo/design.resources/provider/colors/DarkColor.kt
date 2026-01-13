@@ -244,6 +244,7 @@ public object DarkColor : AppColor {
             override val lineA = AppPalette.Blue.P400
             override val lineB = AppPalette.Unique.Green
             override val fillBase = AppPalette.Blue.P400
+            override val dot =  AppPalette.Common.White
         }
         override val area = object : AppColor.Charts.AreaColors {
             override val lineA = AppPalette.Unique.Green

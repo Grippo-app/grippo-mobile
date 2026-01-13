@@ -72,7 +72,10 @@ private fun performanceSparklineStyle(): SparklineStyle {
             }
         ),
         baseline = SparklineStyle.Baseline.None,
-        dots = SparklineStyle.Dots.Visible(radius = 2.dp, color = null),
+        dots = SparklineStyle.Dots.Visible(
+            radius = 3.dp,
+            color = AppTokens.colors.charts.sparkline.dot,
+        ),
         extremes = SparklineStyle.Extremes.Visible(
             minColor = AppTokens.colors.semantic.warning,
             maxColor = AppTokens.colors.semantic.success,
