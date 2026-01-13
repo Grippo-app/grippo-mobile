@@ -168,6 +168,8 @@
     <string name="muscle_loading">Мышечная нагрузка</string>
     <string name="value_training_streak">%1$s — серия тренировок</string>
     <string name="training_streak">Серия тренировок</string>
+    <string name="value_performance_trend">%1$s — тренд %2$s</string>
+    <string name="performance_trend">Тренд %1$s</string>
     <string name="training_streak_confidence_title">Стабильность стрика</string>
     <string name="training_streak_confidence_value">%1$d% уверенности</string>
     <string name="training_streak_timeline_title">Прогресс по периодам</string>
