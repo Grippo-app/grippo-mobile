@@ -11,6 +11,10 @@ import com.grippo.design.resources.provider.icons.Intensity
 import com.grippo.design.resources.provider.icons.Repeat
 import com.grippo.design.resources.provider.icons.Timer
 import com.grippo.design.resources.provider.icons.Volume
+import com.grippo.toolkit.date.utils.DateRange
+import com.grippo.toolkit.date.utils.DateTimeUtils
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration.Companion.minutes
 
@@ -34,6 +38,12 @@ public enum class PerformanceMetricTypeState {
         }
     }
 }
+
+@Immutable
+public data class PerformanceTrendHistoryEntry(
+    val range: DateRange,
+    val metric: PerformanceMetricState,
+)
 
 @Immutable
 public sealed interface PerformanceMetricState {
@@ -103,6 +113,23 @@ public enum class PerformanceTrendStatusState {
     Improved,
     Stable,
     Declined
+}
+
+public fun stubPerformanceTrendHistory(): ImmutableList<PerformanceTrendHistoryEntry> {
+    return persistentListOf(
+        PerformanceTrendHistoryEntry(
+            range = DateTimeUtils.trailingWeek(),
+            metric = stubPerformanceMetrics().random()
+        ),
+        PerformanceTrendHistoryEntry(
+            range = DateTimeUtils.trailingWeek(),
+            metric = stubPerformanceMetrics().random()
+        ),
+        PerformanceTrendHistoryEntry(
+            range = DateTimeUtils.trailingWeek(),
+            metric = stubPerformanceMetrics().random()
+        ),
+    )
 }
 
 public fun stubPerformanceMetrics(): List<PerformanceMetricState> {
