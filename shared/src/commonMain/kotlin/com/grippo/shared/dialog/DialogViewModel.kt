@@ -56,6 +56,11 @@ internal class DialogViewModel(
     private fun show(config: DialogConfig) {
         val stack = state.value.stack
 
+        // Sensitive to fix crash double open the same alert
+        if (stack.any { it.config == config }) {
+            return
+        }
+
         val newStack = stack + DialogEntry(config, pendingResult = null)
 
         val destination =
