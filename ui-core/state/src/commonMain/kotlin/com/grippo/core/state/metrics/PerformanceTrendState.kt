@@ -11,8 +11,10 @@ import com.grippo.design.resources.provider.icons.Intensity
 import com.grippo.design.resources.provider.icons.Repeat
 import com.grippo.design.resources.provider.icons.Timer
 import com.grippo.design.resources.provider.icons.Volume
+import kotlinx.serialization.Serializable
 import kotlin.time.Duration.Companion.minutes
 
+@Serializable
 @Immutable
 public enum class PerformanceMetricTypeState {
     Duration,

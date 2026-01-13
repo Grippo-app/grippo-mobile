@@ -168,6 +168,8 @@
     <string name="muscle_loading">Muscle loading</string>
     <string name="value_training_streak">%1$s training streak</string>
     <string name="training_streak">Training streak</string>
+    <string name="value_performance_trend">%1$s — %2$s trend</string>
+    <string name="performance_trend">%1$s trend</string>
     <string name="training_streak_confidence_title">Consistency insight</string>
     <string name="training_streak_confidence_value">%1$d% confidence</string>
     <string name="training_streak_timeline_title">Timeline progress</string>

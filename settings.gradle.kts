@@ -94,6 +94,7 @@ include(":ui-dialog-features:profile")
 include(":ui-dialog-features:statistics")
 include(":ui-dialog-features:muscle-loading")
 include(":ui-dialog-features:training-streak")
+include(":ui-dialog-features:performance-trend")
 
 include(":toolkit:context")
 include(":toolkit:localization")
