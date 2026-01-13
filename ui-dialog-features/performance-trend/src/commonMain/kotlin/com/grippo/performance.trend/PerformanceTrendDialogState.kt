@@ -11,6 +11,5 @@ import kotlinx.collections.immutable.persistentListOf
 public data class PerformanceTrendDialogState(
     val range: DateRange,
     val metricType: PerformanceMetricTypeState,
-    val chartPoints: ImmutableList<Float> = persistentListOf(),
     val history: ImmutableList<PerformanceTrendHistoryEntry> = persistentListOf(),
 )

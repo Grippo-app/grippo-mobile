@@ -1,7 +1,6 @@
 package com.grippo.performance.trend
 
 import com.grippo.core.foundation.BaseViewModel
-import com.grippo.core.state.metrics.PerformanceMetricState
 import com.grippo.core.state.metrics.PerformanceMetricTypeState
 import com.grippo.core.state.metrics.PerformanceTrendHistoryEntry
 import com.grippo.data.features.api.metrics.PerformanceTrendUseCase
@@ -36,69 +35,27 @@ public class PerformanceTrendViewModel(
 
     private suspend fun providePerformance(trainings: List<Training>) {
         if (trainings.isEmpty()) {
-            update { it.copy(chartPoints = persistentListOf(), history = persistentListOf()) }
+            update { it.copy(history = persistentListOf()) }
             return
         }
 
-        val metrics = performanceTrendUseCase
-            .fromTrainings(trainings)
-            .toState()
-
-        val metric = metrics.firstOrNull { it.type == state.value.metricType }
-
-        val chartPoints = if (metric == null) {
-            persistentListOf()
-        } else {
-            buildChartPoints(trainings, state.value.metricType)
-        }
-        val history = if (metric == null) {
-            persistentListOf()
-        } else {
-            buildHistory(trainings, state.value.metricType, metric)
-        }
-
-        update { it.copy(chartPoints = chartPoints, history = history) }
+        val history = buildHistory(trainings)
+        update { it.copy(history = history) }
     }
 
-    private fun buildChartPoints(
-        trainings: List<Training>,
-        type: PerformanceMetricTypeState,
-    ): ImmutableList<Float> {
-        val values = trainings
-            .sortedBy { it.createdAt }
-            .mapNotNull { training -> valueOf(training, type) }
-
-        if (values.size < 2) {
-            return persistentListOf()
-        }
-
-        return values.toPersistentList()
-    }
-
-    private suspend fun buildHistory(
-        trainings: List<Training>,
-        type: PerformanceMetricTypeState,
-        currentMetric: PerformanceMetricState,
-    ): ImmutableList<PerformanceTrendHistoryEntry> {
+    private suspend fun buildHistory(trainings: List<Training>): ImmutableList<PerformanceTrendHistoryEntry> {
         if (trainings.size < 2) return persistentListOf()
         val sorted = trainings.sortedBy { it.createdAt }
         val history = mutableListOf<PerformanceTrendHistoryEntry>()
 
-        history.add(
-            PerformanceTrendHistoryEntry(
-                range = state.value.range,
-                metric = currentMetric
-            )
-        )
-
-        for (index in sorted.lastIndex - 1 downTo 1) {
+        for (index in sorted.lastIndex downTo 1) {
             if (history.size >= HISTORY_LIMIT) break
             val slice = sorted.subList(0, index + 1)
 
             val metric = performanceTrendUseCase
                 .fromTrainings(slice)
                 .toState()
-                .firstOrNull { it.type == type }
+                .firstOrNull { it.type == state.value.metricType }
 
             if (metric != null) {
                 history.add(
@@ -114,36 +71,6 @@ public class PerformanceTrendViewModel(
         }
 
         return history.toPersistentList()
-    }
-
-    private fun valueOf(training: Training, type: PerformanceMetricTypeState): Float? {
-        return when (type) {
-            PerformanceMetricTypeState.Duration -> {
-                val minutes = training.duration.inWholeSeconds.toFloat() / 60f
-                minutes.takeIf { it > 0f }
-            }
-
-            PerformanceMetricTypeState.Volume -> {
-                training.volume.takeIf { it > 0f }
-            }
-
-            PerformanceMetricTypeState.Density -> {
-                val minutes = training.duration.inWholeSeconds.toFloat() / 60f
-                if (minutes <= 0f) return null
-                val volume = training.volume
-                if (volume <= 0f) return null
-                (volume / minutes).takeIf { it > 0f }
-            }
-
-            PerformanceMetricTypeState.Repetitions -> {
-                val repetitions = training.repetitions.toFloat()
-                repetitions.takeIf { it > 0f }
-            }
-
-            PerformanceMetricTypeState.Intensity -> {
-                training.intensity.takeIf { it > 0f }
-            }
-        }
     }
 
     override fun onBack() {

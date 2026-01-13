@@ -12,22 +12,28 @@ import com.grippo.chart.sparkline.Sparkline
 import com.grippo.chart.sparkline.SparklineData
 import com.grippo.chart.sparkline.SparklinePoint
 import com.grippo.chart.sparkline.SparklineStyle
+import com.grippo.core.state.metrics.PerformanceMetricState
+import com.grippo.core.state.metrics.PerformanceTrendHistoryEntry
+import com.grippo.core.state.metrics.stubPerformanceTrendHistory
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 public fun PerformanceTrendChartSection(
     modifier: Modifier = Modifier,
-    chartPoints: ImmutableList<Float>,
+    history: ImmutableList<PerformanceTrendHistoryEntry>,
 ) {
-    val data = remember(chartPoints) {
-        if (chartPoints.size < 2) {
+    val data = remember(history) {
+        val values = history
+            .asReversed()
+            .mapNotNull { it.metric.chartValue() }
+
+        if (values.size < 2) {
             null
         } else {
-            val points = chartPoints.mapIndexed { index, value ->
+            val points = values.mapIndexed { index, value ->
                 SparklinePoint(index.toFloat(), value)
             }
             SparklineData(points = points)
@@ -77,12 +83,37 @@ private fun performanceSparklineStyle(): SparklineStyle {
     )
 }
 
+private fun PerformanceMetricState.chartValue(): Float? {
+    return when (this) {
+        is PerformanceMetricState.Duration -> {
+            val minutes = current.inWholeSeconds.toFloat() / 60f
+            minutes.takeIf { it > 0f }
+        }
+
+        is PerformanceMetricState.Volume -> {
+            current.value?.takeIf { it > 0f }
+        }
+
+        is PerformanceMetricState.Density -> {
+            current.value?.takeIf { it > 0f }
+        }
+
+        is PerformanceMetricState.Repetitions -> {
+            current.value?.toFloat()?.takeIf { it > 0f }
+        }
+
+        is PerformanceMetricState.Intensity -> {
+            current.value?.takeIf { it > 0f }
+        }
+    }
+}
+
 @AppPreview
 @Composable
 private fun PerformanceTrendChartSectionPreview() {
     PreviewContainer {
         PerformanceTrendChartSection(
-            chartPoints = persistentListOf(4f, 6f, 5f, 8f, 9f, 7f)
+            history = stubPerformanceTrendHistory()
         )
     }
 }

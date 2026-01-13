@@ -7,10 +7,16 @@ import com.grippo.core.state.formatters.IntensityFormatState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.design.core.AppTokens
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.density
+import com.grippo.design.resources.provider.duration
 import com.grippo.design.resources.provider.icons.Intensity
 import com.grippo.design.resources.provider.icons.Repeat
 import com.grippo.design.resources.provider.icons.Timer
 import com.grippo.design.resources.provider.icons.Volume
+import com.grippo.design.resources.provider.intensity_chip
+import com.grippo.design.resources.provider.repetitions
+import com.grippo.design.resources.provider.volume
 import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
@@ -35,6 +41,17 @@ public enum class PerformanceMetricTypeState {
             Density -> AppTokens.icons.Volume
             Repetitions -> AppTokens.icons.Repeat
             Intensity -> AppTokens.icons.Intensity
+        }
+    }
+
+    @Composable
+    public fun label(): String {
+        return when (this) {
+            Duration -> AppTokens.strings.res(Res.string.duration)
+            Volume -> AppTokens.strings.res(Res.string.volume)
+            Density -> AppTokens.strings.res(Res.string.density)
+            Repetitions -> AppTokens.strings.res(Res.string.repetitions)
+            Intensity -> AppTokens.strings.res(Res.string.intensity_chip)
         }
     }
 }
