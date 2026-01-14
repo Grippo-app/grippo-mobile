@@ -22,7 +22,7 @@ public class MuscleLoadingSummaryUseCase(
     private val exerciseExampleFeature: ExerciseExampleFeature,
     private val muscleFeature: MuscleFeature,
 ) {
-    private companion object Companion {
+    private companion object {
         private const val EPS = 1e-3f
 
         private const val COMPLEXITY_SHARE_THRESHOLD_PERCENT = 5f
@@ -45,6 +45,11 @@ public class MuscleLoadingSummaryUseCase(
         private const val EXAMPLE_BODY_WEIGHT_FACTOR = 1.03f
 
         private const val SHARE_DAMPING_ALPHA = 1.6f
+
+        private const val FATIGUE_IMPACT = 0.35f
+
+        private const val PUSH_TINY_SHARE_MAX_PERCENT = 4f
+        private const val PUSH_TINY_SHARE_FACTOR = 0.35f
     }
 
     public suspend fun fromTrainings(trainings: List<Training>): MuscleLoadSummary {
@@ -77,7 +82,8 @@ public class MuscleLoadingSummaryUseCase(
             baseLoad = ::exerciseStimulus,
             applyComplexityFactor = true,
             applyExampleFactors = true,
-            applyMuscleFactors = true,
+            applyFatigueFactor = true,
+            applyForceTypeRules = true,
             fatigueFactorByMuscle = fatigueFactorByMuscle,
         )
 
@@ -87,7 +93,8 @@ public class MuscleLoadingSummaryUseCase(
             baseLoad = ::exerciseVolume,
             applyComplexityFactor = false,
             applyExampleFactors = false,
-            applyMuscleFactors = false,
+            applyFatigueFactor = false,
+            applyForceTypeRules = true,
             fatigueFactorByMuscle = fatigueFactorByMuscle,
         )
 
@@ -98,12 +105,9 @@ public class MuscleLoadingSummaryUseCase(
         val examples = loadExamples(setOf(exampleId))
         val groups = loadMuscleGroups()
 
-        val fatigueFactorByMuscle = buildFatigueFactorByMuscle(groups)
-
         val stimulusLoad = computeExampleLoad(
             example = examples[exampleId],
-            applyMuscleFactors = true,
-            fatigueFactorByMuscle = fatigueFactorByMuscle,
+            applyForceTypeRules = true,
         )
 
         val volumeLoad = emptyMap<MuscleEnum, Float>()
@@ -129,8 +133,8 @@ public class MuscleLoadingSummaryUseCase(
         groups.forEach { group ->
             group.muscles.forEach { muscle ->
                 val capacity = FATIGUE_CAPACITY_BASE + FATIGUE_CAPACITY_RANGE * muscle.size
-                val sensMultiplier = FATIGUE_SENS_BASE + FATIGUE_SENS_RANGE * muscle.sensitivity
-                val factor = sensMultiplier / capacity
+                val sens = FATIGUE_SENS_BASE + FATIGUE_SENS_RANGE * muscle.sensitivity
+                val factor = sens / capacity
                 if (factor.isFinite() && factor > 0f) {
                     map[muscle.type] = factor
                 }
@@ -146,7 +150,8 @@ public class MuscleLoadingSummaryUseCase(
         baseLoad: (List<Iteration>) -> Float,
         applyComplexityFactor: Boolean,
         applyExampleFactors: Boolean,
-        applyMuscleFactors: Boolean,
+        applyFatigueFactor: Boolean,
+        applyForceTypeRules: Boolean,
         fatigueFactorByMuscle: Map<MuscleEnum, Float>,
     ): Map<MuscleEnum, Float> {
         if (exercises.isEmpty()) return emptyMap()
@@ -170,35 +175,41 @@ public class MuscleLoadingSummaryUseCase(
 
             if (!totalShare.isFinite() || totalShare <= EPS) return@forEach
 
-            val complexityFactor = if (applyComplexityFactor) {
-                val normalizedPercents = bundles
-                    .map { it.percentage.coerceAtLeast(0).toFloat() }
-                    .map { share -> (share / totalShare) * 100f }
+            val originalPercents = bundles
+                .map { it.percentage.coerceAtLeast(0).toFloat() }
+                .map { share -> (share / totalShare) * 100f }
+
+            val (complexityFactor, enm) = if (applyComplexityFactor) {
+                val cleanPercents = originalPercents
                     .filter { it.isFinite() && it > EPS }
 
-                val enm = effectiveMuscleCount(
-                    percentages = normalizedPercents,
+                if (cleanPercents.isEmpty()) return@forEach
+
+                val e = effectiveMuscleCount(
+                    percentages = cleanPercents,
                     shareThresholdPercent = COMPLEXITY_SHARE_THRESHOLD_PERCENT,
                 )
 
-                complexityFactorFromEnm(
-                    enm = enm,
+                val cf = complexityFactorFromEnm(
+                    enm = e,
                     k = COMPLEXITY_K,
                     maxFactor = COMPLEXITY_MAX_FACTOR,
-                )
-            } else {
-                1f
-            }
+                ) ?: return@forEach
 
-            if (!complexityFactor.isFinite() || complexityFactor <= 0f) return@forEach
+                cf to e
+            } else {
+                1f to 1f
+            }
 
             val exampleFactor = if (applyExampleFactors) {
-                exampleEffortFactor(example)
+                exampleEffortFactor(
+                    example = example,
+                    complexityFactor = complexityFactor,
+                    enm = enm,
+                ) ?: return@forEach
             } else {
                 1f
             }
-
-            if (!exampleFactor.isFinite() || exampleFactor <= 0f) return@forEach
 
             val load = rawLoad * complexityFactor * exampleFactor
             if (!load.isFinite() || load <= EPS) return@forEach
@@ -217,50 +228,61 @@ public class MuscleLoadingSummaryUseCase(
             if (!weightsSum.isFinite() || weightsSum <= EPS) return@forEach
 
             bundles.forEachIndexed { index, bundle ->
-                val ratio = weights[index] / weightsSum
-                if (!ratio.isFinite() || ratio <= EPS) return@forEachIndexed
+                val dampedRatio = weights[index] / weightsSum
+                if (!dampedRatio.isFinite() || dampedRatio <= EPS) return@forEachIndexed
 
                 val muscle = bundle.muscle.type
-                val baseValueToAdd = load * ratio
-                if (!baseValueToAdd.isFinite() || baseValueToAdd <= 0f) return@forEachIndexed
+                val baseValue = load * dampedRatio
+                if (!baseValue.isFinite() || baseValue <= EPS) return@forEachIndexed
 
-                val valueToAdd = if (applyMuscleFactors) {
-                    val muscleFactor = fatigueFactorByMuscle[muscle] ?: return@forEachIndexed
-                    baseValueToAdd * muscleFactor
+                val forceTypePenalty = if (applyForceTypeRules) {
+                    forceTypePenalty(
+                        example = example,
+                        originalSharePercent = originalPercents.getOrNull(index) ?: 0f,
+                    )
                 } else {
-                    baseValueToAdd
+                    1f
                 }
 
-                if (!valueToAdd.isFinite() || valueToAdd <= 0f) return@forEachIndexed
+                if (!forceTypePenalty.isFinite() || forceTypePenalty <= 0f) return@forEachIndexed
 
-                val current = contributions[muscle] ?: 0f
-                val updated = current + valueToAdd
-                if (!updated.isFinite() || updated <= 0f) return@forEachIndexed
+                val fatiguePenalty = if (applyFatigueFactor) {
+                    val raw = fatigueFactorByMuscle[muscle] ?: return@forEachIndexed
+                    blendedFatigueMultiplier(raw) ?: return@forEachIndexed
+                } else {
+                    1f
+                }
+
+                val valueToAdd = baseValue * forceTypePenalty * fatiguePenalty
+                if (!valueToAdd.isFinite() || valueToAdd <= EPS) return@forEachIndexed
+
+                val updated = (contributions[muscle] ?: 0f) + valueToAdd
+                if (!updated.isFinite() || updated <= EPS) return@forEachIndexed
 
                 contributions[muscle] = updated
             }
         }
 
-        return contributions
-            .filterValues { it.isFinite() && it > EPS }
+        return contributions.filterValues { it.isFinite() && it > EPS }
     }
 
     private fun computeExampleLoad(
         example: ExerciseExample?,
-        applyMuscleFactors: Boolean,
-        fatigueFactorByMuscle: Map<MuscleEnum, Float>,
+        applyForceTypeRules: Boolean,
     ): Map<MuscleEnum, Float> {
         if (example == null) return emptyMap()
-        if (example.bundles.isEmpty()) return emptyMap()
-
         val bundles = example.bundles
+        if (bundles.isEmpty()) return emptyMap()
+
         val totalShare = bundles
             .sumOf { it.percentage.coerceAtLeast(0).toDouble() }
             .toFloat()
 
         if (!totalShare.isFinite() || totalShare <= EPS) return emptyMap()
 
-        val totals = mutableMapOf<MuscleEnum, Float>()
+        val originalPercents = bundles
+            .map { it.percentage.coerceAtLeast(0).toFloat() }
+            .map { share -> (share / totalShare) * 100f }
 
         val shares = bundles.map { it.percentage.coerceAtLeast(0).toFloat() }
         val ratios = shares.map { share ->
@@ -275,39 +297,68 @@ public class MuscleLoadingSummaryUseCase(
         val weightsSum = weights.sum()
         if (!weightsSum.isFinite() || weightsSum <= EPS) return emptyMap()
 
+        val totals = mutableMapOf<MuscleEnum, Float>()
+
         bundles.forEachIndexed { index, bundle ->
-            val ratio = weights[index] / weightsSum
-            if (!ratio.isFinite() || ratio <= EPS) return@forEachIndexed
+            val dampedRatio = weights[index] / weightsSum
+            if (!dampedRatio.isFinite() || dampedRatio <= EPS) return@forEachIndexed
 
-            val muscle = bundle.muscle.type
-            val baseValueToAdd = ratio * 100f
-            if (!baseValueToAdd.isFinite() || baseValueToAdd <= 0f) return@forEachIndexed
-
-            val valueToAdd = if (applyMuscleFactors) {
-                val muscleFactor = fatigueFactorByMuscle[muscle] ?: return@forEachIndexed
-                baseValueToAdd * muscleFactor
+            val forceTypePenalty = if (applyForceTypeRules) {
+                forceTypePenalty(
+                    example = example,
+                    originalSharePercent = originalPercents.getOrNull(index) ?: 0f,
+                )
             } else {
-                baseValueToAdd
+                1f
             }
 
-            if (!valueToAdd.isFinite() || valueToAdd <= 0f) return@forEachIndexed
+            if (!forceTypePenalty.isFinite() || forceTypePenalty <= 0f) return@forEachIndexed
 
-            val current = totals[muscle] ?: 0f
-            val updated = current + valueToAdd
-            if (!updated.isFinite() || updated <= 0f) return@forEachIndexed
+            val muscle = bundle.muscle.type
+            val valueToAdd = dampedRatio * 100f * forceTypePenalty
+            if (!valueToAdd.isFinite() || valueToAdd <= EPS) return@forEachIndexed
+
+            val updated = (totals[muscle] ?: 0f) + valueToAdd
+            if (!updated.isFinite() || updated <= EPS) return@forEachIndexed
 
             totals[muscle] = updated
         }
 
-        return totals
-            .filterValues { it.isFinite() && it > EPS }
+        return totals.filterValues { it.isFinite() && it > EPS }
     }
 
-    private fun exampleEffortFactor(example: ExerciseExample): Float {
-        val categoryFactor = when (example.value.category) {
-            CategoryEnum.COMPOUND -> EXAMPLE_COMPOUND_FACTOR
-            CategoryEnum.ISOLATION -> EXAMPLE_ISOLATION_FACTOR
-        }
+    private fun forceTypePenalty(
+        example: ExerciseExample,
+        originalSharePercent: Float,
+    ): Float {
+        if (!originalSharePercent.isFinite() || originalSharePercent <= EPS) return 1f
+
+        val forceType = example.value.forceType.toString()
+        val isPush = forceType.equals("push", ignoreCase = true)
+        if (!isPush) return 1f
+
+        val isTinyShare = originalSharePercent <= PUSH_TINY_SHARE_MAX_PERCENT
+        if (!isTinyShare) return 1f
+
+        return PUSH_TINY_SHARE_FACTOR
+    }
+
+    private fun blendedFatigueMultiplier(rawFatigue: Float): Float? {
+        if (!rawFatigue.isFinite() || rawFatigue <= 0f) return null
+
+        val m = 1f + (rawFatigue - 1f) * FATIGUE_IMPACT
+        if (!m.isFinite() || m <= 0f) return null
+
+        return m
+    }
+
+    private fun exampleEffortFactor(
+        example: ExerciseExample,
+        complexityFactor: Float,
+        enm: Float,
+    ): Float? {
+        if (!complexityFactor.isFinite() || complexityFactor <= 0f) return null
+        if (!enm.isFinite() || enm <= 0f) return null
 
         val weightTypeFactor = when (example.value.weightType) {
             WeightTypeEnum.FREE -> EXAMPLE_FREE_WEIGHT_FACTOR
@@ -315,8 +366,25 @@ public class MuscleLoadingSummaryUseCase(
             WeightTypeEnum.BODY_WEIGHT -> EXAMPLE_BODY_WEIGHT_FACTOR
         }
 
+        if (!weightTypeFactor.isFinite() || weightTypeFactor <= 0f) return null
+
+        val categoryFactor = when (example.value.category) {
+            CategoryEnum.COMPOUND -> {
+                val bonus = EXAMPLE_COMPOUND_FACTOR - 1f
+                val scaledBonus = bonus * (1f / complexityFactor)
+                val f = 1f + scaledBonus
+                if (f.isFinite() && f > 0f) f else return null
+            }
+
+            CategoryEnum.ISOLATION -> EXAMPLE_ISOLATION_FACTOR
+        }
+
+        if (!categoryFactor.isFinite() || categoryFactor <= 0f) return null
+
         val factor = categoryFactor * weightTypeFactor
-        return if (factor.isFinite() && factor > 0f) factor else 1f
+        if (!factor.isFinite() || factor <= 0f) return null
+
+        return factor
     }
 
     private fun exerciseStimulus(iterations: List<Iteration>): Float {
@@ -328,8 +396,7 @@ public class MuscleLoadingSummaryUseCase(
             else {
                 val weight = iteration.volume.coerceAtLeast(0f)
                 val intensity = intensityFactorFromWeight(weight)
-                if (!intensity.isFinite() || intensity <= 0f) 0.0
-                else reps.toDouble() * intensity.toDouble()
+                reps.toDouble() * intensity.toDouble()
             }
         }.toFloat()
 
@@ -374,9 +441,7 @@ public class MuscleLoadingSummaryUseCase(
         var sumSq = 0f
         chosen.forEach { s ->
             val p = s / total
-            if (p.isFinite() && p > 0f) {
-                sumSq += p * p
-            }
+            if (p.isFinite() && p > 0f) sumSq += p * p
         }
 
         if (!sumSq.isFinite() || sumSq <= EPS) return 1f
@@ -389,16 +454,18 @@ public class MuscleLoadingSummaryUseCase(
         enm: Float,
         k: Float,
         maxFactor: Float,
-    ): Float {
-        val e = if (enm.isFinite() && enm >= 1f) enm else 1f
-        val kk = if (k.isFinite() && k >= 0f) k else 0f
-        val mf = if (maxFactor.isFinite() && maxFactor >= 1f) maxFactor else 1f
+    ): Float? {
+        if (!enm.isFinite() || enm < 1f) return null
+        if (!k.isFinite() || k < 0f) return null
+        if (!maxFactor.isFinite() || maxFactor < 1f) return null
 
-        val raw = 1f + kk * ln(e.toDouble()).toFloat()
-        if (!raw.isFinite() || raw <= 0f) return 1f
+        val raw = 1f + k * ln(enm.toDouble()).toFloat()
+        if (!raw.isFinite() || raw <= 0f) return null
 
-        val clamped = raw.coerceIn(1f, mf)
-        return if (clamped.isFinite() && clamped > 0f) clamped else 1f
+        val clamped = raw.coerceIn(1f, maxFactor)
+        if (!clamped.isFinite() || clamped <= 0f) return null
+
+        return clamped
     }
 
     private fun buildSummary(
@@ -457,19 +524,19 @@ public class MuscleLoadingSummaryUseCase(
 
         if (filtered.isEmpty()) return emptyList()
 
-        val maxValue = filtered.values.maxOrNull()
-        if (maxValue == null || !maxValue.isFinite() || maxValue <= EPS) return emptyList()
+        val sum = filtered.values.sum()
+        if (!sum.isFinite() || sum <= EPS) return emptyList()
 
         return filtered.entries
             .sortedByDescending { it.value }
             .mapNotNull { (muscle, value) ->
                 val group = groupByMuscle[muscle] ?: return@mapNotNull null
-                val normalized = (value / maxValue) * 100f
-                if (!normalized.isFinite()) return@mapNotNull null
+                val percent = (value / sum) * 100f
+                if (!percent.isFinite() || percent <= EPS) return@mapNotNull null
 
                 MuscleLoadEntry(
                     group = group.type,
-                    percentage = normalized.coerceIn(0f, 100f),
+                    percentage = percent.coerceIn(0f, 100f),
                     muscles = listOf(muscle),
                 )
             }
@@ -491,7 +558,7 @@ public class MuscleLoadingSummaryUseCase(
         filtered.forEach { (muscle, value) ->
             val group = groupByMuscle[muscle] ?: return@forEach
             val updated = (totalsByGroupId[group.id] ?: 0f) + value
-            if (!updated.isFinite() || updated <= 0f) return@forEach
+            if (!updated.isFinite() || updated <= EPS) return@forEach
 
             totalsByGroupId[group.id] = updated
             contributedMusclesByGroupId.getOrPut(group.id) { mutableSetOf() }.add(muscle)
@@ -507,7 +574,7 @@ public class MuscleLoadingSummaryUseCase(
             .mapNotNull { (groupId, totalValue) ->
                 val group = groupById[groupId] ?: return@mapNotNull null
                 val percent = (totalValue / sum) * 100f
-                if (!percent.isFinite()) return@mapNotNull null
+                if (!percent.isFinite() || percent <= EPS) return@mapNotNull null
 
                 val muscles = contributedMusclesByGroupId[groupId]
                     ?.toList()

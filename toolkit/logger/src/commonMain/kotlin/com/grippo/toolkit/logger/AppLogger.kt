@@ -57,8 +57,22 @@ public object AppLogger {
 
     private fun present(category: LogCategory, msg: String) {
         onDebug {
-            println(msg)
+            printInChunks(msg)
             dispatcher.dispatch(category, msg)
+        }
+    }
+
+    private fun printInChunks(message: String, chunkSize: Int = 1000) {
+        if (message.isEmpty()) {
+            println()
+            return
+        }
+        var start = 0
+        val length = message.length
+        while (start < length) {
+            val end = (start + chunkSize).coerceAtMost(length)
+            println(message.substring(start, end))
+            start = end
         }
     }
 
