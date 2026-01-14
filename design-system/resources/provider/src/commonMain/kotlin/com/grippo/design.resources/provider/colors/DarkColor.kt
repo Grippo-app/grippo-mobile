@@ -97,6 +97,10 @@ public object DarkColor : AppColor {
                 override val indicator: Color = AppPalette.Unique.Orange
                 override val track: Color = AppPalette.Unique.Orange.copy(alpha = 0.2f)
             }
+            override val muted = object : AppColor.LineIndicatorColors.IndicatorColors {
+                override val indicator: Color = AppPalette.NeutralDark.N500
+                override val track: Color = AppPalette.NeutralDark.N500.copy(alpha = 0.2f)
+            }
         }
 
     override val input: AppColor.InputColors = object : AppColor.InputColors {
@@ -244,7 +248,7 @@ public object DarkColor : AppColor {
             override val lineA = AppPalette.Blue.P400
             override val lineB = AppPalette.Unique.Green
             override val fillBase = AppPalette.Blue.P400
-            override val dot =  AppPalette.Common.White
+            override val dot = AppPalette.Common.White
         }
         override val area = object : AppColor.Charts.AreaColors {
             override val lineA = AppPalette.Unique.Green

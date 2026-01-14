@@ -42,6 +42,7 @@
     <string name="highlight_streak_pattern_target">Цель · %1$d тренировок / %2$d дней</string>
     <string name="highlight_streak_mood_crushing">🔥 Вы неудержимы — продолжайте собирать эти победы.</string>
     <string name="highlight_streak_mood_on_track">Импульс растёт. Держитесь этого ритма.</string>
+    <string name="highlight_streak_mood_paused">Короткая пауза. Возвращайтесь к серии, когда будете готовы.</string>
     <string name="highlight_streak_mood_restart">Каждая серия начинается сейчас. У вас получится.</string>
     <string name="sets_value">Подходы (%1$s)</string>
     <string name="value_sets">%1$s подходов</string>

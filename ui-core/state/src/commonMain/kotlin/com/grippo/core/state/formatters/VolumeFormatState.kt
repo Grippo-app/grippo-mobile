@@ -93,7 +93,19 @@ public sealed class VolumeFormatState : FormatState<Float> {
             abs(this) < 1f -> ((this * 10).roundToInt() / 10.0f).toString()
             abs(this) < 10f -> ((this * 10).roundToInt() / 10.0f).toString()
             abs(this) < 100f -> this.roundToInt().toString()
-            else -> this.roundToInt().toString()
+            else -> {
+                val value = this.roundToInt()
+                val isNegative = value < 0
+                val digits = abs(value).toString()
+
+                val grouped = digits
+                    .reversed()
+                    .chunked(3)
+                    .joinToString(" ")
+                    .reversed()
+
+                if (isNegative) "-$grouped" else grouped
+            }
         }
     }
 

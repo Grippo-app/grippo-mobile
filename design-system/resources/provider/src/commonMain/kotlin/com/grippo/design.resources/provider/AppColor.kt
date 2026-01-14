@@ -229,6 +229,7 @@ public interface AppColor {
         public val success: IndicatorColors
         public val info: IndicatorColors
         public val warning: IndicatorColors
+        public val muted: IndicatorColors
 
         public interface IndicatorColors {
             public val indicator: Color

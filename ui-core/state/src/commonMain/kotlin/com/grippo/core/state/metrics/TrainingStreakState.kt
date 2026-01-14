@@ -7,7 +7,19 @@ public data class TrainingStreakState(
     val totalActiveDays: Int,
     val featured: TrainingStreakFeaturedState,
     val timeline: List<TrainingStreakProgressState>,
+    val kind: TrainingStreakKind,
+    val score: Float,
+    val historyDays: Int,
+    val lastTrainingGapDays: Int,
 )
+
+@Immutable
+public enum class TrainingStreakKind {
+    Daily,
+    Weekly,
+    Rhythm,
+    Pattern,
+}
 
 @Immutable
 public sealed interface TrainingStreakFeaturedState {
@@ -69,6 +81,7 @@ public sealed interface TrainingStreakFeaturedState {
 public enum class TrainingStreakMood {
     CrushingIt,
     OnTrack,
+    Paused,
     Restart,
 }
 
@@ -105,14 +118,18 @@ public fun stubTrainingStreaks(): List<TrainingStreakState> {
                     achievedSessions = 1,
                     targetSessions = 2
                 ),
-            )
+            ),
+            kind = TrainingStreakKind.Daily,
+            score = 0.72f,
+            historyDays = 30,
+            lastTrainingGapDays = 0,
         ),
         TrainingStreakState(
             totalActiveDays = 14,
             featured = TrainingStreakFeaturedState.Weekly(
                 length = 3,
                 targetSessionsPerPeriod = 4,
-                mood = TrainingStreakMood.Restart,
+                mood = TrainingStreakMood.Paused,
                 progressPercent = 40,
                 confidence = 0.7f,
             ),
@@ -132,7 +149,11 @@ public fun stubTrainingStreaks(): List<TrainingStreakState> {
                     achievedSessions = 1,
                     targetSessions = 5
                 ),
-            )
+            ),
+            kind = TrainingStreakKind.Weekly,
+            score = 0.48f,
+            historyDays = 60,
+            lastTrainingGapDays = 4,
         ),
         TrainingStreakState(
             totalActiveDays = 16,
@@ -165,7 +186,11 @@ public fun stubTrainingStreaks(): List<TrainingStreakState> {
                     achievedSessions = 2,
                     targetSessions = 2
                 ),
-            )
+            ),
+            kind = TrainingStreakKind.Rhythm,
+            score = 0.88f,
+            historyDays = 45,
+            lastTrainingGapDays = 1,
         )
     )
 }

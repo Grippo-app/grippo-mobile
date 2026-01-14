@@ -42,6 +42,7 @@
     <string name="highlight_streak_pattern_target">Goal · %1$d trainings / %2$d days</string>
     <string name="highlight_streak_mood_crushing">🔥 You're unstoppable — keep stacking these wins.</string>
     <string name="highlight_streak_mood_on_track">Momentum is building. Stay with this rhythm.</string>
+    <string name="highlight_streak_mood_paused">Short pause. Pick up the streak when you're ready.</string>
     <string name="highlight_streak_mood_restart">Every streak starts now. You've got this.</string>
     <string name="sets_value">Sets (%1$s)</string>
     <string name="value_sets">%1$s sets</string>

@@ -25,6 +25,7 @@ import com.grippo.design.resources.provider.highlight_streak
 import com.grippo.design.resources.provider.highlight_streak_daily_target
 import com.grippo.design.resources.provider.highlight_streak_mood_crushing
 import com.grippo.design.resources.provider.highlight_streak_mood_on_track
+import com.grippo.design.resources.provider.highlight_streak_mood_paused
 import com.grippo.design.resources.provider.highlight_streak_mood_restart
 import com.grippo.design.resources.provider.highlight_streak_pattern_headline_primary
 import com.grippo.design.resources.provider.highlight_streak_pattern_headline_secondary
@@ -104,12 +105,14 @@ public fun TrainingStreakCard(
         val progressColors = when (value.featured.mood) {
             TrainingStreakMood.CrushingIt -> AppTokens.colors.lineIndicator.success
             TrainingStreakMood.OnTrack -> AppTokens.colors.lineIndicator.info
+            TrainingStreakMood.Paused -> AppTokens.colors.lineIndicator.muted
             TrainingStreakMood.Restart -> AppTokens.colors.lineIndicator.warning
         }
 
         val moodLabel = when (value.featured.mood) {
             TrainingStreakMood.CrushingIt -> AppTokens.strings.res(Res.string.highlight_streak_mood_crushing)
             TrainingStreakMood.OnTrack -> AppTokens.strings.res(Res.string.highlight_streak_mood_on_track)
+            TrainingStreakMood.Paused -> AppTokens.strings.res(Res.string.highlight_streak_mood_paused)
             TrainingStreakMood.Restart -> AppTokens.strings.res(Res.string.highlight_streak_mood_restart)
         }
 

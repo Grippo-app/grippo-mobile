@@ -1,11 +1,13 @@
 package com.grippo.domain.state.metrics
 
 import com.grippo.core.state.metrics.TrainingStreakFeaturedState as StateTrainingStreakFeatured
+import com.grippo.core.state.metrics.TrainingStreakKind as StateTrainingStreakKind
 import com.grippo.core.state.metrics.TrainingStreakMood as StateTrainingStreakMood
 import com.grippo.core.state.metrics.TrainingStreakProgressState as StateTrainingStreakProgress
 import com.grippo.core.state.metrics.TrainingStreakState as StateTrainingStreak
 import com.grippo.data.features.api.metrics.models.TrainingStreak as DomainTrainingStreak
 import com.grippo.data.features.api.metrics.models.TrainingStreakFeatured as DomainTrainingStreakFeatured
+import com.grippo.data.features.api.metrics.models.TrainingStreakKind as DomainTrainingStreakKind
 import com.grippo.data.features.api.metrics.models.TrainingStreakMood as DomainTrainingStreakMood
 import com.grippo.data.features.api.metrics.models.TrainingStreakProgressEntry as DomainTrainingStreakProgress
 
@@ -14,6 +16,10 @@ public fun DomainTrainingStreak.toState(): StateTrainingStreak {
         totalActiveDays = totalActiveDays,
         featured = featured.toState(),
         timeline = timeline.map(DomainTrainingStreakProgress::toState),
+        kind = kind.toState(),
+        score = score,
+        historyDays = historyDays,
+        lastTrainingGapDays = lastTrainingGapDays,
     )
 }
 
@@ -59,7 +65,17 @@ private fun DomainTrainingStreakMood.toState(): StateTrainingStreakMood {
     return when (this) {
         DomainTrainingStreakMood.CrushingIt -> StateTrainingStreakMood.CrushingIt
         DomainTrainingStreakMood.OnTrack -> StateTrainingStreakMood.OnTrack
+        DomainTrainingStreakMood.Paused -> StateTrainingStreakMood.Paused
         DomainTrainingStreakMood.Restart -> StateTrainingStreakMood.Restart
+    }
+}
+
+private fun DomainTrainingStreakKind.toState(): StateTrainingStreakKind {
+    return when (this) {
+        DomainTrainingStreakKind.Daily -> StateTrainingStreakKind.Daily
+        DomainTrainingStreakKind.Weekly -> StateTrainingStreakKind.Weekly
+        DomainTrainingStreakKind.Rhythm -> StateTrainingStreakKind.Rhythm
+        DomainTrainingStreakKind.Pattern -> StateTrainingStreakKind.Pattern
     }
 }
 

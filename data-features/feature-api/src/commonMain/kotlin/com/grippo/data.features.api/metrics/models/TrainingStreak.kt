@@ -1,9 +1,29 @@
 package com.grippo.data.features.api.metrics.models
 
+public enum class TrainingStreakKind {
+    Daily,
+    Weekly,
+    Rhythm,
+    Pattern,
+}
+
+public enum class TrainingStreakMood {
+    CrushingIt,
+    OnTrack,
+    Paused,
+    Restart,
+}
+
 public data class TrainingStreak(
     val totalActiveDays: Int,
     val featured: TrainingStreakFeatured,
     val timeline: List<TrainingStreakProgressEntry>,
+
+    val kind: TrainingStreakKind,
+    val score: Float,
+
+    val historyDays: Int,
+    val lastTrainingGapDays: Int,
 )
 
 public sealed interface TrainingStreakFeatured {
@@ -49,12 +69,6 @@ public sealed interface TrainingStreakFeatured {
         override val progressPercent: Int,
         override val confidence: Float,
     ) : TrainingStreakFeatured
-}
-
-public enum class TrainingStreakMood {
-    CrushingIt,
-    OnTrack,
-    Restart,
 }
 
 public data class TrainingStreakProgressEntry(
