@@ -478,10 +478,12 @@ public class TrainingStreakUseCase(
         val currentProgress =
             ((achievedInCurrent.toFloat() / target.toFloat()).coerceIn(0f, 1f) * 100).roundToInt()
 
-        val streakCycles = generateSequence(1) { it + 1 }
-            .mapNotNull { c -> cycles[c]?.let { c to it } }
-            .takeWhile { (_, indices) -> indices.size >= candidate.periodDays }
-            .takeWhile { (_, indices) ->
+        val maxCycleIndex = cycles.keys.maxOrNull() ?: 0
+
+        val streakCycles = (1..maxCycleIndex)
+            .mapNotNull { c -> cycles[c] }
+            .takeWhile { indices -> indices.size >= candidate.periodDays }
+            .takeWhile { indices ->
                 val achieved = indices.count { idx -> series[idx] && candidate.mask[posIndex(idx)] }
                 achieved >= target
             }
