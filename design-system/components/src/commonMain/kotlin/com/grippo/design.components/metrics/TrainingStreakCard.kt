@@ -1,14 +1,11 @@
 package com.grippo.design.components.metrics
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import com.grippo.core.state.metrics.TrainingStreakFeaturedState
 import com.grippo.core.state.metrics.TrainingStreakMood
 import com.grippo.core.state.metrics.TrainingStreakState
@@ -132,9 +129,6 @@ public fun TrainingStreakCard(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-
-            // Hack to avoid missing IntrinsicSize in LazyGrid
-            Spacer(Modifier.height(5.dp))
 
             headlineSecondary?.let { secondary ->
                 Text(

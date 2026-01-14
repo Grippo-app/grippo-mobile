@@ -65,7 +65,13 @@ internal class HomeViewModel(
 
         val last = trainings.firstOrNull() ?: return
 
-        val totalDuration = list.fold(ZERO) { acc: Duration, item -> acc + item.duration }
+        val totalDuration = list.fold(ZERO) { acc: Duration, item ->
+            acc + item.duration
+        }
+
+        val streak = trainingStreakUseCase
+            .fromTrainings(list)
+            .toState()
 
         val weekly = trainingDigestUseCase
             .weeklyDigest(list, range = DateTimeUtils.thisWeek())
@@ -76,10 +82,6 @@ internal class HomeViewModel(
             .toState()
 
         val spotlight = exerciseSpotlightUseCase
-            .fromTrainings(list)
-            .toState()
-
-        val streak = trainingStreakUseCase
             .fromTrainings(list)
             .toState()
 

@@ -1,10 +1,13 @@
 package com.grippo.home.home
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -173,28 +176,31 @@ internal fun HomeScreen(
                         }
                     }
 
-                    if (state.muscleLoad != null) {
-                        item(key = "muscle_loading") {
-                            MuscleLoadingCard(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .scalableClick(onClick = contract::onOpenMuscleLoading),
-                                summary = state.muscleLoad
-                            )
-                        }
-                    } else {
-                        item(key = "muscle_loading_spacer") {
-                            Spacer(modifier = Modifier.fillMaxWidth())
-                        }
-                    }
-
-                    item(key = "training_streak") {
-                        TrainingStreakCard(
+                    item(key = "muscle_loading_and_training_streak", span = { GridItemSpan(2) }) {
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .scalableClick(onClick = contract::onOpenTrainingStreak),
-                            value = state.streak
-                        )
+                                .height(intrinsicSize = IntrinsicSize.Max),
+                            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+                        ) {
+                            if (state.muscleLoad != null) {
+                                MuscleLoadingCard(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .fillMaxHeight()
+                                        .scalableClick(onClick = contract::onOpenMuscleLoading),
+                                    summary = state.muscleLoad
+                                )
+                            }
+
+                            TrainingStreakCard(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxHeight()
+                                    .scalableClick(onClick = contract::onOpenTrainingStreak),
+                                value = state.streak
+                            )
+                        }
                     }
 
                     if (densityMetric != null) {
