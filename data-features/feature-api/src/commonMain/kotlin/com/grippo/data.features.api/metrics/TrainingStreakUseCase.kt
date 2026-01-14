@@ -920,7 +920,9 @@ public class TrainingStreakUseCase(
         }
 
         return candidates.maxWithOrNull(
-            compareBy<PatternCandidate> { it.confidence }.thenBy { it.periodDays }
+            compareBy<PatternCandidate> { it.confidence }
+                .thenBy { -it.periodDays }
+                .thenBy { it.shift }
         )
     }
 
