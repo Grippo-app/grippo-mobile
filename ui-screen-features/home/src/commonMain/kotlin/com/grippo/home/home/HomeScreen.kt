@@ -3,16 +3,21 @@ package com.grippo.home.home
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.metrics.PerformanceMetricTypeState
 import com.grippo.core.state.metrics.stubExerciseSpotlight
 import com.grippo.core.state.metrics.stubMonthlyDigest
 import com.grippo.core.state.metrics.stubMuscleLoadSummary
@@ -27,9 +32,16 @@ import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.loading.Loader
-import com.grippo.design.components.metrics.DigestsCard
-import com.grippo.design.components.metrics.HighlightsCard
+import com.grippo.design.components.metrics.DigestMonthCard
+import com.grippo.design.components.metrics.DigestWeekCard
+import com.grippo.design.components.metrics.DigestsHeader
+import com.grippo.design.components.metrics.ExerciseSpotlightCard
+import com.grippo.design.components.metrics.HighlightsHeader
 import com.grippo.design.components.metrics.LastTrainingCard
+import com.grippo.design.components.metrics.MuscleLoadingCard
+import com.grippo.design.components.metrics.PerformanceTrendCard
+import com.grippo.design.components.metrics.TrainingStreakCard
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
@@ -54,11 +66,8 @@ internal fun HomeScreen(
         value = AppTokens.colors.background.screen,
     )
 ) {
-    val hasHighlights = state.totalDuration != null &&
-            state.streak != null
-
     val isEmptyState = state.lastTraining == null &&
-            !hasHighlights &&
+            state.streak == null &&
             state.weeklyDigest == null &&
             state.monthlyDigest == null
 
@@ -97,6 +106,22 @@ internal fun HomeScreen(
         vertical = AppTokens.dp.contentPadding.content
     )
 
+    val densityMetric = remember(state.performance) {
+        state.performance.firstOrNull { it.type == PerformanceMetricTypeState.Density }
+    }
+
+    val volumeMetric = remember(state.performance) {
+        state.performance.firstOrNull { it.type == PerformanceMetricTypeState.Volume }
+    }
+
+    val repetitionsMetric = remember(state.performance) {
+        state.performance.firstOrNull { it.type == PerformanceMetricTypeState.Repetitions }
+    }
+
+    val intensityMetric = remember(state.performance) {
+        state.performance.firstOrNull { it.type == PerformanceMetricTypeState.Intensity }
+    }
+
     BottomOverlayContainer(
         modifier = Modifier
             .fillMaxWidth()
@@ -104,15 +129,17 @@ internal fun HomeScreen(
         contentPadding = basePadding,
         overlay = AppTokens.colors.background.screen,
         content = { containerModifier, resolvedPadding ->
-            LazyColumn(
+            LazyVerticalGrid(
                 modifier = containerModifier
                     .fillMaxWidth()
                     .weight(1f),
+                columns = GridCells.Fixed(2),
                 contentPadding = resolvedPadding,
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block)
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
             ) {
                 if (state.lastTraining != null) {
-                    item(key = "last_workout") {
+                    item(key = "last_training", span = { GridItemSpan(2) }) {
                         LastTrainingCard(
                             modifier = Modifier.fillMaxWidth(),
                             value = state.lastTraining,
@@ -121,30 +148,156 @@ internal fun HomeScreen(
                     }
                 }
 
-                if (hasHighlights) {
-                    item(key = "highlight") {
-                        HighlightsCard(
+                if (state.streak != null) {
+                    item(key = "highlights_header", span = { GridItemSpan(2) }) {
+                        HighlightsHeader(
                             modifier = Modifier.fillMaxWidth(),
-                            totalDuration = state.totalDuration,
-                            spotlight = state.spotlight,
-                            muscleLoad = state.muscleLoad,
                             streak = state.streak,
                             performance = state.performance,
-                            onExampleClick = contract::onOpenExample,
-                            onMuscleLoadingClick = contract::onOpenMuscleLoading,
-                            onStreakClick = contract::onOpenTrainingStreak,
-                            onPerformanceMetricClick = contract::onPerformanceMetricClick
                         )
+                    }
+
+                    if (state.spotlight != null) {
+                        item(key = "exercise_spotlight", span = { GridItemSpan(2) }) {
+                            val onExampleClickProvider =
+                                remember(state.spotlight.exercise.value.id) {
+                                    { contract.onOpenExample(state.spotlight.exercise.value.id) }
+                                }
+
+                            ExerciseSpotlightCard(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .scalableClick(onClick = onExampleClickProvider),
+                                value = state.spotlight,
+                            )
+                        }
+                    }
+
+                    if (state.muscleLoad != null) {
+                        item(key = "muscle_loading") {
+                            MuscleLoadingCard(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .scalableClick(onClick = contract::onOpenMuscleLoading),
+                                summary = state.muscleLoad
+                            )
+                        }
+                    } else {
+                        item(key = "muscle_loading_spacer") {
+                            Spacer(modifier = Modifier.fillMaxWidth())
+                        }
+                    }
+
+                    item(key = "training_streak") {
+                        TrainingStreakCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .scalableClick(onClick = contract::onOpenTrainingStreak),
+                            value = state.streak
+                        )
+                    }
+
+                    if (densityMetric != null) {
+                        item(key = "performance_density") {
+                            val onPerformanceMetricClickProvider =
+                                remember(densityMetric.type) {
+                                    { contract.onPerformanceMetricClick(densityMetric.type) }
+                                }
+                            PerformanceTrendCard(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .fillMaxHeight()
+                                    .scalableClick(onClick = onPerformanceMetricClickProvider),
+                                metric = densityMetric
+                            )
+                        }
+                    } else {
+                        item(key = "performance_density_spacer") {
+                            Spacer(modifier = Modifier.fillMaxWidth())
+                        }
+                    }
+
+                    if (volumeMetric != null) {
+                        item(key = "performance_volume") {
+                            val onPerformanceMetricClickProvider =
+                                remember(volumeMetric.type) {
+                                    { contract.onPerformanceMetricClick(volumeMetric.type) }
+                                }
+                            PerformanceTrendCard(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .fillMaxHeight()
+                                    .scalableClick(onClick = onPerformanceMetricClickProvider),
+                                metric = volumeMetric
+                            )
+                        }
+                    } else {
+                        item(key = "performance_volume_spacer") {
+                            Spacer(modifier = Modifier.fillMaxWidth())
+                        }
+                    }
+
+                    if (repetitionsMetric != null) {
+                        item(key = "performance_repetitions") {
+                            val onPerformanceMetricClickProvider =
+                                remember(repetitionsMetric.type) {
+                                    { contract.onPerformanceMetricClick(repetitionsMetric.type) }
+                                }
+                            PerformanceTrendCard(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .fillMaxHeight()
+                                    .scalableClick(onClick = onPerformanceMetricClickProvider),
+                                metric = repetitionsMetric
+                            )
+                        }
+                    } else {
+                        item(key = "performance_repetitions_spacer") {
+                            Spacer(modifier = Modifier.fillMaxWidth())
+                        }
+                    }
+
+                    if (intensityMetric != null) {
+                        item(key = "performance_intensity") {
+                            val onPerformanceMetricClickProvider =
+                                remember(intensityMetric.type) {
+                                    { contract.onPerformanceMetricClick(intensityMetric.type) }
+                                }
+                            PerformanceTrendCard(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .fillMaxHeight()
+                                    .scalableClick(onClick = onPerformanceMetricClickProvider),
+                                metric = intensityMetric
+                            )
+                        }
+                    } else {
+                        item(key = "performance_intensity_spacer") {
+                            Spacer(modifier = Modifier.fillMaxWidth())
+                        }
                     }
                 }
 
                 if (state.monthlyDigest != null && state.weeklyDigest != null) {
-                    item(key = "digest_section") {
-                        DigestsCard(
-                            weekly = state.weeklyDigest,
-                            monthly = state.monthlyDigest,
-                            onWeeklyClick = contract::onOpenWeeklyDigest,
-                            onMonthlyClick = contract::onOpenMonthlyDigest
+                    item(key = "digests_header", span = { GridItemSpan(2) }) {
+                        DigestsHeader(modifier = Modifier.fillMaxWidth())
+                    }
+
+                    item(key = "digest_month", span = { GridItemSpan(2) }) {
+                        DigestMonthCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .scalableClick(onClick = contract::onOpenMonthlyDigest),
+                            value = state.monthlyDigest,
+                        )
+                    }
+
+                    item(key = "digest_week", span = { GridItemSpan(2) }) {
+                        DigestWeekCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .scalableClick(onClick = contract::onOpenWeeklyDigest),
+                            value = state.weeklyDigest,
                         )
                     }
                 }

@@ -178,6 +178,10 @@ public data object AppDp {
             val icon: Dp = AppDp.icon.medium
         }
 
+        public data object Digests {
+            val icon: Dp = AppDp.icon.medium
+        }
+
         public data object Status {
             val radius: Dp = AppDp.radius.small
             val horizontalPadding: Dp = padding.small
@@ -201,10 +205,6 @@ public data object AppDp {
                 val verticalPadding: Dp = padding.large
                 val spacer: Dp = padding.medium
             }
-        }
-
-        public data object Digests {
-            val icon: Dp = AppDp.icon.medium
         }
 
         public data object Distribution {
