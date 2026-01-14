@@ -107,7 +107,6 @@ public class MuscleLoadingSummaryUseCase(
 
         val stimulusLoad = computeExampleLoad(
             example = examples[exampleId],
-            applyForceTypeRules = true,
         )
 
         val volumeLoad = emptyMap<MuscleEnum, Float>()
@@ -268,58 +267,20 @@ public class MuscleLoadingSummaryUseCase(
 
     private fun computeExampleLoad(
         example: ExerciseExample?,
-        applyForceTypeRules: Boolean,
     ): Map<MuscleEnum, Float> {
         if (example == null) return emptyMap()
         val bundles = example.bundles
         if (bundles.isEmpty()) return emptyMap()
 
-        val totalShare = bundles
-            .sumOf { it.percentage.coerceAtLeast(0).toDouble() }
-            .toFloat()
-
-        if (!totalShare.isFinite() || totalShare <= EPS) return emptyMap()
-
-        val originalPercents = bundles
-            .map { it.percentage.coerceAtLeast(0).toFloat() }
-            .map { share -> (share / totalShare) * 100f }
-
-        val shares = bundles.map { it.percentage.coerceAtLeast(0).toFloat() }
-        val ratios = shares.map { share ->
-            val r = share / totalShare
-            if (r.isFinite() && r >= 0f) r else 0f
-        }
-
-        val weights = ratios.map { ratio ->
-            ratio.toDouble().pow(SHARE_DAMPING_ALPHA.toDouble()).toFloat()
-        }
-
-        val weightsSum = weights.sum()
-        if (!weightsSum.isFinite() || weightsSum <= EPS) return emptyMap()
-
         val totals = mutableMapOf<MuscleEnum, Float>()
 
-        bundles.forEachIndexed { index, bundle ->
-            val dampedRatio = weights[index] / weightsSum
-            if (!dampedRatio.isFinite() || dampedRatio <= EPS) return@forEachIndexed
-
-            val forceTypePenalty = if (applyForceTypeRules) {
-                forceTypePenalty(
-                    example = example,
-                    originalSharePercent = originalPercents.getOrNull(index) ?: 0f,
-                )
-            } else {
-                1f
-            }
-
-            if (!forceTypePenalty.isFinite() || forceTypePenalty <= 0f) return@forEachIndexed
-
+        bundles.forEach { bundle ->
             val muscle = bundle.muscle.type
-            val valueToAdd = dampedRatio * 100f * forceTypePenalty
-            if (!valueToAdd.isFinite() || valueToAdd <= EPS) return@forEachIndexed
+            val valueToAdd = bundle.percentage.toFloat()
+            if (!valueToAdd.isFinite() || valueToAdd <= EPS) return@forEach
 
             val updated = (totals[muscle] ?: 0f) + valueToAdd
-            if (!updated.isFinite() || updated <= EPS) return@forEachIndexed
+            if (!updated.isFinite() || updated <= EPS) return@forEach
 
             totals[muscle] = updated
         }
