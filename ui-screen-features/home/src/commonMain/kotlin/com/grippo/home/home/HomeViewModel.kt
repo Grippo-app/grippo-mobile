@@ -1,7 +1,6 @@
 package com.grippo.home.home
 
 import com.grippo.core.foundation.BaseViewModel
-import com.grippo.core.state.formatters.PeriodFormatState
 import com.grippo.core.state.metrics.PerformanceMetricTypeState
 import com.grippo.core.state.profile.ProfileMenu
 import com.grippo.core.state.profile.SettingsMenu
@@ -170,16 +169,11 @@ internal class HomeViewModel(
     }
 
     override fun onOpenPeriodPicker() {
-        val range = state.value.range.range ?: return
-
         safeLaunch {
             val dialog = DialogConfig.PeriodPicker(
                 title = stringProvider.get(Res.string.period_picker_title),
-                initial = PeriodFormatState.of(range),
-                onResult = { result ->
-                    val range = result.value?.range() ?: return@PeriodPicker
-                    update { s -> s.copy(range = range) }
-                }
+                initial = state.value.range,
+                onResult = { result -> update { s -> s.copy(range = result) } }
             )
 
             dialogController.show(dialog)

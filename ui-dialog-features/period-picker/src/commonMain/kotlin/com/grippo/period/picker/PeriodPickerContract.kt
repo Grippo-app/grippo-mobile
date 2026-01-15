@@ -5,12 +5,12 @@ import com.grippo.toolkit.date.utils.DateRange
 
 @Immutable
 internal interface PeriodPickerContract {
-    fun onSelectRange(range: DateRange)
+    fun onSelectRange(range: DateRange.Range)
     fun onDismiss()
 
     @Immutable
     companion object Empty : PeriodPickerContract {
-        override fun onSelectRange(range: DateRange) {}
+        override fun onSelectRange(range: DateRange.Range) {}
         override fun onDismiss() {}
     }
 }
