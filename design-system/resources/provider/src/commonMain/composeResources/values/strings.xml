@@ -40,10 +40,15 @@
     <string name="highlight_streak_pattern_headline_primary">Pattern streak: %1$d cycles</string>
     <string name="highlight_streak_pattern_headline_secondary">%1$d trainings / %2$d days</string>
     <string name="highlight_streak_pattern_target">Goal · %1$d trainings / %2$d days</string>
-    <string name="highlight_streak_mood_crushing">🔥 You're unstoppable — keep stacking these wins.</string>
+    <string name="highlight_streak_mood_crushing">🔥 You are unstoppable — keep stacking these wins.</string>
     <string name="highlight_streak_mood_on_track">Momentum is building. Stay with this rhythm.</string>
-    <string name="highlight_streak_mood_paused">Short pause. Pick up the streak when you're ready.</string>
-    <string name="highlight_streak_mood_restart">Every streak starts now. You've got this.</string>
+    <string name="highlight_streak_mood_paused">Short pause. Pick up the streak when you are ready.</string>
+    <string name="highlight_streak_mood_restart">Every streak starts now. You can do this.</string>
+    <string name="performance_trend_desc_duration">This is your duration progress — how long a workout usually takes. Watch: if the line goes up, workouts are getting longer. If it goes down, you are finishing faster, and that is okay.</string>
+    <string name="performance_trend_desc_volume">This is your volume progress — how much work you did per workout. Watch: if the line goes up, you are doing more work. If it drops several times in a row, reduce the load or add rest.</string>
+    <string name="performance_trend_desc_density">This is your efficiency progress — how productive the workout is given the time: how much work you get done per workout. Watch: if the line goes up, you are training better. If it drops several times in a row, consider recovery or lighten the load.</string>
+    <string name="performance_trend_desc_repetitions">This is your repetitions progress — how many reps you did per workout. Watch: if the line goes up, you are handling more work. If it drops several times in a row, fatigue has likely built up.</string>
+    <string name="performance_trend_desc_intensity">This is your intensity progress — how hard you train on average. Watch: if the line goes up, workouts are getting harder. If it drops several times in a row, you may not have recovered or lowered working weights.</string>
     <string name="sets_value">Sets (%1$s)</string>
     <string name="value_sets">%1$s sets</string>
     <string name="one_set">1 set</string>
@@ -129,7 +134,7 @@
     <string name="registration_equipment_title">What’s not in your gym?</string>
     <string name="registration_equipment_description">We’ll leave out exercises that need that equipment.</string>
 
-    <string name="registration_completed_title">🎉 You're all set!</string>
+    <string name="registration_completed_title">🎉 You are all set!</string>
 
     <string name="height_picker_title">Select your height</string>
     <string name="height_picker_description">This will help us personalize your workout recommendations.</string>
@@ -145,10 +150,10 @@
     <string name="experience_intermediate_title">Intermediate</string>
     <string name="experience_advanced_title">Advanced</string>
     <string name="experience_pro_title">Pro</string>
-    <string name="experience_beginner_description">You've been working out for less than 1 year and are currently getting familiar with the exercises.</string>
-    <string name="experience_intermediate_description">You've been working out for over 1 year, are familiar with most exercises, and have developed a solid base.</string>
-    <string name="experience_advanced_description">You've been working out for over 2 years, have good exercise form, and show consistent physical progress.</string>
-    <string name="experience_pro_description">You've been working out for over 5 years, have excellent exercise form, and maintain a high level of muscular development.</string>
+    <string name="experience_beginner_description">You have been working out for less than 1 year and are currently getting familiar with the exercises.</string>
+    <string name="experience_intermediate_description">You have been working out for over 1 year, are familiar with most exercises, and have developed a solid base.</string>
+    <string name="experience_advanced_description">You have been working out for over 2 years, have good exercise form, and show consistent physical progress.</string>
+    <string name="experience_pro_description">You have been working out for over 5 years, have excellent exercise form, and maintain a high level of muscular development.</string>
 
 
     <string name="profile_menu_excluded_muscles">Muscles</string>

@@ -56,12 +56,12 @@ internal fun TrainingStreakScreen(
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = state.range.formatted(),
-            style = AppTokens.typography.b14Med(),
+            style = AppTokens.typography.b14Semi(),
             color = AppTokens.colors.text.tertiary,
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         if (loaders.contains(TrainingStreakLoader.Content)) {
             Loader(modifier = Modifier.fillMaxWidth().weight(1f))
@@ -71,7 +71,9 @@ internal fun TrainingStreakScreen(
                     .fillMaxWidth()
                     .weight(1f),
                 contentPadding = PaddingValues(
-                    horizontal = AppTokens.dp.dialog.horizontalPadding,
+                    start = AppTokens.dp.dialog.horizontalPadding,
+                    end = AppTokens.dp.dialog.horizontalPadding,
+                    top = AppTokens.dp.contentPadding.content,
                 ),
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block)
             ) {

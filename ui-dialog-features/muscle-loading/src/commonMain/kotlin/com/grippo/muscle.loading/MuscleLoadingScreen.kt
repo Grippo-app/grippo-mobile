@@ -86,7 +86,7 @@ internal fun MuscleLoadingScreen(
             style = SegmentStyle.Fill
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         if (loaders.contains(MuscleLoadingLoader.Content)) {
             Loader(modifier = Modifier.fillMaxWidth().weight(1f))
@@ -96,7 +96,9 @@ internal fun MuscleLoadingScreen(
                     .fillMaxWidth()
                     .weight(1f),
                 contentPadding = PaddingValues(
-                    horizontal = AppTokens.dp.dialog.horizontalPadding,
+                    start = AppTokens.dp.dialog.horizontalPadding,
+                    end = AppTokens.dp.dialog.horizontalPadding,
+                    top = AppTokens.dp.contentPadding.content,
                 ),
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block)
             ) {

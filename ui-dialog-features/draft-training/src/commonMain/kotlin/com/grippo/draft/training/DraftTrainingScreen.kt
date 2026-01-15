@@ -144,7 +144,7 @@ internal fun DraftTrainingScreen(
                         content = ButtonContent.Text(
                             text = AppTokens.strings.res(Res.string.continue_btn),
                         ),
-                        style = ButtonStyle.Primary,
+                        style = ButtonStyle.Secondary,
                         onClick = contract::onContinue
                     )
                 }

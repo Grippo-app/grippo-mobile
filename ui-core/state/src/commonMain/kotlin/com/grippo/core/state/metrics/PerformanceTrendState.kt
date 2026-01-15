@@ -15,6 +15,11 @@ import com.grippo.design.resources.provider.icons.Repeat
 import com.grippo.design.resources.provider.icons.Timer
 import com.grippo.design.resources.provider.icons.Volume
 import com.grippo.design.resources.provider.intensity_chip
+import com.grippo.design.resources.provider.performance_trend_desc_density
+import com.grippo.design.resources.provider.performance_trend_desc_duration
+import com.grippo.design.resources.provider.performance_trend_desc_intensity
+import com.grippo.design.resources.provider.performance_trend_desc_repetitions
+import com.grippo.design.resources.provider.performance_trend_desc_volume
 import com.grippo.design.resources.provider.repetitions
 import com.grippo.design.resources.provider.volume
 import com.grippo.toolkit.date.utils.DateRange
@@ -41,6 +46,17 @@ public enum class PerformanceMetricTypeState {
             Density -> AppTokens.icons.Volume
             Repetitions -> AppTokens.icons.Repeat
             Intensity -> AppTokens.icons.Intensity
+        }
+    }
+
+    @Composable
+    public fun description(): String {
+        return when (this) {
+            Duration -> AppTokens.strings.res(Res.string.performance_trend_desc_duration)
+            Volume -> AppTokens.strings.res(Res.string.performance_trend_desc_volume)
+            Density -> AppTokens.strings.res(Res.string.performance_trend_desc_density)
+            Repetitions -> AppTokens.strings.res(Res.string.performance_trend_desc_repetitions)
+            Intensity -> AppTokens.strings.res(Res.string.performance_trend_desc_intensity)
         }
     }
 

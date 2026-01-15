@@ -67,7 +67,7 @@ internal fun PerformanceTrendScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         if (loaders.contains(PerformanceTrendLoader.Content)) {
             Loader(modifier = Modifier.fillMaxWidth().weight(1f))
@@ -76,9 +76,22 @@ internal fun PerformanceTrendScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
+                contentPadding = PaddingValues(
+                    start = AppTokens.dp.dialog.horizontalPadding,
+                    end = AppTokens.dp.dialog.horizontalPadding,
+                ),
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
             ) {
+                item(key = "info") {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = state.metricType.description(),
+                        style = AppTokens.typography.b14Med(),
+                        color = AppTokens.colors.text.secondary,
+                        textAlign = TextAlign.Center
+                    )
+                }
+
                 item(key = "chart") {
                     PerformanceTrendChartSection(
                         modifier = Modifier.fillMaxWidth(),
