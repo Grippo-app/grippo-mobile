@@ -151,49 +151,47 @@ internal fun HomeScreen(
                     }
                 }
 
-                if (state.streak != null) {
-                    item(key = "highlights_header", span = { GridItemSpan(2) }) {
-                        HighlightsHeader(
-                            modifier = Modifier.fillMaxWidth(),
-                            streak = state.streak,
-                            performance = state.performance,
-                            onPeriodChange = contract::onOpenPeriodPicker
-                        )
-                    }
+                item(key = "highlights_header", span = { GridItemSpan(2) }) {
+                    HighlightsHeader(
+                        modifier = Modifier.fillMaxWidth(),
+                        range = state.range,
+                        onPeriodChange = contract::onOpenPeriodPicker
+                    )
+                }
 
-                    if (state.spotlight != null) {
-                        item(key = "exercise_spotlight", span = { GridItemSpan(2) }) {
-                            val onExampleClickProvider =
-                                remember(state.spotlight.exercise.value.id) {
-                                    { contract.onOpenExample(state.spotlight.exercise.value.id) }
-                                }
-
-                            ExerciseSpotlightCard(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .scalableClick(onClick = onExampleClickProvider),
-                                value = state.spotlight,
-                            )
-                        }
-                    }
-
-                    item(key = "muscle_loading_and_training_streak", span = { GridItemSpan(2) }) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(intrinsicSize = IntrinsicSize.Max),
-                            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-                        ) {
-                            if (state.muscleLoad != null) {
-                                MuscleLoadingCard(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .fillMaxHeight()
-                                        .scalableClick(onClick = contract::onOpenMuscleLoading),
-                                    summary = state.muscleLoad
-                                )
+                if (state.spotlight != null) {
+                    item(key = "exercise_spotlight", span = { GridItemSpan(2) }) {
+                        val onExampleClickProvider =
+                            remember(state.spotlight.exercise.value.id) {
+                                { contract.onOpenExample(state.spotlight.exercise.value.id) }
                             }
 
+                        ExerciseSpotlightCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .scalableClick(onClick = onExampleClickProvider),
+                            value = state.spotlight,
+                        )
+                    }
+                }
+
+                item(key = "muscle_loading_and_training_streak", span = { GridItemSpan(2) }) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(intrinsicSize = IntrinsicSize.Max),
+                        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+                    ) {
+                        if (state.muscleLoad != null) {
+                            MuscleLoadingCard(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxHeight()
+                                    .scalableClick(onClick = contract::onOpenMuscleLoading),
+                                summary = state.muscleLoad
+                            )
+                        }
+                        if (state.streak != null) {
                             TrainingStreakCard(
                                 modifier = Modifier
                                     .weight(1f)
@@ -203,85 +201,85 @@ internal fun HomeScreen(
                             )
                         }
                     }
+                }
 
-                    if (densityMetric != null) {
-                        item(key = "performance_density") {
-                            val onPerformanceMetricClickProvider =
-                                remember(densityMetric.type) {
-                                    { contract.onPerformanceMetricClick(densityMetric.type) }
-                                }
-                            PerformanceTrendCard(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .fillMaxHeight()
-                                    .scalableClick(onClick = onPerformanceMetricClickProvider),
-                                metric = densityMetric
-                            )
-                        }
-                    } else {
-                        item(key = "performance_density_spacer") {
-                            Spacer(modifier = Modifier.fillMaxWidth())
-                        }
+                if (densityMetric != null) {
+                    item(key = "performance_density") {
+                        val onPerformanceMetricClickProvider =
+                            remember(densityMetric.type) {
+                                { contract.onPerformanceMetricClick(densityMetric.type) }
+                            }
+                        PerformanceTrendCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight()
+                                .scalableClick(onClick = onPerformanceMetricClickProvider),
+                            metric = densityMetric
+                        )
                     }
-
-                    if (volumeMetric != null) {
-                        item(key = "performance_volume") {
-                            val onPerformanceMetricClickProvider =
-                                remember(volumeMetric.type) {
-                                    { contract.onPerformanceMetricClick(volumeMetric.type) }
-                                }
-                            PerformanceTrendCard(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .fillMaxHeight()
-                                    .scalableClick(onClick = onPerformanceMetricClickProvider),
-                                metric = volumeMetric
-                            )
-                        }
-                    } else {
-                        item(key = "performance_volume_spacer") {
-                            Spacer(modifier = Modifier.fillMaxWidth())
-                        }
+                } else {
+                    item(key = "performance_density_spacer") {
+                        Spacer(modifier = Modifier.fillMaxWidth())
                     }
+                }
 
-                    if (repetitionsMetric != null) {
-                        item(key = "performance_repetitions") {
-                            val onPerformanceMetricClickProvider =
-                                remember(repetitionsMetric.type) {
-                                    { contract.onPerformanceMetricClick(repetitionsMetric.type) }
-                                }
-                            PerformanceTrendCard(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .fillMaxHeight()
-                                    .scalableClick(onClick = onPerformanceMetricClickProvider),
-                                metric = repetitionsMetric
-                            )
-                        }
-                    } else {
-                        item(key = "performance_repetitions_spacer") {
-                            Spacer(modifier = Modifier.fillMaxWidth())
-                        }
+                if (volumeMetric != null) {
+                    item(key = "performance_volume") {
+                        val onPerformanceMetricClickProvider =
+                            remember(volumeMetric.type) {
+                                { contract.onPerformanceMetricClick(volumeMetric.type) }
+                            }
+                        PerformanceTrendCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight()
+                                .scalableClick(onClick = onPerformanceMetricClickProvider),
+                            metric = volumeMetric
+                        )
                     }
+                } else {
+                    item(key = "performance_volume_spacer") {
+                        Spacer(modifier = Modifier.fillMaxWidth())
+                    }
+                }
 
-                    if (intensityMetric != null) {
-                        item(key = "performance_intensity") {
-                            val onPerformanceMetricClickProvider =
-                                remember(intensityMetric.type) {
-                                    { contract.onPerformanceMetricClick(intensityMetric.type) }
-                                }
-                            PerformanceTrendCard(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .fillMaxHeight()
-                                    .scalableClick(onClick = onPerformanceMetricClickProvider),
-                                metric = intensityMetric
-                            )
-                        }
-                    } else {
-                        item(key = "performance_intensity_spacer") {
-                            Spacer(modifier = Modifier.fillMaxWidth())
-                        }
+                if (repetitionsMetric != null) {
+                    item(key = "performance_repetitions") {
+                        val onPerformanceMetricClickProvider =
+                            remember(repetitionsMetric.type) {
+                                { contract.onPerformanceMetricClick(repetitionsMetric.type) }
+                            }
+                        PerformanceTrendCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight()
+                                .scalableClick(onClick = onPerformanceMetricClickProvider),
+                            metric = repetitionsMetric
+                        )
+                    }
+                } else {
+                    item(key = "performance_repetitions_spacer") {
+                        Spacer(modifier = Modifier.fillMaxWidth())
+                    }
+                }
+
+                if (intensityMetric != null) {
+                    item(key = "performance_intensity") {
+                        val onPerformanceMetricClickProvider =
+                            remember(intensityMetric.type) {
+                                { contract.onPerformanceMetricClick(intensityMetric.type) }
+                            }
+                        PerformanceTrendCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight()
+                                .scalableClick(onClick = onPerformanceMetricClickProvider),
+                            metric = intensityMetric
+                        )
+                    }
+                } else {
+                    item(key = "performance_intensity_spacer") {
+                        Spacer(modifier = Modifier.fillMaxWidth())
                     }
                 }
 

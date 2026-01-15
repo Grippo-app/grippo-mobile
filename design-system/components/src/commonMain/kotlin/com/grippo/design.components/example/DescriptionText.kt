@@ -1,11 +1,8 @@
 package com.grippo.design.components.example
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -38,11 +35,7 @@ public fun DescriptionText(
     val collapseLabel = AppTokens.strings.res(Res.string.show_less)
 
     Column(
-        modifier = modifier.background(
-            color = AppTokens.colors.background.card,
-            shape = RoundedCornerShape(AppTokens.dp.descriptionText.radius)
-        ).padding(AppTokens.dp.contentPadding.content)
-            .animateContentSize(),
+        modifier = modifier.animateContentSize(),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
     ) {
         Text(

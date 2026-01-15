@@ -1,6 +1,7 @@
 package com.grippo.home.home
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.formatters.PeriodFormatState
 import com.grippo.core.state.metrics.PerformanceMetricTypeState
 import com.grippo.core.state.profile.ProfileMenu
 import com.grippo.core.state.profile.SettingsMenu
@@ -44,7 +45,7 @@ internal class HomeViewModel(
 
     init {
         state
-            .map { it.period.value }
+            .map { it.range.range }
             .filterNotNull()
             .distinctUntilChanged()
             .flatMapLatest { period ->
@@ -54,7 +55,7 @@ internal class HomeViewModel(
             }.safeLaunch()
 
         state
-            .map { it.period.value }
+            .map { it.range.range }
             .filterNotNull()
             .distinctUntilChanged()
             .onEach { period ->
@@ -125,7 +126,7 @@ internal class HomeViewModel(
     }
 
     override fun onPerformanceMetricClick(type: PerformanceMetricTypeState) {
-        val range = state.value.period.value ?: return
+        val range = state.value.range.range ?: return
 
         val dialog = DialogConfig.PerformanceTrend(
             range = range,
@@ -136,7 +137,7 @@ internal class HomeViewModel(
     }
 
     override fun onOpenMuscleLoading() {
-        val range = state.value.period.value ?: return
+        val range = state.value.range.range ?: return
 
         val dialog = DialogConfig.MuscleLoading(
             range = range,
@@ -169,11 +170,16 @@ internal class HomeViewModel(
     }
 
     override fun onOpenPeriodPicker() {
+        val range = state.value.range.range ?: return
+
         safeLaunch {
             val dialog = DialogConfig.PeriodPicker(
                 title = stringProvider.get(Res.string.period_picker_title),
-                initial = state.value.period,
-                onResult = { result -> update { s -> s.copy(period = result) } }
+                initial = PeriodFormatState.of(range),
+                onResult = { result ->
+                    val range = result.value?.range() ?: return@PeriodPicker
+                    update { s -> s.copy(range = range) }
+                }
             )
 
             dialogController.show(dialog)
@@ -189,7 +195,7 @@ internal class HomeViewModel(
     }
 
     override fun onOpenTrainingStreak() {
-        val range = state.value.period.value ?: return
+        val range = state.value.range.range ?: return
 
         val dialog = DialogConfig.TrainingStreak(
             range = range
