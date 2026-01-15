@@ -1,15 +1,9 @@
 package com.grippo.design.components.cards.selectable
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
 import com.grippo.design.components.cards.selectable.internal.CheckSelectableCardLarge
 import com.grippo.design.components.cards.selectable.internal.CheckSelectableCardMedium
 import com.grippo.design.components.cards.selectable.internal.CheckSelectableCardSmall
@@ -17,7 +11,6 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.icons.Spinner
-
 
 @Immutable
 public sealed class CheckSelectableCardStyle(
@@ -39,7 +32,6 @@ public sealed class CheckSelectableCardStyle(
         override val title: String,
         val description: String,
         val icon: ImageVector,
-        val subContent: (@Composable ColumnScope.() -> Unit)?,
     ) : CheckSelectableCardStyle(title)
 }
 
@@ -83,9 +75,6 @@ private fun CheckSelectableCardLargePreview() {
                 title = "Test Title",
                 description = "Test Description",
                 icon = AppTokens.icons.Spinner,
-                subContent = {
-                    Box(modifier = Modifier.size(40.dp).background(Color.Green))
-                }
             )
         )
 
@@ -94,7 +83,6 @@ private fun CheckSelectableCardLargePreview() {
                 title = "Test Title",
                 description = "Test Description",
                 icon = AppTokens.icons.Spinner,
-                subContent = null
             )
         )
     }

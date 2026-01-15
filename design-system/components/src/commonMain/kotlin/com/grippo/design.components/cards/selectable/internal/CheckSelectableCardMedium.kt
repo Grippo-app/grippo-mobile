@@ -35,12 +35,12 @@ internal fun CheckSelectableCardMedium(
     val shape = RoundedCornerShape(AppTokens.dp.checkSelectableCard.medium.radius)
 
     val borderColor by animateColorAsState(
-        if (isSelected) AppTokens.colors.border.focus else Color.Transparent,
+        if (isSelected) AppTokens.colors.semantic.success else Color.Transparent,
         label = "border"
     )
 
     val iconTint by animateColorAsState(
-        if (isSelected) AppTokens.colors.icon.primary else AppTokens.colors.icon.tertiary,
+        if (isSelected) AppTokens.colors.semantic.success else AppTokens.colors.icon.tertiary,
         label = "iconTint"
     )
 

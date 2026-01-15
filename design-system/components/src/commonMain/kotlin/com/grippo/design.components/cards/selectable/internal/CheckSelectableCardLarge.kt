@@ -4,17 +4,12 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -89,28 +84,6 @@ internal fun CheckSelectableCardLarge(
                 )
             }
         }
-
-        style.subContent?.let { subContent ->
-            Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.checkSelectableCard.large.horizontalPadding),
-            ) {
-                Spacer(modifier = Modifier.width(AppTokens.dp.checkSelectableCard.large.icon))
-
-                Column(modifier = Modifier.weight(1f)) {
-                    HorizontalDivider(
-                        modifier = Modifier.fillMaxWidth(),
-                        color = AppTokens.colors.divider.default
-                    )
-
-                    Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
-
-                    subContent.invoke(this)
-                }
-            }
-        }
     }
 }
 
@@ -122,14 +95,7 @@ private fun CheckSelectableCardLargePreview() {
             CheckSelectableCardStyle.Large(
                 title = "Test Title",
                 description = "Test Description with big text for all cases and more options to do somethig!",
-                icon = AppTokens.icons.Spinner,
-                subContent = {
-                    Box(
-                        modifier = Modifier
-                            .height(40.dp)
-                            .fillMaxWidth().background(Color.DarkGray)
-                    )
-                }
+                icon = AppTokens.icons.Spinner
             )
         )
 
@@ -138,7 +104,6 @@ private fun CheckSelectableCardLargePreview() {
                 title = "Test Title",
                 description = "Test Description with big text for all cases and more options to do somethig!",
                 icon = AppTokens.icons.Spinner,
-                subContent = null
             )
         )
     }

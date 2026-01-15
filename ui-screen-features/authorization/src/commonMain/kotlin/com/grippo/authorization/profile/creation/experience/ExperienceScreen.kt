@@ -25,8 +25,8 @@ import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
 import com.grippo.design.components.cards.selectable.CheckSelectableCard
+import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
@@ -121,7 +121,6 @@ internal fun ExperienceScreen(
                                 title = item.title().text(),
                                 description = item.description().text(),
                                 icon = item.icon(),
-                                subContent = null,
                             ),
                         )
                     }
