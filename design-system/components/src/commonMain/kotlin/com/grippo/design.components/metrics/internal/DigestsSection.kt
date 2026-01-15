@@ -215,10 +215,10 @@ internal data class DigestCardStyle(
 private fun DigestsSectionPreview() {
     PreviewContainer {
         val style = DigestCardStyle(
-            radius = AppTokens.dp.digest.week.radius,
-            horizontalPadding = AppTokens.dp.digest.week.horizontalPadding,
-            verticalPadding = AppTokens.dp.digest.week.verticalPadding,
-            iconSize = AppTokens.dp.digest.week.icon,
+            radius = AppTokens.dp.digest.content.radius,
+            horizontalPadding = AppTokens.dp.digest.content.horizontalPadding,
+            verticalPadding = AppTokens.dp.digest.content.verticalPadding,
+            iconSize = AppTokens.dp.digest.content.icon,
         )
 
         DigestsSection(

@@ -9,9 +9,9 @@ import kotlinx.datetime.minus
 import kotlin.time.Duration
 
 @Immutable
-public data class WeeklyDigestState(
-    val weekStart: LocalDate,
-    val weekEnd: LocalDate,
+public data class DigestState(
+    val start: LocalDate,
+    val end: LocalDate,
     val exercisesCount: Int,
     val trainingsCount: Int,
     val duration: Duration,
@@ -19,9 +19,9 @@ public data class WeeklyDigestState(
     val totalSets: Int,
 )
 
-public fun stubWeeklyDigest(): WeeklyDigestState = WeeklyDigestState(
-    weekStart = DateTimeUtils.now().date.minus(DatePeriod(days = 6)),
-    weekEnd = DateTimeUtils.now().date,
+public fun stubDigest(): DigestState = DigestState(
+    start = DateTimeUtils.now().date.minus(DatePeriod(days = 6)),
+    end = DateTimeUtils.now().date,
     exercisesCount = 28,
     duration = Duration.parse("7h"),
     total = VolumeFormatState.of(540F),

@@ -1,12 +1,13 @@
 package com.grippo.domain.state.metrics
 
 import com.grippo.core.state.formatters.VolumeFormatState
-import com.grippo.core.state.metrics.MonthlyDigestState
-import com.grippo.data.features.api.metrics.models.MonthlyDigest
+import com.grippo.core.state.metrics.DigestState
+import com.grippo.data.features.api.metrics.models.Digest
 
-public fun MonthlyDigest.toState(): MonthlyDigestState {
-    return MonthlyDigestState(
-        month = this.month,
+public fun Digest.toState(): DigestState {
+    return DigestState(
+        start = this.start,
+        end = this.end,
         exercisesCount = this.exercisesCount,
         trainingsCount = this.trainingsCount,
         duration = this.duration,

@@ -10,7 +10,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.design.components.datetime.PeriodPicker
-import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -26,7 +25,7 @@ public fun HighlightsHeader(
     onPeriodChange: () -> Unit
 ) {
     Row(
-        modifier = modifier.scalableClick(onClick = onPeriodChange),
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
         verticalAlignment = Alignment.CenterVertically,
     ) {

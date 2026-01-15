@@ -126,8 +126,7 @@ public data object AppDp {
     }
 
     public data object Digest {
-        val week: Week = Week
-        val month: Month = Month
+        val content: Content = Content
         val layout: Layout = Layout
 
         public data object Layout {
@@ -136,17 +135,10 @@ public data object AppDp {
             val verticalPadding: Dp = padding.small
         }
 
-        public data object Week {
-            val radius: Dp = AppDp.radius.medium
-            val horizontalPadding: Dp = padding.medium
-            val verticalPadding: Dp = padding.medium
-            val icon: Dp = AppDp.icon.large
-        }
-
-        public data object Month {
-            val radius: Dp = AppDp.radius.medium
-            val horizontalPadding: Dp = padding.medium
-            val verticalPadding: Dp = padding.medium
+        public data object Content {
+            val radius: Dp = AppDp.radius.small
+            val horizontalPadding: Dp = padding.small
+            val verticalPadding: Dp = padding.small
             val icon: Dp = AppDp.icon.large
         }
     }
@@ -164,7 +156,6 @@ public data object AppDp {
 
     public data object Metrics {
         val highlights: Highlights = Highlights
-        val digests: Digests = Digests
         val panel: Panel = Panel
         val status: Status = Status
         val distribution: Distribution = Distribution

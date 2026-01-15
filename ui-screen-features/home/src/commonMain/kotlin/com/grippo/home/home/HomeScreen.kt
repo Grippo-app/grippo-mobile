@@ -21,12 +21,11 @@ import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.metrics.PerformanceMetricTypeState
+import com.grippo.core.state.metrics.stubDigest
 import com.grippo.core.state.metrics.stubExerciseSpotlight
-import com.grippo.core.state.metrics.stubMonthlyDigest
 import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.stubPerformanceMetrics
 import com.grippo.core.state.metrics.stubTrainingStreaks
-import com.grippo.core.state.metrics.stubWeeklyDigest
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
@@ -35,9 +34,7 @@ import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.loading.Loader
-import com.grippo.design.components.metrics.DigestMonthCard
-import com.grippo.design.components.metrics.DigestWeekCard
-import com.grippo.design.components.metrics.DigestsHeader
+import com.grippo.design.components.metrics.DigestCard
 import com.grippo.design.components.metrics.ExerciseSpotlightCard
 import com.grippo.design.components.metrics.HighlightsHeader
 import com.grippo.design.components.metrics.LastTrainingCard
@@ -71,8 +68,7 @@ internal fun HomeScreen(
 ) {
     val isEmptyState = state.lastTraining == null &&
             state.streak == null &&
-            state.weeklyDigest == null &&
-            state.monthlyDigest == null
+            state.digest == null
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
@@ -283,26 +279,13 @@ internal fun HomeScreen(
                     }
                 }
 
-                if (state.monthlyDigest != null && state.weeklyDigest != null) {
-                    item(key = "digests_header", span = { GridItemSpan(2) }) {
-                        DigestsHeader(modifier = Modifier.fillMaxWidth())
-                    }
-
-                    item(key = "digest_month", span = { GridItemSpan(2) }) {
-                        DigestMonthCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .scalableClick(onClick = contract::onOpenMonthlyDigest),
-                            value = state.monthlyDigest,
-                        )
-                    }
-
-                    item(key = "digest_week", span = { GridItemSpan(2) }) {
-                        DigestWeekCard(
+                if (state.digest != null) {
+                    item(key = "digest", span = { GridItemSpan(2) }) {
+                        DigestCard(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .scalableClick(onClick = contract::onOpenWeeklyDigest),
-                            value = state.weeklyDigest,
+                            value = state.digest,
                         )
                     }
                 }
@@ -336,8 +319,7 @@ private fun HomeScreenPreview() {
         HomeScreen(
             state = HomeState(
                 lastTraining = stubTraining(),
-                weeklyDigest = stubWeeklyDigest(),
-                monthlyDigest = stubMonthlyDigest(),
+                digest = stubDigest(),
                 totalDuration = 28.hours,
                 spotlight = stubExerciseSpotlight(),
                 muscleLoad = stubMuscleLoadSummary(),

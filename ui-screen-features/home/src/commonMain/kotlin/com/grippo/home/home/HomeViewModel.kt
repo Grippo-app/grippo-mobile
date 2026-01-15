@@ -86,12 +86,8 @@ internal class HomeViewModel(
             .fromTrainings(list)
             .toState()
 
-        val weekly = trainingDigestUseCase
-            .weeklyDigest(list, range = DateRange.Range.Weekly().range)
-            .toState()
-
-        val monthly = trainingDigestUseCase
-            .monthlyDigest(list, range = DateRange.Range.Monthly().range)
+        val digest = trainingDigestUseCase
+            .digest(list, range = DateRange.Range.Weekly().range)
             .toState()
 
         val spotlight = exerciseSpotlightUseCase
@@ -108,8 +104,7 @@ internal class HomeViewModel(
 
         update {
             it.copy(
-                weeklyDigest = weekly,
-                monthlyDigest = monthly,
+                digest = digest,
                 totalDuration = totalDuration,
                 spotlight = spotlight,
                 muscleLoad = muscleLoadSummary,
@@ -223,8 +218,7 @@ internal class HomeViewModel(
     private fun clearHome() {
         update {
             it.copy(
-                weeklyDigest = null,
-                monthlyDigest = null,
+                digest = null,
                 totalDuration = null,
                 spotlight = null,
                 muscleLoad = null,

@@ -1,7 +1,6 @@
 package com.grippo.data.features.api.training.models
 
-import com.grippo.data.features.api.metrics.models.MonthlyDigest
-import com.grippo.data.features.api.metrics.models.WeeklyDigest
+import com.grippo.data.features.api.metrics.models.Digest
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlin.time.Duration
@@ -86,13 +85,13 @@ public sealed interface TrainingTimelineValue {
     ) : Weekly
 
     public data class WeeklySummary(
-        val summary: WeeklyDigest,
+        val summary: Digest,
         override val key: String,
         override val position: TrainingTimelinePosition = TrainingTimelinePosition.EMPTY,
     ) : Weekly
 
     public data class MonthSummary(
-        val summary: MonthlyDigest,
+        val summary: Digest,
         override val month: LocalDate,
         override val key: String,
         override val position: TrainingTimelinePosition = TrainingTimelinePosition.EMPTY,

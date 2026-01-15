@@ -1,7 +1,6 @@
 package com.grippo.data.features.api.training
 
-import com.grippo.data.features.api.metrics.models.MonthlyDigest
-import com.grippo.data.features.api.metrics.models.WeeklyDigest
+import com.grippo.data.features.api.metrics.models.Digest
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.data.features.api.training.models.TrainingTimeline
 import com.grippo.data.features.api.training.models.TrainingTimelinePosition
@@ -16,8 +15,7 @@ public class TrainingTimelineUseCase {
     public fun trainingTimeline(
         trainings: List<Training>,
         range: DateRange,
-        weeklyDigest: WeeklyDigest? = null,
-        monthlyDigest: MonthlyDigest? = null,
+        digest: Digest? = null,
     ): TrainingTimeline {
         val nonEmpty = trainings.filter { it.exercises.isNotEmpty() }
         if (nonEmpty.isEmpty()) return TrainingTimeline(emptyList())
@@ -26,15 +24,16 @@ public class TrainingTimelineUseCase {
         val values = when {
             days <= 1 -> nonEmpty.toDailyTimeline()
             days <= 7 -> nonEmpty.toWeeklyTimeline(
-                summary = requireNotNull(weeklyDigest) {
-                    "Weekly digest is required for weekly timeline range."
+                summary = requireNotNull(digest) {
+                    "Digest is required for weekly timeline range."
                 }
             )
 
             else -> nonEmpty.toMonthlyTimeline(
-                digest = requireNotNull(monthlyDigest) {
-                    "Monthly digest is required for monthly timeline range."
-                }
+                digest = requireNotNull(digest) {
+                    "Digest is required for monthly timeline range."
+                },
+                month = LocalDate(range.from.date.year, range.from.date.month, 1),
             )
         }
 
@@ -80,7 +79,7 @@ public class TrainingTimelineUseCase {
     }
 
     private fun List<Training>.toWeeklyTimeline(
-        summary: WeeklyDigest,
+        summary: Digest,
     ): List<TrainingTimelineValue> {
         val groupedByDate = sortedByDescending { it.createdAt }.groupBy { it.createdAt.date }
         val sortedDates = groupedByDate.keys.sortedDescending()
@@ -88,7 +87,7 @@ public class TrainingTimelineUseCase {
         val values = mutableListOf<TrainingTimelineValue>()
         values += TrainingTimelineValue.WeeklySummary(
             summary = summary,
-            key = "weekly-summary-${summary.weekStart}",
+            key = "weekly-summary-${summary.start}",
         )
 
         sortedDates.forEachIndexed { index, date ->
@@ -112,7 +111,8 @@ public class TrainingTimelineUseCase {
     }
 
     private fun List<Training>.toMonthlyTimeline(
-        digest: MonthlyDigest,
+        digest: Digest,
+        month: LocalDate,
     ): List<TrainingTimelineValue> {
         val groupedByDate = groupBy { it.createdAt.date }
         val sortedDates = groupedByDate.keys.sortedDescending()
@@ -120,8 +120,8 @@ public class TrainingTimelineUseCase {
 
         values += TrainingTimelineValue.MonthSummary(
             summary = digest,
-            month = digest.month,
-            key = "monthly-digest-${digest.month.year}-${digest.month.month.number}",
+            month = month,
+            key = "monthly-digest-${month.year}-${month.month.number}",
         )
 
         sortedDates.forEachIndexed { index, date ->

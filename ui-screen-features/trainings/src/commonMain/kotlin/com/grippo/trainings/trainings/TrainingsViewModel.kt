@@ -64,23 +64,12 @@ internal class TrainingsViewModel(
     }
 
     private fun provideTrainings(range: DateRange, list: List<Training>) {
-        val weeklyDigest = if (range.range() is DateRange.Range.Weekly) {
-            trainingDigestUseCase.weeklyDigest(list, range)
-        } else {
-            null
-        }
-
-        val monthlyDigest = if (range.range() is DateRange.Range.Monthly) {
-            trainingDigestUseCase.monthlyDigest(list, range)
-        } else {
-            null
-        }
+        val digest = trainingDigestUseCase.digest(list, range)
 
         val timeline = trainingTimelineUseCase.trainingTimeline(
             trainings = list,
             range = range,
-            weeklyDigest = weeklyDigest,
-            monthlyDigest = monthlyDigest,
+            digest = digest,
         )
 
         update { it.copy(timeline = timeline.toState()) }

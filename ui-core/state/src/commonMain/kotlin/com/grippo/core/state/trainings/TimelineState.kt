@@ -1,9 +1,8 @@
 package com.grippo.core.state.trainings
 
 import androidx.compose.runtime.Immutable
-import com.grippo.core.state.metrics.MonthlyDigestState
-import com.grippo.core.state.metrics.WeeklyDigestState
-import com.grippo.core.state.metrics.stubMonthlyDigest
+import com.grippo.core.state.metrics.DigestState
+import com.grippo.core.state.metrics.stubDigest
 import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -130,7 +129,7 @@ public sealed interface TimelineState {
 
     @Immutable
     public data class WeeklySummary(
-        val summary: WeeklyDigestState,
+        val summary: DigestState,
         override val key: String,
         override val position: TrainingPosition = TrainingPosition.EMPTY,
     ) : Weekly
@@ -140,7 +139,7 @@ public sealed interface TimelineState {
      */
     @Immutable
     public data class MonthlyDigest(
-        val summary: MonthlyDigestState,
+        val summary: DigestState,
         override val month: LocalDate,
         override val key: String,
         override val position: TrainingPosition = TrainingPosition.EMPTY,
@@ -192,7 +191,7 @@ public fun stubDailyTrainingTimeline(): ImmutableList<TimelineState> {
 public fun stubMonthlyTrainingTimeline(): ImmutableList<TimelineState> {
     val monthRange = DateRange.Range.Monthly().range
     val monthReference = LocalDate(monthRange.from.year, monthRange.from.month, 1)
-    val digest = stubMonthlyDigest()
+    val digest = stubDigest()
     val values = mutableListOf<TimelineState>()
 
     values += TimelineState.MonthlyDigest(
