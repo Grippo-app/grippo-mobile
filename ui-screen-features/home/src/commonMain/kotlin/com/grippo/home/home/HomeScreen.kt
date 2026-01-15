@@ -204,7 +204,7 @@ internal fun HomeScreen(
                         DigestCard(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .scalableClick(onClick = contract::onOpenWeeklyDigest),
+                                .scalableClick(onClick = contract::onOpenDigest),
                             value = state.digest,
                         )
                     }

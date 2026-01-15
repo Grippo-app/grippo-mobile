@@ -13,8 +13,7 @@ internal interface HomeContract {
     fun onOpenTrainingStreak()
     fun onOpenPeriodPicker()
     fun onPerformanceMetricClick(type: PerformanceMetricTypeState)
-    fun onOpenWeeklyDigest()
-    fun onOpenMonthlyDigest()
+    fun onOpenDigest()
     fun onBack()
 
     @Immutable
@@ -27,8 +26,7 @@ internal interface HomeContract {
         override fun onOpenPeriodPicker() {}
         override fun onPerformanceMetricClick(type: PerformanceMetricTypeState) {}
         override fun onOpenExample(id: String) {}
-        override fun onOpenWeeklyDigest() {}
-        override fun onOpenMonthlyDigest() {}
+        override fun onOpenDigest() {}
         override fun onBack() {}
     }
 }
