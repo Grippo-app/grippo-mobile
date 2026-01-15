@@ -19,6 +19,7 @@ import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlin.math.abs
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 public class TrainingStreakUseCase(
@@ -125,6 +126,7 @@ public class TrainingStreakUseCase(
                     dailyData = dailyData,
                     today = today,
                     sessionsByDay = sessionsByDay,
+                    earliestTrainingDate = earliestTrainingDate,
                     historyDays = historyDays,
                     lastTrainingGapDays = lastTrainingGapDays,
                 )
@@ -133,6 +135,7 @@ public class TrainingStreakUseCase(
             val weeklyCandidate = buildWeeklyCandidateOrNull(
                 weeklyData = weeklyData,
                 today = today,
+                earliestTrainingDate = earliestTrainingDate,
                 historyDays = historyDays,
                 lastTrainingGapDays = lastTrainingGapDays,
             )
@@ -273,6 +276,7 @@ public class TrainingStreakUseCase(
         dailyData: DailyStreakData,
         today: LocalDate,
         sessionsByDay: Map<LocalDate, Int>,
+        earliestTrainingDate: LocalDate?,
         historyDays: Int,
         lastTrainingGapDays: Int,
     ): Candidate {
@@ -294,7 +298,11 @@ public class TrainingStreakUseCase(
             confidence = confidence,
         )
 
-        val timeline = buildDailyTimeline(today = today, dayCounts = sessionsByDay)
+        val timeline = buildDailyTimeline(
+            today = today,
+            dayCounts = sessionsByDay,
+            startDate = earliestTrainingDate,
+        )
 
         val score = scoreCandidate(
             kind = TrainingStreakKind.Daily,
@@ -315,6 +323,7 @@ public class TrainingStreakUseCase(
     private fun buildWeeklyCandidateOrNull(
         weeklyData: WeeklyStreakData,
         today: LocalDate,
+        earliestTrainingDate: LocalDate?,
         historyDays: Int,
         lastTrainingGapDays: Int,
     ): Candidate? {
@@ -343,6 +352,7 @@ public class TrainingStreakUseCase(
             today = today,
             countsByWeekStart = weeklyData.countsByWeekStart,
             target = weeklyData.targetSessions,
+            startDate = earliestTrainingDate,
         )
 
         val score = scoreCandidate(
@@ -823,12 +833,22 @@ public class TrainingStreakUseCase(
         countsByWeekStart: Map<LocalDate, Int>,
         target: Int,
         periods: Int = 4,
+        startDate: LocalDate? = null,
     ): List<TrainingStreakProgressEntry> {
         if (target <= 0) return emptyList()
         val daysFromMonday = today.dayOfWeek.isoDayNumber - DayOfWeek.MONDAY.isoDayNumber
         val startOfCurrentWeek = today.minus(DatePeriod(days = daysFromMonday))
-        val start = startOfCurrentWeek.minus(DatePeriod(days = (periods - 1) * 7))
-        return (0 until periods).map { offset ->
+        val earliestWeekStart = startDate?.let { date ->
+            val offset = date.dayOfWeek.isoDayNumber - DayOfWeek.MONDAY.isoDayNumber
+            date.minus(DatePeriod(days = offset))
+        }
+        val maxPeriods = earliestWeekStart?.let { weekStart ->
+            (weekStart.daysUntil(startOfCurrentWeek) / 7) + 1
+        } ?: periods
+        val effectivePeriods = min(periods, maxPeriods.coerceAtLeast(1))
+        if (effectivePeriods <= 0) return emptyList()
+        val start = startOfCurrentWeek.minus(DatePeriod(days = (effectivePeriods - 1) * 7))
+        return (0 until effectivePeriods).map { offset ->
             val weekStart = start.plus(DatePeriod(days = offset * 7))
             val sessions = countsByWeekStart[weekStart] ?: 0
             val percent = ((sessions.toFloat() / target).coerceIn(0f, 1f) * 100).roundToInt()
@@ -844,9 +864,15 @@ public class TrainingStreakUseCase(
         today: LocalDate,
         dayCounts: Map<LocalDate, Int>,
         days: Int = 7,
+        startDate: LocalDate? = null,
     ): List<TrainingStreakProgressEntry> {
         if (days <= 0) return emptyList()
-        return (days - 1 downTo 0).map { offset ->
+        val maxDays = startDate?.let { date ->
+            date.daysUntil(today) + 1
+        } ?: days
+        val effectiveDays = min(days, maxDays.coerceAtLeast(0))
+        if (effectiveDays <= 0) return emptyList()
+        return (effectiveDays - 1 downTo 0).map { offset ->
             val date = today.minus(DatePeriod(days = offset))
             val sessions = dayCounts[date] ?: 0
             TrainingStreakProgressEntry(
