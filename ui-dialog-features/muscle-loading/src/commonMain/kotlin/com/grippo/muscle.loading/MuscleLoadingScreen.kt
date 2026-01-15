@@ -63,8 +63,8 @@ internal fun MuscleLoadingScreen(
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = state.range.formatted(),
-            style = AppTokens.typography.b14Semi(),
-            color = AppTokens.colors.text.secondary,
+            style = AppTokens.typography.b14Med(),
+            color = AppTokens.colors.text.tertiary,
             textAlign = TextAlign.Center
         )
 

@@ -14,7 +14,6 @@ import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.profile.ProfileMenu
-import com.grippo.core.state.profile.SettingsMenu
 import com.grippo.core.state.profile.stubUser
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
@@ -68,7 +67,7 @@ internal fun ProfileScreen(
                 .padding(start = AppTokens.dp.contentPadding.subContent),
             text = ProfileMenu.title(),
             style = AppTokens.typography.b14Semi(),
-            color = AppTokens.colors.text.secondary
+            color = AppTokens.colors.text.tertiary
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))

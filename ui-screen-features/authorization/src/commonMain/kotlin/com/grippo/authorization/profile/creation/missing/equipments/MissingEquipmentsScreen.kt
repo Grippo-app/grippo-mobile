@@ -89,7 +89,7 @@ internal fun MissingEquipmentsScreen(
                 .fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.registration_equipment_description),
             style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.secondary,
+            color = AppTokens.colors.text.tertiary,
             textAlign = TextAlign.Center
         )
 

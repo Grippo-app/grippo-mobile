@@ -1,9 +1,7 @@
 package com.grippo.design.components.user
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -48,8 +46,6 @@ public fun UserCard(
             textAlign = TextAlign.Center,
             overflow = TextOverflow.Ellipsis,
         )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
 
         Text(
             modifier = Modifier.fillMaxWidth(),

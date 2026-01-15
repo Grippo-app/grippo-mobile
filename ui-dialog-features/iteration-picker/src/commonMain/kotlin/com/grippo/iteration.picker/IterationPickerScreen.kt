@@ -99,8 +99,8 @@ internal fun IterationPickerScreen(
                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                 .fillMaxWidth(),
             text = hint,
-            style = AppTokens.typography.b14Semi(),
-            color = AppTokens.colors.text.secondary,
+            style = AppTokens.typography.b14Med(),
+            color = AppTokens.colors.text.tertiary,
             textAlign = TextAlign.Center
         )
     }

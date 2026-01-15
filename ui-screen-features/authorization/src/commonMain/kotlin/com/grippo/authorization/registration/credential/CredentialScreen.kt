@@ -76,7 +76,7 @@ internal fun CredentialScreen(
             modifier = Modifier.fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.registration_credential_description),
             style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.secondary,
+            color = AppTokens.colors.text.tertiary,
             textAlign = TextAlign.Center
         )
 
