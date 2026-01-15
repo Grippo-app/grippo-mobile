@@ -69,6 +69,8 @@ internal class HomeViewModel(
     }
 
     private suspend fun provideTrainings(list: List<Training>) {
+        val range = state.value.range.range ?: return
+
         if (list.isEmpty()) {
             clearHome()
             return
@@ -87,7 +89,7 @@ internal class HomeViewModel(
             .toState()
 
         val digest = trainingDigestUseCase
-            .digest(list, range = DateRange.Range.Weekly().range)
+            .digest(list, range = range)
             .toState()
 
         val spotlight = exerciseSpotlightUseCase
