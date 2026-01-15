@@ -183,7 +183,7 @@ private fun DigestMetricPanel(
         Text(
             text = label,
             style = AppTokens.typography.b12Med(),
-            color = AppTokens.colors.text.secondary,
+            color = AppTokens.colors.text.tertiary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
