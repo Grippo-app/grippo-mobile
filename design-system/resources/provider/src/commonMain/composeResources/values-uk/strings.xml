@@ -67,6 +67,7 @@
     <string name="yearly">Щороку</string>
     <string name="custom">Власний</string>
     <string name="weekly_digest">Щотижневий дайджест</string>
+    <string name="digest">Дайджест</string>
     <string name="weekly">Щотижня</string>
     <string name="monthly">Щомісяця</string>
     <string name="monthly_digest_template">Дайджест за %1$s</string>

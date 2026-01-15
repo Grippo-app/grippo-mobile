@@ -56,7 +56,7 @@ public fun LastTrainingCard(
 
     val volume = value.total.volume.short()
 
-    val string = remember {
+    val string = remember(value.duration, startLabel, volume) {
         buildString {
             append(startLabel)
             append(" · ")

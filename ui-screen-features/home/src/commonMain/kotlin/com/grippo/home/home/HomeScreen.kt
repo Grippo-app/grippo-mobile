@@ -199,6 +199,17 @@ internal fun HomeScreen(
                     }
                 }
 
+                if (state.digest != null) {
+                    item(key = "digest", span = { GridItemSpan(2) }) {
+                        DigestCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .scalableClick(onClick = contract::onOpenWeeklyDigest),
+                            value = state.digest,
+                        )
+                    }
+                }
+
                 if (densityMetric != null) {
                     item(key = "performance_density") {
                         val onPerformanceMetricClickProvider =
@@ -276,17 +287,6 @@ internal fun HomeScreen(
                 } else {
                     item(key = "performance_intensity_spacer") {
                         Spacer(modifier = Modifier.fillMaxWidth())
-                    }
-                }
-
-                if (state.digest != null) {
-                    item(key = "digest", span = { GridItemSpan(2) }) {
-                        DigestCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .scalableClick(onClick = contract::onOpenWeeklyDigest),
-                            value = state.digest,
-                        )
                     }
                 }
             }

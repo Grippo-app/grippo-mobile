@@ -146,7 +146,7 @@ private fun DigestMetricsGrid(
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
     ) {
         metrics
-            .chunked(2)
+            .chunked(4)
             .forEach { rowItems ->
                 Row(
                     modifier = Modifier.fillMaxWidth(),
