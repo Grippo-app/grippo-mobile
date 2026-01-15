@@ -1,6 +1,7 @@
 package com.grippo.core.state.metrics
 
 import androidx.compose.runtime.Immutable
+import com.grippo.toolkit.date.utils.DateRange
 
 @Immutable
 public data class TrainingStreakState(
@@ -90,6 +91,7 @@ public data class TrainingStreakProgressState(
     val progressPercent: Int,
     val achievedSessions: Int,
     val targetSessions: Int,
+    val range: DateRange,
 )
 
 public fun stubTrainingStreaks(): List<TrainingStreakState> {
@@ -106,17 +108,20 @@ public fun stubTrainingStreaks(): List<TrainingStreakState> {
                 TrainingStreakProgressState(
                     progressPercent = 100,
                     achievedSessions = 1,
-                    targetSessions = 1
+                    targetSessions = 1,
+                    range = DateRange.Range.Last7Days().range,
                 ),
                 TrainingStreakProgressState(
                     progressPercent = 100,
                     achievedSessions = 1,
-                    targetSessions = 1
+                    targetSessions = 1,
+                    range = DateRange.Range.Last7Days().range,
                 ),
                 TrainingStreakProgressState(
                     progressPercent = 50,
                     achievedSessions = 1,
-                    targetSessions = 2
+                    targetSessions = 2,
+                    range = DateRange.Range.Last7Days().range,
                 ),
             ),
             kind = TrainingStreakKind.Daily,
@@ -137,17 +142,20 @@ public fun stubTrainingStreaks(): List<TrainingStreakState> {
                 TrainingStreakProgressState(
                     progressPercent = 75,
                     achievedSessions = 3,
-                    targetSessions = 4
+                    targetSessions = 4,
+                    range = DateRange.Range.Last7Days().range,
                 ),
                 TrainingStreakProgressState(
                     progressPercent = 40,
                     achievedSessions = 2,
-                    targetSessions = 5
+                    targetSessions = 5,
+                    range = DateRange.Range.Last7Days().range,
                 ),
                 TrainingStreakProgressState(
                     progressPercent = 20,
                     achievedSessions = 1,
-                    targetSessions = 5
+                    targetSessions = 5,
+                    range = DateRange.Range.Last7Days().range,
                 ),
             ),
             kind = TrainingStreakKind.Weekly,
@@ -169,22 +177,26 @@ public fun stubTrainingStreaks(): List<TrainingStreakState> {
                 TrainingStreakProgressState(
                     progressPercent = 100,
                     achievedSessions = 2,
-                    targetSessions = 2
+                    targetSessions = 2,
+                    range = DateRange.Range.Last7Days().range,
                 ),
                 TrainingStreakProgressState(
                     progressPercent = 100,
                     achievedSessions = 2,
-                    targetSessions = 2
+                    targetSessions = 2,
+                    range = DateRange.Range.Last7Days().range,
                 ),
                 TrainingStreakProgressState(
                     progressPercent = 60,
                     achievedSessions = 1,
-                    targetSessions = 2
+                    targetSessions = 2,
+                    range = DateRange.Range.Last7Days().range,
                 ),
                 TrainingStreakProgressState(
                     progressPercent = 80,
                     achievedSessions = 2,
-                    targetSessions = 2
+                    targetSessions = 2,
+                    range = DateRange.Range.Last7Days().range,
                 ),
             ),
             kind = TrainingStreakKind.Rhythm,

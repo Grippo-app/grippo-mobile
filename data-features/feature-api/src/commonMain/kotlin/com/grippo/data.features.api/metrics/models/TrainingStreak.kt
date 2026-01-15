@@ -1,5 +1,7 @@
 package com.grippo.data.features.api.metrics.models
 
+import kotlinx.datetime.LocalDateTime
+
 public enum class TrainingStreakKind {
     Daily,
     Weekly,
@@ -75,4 +77,6 @@ public data class TrainingStreakProgressEntry(
     val progressPercent: Int,
     val achievedSessions: Int,
     val targetSessions: Int,
+    val from: LocalDateTime,
+    val to: LocalDateTime,
 )

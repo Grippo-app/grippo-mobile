@@ -503,12 +503,20 @@ public class TrainingStreakUseCase(
             val indices = cycles[cycle] ?: return@mapNotNull null
             if (indices.isEmpty()) return@mapNotNull null
             val achieved = indices.count { idx -> series[idx] && candidate.mask[posIndex(idx)] }
-            val percent =
-                ((achieved.toFloat() / target.toFloat()).coerceIn(0f, 1f) * 100).roundToInt()
+            val percent = ((achieved.toFloat() / target.toFloat())
+                .coerceIn(0f, 1f) * 100).roundToInt()
+
+            val minIndex = indices.minOrNull() ?: return@mapNotNull null
+            val maxIndex = indices.maxOrNull() ?: return@mapNotNull null
+            val periodEnd = today.minus(DatePeriod(days = minIndex))
+            val periodStart = today.minus(DatePeriod(days = maxIndex))
+
             TrainingStreakProgressEntry(
                 progressPercent = percent,
                 achievedSessions = achieved,
                 targetSessions = target,
+                from = DateTimeUtils.startOfDay(periodStart),
+                to = DateTimeUtils.endOfDay(periodEnd),
             )
         }
 
@@ -675,25 +683,18 @@ public class TrainingStreakUseCase(
     ): List<TrainingStreakProgressEntry> {
         if (blocks.isEmpty()) return emptyList()
         val recent = blocks.takeLast(periods)
-        val entries = recent.map { block ->
+        return recent.map { block ->
             val achieved = block.length.coerceAtMost(pattern.workDays)
             val percent =
                 ((achieved.toFloat() / pattern.workDays).coerceIn(0f, 1f) * 100).roundToInt()
             TrainingStreakProgressEntry(
                 progressPercent = percent,
                 achievedSessions = achieved,
-                targetSessions = pattern.workDays
+                targetSessions = pattern.workDays,
+                from = DateTimeUtils.startOfDay(block.start),
+                to = DateTimeUtils.endOfDay(block.end),
             )
         }
-        if (entries.size >= periods) return entries
-        val padding = List(periods - entries.size) {
-            TrainingStreakProgressEntry(
-                progressPercent = 0,
-                achievedSessions = 0,
-                targetSessions = pattern.workDays
-            )
-        }
-        return padding + entries
     }
 
     private data class WeekBucket(
@@ -855,7 +856,9 @@ public class TrainingStreakUseCase(
             TrainingStreakProgressEntry(
                 progressPercent = percent,
                 achievedSessions = sessions,
-                targetSessions = target
+                targetSessions = target,
+                from = DateTimeUtils.startOfDay(weekStart),
+                to = DateTimeUtils.endOfDay(weekStart.plus(DatePeriod(days = 6))),
             )
         }
     }
@@ -878,7 +881,9 @@ public class TrainingStreakUseCase(
             TrainingStreakProgressEntry(
                 progressPercent = if (sessions > 0) 100 else 0,
                 achievedSessions = sessions,
-                targetSessions = 1
+                targetSessions = 1,
+                from = DateTimeUtils.startOfDay(date),
+                to = DateTimeUtils.endOfDay(date),
             )
         }
     }

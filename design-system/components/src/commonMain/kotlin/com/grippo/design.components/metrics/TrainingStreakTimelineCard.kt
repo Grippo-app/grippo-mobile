@@ -15,7 +15,6 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.training_streak_period_label
 import com.grippo.design.resources.provider.training_streak_period_value
 import com.grippo.design.resources.provider.training_streak_timeline_title
 
@@ -36,10 +35,8 @@ public fun TrainingStreakTimelineCard(
             color = AppTokens.colors.text.secondary
         )
 
-        entries.asReversed().forEachIndexed { index, entry ->
-            val cycleNumber = entries.size - index
+        entries.asReversed().forEach { entry ->
             TrainingStreakTimelineRow(
-                cycleNumber = cycleNumber,
                 entry = entry
             )
         }
@@ -48,12 +45,13 @@ public fun TrainingStreakTimelineCard(
 
 @Composable
 private fun TrainingStreakTimelineRow(
-    cycleNumber: Int,
     entry: TrainingStreakProgressState,
 ) {
+    val periodLabel = entry.range.formatted()
+
     Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)) {
         Text(
-            text = AppTokens.strings.res(Res.string.training_streak_period_label, cycleNumber),
+            text = periodLabel,
             style = AppTokens.typography.b13Med(),
             color = AppTokens.colors.text.primary
         )

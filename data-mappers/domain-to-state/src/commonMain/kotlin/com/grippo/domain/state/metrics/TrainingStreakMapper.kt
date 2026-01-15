@@ -1,5 +1,6 @@
 package com.grippo.domain.state.metrics
 
+import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.core.state.metrics.TrainingStreakFeaturedState as StateTrainingStreakFeatured
 import com.grippo.core.state.metrics.TrainingStreakKind as StateTrainingStreakKind
 import com.grippo.core.state.metrics.TrainingStreakMood as StateTrainingStreakMood
@@ -84,5 +85,6 @@ private fun DomainTrainingStreakProgress.toState(): StateTrainingStreakProgress 
         progressPercent = progressPercent,
         achievedSessions = achievedSessions,
         targetSessions = targetSessions,
+        range = DateRange(from = from, to = to),
     )
 }
