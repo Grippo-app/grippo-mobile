@@ -205,6 +205,7 @@
     <string name="this_month">Этот месяц</string>
     <string name="last_7_days">Последние 7 дней</string>
     <string name="last_30_days">Последние 30 дней</string>
+    <string name="last_365_days">Последние 365 дней</string>
     <string name="custom_range">Свой</string>
     <string name="show_more">Показать больше</string>
     <string name="show_less">Показать меньше</string>

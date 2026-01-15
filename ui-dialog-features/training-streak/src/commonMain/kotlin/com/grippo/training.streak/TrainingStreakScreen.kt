@@ -26,7 +26,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.training_streak
 import com.grippo.design.resources.provider.value_training_streak
-import com.grippo.toolkit.date.utils.DateTimeUtils
+import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -116,7 +116,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         TrainingStreakScreen(
             state = TrainingStreakDialogState(
-                range = DateTimeUtils.trailingWeek(),
+                range = DateRange.Range.Last7Days().range,
                 streak = stubTrainingStreaks().first()
             ),
             loaders = persistentSetOf(),

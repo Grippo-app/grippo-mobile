@@ -235,7 +235,7 @@ private fun DateWheelPickerPreview() {
     PreviewContainer {
         DateWheelPicker(
             initial = DateTimeUtils.now(),
-            limitations = DateTimeUtils.trailingYear(),
+            limitations = DateRange.Range.Last365Days().range,
             select = {}
         )
     }

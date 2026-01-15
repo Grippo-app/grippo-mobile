@@ -99,7 +99,7 @@ private fun ScreenPreview() {
         DatePickerScreen(
             state = DatePickerState(
                 value = DateFormatState.of(DateTimeUtils.now(), DateRange.Range.Weekly().range),
-                limitations = DateTimeUtils.trailingYear(),
+                limitations = DateRange.Range.Last365Days().range,
                 title = "Select date",
             ),
             loaders = persistentSetOf(),

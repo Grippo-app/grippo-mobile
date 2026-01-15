@@ -20,7 +20,6 @@ import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.metrics.toState
 import com.grippo.domain.state.training.toState
 import com.grippo.toolkit.date.utils.DateRange
-import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -200,7 +199,7 @@ internal class HomeViewModel(
     }
 
     override fun onOpenMonthlyDigest() {
-        val range = DateTimeUtils.trailingMonth()
+        val range = DateRange.Range.Last30Days().range
         val config = DialogConfig.Statistics.Trainings(
             range = range
         )
@@ -209,7 +208,7 @@ internal class HomeViewModel(
     }
 
     override fun onOpenWeeklyDigest() {
-        val range = DateTimeUtils.trailingWeek()
+        val range = DateRange.Range.Last7Days().range
         val config = DialogConfig.Statistics.Trainings(
             range = range
         )

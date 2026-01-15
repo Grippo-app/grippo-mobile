@@ -32,7 +32,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.muscle_loading
 import com.grippo.design.resources.provider.value_muscle_loading
-import com.grippo.toolkit.date.utils.DateTimeUtils
+import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
@@ -150,7 +150,7 @@ private fun ScreenPerGroupPreview() {
     PreviewContainer {
         MuscleLoadingScreen(
             state = MuscleLoadingState(
-                range = DateTimeUtils.trailingWeek(),
+                range = DateRange.Range.Last7Days().range,
                 summary = stubMuscleLoadSummary(),
                 mode = MuscleLoadingShowingMode.PerGroup
             ),
@@ -166,7 +166,7 @@ private fun ScreenPerMusclePreview() {
     PreviewContainer {
         MuscleLoadingScreen(
             state = MuscleLoadingState(
-                range = DateTimeUtils.trailingWeek(),
+                range = DateRange.Range.Last7Days().range,
                 summary = stubMuscleLoadSummary(),
                 mode = MuscleLoadingShowingMode.PerMuscle
             ),

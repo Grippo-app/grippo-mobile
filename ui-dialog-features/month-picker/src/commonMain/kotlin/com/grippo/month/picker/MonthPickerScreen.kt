@@ -102,7 +102,7 @@ private fun ScreenPreview() {
                     DateTimeUtils.now(),
                     DateRange.Range.Yearly().range
                 ),
-                limitations = DateTimeUtils.trailingYear(),
+                limitations = DateRange.Range.Last365Days().range,
                 title = "Select month",
             ),
             loaders = persistentSetOf(),
