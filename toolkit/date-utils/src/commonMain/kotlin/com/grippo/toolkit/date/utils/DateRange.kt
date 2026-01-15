@@ -27,45 +27,54 @@ public data class DateRange(
     @Serializable
     @Immutable
     public sealed class Range(public open val range: DateRange?) {
+        @Immutable
         public data class Daily(override val range: DateRange = DateTimeUtils.thisDay()) :
             Range(range)
 
+        @Immutable
         public data class Weekly(override val range: DateRange = DateTimeUtils.thisWeek()) :
             Range(range)
 
+        @Immutable
         public data class Last7Days(override val range: DateRange = DateTimeUtils.trailingWeek()) :
             Range(range)
 
+        @Immutable
         public data class Monthly(override val range: DateRange = DateTimeUtils.thisMonth()) :
             Range(range)
 
+        @Immutable
         public data class Last30Days(override val range: DateRange = DateTimeUtils.trailingMonth()) :
             Range(range)
 
+        @Immutable
         public data class Last365Days(override val range: DateRange = DateTimeUtils.trailingYear()) :
             Range(range)
 
+        @Immutable
         public data class Yearly(override val range: DateRange = DateTimeUtils.thisYear()) :
             Range(range)
 
+        @Immutable
         public data object Undefined : Range(null)
-
-        public companion object {
-            public fun preset(): List<DateRange> {
-                return listOf()
-            }
-        }
     }
 
     public fun range(): Range {
         val days = max(0, from.date.daysUntil(to.date) + 1)
 
-        return when (days) {
-            1 -> Range.Daily()
-            7 -> Range.Last7Days()
-            30 -> Range.Last30Days()
-            in 28..31 -> Range.Monthly()
-            in 365..366 -> Range.Yearly()
+        return when {
+            matches(DateTimeUtils.thisDay()) -> Range.Daily()
+            matches(DateTimeUtils.thisWeek()) -> Range.Weekly()
+            matches(DateTimeUtils.trailingWeek()) -> Range.Last7Days()
+            matches(DateTimeUtils.thisMonth()) -> Range.Monthly()
+            matches(DateTimeUtils.trailingMonth()) -> Range.Last30Days()
+            matches(DateTimeUtils.trailingYear()) -> Range.Last365Days()
+            matches(DateTimeUtils.thisYear()) -> Range.Yearly()
+            days == 1 -> Range.Daily()
+            days == 7 -> Range.Last7Days()
+            days == 30 -> Range.Last30Days()
+            days in 28..31 -> Range.Monthly()
+            days in 365..366 -> Range.Yearly()
             else -> Range.Undefined
         }
     }
@@ -86,58 +95,36 @@ public data class DateRange(
 
     @Composable
     public fun formatted(): String {
-        when (range()) {
-            is Range.Daily -> {
-                val from = DateCompose.rememberFormat(this.from, DateFormat.DateOnly.DateDdMmmm)
-                return from
-            }
-
-            is Range.Weekly -> {
-                val from = DateCompose.rememberFormat(this.from, DateFormat.DateOnly.DateDdMmm)
-                val to = DateCompose.rememberFormat(this.to, DateFormat.DateOnly.DateDdMmm)
-                return "$from - $to"
-            }
-
-            is Range.Last7Days -> {
-                val from = DateCompose.rememberFormat(this.from, DateFormat.DateOnly.DateDdMmm)
-                val to = DateCompose.rememberFormat(this.to, DateFormat.DateOnly.DateDdMmm)
-                return "$from - $to"
-            }
-
-            is Range.Monthly -> {
-                val from = DateCompose.rememberFormat(this.from, DateFormat.DateOnly.DateDdMmm)
-                val to = DateCompose.rememberFormat(this.to, DateFormat.DateOnly.DateDdMmm)
-                return "$from - $to"
-            }
-
-            is Range.Last30Days -> {
-                val from = DateCompose.rememberFormat(this.from, DateFormat.DateOnly.DateDdMmm)
-                val to = DateCompose.rememberFormat(this.to, DateFormat.DateOnly.DateDdMmm)
-                return "$from - $to"
-            }
-
-            is Range.Last365Days -> {
-                val from = DateCompose.rememberFormat(this.from, DateFormat.DateOnly.DateMmmDdYyyy)
-                val to = DateCompose.rememberFormat(this.to, DateFormat.DateOnly.DateMmmDdYyyy)
-                return "$from - $to"
-            }
-
-            is Range.Yearly -> {
-                val from = DateCompose.rememberFormat(this.from, DateFormat.DateOnly.DateMmmDdYyyy)
-                val to = DateCompose.rememberFormat(this.to, DateFormat.DateOnly.DateMmmDdYyyy)
-                return "$from - $to"
-            }
-
-            Range.Undefined -> {
-                val sameDay = remember(this.from, this.to) { this.from.date == this.to.date }
-
-                val from = DateCompose.rememberFormat(this.from, DateFormat.DateOnly.DateMmmDdYyyy)
-                if (sameDay) return from
-
-                val to = DateCompose.rememberFormat(this.to, DateFormat.DateOnly.DateMmmDdYyyy)
-                return "$from - $to"
-            }
+        return when (range()) {
+            is Range.Daily -> DateCompose.rememberFormat(this.from, DateFormat.DateOnly.DateDdMmmm)
+            is Range.Weekly -> formatSpan(DateFormat.DateOnly.DateDdMmm)
+            is Range.Last7Days -> formatSpan(DateFormat.DateOnly.DateDdMmm)
+            is Range.Monthly -> formatSpan(DateFormat.DateOnly.DateDdMmm)
+            is Range.Last30Days -> formatSpan(DateFormat.DateOnly.DateDdMmm)
+            is Range.Last365Days -> formatSpan(DateFormat.DateOnly.DateMmmDdYyyy)
+            is Range.Yearly -> formatSpan(DateFormat.DateOnly.DateMmmDdYyyy)
+            Range.Undefined -> formatUndefined()
         }
+    }
+
+    private fun matches(other: DateRange): Boolean {
+        return from == other.from && to == other.to
+    }
+
+    @Composable
+    private fun formatSpan(format: DateFormat.DateOnly): String {
+        val from = DateCompose.rememberFormat(this.from, format)
+        val to = DateCompose.rememberFormat(this.to, format)
+        return "$from - $to"
+    }
+
+    @Composable
+    private fun formatUndefined(): String {
+        val sameDay = remember(this.from, this.to) { this.from.date == this.to.date }
+        val from = DateCompose.rememberFormat(this.from, DateFormat.DateOnly.DateMmmDdYyyy)
+        if (sameDay) return from
+        val to = DateCompose.rememberFormat(this.to, DateFormat.DateOnly.DateMmmDdYyyy)
+        return "$from - $to"
     }
 }
 
