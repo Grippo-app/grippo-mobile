@@ -59,7 +59,7 @@ public fun PeriodPicker(
             color = titleColor
         )
 
-        Spacer(Modifier.width(AppTokens.dp.contentPadding.subContent))
+        Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
 
         val buttonState = remember(enabled) {
             when (enabled) {
