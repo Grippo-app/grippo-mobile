@@ -203,9 +203,9 @@
     <string name="this_week">Цей тиждень</string>
     <string name="this_year">Цей рік</string>
     <string name="this_month">Цей місяць</string>
-    <string name="last_7_days">Останні 7 днів</string>
-    <string name="last_30_days">Останні 30 днів</string>
-    <string name="last_365_days">Останні 365 днів</string>
+    <string name="last_7_days">7 днів</string>
+    <string name="last_30_days">30 днів</string>
+    <string name="last_365_days">365 днів</string>
     <string name="custom_range">Власний</string>
     <string name="show_more">Показати більше</string>
     <string name="show_less">Показати менше</string>

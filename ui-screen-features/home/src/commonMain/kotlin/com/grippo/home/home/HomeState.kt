@@ -12,7 +12,7 @@ import kotlin.time.Duration
 
 @Immutable
 internal data class HomeState(
-    val range: DateRange.Range = DateRange.Range.Last7Days(),
+    val range: DateRange.Range = DateRange.Range.Monthly(),
     val lastTraining: TrainingState? = null,
     val digest: DigestState? = null,
     val totalDuration: Duration? = null,
