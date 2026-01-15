@@ -65,7 +65,7 @@ internal fun CheckSelectableCardMedium(
 
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
         ) {
             Text(
                 text = style.title,
