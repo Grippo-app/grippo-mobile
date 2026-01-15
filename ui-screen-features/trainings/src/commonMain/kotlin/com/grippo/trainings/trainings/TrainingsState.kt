@@ -26,7 +26,7 @@ internal data class TrainingsState(
     val period: TrainingsTimelinePeriod = TrainingsTimelinePeriod.Monthly,
     val date: DateRange = TrainingsTimelinePeriod.Monthly.defaultRange(),
     val limitations: DateRange = run {
-        val currentYear = DateTimeUtils.thisYear()
+        val currentYear = DateRange.Range.Yearly().range
         val previousYear = DateTimeUtils.shift(currentYear, DatePeriod(years = -1))
         val nextYear = DateTimeUtils.shift(currentYear, DatePeriod(years = 1))
         DateRange(from = previousYear.from, to = nextYear.to)
@@ -68,8 +68,8 @@ internal enum class TrainingsTimelinePeriod(
     Monthly(id = "monthly", text = UiText.Res(Res.string.trainings_period_monthly));
 
     fun defaultRange(): DateRange = when (this) {
-        Daily -> DateTimeUtils.thisDay()
-        Monthly -> DateTimeUtils.thisMonth()
+        Daily -> DateRange.Range.Daily().range
+        Monthly -> DateRange.Range.Monthly().range
     }
 
     fun rangeFor(anchor: LocalDateTime): DateRange = when (this) {

@@ -101,7 +101,7 @@ private fun DatePickerPreview() {
             format = DateFormat.DateOnly.DateMmmDdYyyy,
             enabled = true,
             onSelect = {},
-            limitations = DateTimeUtils.thisWeek(),
+            limitations = DateRange.Range.Weekly().range,
             onNext = {},
             onPrevious = {}
         )
@@ -111,7 +111,7 @@ private fun DatePickerPreview() {
             format = DateFormat.DateOnly.DateMmmDdYyyy,
             enabled = false,
             onSelect = {},
-            limitations = DateTimeUtils.thisWeek(),
+            limitations = DateRange.Range.Weekly().range,
             onNext = {},
             onPrevious = {}
         )

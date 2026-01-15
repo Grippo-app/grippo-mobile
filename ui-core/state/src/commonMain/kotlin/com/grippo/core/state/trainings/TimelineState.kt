@@ -4,7 +4,7 @@ import androidx.compose.runtime.Immutable
 import com.grippo.core.state.metrics.MonthlyDigestState
 import com.grippo.core.state.metrics.WeeklyDigestState
 import com.grippo.core.state.metrics.stubMonthlyDigest
-import com.grippo.toolkit.date.utils.DateTimeUtils
+import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
@@ -190,7 +190,7 @@ public fun stubDailyTrainingTimeline(): ImmutableList<TimelineState> {
 }
 
 public fun stubMonthlyTrainingTimeline(): ImmutableList<TimelineState> {
-    val monthRange = DateTimeUtils.thisMonth()
+    val monthRange = DateRange.Range.Monthly().range
     val monthReference = LocalDate(monthRange.from.year, monthRange.from.month, 1)
     val digest = stubMonthlyDigest()
     val values = mutableListOf<TimelineState>()

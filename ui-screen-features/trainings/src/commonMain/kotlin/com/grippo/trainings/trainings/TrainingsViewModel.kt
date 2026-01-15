@@ -64,13 +64,13 @@ internal class TrainingsViewModel(
     }
 
     private fun provideTrainings(range: DateRange, list: List<Training>) {
-        val weeklyDigest = if (range.range() == DateRange.Range.WEEKLY) {
+        val weeklyDigest = if (range.range() is DateRange.Range.Weekly) {
             trainingDigestUseCase.weeklyDigest(list, range)
         } else {
             null
         }
 
-        val monthlyDigest = if (range.range() == DateRange.Range.MONTHLY) {
+        val monthlyDigest = if (range.range() is DateRange.Range.Monthly) {
             trainingDigestUseCase.monthlyDigest(list, range)
         } else {
             null

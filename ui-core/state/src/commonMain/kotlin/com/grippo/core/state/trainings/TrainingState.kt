@@ -3,7 +3,7 @@ package com.grippo.core.state.trainings
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.metrics.TrainingTotalState
 import com.grippo.core.state.metrics.stubTotal
-import com.grippo.toolkit.date.utils.DateTimeUtils
+import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDateTime
@@ -25,7 +25,7 @@ public data class TrainingState(
 public fun stubTraining(): TrainingState = TrainingState(
     id = Uuid.random().toString(),
     duration = 10000L.minutes,
-    createdAt = DateTimeUtils.thisDay().from,
+    createdAt = DateRange.Range.Daily().range.from,
     total = stubTotal(),
     exercises = listOf(
         stubExercise(),

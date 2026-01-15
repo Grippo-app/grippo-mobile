@@ -25,7 +25,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.custom
-import com.grippo.toolkit.date.utils.DateTimeUtils
+import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -91,7 +91,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         PeriodPickerScreen(
             state = PeriodPickerState(
-                value = PeriodFormatState.of(DateTimeUtils.thisWeek()),
+                value = PeriodFormatState.of(DateRange.Range.Weekly().range),
                 title = "Select period",
             ),
             loaders = persistentSetOf(),

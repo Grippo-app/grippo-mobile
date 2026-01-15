@@ -3,7 +3,7 @@ package com.grippo.core.state.profile
 import androidx.compose.runtime.Immutable
 import com.grippo.core.state.formatters.HeightFormatState
 import com.grippo.core.state.formatters.WeightFormatState
-import com.grippo.toolkit.date.utils.DateTimeUtils
+import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.datetime.LocalDateTime
 import kotlin.random.Random
 import kotlin.uuid.Uuid
@@ -25,6 +25,6 @@ public fun stubUser(): UserState = UserState(
     email = "max@test.dev",
     height = HeightFormatState.of(Random.nextInt(140, 200)),
     weight = WeightFormatState.of(Random.nextInt(60, 100).toFloat()),
-    createdAt = DateTimeUtils.thisDay().from,
+    createdAt = DateRange.Range.Daily().range.from,
     experience = ExperienceEnumState.INTERMEDIATE
 )

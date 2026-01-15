@@ -41,6 +41,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.toolkit.date.utils.DateFormat
+import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -73,7 +74,7 @@ internal fun MonthlyTrainingsPage(
         month?.let { LocalDate(it.year, it.month, 1) }
             ?: digest?.month
             ?: days.firstOrNull()?.month
-            ?: DateTimeUtils.thisMonth().from.date
+            ?: DateRange.Range.Monthly().range.from.date
     }
 
     LaunchedEffect(monthReference) {
@@ -317,7 +318,7 @@ private fun MonthlyTrainingsPagePreview() {
         MonthlyTrainingsPage(
             timeline = stubMonthlyTrainingTimeline(),
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
-            month = DateTimeUtils.thisMonth().from.date,
+            month = DateRange.Range.Monthly().range.from.date,
             onDigestClick = {},
             onOpenDaily = { _ -> },
         )
@@ -331,7 +332,7 @@ private fun MonthlyTrainingsEmptyPagePreview() {
         MonthlyTrainingsPage(
             timeline = persistentListOf(),
             contentPadding = PaddingValues(AppTokens.dp.contentPadding.content),
-            month = DateTimeUtils.thisMonth().from.date,
+            month = DateRange.Range.Monthly().range.from.date,
             onDigestClick = {},
             onOpenDaily = { _ -> },
         )

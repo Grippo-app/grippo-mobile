@@ -341,11 +341,11 @@ public class MuscleLoadTimelineUseCase(
     )
 
     private fun deriveScale(range: DateRange): BucketScale = when (range.range()) {
-        DateRange.Range.DAILY -> BucketScale.EXERCISE
-        DateRange.Range.WEEKLY -> BucketScale.DAY
-        DateRange.Range.MONTHLY -> BucketScale.WEEK
-        DateRange.Range.YEARLY -> BucketScale.MONTH
-        DateRange.Range.UNDEFINED -> deriveCustomScale(range)
+        is DateRange.Range.Daily -> BucketScale.EXERCISE
+        is DateRange.Range.Weekly -> BucketScale.DAY
+        is DateRange.Range.Monthly -> BucketScale.WEEK
+        is DateRange.Range.Yearly -> BucketScale.MONTH
+        else -> deriveCustomScale(range)
     }
 
     private fun deriveCustomScale(range: DateRange): BucketScale {

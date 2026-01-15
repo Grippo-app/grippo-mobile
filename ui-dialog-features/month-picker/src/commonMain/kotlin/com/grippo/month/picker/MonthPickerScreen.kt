@@ -26,6 +26,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.continue_btn
 import com.grippo.month.picker.internal.MonthWheelPicker
+import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -97,7 +98,10 @@ private fun ScreenPreview() {
     PreviewContainer {
         MonthPickerScreen(
             state = MonthPickerState(
-                value = DateFormatState.of(DateTimeUtils.now(), DateTimeUtils.thisYear()),
+                value = DateFormatState.of(
+                    DateTimeUtils.now(),
+                    DateRange.Range.Yearly().range
+                ),
                 limitations = DateTimeUtils.trailingYear(),
                 title = "Select month",
             ),

@@ -95,7 +95,7 @@ public object DateTimeUtils {
 
     public fun trailingMonth(): DateRange {
         val today = Clock.System.now().toLocalDateTime(timeZone).date
-        val monthAgo = today.minus(DatePeriod(days = 31))
+        val monthAgo = today.minus(DatePeriod(days = 30))
 
         return DateRange(
             from = monthAgo.atTime(DayTime.StartOfDay.localTime),
