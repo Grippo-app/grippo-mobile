@@ -5,6 +5,7 @@ import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.filters.FilterValueState
 import com.grippo.core.state.formatters.DateFormatState
 import com.grippo.core.state.formatters.HeightFormatState
+import com.grippo.core.state.formatters.PeriodFormatState
 import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.menu.MenuItemState
 import com.grippo.core.state.metrics.PerformanceMetricTypeState
@@ -109,6 +110,16 @@ public sealed class DialogConfig(
         val limitations: DateRange,
         val title: String,
         @Transient val onResult: (value: DateFormatState) -> Unit = {},
+    ) : DialogConfig(
+        onDismiss = null,
+        dismissBySwipe = true
+    )
+
+    @Serializable
+    public data class PeriodPicker(
+        val initial: PeriodFormatState,
+        val title: String,
+        @Transient val onResult: (value: PeriodFormatState) -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true

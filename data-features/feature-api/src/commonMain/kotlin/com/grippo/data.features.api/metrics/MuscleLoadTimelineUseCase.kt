@@ -345,7 +345,7 @@ public class MuscleLoadTimelineUseCase(
         DateRange.Range.WEEKLY -> BucketScale.DAY
         DateRange.Range.MONTHLY -> BucketScale.WEEK
         DateRange.Range.YEARLY -> BucketScale.MONTH
-        DateRange.Range.CUSTOM -> deriveCustomScale(range)
+        DateRange.Range.UNDEFINED -> deriveCustomScale(range)
     }
 
     private fun deriveCustomScale(range: DateRange): BucketScale {

@@ -17,6 +17,7 @@ import com.grippo.core.state.metrics.PerformanceTrendStatusState
 import com.grippo.core.state.metrics.TrainingStreakState
 import com.grippo.core.state.metrics.stubPerformanceMetrics
 import com.grippo.core.state.metrics.stubTrainingStreaks
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -35,6 +36,7 @@ public fun HighlightsHeader(
     modifier: Modifier = Modifier,
     streak: TrainingStreakState,
     performance: List<PerformanceMetricState>,
+    onPeriodChange: () -> Unit
 ) {
     val storyType = run {
         val dominantMetric = performance.firstOrNull()
@@ -71,7 +73,8 @@ public fun HighlightsHeader(
     }
 
     Row(
-        modifier = modifier,
+        modifier = modifier
+            .scalableClick(onClick = onPeriodChange),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -123,6 +126,7 @@ private fun HighlightsHeaderPreview() {
         HighlightsHeader(
             streak = stubTrainingStreaks().first(),
             performance = stubPerformanceMetrics(),
+            onPeriodChange = {}
         )
     }
 }

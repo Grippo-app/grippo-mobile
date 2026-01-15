@@ -15,7 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
-import com.grippo.design.components.cards.selectable.SelectableCard
+import com.grippo.design.components.cards.selectable.CheckSelectableCard
 import com.grippo.design.components.inputs.InputSearch
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
@@ -64,7 +64,7 @@ internal fun ManualHeader(
                     { contract.onMuscleGroupClick(item.id) }
                 }
 
-                SelectableCard(
+                CheckSelectableCard(
                     style = CheckSelectableCardStyle.Small(
                         title = item.type.title().text()
                     ),

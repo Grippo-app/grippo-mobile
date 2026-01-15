@@ -157,6 +157,7 @@ internal fun HomeScreen(
                             modifier = Modifier.fillMaxWidth(),
                             streak = state.streak,
                             performance = state.performance,
+                            onPeriodChange = contract::onOpenPeriodPicker
                         )
                     }
 

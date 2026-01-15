@@ -12,16 +12,21 @@ import com.grippo.data.features.api.metrics.TrainingDigestUseCase
 import com.grippo.data.features.api.metrics.TrainingStreakUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.period_picker_title
+import com.grippo.design.resources.provider.providers.StringProvider
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.metrics.toState
 import com.grippo.domain.state.training.toState
-import com.grippo.toolkit.date.utils.DateRange
 import com.grippo.toolkit.date.utils.DateTimeUtils
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
-import kotlin.time.Duration.Companion.days
 
 internal class HomeViewModel(
     private val trainingFeature: TrainingFeature,
@@ -32,23 +37,31 @@ internal class HomeViewModel(
     private val performanceTrendUseCase: PerformanceTrendUseCase,
     private val trainingDigestUseCase: TrainingDigestUseCase,
     private val exerciseExampleFeature: ExerciseExampleFeature,
+    private val stringProvider: StringProvider,
 ) : BaseViewModel<HomeState, HomeDirection, HomeLoader>(
     HomeState()
 ), HomeContract {
 
     init {
-        val range = defaultRange()
+        state
+            .map { it.period.value }
+            .filterNotNull()
+            .distinctUntilChanged()
+            .flatMapLatest { period ->
+                trainingFeature
+                    .observeTrainings(start = period.from, end = period.to)
+                    .onEach(::provideTrainings)
+            }.safeLaunch()
 
-        trainingFeature
-            .observeTrainings(start = defaultRange().from, end = range.to)
-            .onEach(::provideTrainings)
-            .safeLaunch()
-
-        safeLaunch(loader = HomeLoader.Trainings) {
-            trainingFeature
-                .getTrainings(start = range.from, end = range.to)
-                .getOrThrow()
-        }
+        state
+            .map { it.period.value }
+            .filterNotNull()
+            .distinctUntilChanged()
+            .onEach { period ->
+                trainingFeature
+                    .getTrainings(start = period.from, end = period.to)
+                    .getOrThrow()
+            }.safeLaunch()
 
         safeLaunch {
             exerciseExampleFeature.getExerciseExamples()
@@ -112,17 +125,21 @@ internal class HomeViewModel(
     }
 
     override fun onPerformanceMetricClick(type: PerformanceMetricTypeState) {
+        val range = state.value.period.value ?: return
+
         val dialog = DialogConfig.PerformanceTrend(
-            range = defaultRange(),
-            metricType = type
+            range = range,
+            metricType = type,
         )
 
         dialogController.show(dialog)
     }
 
     override fun onOpenMuscleLoading() {
+        val range = state.value.period.value ?: return
+
         val dialog = DialogConfig.MuscleLoading(
-            range = defaultRange()
+            range = range,
         )
         dialogController.show(dialog)
     }
@@ -151,6 +168,18 @@ internal class HomeViewModel(
         navigateTo(HomeDirection.Trainings)
     }
 
+    override fun onOpenPeriodPicker() {
+        safeLaunch {
+            val dialog = DialogConfig.PeriodPicker(
+                title = stringProvider.get(Res.string.period_picker_title),
+                initial = state.value.period,
+                onResult = { result -> update { s -> s.copy(period = result) } }
+            )
+
+            dialogController.show(dialog)
+        }
+    }
+
     override fun onOpenExample(id: String) {
         val dialog = DialogConfig.ExerciseExample(
             id = id
@@ -160,8 +189,10 @@ internal class HomeViewModel(
     }
 
     override fun onOpenTrainingStreak() {
+        val range = state.value.period.value ?: return
+
         val dialog = DialogConfig.TrainingStreak(
-            range = defaultRange()
+            range = range
         )
 
         dialogController.show(dialog)
@@ -187,17 +218,6 @@ internal class HomeViewModel(
 
     override fun onBack() {
         navigateTo(HomeDirection.Back)
-    }
-
-    private fun defaultRange(): DateRange {
-        val now = DateTimeUtils.now()
-
-        val range = DateRange(
-            from = DateTimeUtils.minus(now, 90.days),
-            to = DateTimeUtils.plus(now, 1.days)
-        )
-
-        return range
     }
 
     private fun clearHome() {

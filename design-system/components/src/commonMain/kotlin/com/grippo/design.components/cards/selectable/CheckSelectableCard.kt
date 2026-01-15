@@ -44,7 +44,7 @@ public sealed class CheckSelectableCardStyle(
 }
 
 @Composable
-public fun SelectableCard(
+public fun CheckSelectableCard(
     modifier: Modifier = Modifier,
     style: CheckSelectableCardStyle,
     isSelected: Boolean,
@@ -127,12 +127,12 @@ private fun CheckSelectableCardSmallPreview() {
 
 @Composable
 internal fun CheckSelectableCardVariants(style: CheckSelectableCardStyle) {
-    SelectableCard(
+    CheckSelectableCard(
         style = style,
         isSelected = true,
         onSelect = {}
     )
-    SelectableCard(
+    CheckSelectableCard(
         style = style,
         isSelected = false,
         onSelect = {}

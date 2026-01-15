@@ -11,6 +11,7 @@ internal interface HomeContract {
     fun onOpenExample(id: String)
     fun onOpenMuscleLoading()
     fun onOpenTrainingStreak()
+    fun onOpenPeriodPicker()
     fun onPerformanceMetricClick(type: PerformanceMetricTypeState)
     fun onOpenWeeklyDigest()
     fun onOpenMonthlyDigest()
@@ -23,6 +24,7 @@ internal interface HomeContract {
         override fun onOpenTrainings() {}
         override fun onOpenMuscleLoading() {}
         override fun onOpenTrainingStreak() {}
+        override fun onOpenPeriodPicker() {}
         override fun onPerformanceMetricClick(type: PerformanceMetricTypeState) {}
         override fun onOpenExample(id: String) {}
         override fun onOpenWeeklyDigest() {}

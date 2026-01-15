@@ -84,6 +84,7 @@ kotlin {
         implementation(projects.uiDialogFeatures.muscleLoading)
         implementation(projects.uiDialogFeatures.trainingStreak)
         implementation(projects.uiDialogFeatures.performanceTrend)
+        implementation(projects.uiDialogFeatures.periodPicker)
 
         implementation(libs.datetime)
         implementation(libs.immutable.collections)
