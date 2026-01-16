@@ -28,6 +28,7 @@ public data object AppDp {
     }
 
     private data object Radius {
+        val tiny: Dp = 4.dp
         val small: Dp = 8.dp
         val medium: Dp = 12.dp
         val large: Dp = 28.dp
@@ -315,12 +316,18 @@ public data object AppDp {
     }
 
     public data object ExerciseExampleImage {
+        val small: Small = Small
         val large: Large = Large
         val medium: Medium = Medium
 
         public data object Medium {
             val size: Dp = icon.xxLarge
             val radius: Dp = AppDp.radius.medium
+        }
+
+        public data object Small {
+            val size: Dp = icon.medium
+            val radius: Dp = AppDp.radius.tiny
         }
 
         public data object Large {

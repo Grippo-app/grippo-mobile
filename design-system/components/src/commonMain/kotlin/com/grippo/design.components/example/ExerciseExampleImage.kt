@@ -26,6 +26,7 @@ import com.grippo.design.resources.provider.icons.Question
 
 @Immutable
 public enum class ExerciseExampleImageStyle {
+    SMALL,
     MEDIUM,
     LARGE,
 }
@@ -55,6 +56,18 @@ public fun ExerciseExampleImage(
             modifier = modifier
                 .clip(RoundedCornerShape(AppTokens.dp.exerciseExampleImage.large.radius))
                 .size(AppTokens.dp.exerciseExampleImage.large.size)
+                .background(AppTokens.colors.background.card),
+            model = value,
+            contentScale = ContentScale.Crop,
+            contentDescription = null,
+            placeholder = fallback,
+            error = fallback
+        )
+
+        ExerciseExampleImageStyle.SMALL -> AsyncImage(
+            modifier = modifier
+                .clip(RoundedCornerShape(AppTokens.dp.exerciseExampleImage.small.radius))
+                .size(AppTokens.dp.exerciseExampleImage.small.size)
                 .background(AppTokens.colors.background.card),
             model = value,
             contentScale = ContentScale.Crop,
@@ -120,6 +133,11 @@ private class InsetPainter(
 @Composable
 private fun ExerciseExampleImagePreview() {
     PreviewContainer {
+        ExerciseExampleImage(
+            value = "https://example.com/image.jpg",
+            style = ExerciseExampleImageStyle.SMALL
+        )
+
         ExerciseExampleImage(
             value = "https://example.com/image.jpg",
             style = ExerciseExampleImageStyle.MEDIUM

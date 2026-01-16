@@ -11,6 +11,7 @@ import com.grippo.core.state.examples.ExerciseExampleValueState
 import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.design.components.example.internal.ExerciseExampleCardLarge
 import com.grippo.design.components.example.internal.ExerciseExampleCardMedium
+import com.grippo.design.components.example.internal.ExerciseExampleCardSmall
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
@@ -50,7 +51,10 @@ public fun ExerciseExampleCard(
             allowUsageLabel = style.allowUsageLabel
         )
 
-        is ExerciseExampleCardStyle.Small -> TODO()
+        is ExerciseExampleCardStyle.Small -> ExerciseExampleCardSmall(
+            modifier = modifier,
+            value = style.value,
+        )
     }
 }
 
@@ -77,6 +81,17 @@ private fun ExerciseExampleCardMediumPreview() {
         ExerciseExampleCard(
             modifier = Modifier.fillMaxWidth(),
             style = ExerciseExampleCardStyle.Medium(stubExerciseExample()),
+        )
+    }
+}
+
+@AppPreview
+@Composable
+private fun ExerciseExampleCardSmallPreview() {
+    PreviewContainer {
+        ExerciseExampleCard(
+            modifier = Modifier.fillMaxWidth(),
+            style = ExerciseExampleCardStyle.Small(stubExerciseExample().value),
         )
     }
 }
