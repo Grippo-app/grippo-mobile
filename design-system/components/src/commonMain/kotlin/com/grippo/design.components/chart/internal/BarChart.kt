@@ -56,6 +56,30 @@ internal fun BarChart(
             tickMarkWidth = 1.dp,
             tickMarkLength = 6.dp
         ),
+        peek = BarStyle.Peek.Visible(
+            hitSlop = 26.dp,
+
+            guideColor = colors.charts.bar.guide,
+            guideWidth = 1.dp,
+            guideDash = 6.dp,
+            guideGap = 6.dp,
+
+            focusColor = colors.charts.bar.focus,
+            focusRadius = 3.5.dp,
+            focusRingWidth = 2.dp,
+            focusHaloRadius = 18.dp,
+
+            tooltipBackground = colors.charts.tooltip.background,
+            tooltipBorder = colors.charts.tooltip.border,
+            tooltipText = colors.charts.tooltip.text,
+            tooltipCornerRadius = 10.dp,
+            tooltipPaddingH = 10.dp,
+            tooltipPaddingV = 6.dp,
+            tooltipMargin = 10.dp,
+
+            decimals = 0,
+            showLabel = true,
+        ),
         yAxisLine = BarStyle.AxisLine(
             color = colors.border.default.copy(alpha = 0.4f),
             width = 1.dp

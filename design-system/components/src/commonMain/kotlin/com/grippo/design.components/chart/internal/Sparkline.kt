@@ -66,9 +66,9 @@ internal fun Sparkline(
             focusRingWidth = 2.dp,
             focusHaloRadius = 18.dp,
 
-            tooltipBackground = charts.sparkline.tooltip.background,
-            tooltipBorder = charts.sparkline.tooltip.border,
-            tooltipText = charts.sparkline.tooltip.text,
+            tooltipBackground = charts.tooltip.background,
+            tooltipBorder = charts.tooltip.border,
+            tooltipText = charts.tooltip.text,
             tooltipCornerRadius = 10.dp,
             tooltipPaddingH = 10.dp,
             tooltipPaddingV = 6.dp,

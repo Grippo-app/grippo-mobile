@@ -17,8 +17,9 @@ import androidx.compose.ui.unit.dp
  * - Y axis: labels/ticks; optional axis line
  * - X axis: labels show-all or adaptive thinning
  * - Bars: per-entry fill (solid/gradient), stroke and corner radius
- * - Values: labels above/inside/outside bars
- * - Baseline/Target: optional reference lines
+ * - Values: labels above bars
+ * - Baseline: optional reference line
+ * - Peek: click/selection overlay + tooltip
  */
 @Immutable
 public data class BarStyle(
@@ -30,6 +31,7 @@ public data class BarStyle(
     val xBaseline: Baseline?,
     val bars: Bars,
     val values: Values,
+    val peek: Peek = Peek.None,
 ) {
     /** Global paddings for labels. */
     @Immutable
@@ -127,11 +129,11 @@ public data class BarStyle(
         /** Compute equal bar/gap width to fill the chart (now adaptive under high density). */
         @Immutable
         public data class AutoEqualBarsAndGaps(
-            val midThresholdDp: Dp = 16.dp,    // if wEqual < this -> use midRatio
-            val denseThresholdDp: Dp = 10.dp,  // if wEqual < this -> use denseRatio
-            val midRatio: Float = 0.5f,       // gap = midRatio * bar
-            val denseRatio: Float = 0.3f,     // gap = denseRatio * bar
-            val maxBarWidth: Dp = 40.dp       // cap individual bar width when space is abundant
+            val midThresholdDp: Dp = 16.dp,
+            val denseThresholdDp: Dp = 10.dp,
+            val midRatio: Float = 0.5f,
+            val denseRatio: Float = 0.3f,
+            val maxBarWidth: Dp = 40.dp
         ) : BarsSizing
 
         /** Fixed bar width; gaps auto-fit to available width. */
@@ -160,4 +162,41 @@ public data class BarStyle(
         val color: Color,
         val width: Dp,
     )
+
+    @Immutable
+    public sealed interface Peek {
+        @Immutable
+        public data object None : Peek
+
+        @Immutable
+        public data class Visible(
+            val hitSlop: Dp = 8.dp,
+
+            val guideColor: Color,
+            val guideWidth: Dp = 1.dp,
+            val guideDash: Dp = 4.dp,
+            val guideGap: Dp = 4.dp,
+
+            val focusColor: Color? = null,
+            val focusRadius: Dp = 4.dp,
+            val focusRingWidth: Dp = 2.dp,
+            val focusHaloRadius: Dp = 18.dp,
+
+            val selectedBarOverlay: Color? = null,
+            val selectedBarStrokeColor: Color? = null,
+            val selectedBarStrokeWidth: Dp = 2.dp,
+
+            val tooltipBackground: Color,
+            val tooltipBorder: Color,
+            val tooltipText: Color,
+            val tooltipCornerRadius: Dp,
+            val tooltipPaddingH: Dp,
+            val tooltipPaddingV: Dp,
+            val tooltipMargin: Dp,
+
+            val decimals: Int = 0,
+            val showLabel: Boolean = true,
+            val valueFormatter: ((Float, BarData) -> String)? = null,
+        ) : Peek
+    }
 }
