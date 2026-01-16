@@ -21,6 +21,7 @@ public data class SparklineStyle(
     val line: Line,
     val fill: Fill?,
     val baseline: Baseline,
+    val midline: Midline,
     val dots: Dots,
     val extremes: Extremes,
 ) {
@@ -34,6 +35,21 @@ public data class SparklineStyle(
         val curveSmoothness: Float,    // 0..0.5
         val clampOvershoot: Boolean,
     )
+
+    @Immutable
+    public sealed interface Midline {
+        @Immutable
+        public data object None : Midline
+
+        @Immutable
+        public data class Visible(
+            val position: Float = 0.5f,
+            val color: Color,
+            val width: Dp,
+            val dash: Dp,
+            val gap: Dp,
+        ) : Midline
+    }
 
     /** Optional fill under line. */
     @Immutable

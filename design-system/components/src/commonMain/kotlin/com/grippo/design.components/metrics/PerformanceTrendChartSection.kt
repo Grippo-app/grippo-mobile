@@ -76,6 +76,12 @@ private fun performanceSparklineStyle(): SparklineStyle {
             radius = 3.dp,
             color = AppTokens.colors.charts.sparkline.dot,
         ),
+        midline = SparklineStyle.Midline.Visible(
+            color = charts.sparkline.middle,
+            width = 1.dp,
+            dash = 3.dp,
+            gap = 3.dp
+        ),
         extremes = SparklineStyle.Extremes.Visible(
             minColor = AppTokens.colors.semantic.warning,
             maxColor = AppTokens.colors.semantic.success,

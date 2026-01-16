@@ -261,6 +261,7 @@ public interface AppColor {
             public val lineB: Color
             public val fillBase: Color
             public val dot: Color
+            public val middle: Color
         }
 
         public interface RadarColors {

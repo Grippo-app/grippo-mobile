@@ -24,6 +24,12 @@ private fun sparkStyle(curved: Boolean): SparklineStyle = SparklineStyle(
         curveSmoothness = 0.25f,
         clampOvershoot = true
     ),
+    midline = SparklineStyle.Midline.Visible(
+        color = Color(0xFF6AA9FF),
+        width = 1.dp,
+        dash = 3.dp,
+        gap = 3.dp
+    ),
     fill = SparklineStyle.Fill(
         provider = { rect ->
             Brush.verticalGradient(

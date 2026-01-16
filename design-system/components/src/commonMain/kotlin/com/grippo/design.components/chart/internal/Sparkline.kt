@@ -46,6 +46,12 @@ internal fun Sparkline(
             }
         ),
         baseline = SparklineStyle.Baseline.None,
+        midline = SparklineStyle.Midline.Visible(
+            color = charts.sparkline.middle,
+            width = 1.dp,
+            dash = 3.dp,
+            gap = 3.dp
+        ),
         dots = SparklineStyle.Dots.Visible(radius = 2.dp, color = null),
         extremes = SparklineStyle.Extremes.Visible(
             minColor = AppTokens.colors.semantic.warning,
