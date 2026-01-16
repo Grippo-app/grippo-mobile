@@ -12,10 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
-import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonContent
-import com.grippo.design.components.button.ButtonSize
-import com.grippo.design.components.button.ButtonStyle
+import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -35,7 +32,9 @@ public fun DescriptionText(
     val collapseLabel = AppTokens.strings.res(Res.string.show_less)
 
     Column(
-        modifier = modifier.animateContentSize(),
+        modifier = modifier
+            .scalableClick(onClick = { expanded = !expanded })
+            .animateContentSize(),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
     ) {
         Text(
@@ -51,16 +50,14 @@ public fun DescriptionText(
                 }
             }
         )
+
         if (isOverflow) {
-            // Toggle control
-            Button(
-                modifier = Modifier.align(Alignment.End),
-                content = ButtonContent.Text(
-                    text = if (expanded) collapseLabel else expandLabel,
-                ),
-                style = ButtonStyle.Transparent,
-                size = ButtonSize.Small,
-                onClick = { expanded = !expanded },
+            Text(
+                modifier = Modifier.align(Alignment.End)
+                    .scalableClick(onClick = { expanded = !expanded }),
+                text = if (expanded) collapseLabel else expandLabel,
+                style = AppTokens.typography.b14Med(),
+                color = AppTokens.colors.text.tertiary,
             )
         }
     }
