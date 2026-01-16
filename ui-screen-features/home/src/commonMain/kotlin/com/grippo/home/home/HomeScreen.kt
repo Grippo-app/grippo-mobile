@@ -22,7 +22,9 @@ import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.metrics.PerformanceMetricTypeState
 import com.grippo.core.state.metrics.stubDigest
-import com.grippo.core.state.metrics.stubExerciseSpotlight
+import com.grippo.core.state.metrics.stubExerciseSpotlightBestProgress
+import com.grippo.core.state.metrics.stubExerciseSpotlightComebackMissing
+import com.grippo.core.state.metrics.stubExerciseSpotlightMostConsistent
 import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.stubPerformanceMetrics
 import com.grippo.core.state.metrics.stubTrainingStreaks
@@ -155,18 +157,50 @@ internal fun HomeScreen(
                     )
                 }
 
-                if (state.spotlight != null) {
-                    item(key = "exercise_spotlight", span = { GridItemSpan(2) }) {
+                if (state.best != null) {
+                    item(key = "exercise_spotlight_best", span = { GridItemSpan(2) }) {
                         val onExampleClickProvider =
-                            remember(state.spotlight.exercise.value.id) {
-                                { contract.onOpenExample(state.spotlight.exercise.value.id) }
+                            remember(state.best.example.id) {
+                                { contract.onOpenExample(state.best.example.id) }
                             }
 
                         ExerciseSpotlightCard(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .scalableClick(onClick = onExampleClickProvider),
-                            value = state.spotlight,
+                            value = state.best,
+                        )
+                    }
+                }
+
+                if (state.missing != null) {
+                    item(key = "exercise_spotlight_missing", span = { GridItemSpan(2) }) {
+                        val onExampleClickProvider =
+                            remember(state.missing.example.id) {
+                                { contract.onOpenExample(state.missing.example.id) }
+                            }
+
+                        ExerciseSpotlightCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .scalableClick(onClick = onExampleClickProvider),
+                            value = state.missing,
+                        )
+                    }
+                }
+
+                if (state.consistent != null) {
+                    item(key = "exercise_spotlight_consistent", span = { GridItemSpan(2) }) {
+                        val onExampleClickProvider =
+                            remember(state.consistent.example.id) {
+                                { contract.onOpenExample(state.consistent.example.id) }
+                            }
+
+                        ExerciseSpotlightCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .scalableClick(onClick = onExampleClickProvider),
+                            value = state.consistent,
                         )
                     }
                 }
@@ -321,7 +355,9 @@ private fun HomeScreenPreview() {
                 lastTraining = stubTraining(),
                 digest = stubDigest(),
                 totalDuration = 28.hours,
-                spotlight = stubExerciseSpotlight(),
+                best = stubExerciseSpotlightBestProgress(),
+                missing = stubExerciseSpotlightComebackMissing(),
+                consistent = stubExerciseSpotlightMostConsistent(),
                 muscleLoad = stubMuscleLoadSummary(),
                 streak = stubTrainingStreaks().first(),
                 performance = stubPerformanceMetrics(),

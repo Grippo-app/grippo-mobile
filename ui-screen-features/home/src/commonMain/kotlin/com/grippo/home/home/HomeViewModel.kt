@@ -91,9 +91,17 @@ internal class HomeViewModel(
             .digest(list, range = range)
             .toState()
 
-        val spotlight = exerciseSpotlightUseCase
-            .fromTrainings(list)
-            .toState()
+        val consistent = exerciseSpotlightUseCase
+            .mostConsistent(list)
+            ?.toState()
+
+        val best = exerciseSpotlightUseCase
+            .bestProgress(list)
+            ?.toState()
+
+        val missing = exerciseSpotlightUseCase
+            .comebackMissing(list)
+            ?.toState()
 
         val performance = performanceTrendUseCase
             .fromTrainings(list)
@@ -107,7 +115,9 @@ internal class HomeViewModel(
             it.copy(
                 digest = digest,
                 totalDuration = totalDuration,
-                spotlight = spotlight,
+                missing = missing,
+                best = best,
+                consistent = consistent,
                 muscleLoad = muscleLoadSummary,
                 streak = streak,
                 performance = performance,
@@ -213,7 +223,9 @@ internal class HomeViewModel(
             it.copy(
                 digest = null,
                 totalDuration = null,
-                spotlight = null,
+                missing = null,
+                best = null,
+                consistent = null,
                 muscleLoad = null,
                 streak = null,
                 performance = emptyList(),

@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.metrics.ExerciseSpotlightState
-import com.grippo.core.state.metrics.stubExerciseSpotlight
+import com.grippo.core.state.metrics.stubExerciseSpotlightMostConsistent
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
@@ -36,10 +36,7 @@ public fun ExerciseSpotlightCard(
 
         ExerciseExampleCard(
             modifier = Modifier.fillMaxWidth(),
-            style = ExerciseExampleCardStyle.Large(
-                value = value.exercise,
-                allowUsageLabel = true
-            )
+            style = ExerciseExampleCardStyle.Small(value = value.example)
         )
     }
 }
@@ -49,7 +46,7 @@ public fun ExerciseSpotlightCard(
 private fun ExerciseSpotlightCardPreview() {
     PreviewContainer {
         ExerciseSpotlightCard(
-            value = stubExerciseSpotlight(),
+            value = stubExerciseSpotlightMostConsistent(),
         )
     }
 }

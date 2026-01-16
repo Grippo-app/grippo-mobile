@@ -89,9 +89,7 @@ public class FeatureApiModule {
         }
 
         single {
-            ExerciseSpotlightUseCase(
-                exerciseExampleFeature = get(),
-            )
+            ExerciseSpotlightUseCase()
         }
 
         single {
