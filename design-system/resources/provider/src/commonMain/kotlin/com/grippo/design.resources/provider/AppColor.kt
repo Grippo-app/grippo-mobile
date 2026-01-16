@@ -253,7 +253,6 @@ public interface AppColor {
         public val area: AreaColors
         public val heatmap: HeatmapColors
         public val progress: ProgressColors
-        public val bar: BarColors
         public val radar: RadarColors
         public val sparkline: SparklineColors
         public val tooltip: Tooltip
@@ -266,15 +265,12 @@ public interface AppColor {
             public val middle: Color
         }
 
-        public interface BarColors {
-            public val focus: Color
-            public val guide: Color
-        }
-
         public interface Tooltip {
             public val background: Color
             public val border: Color
             public val text: Color
+            public val focus: Color
+            public val guide: Color
         }
 
         public interface RadarColors {

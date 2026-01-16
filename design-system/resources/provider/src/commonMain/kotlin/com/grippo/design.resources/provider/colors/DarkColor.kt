@@ -239,8 +239,7 @@ public object DarkColor : AppColor {
         override val inactive = AppPalette.NeutralDark.N400.copy(alpha = 0.90f)
         override val background = AppPalette.NeutralDark.N300.copy(0.70f)
         override val outline = Color.Transparent
-        override val palette6MuscleCalm: List<Color> =
-            AppPalette.Gradient.Palette6MuscleCalm
+        override val palette6MuscleCalm: List<Color> = AppPalette.Gradient.Palette6MuscleCalm
     }
 
     override val charts: AppColor.Charts = object : AppColor.Charts {
@@ -251,14 +250,12 @@ public object DarkColor : AppColor {
             override val dot = AppPalette.Common.White
             override val middle = AppPalette.NeutralDark.N400
         }
-        override val bar = object : AppColor.Charts.BarColors {
-            override val focus: Color = AppPalette.Blue.P400
-            override val guide: Color = AppPalette.Blue.P400
-        }
         override val tooltip = object : AppColor.Charts.Tooltip {
             override val background: Color = AppPalette.NeutralDark.N400
             override val border: Color = AppPalette.NeutralDark.N450
             override val text: Color = AppPalette.Common.White
+            override val focus: Color = AppPalette.Blue.P400
+            override val guide: Color = AppPalette.Blue.P400
         }
         override val area = object : AppColor.Charts.AreaColors {
             override val lineA = AppPalette.Unique.Green

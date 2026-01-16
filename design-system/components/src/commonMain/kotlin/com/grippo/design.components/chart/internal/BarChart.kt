@@ -59,12 +59,12 @@ internal fun BarChart(
         peek = BarStyle.Peek.Visible(
             hitSlop = 26.dp,
 
-            guideColor = colors.charts.bar.guide,
+            guideColor = colors.charts.tooltip.guide,
             guideWidth = 1.dp,
             guideDash = 6.dp,
             guideGap = 6.dp,
 
-            focusColor = colors.charts.bar.focus,
+            focusColor = colors.charts.tooltip.focus,
             focusRadius = 3.5.dp,
             focusRingWidth = 2.dp,
             focusHaloRadius = 18.dp,

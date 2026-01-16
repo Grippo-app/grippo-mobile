@@ -48,15 +48,15 @@ internal fun Sparkline(
         ),
         baseline = SparklineStyle.Baseline.None,
         midline = SparklineStyle.Midline.Visible(
-            color = charts.sparkline.middle,
+            color = charts.tooltip.focus,
             width = 1.dp,
-            dash = 3.dp,
-            gap = 3.dp
+            dash = 6.dp,
+            gap = 6.dp
         ),
         peek = Peek.Visible(
             hitSlop = 26.dp,
 
-            guideColor = charts.sparkline.middle.copy(alpha = 0.65f),
+            guideColor = charts.tooltip.guide,
             guideWidth = 1.dp,
             guideDash = 6.dp,
             guideGap = 6.dp,
