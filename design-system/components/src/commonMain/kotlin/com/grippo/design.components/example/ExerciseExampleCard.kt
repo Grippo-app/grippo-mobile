@@ -30,7 +30,6 @@ public sealed interface ExerciseExampleCardStyle {
     @Immutable
     public data class Large(
         val value: ExerciseExampleState,
-        val allowUsageLabel: Boolean
     ) : ExerciseExampleCardStyle
 }
 
@@ -48,7 +47,6 @@ public fun ExerciseExampleCard(
         is ExerciseExampleCardStyle.Large -> ExerciseExampleCardLarge(
             modifier = modifier,
             value = style.value,
-            allowUsageLabel = style.allowUsageLabel
         )
 
         is ExerciseExampleCardStyle.Small -> ExerciseExampleCardSmall(
@@ -64,12 +62,12 @@ private fun ExerciseExampleCardLargePreview() {
     PreviewContainer {
         ExerciseExampleCard(
             modifier = Modifier.size(250.dp),
-            style = ExerciseExampleCardStyle.Large(stubExerciseExample(), allowUsageLabel = true),
+            style = ExerciseExampleCardStyle.Large(stubExerciseExample()),
         )
 
         ExerciseExampleCard(
             modifier = Modifier.size(250.dp),
-            style = ExerciseExampleCardStyle.Large(stubExerciseExample(), allowUsageLabel = false),
+            style = ExerciseExampleCardStyle.Large(stubExerciseExample()),
         )
     }
 }

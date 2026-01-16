@@ -38,7 +38,6 @@ import com.grippo.toolkit.date.utils.DateFormat
 internal fun ExerciseExampleCardLarge(
     modifier: Modifier,
     value: ExerciseExampleState,
-    allowUsageLabel: Boolean,
 ) {
     Column(modifier = modifier) {
         Row(
@@ -100,38 +99,36 @@ internal fun ExerciseExampleCardLarge(
             }
         }
 
-        if (allowUsageLabel) {
-            Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
+        Spacer(modifier = Modifier.height(AppTokens.dp.contentPadding.content))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
 
-                val lastUsedDate = value.value.lastUsed?.let { l ->
-                    DateCompose.rememberFormat(l.date, DateFormat.DateOnly.DateDdMmm)
-                }
-
-                lastUsedDate?.let {
-                    Text(
-                        text = AppTokens.strings.res(Res.string.last_used_label),
-                        style = AppTokens.typography.b12Med(),
-                        color = AppTokens.colors.text.secondary
-                    )
-
-                    Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.text))
-
-                    Text(
-                        text = lastUsedDate,
-                        style = AppTokens.typography.b12Semi(),
-                        color = AppTokens.colors.text.secondary
-                    )
-                } ?: Text(
-                    text = AppTokens.strings.res(Res.string.not_used_before),
-                    style = AppTokens.typography.b12Med(),
-                    color = AppTokens.colors.text.tertiary
-                )
+            val lastUsedDate = value.value.lastUsed?.let { l ->
+                DateCompose.rememberFormat(l.date, DateFormat.DateOnly.DateDdMmm)
             }
+
+            lastUsedDate?.let {
+                Text(
+                    text = AppTokens.strings.res(Res.string.last_used_label),
+                    style = AppTokens.typography.b12Med(),
+                    color = AppTokens.colors.text.secondary
+                )
+
+                Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.text))
+
+                Text(
+                    text = lastUsedDate,
+                    style = AppTokens.typography.b12Semi(),
+                    color = AppTokens.colors.text.secondary
+                )
+            } ?: Text(
+                text = AppTokens.strings.res(Res.string.not_used_before),
+                style = AppTokens.typography.b12Med(),
+                color = AppTokens.colors.text.tertiary
+            )
         }
     }
 }
@@ -144,15 +141,6 @@ private fun ExerciseExampleCardLargePreview() {
             modifier = Modifier.fillMaxWidth(),
             style = ExerciseExampleCardStyle.Large(
                 stubExerciseExample(),
-                allowUsageLabel = true
-            ),
-        )
-
-        ExerciseExampleCard(
-            modifier = Modifier.fillMaxWidth(),
-            style = ExerciseExampleCardStyle.Large(
-                stubExerciseExample(),
-                allowUsageLabel = false
             ),
         )
     }

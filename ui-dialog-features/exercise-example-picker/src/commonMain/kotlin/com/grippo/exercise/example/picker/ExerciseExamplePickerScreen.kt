@@ -162,10 +162,7 @@ internal fun ExerciseExamplePickerScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .scalableClick(onClick = selectClickProvider),
-                                        style = ExerciseExampleCardStyle.Large(
-                                            value = item,
-                                            allowUsageLabel = true
-                                        ),
+                                        style = ExerciseExampleCardStyle.Large(value = item),
                                     )
                                 }
                             }
