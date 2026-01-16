@@ -72,9 +72,7 @@ public fun SuggestionCard(
         )
 
         Button(
-            content = ButtonContent.Icon(
-                icon = ButtonIcon.Icon(AppTokens.icons.Cancel),
-            ),
+            content = ButtonContent.Icon(icon = ButtonIcon.Icon(AppTokens.icons.Cancel)),
             style = ButtonStyle.Transparent,
             size = ButtonSize.Small,
             onClick = onClose

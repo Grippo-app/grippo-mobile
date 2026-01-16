@@ -37,13 +37,11 @@ public enum class ToolbarStyle {
 
 @Immutable
 public sealed class Leading {
-    public data class Back(
-        val onClick: (() -> Unit)
-    ) : Leading()
+    @Immutable
+    public data class Back(val onClick: (() -> Unit)) : Leading()
 
-    public data class Profile(
-        val onClick: (() -> Unit)
-    ) : Leading()
+    @Immutable
+    public data class Profile(val onClick: (() -> Unit)) : Leading()
 
     public data object Nothing : Leading()
 }

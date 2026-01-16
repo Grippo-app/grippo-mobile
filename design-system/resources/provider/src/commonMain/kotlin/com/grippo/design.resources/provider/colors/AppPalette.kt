@@ -11,19 +11,19 @@ internal object AppPalette {
     }
 
     object NeutralDark {
-        val N050 = Color(0xFF0D0F12) // base background
-        val N100 = Color(0xFF12151A) // surface-0
-        val N150 = Color(0xFF171B21) // surface-1
-        val N200 = Color(0xFF1C2128) // surface-2
-        val N250 = Color(0xFF222833) // surface-3
-        val N300 = Color(0xFF2A303B) // surface-4
-        val N400 = Color(0xFF333B47) // outline/low-contrast text
+        val N050 = Color(0xFF0D0F12)
+        val N100 = Color(0xFF12151A)
+        val N150 = Color(0xFF171B21)
+        val N200 = Color(0xFF1C2128)
+        val N250 = Color(0xFF222833)
+        val N300 = Color(0xFF2A303B)
+        val N400 = Color(0xFF333B47)
         val N450 = Color(0xFF3F4857)
-        val N500 = Color(0xFF4A5566) // muted text/icons
+        val N500 = Color(0xFF4A5566)
         val N550 = Color(0xFF5B667A)
         val N600 = Color(0xFF7D8898)
         val N700 = Color(0xFFA5B0BF)
-        val N800 = Color(0xFFF4F7FA) // high-contrast on dark kept as before
+        val N800 = Color(0xFFF4F7FA)
     }
 
     object Blue {
@@ -80,20 +80,20 @@ internal object AppPalette {
         )
 
         val Palette5OrangeRedGrowth: List<Color> = listOf(
-            Unique.Amber,     // light warm yellow-orange
-            Unique.Coral,     // soft orange-red
-            Unique.Orange,    // saturated orange
-            Unique.Red,       // bright red
-            Unique.Burgundy   // deep dark red
+            Unique.Amber,
+            Unique.Coral,
+            Unique.Orange,
+            Unique.Red,
+            Unique.Burgundy
         )
 
         val Palette6MuscleCalm: List<Color> = listOf(
-            lerp(Unique.Green, Common.White, 0.8f),   // subtle green
-            lerp(Unique.Green, Common.White, 0.6f),   // pale green
-            lerp(Unique.Green, Common.White, 0.4f),   // soft green
-            lerp(Unique.Green, Common.White, 0.2f),   // lighter green
-            Unique.Green,    // brand success
-            Unique.Emerald,  // deep success
+            lerp(Unique.Green, Common.White, 0.8f),
+            lerp(Unique.Green, Common.White, 0.6f),
+            lerp(Unique.Green, Common.White, 0.4f),
+            lerp(Unique.Green, Common.White, 0.2f),
+            Unique.Green,
+            Unique.Emerald,
         )
     }
 }
