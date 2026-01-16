@@ -130,7 +130,7 @@ private fun DigestSubtitleChip(
             ),
         text = text,
         style = AppTokens.typography.b12Semi(),
-        color = accent,
+        color = AppTokens.colors.text.secondary,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
     )

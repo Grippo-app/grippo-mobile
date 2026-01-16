@@ -217,6 +217,7 @@
     <string name="select_month">Select month</string>
     <string name="x">x</string>
     <string name="tonnage">Tonnage</string>
+    <string name="insights">Insights</string>
     <string name="tonnage_chip">Tonnage</string>
     <string name="intensity_chip">Intensity</string>
     <string name="repetitions_chip">Repetitions</string>

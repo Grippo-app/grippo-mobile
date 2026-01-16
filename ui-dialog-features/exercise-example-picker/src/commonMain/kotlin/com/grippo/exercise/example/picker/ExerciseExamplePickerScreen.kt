@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -28,11 +27,6 @@ import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.examples.stubExerciseExample
-import com.grippo.design.components.button.Button
-import com.grippo.design.components.button.ButtonContent
-import com.grippo.design.components.button.ButtonIcon
-import com.grippo.design.components.button.ButtonState
-import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.empty.EmptyState
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
@@ -42,8 +36,6 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.ai_suggestion_btn
-import com.grippo.design.resources.provider.icons.Molecule
 import com.grippo.design.resources.provider.select_exercise
 import com.grippo.exercise.example.picker.internal.AiSuggestionHeader
 import com.grippo.exercise.example.picker.internal.ManualHeader
@@ -171,7 +163,7 @@ internal fun ExerciseExamplePickerScreen(
                                             .fillMaxWidth()
                                             .scalableClick(onClick = selectClickProvider),
                                         value = item,
-                                        style = ExerciseExampleCardStyle.Medium(allowUsageLabel = true),
+                                        style = ExerciseExampleCardStyle.Large(allowUsageLabel = true),
                                     )
                                 }
                             }

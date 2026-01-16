@@ -12,9 +12,9 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.digest
 import com.grippo.design.resources.provider.duration
 import com.grippo.design.resources.provider.icons.Trophy
+import com.grippo.design.resources.provider.total
 import com.grippo.design.resources.provider.trainings
 import com.grippo.design.resources.provider.volume
 import com.grippo.toolkit.date.utils.DateFormat
@@ -43,7 +43,7 @@ public fun DigestCard(
         style = style,
         icon = AppTokens.icons.Trophy,
         accentColor = AppTokens.colors.brand.color6,
-        title = AppTokens.strings.res(Res.string.digest),
+        title = AppTokens.strings.res(Res.string.total),
         subtitle = subtitle,
         metrics = listOf(
             DigestMetric(

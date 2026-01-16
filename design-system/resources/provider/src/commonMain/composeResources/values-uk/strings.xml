@@ -216,6 +216,7 @@
     <string name="select_month">Оберіть місяць</string>
     <string name="x">x</string>
     <string name="tonnage">Тоннаж</string>
+    <string name="insights">Інсайти</string>
     <string name="tonnage_chip">Тоннаж</string>
     <string name="intensity_chip">Інтенсивність</string>
     <string name="repetitions_chip">Повторення</string>

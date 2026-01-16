@@ -37,7 +37,7 @@ public fun ExerciseSpotlightCard(
         ExerciseExampleCard(
             modifier = Modifier.fillMaxWidth(),
             value = value.exercise,
-            style = ExerciseExampleCardStyle.Medium(
+            style = ExerciseExampleCardStyle.Large(
                 allowUsageLabel = true
             )
         )
