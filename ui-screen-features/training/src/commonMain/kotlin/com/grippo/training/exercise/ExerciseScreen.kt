@@ -78,8 +78,9 @@ internal fun ExerciseScreen(
                             top = AppTokens.dp.contentPadding.content,
                         )
                         .scalableClick(onClick = contract::onExampleClick),
-                    style = ExerciseExampleCardStyle.Medium,
-                    value = example
+                    style = ExerciseExampleCardStyle.Medium(
+                        value = example
+                    ),
                 )
             }
         },

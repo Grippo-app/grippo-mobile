@@ -22,8 +22,8 @@ import com.grippo.design.components.button.ButtonContent
 import com.grippo.design.components.button.ButtonIcon
 import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
-import com.grippo.design.components.training.ExerciseCard
-import com.grippo.design.components.training.ExerciseCardStyle
+import com.grippo.design.components.example.ExerciseExampleCard
+import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -113,14 +113,13 @@ public fun LastTrainingCard(
                 value.exercises.take(3)
             }
 
-            firstExercises.forEach {
+            firstExercises.forEach { exercise ->
                 Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
 
-                ExerciseCard(
+                ExerciseExampleCard(
                     modifier = Modifier.fillMaxWidth(),
-                    value = it,
-                    style = ExerciseCardStyle.Medium(
-                        onClick = {}
+                    style = ExerciseExampleCardStyle.Small(
+                        value = exercise.exerciseExample,
                     )
                 )
 //                Text(

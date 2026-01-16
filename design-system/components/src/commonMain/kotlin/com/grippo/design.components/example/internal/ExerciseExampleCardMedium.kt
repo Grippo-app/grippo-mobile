@@ -96,8 +96,9 @@ private fun ExerciseExampleCardMediumPreview() {
     PreviewContainer {
         ExerciseExampleCard(
             modifier = Modifier.fillMaxWidth(),
-            value = stubExerciseExample(),
-            style = ExerciseExampleCardStyle.Medium,
+            style = ExerciseExampleCardStyle.Medium(
+                stubExerciseExample(),
+            ),
         )
     }
 }

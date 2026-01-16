@@ -7,6 +7,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.grippo.core.state.examples.ExerciseExampleState
+import com.grippo.core.state.examples.ExerciseExampleValueState
 import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.design.components.example.internal.ExerciseExampleCardLarge
 import com.grippo.design.components.example.internal.ExerciseExampleCardMedium
@@ -16,10 +17,18 @@ import com.grippo.design.preview.PreviewContainer
 @Immutable
 public sealed interface ExerciseExampleCardStyle {
     @Immutable
-    public data object Medium : ExerciseExampleCardStyle
+    public data class Small(
+        val value: ExerciseExampleValueState,
+    ) : ExerciseExampleCardStyle
+
+    @Immutable
+    public data class Medium(
+        val value: ExerciseExampleState,
+    ) : ExerciseExampleCardStyle
 
     @Immutable
     public data class Large(
+        val value: ExerciseExampleState,
         val allowUsageLabel: Boolean
     ) : ExerciseExampleCardStyle
 }
@@ -27,20 +36,21 @@ public sealed interface ExerciseExampleCardStyle {
 @Composable
 public fun ExerciseExampleCard(
     modifier: Modifier = Modifier,
-    value: ExerciseExampleState,
     style: ExerciseExampleCardStyle,
 ) {
     when (style) {
         is ExerciseExampleCardStyle.Medium -> ExerciseExampleCardMedium(
             modifier = modifier,
-            value = value,
+            value = style.value,
         )
 
         is ExerciseExampleCardStyle.Large -> ExerciseExampleCardLarge(
             modifier = modifier,
-            value = value,
+            value = style.value,
             allowUsageLabel = style.allowUsageLabel
         )
+
+        is ExerciseExampleCardStyle.Small -> TODO()
     }
 }
 
@@ -50,14 +60,12 @@ private fun ExerciseExampleCardLargePreview() {
     PreviewContainer {
         ExerciseExampleCard(
             modifier = Modifier.size(250.dp),
-            value = stubExerciseExample(),
-            style = ExerciseExampleCardStyle.Large(allowUsageLabel = true),
+            style = ExerciseExampleCardStyle.Large(stubExerciseExample(), allowUsageLabel = true),
         )
 
         ExerciseExampleCard(
             modifier = Modifier.size(250.dp),
-            value = stubExerciseExample(),
-            style = ExerciseExampleCardStyle.Large(allowUsageLabel = false),
+            style = ExerciseExampleCardStyle.Large(stubExerciseExample(), allowUsageLabel = false),
         )
     }
 }
@@ -68,8 +76,7 @@ private fun ExerciseExampleCardMediumPreview() {
     PreviewContainer {
         ExerciseExampleCard(
             modifier = Modifier.fillMaxWidth(),
-            value = stubExerciseExample(),
-            style = ExerciseExampleCardStyle.Medium,
+            style = ExerciseExampleCardStyle.Medium(stubExerciseExample()),
         )
     }
 }

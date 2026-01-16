@@ -142,14 +142,18 @@ private fun ExerciseExampleCardLargePreview() {
     PreviewContainer {
         ExerciseExampleCard(
             modifier = Modifier.fillMaxWidth(),
-            value = stubExerciseExample(),
-            style = ExerciseExampleCardStyle.Large(allowUsageLabel = true),
+            style = ExerciseExampleCardStyle.Large(
+                stubExerciseExample(),
+                allowUsageLabel = true
+            ),
         )
 
         ExerciseExampleCard(
             modifier = Modifier.fillMaxWidth(),
-            value = stubExerciseExample(),
-            style = ExerciseExampleCardStyle.Large(allowUsageLabel = false),
+            style = ExerciseExampleCardStyle.Large(
+                stubExerciseExample(),
+                allowUsageLabel = false
+            ),
         )
     }
 }
