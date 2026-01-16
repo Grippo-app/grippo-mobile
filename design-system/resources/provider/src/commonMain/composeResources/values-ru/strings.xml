@@ -216,6 +216,7 @@
     <string name="select_date">Выберите дату</string>
     <string name="select_month">Выберите месяц</string>
     <string name="x">x</string>
+    <string name="tonnage">Тоннаж</string>
     <string name="tonnage_chip">Тоннаж</string>
     <string name="intensity_chip">Интенсивность</string>
     <string name="repetitions_chip">Повторения</string>

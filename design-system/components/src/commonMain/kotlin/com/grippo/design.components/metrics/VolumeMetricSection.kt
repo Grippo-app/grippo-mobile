@@ -3,30 +3,50 @@ package com.grippo.design.components.metrics
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.chart.bar.BarData
 import com.grippo.chart.bar.BarEntry
 import com.grippo.core.state.metrics.VolumeSeriesState
 import com.grippo.core.state.metrics.stubVolumeSeries
 import com.grippo.design.components.chart.internal.BarChart
+import com.grippo.design.components.metrics.internal.MetricSectionPanel
+import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.tonnage
 
 @Composable
 public fun VolumeMetricChart(
     state: VolumeSeriesState,
     modifier: Modifier = Modifier,
 ) {
-    BarChart(
-        modifier = modifier
-            .fillMaxWidth()
-            .heightIn(min = AppTokens.dp.metrics.volume.height)
-            .aspectRatio(1.7f),
-        data = state.toBarData()
-    )
+    MetricSectionPanel(
+        modifier = modifier,
+        style = MetricSectionPanelStyle.Large,
+    ) {
+        Text(
+            modifier = Modifier.weight(1f),
+            text = AppTokens.strings.res(Res.string.tonnage),
+            style = AppTokens.typography.h6(),
+            color = AppTokens.colors.text.secondary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+
+        BarChart(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = AppTokens.dp.metrics.volume.height)
+                .aspectRatio(1.7f),
+            data = state.toBarData()
+        )
+    }
 }
 
 @Composable
