@@ -5,16 +5,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.unit.dp
-import com.grippo.chart.sparkline.Sparkline
 import com.grippo.chart.sparkline.SparklineData
 import com.grippo.chart.sparkline.SparklinePoint
-import com.grippo.chart.sparkline.SparklineStyle
 import com.grippo.core.state.metrics.PerformanceMetricState
 import com.grippo.core.state.metrics.PerformanceTrendHistoryEntry
 import com.grippo.core.state.metrics.stubPerformanceTrendHistory
-import com.grippo.design.core.AppTokens
+import com.grippo.design.components.chart.internal.Sparkline
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import kotlinx.collections.immutable.ImmutableList
@@ -44,49 +40,6 @@ public fun PerformanceTrendChartSection(
             .fillMaxWidth()
             .aspectRatio(2.2f),
         data = data,
-        style = performanceSparklineStyle()
-    )
-}
-
-@Composable
-private fun performanceSparklineStyle(): SparklineStyle {
-    val charts = AppTokens.colors.charts
-
-    return SparklineStyle(
-        line = SparklineStyle.Line(
-            stroke = 2.dp,
-            color = charts.sparkline.lineA,
-            brush = null,
-            curved = true,
-            curveSmoothness = 0.25f,
-            clampOvershoot = true,
-        ),
-        fill = SparklineStyle.Fill(
-            provider = { rect ->
-                Brush.verticalGradient(
-                    0f to charts.sparkline.fillBase.copy(alpha = 0.18f),
-                    1f to charts.sparkline.fillBase.copy(alpha = 0f),
-                    startY = rect.top,
-                    endY = rect.bottom
-                )
-            }
-        ),
-        baseline = SparklineStyle.Baseline.None,
-        dots = SparklineStyle.Dots.Visible(
-            radius = 3.dp,
-            color = AppTokens.colors.charts.sparkline.dot,
-        ),
-        midline = SparklineStyle.Midline.Visible(
-            color = charts.sparkline.middle,
-            width = 1.dp,
-            dash = 3.dp,
-            gap = 3.dp
-        ),
-        extremes = SparklineStyle.Extremes.Visible(
-            minColor = AppTokens.colors.semantic.warning,
-            maxColor = AppTokens.colors.semantic.success,
-            radius = 3.dp
-        )
     )
 }
 
