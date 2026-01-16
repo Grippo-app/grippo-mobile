@@ -6,35 +6,43 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 
-/**
- * Visual configuration for a Sparkline (tiny line chart).
- *
- * Layout overview:
- * - Line: stroke, optional gradient brush, curvature and overshoot clamping
- * - Fill: optional area fill under the line
- * - Baseline: optional horizontal baseline
- * - Dots: small markers on points
- * - Extremes: highlight min/max points
- */
 @Immutable
 public data class SparklineStyle(
     val line: Line,
     val fill: Fill?,
     val baseline: Baseline,
-    val midline: Midline,
+    val midline: Midline = Midline.None,
+    val peek: Peek = Peek.None,
     val dots: Dots,
     val extremes: Extremes,
 ) {
-    /** Line stroke config and smoothing. */
     @Immutable
     public data class Line(
         val stroke: Dp,
         val color: Color,
         val brush: ((Rect) -> Brush)?,
         val curved: Boolean,
-        val curveSmoothness: Float,    // 0..0.5
+        val curveSmoothness: Float,
         val clampOvershoot: Boolean,
     )
+
+    @Immutable
+    public data class Fill(
+        val provider: ((Rect) -> Brush)?,
+    )
+
+    @Immutable
+    public sealed interface Baseline {
+        @Immutable
+        public data object None : Baseline
+
+        @Immutable
+        public data class Visible(
+            val value: Float?,
+            val color: Color,
+            val width: Dp,
+        ) : Baseline
+    }
 
     @Immutable
     public sealed interface Midline {
@@ -51,34 +59,43 @@ public data class SparklineStyle(
         ) : Midline
     }
 
-    /** Optional fill under line. */
     @Immutable
-    public data class Fill(
-        val provider: ((Rect) -> Brush)?,
-    )
-
-    @Immutable
-    public sealed interface Baseline {
-        /** No baseline. */
+    public sealed interface Peek {
         @Immutable
-        public data object None : Baseline
+        public data object None : Peek
 
-        /** Visible baseline at [value] (null → min). */
         @Immutable
         public data class Visible(
-            val value: Float?,    // null → min value
-            val color: Color,
-            val width: Dp,
-        ) : Baseline
+            val hitSlop: Dp,
+
+            val guideColor: Color,
+            val guideWidth: Dp,
+            val guideDash: Dp,
+            val guideGap: Dp,
+
+            val focusColor: Color? = null,
+            val focusRadius: Dp,
+            val focusRingWidth: Dp,
+            val focusHaloRadius: Dp,
+
+            val tooltipBackground: Color,
+            val tooltipBorder: Color,
+            val tooltipText: Color,
+            val tooltipCornerRadius: Dp,
+            val tooltipPaddingH: Dp,
+            val tooltipPaddingV: Dp,
+            val tooltipMargin: Dp,
+
+            val decimals: Int = 0,
+            val showLabel: Boolean = true,
+        ) : Peek
     }
 
     @Immutable
     public sealed interface Dots {
-        /** No dots. */
         @Immutable
         public data object None : Dots
 
-        /** Draw dots on points. */
         @Immutable
         public data class Visible(
             val radius: Dp,
@@ -88,11 +105,9 @@ public data class SparklineStyle(
 
     @Immutable
     public sealed interface Extremes {
-        /** No extremes. */
         @Immutable
         public data object None : Extremes
 
-        /** Highlight min/max points. */
         @Immutable
         public data class Visible(
             val minColor: Color,

@@ -17,6 +17,8 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.training_streak_period_value
 import com.grippo.design.resources.provider.training_streak_timeline_title
+import com.grippo.toolkit.date.utils.DateCompose
+import com.grippo.toolkit.date.utils.DateFormat
 
 @Composable
 public fun TrainingStreakTimelineCard(
@@ -47,11 +49,21 @@ public fun TrainingStreakTimelineCard(
 private fun TrainingStreakTimelineRow(
     entry: TrainingStreakProgressState,
 ) {
-    val periodLabel = entry.range.formatted()
+    val from = entry.range.from.date
+    val to = entry.range.to.date
+
+    val formattedDate = if (from == to) {
+        val start = DateCompose.rememberFormat(from, DateFormat.DateOnly.DateDdMmm)
+        start
+    } else {
+        val start = DateCompose.rememberFormat(from, DateFormat.DateOnly.DateDdMmm)
+        val end = DateCompose.rememberFormat(to, DateFormat.DateOnly.DateDdMmm)
+        "$start - $end"
+    }
 
     Column(verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)) {
         Text(
-            text = periodLabel,
+            text = formattedDate,
             style = AppTokens.typography.b13Med(),
             color = AppTokens.colors.text.primary
         )

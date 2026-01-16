@@ -9,6 +9,7 @@ import com.grippo.chart.sparkline.Sparkline
 import com.grippo.chart.sparkline.SparklineData
 import com.grippo.chart.sparkline.SparklinePoint
 import com.grippo.chart.sparkline.SparklineStyle
+import com.grippo.chart.sparkline.SparklineStyle.Peek
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -52,7 +53,34 @@ internal fun Sparkline(
             dash = 3.dp,
             gap = 3.dp
         ),
-        dots = SparklineStyle.Dots.Visible(radius = 2.dp, color = null),
+        peek = Peek.Visible(
+            hitSlop = 26.dp,
+
+            guideColor = charts.sparkline.middle.copy(alpha = 0.65f),
+            guideWidth = 1.dp,
+            guideDash = 6.dp,
+            guideGap = 6.dp,
+
+            focusColor = charts.sparkline.lineA,
+            focusRadius = 3.5.dp,
+            focusRingWidth = 2.dp,
+            focusHaloRadius = 18.dp,
+
+            tooltipBackground = charts.sparkline.tooltip.background,
+            tooltipBorder = charts.sparkline.tooltip.border,
+            tooltipText = charts.sparkline.tooltip.text,
+            tooltipCornerRadius = 10.dp,
+            tooltipPaddingH = 10.dp,
+            tooltipPaddingV = 6.dp,
+            tooltipMargin = 10.dp,
+
+            decimals = 0,
+            showLabel = true,
+        ),
+        dots = SparklineStyle.Dots.Visible(
+            radius = 2.dp,
+            color = null
+        ),
         extremes = SparklineStyle.Extremes.Visible(
             minColor = AppTokens.colors.semantic.warning,
             maxColor = AppTokens.colors.semantic.success,

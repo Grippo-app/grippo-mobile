@@ -250,6 +250,12 @@ public object DarkColor : AppColor {
             override val fillBase = AppPalette.Blue.P400
             override val dot = AppPalette.Common.White
             override val middle = AppPalette.NeutralDark.N400
+
+            override val tooltip = object : AppColor.Charts.SparklineColors.Tooltip {
+                override val background: Color = AppPalette.NeutralDark.N400
+                override val border: Color = AppPalette.NeutralDark.N450
+                override val text: Color = AppPalette.Common.White
+            }
         }
         override val area = object : AppColor.Charts.AreaColors {
             override val lineA = AppPalette.Unique.Green

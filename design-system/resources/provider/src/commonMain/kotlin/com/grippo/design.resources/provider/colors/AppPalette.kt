@@ -18,6 +18,7 @@ internal object AppPalette {
         val N250 = Color(0xFF222833) // surface-3
         val N300 = Color(0xFF2A303B) // surface-4
         val N400 = Color(0xFF333B47) // outline/low-contrast text
+        val N450 = Color(0xFF3F4857)
         val N500 = Color(0xFF4A5566) // muted text/icons
         val N550 = Color(0xFF5B667A)
         val N600 = Color(0xFF7D8898)

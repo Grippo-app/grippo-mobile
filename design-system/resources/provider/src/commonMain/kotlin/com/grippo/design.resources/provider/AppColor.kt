@@ -262,6 +262,13 @@ public interface AppColor {
             public val fillBase: Color
             public val dot: Color
             public val middle: Color
+            public val tooltip: Tooltip
+
+            public interface Tooltip {
+                public val background: Color
+                public val border: Color
+                public val text: Color
+            }
         }
 
         public interface RadarColors {
