@@ -72,6 +72,7 @@ public class MuscleLoadingSummaryUseCase(
         }
 
         val exampleIds = exercises.map { it.exerciseExample.id }.toSet()
+
         val examples = loadExamples(exampleIds)
 
         val fatigueFactorByMuscle = buildFatigueFactorByMuscle(groups)
