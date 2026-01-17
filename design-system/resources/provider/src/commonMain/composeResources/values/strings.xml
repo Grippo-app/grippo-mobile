@@ -40,10 +40,10 @@
     <string name="highlight_streak_pattern_headline_primary">Pattern streak: %1$d cycles</string>
     <string name="highlight_streak_pattern_headline_secondary">%1$d trainings / %2$d days</string>
     <string name="highlight_streak_pattern_target">Goal · %1$d trainings / %2$d days</string>
-    <string name="highlight_streak_mood_crushing">🔥 You are unstoppable — keep stacking these wins.</string>
-    <string name="highlight_streak_mood_on_track">Momentum is building. Stay with this rhythm.</string>
-    <string name="highlight_streak_mood_paused">Short pause. Pick up the streak when you are ready.</string>
-    <string name="highlight_streak_mood_restart">Every streak starts now. You can do this.</string>
+    <string name="highlight_streak_mood_crushing">🔥 You’re doing great. Keep it up.</string>
+    <string name="highlight_streak_mood_on_track">💪 Nice progress. Stay consistent.</string>
+    <string name="highlight_streak_mood_paused">It’s okay to pause. Come back anytime.</string>
+    <string name="highlight_streak_mood_restart">🚀 Start fresh. One step is enough</string>
     <string name="performance_trend_desc_duration">This is your duration progress — how long a workout usually takes. Watch: if the line goes up, workouts are getting longer. If it goes down, you are finishing faster, and that is okay.</string>
     <string name="performance_trend_desc_volume">This is your volume progress — how much work you did per workout. Watch: if the line goes up, you are doing more work. If it drops several times in a row, reduce the load or add rest.</string>
     <string name="performance_trend_desc_density">This is your efficiency progress — how productive the workout is given the time: how much work you get done per workout. Watch: if the line goes up, you are training better. If it drops several times in a row, consider recovery or lighten the load.</string>

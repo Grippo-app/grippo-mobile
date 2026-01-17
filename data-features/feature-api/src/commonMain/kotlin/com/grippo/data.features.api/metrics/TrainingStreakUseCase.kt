@@ -19,6 +19,7 @@ import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlin.math.abs
+import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -41,12 +42,32 @@ public class TrainingStreakUseCase(
 
         private const val STARTUP_HISTORY_DAYS = 10
         private const val MATURE_HISTORY_DAYS = 28
+
+        // 1) Stronger progress impact (was 0.05 max, now bigger).
+        private const val PROGRESS_BONUS_WEIGHT = 0.12f
+
+        // 2) Pattern mask less brittle: tri-state thresholds.
+        private const val PATTERN_PROB_TRAIN = 0.65f
+        private const val PATTERN_PROB_REST = 0.35f
+
+        // 3) Stricter Pattern entry on short history.
+        private const val MIN_HISTORY_DAYS_FOR_PATTERN = 14
+        private const val MIN_TRAINING_DAYS_FOR_PATTERN_BASE = 6
+
+        // 4) Daily less pushy.
+        private const val DAILY_MIN_STREAK_TO_ENABLE = 3
+        private const val DAILY_MIN_DENSITY_WINDOW_DAYS = 14
+        private const val DAILY_MIN_DENSITY = 0.60f
+
+        // 5) Weekly target stabilization.
+        private const val WEEKLY_TARGET_CLAMP_DELTA = 1
+
+        // 6) Weekly schedule helper (Pattern period=7) affects confidence softly.
+        private const val WEEKLY_SCHEDULE_CONFIDENCE_MIN = 0.55f
+        private const val WEEKLY_SCHEDULE_FACTOR_MIN = 0.90f
+        private const val WEEKLY_SCHEDULE_FACTOR_MAX = 1.00f
     }
 
-    /**
-     * previousKind is optional stabilization input.
-     * Store it from the previous TrainingStreak.kind and pass back on next recomputation.
-     */
     public suspend fun fromTrainings(
         trainings: List<Training>,
     ): TrainingStreak {
@@ -103,6 +124,16 @@ public class TrainingStreakUseCase(
             else -> adaptation.patternMinCycles
         }
 
+        // Weekly schedule helper: detect "which weekdays are usually training days".
+        // Used only to adjust Weekly confidence softly. Never shown as Pattern mode.
+        val weeklySchedule = detectWeeklyScheduleOrNull(
+            sessionsByDay = sessionsByDay,
+            today = today,
+            horizonDays = adaptation.patternHorizonDays,
+            minCycles = patternMinCycles,
+            minConfidence = WEEKLY_SCHEDULE_CONFIDENCE_MIN,
+        )
+
         val rhythmPattern = detectRhythmPattern(
             blocks = dayBlocks,
             minBlocks = rhythmMinBlocks,
@@ -121,16 +152,24 @@ public class TrainingStreakUseCase(
         )
 
         val candidates = buildList {
-            add(
-                buildDailyCandidate(
-                    dailyData = dailyData,
-                    today = today,
-                    sessionsByDay = sessionsByDay,
-                    earliestTrainingDate = earliestTrainingDate,
-                    historyDays = historyDays,
-                    lastTrainingGapDays = lastTrainingGapDays,
-                )
+            val shouldConsiderDaily = shouldEnableDailyCandidate(
+                dailyData = dailyData,
+                historyDays = historyDays,
+                sessionsByDay = sessionsByDay,
             )
+
+            if (shouldConsiderDaily) {
+                add(
+                    buildDailyCandidate(
+                        dailyData = dailyData,
+                        today = today,
+                        sessionsByDay = sessionsByDay,
+                        earliestTrainingDate = earliestTrainingDate,
+                        historyDays = historyDays,
+                        lastTrainingGapDays = lastTrainingGapDays,
+                    )
+                )
+            }
 
             val weeklyCandidate = buildWeeklyCandidateOrNull(
                 weeklyData = weeklyData,
@@ -138,6 +177,8 @@ public class TrainingStreakUseCase(
                 earliestTrainingDate = earliestTrainingDate,
                 historyDays = historyDays,
                 lastTrainingGapDays = lastTrainingGapDays,
+                sessionsByDay = sessionsByDay,
+                weeklySchedule = weeklySchedule,
             )
             if (weeklyCandidate != null) add(weeklyCandidate)
 
@@ -149,7 +190,23 @@ public class TrainingStreakUseCase(
             )
             if (rhythmCandidate != null) add(rhythmCandidate)
 
-            if (patternCandidate != null) add(patternCandidate)
+            // Do not show Pattern as a mode if it's actually weekly (period=7).
+            val isWeeklyPattern = (patternCandidate?.featured as? TrainingStreakFeatured.Pattern)
+                ?.periodLengthDays == 7
+            if (patternCandidate != null && !isWeeklyPattern) add(patternCandidate)
+
+            if (isEmpty()) {
+                add(
+                    buildDailyCandidate(
+                        dailyData = dailyData,
+                        today = today,
+                        sessionsByDay = sessionsByDay,
+                        earliestTrainingDate = earliestTrainingDate,
+                        historyDays = historyDays,
+                        lastTrainingGapDays = lastTrainingGapDays,
+                    )
+                )
+            }
         }
 
         val best = candidates.maxBy { it.score }
@@ -163,6 +220,21 @@ public class TrainingStreakUseCase(
             historyDays = historyDays,
             lastTrainingGapDays = lastTrainingGapDays,
         )
+    }
+
+    private fun shouldEnableDailyCandidate(
+        dailyData: DailyStreakData,
+        historyDays: Int,
+        sessionsByDay: Map<LocalDate, Int>,
+    ): Boolean {
+        if (dailyData.currentStreak >= DAILY_MIN_STREAK_TO_ENABLE) return true
+        if (historyDays <= 0) return false
+
+        val window = min(historyDays, DAILY_MIN_DENSITY_WINDOW_DAYS)
+        if (window <= 0) return false
+
+        val density = sessionsByDay.size.toFloat() / window.toFloat()
+        return density >= DAILY_MIN_DENSITY
     }
 
     private fun confidenceRelaxation(historyDays: Int): Float {
@@ -241,7 +313,7 @@ public class TrainingStreakUseCase(
             }
         }
 
-        val progressBonus = (progressPercent.coerceIn(0, 100) / 100f) * 0.05f
+        val progressBonus = (progressPercent.coerceIn(0, 100) / 100f) * PROGRESS_BONUS_WEIGHT
 
         val recencyFactor = when {
             lastTrainingGapDays < 0 -> 1f
@@ -326,13 +398,27 @@ public class TrainingStreakUseCase(
         earliestTrainingDate: LocalDate?,
         historyDays: Int,
         lastTrainingGapDays: Int,
+        sessionsByDay: Map<LocalDate, Int>,
+        weeklySchedule: WeeklySchedulePattern?,
     ): Candidate? {
         if (weeklyData.targetSessions <= 0) return null
 
         val confidenceBase = (weeklyData.countsByWeekStart.size.toFloat() / 4f).coerceIn(0f, 1f)
-        val confidence =
+        var confidence =
             (confidenceBase * historyFactor(historyDays) * recencyFactor(lastTrainingGapDays))
                 .coerceIn(0f, 1f)
+
+        // Soft schedule adherence factor:
+        // - Weekly progress remains "count-based".
+        // - Confidence increases when user trains on their usual weekdays.
+        if (weeklySchedule != null) {
+            val adherence = computeWeeklyScheduleAdherence(
+                today = today,
+                sessionsByDay = sessionsByDay,
+                schedule = weeklySchedule,
+            )
+            confidence = (confidence * adherenceFactor(adherence)).coerceIn(0f, 1f)
+        }
 
         val mood = moodFor(
             length = weeklyData.streakLength,
@@ -369,6 +455,35 @@ public class TrainingStreakUseCase(
             timeline = timeline,
             score = score,
         )
+    }
+
+    private fun adherenceFactor(adherence: Float): Float {
+        val a = adherence.coerceIn(0f, 1f)
+        return WEEKLY_SCHEDULE_FACTOR_MIN + (WEEKLY_SCHEDULE_FACTOR_MAX - WEEKLY_SCHEDULE_FACTOR_MIN) * a
+    }
+
+    private fun computeWeeklyScheduleAdherence(
+        today: LocalDate,
+        sessionsByDay: Map<LocalDate, Int>,
+        schedule: WeeklySchedulePattern,
+    ): Float {
+        if (schedule.expectedDays <= 0) return 1f
+
+        val currentWeekStart = today.minus(
+            DatePeriod(days = today.dayOfWeek.isoDayNumber - DayOfWeek.MONDAY.isoDayNumber)
+        )
+
+        var hit = 0
+        for (offset in 0..6) {
+            val date = currentWeekStart.plus(DatePeriod(days = offset))
+            val hasTraining = (sessionsByDay[date] ?: 0) > 0
+            if (!hasTraining) continue
+
+            val planned = schedule.mask[offset]
+            if (planned) hit++
+        }
+
+        return (hit.toFloat() / schedule.expectedDays.toFloat()).coerceIn(0f, 1f)
     }
 
     private fun buildRhythmCandidateOrNull(
@@ -457,13 +572,16 @@ public class TrainingStreakUseCase(
         lastTrainingGapDays: Int,
     ): Candidate? {
         if (sessionsByDay.isEmpty()) return null
+        if (historyDays < MIN_HISTORY_DAYS_FOR_PATTERN) return null
 
         val series = (0 until horizonDays).map { offset ->
             val date = today.minus(DatePeriod(days = offset))
             (sessionsByDay[date] ?: 0) > 0
         }
 
-        if (series.count { it } < 3) return null
+        val trainingDays = series.count { it }
+        val minTrainingDays = max(MIN_TRAINING_DAYS_FOR_PATTERN_BASE, minCycles * 2)
+        if (trainingDays < minTrainingDays) return null
 
         val candidate = detectBestPattern(
             series = series,
@@ -483,7 +601,7 @@ public class TrainingStreakUseCase(
         val currentCycleDays = cycles.getValue(0)
 
         val achievedInCurrent = currentCycleDays.count { idx ->
-            series[idx] && candidate.mask[posIndex(idx)]
+            series[idx] && (candidate.mask[posIndex(idx)] == true)
         }
         val currentProgress =
             ((achievedInCurrent.toFloat() / target.toFloat()).coerceIn(0f, 1f) * 100).roundToInt()
@@ -494,7 +612,7 @@ public class TrainingStreakUseCase(
             .mapNotNull { c -> cycles[c] }
             .takeWhile { indices -> indices.size >= candidate.periodDays }
             .takeWhile { indices ->
-                val achieved = indices.count { idx -> series[idx] && candidate.mask[posIndex(idx)] }
+                val achieved = indices.count { idx -> series[idx] && (candidate.mask[posIndex(idx)] == true) }
                 achieved >= target
             }
             .count()
@@ -502,7 +620,7 @@ public class TrainingStreakUseCase(
         val timeline = (3 downTo 0).mapNotNull { cycle ->
             val indices = cycles[cycle] ?: return@mapNotNull null
             if (indices.isEmpty()) return@mapNotNull null
-            val achieved = indices.count { idx -> series[idx] && candidate.mask[posIndex(idx)] }
+            val achieved = indices.count { idx -> series[idx] && (candidate.mask[posIndex(idx)] == true) }
             val percent = ((achieved.toFloat() / target.toFloat())
                 .coerceIn(0f, 1f) * 100).roundToInt()
 
@@ -534,7 +652,7 @@ public class TrainingStreakUseCase(
             length = streakCycles,
             targetSessionsPerPeriod = target,
             periodLengthDays = candidate.periodDays,
-            mask = candidate.mask,
+            mask = candidate.mask.map { it == true },
             mood = mood,
             progressPercent = currentProgress,
             confidence = confidence,
@@ -623,8 +741,8 @@ public class TrainingStreakUseCase(
         val restLengths = blocks.restLengths()
         if (restLengths.size < effectiveMinBlocks - 1) return null
 
-        val runMode = runLengths.modeOrNull() ?: return null
-        val restMode = restLengths.modeOrNull() ?: return null
+        val runMode = runLengths.modeOrNull(preferLargerValueOnTie = true) ?: return null
+        val restMode = restLengths.modeOrNull(preferLargerValueOnTie = false) ?: return null
 
         if (runMode.value < 2 || restMode.value <= 0) return null
 
@@ -652,11 +770,19 @@ public class TrainingStreakUseCase(
         val count: Int,
     )
 
-    private fun List<Int>.modeOrNull(): ModeValue? {
+    private fun List<Int>.modeOrNull(
+        preferLargerValueOnTie: Boolean,
+    ): ModeValue? {
         if (isEmpty()) return null
         val stats = groupingBy { it }.eachCount()
-        val entry = stats.entries.maxByOrNull { it.value } ?: return null
-        return ModeValue(value = entry.key, count = entry.value)
+        val maxCount = stats.values.maxOrNull() ?: return null
+        val tiedValues = stats.filterValues { it == maxCount }.keys
+        val selectedValue = if (preferLargerValueOnTie) {
+            tiedValues.maxOrNull()
+        } else {
+            tiedValues.minOrNull()
+        } ?: return null
+        return ModeValue(value = selectedValue, count = maxCount)
     }
 
     private fun List<DayBlock>.restLengths(): List<Int> {
@@ -738,7 +864,7 @@ public class TrainingStreakUseCase(
         }
 
         val countsByWeek = associate { it.start to it.count }
-        val weeklyTarget = deriveWeeklyTarget()
+        val weeklyTarget = deriveWeeklyTargetStable()
 
         val currentWeekStart = today.minus(
             DatePeriod(days = today.dayOfWeek.isoDayNumber - DayOfWeek.MONDAY.isoDayNumber)
@@ -891,7 +1017,7 @@ public class TrainingStreakUseCase(
     private data class PatternCandidate(
         val periodDays: Int,
         val shift: Int,
-        val mask: List<Boolean>,
+        val mask: List<Boolean?>,
         val expectedTrainingDays: Int,
         val confidence: Float,
     )
@@ -921,21 +1047,37 @@ public class TrainingStreakUseCase(
                         if (obs[p] == 0) 0f else trains[p].toFloat() / obs[p].toFloat()
                     }
 
-                    val mask = probs.map { it > 0.5f }
-                    val expected = mask.count { it }
-                    if (expected == 0 || expected == period) continue
-
-                    val matches = (0 until horizon).count { i ->
-                        val expectedTrain = mask[(i + shift) % period]
-                        expectedTrain == series[i]
+                    val mask: List<Boolean?> = probs.map { prob ->
+                        when {
+                            prob >= PATTERN_PROB_TRAIN -> true
+                            prob <= PATTERN_PROB_REST -> false
+                            else -> null
+                        }
                     }
 
-                    val accuracy = matches.toFloat() / horizon.toFloat()
+                    val expected = mask.count { it == true }
+                    if (expected == 0 || expected == period) continue
+
+                    val knownPositionsCount = mask.count { it != null }
+                    if (knownPositionsCount <= 0) continue
+
+                    var knownObs = 0
+                    var knownMatches = 0
+                    for (i in 0 until horizon) {
+                        val expectedTrain = mask[(i + shift) % period]
+                        if (expectedTrain == null) continue
+                        knownObs++
+                        if (expectedTrain == series[i]) knownMatches++
+                    }
+                    if (knownObs <= 0) continue
+
+                    val accuracy = knownMatches.toFloat() / knownObs.toFloat()
                     val stability = probs.map { abs(it - 0.5f) * 2f }.average().toFloat()
                     val coverage =
                         (horizon.toFloat() / (period * minCycles).toFloat()).coerceIn(0f, 1f)
+                    val knownCoverage = (knownPositionsCount.toFloat() / period.toFloat()).coerceIn(0f, 1f)
 
-                    val confidence = (accuracy * stability * coverage).coerceIn(0f, 1f)
+                    val confidence = (accuracy * stability * coverage * knownCoverage).coerceIn(0f, 1f)
 
                     add(
                         PatternCandidate(
@@ -963,7 +1105,22 @@ public class TrainingStreakUseCase(
             .firstOrNull()
     }
 
-    private fun List<WeekBucket>.deriveWeeklyTarget(): Int {
+    private fun List<WeekBucket>.deriveWeeklyTargetStable(): Int {
+        val raw = deriveWeeklyTargetCore().coerceIn(1, 10)
+
+        val positiveCounts = map { it.count }.filter { it > 0 }
+        val recent = positiveCounts.takeLast(RECENT_WEEKS_FOR_TARGET)
+        if (recent.size < 3) return raw
+
+        val sorted = recent.sorted()
+        val median = sorted[sorted.size / 2].coerceIn(1, 10)
+        val minClamp = (median - WEEKLY_TARGET_CLAMP_DELTA).coerceAtLeast(1)
+        val maxClamp = (median + WEEKLY_TARGET_CLAMP_DELTA).coerceAtMost(10)
+
+        return raw.coerceIn(minClamp, maxClamp)
+    }
+
+    private fun List<WeekBucket>.deriveWeeklyTargetCore(): Int {
         if (isEmpty()) return 0
         val positiveCounts = map { it.count }.filter { it > 0 }
         if (positiveCounts.isEmpty()) return 0
@@ -985,7 +1142,12 @@ public class TrainingStreakUseCase(
             .maxByOrNull { it.value }
             ?.key
 
-        val mean = recent.average().roundToInt().coerceAtLeast(1)
+        val trimmedMean = if (recent.size >= 5) {
+            sorted.subList(1, sorted.size - 1).average().roundToInt()
+        } else {
+            recent.average().roundToInt()
+        }.coerceAtLeast(1)
+
         val lastWeek = recent.last()
         val blended = ((median + lastWeek) / 2.0).roundToInt().coerceAtLeast(1)
 
@@ -995,7 +1157,7 @@ public class TrainingStreakUseCase(
             blended
         }
 
-        return (stableCandidate ?: mean).coerceIn(1, 10)
+        return (stableCandidate ?: trimmedMean).coerceIn(1, 10)
     }
 
     private data class TrainingStreakAdaptation(
@@ -1040,5 +1202,80 @@ public class TrainingStreakUseCase(
                 rhythmMinConfidence = 0.6f,
             )
         }
+    }
+
+    private data class WeeklySchedulePattern(
+        val mask: BooleanArray, // Monday..Sunday
+        val expectedDays: Int,
+        val confidence: Float,
+    )
+
+    private fun detectWeeklyScheduleOrNull(
+        sessionsByDay: Map<LocalDate, Int>,
+        today: LocalDate,
+        horizonDays: Int,
+        minCycles: Int,
+        minConfidence: Float,
+    ): WeeklySchedulePattern? {
+        val minHorizon = 7 * minCycles
+        if (horizonDays < minHorizon) return null
+
+        val obs = IntArray(7)
+        val trains = IntArray(7)
+
+        for (i in 0 until horizonDays) {
+            val date = today.minus(DatePeriod(days = i))
+            val weekdayIndex = date.dayOfWeek.isoDayNumber - DayOfWeek.MONDAY.isoDayNumber
+            obs[weekdayIndex]++
+            if ((sessionsByDay[date] ?: 0) > 0) trains[weekdayIndex]++
+        }
+
+        val probs = (0..6).map { idx ->
+            if (obs[idx] == 0) 0f else trains[idx].toFloat() / obs[idx].toFloat()
+        }
+
+        val triMask: Array<Boolean?> = Array(7) { idx ->
+            val p = probs[idx]
+            when {
+                p >= PATTERN_PROB_TRAIN -> true
+                p <= PATTERN_PROB_REST -> false
+                else -> null
+            }
+        }
+
+        val expectedDays = triMask.count { it == true }
+        if (expectedDays <= 0 || expectedDays >= 7) return null
+
+        val knownPositions = triMask.count { it != null }
+        if (knownPositions <= 0) return null
+
+        var knownObs = 0
+        var knownMatches = 0
+        for (i in 0 until horizonDays) {
+            val date = today.minus(DatePeriod(days = i))
+            val weekdayIndex = date.dayOfWeek.isoDayNumber - DayOfWeek.MONDAY.isoDayNumber
+            val expected = triMask[weekdayIndex]
+            if (expected == null) continue
+
+            knownObs++
+            val actual = (sessionsByDay[date] ?: 0) > 0
+            if (expected == actual) knownMatches++
+        }
+        if (knownObs <= 0) return null
+
+        val accuracy = knownMatches.toFloat() / knownObs.toFloat()
+        val stability = probs.map { abs(it - 0.5f) * 2f }.average().toFloat()
+        val coverage = (horizonDays.toFloat() / minHorizon.toFloat()).coerceIn(0f, 1f)
+        val knownCoverage = (knownPositions.toFloat() / 7f).coerceIn(0f, 1f)
+
+        val confidence = (accuracy * stability * coverage * knownCoverage).coerceIn(0f, 1f)
+        if (confidence < minConfidence) return null
+
+        val mask = BooleanArray(7) { idx -> triMask[idx] == true }
+        return WeeklySchedulePattern(
+            mask = mask,
+            expectedDays = expectedDays,
+            confidence = confidence,
+        )
     }
 }
