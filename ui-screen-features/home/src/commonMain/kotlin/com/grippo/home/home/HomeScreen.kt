@@ -195,7 +195,8 @@ internal fun HomeScreen(
 
                         ExerciseSpotlightsCard(
                             modifier = Modifier.fillMaxWidth(),
-                            value = list
+                            value = list,
+                            onExampleClick = contract::onOpenExample
                         )
                     }
                 }

@@ -217,6 +217,7 @@
     <string name="select_month">Выберите месяц</string>
     <string name="x">x</string>
     <string name="tonnage">Тоннаж</string>
+    <string name="spotlight">В центре внимания</string>
     <string name="insights">Инсайты</string>
     <string name="tonnage_chip">Тоннаж</string>
     <string name="intensity_chip">Интенсивность</string>
