@@ -145,14 +145,7 @@ public data object AppDp {
     }
 
     public data object PerformanceTrend {
-        val status: Status = Status
         val icon: Dp = AppDp.icon.extraSmall
-
-        public data object Status {
-            val radius: Dp = AppDp.radius.small
-            val horizontalPadding: Dp = padding.small
-            val verticalPadding: Dp = padding.extraSmall
-        }
     }
 
     public data object Metrics {
@@ -320,14 +313,14 @@ public data object AppDp {
         val large: Large = Large
         val medium: Medium = Medium
 
+        public data object Small {
+            val size: Dp = icon.xLarge
+            val radius: Dp = AppDp.radius.tiny
+        }
+
         public data object Medium {
             val size: Dp = icon.xxLarge
             val radius: Dp = AppDp.radius.medium
-        }
-
-        public data object Small {
-            val size: Dp = icon.medium
-            val radius: Dp = AppDp.radius.tiny
         }
 
         public data object Large {

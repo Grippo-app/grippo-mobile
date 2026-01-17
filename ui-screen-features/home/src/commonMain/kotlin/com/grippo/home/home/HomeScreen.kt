@@ -37,7 +37,7 @@ import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.DigestCard
-import com.grippo.design.components.metrics.ExerciseSpotlightCard
+import com.grippo.design.components.metrics.ExerciseSpotlightsCard
 import com.grippo.design.components.metrics.HighlightsHeader
 import com.grippo.design.components.metrics.LastTrainingCard
 import com.grippo.design.components.metrics.MuscleLoadingCard
@@ -56,6 +56,7 @@ import com.grippo.design.resources.provider.start_workout
 import com.grippo.home.home.components.EmptyHomeContent
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlin.time.Duration.Companion.hours
 
 @Composable
@@ -157,50 +158,16 @@ internal fun HomeScreen(
                     )
                 }
 
-                if (state.best != null) {
-                    item(key = "exercise_spotlight_best", span = { GridItemSpan(2) }) {
-                        val onExampleClickProvider =
-                            remember(state.best.example.id) {
-                                { contract.onOpenExample(state.best.example.id) }
-                            }
+                if (state.missing != null || state.best != null || state.consistent != null) {
+                    item(key = "exercise_spotlight", span = { GridItemSpan(2) }) {
+                        val list = remember(state.missing, state.best, state.consistent) {
+                            listOfNotNull(state.missing, state.best, state.consistent)
+                                .toPersistentList()
+                        }
 
-                        ExerciseSpotlightCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .scalableClick(onClick = onExampleClickProvider),
-                            value = state.best,
-                        )
-                    }
-                }
-
-                if (state.missing != null) {
-                    item(key = "exercise_spotlight_missing", span = { GridItemSpan(2) }) {
-                        val onExampleClickProvider =
-                            remember(state.missing.example.id) {
-                                { contract.onOpenExample(state.missing.example.id) }
-                            }
-
-                        ExerciseSpotlightCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .scalableClick(onClick = onExampleClickProvider),
-                            value = state.missing,
-                        )
-                    }
-                }
-
-                if (state.consistent != null) {
-                    item(key = "exercise_spotlight_consistent", span = { GridItemSpan(2) }) {
-                        val onExampleClickProvider =
-                            remember(state.consistent.example.id) {
-                                { contract.onOpenExample(state.consistent.example.id) }
-                            }
-
-                        ExerciseSpotlightCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .scalableClick(onClick = onExampleClickProvider),
-                            value = state.consistent,
+                        ExerciseSpotlightsCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = list
                         )
                     }
                 }
@@ -230,17 +197,6 @@ internal fun HomeScreen(
                                 value = state.streak
                             )
                         }
-                    }
-                }
-
-                if (state.digest != null) {
-                    item(key = "digest", span = { GridItemSpan(2) }) {
-                        DigestCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .scalableClick(onClick = contract::onOpenDigest),
-                            value = state.digest,
-                        )
                     }
                 }
 
@@ -321,6 +277,17 @@ internal fun HomeScreen(
                 } else {
                     item(key = "performance_intensity_spacer") {
                         Spacer(modifier = Modifier.fillMaxWidth())
+                    }
+                }
+
+                if (state.digest != null) {
+                    item(key = "digest", span = { GridItemSpan(2) }) {
+                        DigestCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .scalableClick(onClick = contract::onOpenDigest),
+                            value = state.digest,
+                        )
                     }
                 }
             }

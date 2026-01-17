@@ -174,15 +174,15 @@ private fun PerformanceTrendChip(status: PerformanceTrendStatusState) {
 
     val color = performanceStatusColor(status)
 
-    val shape = RoundedCornerShape(AppTokens.dp.performanceTrend.status.radius)
+    val shape = RoundedCornerShape(AppTokens.dp.metrics.status.radius)
 
     Text(
         modifier = Modifier
             .clip(shape)
             .background(color.copy(alpha = 0.2f), shape = shape)
             .padding(
-                horizontal = AppTokens.dp.performanceTrend.status.horizontalPadding,
-                vertical = AppTokens.dp.performanceTrend.status.verticalPadding
+                horizontal = AppTokens.dp.metrics.status.horizontalPadding,
+                vertical = AppTokens.dp.metrics.status.verticalPadding
             ),
         text = label,
         style = AppTokens.typography.b11Semi(),
