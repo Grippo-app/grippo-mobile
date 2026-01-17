@@ -158,20 +158,6 @@ internal fun HomeScreen(
                     )
                 }
 
-                if (state.missing != null || state.best != null || state.consistent != null) {
-                    item(key = "exercise_spotlight", span = { GridItemSpan(2) }) {
-                        val list = remember(state.missing, state.best, state.consistent) {
-                            listOfNotNull(state.missing, state.best, state.consistent)
-                                .toPersistentList()
-                        }
-
-                        ExerciseSpotlightsCard(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = list
-                        )
-                    }
-                }
-
                 item(key = "muscle_loading_and_training_streak", span = { GridItemSpan(2) }) {
                     Row(
                         modifier = Modifier
@@ -197,6 +183,20 @@ internal fun HomeScreen(
                                 value = state.streak
                             )
                         }
+                    }
+                }
+
+                if (state.missing != null || state.best != null || state.consistent != null) {
+                    item(key = "exercise_spotlight", span = { GridItemSpan(2) }) {
+                        val list = remember(state.missing, state.best, state.consistent) {
+                            listOfNotNull(state.missing, state.best, state.consistent)
+                                .toPersistentList()
+                        }
+
+                        ExerciseSpotlightsCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = list
+                        )
                     }
                 }
 

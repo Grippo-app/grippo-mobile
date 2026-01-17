@@ -40,7 +40,7 @@ public data object AppDp {
         val medium: Dp = 22.dp
         val large: Dp = 24.dp
         val xLarge: Dp = 32.dp
-        val xxLarge: Dp = 68.dp
+        val xxLarge: Dp = 64.dp
         val xxxLarge: Dp = 100.dp
         val xxxxLarge: Dp = 200.dp
     }
@@ -315,7 +315,7 @@ public data object AppDp {
 
         public data object Small {
             val size: Dp = icon.xLarge
-            val radius: Dp = AppDp.radius.tiny
+            val radius: Dp = AppDp.radius.small
         }
 
         public data object Medium {
@@ -410,11 +410,11 @@ public data object AppDp {
     }
 
     public data object Error {
-        val icon: Dp = AppDp.icon.xxLarge
+        val icon: Dp = AppDp.icon.xxxLarge
     }
 
     public data object Confirmation {
-        val icon: Dp = AppDp.icon.xxLarge
+        val icon: Dp = AppDp.icon.xxxLarge
     }
 
     public data object Loader {

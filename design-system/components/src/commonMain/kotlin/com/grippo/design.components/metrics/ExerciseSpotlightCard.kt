@@ -8,9 +8,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.metrics.ExerciseSpotlightState
 import com.grippo.core.state.metrics.stubExerciseSpotlightBestProgress
 import com.grippo.core.state.metrics.stubExerciseSpotlightComebackMissing
@@ -42,7 +42,7 @@ public fun ExerciseSpotlightsCard(
 }
 
 @Composable
-public fun ExerciseSpotlightCard(
+private fun ExerciseSpotlightCard(
     modifier: Modifier = Modifier,
     value: ExerciseSpotlightState,
 ) {
@@ -63,6 +63,7 @@ public fun ExerciseSpotlightCard(
 
         Column(
             modifier = Modifier,
+            horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
         ) {
             Text(
@@ -76,14 +77,6 @@ public fun ExerciseSpotlightCard(
                 text = value.title(),
                 style = AppTokens.typography.b11Semi(),
                 color = color
-            )
-
-            Text(
-                text = value.description(),
-                style = AppTokens.typography.b12Med(),
-                color = AppTokens.colors.text.secondary,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
             )
         }
     }

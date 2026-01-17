@@ -14,8 +14,8 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.highlights
 import com.grippo.design.resources.provider.icons.Intensity
+import com.grippo.design.resources.provider.insights
 import com.grippo.toolkit.date.utils.DateRange
 
 @Composable
@@ -38,7 +38,7 @@ public fun HighlightsHeader(
 
         Text(
             modifier = Modifier.weight(1f),
-            text = AppTokens.strings.res(Res.string.highlights),
+            text = AppTokens.strings.res(Res.string.insights),
             style = AppTokens.typography.h4(),
             color = AppTokens.colors.semantic.warning,
             maxLines = 1,

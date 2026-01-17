@@ -39,17 +39,17 @@ public fun ExerciseExampleCard(
     style: ExerciseExampleCardStyle,
 ) {
     when (style) {
+        is ExerciseExampleCardStyle.Small -> ExerciseExampleCardSmall(
+            modifier = modifier,
+            value = style.value,
+        )
+
         is ExerciseExampleCardStyle.Medium -> ExerciseExampleCardMedium(
             modifier = modifier,
             value = style.value,
         )
 
         is ExerciseExampleCardStyle.Large -> ExerciseExampleCardLarge(
-            modifier = modifier,
-            value = style.value,
-        )
-
-        is ExerciseExampleCardStyle.Small -> ExerciseExampleCardSmall(
             modifier = modifier,
             value = style.value,
         )

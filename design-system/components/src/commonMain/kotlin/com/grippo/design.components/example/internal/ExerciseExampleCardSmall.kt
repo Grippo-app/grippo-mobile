@@ -24,7 +24,7 @@ internal fun ExerciseExampleCardSmall(
     value: ExerciseExampleValueState,
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -35,8 +35,8 @@ internal fun ExerciseExampleCardSmall(
 
         Text(
             text = value.name,
-            style = AppTokens.typography.b13Semi(),
-            color = AppTokens.colors.text.secondary,
+            style = AppTokens.typography.b14Semi(),
+            color = AppTokens.colors.text.primary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
