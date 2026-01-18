@@ -143,8 +143,7 @@ public class TrainingLoadProfileUseCase(
         val pushRatio = weightedPushRatioByStimulus(exercises)
 
         val strengthRaw = strengthFromTopExercises(exercises)
-        val enduranceRaw =
-            ENDURANCE_STIMULUS_SHARE * stimulusPerMin + ENDURANCE_REPS_SHARE * repsPerMin
+        val enduranceRaw = repsPerMin
 
         val specializationTop2Percent = computeSpecializationTop2Percent(exercises, exampleMap)
 
@@ -243,9 +242,6 @@ public class TrainingLoadProfileUseCase(
 
     private fun strengthFromTopExercises(exercises: List<Exercise>): Float {
         val items = exercises.mapNotNull { e ->
-            val effort = exerciseStimulus(e.iterations)
-            if (!effort.isFinite() || effort <= EPS) return@mapNotNull null
-
             val heavy = heavyE1rmSignalForIterations(e.iterations)
             if (!heavy.isFinite() || heavy <= EPS) return@mapNotNull null
 
@@ -263,7 +259,7 @@ public class TrainingLoadProfileUseCase(
             val factor = categoryFactor * weightTypeFactor
             if (!factor.isFinite() || factor <= 0f) return@mapNotNull null
 
-            val pickScore = effort * factor
+            val pickScore = heavy * factor
             if (!pickScore.isFinite() || pickScore <= EPS) return@mapNotNull null
 
             StrengthItem(

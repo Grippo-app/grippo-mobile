@@ -7,6 +7,13 @@ import com.grippo.core.state.examples.ExerciseExampleValueState
 import com.grippo.core.state.examples.stubExerciseExampleValueState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.design.core.AppTokens
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.best_progress
+import com.grippo.design.resources.provider.spotlight_anchor_title
+import com.grippo.design.resources.provider.spotlight_best_progress_description
+import com.grippo.design.resources.provider.spotlight_missing_description
+import com.grippo.design.resources.provider.spotlight_missing_title
+import com.grippo.design.resources.provider.spotlight_most_consistent_description
 
 @Immutable
 public sealed interface ExerciseSpotlightState {
@@ -47,9 +54,9 @@ public sealed interface ExerciseSpotlightState {
     @Composable
     public fun title(): String {
         return when (this) {
-            is BestProgressState -> "Best progress"
-            is ComebackMissingState -> "Missing"
-            is MostConsistentState -> "Your anchor"
+            is BestProgressState -> AppTokens.strings.res(Res.string.best_progress)
+            is ComebackMissingState -> AppTokens.strings.res(Res.string.spotlight_missing_title)
+            is MostConsistentState -> AppTokens.strings.res(Res.string.spotlight_anchor_title)
         }
     }
 
@@ -57,13 +64,24 @@ public sealed interface ExerciseSpotlightState {
     public fun description(): String {
         return when (this) {
             is MostConsistentState ->
-                "$sessionCount/$trainingsCount workouts"
+                AppTokens.strings.res(
+                    Res.string.spotlight_most_consistent_description,
+                    sessionCount,
+                    trainingsCount,
+                )
 
             is BestProgressState ->
-                "+${progressDelta} vs median"
+                AppTokens.strings.res(
+                    Res.string.spotlight_best_progress_description,
+                    progressDelta,
+                )
 
             is ComebackMissingState ->
-                "Missing $currentGap workouts (usual ~${typicalGap})"
+                AppTokens.strings.res(
+                    Res.string.spotlight_missing_description,
+                    currentGap,
+                    typicalGap,
+                )
         }
     }
 

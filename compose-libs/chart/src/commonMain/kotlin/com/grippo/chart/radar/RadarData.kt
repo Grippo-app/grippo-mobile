@@ -4,7 +4,10 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
 @Immutable
-public data class RadarAxis(val id: String, val label: String)
+public data class RadarAxis(
+    val id: String,
+    val label: String
+)
 
 @Immutable
 public data class RadarSeries(

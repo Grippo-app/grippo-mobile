@@ -596,7 +596,7 @@ private fun DrawScope.drawRadar(
             val ringW = peek.focusRingWidth.toPx()
             val haloR = peek.focusHaloRadius.toPx()
 
-            val halo = androidx.compose.ui.graphics.Brush.radialGradient(
+            val halo = Brush.radialGradient(
                 colors = listOf(
                     focus.copy(alpha = 0.20f),
                     focus.copy(alpha = 0f)
@@ -701,29 +701,45 @@ private fun buildSweepStops(
 ): List<Pair<Float, Color>> {
     if (angles.isEmpty()) return emptyList()
     val twoPi = 2f * PI.toFloat()
+    val startAngle = angles.first()
+    val seamWidth = 0.04f
+    val seamInner = seamWidth * 0.5f
 
     val byAngle = buildList {
         for (i in angles.indices) {
             val angle = angles[i]
-            val fraction = ((angle % twoPi) + twoPi) % twoPi / twoPi
+            val fraction = (((angle - startAngle) % twoPi) + twoPi) % twoPi / twoPi
             val raw = rawValues.getOrNull(i) ?: Float.NaN
             val value = if (raw.isNaN()) 0f else raw
             add(fraction to colorFromStops(stops, value))
         }
-    }.sortedBy { it.first }.toMutableList()
+    }.sortedBy { it.first }
 
     if (byAngle.isEmpty()) return emptyList()
 
-    val first = byAngle.first()
-    val last = byAngle.last()
-    if (first.first > 0f) {
-        byAngle.add(0, 0f to first.second)
-    }
-    if (last.first < 1f) {
-        byAngle.add(1f to first.second)
-    }
+    val firstColor = byAngle.first().second
+    val lastColor = byAngle.last().second
+    val seamColor = lerpColor(lastColor, firstColor, 0.5f)
+    val preBlend = lerpColor(lastColor, seamColor, 0.5f)
+    val postBlend = lerpColor(seamColor, firstColor, 0.5f)
 
-    return byAngle
+    val adjusted = byAngle.map { (pos, color) ->
+        val clampedPos = when {
+            pos <= 0f -> seamWidth
+            pos >= 1f -> 1f - seamWidth
+            else -> pos
+        }
+        clampedPos to color
+    }.toMutableList()
+
+    adjusted.add(0f to seamColor)
+    adjusted.add(1f to seamColor)
+    adjusted.add(seamInner to postBlend)
+    adjusted.add(seamWidth to firstColor)
+    adjusted.add(1f - seamWidth to lastColor)
+    adjusted.add(1f - seamInner to preBlend)
+
+    return adjusted.sortedBy { it.first }
 }
 
 private fun format01(value: Float, decimals: Int): String {

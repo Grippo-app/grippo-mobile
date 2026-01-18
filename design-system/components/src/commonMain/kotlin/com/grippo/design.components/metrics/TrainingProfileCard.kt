@@ -1,10 +1,12 @@
 package com.grippo.design.components.metrics
 
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import com.grippo.chart.radar.RadarAxis
 import com.grippo.chart.radar.RadarData
 import com.grippo.chart.radar.RadarSeries
@@ -29,6 +31,15 @@ public fun TrainingLoadProfileCard(
         modifier = modifier,
         style = MetricSectionPanelStyle.Small,
     ) {
+
+        Text(
+            text = "Training profile",
+            style = AppTokens.typography.b12Med(),
+            color = AppTokens.colors.text.secondary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+
         val fallback = AppTokens.colors.charts.radar.strokeFallback
         val data = remember(value) {
             val orderedKinds = listOf(
@@ -40,6 +51,8 @@ public fun TrainingLoadProfileCard(
                 keySelector = TrainingDimensionScoreState::kind,
                 valueTransform = TrainingDimensionScoreState::score,
             )
+            val maxScore = scoresByKind.values.maxOrNull() ?: return@remember null
+            if (maxScore <= 0) return@remember null
             val axes = orderedKinds.map { kind ->
                 RadarAxis(
                     id = kind.axisId(),
@@ -47,7 +60,7 @@ public fun TrainingLoadProfileCard(
                 )
             }
             val values = orderedKinds.associate { kind ->
-                val normalizedScore = scoresByKind.getValue(kind) / 100f
+                val normalizedScore = scoresByKind.getValue(kind).toFloat() / maxScore.toFloat()
                 kind.axisId() to normalizedScore
             }
 
@@ -61,12 +74,9 @@ public fun TrainingLoadProfileCard(
                     )
                 ),
             )
-        }
-
+        } ?: return@MetricSectionPanel
         RadarChart(
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1f),
+            modifier = Modifier.size(200.dp),
             data = data,
         )
     }
