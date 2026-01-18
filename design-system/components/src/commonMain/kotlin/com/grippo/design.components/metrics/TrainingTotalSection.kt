@@ -21,14 +21,14 @@ import com.grippo.design.preview.PreviewContainer
 @Composable
 public fun TrainingTotalSection(
     modifier: Modifier = Modifier,
-    state: TrainingTotalState,
+    value: TrainingTotalState,
     chipSize: ChipSize = ChipSize.Medium,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
-        state.volume
+        value.volume
             .takeIf { it.value != null }
             ?.let { value ->
                 VolumeChip(
@@ -39,7 +39,7 @@ public fun TrainingTotalSection(
                 )
             }
 
-        state.repetitions
+        value.repetitions
             .takeIf { it.value != null }
             ?.let { value ->
                 RepetitionsChip(
@@ -50,7 +50,7 @@ public fun TrainingTotalSection(
                 )
             }
 
-        state.intensity
+        value.intensity
             .takeIf { it.value != null }
             ?.let { value ->
                 IntensityChip(
@@ -67,6 +67,6 @@ public fun TrainingTotalSection(
 @Composable
 private fun TrainingTotalSectionPreview() {
     PreviewContainer {
-        TrainingTotalSection(state = stubTotal())
+        TrainingTotalSection(value = stubTotal())
     }
 }

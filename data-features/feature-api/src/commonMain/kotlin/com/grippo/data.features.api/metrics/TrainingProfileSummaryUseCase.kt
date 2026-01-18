@@ -61,32 +61,26 @@ public class TrainingLoadProfileUseCase(
             loadExamples(trainings.flatMap { it.exercises }.map { it.exerciseExample.id }.toSet())
         val raws = trainings.mapNotNull { buildRaw(it, examples) }
         if (raws.isEmpty()) return emptyProfile()
-
-        val normalizer = buildNormalizer(raws)
-        val ranks = buildRanksByRaw(raws)
-
-        val poolRaw = aggregateRaw(raws)
-        val poolScore = computeScores(poolRaw, normalizer)
-        val poolRank = ranks.rankFor(poolRaw)
-
-        val kind = classifyWithinPool(
-            raw = poolRaw,
-            score = poolScore,
-            rank = poolRank,
-        )
-
-        return TrainingLoadProfile(
-            kind = kind,
-            dimensions = listOf(
-                TrainingDimensionScore(TrainingDimensionKind.Strength, poolScore.strength),
-                TrainingDimensionScore(TrainingDimensionKind.Hypertrophy, poolScore.hypertrophy),
-                TrainingDimensionScore(TrainingDimensionKind.Endurance, poolScore.endurance),
-            ),
-        )
+        return buildProfile(raws)
     }
 
     public suspend fun fromTraining(training: Training): TrainingLoadProfile {
         return fromTrainings(listOf(training))
+    }
+
+    public suspend fun fromExercises(exercises: List<Exercise>): TrainingLoadProfile {
+        if (exercises.isEmpty()) return emptyProfile()
+
+        val examples = loadExamples(exercises.map { it.exerciseExample.id }.toSet())
+        val repetitions = exercises.sumOf { it.repetitions }
+        val raw = buildRaw(
+            exercises = exercises,
+            minutes = 0f,
+            repetitions = repetitions,
+            exampleMap = examples,
+        ) ?: return emptyProfile()
+
+        return buildProfile(listOf(raw))
     }
 
     private suspend fun loadExamples(ids: Set<String>): Map<String, ExerciseExample> {
@@ -119,17 +113,29 @@ public class TrainingLoadProfileUseCase(
     )
 
     private fun buildRaw(training: Training, exampleMap: Map<String, ExerciseExample>): Raw? {
-        val exercises = training.exercises
+        return buildRaw(
+            exercises = training.exercises,
+            minutes = training.duration.inWholeSeconds.toFloat() / 60f,
+            repetitions = training.repetitions,
+            exampleMap = exampleMap,
+        )
+    }
+
+    private fun buildRaw(
+        exercises: List<Exercise>,
+        minutes: Float,
+        repetitions: Int,
+        exampleMap: Map<String, ExerciseExample>,
+    ): Raw? {
         if (exercises.isEmpty()) return null
 
-        val minutes = training.duration.inWholeSeconds.toFloat() / 60f
         val safeMinutes = if (minutes.isFinite() && minutes > 0.5f) minutes else 1f
 
         val stimulus = computeStimulus(exercises)
         val stimulusPerMin =
             if (stimulus.isFinite() && stimulus > EPS) stimulus / safeMinutes else 0f
 
-        val reps = training.repetitions.coerceAtLeast(0)
+        val reps = repetitions.coerceAtLeast(0)
         val repsPerMin = if (reps > 0) reps.toFloat() / safeMinutes else 0f
 
         val compoundRatio = weightedCategoryRatioByStimulus(exercises, CategoryEnum.COMPOUND)
@@ -155,6 +161,30 @@ public class TrainingLoadProfileUseCase(
             pushRatio = clamp01(pushRatio),
             specializationTop2Percent = specializationTop2Percent.coerceIn(0f, 100f),
             activity = activity,
+        )
+    }
+
+    private fun buildProfile(raws: List<Raw>): TrainingLoadProfile {
+        val normalizer = buildNormalizer(raws)
+        val ranks = buildRanksByRaw(raws)
+
+        val poolRaw = aggregateRaw(raws)
+        val poolScore = computeScores(poolRaw, normalizer)
+        val poolRank = ranks.rankFor(poolRaw)
+
+        val kind = classifyWithinPool(
+            raw = poolRaw,
+            score = poolScore,
+            rank = poolRank,
+        )
+
+        return TrainingLoadProfile(
+            kind = kind,
+            dimensions = listOf(
+                TrainingDimensionScore(TrainingDimensionKind.Strength, poolScore.strength),
+                TrainingDimensionScore(TrainingDimensionKind.Hypertrophy, poolScore.hypertrophy),
+                TrainingDimensionScore(TrainingDimensionKind.Endurance, poolScore.endurance),
+            ),
         )
     }
 

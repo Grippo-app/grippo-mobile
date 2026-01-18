@@ -23,7 +23,7 @@ import com.grippo.design.resources.provider.tonnage
 
 @Composable
 public fun VolumeMetricChart(
-    state: VolumeSeriesState,
+    value: VolumeSeriesState,
     modifier: Modifier = Modifier,
 ) {
     MetricSectionPanel(
@@ -44,7 +44,7 @@ public fun VolumeMetricChart(
                 .fillMaxWidth()
                 .heightIn(min = AppTokens.dp.metrics.volume.height)
                 .aspectRatio(1.7f),
-            data = state.toBarData()
+            data = value.toBarData()
         )
     }
 }
@@ -95,7 +95,7 @@ private fun assignColors(
 private fun VolumeMetricChartPreview() {
     PreviewContainer {
         VolumeMetricChart(
-            state = stubVolumeSeries()
+            value = stubVolumeSeries()
         )
     }
 }

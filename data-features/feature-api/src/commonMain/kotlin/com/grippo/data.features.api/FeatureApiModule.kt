@@ -6,10 +6,10 @@ import com.grippo.data.features.api.exercise.example.UserExerciseExamplesUseCase
 import com.grippo.data.features.api.metrics.EstimatedOneRepMaxUseCase
 import com.grippo.data.features.api.metrics.ExerciseDistributionUseCase
 import com.grippo.data.features.api.metrics.ExerciseSpotlightUseCase
-import com.grippo.data.features.api.metrics.MuscleLoadTimelineUseCase
 import com.grippo.data.features.api.metrics.MuscleLoadingSummaryUseCase
 import com.grippo.data.features.api.metrics.PerformanceTrendUseCase
 import com.grippo.data.features.api.metrics.TrainingDigestUseCase
+import com.grippo.data.features.api.metrics.TrainingLoadProfileUseCase
 import com.grippo.data.features.api.metrics.TrainingStreakUseCase
 import com.grippo.data.features.api.metrics.TrainingTotalUseCase
 import com.grippo.data.features.api.metrics.VolumeSeriesUseCase
@@ -78,13 +78,6 @@ public class FeatureApiModule {
         }
 
         single {
-            MuscleLoadTimelineUseCase(
-                exerciseExampleFeature = get(),
-                muscleFeature = get(),
-            )
-        }
-
-        single {
             ExerciseDistributionUseCase()
         }
 
@@ -104,6 +97,12 @@ public class FeatureApiModule {
 
         single {
             TrainingTimelineUseCase()
+        }
+
+        single {
+            TrainingLoadProfileUseCase(
+                exerciseExampleFeature = get()
+            )
         }
 
         single {

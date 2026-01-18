@@ -210,7 +210,7 @@ internal fun ExerciseExampleScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-                            state = data,
+                            value = data,
                         )
 
                         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))

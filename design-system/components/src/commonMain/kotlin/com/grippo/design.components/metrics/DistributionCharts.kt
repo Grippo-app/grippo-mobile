@@ -28,11 +28,11 @@ import com.grippo.design.preview.PreviewContainer
 
 @Composable
 public fun ExerciseDistributionChart(
-    state: ExerciseDistributionState<CategoryEnumState>,
+    value: ExerciseDistributionState<CategoryEnumState>,
     modifier: Modifier = Modifier,
 ) {
     ExerciseDistributionChartContent(
-        state = state,
+        state = value,
         modifier = modifier,
         labelProvider = { it.title() },
         colorProvider = { it.color() }
@@ -41,11 +41,11 @@ public fun ExerciseDistributionChart(
 
 @Composable
 public fun WeightTypeDistributionChart(
-    state: ExerciseDistributionState<WeightTypeEnumState>,
+    value: ExerciseDistributionState<WeightTypeEnumState>,
     modifier: Modifier = Modifier,
 ) {
     ExerciseDistributionChartContent(
-        state = state,
+        state = value,
         modifier = modifier,
         labelProvider = { it.title() },
         colorProvider = { it.color() }
@@ -54,11 +54,11 @@ public fun WeightTypeDistributionChart(
 
 @Composable
 public fun ForceTypeDistributionChart(
-    state: ExerciseDistributionState<ForceTypeEnumState>,
+    value: ExerciseDistributionState<ForceTypeEnumState>,
     modifier: Modifier = Modifier,
 ) {
     ExerciseDistributionChartContent(
-        state = state,
+        state = value,
         modifier = modifier,
         labelProvider = { it.title() },
         colorProvider = { it.color() }
@@ -121,17 +121,17 @@ private fun ExerciseDistributionPreview() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             ExerciseDistributionChart(
-                state = category,
+                value = category,
                 modifier = Modifier.size(200.dp)
             )
 
             WeightTypeDistributionChart(
-                state = weight,
+                value = weight,
                 modifier = Modifier.size(200.dp)
             )
 
             ForceTypeDistributionChart(
-                state = force,
+                value = force,
                 modifier = Modifier.size(200.dp)
             )
         }

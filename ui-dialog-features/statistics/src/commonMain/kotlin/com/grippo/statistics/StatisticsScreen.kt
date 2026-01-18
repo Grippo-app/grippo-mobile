@@ -27,6 +27,7 @@ import com.grippo.design.components.metrics.ExerciseDistributionChart
 import com.grippo.design.components.metrics.ForceTypeDistributionChart
 import com.grippo.design.components.metrics.MuscleLoading
 import com.grippo.design.components.metrics.MuscleLoadingMode
+import com.grippo.design.components.metrics.TrainingLoadProfileCard
 import com.grippo.design.components.metrics.TrainingTotalSection
 import com.grippo.design.components.metrics.VolumeMetricChart
 import com.grippo.design.components.metrics.WeightTypeDistributionChart
@@ -105,7 +106,7 @@ internal fun StatisticsScreen(
                     item(key = "total_chips") {
                         TrainingTotalSection(
                             modifier = Modifier.fillMaxWidth(),
-                            state = metrics,
+                            value = metrics,
                         )
                     }
                 }
@@ -116,7 +117,18 @@ internal fun StatisticsScreen(
                         item(key = "exercise_volume") {
                             VolumeMetricChart(
                                 modifier = Modifier.fillMaxWidth(),
-                                state = data,
+                                value = data,
+                            )
+                        }
+                    }
+
+                state.trainingLoadProfile
+                    ?.takeIf { it.dimensions.isNotEmpty() }
+                    ?.let { data ->
+                        item(key = "training_load_profile") {
+                            TrainingLoadProfileCard(
+                                modifier = Modifier.fillMaxWidth(),
+                                value = data,
                             )
                         }
                     }
@@ -137,7 +149,7 @@ internal fun StatisticsScreen(
                             ?.let { distribution ->
                                 ExerciseDistributionChart(
                                     modifier = Modifier.weight(1f),
-                                    state = distribution
+                                    value = distribution
                                 )
                             }
 
@@ -146,7 +158,7 @@ internal fun StatisticsScreen(
                             ?.let { distribution ->
                                 WeightTypeDistributionChart(
                                     modifier = Modifier.weight(1f),
-                                    state = distribution
+                                    value = distribution
                                 )
                             }
 
@@ -155,7 +167,7 @@ internal fun StatisticsScreen(
                             ?.let { distribution ->
                                 ForceTypeDistributionChart(
                                     modifier = Modifier.weight(1f),
-                                    state = distribution
+                                    value = distribution
                                 )
                             }
                     }

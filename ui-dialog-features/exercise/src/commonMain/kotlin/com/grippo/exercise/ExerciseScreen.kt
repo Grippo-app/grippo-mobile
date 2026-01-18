@@ -78,7 +78,7 @@ internal fun ExerciseScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-            state = exercise.total,
+            value = exercise.total,
         )
 
         if (exercise.iterations.isNotEmpty()) {
