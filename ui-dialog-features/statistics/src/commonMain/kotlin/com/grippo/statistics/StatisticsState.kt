@@ -6,7 +6,6 @@ import com.grippo.core.state.examples.ForceTypeEnumState
 import com.grippo.core.state.examples.WeightTypeEnumState
 import com.grippo.core.state.metrics.ExerciseDistributionState
 import com.grippo.core.state.metrics.MuscleLoadSummaryState
-import com.grippo.core.state.metrics.TrainingLoadProfileState
 import com.grippo.core.state.metrics.TrainingTotalState
 import com.grippo.core.state.metrics.VolumeSeriesState
 import com.grippo.toolkit.date.utils.DateRange
@@ -28,8 +27,6 @@ public data class StatisticsState(
     val categoryDistribution: ExerciseDistributionState<CategoryEnumState>? = null,
     val weightTypeDistribution: ExerciseDistributionState<WeightTypeEnumState>? = null,
     val forceTypeDistribution: ExerciseDistributionState<ForceTypeEnumState>? = null,
-
-    val trainingLoadProfile: TrainingLoadProfileState? = null,
 )
 
 @Immutable

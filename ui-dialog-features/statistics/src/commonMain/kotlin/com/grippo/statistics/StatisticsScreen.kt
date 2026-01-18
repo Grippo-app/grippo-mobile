@@ -27,7 +27,6 @@ import com.grippo.design.components.metrics.ExerciseDistributionChart
 import com.grippo.design.components.metrics.ForceTypeDistributionChart
 import com.grippo.design.components.metrics.MuscleLoading
 import com.grippo.design.components.metrics.MuscleLoadingMode
-import com.grippo.design.components.metrics.TrainingLoadProfileCard
 import com.grippo.design.components.metrics.TrainingTotalSection
 import com.grippo.design.components.metrics.VolumeMetricChart
 import com.grippo.design.components.metrics.WeightTypeDistributionChart
@@ -116,17 +115,6 @@ internal fun StatisticsScreen(
                     ?.let { data ->
                         item(key = "exercise_volume") {
                             VolumeMetricChart(
-                                modifier = Modifier.fillMaxWidth(),
-                                value = data,
-                            )
-                        }
-                    }
-
-                state.trainingLoadProfile
-                    ?.takeIf { it.dimensions.isNotEmpty() }
-                    ?.let { data ->
-                        item(key = "training_load_profile") {
-                            TrainingLoadProfileCard(
                                 modifier = Modifier.fillMaxWidth(),
                                 value = data,
                             )
