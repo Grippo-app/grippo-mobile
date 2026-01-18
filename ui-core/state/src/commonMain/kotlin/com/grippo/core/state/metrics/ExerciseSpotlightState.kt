@@ -8,9 +8,9 @@ import com.grippo.core.state.examples.stubExerciseExampleValueState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.best_progress
 import com.grippo.design.resources.provider.spotlight_anchor_title
 import com.grippo.design.resources.provider.spotlight_best_progress_description
+import com.grippo.design.resources.provider.spotlight_best_title
 import com.grippo.design.resources.provider.spotlight_missing_description
 import com.grippo.design.resources.provider.spotlight_missing_title
 import com.grippo.design.resources.provider.spotlight_most_consistent_description
@@ -54,7 +54,7 @@ public sealed interface ExerciseSpotlightState {
     @Composable
     public fun title(): String {
         return when (this) {
-            is BestProgressState -> AppTokens.strings.res(Res.string.best_progress)
+            is BestProgressState -> AppTokens.strings.res(Res.string.spotlight_best_title)
             is ComebackMissingState -> AppTokens.strings.res(Res.string.spotlight_missing_title)
             is MostConsistentState -> AppTokens.strings.res(Res.string.spotlight_anchor_title)
         }

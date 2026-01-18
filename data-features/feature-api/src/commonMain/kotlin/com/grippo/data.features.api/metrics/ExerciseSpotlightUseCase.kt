@@ -23,7 +23,7 @@ public class ExerciseSpotlightUseCase {
         val best = stats.values.maxWithOrNull(
             compareBy<ExampleStats> { it.sessionCount }
                 .thenBy { it.totalVolume }
-                .thenBy { it.example.name }
+                .thenBy { it.example.id }
         ) ?: return null
 
         val coverageRatio = best.sessionCount.toFloat() / trainingsCount.toFloat()

@@ -12,9 +12,9 @@
     <string name="plus_value_more">+ ще %1$s</string>
     <string name="view_workout">Переглянути тренування</string>
     <string name="last_workout">Останнє тренування</string>
-    <string name="best_progress">Пік прогресу</string>
-    <string name="spotlight_anchor_title">Надійний фаворит</string>
-    <string name="spotlight_missing_title">Час повернутись</string>
+    <string name="spotlight_anchor_title">Твоє базове</string>
+    <string name="spotlight_best_title">Вище звичного</string>
+    <string name="spotlight_missing_title">Час повернути</string>
     <string name="spotlight_most_consistent_description">Фаворит у %1$d/%2$d тренувань</string>
     <string name="spotlight_best_progress_description">Зростання +%1$s до медіани</string>
     <string name="spotlight_missing_description">Пропущено %1$d тренувань (зазвичай ~%2$s)</string>
