@@ -67,7 +67,7 @@ internal fun ExerciseScreen(
             modifier = Modifier
                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                 .fillMaxWidth(),
-            text = exercise.name,
+            text = exercise.exerciseExample.name,
             style = AppTokens.typography.h1(),
             color = AppTokens.colors.text.primary,
         )
