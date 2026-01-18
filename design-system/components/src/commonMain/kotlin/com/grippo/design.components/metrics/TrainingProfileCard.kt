@@ -22,6 +22,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
+@Deprecated("don't use it")
 @Composable
 public fun TrainingLoadProfileCard(
     modifier: Modifier = Modifier,

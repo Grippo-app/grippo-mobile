@@ -1,5 +1,6 @@
 package com.grippo.data.features.api.metrics.models
 
+@Deprecated("don't use it")
 public data class TrainingLoadProfile(
     val kind: TrainingProfileKind,
     val dimensions: List<TrainingDimensionScore>,

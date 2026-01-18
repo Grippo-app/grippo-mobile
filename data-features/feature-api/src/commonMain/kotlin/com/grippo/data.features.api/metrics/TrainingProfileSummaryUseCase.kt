@@ -18,6 +18,7 @@ import kotlin.math.ln
 import kotlin.math.max
 import kotlin.math.min
 
+@Deprecated("don't use it")
 public class TrainingLoadProfileUseCase(
     private val exerciseExampleFeature: ExerciseExampleFeature,
 ) {

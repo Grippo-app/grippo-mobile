@@ -9,6 +9,7 @@ import com.grippo.data.features.api.metrics.models.TrainingDimensionScore as Dom
 import com.grippo.data.features.api.metrics.models.TrainingLoadProfile as DomainTrainingLoadProfile
 import com.grippo.data.features.api.metrics.models.TrainingProfileKind as DomainTrainingProfileKind
 
+@Deprecated("don't use it")
 public fun DomainTrainingLoadProfile?.toState(): StateTrainingLoadProfile? {
     val value = this ?: return null
     return StateTrainingLoadProfile(

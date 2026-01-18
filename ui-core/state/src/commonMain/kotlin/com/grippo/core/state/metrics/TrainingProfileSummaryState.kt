@@ -2,6 +2,7 @@ package com.grippo.core.state.metrics
 
 import androidx.compose.runtime.Immutable
 
+@Deprecated("don't use it")
 @Immutable
 public data class TrainingLoadProfileState(
     val kind: TrainingProfileKindState,
