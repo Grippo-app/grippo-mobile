@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 
+@Deprecated("")
 @Immutable
 public data class MuscleLoadTimelineState(
     val rows: Int,

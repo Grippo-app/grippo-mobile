@@ -41,7 +41,7 @@ import com.grippo.design.components.metrics.ExerciseSpotlightsCard
 import com.grippo.design.components.metrics.HighlightsHeader
 import com.grippo.design.components.metrics.LastTrainingCard
 import com.grippo.design.components.metrics.MuscleLoadingCard
-import com.grippo.design.components.metrics.PerformanceTrendCard
+import com.grippo.design.components.metrics.PerformanceMetricCard
 import com.grippo.design.components.metrics.TrainingStreakCard
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.toolbar.Toolbar
@@ -207,7 +207,7 @@ internal fun HomeScreen(
                             remember(densityMetric.type) {
                                 { contract.onPerformanceMetricClick(densityMetric.type) }
                             }
-                        PerformanceTrendCard(
+                        PerformanceMetricCard(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .fillMaxHeight()
@@ -227,7 +227,7 @@ internal fun HomeScreen(
                             remember(volumeMetric.type) {
                                 { contract.onPerformanceMetricClick(volumeMetric.type) }
                             }
-                        PerformanceTrendCard(
+                        PerformanceMetricCard(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .fillMaxHeight()
@@ -247,7 +247,7 @@ internal fun HomeScreen(
                             remember(repetitionsMetric.type) {
                                 { contract.onPerformanceMetricClick(repetitionsMetric.type) }
                             }
-                        PerformanceTrendCard(
+                        PerformanceMetricCard(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .fillMaxHeight()
@@ -267,7 +267,7 @@ internal fun HomeScreen(
                             remember(intensityMetric.type) {
                                 { contract.onPerformanceMetricClick(intensityMetric.type) }
                             }
-                        PerformanceTrendCard(
+                        PerformanceMetricCard(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .fillMaxHeight()

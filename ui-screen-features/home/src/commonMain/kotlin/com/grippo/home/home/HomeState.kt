@@ -5,6 +5,7 @@ import com.grippo.core.state.metrics.DigestState
 import com.grippo.core.state.metrics.ExerciseSpotlightState
 import com.grippo.core.state.metrics.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.PerformanceMetricState
+import com.grippo.core.state.metrics.TrainingLoadProfileState
 import com.grippo.core.state.metrics.TrainingStreakState
 import com.grippo.core.state.trainings.TrainingState
 import com.grippo.toolkit.date.utils.DateRange
@@ -19,6 +20,7 @@ internal data class HomeState(
     val muscleLoad: MuscleLoadSummaryState? = null,
     val streak: TrainingStreakState? = null,
     val performance: List<PerformanceMetricState> = emptyList(),
+    val profile: List<TrainingLoadProfileState> = emptyList(),
 
     val consistent: ExerciseSpotlightState.MostConsistentState? = null,
     val missing: ExerciseSpotlightState.ComebackMissingState? = null,

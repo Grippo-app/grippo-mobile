@@ -16,7 +16,7 @@ import com.grippo.design.preview.PreviewContainer
 import kotlinx.collections.immutable.ImmutableList
 
 @Composable
-public fun PerformanceTrendChartSection(
+public fun PerformanceTrendHistoryCard(
     modifier: Modifier = Modifier,
     history: ImmutableList<PerformanceTrendHistoryEntry>,
 ) {
@@ -70,9 +70,9 @@ private fun PerformanceMetricState.chartValue(): Float? {
 
 @AppPreview
 @Composable
-private fun PerformanceTrendChartSectionPreview() {
+private fun PerformanceTrendHistoryCardPreview() {
     PreviewContainer {
-        PerformanceTrendChartSection(
+        PerformanceTrendHistoryCard(
             history = stubPerformanceTrendHistory()
         )
     }

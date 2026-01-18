@@ -19,8 +19,8 @@ import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.metrics.PerformanceMetricTypeState
 import com.grippo.core.state.metrics.stubPerformanceTrendHistory
 import com.grippo.design.components.loading.Loader
-import com.grippo.design.components.metrics.PerformanceTrendCard
-import com.grippo.design.components.metrics.PerformanceTrendChartSection
+import com.grippo.design.components.metrics.PerformanceMetricCard
+import com.grippo.design.components.metrics.PerformanceTrendHistoryCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -93,7 +93,7 @@ internal fun PerformanceTrendScreen(
                 }
 
                 item(key = "chart") {
-                    PerformanceTrendChartSection(
+                    PerformanceTrendHistoryCard(
                         modifier = Modifier.fillMaxWidth(),
                         history = state.history,
                     )
@@ -131,7 +131,7 @@ internal fun PerformanceTrendScreen(
                             color = color
                         )
 
-                        PerformanceTrendCard(
+                        PerformanceMetricCard(
                             modifier = Modifier.fillMaxWidth(),
                             metric = entry.metric
                         )
