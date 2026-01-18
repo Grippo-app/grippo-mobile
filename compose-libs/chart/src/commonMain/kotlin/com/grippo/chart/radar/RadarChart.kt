@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
@@ -437,36 +438,73 @@ private fun DrawScope.drawRadar(
     }
 
     val strokeW = style.polygon.strokeWidth.toPx().coerceAtLeast(0f)
+    val gradientStops = style.colorStops.sortedBy { it.first }
 
     data.series.forEachIndexed { sIdx, s ->
         val sl = layout.series.getOrNull(sIdx) ?: return@forEachIndexed
+        val sweepStops = if (gradientStops.isNotEmpty()) {
+            buildSweepStops(
+                angles = layout.angles,
+                rawValues = sl.rawValues,
+                stops = gradientStops,
+            )
+        } else {
+            emptyList()
+        }
 
-        val fill = s.color.copy(alpha = style.polygon.fillAlpha.coerceIn(0f, 1f))
+        val fillAlpha = style.polygon.fillAlpha.coerceIn(0f, 1f)
+        val fill = s.color.copy(alpha = fillAlpha)
         if (style.polygon.fillAlpha > 0f) {
-            drawPath(sl.path, color = fill)
+            if (sweepStops.isNotEmpty()) {
+                val fillBrush = Brush.sweepGradient(
+                    colorStops = sweepStops.map { (pos, color) ->
+                        pos to color.copy(alpha = fillAlpha)
+                    }.toTypedArray(),
+                    center = c,
+                )
+                drawPath(sl.path, brush = fillBrush)
+            } else {
+                drawPath(sl.path, color = fill)
+            }
         }
 
         val stroke = s.color
         if (strokeW > 0f) {
-            drawPath(
-                sl.path,
-                color = stroke,
-                style = Stroke(
-                    width = strokeW.coerceAtLeast(1f),
-                    cap = StrokeCap.Round,
-                    join = StrokeJoin.Round
+            if (sweepStops.isNotEmpty()) {
+                val strokeBrush = Brush.sweepGradient(
+                    colorStops = sweepStops.toTypedArray(),
+                    center = c,
                 )
-            )
+                drawPath(
+                    sl.path,
+                    brush = strokeBrush,
+                    style = Stroke(
+                        width = strokeW.coerceAtLeast(1f),
+                        cap = StrokeCap.Round,
+                        join = StrokeJoin.Round
+                    )
+                )
+            } else {
+                drawPath(
+                    sl.path,
+                    color = stroke,
+                    style = Stroke(
+                        width = strokeW.coerceAtLeast(1f),
+                        cap = StrokeCap.Round,
+                        join = StrokeJoin.Round
+                    )
+                )
+            }
         }
 
         when (val vc = style.vertices) {
             is RadarStyle.Vertices.None -> Unit
             is RadarStyle.Vertices.Visible -> {
                 val vr = vc.radius.toPx().coerceAtLeast(0f)
-                val stops = style.colorStops.sortedBy { it.first }
                 sl.vertices.forEach { v ->
                     val col = vc.colorOverride ?: run {
-                        if (stops.isNotEmpty()) colorFromStops(stops, v.value) else s.color
+                        if (gradientStops.isNotEmpty()) colorFromStops(gradientStops, v.value)
+                        else s.color
                     }
                     drawCircle(color = col, radius = vr, center = v.point)
                 }
@@ -654,6 +692,38 @@ private fun colorFromStops(stops: List<Pair<Float, Color>>, t: Float): Color {
     }
 
     return stops.last().second
+}
+
+private fun buildSweepStops(
+    angles: FloatArray,
+    rawValues: FloatArray,
+    stops: List<Pair<Float, Color>>,
+): List<Pair<Float, Color>> {
+    if (angles.isEmpty()) return emptyList()
+    val twoPi = 2f * PI.toFloat()
+
+    val byAngle = buildList {
+        for (i in angles.indices) {
+            val angle = angles[i]
+            val fraction = ((angle % twoPi) + twoPi) % twoPi / twoPi
+            val raw = rawValues.getOrNull(i) ?: Float.NaN
+            val value = if (raw.isNaN()) 0f else raw
+            add(fraction to colorFromStops(stops, value))
+        }
+    }.sortedBy { it.first }.toMutableList()
+
+    if (byAngle.isEmpty()) return emptyList()
+
+    val first = byAngle.first()
+    val last = byAngle.last()
+    if (first.first > 0f) {
+        byAngle.add(0, 0f to first.second)
+    }
+    if (last.first < 1f) {
+        byAngle.add(1f to first.second)
+    }
+
+    return byAngle
 }
 
 private fun format01(value: Float, decimals: Int): String {
