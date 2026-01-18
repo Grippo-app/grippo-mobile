@@ -6,21 +6,19 @@ import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.exercise.example.models.WeightTypeEnum
 import com.grippo.data.features.api.metrics.models.TrainingDimensionKind
 import com.grippo.data.features.api.metrics.models.TrainingDimensionScore
+import com.grippo.data.features.api.metrics.models.TrainingLoadProfile
 import com.grippo.data.features.api.metrics.models.TrainingProfileKind
-import com.grippo.data.features.api.metrics.models.TrainingProfileSnapshot
-import com.grippo.data.features.api.metrics.models.TrainingProfileSummary
 import com.grippo.data.features.api.muscle.models.MuscleEnum
 import com.grippo.data.features.api.training.models.Exercise
 import com.grippo.data.features.api.training.models.Iteration
 import com.grippo.data.features.api.training.models.Training
 import kotlinx.coroutines.flow.first
-import kotlinx.datetime.LocalDateTime
 import kotlin.math.abs
 import kotlin.math.ln
 import kotlin.math.max
 import kotlin.math.min
 
-public class TrainingProfileSummaryUseCase(
+public class TrainingLoadProfileUseCase(
     private val exerciseExampleFeature: ExerciseExampleFeature,
 ) {
 
@@ -33,6 +31,7 @@ public class TrainingProfileSummaryUseCase(
 
         private const val WORKING_MIN_WEIGHT_FRACTION = 0.75f
         private const val WORKING_MIN_SETS = 2
+        private const val WORKING_REFERENCE_TOP_SETS = 3
 
         private const val ONE_RM_REPS_CAP = 12
         private const val HEAVY_E1RM_PERCENTILE = 0.80f
@@ -57,48 +56,37 @@ public class TrainingProfileSummaryUseCase(
         private const val POWERBUILDING_COMPOUND_RANK_MIN = 0.50f
     }
 
-    public suspend fun fromTrainings(trainings: List<Training>): TrainingProfileSummary {
-        if (trainings.isEmpty()) return TrainingProfileSummary(snapshots = emptyList())
-
-        val allExercises = trainings.flatMap { it.exercises }
-        val exampleIds = allExercises.map { it.exerciseExample.id }
-            .filter { it.isNotBlank() }
-            .toSet()
-
-        val exampleMap = loadExamples(exampleIds)
-
-        val raws = trainings.mapNotNull { buildRaw(it, exampleMap) }
-        if (raws.isEmpty()) return TrainingProfileSummary(snapshots = emptyList())
+    public suspend fun fromTrainings(trainings: List<Training>): TrainingLoadProfile {
+        val examples =
+            loadExamples(trainings.flatMap { it.exercises }.map { it.exerciseExample.id }.toSet())
+        val raws = trainings.mapNotNull { buildRaw(it, examples) }
+        if (raws.isEmpty()) return emptyProfile()
 
         val normalizer = buildNormalizer(raws)
-        val scored = raws.map { computeScores(it, normalizer) }
         val ranks = buildRanksByRaw(raws)
 
-        val snapshots = scored.map { s ->
-            val r = ranks.rankFor(s.raw)
-            val kind = classifyWithinMacrocycle(
-                raw = s.raw,
-                score = s,
-                rank = r,
-            )
+        val poolRaw = aggregateRaw(raws)
+        val poolScore = computeScores(poolRaw, normalizer)
+        val poolRank = ranks.rankFor(poolRaw)
 
-            TrainingProfileSnapshot(
-                trainingId = s.raw.trainingId,
-                createdAt = s.raw.createdAt,
-                kind = kind,
-                dimensions = listOf(
-                    TrainingDimensionScore(TrainingDimensionKind.Strength, s.strength),
-                    TrainingDimensionScore(TrainingDimensionKind.Hypertrophy, s.hypertrophy),
-                    TrainingDimensionScore(TrainingDimensionKind.Endurance, s.endurance),
-                    TrainingDimensionScore(TrainingDimensionKind.Compoundness, s.compoundness),
-                    TrainingDimensionScore(TrainingDimensionKind.FreeWeightBias, s.freeWeight),
-                    TrainingDimensionScore(TrainingDimensionKind.PushDominance, s.push),
-                    TrainingDimensionScore(TrainingDimensionKind.Specialization, s.specialization),
-                ),
-            )
-        }
+        val kind = classifyWithinPool(
+            raw = poolRaw,
+            score = poolScore,
+            rank = poolRank,
+        )
 
-        return TrainingProfileSummary(snapshots = snapshots)
+        return TrainingLoadProfile(
+            kind = kind,
+            dimensions = listOf(
+                TrainingDimensionScore(TrainingDimensionKind.Strength, poolScore.strength),
+                TrainingDimensionScore(TrainingDimensionKind.Hypertrophy, poolScore.hypertrophy),
+                TrainingDimensionScore(TrainingDimensionKind.Endurance, poolScore.endurance),
+            ),
+        )
+    }
+
+    public suspend fun fromTraining(training: Training): TrainingLoadProfile {
+        return fromTrainings(listOf(training))
     }
 
     private suspend fun loadExamples(ids: Set<String>): Map<String, ExerciseExample> {
@@ -108,27 +96,29 @@ public class TrainingProfileSummaryUseCase(
             .associateBy { it.value.id }
     }
 
-    private data class Raw(
-        val trainingId: String,
-        val createdAt: LocalDateTime,
+    private fun emptyProfile(): TrainingLoadProfile {
+        return TrainingLoadProfile(
+            kind = TrainingProfileKind.Easy,
+            dimensions = listOf(
+                TrainingDimensionScore(TrainingDimensionKind.Strength, 0),
+                TrainingDimensionScore(TrainingDimensionKind.Hypertrophy, 0),
+                TrainingDimensionScore(TrainingDimensionKind.Endurance, 0),
+            ),
+        )
+    }
 
+    private data class Raw(
         val strengthRaw: Float,
         val hypertrophyRaw: Float,
         val enduranceRaw: Float,
-
         val compoundRatio: Float,
         val freeWeightRatio: Float,
         val pushRatio: Float,
-
         val specializationTop2Percent: Float,
-
         val activity: Float,
     )
 
-    private fun buildRaw(
-        training: Training,
-        exampleMap: Map<String, ExerciseExample>,
-    ): Raw? {
+    private fun buildRaw(training: Training, exampleMap: Map<String, ExerciseExample>): Raw? {
         val exercises = training.exercises
         if (exercises.isEmpty()) return null
 
@@ -147,8 +137,6 @@ public class TrainingProfileSummaryUseCase(
         val pushRatio = weightedPushRatioByStimulus(exercises)
 
         val strengthRaw = strengthFromTopExercises(exercises)
-
-        val hypertrophyRaw = stimulus
         val enduranceRaw =
             ENDURANCE_STIMULUS_SHARE * stimulusPerMin + ENDURANCE_REPS_SHARE * repsPerMin
 
@@ -159,10 +147,8 @@ public class TrainingProfileSummaryUseCase(
         )
 
         return Raw(
-            trainingId = training.id,
-            createdAt = training.createdAt,
             strengthRaw = safe(strengthRaw),
-            hypertrophyRaw = safe(hypertrophyRaw),
+            hypertrophyRaw = safe(stimulus),
             enduranceRaw = safe(enduranceRaw),
             compoundRatio = clamp01(compoundRatio),
             freeWeightRatio = clamp01(freeWeightRatio),
@@ -170,6 +156,54 @@ public class TrainingProfileSummaryUseCase(
             specializationTop2Percent = specializationTop2Percent.coerceIn(0f, 100f),
             activity = activity,
         )
+    }
+
+    private fun aggregateRaw(raws: List<Raw>): Raw {
+        if (raws.isEmpty()) {
+            return Raw(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)
+        }
+
+        var sumW = 0f
+        var strength = 0f
+        var hypertrophy = 0f
+        var endurance = 0f
+        var compound = 0f
+        var free = 0f
+        var push = 0f
+        var spec = 0f
+        var activity = 0f
+
+        raws.forEach { r ->
+            val w = weightFor(r)
+            sumW += w
+
+            strength += w * r.strengthRaw
+            hypertrophy += w * r.hypertrophyRaw
+            endurance += w * r.enduranceRaw
+            compound += w * r.compoundRatio
+            free += w * r.freeWeightRatio
+            push += w * r.pushRatio
+            spec += w * r.specializationTop2Percent
+            activity += w * r.activity
+        }
+
+        val denom = if (sumW.isFinite() && sumW > EPS) sumW else 1f
+
+        return Raw(
+            strengthRaw = safe(strength / denom),
+            hypertrophyRaw = safe(hypertrophy / denom),
+            enduranceRaw = safe(endurance / denom),
+            compoundRatio = clamp01(compound / denom),
+            freeWeightRatio = clamp01(free / denom),
+            pushRatio = clamp01(push / denom),
+            specializationTop2Percent = (spec / denom).coerceIn(0f, 100f),
+            activity = safe(activity / denom),
+        )
+    }
+
+    private fun weightFor(raw: Raw): Float {
+        val w = 0.25f + raw.activity
+        return if (w.isFinite() && w > EPS) w else 1f
     }
 
     private data class StrengthItem(
@@ -232,14 +266,11 @@ public class TrainingProfileSummaryUseCase(
 
         if (valid.isEmpty()) return 0f
 
-        val maxWeight = valid.maxOfOrNull { it.weight } ?: 0f
-        if (!maxWeight.isFinite() || maxWeight <= EPS) return 0f
-
-        val threshold = maxWeight * WORKING_MIN_WEIGHT_FRACTION
-
-        val working = valid
-            .filter { it.weight >= threshold }
-            .let { picked -> if (picked.size >= WORKING_MIN_SETS) picked else valid }
+        val working = pickWorkingSets(
+            sets = valid,
+            minFraction = WORKING_MIN_WEIGHT_FRACTION,
+            minSets = WORKING_MIN_SETS,
+        )
 
         val e1rms = working
             .map { epleyE1rm(it.weight, it.reps) }
@@ -263,6 +294,52 @@ public class TrainingProfileSummaryUseCase(
         if (!w.isFinite() || w <= EPS) return null
         if (r <= 0) return null
         return LiftSet(weight = w, reps = r)
+    }
+
+    private fun pickWorkingSets(
+        sets: List<LiftSet>,
+        minFraction: Float,
+        minSets: Int,
+    ): List<LiftSet> {
+        if (sets.isEmpty()) return emptyList()
+
+        val weights = sets
+            .asSequence()
+            .map { it.weight }
+            .filter { it.isFinite() && it > EPS }
+            .toList()
+
+        if (weights.isEmpty()) return emptyList()
+
+        val topCount = min(WORKING_REFERENCE_TOP_SETS, weights.size)
+        val topAsc = weights
+            .sortedDescending()
+            .take(topCount)
+            .sorted()
+
+        val ref = medianSorted(topAsc)
+        if (!ref.isFinite() || ref <= EPS) return emptyList()
+
+        val thr = ref * minFraction
+        val picked = sets.filter { it.weight.isFinite() && it.weight >= thr }
+
+        return if (picked.size >= minSets) picked else sets
+    }
+
+    private fun medianSorted(sortedAsc: List<Float>): Float {
+        val n = sortedAsc.size
+        if (n == 0) return 0f
+        if (n == 1) return sortedAsc[0]
+
+        val mid = n / 2
+        return if (n % 2 == 1) {
+            sortedAsc[mid]
+        } else {
+            val a = sortedAsc[mid - 1]
+            val b = sortedAsc[mid]
+            val v = a + (b - a) * 0.5f
+            if (v.isFinite()) v else a
+        }
     }
 
     private fun epleyE1rm(weight: Float, reps: Int): Float {
@@ -307,8 +384,7 @@ public class TrainingProfileSummaryUseCase(
             val exampleId = exercise.exerciseExample.id
             if (exampleId.isBlank()) return@forEach
 
-            val example = exampleMap[exampleId] ?: return@forEach
-            val bundles = example.bundles
+            val bundles = exampleMap[exampleId]?.bundles ?: return@forEach
             if (bundles.isEmpty()) return@forEach
 
             val base = exerciseStimulus(exercise.iterations)
@@ -318,6 +394,7 @@ public class TrainingProfileSummaryUseCase(
             if (totalShare <= 0) return@forEach
 
             val denom = totalShare.toFloat()
+
             bundles.forEach { bundle ->
                 val share = bundle.percentage.coerceAtLeast(0).toFloat()
                 if (share <= 0f) return@forEach
@@ -407,7 +484,7 @@ public class TrainingProfileSummaryUseCase(
         val hi: Float,
     )
 
-    private inner class Normalizer(
+    private class Normalizer(
         private val bands: Map<TrainingDimensionKind, AxisBand>,
     ) {
         fun score(kind: TrainingDimensionKind, raw: Float): Int {
@@ -460,7 +537,6 @@ public class TrainingProfileSummaryUseCase(
     }
 
     private data class Scored(
-        val raw: Raw,
         val strength: Int,
         val hypertrophy: Int,
         val endurance: Int,
@@ -481,7 +557,6 @@ public class TrainingProfileSummaryUseCase(
         val specialization = percentToScore(raw.specializationTop2Percent)
 
         return Scored(
-            raw = raw,
             strength = strength,
             hypertrophy = hypertrophy,
             endurance = endurance,
@@ -499,7 +574,7 @@ public class TrainingProfileSummaryUseCase(
         val compoundness: Float,
     )
 
-    private inner class RanksByRaw(
+    private class RanksByRaw(
         private val strengthSorted: List<Float>,
         private val hypertrophySorted: List<Float>,
         private val enduranceSorted: List<Float>,
@@ -528,7 +603,7 @@ public class TrainingProfileSummaryUseCase(
         )
     }
 
-    private fun classifyWithinMacrocycle(
+    private fun classifyWithinPool(
         raw: Raw,
         score: Scored,
         rank: Rank,
@@ -560,50 +635,11 @@ public class TrainingProfileSummaryUseCase(
             }
         }
 
-        if (score.specialization >= 70 && score.compoundness >= 70 && score.strength >= 45) {
-            return TrainingProfileKind.Strength
-        }
+        val looksStrength =
+            score.specialization >= 70 && score.compoundness >= 70 && score.strength >= 45
+        if (looksStrength) return TrainingProfileKind.Strength
 
         return TrainingProfileKind.Mixed
-    }
-
-    private fun percentileRankFloat(sorted: List<Float>, value: Float): Float {
-        val n = sorted.size
-        if (n == 0) return 0.5f
-        if (n == 1) return 0.5f
-
-        val v = if (value.isFinite()) value else 0f
-
-        fun lowerBound(x: Float): Int {
-            var lo = 0
-            var hi = n
-            while (lo < hi) {
-                val mid = (lo + hi) ushr 1
-                if (sorted[mid] < x) lo = mid + 1 else hi = mid
-            }
-            return lo
-        }
-
-        fun upperBound(x: Float): Int {
-            var lo = 0
-            var hi = n
-            while (lo < hi) {
-                val mid = (lo + hi) ushr 1
-                if (sorted[mid] <= x) lo = mid + 1 else hi = mid
-            }
-            return lo
-        }
-
-        val lb = lowerBound(v)
-        val ub = upperBound(v)
-
-        val pos = if (lb >= ub) {
-            lb.toFloat()
-        } else {
-            ((lb + (ub - 1)).toFloat()) * 0.5f
-        }
-
-        return (pos / (n - 1).toFloat()).coerceIn(0f, 1f)
     }
 
     private fun secondOfThree(a: Float, b: Float, c: Float): Float {
@@ -637,11 +673,6 @@ public class TrainingProfileSummaryUseCase(
         return v.toInt().coerceIn(0, 100)
     }
 
-    private fun log1pSafe(v: Float): Float {
-        if (!v.isFinite() || v <= 0f) return 0f
-        return ln(1.0 + v.toDouble()).toFloat()
-    }
-
     private fun clamp01(v: Float): Float {
         return if (v.isFinite()) v.coerceIn(0f, 1f) else 0f
     }
@@ -649,4 +680,47 @@ public class TrainingProfileSummaryUseCase(
     private fun safe(v: Float): Float {
         return if (v.isFinite() && v > 0f) v else 0f
     }
+}
+
+private fun log1pSafe(v: Float): Float {
+    if (!v.isFinite() || v <= 0f) return 0f
+    return ln(1.0 + v.toDouble()).toFloat()
+}
+
+private fun percentileRankFloat(sorted: List<Float>, value: Float): Float {
+    val n = sorted.size
+    if (n <= 1) return 0.5f
+
+    val v = if (value.isFinite()) value else 0f
+
+    fun lowerBound(x: Float): Int {
+        var lo = 0
+        var hi = n
+        while (lo < hi) {
+            val mid = (lo + hi) ushr 1
+            if (sorted[mid] < x) lo = mid + 1 else hi = mid
+        }
+        return lo
+    }
+
+    fun upperBound(x: Float): Int {
+        var lo = 0
+        var hi = n
+        while (lo < hi) {
+            val mid = (lo + hi) ushr 1
+            if (sorted[mid] <= x) lo = mid + 1 else hi = mid
+        }
+        return lo
+    }
+
+    val lb = lowerBound(v)
+    val ub = upperBound(v)
+
+    val pos = if (lb >= ub) {
+        lb.toFloat()
+    } else {
+        ((lb + (ub - 1)).toFloat()) * 0.5f
+    }
+
+    return (pos / (n - 1).toFloat()).coerceIn(0f, 1f)
 }
