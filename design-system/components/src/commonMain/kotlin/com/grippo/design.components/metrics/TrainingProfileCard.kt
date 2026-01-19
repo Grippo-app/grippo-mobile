@@ -46,7 +46,7 @@ public fun TrainingLoadProfileCard(
             overflow = TextOverflow.Ellipsis
         )
 
-        val fallback = AppTokens.colors.charts.radar.grid
+        val grid = AppTokens.colors.charts.radar.grid
 
         val data = remember(value) {
             val orderedKinds = listOf(
@@ -76,7 +76,7 @@ public fun TrainingLoadProfileCard(
                 series = listOf(
                     RadarSeries(
                         name = value.kind.label(),
-                        color = fallback,
+                        color = grid,
                         values = RadarValues.ByAxisId(values),
                     )
                 ),
