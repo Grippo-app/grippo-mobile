@@ -113,7 +113,7 @@ internal class HomeViewModel(
             .fromTrainings(list)
             .toState()
 
-        val trainingProfile = trainingLoadProfileUseCase
+        val profile = trainingLoadProfileUseCase
             .fromTrainings(list)
             .toState()
 
@@ -128,7 +128,7 @@ internal class HomeViewModel(
                 streak = streak,
                 performance = performance,
                 lastTraining = last,
-                profile = trainingProfile
+                profile = profile
             )
         }
     }

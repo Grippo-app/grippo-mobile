@@ -18,7 +18,7 @@ import com.grippo.chart.radar.RadarValues
 import com.grippo.core.state.metrics.TrainingDimensionKindState
 import com.grippo.core.state.metrics.TrainingDimensionScoreState
 import com.grippo.core.state.metrics.TrainingLoadProfileState
-import com.grippo.core.state.metrics.TrainingProfileKindState
+import com.grippo.core.state.metrics.stubTrainingLoadProfile
 import com.grippo.design.components.chart.internal.RadarChart
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
@@ -127,25 +127,7 @@ public fun TrainingLoadProfileCard(
 private fun TrainingLoadProfileCardPreview() {
     PreviewContainer {
         TrainingLoadProfileCard(
-            value = TrainingLoadProfileState(
-                kind = TrainingProfileKindState.Powerbuilding,
-                dimensions = listOf(
-                    TrainingDimensionScoreState(
-                        kind = TrainingDimensionKindState.Strength,
-                        score = 78,
-                    ),
-                    TrainingDimensionScoreState(
-                        kind = TrainingDimensionKindState.Hypertrophy,
-                        score = 64,
-                    ),
-                    TrainingDimensionScoreState(
-                        kind = TrainingDimensionKindState.Endurance,
-                        score = 42,
-                    ),
-                ),
-                dominant = TrainingDimensionKindState.Hypertrophy,
-                confidence = 40
-            ),
+            value = stubTrainingLoadProfile()
         )
     }
 }

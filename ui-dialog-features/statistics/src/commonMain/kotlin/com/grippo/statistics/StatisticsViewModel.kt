@@ -3,6 +3,7 @@ package com.grippo.statistics
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.data.features.api.metrics.ExerciseDistributionUseCase
 import com.grippo.data.features.api.metrics.MuscleLoadingSummaryUseCase
+import com.grippo.data.features.api.metrics.TrainingLoadProfileUseCase
 import com.grippo.data.features.api.metrics.TrainingTotalUseCase
 import com.grippo.data.features.api.metrics.VolumeSeriesUseCase
 import com.grippo.data.features.api.training.TrainingFeature
@@ -19,6 +20,7 @@ public class StatisticsViewModel(
     private val exerciseDistributionUseCase: ExerciseDistributionUseCase,
     private val volumeSeriesUseCase: VolumeSeriesUseCase,
     private val trainingTotalUseCase: TrainingTotalUseCase,
+    private val trainingLoadProfileUseCase: TrainingLoadProfileUseCase,
 ) : BaseViewModel<StatisticsState, StatisticsDirection, StatisticsLoader>(
     StatisticsState(
         mode = when (config) {
@@ -91,6 +93,10 @@ public class StatisticsViewModel(
             .fromTrainings(trainings)
             .toState()
 
+        val profile = trainingLoadProfileUseCase
+            .fromTrainings(trainings)
+            .toState()
+
         update {
             it.copy(
                 mode = StatisticsMode.Trainings(range = range),
@@ -100,6 +106,7 @@ public class StatisticsViewModel(
                 weightTypeDistribution = weightTypeDistribution,
                 forceTypeDistribution = forceTypeDistribution,
                 muscleLoad = muscleLoad,
+                profile = profile
             )
         }
     }
@@ -134,6 +141,10 @@ public class StatisticsViewModel(
             .fromExercises(training.exercises)
             .toState()
 
+        val profile = trainingLoadProfileUseCase
+            .fromExercises(training.exercises)
+            .toState()
+
         update {
             it.copy(
                 mode = StatisticsMode.Exercises,
@@ -143,6 +154,7 @@ public class StatisticsViewModel(
                 weightTypeDistribution = weightTypeDistribution,
                 forceTypeDistribution = forceTypeDistribution,
                 muscleLoad = muscleLoad,
+                profile = profile
             )
         }
     }
@@ -157,6 +169,7 @@ public class StatisticsViewModel(
                 weightTypeDistribution = null,
                 forceTypeDistribution = null,
                 muscleLoad = null,
+                profile = null
             )
         }
     }

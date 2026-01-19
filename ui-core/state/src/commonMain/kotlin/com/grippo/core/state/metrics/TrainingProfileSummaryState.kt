@@ -194,3 +194,25 @@ public data class TrainingDimensionScoreState(
 ) {
     public fun segment(): String = "${kind.label()} ${score.coerceIn(0, 100)}"
 }
+
+public fun stubTrainingLoadProfile(): TrainingLoadProfileState {
+    return TrainingLoadProfileState(
+        kind = TrainingProfileKindState.Powerbuilding,
+        dimensions = listOf(
+            TrainingDimensionScoreState(
+                kind = TrainingDimensionKindState.Strength,
+                score = 78
+            ),
+            TrainingDimensionScoreState(
+                kind = TrainingDimensionKindState.Hypertrophy,
+                score = 68
+            ),
+            TrainingDimensionScoreState(
+                kind = TrainingDimensionKindState.Endurance,
+                score = 32
+            )
+        ),
+        dominant = TrainingDimensionKindState.Strength,
+        confidence = 74
+    )
+}

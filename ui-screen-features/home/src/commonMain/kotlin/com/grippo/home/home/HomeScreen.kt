@@ -27,6 +27,7 @@ import com.grippo.core.state.metrics.stubExerciseSpotlightComebackMissing
 import com.grippo.core.state.metrics.stubExerciseSpotlightMostConsistent
 import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.stubPerformanceMetrics
+import com.grippo.core.state.metrics.stubTrainingLoadProfile
 import com.grippo.core.state.metrics.stubTrainingStreaks
 import com.grippo.core.state.trainings.stubTraining
 import com.grippo.design.components.button.Button
@@ -337,8 +338,9 @@ private fun HomeScreenPreview() {
                 missing = stubExerciseSpotlightComebackMissing(),
                 consistent = stubExerciseSpotlightMostConsistent(),
                 muscleLoad = stubMuscleLoadSummary(),
-                streak = stubTrainingStreaks().first(),
+                streak = stubTrainingStreaks().random(),
                 performance = stubPerformanceMetrics(),
+                profile = stubTrainingLoadProfile()
             ),
             loaders = persistentSetOf(),
             contract = HomeContract.Empty
