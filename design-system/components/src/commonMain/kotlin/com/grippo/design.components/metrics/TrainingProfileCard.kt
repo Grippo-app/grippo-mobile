@@ -11,7 +11,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import com.grippo.chart.radar.RadarAxis
 import com.grippo.chart.radar.RadarData
 import com.grippo.chart.radar.RadarSeries
@@ -86,11 +85,11 @@ public fun TrainingLoadProfileCard(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
             verticalAlignment = Alignment.CenterVertically
         ) {
             RadarChart(
-                modifier = Modifier.size(80.dp),
+                modifier = Modifier.size(AppTokens.dp.metrics.trainingProfile.chartSize),
                 data = data,
             )
 

@@ -157,6 +157,7 @@ public data object AppDp {
         val strength: Strength = Strength
         val lastTraining: LastTraining = LastTraining
         val trainingSummary: TrainingSummary = TrainingSummary
+        val trainingProfile: TrainingProfile = TrainingProfile
 
         public data object Highlights {
             val icon: Dp = AppDp.icon.medium
@@ -208,6 +209,10 @@ public data object AppDp {
             val horizontalPadding: Dp = padding.large
             val verticalPadding: Dp = padding.large
             val image: Dp = icon.xxxxLarge
+        }
+
+        public data object TrainingProfile {
+            val chartSize: Dp = Size.xLarge
         }
 
         public data object TrainingSummary {
