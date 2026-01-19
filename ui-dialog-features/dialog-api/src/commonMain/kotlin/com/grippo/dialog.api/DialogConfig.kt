@@ -64,6 +64,14 @@ public sealed class DialogConfig(
     )
 
     @Serializable
+    public data class TrainingProfile(
+        val range: DateRange,
+    ) : DialogConfig(
+        onDismiss = null,
+        dismissBySwipe = true
+    )
+
+    @Serializable
     public data class PerformanceTrend(
         val range: DateRange,
         val metricType: PerformanceMetricTypeState,

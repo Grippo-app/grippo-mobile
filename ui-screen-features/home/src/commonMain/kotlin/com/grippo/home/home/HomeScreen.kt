@@ -163,7 +163,9 @@ internal fun HomeScreen(
                 if (state.profile != null) {
                     item(key = "training_load_profile", span = { GridItemSpan(2) }) {
                         TrainingLoadProfileCard(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .scalableClick(onClick = contract::onOpenTrainingProfile),
                             value = state.profile,
                         )
                     }

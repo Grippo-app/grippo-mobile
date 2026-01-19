@@ -193,6 +193,16 @@ internal class HomeViewModel(
         }
     }
 
+    override fun onOpenTrainingProfile() {
+        val range = state.value.range.range ?: return
+
+        val dialog = DialogConfig.TrainingProfile(
+            range = range
+        )
+
+        dialogController.show(dialog)
+    }
+
     override fun onOpenExample(id: String) {
         val dialog = DialogConfig.ExerciseExample(
             id = id
