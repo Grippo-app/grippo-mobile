@@ -268,7 +268,7 @@ public object DarkColor : AppColor {
             override val missingCell = AppPalette.Common.White.copy(alpha = 0.08f)
         }
         override val radar = object : AppColor.Charts.RadarColors {
-            override val strokeFallback = AppPalette.Blue.P500
+            override val grid = AppPalette.NeutralDark.N300
         }
         override val progress = object : AppColor.Charts.ProgressColors {
             override val track = AppPalette.Common.White.copy(alpha = 0.08f)

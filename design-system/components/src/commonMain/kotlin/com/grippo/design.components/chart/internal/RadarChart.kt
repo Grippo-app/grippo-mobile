@@ -42,12 +42,12 @@ internal fun RadarChart(
         grid = RadarStyle.Grid(
             levels = 5,
             asPolygon = true,
-            color = AppTokens.colors.divider.default,
+            color = AppTokens.colors.charts.radar.grid,
             strokeWidth = 1.dp,
             levelLabels = RadarStyle.LevelLabels.None,
         ),
         spokes = RadarStyle.Spokes.Visible(
-            color = AppTokens.colors.divider.default,
+            color = AppTokens.colors.charts.radar.grid,
             strokeWidth = 1.dp,
         ),
         peek = RadarStyle.Peek.Visible(
@@ -66,19 +66,18 @@ internal fun RadarChart(
             tooltipBackground = charts.tooltip.background,
             tooltipBorder = charts.tooltip.border,
             tooltipText = charts.tooltip.text,
-            tooltipCornerRadius = 10.dp,
-            tooltipPaddingH = 10.dp,
-            tooltipPaddingV = 6.dp,
-            tooltipMargin = 10.dp,
+            tooltipCornerRadius = 6.dp,
+            tooltipPaddingH = 8.dp,
+            tooltipPaddingV = 4.dp,
+            tooltipMargin = 6.dp,
 
             decimals = 0,
             showAxisLabel = true,
-            showSeriesName = true
+            showSeriesName = false,
         ),
         labels = RadarStyle.Labels.None,
         polygon = RadarStyle.Polygon(
             strokeWidth = 1.5.dp,
-            strokeColorFallback = charts.radar.strokeFallback,
             fillAlpha = 0.35f,
         ),
         vertices = RadarStyle.Vertices.Visible(

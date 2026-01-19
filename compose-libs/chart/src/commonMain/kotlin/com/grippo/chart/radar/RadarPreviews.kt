@@ -57,7 +57,6 @@ private fun radarStyle(labels: Boolean, values: Boolean): RadarStyle = RadarStyl
     ) else RadarStyle.Labels.None,
     polygon = RadarStyle.Polygon(
         strokeWidth = 2.dp,
-        strokeColorFallback = Color(0xFF6AA9FF),
         fillAlpha = 0.35f
     ),
     vertices = RadarStyle.Vertices.Visible(radius = 3.dp, colorOverride = null),

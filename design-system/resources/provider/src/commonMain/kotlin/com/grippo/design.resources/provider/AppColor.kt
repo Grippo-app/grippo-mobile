@@ -274,7 +274,7 @@ public interface AppColor {
         }
 
         public interface RadarColors {
-            public val strokeFallback: Color
+            public val grid: Color
         }
 
         public interface HeatmapColors {

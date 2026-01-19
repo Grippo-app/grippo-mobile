@@ -111,7 +111,8 @@ public fun RadarChart(
                     data = data,
                     style = style,
                     density = density,
-                    axisLabelLayouts = axisLabelLayouts
+                    axisLabelLayouts = axisLabelLayouts,
+                    levelLabelLayouts = levelLabelLayouts,
                 )
             }
         }
@@ -233,13 +234,13 @@ private data class RadarVertexLayout(
     val point: Offset,
 )
 
-private data class RadarSeriesLayout(
+private class RadarSeriesLayout(
     val path: Path,
     val vertices: List<RadarVertexLayout>,
     val rawValues: FloatArray,
 )
 
-private data class RadarChartLayoutResult(
+private class RadarChartLayoutResult(
     val chart: Rect,
     val center: Offset,
     val radius: Float,
@@ -253,107 +254,133 @@ private fun computeRadarLayout(
     style: RadarStyle,
     density: Density,
     axisLabelLayouts: List<TextLayoutResult>,
+    levelLabelLayouts: List<TextLayoutResult>,
 ): RadarChartLayoutResult {
     val w = canvasSize.width.toFloat()
     val h = canvasSize.height.toFloat()
-    val chart = Rect(0f, 0f, w, h)
-    val center = Offset(w * 0.5f, h * 0.5f)
 
     val n = data.axes.size
     val dir = if (style.layout.clockwise) 1f else -1f
     val angleStep = (2f * PI.toFloat() / n) * dir
     val startRad = style.layout.startAngleDeg * PI.toFloat() / 180f
-
     val angles = FloatArray(n) { i -> startRad + i * angleStep }
 
-    fun polar(angle: Float, radius: Float): Offset = Offset(
-        x = center.x + radius * cos(angle),
-        y = center.y + radius * sin(angle)
+    val gridInset = with(density) { style.grid.strokeWidth.toPx() } * 0.5f
+    val polygonInset = with(density) { style.polygon.strokeWidth.toPx() } * 0.5f
+    val spokesInset = when (val sp = style.spokes) {
+        is RadarStyle.Spokes.Visible -> with(density) { sp.strokeWidth.toPx() } * 0.5f
+        is RadarStyle.Spokes.None -> 0f
+    }
+
+    val inset = max(gridInset, max(polygonInset, spokesInset)).coerceAtLeast(0f)
+    val chart = Rect(
+        left = inset,
+        top = inset,
+        right = (w - inset).coerceAtLeast(inset),
+        bottom = (h - inset).coerceAtLeast(inset),
     )
 
     val labelPadPx = with(density) { style.layout.labelPadding.toPx() }
 
-    var r = min(chart.width, chart.height) * 0.5f * 0.95f
-    if (axisLabelLayouts.isNotEmpty()) {
-        var iter = 0
-        while (iter < 10) {
-            var maxOverflow = 0f
-            for (i in 0 until n) {
-                val a = angles[i]
-                val p = polar(a, r + labelPadPx)
-                val layout = axisLabelLayouts[i]
-                val halfW = layout.size.width * 0.5f
-                val halfH = layout.size.height * 0.5f
-
-                val left = p.x - halfW
-                val right = p.x + halfW
-                val top = p.y - halfH
-                val bottom = p.y + halfH
-
-                val overflowLeft = max(0f, chart.left - left)
-                val overflowRight = max(0f, right - chart.right)
-                val overflowTop = max(0f, chart.top - top)
-                val overflowBottom = max(0f, bottom - chart.bottom)
-
-                maxOverflow = max(
-                    maxOverflow,
-                    max(max(overflowLeft, overflowRight), max(overflowTop, overflowBottom))
-                )
-            }
-
-            if (maxOverflow <= 0f) break
-            r -= maxOverflow
-            if (r <= 0f) {
-                r = 0f
-                break
-            }
-            iter++
+    val topLevelLabelPadPx = when (style.grid.levelLabels) {
+        is RadarStyle.LevelLabels.None -> 0f
+        is RadarStyle.LevelLabels.Visible -> {
+            val maxH = (levelLabelLayouts.maxOfOrNull { it.size.height } ?: 0).toFloat()
+            maxH + with(density) { 4.dp.toPx() }
         }
     }
 
+    fun centerForRadius(r: Float): Offset? {
+        var xMin = Float.NEGATIVE_INFINITY
+        var xMax = Float.POSITIVE_INFINITY
+        var yMin = Float.NEGATIVE_INFINITY
+        var yMax = Float.POSITIVE_INFINITY
+
+        for (i in 0 until n) {
+            val cosA = cos(angles[i])
+            val sinA = sin(angles[i])
+
+            xMin = max(xMin, chart.left - r * cosA)
+            xMax = min(xMax, chart.right - r * cosA)
+
+            yMin = max(yMin, chart.top - r * sinA)
+            yMax = min(yMax, chart.bottom - r * sinA)
+        }
+
+        if (topLevelLabelPadPx > 0f) {
+            yMin = max(yMin, chart.top + r + topLevelLabelPadPx)
+        }
+
+        if (axisLabelLayouts.isNotEmpty()) {
+            val rr = r + labelPadPx
+            for (i in 0 until n) {
+                val cosA = cos(angles[i])
+                val sinA = sin(angles[i])
+
+                val halfW = axisLabelLayouts[i].size.width * 0.5f
+                val halfH = axisLabelLayouts[i].size.height * 0.5f
+
+                xMin = max(xMin, chart.left - rr * cosA + halfW)
+                xMax = min(xMax, chart.right - rr * cosA - halfW)
+
+                yMin = max(yMin, chart.top - rr * sinA + halfH)
+                yMax = min(yMax, chart.bottom - rr * sinA - halfH)
+            }
+        }
+
+        if (xMin > xMax || yMin > yMax) return null
+        return Offset(
+            x = (xMin + xMax) * 0.5f,
+            y = (yMin + yMax) * 0.5f
+        )
+    }
+
+    var lo = 0f
+    var hi = max(w, h)
+
+    repeat(26) {
+        val mid = (lo + hi) * 0.5f
+        if (centerForRadius(mid) != null) lo = mid else hi = mid
+    }
+
+    val radius = lo
+    val center = centerForRadius(radius) ?: chart.center
+
+    fun polar(angle: Float, rr: Float): Offset = Offset(
+        x = center.x + rr * cos(angle),
+        y = center.y + rr * sin(angle)
+    )
+
     val seriesLayouts: List<RadarSeriesLayout?> = data.series.map { s ->
-        val raw = FloatArray(n) { Float.NaN }
-        var hasMissing = false
+        val raw = FloatArray(n)
 
         for (i in 0 until n) {
             val v: Float? = when (val vv = s.values) {
                 is RadarValues.ByAxisId -> vv.map[data.axes[i].id]
                 is RadarValues.ByIndex -> vv.list.getOrNull(i)
             }
+
             if (v == null) {
-                hasMissing = true
-                if (style.dataPolicy.missingAsZero) raw[i] = 0f
+                if (!style.dataPolicy.missingAsZero) return@map null
+                raw[i] = 0f
             } else {
                 raw[i] = v.coerceIn(0f, 1f)
             }
         }
 
-        if (style.dataPolicy.requireCompleteSeries && hasMissing && !style.dataPolicy.missingAsZero) {
-            return@map null
-        }
-
         val path = Path()
         for (i in 0 until n) {
-            val vv = raw[i]
-            val rr = if (vv.isNaN()) 0f else vv
-            val p = polar(angles[i], r * rr)
+            val p = polar(angles[i], radius * raw[i])
             if (i == 0) path.moveTo(p.x, p.y) else path.lineTo(p.x, p.y)
         }
         path.close()
 
-        val vertices = buildList {
-            for (i in 0 until n) {
-                val vv = raw[i]
-                if (vv.isNaN() && !style.dataPolicy.missingAsZero) continue
-                val point = polar(angles[i], r * (if (vv.isNaN()) 0f else vv))
-                add(
-                    RadarVertexLayout(
-                        axisIdx = i,
-                        value = if (vv.isNaN()) 0f else vv,
-                        point = point
-                    )
-                )
-            }
+        val vertices = List(n) { i ->
+            RadarVertexLayout(
+                axisIdx = i,
+                value = raw[i],
+                point = polar(angles[i], radius * raw[i])
+            )
         }
 
         RadarSeriesLayout(
@@ -366,7 +393,7 @@ private fun computeRadarLayout(
     return RadarChartLayoutResult(
         chart = chart,
         center = center,
-        radius = r,
+        radius = radius,
         angles = angles,
         series = seriesLayouts
     )
@@ -411,15 +438,13 @@ private fun DrawScope.drawRadar(
             drawCircle(color = style.grid.color, radius = rr, center = c, style = gridStroke)
         }
 
-        when (val ll = style.grid.levelLabels) {
+        when (style.grid.levelLabels) {
             is RadarStyle.LevelLabels.None -> Unit
             is RadarStyle.LevelLabels.Visible -> {
                 val layoutText = levelLabelLayouts.getOrNull(lvl - 1)
                 if (layoutText != null) {
-                    val y =
-                        (c.y - rr - layoutText.size.height - 4.dp.toPx()).coerceAtLeast(chart.top)
-                    val x = (c.x - layoutText.size.width * 0.5f)
-                        .coerceIn(chart.left, chart.right - layoutText.size.width.toFloat())
+                    val y = c.y - rr - layoutText.size.height - 4.dp.toPx()
+                    val x = c.x - layoutText.size.width * 0.5f
                     drawText(layoutText, topLeft = Offset(x, y))
                 }
             }
@@ -453,7 +478,6 @@ private fun DrawScope.drawRadar(
         }
 
         val fillAlpha = style.polygon.fillAlpha.coerceIn(0f, 1f)
-        val fill = s.color.copy(alpha = fillAlpha)
         if (style.polygon.fillAlpha > 0f) {
             if (sweepStops.isNotEmpty()) {
                 val fillBrush = Brush.sweepGradient(
@@ -464,11 +488,10 @@ private fun DrawScope.drawRadar(
                 )
                 drawPath(sl.path, brush = fillBrush)
             } else {
-                drawPath(sl.path, color = fill)
+                drawPath(sl.path, color = s.color.copy(alpha = fillAlpha))
             }
         }
 
-        val stroke = s.color
         if (strokeW > 0f) {
             if (sweepStops.isNotEmpty()) {
                 val strokeBrush = Brush.sweepGradient(
@@ -487,7 +510,7 @@ private fun DrawScope.drawRadar(
             } else {
                 drawPath(
                     sl.path,
-                    color = stroke,
+                    color = s.color,
                     style = Stroke(
                         width = strokeW.coerceAtLeast(1f),
                         cap = StrokeCap.Round,
@@ -516,9 +539,7 @@ private fun DrawScope.drawRadar(
             is RadarStyle.Values.Visible -> {
                 val off = vCfg.offset.toPx()
                 for (i in 0 until n) {
-                    val raw = sl.rawValues.getOrNull(i) ?: Float.NaN
-                    if (raw.isNaN() && !style.dataPolicy.missingAsZero) continue
-                    val vv = if (raw.isNaN()) 0f else raw
+                    val vv = sl.rawValues.getOrNull(i) ?: continue
                     val p0 = polar(layout.angles[i], r * vv)
                     val label = vCfg.formatter(vv, data)
                     val textLayout = measurer.measure(AnnotatedString(label), vCfg.textStyle)
@@ -620,7 +641,7 @@ private fun DrawScope.drawRadar(
         }
     }
 
-    when (val lbl = style.labels) {
+    when (style.labels) {
         is RadarStyle.Labels.None -> Unit
         is RadarStyle.Labels.Visible -> {
             val lp = style.layout.labelPadding.toPx()
@@ -628,10 +649,8 @@ private fun DrawScope.drawRadar(
                 val a = layout.angles[i]
                 val p = polar(a, r + lp)
                 val textLayout = axisLabelLayouts[i]
-                val x = (p.x - textLayout.size.width * 0.5f)
-                    .coerceIn(chart.left, chart.right - textLayout.size.width.toFloat())
-                val y = (p.y - textLayout.size.height * 0.5f)
-                    .coerceIn(chart.top, chart.bottom - textLayout.size.height.toFloat())
+                val x = p.x - textLayout.size.width * 0.5f
+                val y = p.y - textLayout.size.height * 0.5f
                 drawText(textLayout, topLeft = Offset(x, y))
             }
         }
@@ -709,8 +728,7 @@ private fun buildSweepStops(
         for (i in angles.indices) {
             val angle = angles[i]
             val fraction = (((angle - startAngle) % twoPi) + twoPi) % twoPi / twoPi
-            val raw = rawValues.getOrNull(i) ?: Float.NaN
-            val value = if (raw.isNaN()) 0f else raw
+            val value = rawValues.getOrNull(i) ?: 0f
             add(fraction to colorFromStops(stops, value))
         }
     }.sortedBy { it.first }

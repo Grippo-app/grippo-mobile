@@ -84,7 +84,7 @@ internal object AppPalette {
             Unique.Coral,
             Unique.Orange,
             Unique.Red,
-            Unique.Burgundy
+            Unique.Magenta
         )
 
         val Palette6MuscleCalm: List<Color> = listOf(

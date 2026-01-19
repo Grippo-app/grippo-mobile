@@ -59,10 +59,10 @@ private fun sparkStyle(curved: Boolean): SparklineStyle = SparklineStyle(
         tooltipBackground = Color(0xFF12151B).copy(alpha = 0.92f),
         tooltipBorder = Color(0xFFFFFFFF).copy(alpha = 0.16f),
         tooltipText = Color(0xFFFFFFFF),
-        tooltipCornerRadius = 10.dp,
-        tooltipPaddingH = 10.dp,
-        tooltipPaddingV = 6.dp,
-        tooltipMargin = 10.dp,
+        tooltipCornerRadius = 6.dp,
+        tooltipPaddingH = 8.dp,
+        tooltipPaddingV = 4.dp,
+        tooltipMargin = 6.dp,
 
         decimals = 0,
         showLabel = true

@@ -80,7 +80,6 @@ public data class RadarStyle(
     @Immutable
     public data class Polygon(
         val strokeWidth: Dp,
-        val strokeColorFallback: Color,
         val fillAlpha: Float,
     )
 
