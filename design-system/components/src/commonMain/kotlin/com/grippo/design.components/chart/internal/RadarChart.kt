@@ -19,7 +19,8 @@ import com.grippo.design.preview.PreviewContainer
 @Composable
 internal fun RadarChart(
     modifier: Modifier = Modifier,
-    data: RadarData
+    data: RadarData,
+    showLabels: Boolean
 ) {
     val charts = AppTokens.colors.charts
     val palette = AppTokens.colors.palette
@@ -31,6 +32,14 @@ internal fun RadarChart(
         colors.mapIndexed { index, color ->
             index.toFloat() / last.toFloat() to color
         }
+    }
+
+    val labels = when (showLabels) {
+        true -> RadarStyle.Labels.Visible(
+            textStyle = AppTokens.typography.b10Reg().copy(color = AppTokens.colors.text.primary)
+        )
+
+        false -> RadarStyle.Labels.None
     }
 
     val style = RadarStyle(
@@ -75,7 +84,7 @@ internal fun RadarChart(
             showAxisLabel = true,
             showSeriesName = false,
         ),
-        labels = RadarStyle.Labels.None,
+        labels = labels,
         polygon = RadarStyle.Polygon(
             strokeWidth = 1.5.dp,
             fillAlpha = 0.35f,
@@ -132,7 +141,8 @@ private fun RadarChartPreview() {
 
         RadarChart(
             modifier = Modifier.size(300.dp),
-            data = ds
+            data = ds,
+            showLabels = true
         )
     }
 }

@@ -11,14 +11,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.metrics.stubTrainingLoadProfile
 import com.grippo.design.components.loading.Loader
-import com.grippo.design.components.metrics.TrainingLoadProfileCard
 import com.grippo.design.components.metrics.TrainingLoadProfileDetailsCard
+import com.grippo.design.components.metrics.TrainingProfileRadar
+import com.grippo.design.components.metrics.TrainingProfileRadarStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -75,13 +77,14 @@ internal fun TrainingProfileScreen(
                     end = AppTokens.dp.dialog.horizontalPadding,
                     top = AppTokens.dp.contentPadding.content,
                 ),
+                horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block)
             ) {
                 state.profile?.let { profile ->
-                    item(key = "summary") {
-                        TrainingLoadProfileCard(
-                            modifier = Modifier.fillMaxWidth(),
+                    item(key = "radar") {
+                        TrainingProfileRadar(
                             value = profile,
+                            style = TrainingProfileRadarStyle.LARGE
                         )
                     }
 

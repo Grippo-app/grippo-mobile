@@ -25,6 +25,7 @@ public data object AppDp {
         val large: Dp = 64.dp
         val xLarge: Dp = 72.dp
         val xxLarge: Dp = 96.dp
+        val xxxLarge: Dp = 192.dp
     }
 
     private data object Radius {
@@ -212,7 +213,20 @@ public data object AppDp {
         }
 
         public data object TrainingProfile {
-            val chartSize: Dp = Size.xLarge
+            val radar: Radar = Radar
+
+            public data object Radar {
+                val small: Small = Small
+                val large: Large = Large
+
+                public data object Small {
+                    val size: Dp = Size.xLarge
+                }
+
+                public data object Large {
+                    val size: Dp = Size.xxxLarge
+                }
+            }
         }
 
         public data object TrainingSummary {
