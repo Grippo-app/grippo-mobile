@@ -80,6 +80,7 @@ public data object AppDp {
     val performanceTrend: PerformanceTrend = PerformanceTrend
     val metrics: Metrics = Metrics
     val empty: Empty = Empty
+    val tip: Tip = Tip
 
     public data object Screen {
         val toolbar: Toolbar = Toolbar
@@ -232,6 +233,13 @@ public data object AppDp {
         public data object TrainingSummary {
             val spot: Dp = icon.xxxxLarge
         }
+    }
+
+    public data object Tip {
+        val radius: Dp = AppDp.radius.small
+        val horizontalPadding: Dp = padding.small
+        val verticalPadding: Dp = padding.small
+        val image: Dp = icon.large
     }
 
     public data object Empty {

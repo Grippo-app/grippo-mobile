@@ -28,7 +28,6 @@ import com.grippo.design.resources.provider.training_profile_kind_powerbuilding
 import com.grippo.design.resources.provider.training_profile_kind_strength
 import com.grippo.design.resources.provider.training_profile_leads_by
 import com.grippo.design.resources.provider.training_profile_no_clear_focus
-import com.grippo.design.resources.provider.training_profile_segment
 import com.grippo.design.resources.provider.training_profile_subtitle_easy
 import com.grippo.design.resources.provider.training_profile_subtitle_endurance
 import com.grippo.design.resources.provider.training_profile_subtitle_hypertrophy
@@ -68,24 +67,6 @@ public data class TrainingLoadProfileState(
 
     @Composable
     public fun tip(): String? = kind.tip(this)
-
-    @Composable
-    public fun description(): String {
-        val t = title()
-        val s = subtitle()
-        val d = details()
-        val tip = tip()
-
-        return buildString {
-            appendLine(t)
-            appendLine(s)
-            append(d)
-            if (!tip.isNullOrBlank()) {
-                appendLine()
-                append(tip)
-            }
-        }
-    }
 
     @Composable
     public fun confidenceLabel(): String {
@@ -320,16 +301,7 @@ public enum class TrainingProfileKindState {
 public data class TrainingDimensionScoreState(
     val kind: TrainingDimensionKindState,
     val score: Int, // 0..100
-) {
-    @Composable
-    public fun segment(): String {
-        return AppTokens.strings.res(
-            Res.string.training_profile_segment,
-            kind.label(),
-            score.coerceIn(0, 100),
-        )
-    }
-}
+)
 
 public fun stubTrainingLoadProfile(): TrainingLoadProfileState {
     return TrainingLoadProfileState(

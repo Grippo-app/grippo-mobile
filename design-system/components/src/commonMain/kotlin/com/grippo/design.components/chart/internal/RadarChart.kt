@@ -36,7 +36,7 @@ internal fun RadarChart(
 
     val labels = when (showLabels) {
         true -> RadarStyle.Labels.Visible(
-            textStyle = AppTokens.typography.b10Reg().copy(color = AppTokens.colors.text.primary)
+            textStyle = AppTokens.typography.b11Med().copy(color = AppTokens.colors.text.primary)
         )
 
         false -> RadarStyle.Labels.None
@@ -44,7 +44,7 @@ internal fun RadarChart(
 
     val style = RadarStyle(
         layout = RadarStyle.Layout(
-            labelPadding = 12.dp,
+            labelPadding = 3.dp,
             startAngleDeg = -90f,
             clockwise = true,
         ),

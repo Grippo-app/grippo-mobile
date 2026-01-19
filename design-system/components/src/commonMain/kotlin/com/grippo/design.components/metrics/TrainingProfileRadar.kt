@@ -12,8 +12,11 @@ import com.grippo.chart.radar.RadarValues
 import com.grippo.core.state.metrics.TrainingDimensionKindState
 import com.grippo.core.state.metrics.TrainingDimensionScoreState
 import com.grippo.core.state.metrics.TrainingLoadProfileState
+import com.grippo.core.state.metrics.stubTrainingLoadProfile
 import com.grippo.design.components.chart.internal.RadarChart
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 
 @Immutable
 public enum class TrainingProfileRadarStyle {
@@ -85,4 +88,20 @@ public fun TrainingProfileRadar(
         data = data,
         showLabels = showLabels
     )
+}
+
+@AppPreview
+@Composable
+private fun TrainingProfileRadarPreview() {
+    PreviewContainer {
+        TrainingProfileRadar(
+            value = stubTrainingLoadProfile(),
+            style = TrainingProfileRadarStyle.LARGE
+        )
+
+        TrainingProfileRadar(
+            value = stubTrainingLoadProfile(),
+            style = TrainingProfileRadarStyle.SMALL
+        )
+    }
 }

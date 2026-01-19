@@ -16,6 +16,7 @@
     <string name="spotlight_best_title">Выше обычного</string>
     <string name="spotlight_missing_title">Пора вернуть</string>
     <string name="low_confidence">Низкая уверенность</string>
+    <string name="advice">Совет</string>
     <string name="medium_confidence">Средняя уверенность</string>
     <string name="high_confidence">Высокая уверенность</string>
     <string name="training_profile">Профиль тренировки</string>

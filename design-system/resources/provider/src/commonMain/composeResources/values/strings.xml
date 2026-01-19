@@ -16,6 +16,7 @@
     <string name="spotlight_best_title">Up from Usual</string>
     <string name="spotlight_missing_title">Due Back</string>
     <string name="low_confidence">Low confidence</string>
+    <string name="advice">Advice</string>
     <string name="medium_confidence">Medium confidence</string>
     <string name="high_confidence">High confidence</string>
     <string name="training_profile">Training profile</string>

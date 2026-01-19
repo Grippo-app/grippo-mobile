@@ -72,7 +72,7 @@ internal fun TrainingStreakScreen(
                 end = AppTokens.dp.dialog.horizontalPadding,
                 top = AppTokens.dp.contentPadding.content,
             ),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block)
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
         ) {
             state.streak?.let { streak ->
                 item(key = "summary") {
