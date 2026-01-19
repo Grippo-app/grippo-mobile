@@ -6,6 +6,7 @@ import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 /**
@@ -28,12 +29,10 @@ class IosSwiftPackageConventionPlugin : Plugin<Project> {
                 // Configure every Apple (iOS, simulator) native target
                 targets
                     .withType<KotlinNativeTarget>()
-                    .matching { nativeTarget ->
-                        nativeTarget.konanTarget.family.isAppleFamily
-                    }
+                    .matching { nativeTarget -> nativeTarget.konanTarget.family.isAppleFamily }
                     .configureEach {
                         // Ensure the binary frameworks are actually registered for every target
-                        binaries.framework {
+                        binaries.framework(listOf(NativeBuildType.DEBUG, NativeBuildType.RELEASE)) {
                             baseName = "shared"
                             isStatic = true
 
@@ -49,10 +48,9 @@ class IosSwiftPackageConventionPlugin : Plugin<Project> {
                                 libs.findLibrary("decompose.essenty").get(),
                                 libs.findLibrary("decompose.state.keeper").get(),
                                 libs.findLibrary("decompose.back.handler").get()
-                            ).forEach { exportedDep ->
-                                export(exportedDep)
-                            }
+                            ).forEach { exportedDep -> export(exportedDep) }
 
+                            // Bridge to implement firebase interface
                             export(project(":data-services:firebase"))
                         }
                     }
