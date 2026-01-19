@@ -117,8 +117,6 @@ internal class HomeViewModel(
             .fromTrainings(list)
             .toState()
 
-        println("TRAINING_PROFILE = $trainingProfile")
-
         update {
             it.copy(
                 digest = digest,
@@ -129,7 +127,8 @@ internal class HomeViewModel(
                 muscleLoad = muscleLoadSummary,
                 streak = streak,
                 performance = performance,
-                lastTraining = last
+                lastTraining = last,
+                profile = trainingProfile
             )
         }
     }
@@ -237,7 +236,8 @@ internal class HomeViewModel(
                 muscleLoad = null,
                 streak = null,
                 performance = emptyList(),
-                lastTraining = null
+                lastTraining = null,
+                profile = null
             )
         }
     }

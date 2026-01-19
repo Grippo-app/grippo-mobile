@@ -15,6 +15,7 @@
     <string name="spotlight_anchor_title">Your Go-To</string>
     <string name="spotlight_best_title">Up from Usual</string>
     <string name="spotlight_missing_title">Due Back</string>
+    <string name="training_profile">Training profile</string>
     <string name="spotlight_most_consistent_description">Favorite in %1$d/%2$d workouts</string>
     <string name="spotlight_best_progress_description">Up %1$s vs median</string>
     <string name="spotlight_missing_description">Missed %1$d workouts (usual ~%2$s)</string>

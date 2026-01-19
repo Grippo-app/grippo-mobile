@@ -42,6 +42,7 @@ import com.grippo.design.components.metrics.HighlightsHeader
 import com.grippo.design.components.metrics.LastTrainingCard
 import com.grippo.design.components.metrics.MuscleLoadingCard
 import com.grippo.design.components.metrics.PerformanceMetricCard
+import com.grippo.design.components.metrics.TrainingLoadProfileCard
 import com.grippo.design.components.metrics.TrainingStreakCard
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.toolbar.Toolbar
@@ -156,6 +157,15 @@ internal fun HomeScreen(
                         range = state.range,
                         onPeriodChange = contract::onOpenPeriodPicker
                     )
+                }
+
+                if (state.profile != null) {
+                    item(key = "training_load_profile", span = { GridItemSpan(2) }) {
+                        TrainingLoadProfileCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = state.profile,
+                        )
+                    }
                 }
 
                 item(key = "muscle_loading_and_training_streak", span = { GridItemSpan(2) }) {

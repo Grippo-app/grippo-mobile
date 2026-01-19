@@ -20,8 +20,7 @@ internal data class HomeState(
     val muscleLoad: MuscleLoadSummaryState? = null,
     val streak: TrainingStreakState? = null,
     val performance: List<PerformanceMetricState> = emptyList(),
-    val profile: List<TrainingLoadProfileState> = emptyList(),
-
+    val profile: TrainingLoadProfileState? = null,
     val consistent: ExerciseSpotlightState.MostConsistentState? = null,
     val missing: ExerciseSpotlightState.ComebackMissingState? = null,
     val best: ExerciseSpotlightState.BestProgressState? = null,

@@ -75,16 +75,14 @@ internal fun RadarChart(
             showAxisLabel = true,
             showSeriesName = true
         ),
-        labels = RadarStyle.Labels.Visible(
-            textStyle = AppTokens.typography.b10Reg().copy(color = AppTokens.colors.text.primary)
-        ),
+        labels = RadarStyle.Labels.None,
         polygon = RadarStyle.Polygon(
-            strokeWidth = 2.dp,
+            strokeWidth = 1.5.dp,
             strokeColorFallback = charts.radar.strokeFallback,
             fillAlpha = 0.35f,
         ),
         vertices = RadarStyle.Vertices.Visible(
-            radius = 3.dp,
+            radius = 2.dp,
             colorOverride = null,
         ),
         values = RadarStyle.Values.None,
@@ -92,7 +90,7 @@ internal fun RadarChart(
             requireCompleteSeries = true,
             missingAsZero = true,
         ),
-        colorStops = scaleStopsOrangeRed, // now real stops
+        colorStops = scaleStopsOrangeRed,
     )
 
     RadarChart(
