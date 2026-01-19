@@ -9,6 +9,7 @@ import com.grippo.data.features.api.metrics.ExerciseSpotlightUseCase
 import com.grippo.data.features.api.metrics.MuscleLoadingSummaryUseCase
 import com.grippo.data.features.api.metrics.PerformanceTrendUseCase
 import com.grippo.data.features.api.metrics.TrainingDigestUseCase
+import com.grippo.data.features.api.metrics.TrainingLoadProfileUseCase
 import com.grippo.data.features.api.metrics.TrainingStreakUseCase
 import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.models.Training
@@ -36,6 +37,7 @@ internal class HomeViewModel(
     private val performanceTrendUseCase: PerformanceTrendUseCase,
     private val trainingDigestUseCase: TrainingDigestUseCase,
     private val exerciseExampleFeature: ExerciseExampleFeature,
+    private val trainingLoadProfileUseCase: TrainingLoadProfileUseCase,
     private val stringProvider: StringProvider,
 ) : BaseViewModel<HomeState, HomeDirection, HomeLoader>(
     HomeState()
@@ -110,6 +112,12 @@ internal class HomeViewModel(
         val muscleLoadSummary = muscleLoadingSummaryUseCase
             .fromTrainings(list)
             .toState()
+
+        val trainingProfile = trainingLoadProfileUseCase
+            .fromTrainings(list)
+            .toState()
+
+        println("TRAINING_PROFILE = $trainingProfile")
 
         update {
             it.copy(

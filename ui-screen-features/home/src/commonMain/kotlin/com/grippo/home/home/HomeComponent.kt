@@ -30,7 +30,8 @@ internal class HomeComponent(
             performanceTrendUseCase = getKoin().get(),
             trainingDigestUseCase = getKoin().get(),
             exerciseExampleFeature = getKoin().get(),
-            stringProvider = getKoin().get()
+            stringProvider = getKoin().get(),
+            trainingLoadProfileUseCase = getKoin().get()
         )
     }
 

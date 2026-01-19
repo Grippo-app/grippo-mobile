@@ -1,5 +1,7 @@
 package com.grippo.design.components.metrics
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
@@ -11,8 +13,6 @@ import com.grippo.chart.sparkline.SparklinePoint
 import com.grippo.core.state.metrics.EstimatedOneRepMaxState
 import com.grippo.core.state.metrics.stubEstimatedOneRepMax
 import com.grippo.design.components.chart.internal.Sparkline
-import com.grippo.design.components.metrics.internal.MetricSectionPanel
-import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -27,9 +27,9 @@ public fun EstimatedOneRepMaxCard(
     state: EstimatedOneRepMaxState,
     modifier: Modifier = Modifier,
 ) {
-    MetricSectionPanel(
+    Column(
         modifier = modifier,
-        style = MetricSectionPanelStyle.Large,
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
     ) {
         val title = AppTokens.strings.res(Res.string.estimated_one_rm)
         val kg = AppTokens.strings.res(Res.string.kg)

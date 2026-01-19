@@ -1,5 +1,6 @@
 package com.grippo.design.components.metrics
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,7 +23,6 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
-@Deprecated("don't use it")
 @Composable
 public fun TrainingLoadProfileCard(
     modifier: Modifier = Modifier,
@@ -77,9 +77,13 @@ public fun TrainingLoadProfileCard(
             )
         } ?: return@MetricSectionPanel
         RadarChart(
-            modifier = Modifier.size(200.dp),
+            modifier = Modifier.size(100.dp),
             data = data,
         )
+
+        Column(modifier = Modifier.weight(1f)) {
+
+        }
     }
 }
 
@@ -104,34 +108,9 @@ private fun TrainingLoadProfileCardPreview() {
                         score = 42,
                     ),
                 ),
+                dominant = TrainingDimensionKindState.Hypertrophy,
+                confidence = 40
             ),
         )
-    }
-}
-
-private fun TrainingDimensionKindState.axisId(): String {
-    return when (this) {
-        TrainingDimensionKindState.Strength -> "strength"
-        TrainingDimensionKindState.Hypertrophy -> "hypertrophy"
-        TrainingDimensionKindState.Endurance -> "endurance"
-    }
-}
-
-private fun TrainingDimensionKindState.label(): String {
-    return when (this) {
-        TrainingDimensionKindState.Strength -> "Strength"
-        TrainingDimensionKindState.Hypertrophy -> "Hypertrophy"
-        TrainingDimensionKindState.Endurance -> "Endurance"
-    }
-}
-
-private fun TrainingProfileKindState.label(): String {
-    return when (this) {
-        TrainingProfileKindState.Strength -> "Strength"
-        TrainingProfileKindState.Hypertrophy -> "Hypertrophy"
-        TrainingProfileKindState.Endurance -> "Endurance"
-        TrainingProfileKindState.Powerbuilding -> "Powerbuilding"
-        TrainingProfileKindState.Mixed -> "Mixed"
-        TrainingProfileKindState.Easy -> "Easy"
     }
 }

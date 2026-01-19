@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.achevements.stubAchievements
 import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.core.state.metrics.stubEstimatedOneRepMax
 import com.grippo.core.state.trainings.stubExercises
@@ -44,7 +45,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.achievements
-import com.grippo.design.resources.provider.equipments
 import com.grippo.design.resources.provider.history
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -132,6 +132,17 @@ internal fun ExerciseExampleScreen(
             text = example.value.description,
         )
 
+        if (example.equipments.isNotEmpty()) {
+
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+            EquipmentsCard(
+                modifier = Modifier.fillMaxWidth(),
+                value = example.equipments,
+                contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
+            )
+        }
+
         state.muscleLoad
             ?.takeIf { it.perGroup.entries.isNotEmpty() }
             ?.let { summary ->
@@ -146,23 +157,6 @@ internal fun ExerciseExampleScreen(
                     mode = MuscleLoadingMode.PerGroup
                 )
             }
-
-        if (example.equipments.isNotEmpty()) {
-
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-            ContentSpliter(
-                text = AppTokens.strings.res(Res.string.equipments)
-            )
-
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-            EquipmentsCard(
-                modifier = Modifier.fillMaxWidth(),
-                value = example.equipments,
-                contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding)
-            )
-        }
 
         if (state.achievements.isNotEmpty()) {
             Column(modifier = Modifier.fillMaxWidth()) {
@@ -213,7 +207,7 @@ internal fun ExerciseExampleScreen(
                             value = data,
                         )
 
-                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+                        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
                     }
 
                 state.recent.forEachIndexed { index, item ->
@@ -263,7 +257,8 @@ private fun ScreenPreview2() {
             state = ExerciseExampleState(
                 example = stubExerciseExample(),
                 recent = stubExercises(),
-                estimatedOneRepMax = stubEstimatedOneRepMax()
+                estimatedOneRepMax = stubEstimatedOneRepMax(),
+                achievements = stubAchievements()
             ),
             contract = ExerciseExampleContract.Empty,
             loaders = persistentSetOf()
