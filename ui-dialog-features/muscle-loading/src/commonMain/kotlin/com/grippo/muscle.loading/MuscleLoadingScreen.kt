@@ -1,10 +1,8 @@
 package com.grippo.muscle.loading
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -44,101 +42,98 @@ internal fun MuscleLoadingScreen(
     contract: MuscleLoadingContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
+    Text(
+        modifier = Modifier.fillMaxWidth(),
+        text = state.range.label()?.let {
+            AppTokens.strings.res(Res.string.value_muscle_loading, it)
+        } ?: AppTokens.strings.res(Res.string.muscle_loading),
+        style = AppTokens.typography.h3(),
+        color = AppTokens.colors.text.primary,
+        textAlign = TextAlign.Center
+    )
 
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = state.range.label()?.let {
-                AppTokens.strings.res(Res.string.value_muscle_loading, it)
-            } ?: AppTokens.strings.res(Res.string.muscle_loading),
-            style = AppTokens.typography.h3(),
-            color = AppTokens.colors.text.primary,
-            textAlign = TextAlign.Center
-        )
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
+    Text(
+        modifier = Modifier.fillMaxWidth(),
+        text = state.range.formatted(),
+        style = AppTokens.typography.b14Med(),
+        color = AppTokens.colors.text.tertiary,
+        textAlign = TextAlign.Center
+    )
 
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = state.range.formatted(),
-            style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.tertiary,
-            textAlign = TextAlign.Center
-        )
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+    val segmentItems = remember {
+        MuscleLoadingShowingMode.entries.map { it to it.text }
+            .toPersistentList()
+    }
 
-        val segmentItems = remember {
-            MuscleLoadingShowingMode.entries.map { it to it.text }
-                .toPersistentList()
-        }
+    Segment(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+        items = segmentItems,
+        selected = state.mode,
+        onSelect = contract::onSelectMode,
+        segmentWidth = SegmentWidth.EqualFill,
+        style = SegmentStyle.Fill
+    )
 
-        Segment(
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+    if (loaders.contains(MuscleLoadingLoader.Content)) {
+        Loader(modifier = Modifier.fillMaxWidth().weight(1f))
+    } else {
+        LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-            items = segmentItems,
-            selected = state.mode,
-            onSelect = contract::onSelectMode,
-            segmentWidth = SegmentWidth.EqualFill,
-            style = SegmentStyle.Fill
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
-        if (loaders.contains(MuscleLoadingLoader.Content)) {
-            Loader(modifier = Modifier.fillMaxWidth().weight(1f))
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                contentPadding = PaddingValues(
-                    start = AppTokens.dp.dialog.horizontalPadding,
-                    end = AppTokens.dp.dialog.horizontalPadding,
-                    top = AppTokens.dp.contentPadding.content,
-                ),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block)
-            ) {
-                state.summary?.let { summary ->
-                    item(key = "images") {
-                        val mode = remember(state.mode) {
-                            when (state.mode) {
-                                MuscleLoadingShowingMode.PerGroup -> MuscleLoadingImagesMode.PerGroup
-                                MuscleLoadingShowingMode.PerMuscle -> MuscleLoadingImagesMode.PerMuscle
-                            }
+                .weight(1f),
+            contentPadding = PaddingValues(
+                start = AppTokens.dp.dialog.horizontalPadding,
+                end = AppTokens.dp.dialog.horizontalPadding,
+                top = AppTokens.dp.contentPadding.content,
+            ),
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block)
+        ) {
+            state.summary?.let { summary ->
+                item(key = "images") {
+                    val mode = remember(state.mode) {
+                        when (state.mode) {
+                            MuscleLoadingShowingMode.PerGroup -> MuscleLoadingImagesMode.PerGroup
+                            MuscleLoadingShowingMode.PerMuscle -> MuscleLoadingImagesMode.PerMuscle
                         }
-
-                        MuscleLoadingImagesRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            summary = summary,
-                            mode = mode
-                        )
                     }
 
-                    item(key = "summary") {
-                        val mode = remember(state.mode) {
-                            when (state.mode) {
-                                MuscleLoadingShowingMode.PerGroup -> MuscleLoadingMode.PerGroup
-                                MuscleLoadingShowingMode.PerMuscle -> MuscleLoadingMode.PerMuscle
-                            }
+                    MuscleLoadingImagesRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        summary = summary,
+                        mode = mode
+                    )
+                }
+
+                item(key = "summary") {
+                    val mode = remember(state.mode) {
+                        when (state.mode) {
+                            MuscleLoadingShowingMode.PerGroup -> MuscleLoadingMode.PerGroup
+                            MuscleLoadingShowingMode.PerMuscle -> MuscleLoadingMode.PerMuscle
                         }
-
-                        MuscleLoading(
-                            modifier = Modifier.fillMaxWidth(),
-                            summary = summary,
-                            mode = mode
-                        )
                     }
-                }
 
-                item("bottom_space") {
-                    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-
-                    Spacer(modifier = Modifier.navigationBarsPadding())
+                    MuscleLoading(
+                        modifier = Modifier.fillMaxWidth(),
+                        summary = summary,
+                        mode = mode
+                    )
                 }
+            }
+
+            item("bottom_space") {
+                Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+
+                Spacer(modifier = Modifier.navigationBarsPadding())
             }
         }
     }

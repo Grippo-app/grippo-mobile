@@ -1,10 +1,8 @@
 package com.grippo.training.profile
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.size
@@ -37,70 +35,68 @@ internal fun TrainingProfileScreen(
     contract: TrainingProfileContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
-    Column(modifier = Modifier.fillMaxSize()) {
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
+    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
-        val baseTitle = AppTokens.strings.res(Res.string.training_profile)
+    val baseTitle = AppTokens.strings.res(Res.string.training_profile)
 
-        val title = state.range.label()?.let { "$baseTitle • $it" } ?: baseTitle
+    val title = state.range.label()?.let { "$baseTitle • $it" } ?: baseTitle
 
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = title,
-            style = AppTokens.typography.h3(),
-            color = AppTokens.colors.text.primary,
-            textAlign = TextAlign.Center
-        )
+    Text(
+        modifier = Modifier.fillMaxWidth(),
+        text = title,
+        style = AppTokens.typography.h3(),
+        color = AppTokens.colors.text.primary,
+        textAlign = TextAlign.Center
+    )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
 
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = state.range.formatted(),
-            style = AppTokens.typography.b14Semi(),
-            color = AppTokens.colors.text.tertiary,
-            textAlign = TextAlign.Center
-        )
+    Text(
+        modifier = Modifier.fillMaxWidth(),
+        text = state.range.formatted(),
+        style = AppTokens.typography.b14Semi(),
+        color = AppTokens.colors.text.tertiary,
+        textAlign = TextAlign.Center
+    )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-        if (loaders.contains(TrainingProfileLoader.Content)) {
-            Loader(modifier = Modifier.fillMaxWidth().weight(1f))
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                contentPadding = PaddingValues(
-                    start = AppTokens.dp.dialog.horizontalPadding,
-                    end = AppTokens.dp.dialog.horizontalPadding,
-                    top = AppTokens.dp.contentPadding.content,
-                ),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block)
-            ) {
-                state.profile?.let { profile ->
-                    item(key = "radar") {
-                        TrainingProfileRadar(
-                            value = profile,
-                            style = TrainingProfileRadarStyle.LARGE
-                        )
-                    }
-
-                    item(key = "details") {
-                        TrainingLoadProfileDetailsCard(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = profile,
-                        )
-                    }
+    if (loaders.contains(TrainingProfileLoader.Content)) {
+        Loader(modifier = Modifier.fillMaxWidth().weight(1f))
+    } else {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f, false),
+            contentPadding = PaddingValues(
+                start = AppTokens.dp.dialog.horizontalPadding,
+                end = AppTokens.dp.dialog.horizontalPadding,
+                top = AppTokens.dp.contentPadding.content,
+            ),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block)
+        ) {
+            state.profile?.let { profile ->
+                item(key = "radar") {
+                    TrainingProfileRadar(
+                        value = profile,
+                        style = TrainingProfileRadarStyle.LARGE
+                    )
                 }
 
-                item("bottom_space") {
-                    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-
-                    Spacer(modifier = Modifier.navigationBarsPadding())
+                item(key = "details") {
+                    TrainingLoadProfileDetailsCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = profile,
+                    )
                 }
+            }
+
+            item("bottom_space") {
+                Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+
+                Spacer(modifier = Modifier.navigationBarsPadding())
             }
         }
     }

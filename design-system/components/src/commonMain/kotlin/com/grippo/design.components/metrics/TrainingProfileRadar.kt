@@ -29,12 +29,18 @@ public fun TrainingProfileRadar(
 ) {
     val grid = AppTokens.colors.charts.radar.grid
 
-    val data = remember(value) {
-        val orderedKinds = listOf(
+    val orderedKinds = remember {
+        listOf(
             TrainingDimensionKindState.Strength,
             TrainingDimensionKindState.Hypertrophy,
             TrainingDimensionKindState.Endurance,
         )
+    }
+    val axisIds = orderedKinds.associateWith { it.axisId() }
+    val axisLabels = orderedKinds.associateWith { it.label() }
+    val seriesName = value.kind.label()
+
+    val data = remember(value, axisIds, axisLabels, seriesName) {
         val scoresByKind = value.dimensions.associateBy(
             keySelector = TrainingDimensionScoreState::kind,
             valueTransform = TrainingDimensionScoreState::score,
@@ -43,20 +49,20 @@ public fun TrainingProfileRadar(
         if (maxScore <= 0) return@remember null
         val axes = orderedKinds.map { kind ->
             RadarAxis(
-                id = kind.axisId(),
-                label = kind.label(),
+                id = axisIds.getValue(kind),
+                label = axisLabels.getValue(kind),
             )
         }
         val values = orderedKinds.associate { kind ->
             val normalizedScore = scoresByKind.getValue(kind).toFloat() / maxScore.toFloat()
-            kind.axisId() to normalizedScore
+            axisIds.getValue(kind) to normalizedScore
         }
 
         RadarData(
             axes = axes,
             series = listOf(
                 RadarSeries(
-                    name = value.kind.label(),
+                    name = seriesName,
                     color = grid,
                     values = RadarValues.ByAxisId(values),
                 )

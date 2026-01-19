@@ -25,7 +25,7 @@ public data object AppDp {
         val large: Dp = 64.dp
         val xLarge: Dp = 72.dp
         val xxLarge: Dp = 96.dp
-        val xxxLarge: Dp = 192.dp
+        val xxxLarge: Dp = 262.dp
     }
 
     private data object Radius {
