@@ -3,8 +3,9 @@ package com.grippo.design.components.metrics.muscle.loading.internal
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -72,12 +73,33 @@ internal fun MuscleLoadingItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier,
                 text = label,
                 style = labelStyle,
                 color = labelColor,
                 maxLines = 1
             )
+
+            if (style == MuscleLoadingItemStyle.Expanded) {
+                val trainingsCount = entry.hitTrainingsCount.coerceAtLeast(0)
+
+                val trainingsText = AppTokens.strings.res(
+                    Res.string.muscle_load_trainings_count,
+                    trainingsCount
+                )
+
+                if (trainingsText.isNotBlank()) {
+                    Spacer(Modifier.width(AppTokens.dp.contentPadding.text))
+                    Text(
+                        text = trainingsText,
+                        style = AppTokens.typography.b12Med(),
+                        color = AppTokens.colors.text.tertiary,
+                        maxLines = 1
+                    )
+                }
+            }
+
+            Spacer(Modifier.weight(1f))
 
             Text(
                 text = valueText,
@@ -92,30 +114,6 @@ internal fun MuscleLoadingItem(
             progress = progress,
             colors = indicatorColors
         )
-
-        if (style == MuscleLoadingItemStyle.Expanded) {
-            val trainingsCount = entry.hitTrainingsCount.coerceAtLeast(0)
-
-            val trainingsText = AppTokens.strings.res(
-                Res.string.muscle_load_trainings_count,
-                trainingsCount
-            )
-
-            if (trainingsText.isNotBlank()) {
-                Row(
-                    modifier = Modifier.wrapContentWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = trainingsText,
-                        style = AppTokens.typography.b12Med(),
-                        color = AppTokens.colors.text.tertiary,
-                        maxLines = 1
-                    )
-                }
-            }
-        }
     }
 }
 

@@ -1,12 +1,13 @@
 package com.grippo.design.components.metrics.muscle.loading
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,13 +15,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.unit.dp
 import com.grippo.core.state.metrics.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.stubMuscleLoadSummary
+import com.grippo.design.components.chart.internal.RingChart
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -44,9 +41,6 @@ public fun MuscleLoadingBalanceCard(
     summary: MuscleLoadSummaryState,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(AppTokens.dp.metrics.panel.large.radius)
-    val panelPadding = AppTokens.dp.metrics.panel.large
-
     val groupEntries = summary.perGroup.entries
     val topEntry = groupEntries.maxByOrNull { it.value }
     val secondEntry = groupEntries.filterNot { it == topEntry }.maxByOrNull { it.value }
@@ -91,12 +85,15 @@ public fun MuscleLoadingBalanceCard(
 
     Column(
         modifier = modifier
-            .background(AppTokens.colors.background.card, shape)
+            .background(
+                AppTokens.colors.background.card,
+                RoundedCornerShape(AppTokens.dp.metrics.muscleLoad.balance.radius)
+            )
             .padding(
-                horizontal = panelPadding.horizontalPadding,
-                vertical = panelPadding.verticalPadding
+                horizontal = AppTokens.dp.metrics.muscleLoad.balance.horizontalPadding,
+                vertical = AppTokens.dp.metrics.muscleLoad.balance.verticalPadding
             ),
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -105,7 +102,6 @@ public fun MuscleLoadingBalanceCard(
         ) {
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
             ) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
@@ -132,10 +128,12 @@ public fun MuscleLoadingBalanceCard(
                     color = AppTokens.colors.text.tertiary
                 )
 
+                Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+
                 if (biasLine != null) {
                     Text(
                         text = biasLine,
-                        style = AppTokens.typography.b13Med(),
+                        style = AppTokens.typography.b13Semi(),
                         color = AppTokens.colors.semantic.warning
                     )
                 } else {
@@ -147,16 +145,20 @@ public fun MuscleLoadingBalanceCard(
                 }
 
                 if (gapLine != null) {
+                    Spacer(Modifier.height(AppTokens.dp.contentPadding.text))
+
                     Text(
                         text = gapLine,
                         style = AppTokens.typography.b13Med(),
-                        color = AppTokens.colors.semantic.info
+                        color = AppTokens.colors.text.primary
                     )
                 }
+
+                Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
             }
 
             BalanceRing(
-                modifier = Modifier.size(100.dp),
+                modifier = Modifier.size(AppTokens.dp.metrics.muscleLoad.balance.chart),
                 score = balanceScore,
                 caption = AppTokens.strings.res(Res.string.muscle_load_balance_score_label),
                 percentSymbol = percentSymbol
@@ -178,7 +180,6 @@ private fun BalanceRing(
     percentSymbol: String,
     modifier: Modifier = Modifier,
 ) {
-    val progress = (score / 100f).coerceIn(0f, 1f)
     val colors = when {
         score >= 70 -> AppTokens.colors.lineIndicator.success
         score >= 50 -> AppTokens.colors.lineIndicator.info
@@ -189,33 +190,12 @@ private fun BalanceRing(
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-        Canvas(modifier = Modifier.matchParentSize()) {
-            val stroke = size.minDimension * 0.12f
-            val arcSize = size.minDimension - stroke
-            val offset = (size.minDimension - arcSize) / 2f
-            val topLeft = Offset(offset, offset)
-            val arcSizePx = Size(arcSize, arcSize)
-
-            drawArc(
-                color = colors.track,
-                startAngle = -90f,
-                sweepAngle = 360f,
-                useCenter = false,
-                topLeft = topLeft,
-                size = arcSizePx,
-                style = Stroke(width = stroke, cap = StrokeCap.Round)
-            )
-
-            drawArc(
-                color = colors.indicator,
-                startAngle = -90f,
-                sweepAngle = 360f * progress,
-                useCenter = false,
-                topLeft = topLeft,
-                size = arcSizePx,
-                style = Stroke(width = stroke, cap = StrokeCap.Round)
-            )
-        }
+        RingChart(
+            modifier = Modifier.matchParentSize(),
+            value = score.toFloat(),
+            max = 100f,
+            colors = colors
+        )
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
@@ -228,7 +208,7 @@ private fun BalanceRing(
             Text(
                 text = caption,
                 style = AppTokens.typography.b12Med(),
-                color = AppTokens.colors.text.tertiary
+                color = AppTokens.colors.text.secondary
             )
         }
     }
