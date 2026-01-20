@@ -1,4 +1,4 @@
-package com.grippo.design.components.metrics.internal
+package com.grippo.design.components.metrics.muscle.loading.internal
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

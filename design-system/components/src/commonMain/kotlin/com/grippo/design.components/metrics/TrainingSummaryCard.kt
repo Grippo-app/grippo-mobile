@@ -22,6 +22,9 @@ import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
+import com.grippo.design.components.metrics.muscle.loading.MuscleLoading
+import com.grippo.design.components.metrics.muscle.loading.MuscleLoadingMode
+import com.grippo.design.components.metrics.muscle.loading.MuscleLoadingStyle
 import com.grippo.design.components.modifiers.spot
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview

@@ -1,4 +1,4 @@
-package com.grippo.design.components.metrics
+package com.grippo.design.components.metrics.muscle.loading
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
@@ -12,8 +12,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.grippo.core.state.metrics.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.core.state.muscles.MuscleEnumState
-import com.grippo.design.components.metrics.internal.ColoredEntry
-import com.grippo.design.components.metrics.internal.colorizeEntries
+import com.grippo.design.components.metrics.muscle.loading.internal.ColoredEntry
+import com.grippo.design.components.metrics.muscle.loading.internal.colorizeEntries
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer

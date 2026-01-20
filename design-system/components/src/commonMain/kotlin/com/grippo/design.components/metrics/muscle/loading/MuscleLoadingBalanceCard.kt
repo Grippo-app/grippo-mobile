@@ -1,4 +1,4 @@
-package com.grippo.design.components.metrics
+package com.grippo.design.components.metrics.muscle.loading
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -14,11 +14,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import com.grippo.core.state.metrics.MuscleLoadSummaryState
+import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.muscle_load_balance
 import com.grippo.design.resources.provider.muscle_load_balance_description
@@ -188,8 +193,8 @@ private fun BalanceRing(
             val stroke = size.minDimension * 0.12f
             val arcSize = size.minDimension - stroke
             val offset = (size.minDimension - arcSize) / 2f
-            val topLeft = androidx.compose.ui.geometry.Offset(offset, offset)
-            val arcSizePx = androidx.compose.ui.geometry.Size(arcSize, arcSize)
+            val topLeft = Offset(offset, offset)
+            val arcSizePx = Size(arcSize, arcSize)
 
             drawArc(
                 color = colors.track,
@@ -226,5 +231,15 @@ private fun BalanceRing(
                 color = AppTokens.colors.text.tertiary
             )
         }
+    }
+}
+
+@AppPreview
+@Composable
+private fun MuscleLoadingBalanceCardPreview() {
+    PreviewContainer {
+        MuscleLoadingBalanceCard(
+            summary = stubMuscleLoadSummary()
+        )
     }
 }

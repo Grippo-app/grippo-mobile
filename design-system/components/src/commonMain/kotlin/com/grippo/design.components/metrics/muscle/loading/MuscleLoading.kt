@@ -1,4 +1,4 @@
-package com.grippo.design.components.metrics
+package com.grippo.design.components.metrics.muscle.loading
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -7,8 +7,8 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.metrics.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.stubMuscleLoadSummary
-import com.grippo.design.components.metrics.internal.MuscleLoadingPerGroup
-import com.grippo.design.components.metrics.internal.MuscleLoadingPerMuscle
+import com.grippo.design.components.metrics.muscle.loading.internal.MuscleLoadingPerGroup
+import com.grippo.design.components.metrics.muscle.loading.internal.MuscleLoadingPerMuscle
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 

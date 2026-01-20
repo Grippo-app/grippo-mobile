@@ -41,10 +41,10 @@ import com.grippo.design.components.metrics.DigestCard
 import com.grippo.design.components.metrics.ExerciseSpotlightsCard
 import com.grippo.design.components.metrics.HighlightsHeader
 import com.grippo.design.components.metrics.LastTrainingCard
-import com.grippo.design.components.metrics.MuscleLoadingCard
 import com.grippo.design.components.metrics.PerformanceMetricCard
 import com.grippo.design.components.metrics.TrainingLoadProfileCard
 import com.grippo.design.components.metrics.TrainingStreakCard
+import com.grippo.design.components.metrics.muscle.loading.MuscleLoadingCard
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle

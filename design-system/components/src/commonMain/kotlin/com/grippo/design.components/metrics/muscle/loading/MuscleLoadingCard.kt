@@ -1,4 +1,4 @@
-package com.grippo.design.components.metrics
+package com.grippo.design.components.metrics.muscle.loading
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
