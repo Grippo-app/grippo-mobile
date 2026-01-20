@@ -32,10 +32,10 @@ public fun DigestCard(
     }
 
     val style = DigestCardStyle(
-        radius = AppTokens.dp.digest.content.radius,
-        horizontalPadding = AppTokens.dp.digest.content.horizontalPadding,
-        verticalPadding = AppTokens.dp.digest.content.verticalPadding,
-        iconSize = AppTokens.dp.digest.content.icon,
+        radius = AppTokens.dp.metrics.digest.content.radius,
+        horizontalPadding = AppTokens.dp.metrics.digest.content.horizontalPadding,
+        verticalPadding = AppTokens.dp.metrics.digest.content.verticalPadding,
+        iconSize = AppTokens.dp.metrics.digest.content.icon,
     )
 
     DigestsSection(

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -38,7 +37,6 @@ import com.grippo.design.resources.provider.draft_training_alert_description_add
 import com.grippo.design.resources.provider.draft_training_alert_description_edit
 import com.grippo.design.resources.provider.draft_training_alert_title_add
 import com.grippo.design.resources.provider.draft_training_alert_title_edit
-import com.grippo.design.resources.provider.icons.Question
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -59,15 +57,6 @@ internal fun DraftTrainingScreen(
     ) {
 
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
-
-        Icon(
-            modifier = Modifier.size(AppTokens.dp.confirmation.icon),
-            imageVector = AppTokens.icons.Question,
-            tint = AppTokens.colors.semantic.info,
-            contentDescription = null
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         Text(
             modifier = Modifier.fillMaxWidth(),

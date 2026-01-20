@@ -65,7 +65,7 @@ private fun EmptyIllustration(modifier: Modifier = Modifier) {
     val borderColor = AppTokens.colors.border.default.copy(alpha = 0.4f)
     val backgroundColor = AppTokens.colors.background.card.copy(alpha = 0.4f)
     val highlight = AppTokens.colors.brand.color2
-    val shape = RoundedCornerShape(AppTokens.dp.menu.radius)
+    val shape = RoundedCornerShape(AppTokens.dp.empty.radius)
 
     Box(
         modifier = modifier

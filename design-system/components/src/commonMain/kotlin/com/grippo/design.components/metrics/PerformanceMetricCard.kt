@@ -110,7 +110,7 @@ public fun PerformanceMetricCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                modifier = Modifier.size(AppTokens.dp.performanceTrend.icon),
+                modifier = Modifier.size(AppTokens.dp.metrics.performanceTrend.icon),
                 imageVector = metric.type.icon(),
                 tint = AppTokens.colors.icon.secondary,
                 contentDescription = null

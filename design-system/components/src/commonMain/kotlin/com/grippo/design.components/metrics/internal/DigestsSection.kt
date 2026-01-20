@@ -115,7 +115,7 @@ private fun DigestSubtitleChip(
     text: String,
     accent: Color,
 ) {
-    val chipShape = RoundedCornerShape(AppTokens.dp.digest.layout.radius)
+    val chipShape = RoundedCornerShape(AppTokens.dp.metrics.digest.layout.radius)
 
     Text(
         modifier = Modifier
@@ -125,8 +125,8 @@ private fun DigestSubtitleChip(
                 shape = chipShape
             )
             .padding(
-                horizontal = AppTokens.dp.digest.layout.horizontalPadding,
-                vertical = AppTokens.dp.digest.layout.verticalPadding
+                horizontal = AppTokens.dp.metrics.digest.layout.horizontalPadding,
+                vertical = AppTokens.dp.metrics.digest.layout.verticalPadding
             ),
         text = text,
         style = AppTokens.typography.b12Semi(),
@@ -215,10 +215,10 @@ internal data class DigestCardStyle(
 private fun DigestsSectionPreview() {
     PreviewContainer {
         val style = DigestCardStyle(
-            radius = AppTokens.dp.digest.content.radius,
-            horizontalPadding = AppTokens.dp.digest.content.horizontalPadding,
-            verticalPadding = AppTokens.dp.digest.content.verticalPadding,
-            iconSize = AppTokens.dp.digest.content.icon,
+            radius = AppTokens.dp.metrics.digest.content.radius,
+            horizontalPadding = AppTokens.dp.metrics.digest.content.horizontalPadding,
+            verticalPadding = AppTokens.dp.metrics.digest.content.verticalPadding,
+            iconSize = AppTokens.dp.metrics.digest.content.icon,
         )
 
         DigestsSection(

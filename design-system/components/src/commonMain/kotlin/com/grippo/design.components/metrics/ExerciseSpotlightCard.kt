@@ -50,7 +50,7 @@ public fun ExerciseSpotlightsCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                modifier = Modifier.size(AppTokens.dp.performanceTrend.icon),
+                modifier = Modifier.size(AppTokens.dp.metrics.spotlightCard.icon),
                 imageVector = AppTokens.icons.Warning,
                 tint = AppTokens.colors.icon.secondary,
                 contentDescription = null
