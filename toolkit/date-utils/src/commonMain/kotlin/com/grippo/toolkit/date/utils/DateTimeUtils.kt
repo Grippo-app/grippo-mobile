@@ -103,12 +103,30 @@ public object DateTimeUtils {
         )
     }
 
+    public fun trailing14Days(): DateRange {
+        return trailingDays(14)
+    }
+
+    public fun trailing60Days(): DateRange {
+        return trailingDays(60)
+    }
+
     public fun trailingWeek(): DateRange {
         val today = Clock.System.now().toLocalDateTime(timeZone).date
         val weekAgo = today.minus(DatePeriod(days = 7))
 
         return DateRange(
             from = weekAgo.atTime(DayTime.StartOfDay.localTime),
+            to = today.atTime(DayTime.EndOfDay.localTime)
+        )
+    }
+
+    private fun trailingDays(days: Int): DateRange {
+        val today = Clock.System.now().toLocalDateTime(timeZone).date
+        val daysAgo = today.minus(DatePeriod(days = days))
+
+        return DateRange(
+            from = daysAgo.atTime(DayTime.StartOfDay.localTime),
             to = today.atTime(DayTime.EndOfDay.localTime)
         )
     }

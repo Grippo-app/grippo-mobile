@@ -11,6 +11,8 @@ public data class PeriodPickerState(
     val value: DateRange.Range,
     val suggestions: ImmutableList<DateRange.Range> = persistentListOf(
         DateRange.Range.Last7Days(),
+        DateRange.Range.Last14Days(),
         DateRange.Range.Last30Days(),
+        DateRange.Range.Last60Days(),
     )
 )

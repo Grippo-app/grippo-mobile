@@ -6,8 +6,10 @@ import androidx.compose.runtime.remember
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.daily
+import com.grippo.design.resources.provider.last_14_days
 import com.grippo.design.resources.provider.last_30_days
 import com.grippo.design.resources.provider.last_365_days
+import com.grippo.design.resources.provider.last_60_days
 import com.grippo.design.resources.provider.last_7_days
 import com.grippo.design.resources.provider.monthly
 import com.grippo.design.resources.provider.weekly
@@ -40,11 +42,19 @@ public data class DateRange(
             Range(range)
 
         @Immutable
+        public data class Last14Days(override val range: DateRange = DateTimeUtils.trailing14Days()) :
+            Range(range)
+
+        @Immutable
         public data class Monthly(override val range: DateRange = DateTimeUtils.thisMonth()) :
             Range(range)
 
         @Immutable
         public data class Last30Days(override val range: DateRange = DateTimeUtils.trailingMonth()) :
+            Range(range)
+
+        @Immutable
+        public data class Last60Days(override val range: DateRange = DateTimeUtils.trailing60Days()) :
             Range(range)
 
         @Immutable
@@ -66,13 +76,17 @@ public data class DateRange(
             matches(DateTimeUtils.thisDay()) -> Range.Daily()
             matches(DateTimeUtils.thisWeek()) -> Range.Weekly()
             matches(DateTimeUtils.trailingWeek()) -> Range.Last7Days()
+            matches(DateTimeUtils.trailing14Days()) -> Range.Last14Days()
             matches(DateTimeUtils.thisMonth()) -> Range.Monthly()
             matches(DateTimeUtils.trailingMonth()) -> Range.Last30Days()
+            matches(DateTimeUtils.trailing60Days()) -> Range.Last60Days()
             matches(DateTimeUtils.trailingYear()) -> Range.Last365Days()
             matches(DateTimeUtils.thisYear()) -> Range.Yearly()
             days == 1 -> Range.Daily()
             days == 7 -> Range.Last7Days()
+            days == 14 -> Range.Last14Days()
             days == 30 -> Range.Last30Days()
+            days == 60 -> Range.Last60Days()
             days in 28..31 -> Range.Monthly()
             days in 365..366 -> Range.Yearly()
             else -> Range.Undefined
@@ -85,8 +99,10 @@ public data class DateRange(
             is Range.Daily -> AppTokens.strings.res(Res.string.daily)
             is Range.Weekly -> AppTokens.strings.res(Res.string.weekly)
             is Range.Last7Days -> AppTokens.strings.res(Res.string.last_7_days)
+            is Range.Last14Days -> AppTokens.strings.res(Res.string.last_14_days)
             is Range.Monthly -> AppTokens.strings.res(Res.string.monthly)
             is Range.Last30Days -> AppTokens.strings.res(Res.string.last_30_days)
+            is Range.Last60Days -> AppTokens.strings.res(Res.string.last_60_days)
             is Range.Last365Days -> AppTokens.strings.res(Res.string.last_365_days)
             is Range.Yearly -> AppTokens.strings.res(Res.string.yearly)
             Range.Undefined -> null
@@ -99,8 +115,10 @@ public data class DateRange(
             is Range.Daily -> DateCompose.rememberFormat(this.from, DateFormat.DateOnly.DateDdMmmm)
             is Range.Weekly -> formatSpan(DateFormat.DateOnly.DateDdMmm)
             is Range.Last7Days -> formatSpan(DateFormat.DateOnly.DateDdMmm)
+            is Range.Last14Days -> formatSpan(DateFormat.DateOnly.DateDdMmm)
             is Range.Monthly -> formatSpan(DateFormat.DateOnly.DateDdMmm)
             is Range.Last30Days -> formatSpan(DateFormat.DateOnly.DateDdMmm)
+            is Range.Last60Days -> formatSpan(DateFormat.DateOnly.DateDdMmm)
             is Range.Last365Days -> formatSpan(DateFormat.DateOnly.DateMmmDdYyyy)
             is Range.Yearly -> formatSpan(DateFormat.DateOnly.DateMmmDdYyyy)
             Range.Undefined -> formatUndefined()
