@@ -215,7 +215,10 @@ internal fun HomeScreen(
                 }
 
                 if (densityMetric != null) {
-                    item(key = "performance_density") {
+                    item(
+                        key = "performance_density",
+                        span = { GridItemSpan(if (volumeMetric == null) 2 else 1) }
+                    ) {
                         val onPerformanceMetricClickProvider =
                             remember(densityMetric.type) {
                                 { contract.onPerformanceMetricClick(densityMetric.type) }
@@ -228,14 +231,13 @@ internal fun HomeScreen(
                             metric = densityMetric
                         )
                     }
-                } else {
-                    item(key = "performance_density_spacer") {
-                        Spacer(modifier = Modifier.fillMaxWidth())
-                    }
                 }
 
                 if (volumeMetric != null) {
-                    item(key = "performance_volume") {
+                    item(
+                        key = "performance_volume",
+                        span = { GridItemSpan(if (densityMetric == null) 2 else 1) }
+                    ) {
                         val onPerformanceMetricClickProvider =
                             remember(volumeMetric.type) {
                                 { contract.onPerformanceMetricClick(volumeMetric.type) }
@@ -248,14 +250,13 @@ internal fun HomeScreen(
                             metric = volumeMetric
                         )
                     }
-                } else {
-                    item(key = "performance_volume_spacer") {
-                        Spacer(modifier = Modifier.fillMaxWidth())
-                    }
                 }
 
                 if (repetitionsMetric != null) {
-                    item(key = "performance_repetitions") {
+                    item(
+                        key = "performance_repetitions",
+                        span = { GridItemSpan(if (intensityMetric == null) 2 else 1) }
+                    ) {
                         val onPerformanceMetricClickProvider =
                             remember(repetitionsMetric.type) {
                                 { contract.onPerformanceMetricClick(repetitionsMetric.type) }
@@ -268,14 +269,13 @@ internal fun HomeScreen(
                             metric = repetitionsMetric
                         )
                     }
-                } else {
-                    item(key = "performance_repetitions_spacer") {
-                        Spacer(modifier = Modifier.fillMaxWidth())
-                    }
                 }
 
                 if (intensityMetric != null) {
-                    item(key = "performance_intensity") {
+                    item(
+                        key = "performance_intensity",
+                        span = { GridItemSpan(if (repetitionsMetric == null) 2 else 1) }
+                    ) {
                         val onPerformanceMetricClickProvider =
                             remember(intensityMetric.type) {
                                 { contract.onPerformanceMetricClick(intensityMetric.type) }
@@ -287,10 +287,6 @@ internal fun HomeScreen(
                                 .scalableClick(onClick = onPerformanceMetricClickProvider),
                             metric = intensityMetric
                         )
-                    }
-                } else {
-                    item(key = "performance_intensity_spacer") {
-                        Spacer(modifier = Modifier.fillMaxWidth())
                     }
                 }
 

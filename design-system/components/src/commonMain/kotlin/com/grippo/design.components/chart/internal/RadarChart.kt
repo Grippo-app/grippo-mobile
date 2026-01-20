@@ -20,7 +20,8 @@ import com.grippo.design.preview.PreviewContainer
 internal fun RadarChart(
     modifier: Modifier = Modifier,
     data: RadarData,
-    showLabels: Boolean
+    showLabels: Boolean,
+    clickable: Boolean
 ) {
     val charts = AppTokens.colors.charts
     val palette = AppTokens.colors.palette
@@ -59,7 +60,7 @@ internal fun RadarChart(
             color = AppTokens.colors.charts.radar.grid,
             strokeWidth = 1.dp,
         ),
-        peek = RadarStyle.Peek.Visible(
+        peek = if (clickable) RadarStyle.Peek.Visible(
             hitSlop = 26.dp,
 
             guideColor = charts.tooltip.guide,
@@ -69,8 +70,8 @@ internal fun RadarChart(
 
             focusColor = charts.tooltip.focus,
             focusRadius = 3.5.dp,
-            focusRingWidth = 2.dp,
-            focusHaloRadius = 18.dp,
+            focusRingWidth = 1.dp,
+            focusHaloRadius = 10.dp,
 
             tooltipBackground = charts.tooltip.background,
             tooltipBorder = charts.tooltip.border,
@@ -83,7 +84,7 @@ internal fun RadarChart(
             decimals = 0,
             showAxisLabel = true,
             showSeriesName = false,
-        ),
+        ) else RadarStyle.Peek.None,
         labels = labels,
         polygon = RadarStyle.Polygon(
             strokeWidth = 1.5.dp,
@@ -142,7 +143,8 @@ private fun RadarChartPreview() {
         RadarChart(
             modifier = Modifier.size(300.dp),
             data = ds,
-            showLabels = true
+            showLabels = true,
+            clickable = true
         )
     }
 }

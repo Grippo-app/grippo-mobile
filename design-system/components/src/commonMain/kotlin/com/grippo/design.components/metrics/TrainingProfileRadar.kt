@@ -83,10 +83,16 @@ public fun TrainingProfileRadar(
         TrainingProfileRadarStyle.LARGE -> true
     }
 
+    val clickable = when (style) {
+        TrainingProfileRadarStyle.SMALL -> false
+        TrainingProfileRadarStyle.LARGE -> true
+    }
+
     RadarChart(
         modifier = modifier.size(size),
         data = data,
-        showLabels = showLabels
+        showLabels = showLabels,
+        clickable = clickable
     )
 }
 

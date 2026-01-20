@@ -20,7 +20,6 @@ import com.grippo.core.state.metrics.stubCategoryDistribution
 import com.grippo.core.state.metrics.stubForceDistribution
 import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.stubTotal
-import com.grippo.core.state.metrics.stubTrainingLoadProfile
 import com.grippo.core.state.metrics.stubVolumeSeries
 import com.grippo.core.state.metrics.stubWeightDistribution
 import com.grippo.design.components.loading.Loader
@@ -28,7 +27,6 @@ import com.grippo.design.components.metrics.ExerciseDistributionChart
 import com.grippo.design.components.metrics.ForceTypeDistributionChart
 import com.grippo.design.components.metrics.MuscleLoading
 import com.grippo.design.components.metrics.MuscleLoadingMode
-import com.grippo.design.components.metrics.TrainingLoadProfileCard
 import com.grippo.design.components.metrics.TrainingTotalSection
 import com.grippo.design.components.metrics.VolumeMetricChart
 import com.grippo.design.components.metrics.WeightTypeDistributionChart
@@ -108,15 +106,6 @@ internal fun StatisticsScreen(
                         TrainingTotalSection(
                             modifier = Modifier.fillMaxWidth(),
                             value = metrics,
-                        )
-                    }
-                }
-
-                state.profile?.let { profile ->
-                    item(key = "training_load_profile") {
-                        TrainingLoadProfileCard(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = profile,
                         )
                     }
                 }
@@ -213,7 +202,6 @@ private fun ScreenPreview() {
                 weightTypeDistribution = stubWeightDistribution(),
                 forceTypeDistribution = stubForceDistribution(),
                 muscleLoad = stubMuscleLoadSummary(),
-                profile = stubTrainingLoadProfile()
             ),
             loaders = persistentSetOf(),
             contract = StatisticsContract.Empty
