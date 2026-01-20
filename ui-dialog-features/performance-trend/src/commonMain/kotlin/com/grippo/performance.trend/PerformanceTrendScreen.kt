@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.size
@@ -40,109 +39,107 @@ internal fun PerformanceTrendScreen(
     contract: PerformanceTrendContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
+    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
-        val metricLabel = state.metricType.label()
+    val metricLabel = state.metricType.label()
 
-        val title = state.range.label()?.let {
-            AppTokens.strings.res(Res.string.value_performance_trend, it, metricLabel)
-        } ?: AppTokens.strings.res(Res.string.performance_trend, metricLabel)
+    val title = state.range.label()?.let {
+        AppTokens.strings.res(Res.string.value_performance_trend, it, metricLabel)
+    } ?: AppTokens.strings.res(Res.string.performance_trend, metricLabel)
 
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = title,
-            style = AppTokens.typography.h3(),
-            color = AppTokens.colors.text.primary,
-            textAlign = TextAlign.Center
-        )
+    Text(
+        modifier = Modifier.fillMaxWidth(),
+        text = title,
+        style = AppTokens.typography.h3(),
+        color = AppTokens.colors.text.primary,
+        textAlign = TextAlign.Center
+    )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
 
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = state.range.formatted(),
-            style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.tertiary,
-            textAlign = TextAlign.Center
-        )
+    Text(
+        modifier = Modifier.fillMaxWidth(),
+        text = state.range.formatted(),
+        style = AppTokens.typography.b14Med(),
+        color = AppTokens.colors.text.tertiary,
+        textAlign = TextAlign.Center
+    )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-        if (loaders.contains(PerformanceTrendLoader.Content)) {
-            Loader(modifier = Modifier.fillMaxWidth().weight(1f))
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                contentPadding = PaddingValues(
-                    start = AppTokens.dp.dialog.horizontalPadding,
-                    end = AppTokens.dp.dialog.horizontalPadding,
-                ),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-            ) {
-                item(key = "info") {
+    if (loaders.contains(PerformanceTrendLoader.Content)) {
+        Loader(modifier = Modifier.fillMaxWidth().weight(1f))
+    } else {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f, false),
+            contentPadding = PaddingValues(
+                start = AppTokens.dp.dialog.horizontalPadding,
+                end = AppTokens.dp.dialog.horizontalPadding,
+            ),
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+        ) {
+            item(key = "info") {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = state.metricType.description(),
+                    style = AppTokens.typography.b14Med(),
+                    color = AppTokens.colors.text.secondary,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            item(key = "chart") {
+                PerformanceTrendHistoryCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    history = state.history,
+                )
+            }
+
+            itemsIndexed(
+                items = state.history,
+                key = { index, _ -> "history_$index" }
+            ) { index, entry ->
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
+                ) {
+                    val formattedDate = DateCompose.rememberFormat(
+                        entry.range.to,
+                        DateFormat.DateOnly.DateMmmDdYyyy
+                    )
+
+                    val style = if (index == 0) {
+                        AppTokens.typography.h5()
+                    } else {
+                        AppTokens.typography.b13Med()
+                    }
+
+                    val color = if (index == 0) {
+                        AppTokens.colors.text.primary
+                    } else {
+                        AppTokens.colors.text.secondary
+                    }
+
                     Text(
                         modifier = Modifier.fillMaxWidth(),
-                        text = state.metricType.description(),
-                        style = AppTokens.typography.b14Med(),
-                        color = AppTokens.colors.text.secondary,
-                        textAlign = TextAlign.Center
+                        text = formattedDate,
+                        style = style,
+                        color = color
+                    )
+
+                    PerformanceMetricCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        metric = entry.metric
                     )
                 }
+            }
 
-                item(key = "chart") {
-                    PerformanceTrendHistoryCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        history = state.history,
-                    )
-                }
+            item("bottom_space") {
+                Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
 
-                itemsIndexed(
-                    items = state.history,
-                    key = { index, _ -> "history_$index" }
-                ) { index, entry ->
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
-                    ) {
-                        val formattedDate = DateCompose.rememberFormat(
-                            entry.range.to,
-                            DateFormat.DateOnly.DateMmmDdYyyy
-                        )
-
-                        val style = if (index == 0) {
-                            AppTokens.typography.h5()
-                        } else {
-                            AppTokens.typography.b13Med()
-                        }
-
-                        val color = if (index == 0) {
-                            AppTokens.colors.text.primary
-                        } else {
-                            AppTokens.colors.text.secondary
-                        }
-
-                        Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = formattedDate,
-                            style = style,
-                            color = color
-                        )
-
-                        PerformanceMetricCard(
-                            modifier = Modifier.fillMaxWidth(),
-                            metric = entry.metric
-                        )
-                    }
-                }
-
-                item("bottom_space") {
-                    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-
-                    Spacer(modifier = Modifier.navigationBarsPadding())
-                }
+                Spacer(modifier = Modifier.navigationBarsPadding())
             }
         }
     }
