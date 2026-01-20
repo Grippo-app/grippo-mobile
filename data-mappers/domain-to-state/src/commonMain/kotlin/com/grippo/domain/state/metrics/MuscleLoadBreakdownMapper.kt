@@ -18,5 +18,12 @@ private fun DomainMuscleLoadEntry.toState(): StateMuscleLoadEntry {
         group = group.toState(),
         value = normalizedValue,
         muscles = muscles.map { it.toState() }.toPersistentList(),
+        hitTrainingsCount = hitTrainingsCount,
+        primaryTrainingsCount = primaryTrainingsCount,
+        avgStimulusPerHitSession = avgStimulusPerHitSession,
+        maxStimulusInOneSession = maxStimulusInOneSession,
+        avgVolumePerHitSession = avgVolumePerHitSession,
+        maxVolumeInOneSession = maxVolumeInOneSession,
+        topExampleIds = topExampleIds,
     )
 }

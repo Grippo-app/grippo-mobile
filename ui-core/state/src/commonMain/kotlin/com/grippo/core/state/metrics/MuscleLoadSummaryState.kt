@@ -10,11 +10,13 @@ import kotlin.math.roundToInt
 
 @Immutable
 public data class MuscleLoadSummaryState(
+    val meta: MuscleLoadMetaState,
     val perGroup: MuscleLoadBreakdownState,
     val perMuscle: MuscleLoadBreakdownState,
     val volumePerGroup: MuscleLoadBreakdownState,
     val volumePerMuscle: MuscleLoadBreakdownState,
     val dominance: MuscleLoadDominanceState,
+    val groupDominance: MuscleLoadDominanceState,
 ) {
     @Composable
     public fun tip(): String {
@@ -25,8 +27,8 @@ public data class MuscleLoadSummaryState(
             return "Log a workout to see your muscle load."
         }
 
-        val top1 = dominance.top1SharePercent.coerceIn(0f, 100f)
-        val top2 = dominance.top2SharePercent.coerceIn(0f, 100f)
+        val top1 = groupDominance.top1SharePercent.coerceIn(0f, 100f)
+        val top2 = groupDominance.top2SharePercent.coerceIn(0f, 100f)
 
         val top1i = top1.roundToInt().coerceIn(0, 100)
         val top2i = top2.roundToInt().coerceIn(0, 100)
@@ -235,10 +237,27 @@ public data class MuscleLoadBreakdownState(
 )
 
 @Immutable
+public data class MuscleLoadMetaState(
+    val trainingsCount: Int,
+    val totalExercises: Int,
+    val totalSets: Int,
+    val totalRepetitions: Int,
+    val totalVolume: Float,
+    val dominantGroup: MuscleGroupEnumState?,
+)
+
+@Immutable
 public data class MuscleLoadEntryState(
     val group: MuscleGroupEnumState,
     val value: Float,
     val muscles: ImmutableList<MuscleEnumState>,
+    val hitTrainingsCount: Int = 0,
+    val primaryTrainingsCount: Int = 0,
+    val avgStimulusPerHitSession: Float = 0f,
+    val maxStimulusInOneSession: Float = 0f,
+    val avgVolumePerHitSession: Float = 0f,
+    val maxVolumeInOneSession: Float = 0f,
+    val topExampleIds: List<String> = emptyList(),
 )
 
 @Immutable
@@ -249,6 +268,14 @@ public data class MuscleLoadDominanceState(
 
 public fun stubMuscleLoadSummary(): MuscleLoadSummaryState {
     return MuscleLoadSummaryState(
+        meta = MuscleLoadMetaState(
+            trainingsCount = 24,
+            totalExercises = 188,
+            totalSets = 612,
+            totalRepetitions = 4680,
+            totalVolume = 54230f,
+            dominantGroup = MuscleGroupEnumState.CHEST_MUSCLES,
+        ),
         perGroup = MuscleLoadBreakdownState(
             entries = listOf(
                 MuscleLoadEntryState(
@@ -257,17 +284,38 @@ public fun stubMuscleLoadSummary(): MuscleLoadSummaryState {
                     muscles = persistentListOf(
                         MuscleEnumState.PECTORALIS_MAJOR_CLAVICULAR,
                         MuscleEnumState.PECTORALIS_MAJOR_STERNOCOSTAL
-                    )
+                    ),
+                    hitTrainingsCount = 12,
+                    primaryTrainingsCount = 8,
+                    avgStimulusPerHitSession = 18.5f,
+                    maxStimulusInOneSession = 42.3f,
+                    avgVolumePerHitSession = 920f,
+                    maxVolumeInOneSession = 1580f,
+                    topExampleIds = listOf("bench_press", "incline_bench_press"),
                 ),
                 MuscleLoadEntryState(
                     group = MuscleGroupEnumState.BACK_MUSCLES,
                     value = 27f,
-                    muscles = persistentListOf(MuscleEnumState.LATISSIMUS_DORSI)
+                    muscles = persistentListOf(MuscleEnumState.LATISSIMUS_DORSI),
+                    hitTrainingsCount = 10,
+                    primaryTrainingsCount = 6,
+                    avgStimulusPerHitSession = 14.2f,
+                    maxStimulusInOneSession = 33.4f,
+                    avgVolumePerHitSession = 860f,
+                    maxVolumeInOneSession = 1320f,
+                    topExampleIds = listOf("pull_up"),
                 ),
                 MuscleLoadEntryState(
                     group = MuscleGroupEnumState.ARMS_AND_FOREARMS,
                     value = 18f,
-                    muscles = persistentListOf(MuscleEnumState.BICEPS, MuscleEnumState.TRICEPS)
+                    muscles = persistentListOf(MuscleEnumState.BICEPS, MuscleEnumState.TRICEPS),
+                    hitTrainingsCount = 9,
+                    primaryTrainingsCount = 3,
+                    avgStimulusPerHitSession = 10.1f,
+                    maxStimulusInOneSession = 22.0f,
+                    avgVolumePerHitSession = 540f,
+                    maxVolumeInOneSession = 900f,
+                    topExampleIds = listOf("cable_curl"),
                 ),
                 MuscleLoadEntryState(
                     group = MuscleGroupEnumState.LEGS,
@@ -275,7 +323,14 @@ public fun stubMuscleLoadSummary(): MuscleLoadSummaryState {
                     muscles = persistentListOf(
                         MuscleEnumState.QUADRICEPS,
                         MuscleEnumState.HAMSTRINGS
-                    )
+                    ),
+                    hitTrainingsCount = 7,
+                    primaryTrainingsCount = 2,
+                    avgStimulusPerHitSession = 9.5f,
+                    maxStimulusInOneSession = 19.8f,
+                    avgVolumePerHitSession = 1100f,
+                    maxVolumeInOneSession = 1750f,
+                    topExampleIds = listOf("squat"),
                 )
             )
         ),
@@ -284,22 +339,50 @@ public fun stubMuscleLoadSummary(): MuscleLoadSummaryState {
                 MuscleLoadEntryState(
                     group = MuscleGroupEnumState.CHEST_MUSCLES,
                     value = 52f,
-                    muscles = persistentListOf(MuscleEnumState.PECTORALIS_MAJOR_CLAVICULAR)
+                    muscles = persistentListOf(MuscleEnumState.PECTORALIS_MAJOR_CLAVICULAR),
+                    hitTrainingsCount = 12,
+                    primaryTrainingsCount = 8,
+                    avgStimulusPerHitSession = 20.2f,
+                    maxStimulusInOneSession = 44.1f,
+                    avgVolumePerHitSession = 510f,
+                    maxVolumeInOneSession = 780f,
+                    topExampleIds = listOf("incline_bench_press"),
                 ),
                 MuscleLoadEntryState(
                     group = MuscleGroupEnumState.BACK_MUSCLES,
                     value = 34f,
-                    muscles = persistentListOf(MuscleEnumState.LATISSIMUS_DORSI)
+                    muscles = persistentListOf(MuscleEnumState.LATISSIMUS_DORSI),
+                    hitTrainingsCount = 10,
+                    primaryTrainingsCount = 6,
+                    avgStimulusPerHitSession = 15.9f,
+                    maxStimulusInOneSession = 31.7f,
+                    avgVolumePerHitSession = 480f,
+                    maxVolumeInOneSession = 720f,
+                    topExampleIds = listOf("pull_up"),
                 ),
                 MuscleLoadEntryState(
                     group = MuscleGroupEnumState.ARMS_AND_FOREARMS,
                     value = 21f,
-                    muscles = persistentListOf(MuscleEnumState.BICEPS)
+                    muscles = persistentListOf(MuscleEnumState.BICEPS),
+                    hitTrainingsCount = 9,
+                    primaryTrainingsCount = 4,
+                    avgStimulusPerHitSession = 12.0f,
+                    maxStimulusInOneSession = 22.5f,
+                    avgVolumePerHitSession = 260f,
+                    maxVolumeInOneSession = 410f,
+                    topExampleIds = listOf("cable_curl"),
                 ),
                 MuscleLoadEntryState(
                     group = MuscleGroupEnumState.LEGS,
                     value = 18f,
-                    muscles = persistentListOf(MuscleEnumState.QUADRICEPS)
+                    muscles = persistentListOf(MuscleEnumState.QUADRICEPS),
+                    hitTrainingsCount = 7,
+                    primaryTrainingsCount = 2,
+                    avgStimulusPerHitSession = 11.2f,
+                    maxStimulusInOneSession = 19.4f,
+                    avgVolumePerHitSession = 610f,
+                    maxVolumeInOneSession = 980f,
+                    topExampleIds = listOf("squat"),
                 ),
             )
         ),
@@ -308,6 +391,10 @@ public fun stubMuscleLoadSummary(): MuscleLoadSummaryState {
         dominance = MuscleLoadDominanceState(
             top1SharePercent = 52f,
             top2SharePercent = 74f,
+        ),
+        groupDominance = MuscleLoadDominanceState(
+            top1SharePercent = 42f,
+            top2SharePercent = 69f,
         ),
     )
 }
