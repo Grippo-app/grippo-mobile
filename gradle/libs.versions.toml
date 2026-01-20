@@ -3,7 +3,7 @@ agp = "9.0.0-rc01"
 kotlin = "2.3.0"
 coroutines = "1.10.2"
 serialization = "1.9.0"
-compose-plugin = "1.9.3"
+compose-plugin = "1.10.0"
 activity-compose = "1.12.2"
 datetime = "0.7.1-0.6.x-compat"
 koin = "4.1.1"
@@ -17,11 +17,10 @@ immutable-collections = "0.4.0"
 sqlite = "2.6.2"
 appcompat = "1.7.1"
 coil = "3.3.0"
-koog = "0.5.0" # resoure packaging error 0.5.1
 core-splashscreen = "1.2.0"
 google-identity = "1.1.1"
 credentials = "1.5.0"
-firebase-bom = "34.7.0"
+firebase-bom = "34.8.0"
 google-services-plugin = "4.4.4"
 firebase-crashlytics-plugin = "3.0.6"
 
@@ -51,10 +50,6 @@ ksp-plugin-api = { module = "com.google.devtools.ksp:symbol-processing-gradle-pl
 android-firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 android-firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 android-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
-
-#Koog
-koog-agent = { module = "ai.koog:koog-agents", version.ref = "koog" }
-google-client = { module = "ai.koog:prompt-executor-google-client", version.ref = "koog" }
 
 #Decompose
 decompose-core = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }

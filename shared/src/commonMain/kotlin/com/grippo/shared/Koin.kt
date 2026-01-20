@@ -10,13 +10,12 @@ import com.grippo.data.features.excluded.muscles.ExcludedMusclesFeatureModule
 import com.grippo.data.features.exercise.examples.ExerciseExamplesFeatureModule
 import com.grippo.data.features.exercise.metrics.ExerciseMetricsFeatureModule
 import com.grippo.data.features.muscle.MusclesFeatureModule
-import com.grippo.data.features.suggestions.AiSuggestionsFeatureModule
 import com.grippo.data.features.trainings.TrainingsFeatureModule
 import com.grippo.data.features.user.UserFeatureModule
 import com.grippo.data.features.weight.history.WeightHistoryFeatureModule
 import com.grippo.design.resources.provider.impl.ResourcesProviderModule
 import com.grippo.dialog.api.DialogModule
-import com.grippo.services.ai.agent.AiAgentModule
+import com.grippo.services.backend.BackendModule
 import com.grippo.services.database.DatabaseModule
 import com.grippo.services.google.auth.GoogleAuthModule
 import com.grippo.toolkit.connectivity.ConnectivityModule
@@ -37,7 +36,7 @@ public object Koin {
         modules(
             ContextModule().module,
             DatabaseModule().module,
-            _root_ide_package_.com.grippo.services.backend.BackendModule().module,
+            BackendModule().module,
             GoogleAuthModule().module,
             CoreModule().module,
             DialogModule().module,
@@ -54,11 +53,9 @@ public object Koin {
             FeatureApiModule().module,
             ConnectivityModule().module,
             ResourcesProviderModule().module,
-            AiSuggestionsFeatureModule().module,
             SerializationModule().module,
             ExerciseMetricsFeatureModule().module,
             HttpModule().module,
-            AiAgentModule().module,
             ImageLoaderModule().module,
         )
     }

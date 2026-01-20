@@ -14,19 +14,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
 import com.grippo.design.components.cards.selectable.CheckSelectableCard
+import com.grippo.design.components.cards.selectable.CheckSelectableCardStyle
 import com.grippo.design.components.inputs.InputSearch
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.exercise.example.picker.ExerciseExamplePickerContract
-import com.grippo.exercise.example.picker.ManualQueries
+import com.grippo.exercise.example.picker.Queries
 
 @Composable
-internal fun ManualHeader(
+internal fun Header(
     modifier: Modifier = Modifier,
-    value: ManualQueries,
+    value: Queries,
     contract: ExerciseExamplePickerContract,
 ) {
     Column(modifier = modifier) {
@@ -78,10 +78,10 @@ internal fun ManualHeader(
 
 @Composable
 @AppPreview
-private fun ManualHeaderPreview() {
+private fun HeaderPreview() {
     PreviewContainer {
-        ManualHeader(
-            value = ManualQueries(
+        Header(
+            value = Queries(
                 name = "Bench",
                 selectedMuscleGroupId = null,
             ),

@@ -2,7 +2,6 @@ package com.grippo.exercise.example.picker
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.filters.FilterValueState
-import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.exercise.example.UserExerciseExamplesUseCase
 import com.grippo.data.features.api.exercise.example.models.ExamplePage
 import com.grippo.data.features.api.exercise.example.models.ExampleParams
@@ -10,7 +9,6 @@ import com.grippo.data.features.api.exercise.example.models.ExampleQueries
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
-import com.grippo.data.features.api.suggestion.AiSuggestionFeature
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
@@ -18,7 +16,6 @@ import com.grippo.domain.state.muscles.toState
 import com.grippo.state.domain.example.toDomain
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -27,11 +24,9 @@ public class ExerciseExamplePickerViewModel(
     targetMuscleGroupId: String?,
     userExerciseExamplesUseCase: UserExerciseExamplesUseCase,
     muscleFeature: MuscleFeature,
-    private val exampleFeature: ExerciseExampleFeature,
-    private val aiSuggestionFeature: AiSuggestionFeature,
     private val dialogController: DialogController,
 ) : BaseViewModel<ExerciseExamplePickerState, ExerciseExamplePickerDirection, ExerciseExamplePickerLoader>(
-    ExerciseExamplePickerState(manual = ManualQueries(selectedMuscleGroupId = targetMuscleGroupId))
+    ExerciseExamplePickerState(queries = Queries(selectedMuscleGroupId = targetMuscleGroupId))
 ), ExerciseExamplePickerContract {
 
     init {
@@ -41,28 +36,26 @@ public class ExerciseExamplePickerViewModel(
 
         state
             .map { current ->
-                val manual = current.manual
-                val suggestion = current.suggestion
+                val manual = current.queries
 
                 val manualFilters = manual.filters
-                val isManual = suggestion == null
 
                 ExampleParams(
                     queries = ExampleQueries(
-                        name = suggestion?.name ?: manual.name.trim(),
-                        weightType = if (isManual) manualFilters
+                        name = manual.name.trim(),
+                        weightType = manualFilters
                             .filterIsInstance<FilterValueState.WeightType>()
                             .firstOrNull()
-                            ?.value?.toDomain() else null,
-                        forceType = if (isManual) manualFilters
+                            ?.value?.toDomain(),
+                        forceType = manualFilters
                             .filterIsInstance<FilterValueState.ForceType>()
                             .firstOrNull()
-                            ?.value?.toDomain() else null,
-                        category = if (isManual) manualFilters
+                            ?.value?.toDomain(),
+                        category = manualFilters
                             .filterIsInstance<FilterValueState.Category>()
                             .firstOrNull()
-                            ?.value?.toDomain() else null,
-                        muscleGroupId = if (isManual) manual.selectedMuscleGroupId else null
+                            ?.value?.toDomain(),
+                        muscleGroupId = manual.selectedMuscleGroupId
                     ),
                     page = ExamplePage(
                         limits = current.pagination.limit,
@@ -78,7 +71,7 @@ public class ExerciseExamplePickerViewModel(
 
     private fun provideMuscles(list: List<MuscleGroup>) {
         val suggestions = list.toState()
-        update { it.copy(manual = it.manual.copy(muscleGroups = suggestions)) }
+        update { it.copy(queries = it.queries.copy(muscleGroups = suggestions)) }
     }
 
     private fun provideExerciseExamples(value: List<ExerciseExample>) {
@@ -111,20 +104,18 @@ public class ExerciseExamplePickerViewModel(
     override fun onQueryChange(value: String) {
         updateWithPaginationReset {
             it.copy(
-                manual = it.manual.copy(name = value),
-                suggestion = null
+                queries = it.queries.copy(name = value),
             )
         }
     }
 
     override fun onFiltersClick() {
         val dialog = DialogConfig.FilterPicker(
-            initial = state.value.manual.filters,
+            initial = state.value.queries.filters,
             onResult = { value ->
                 updateWithPaginationReset {
                     it.copy(
-                        manual = it.manual.copy(filters = value.toPersistentList()),
-                        suggestion = null
+                        queries = it.queries.copy(filters = value.toPersistentList()),
                     )
                 }
             }
@@ -133,39 +124,12 @@ public class ExerciseExamplePickerViewModel(
         dialogController.show(dialog)
     }
 
-    override fun onClearSuggestion() {
-        updateWithPaginationReset { it.copy(suggestion = null) }
-    }
-
     override fun onMuscleGroupClick(id: String) {
         updateWithPaginationReset {
-            val value = if (it.manual.selectedMuscleGroupId == id) null else id
+            val value = if (it.queries.selectedMuscleGroupId == id) null else id
             it.copy(
-                manual = it.manual.copy(selectedMuscleGroupId = value),
-                suggestion = null
+                queries = it.queries.copy(selectedMuscleGroupId = value),
             )
-        }
-    }
-
-    override fun onSuggestClick() {
-        safeLaunch(loader = ExerciseExamplePickerLoader.SuggestExample) {
-            val result = aiSuggestionFeature
-                .predictExerciseExample()
-                .getOrThrow() ?: return@safeLaunch
-
-            val name = exampleFeature
-                .observeExerciseExample(result.id)
-                .firstOrNull()?.value?.name ?: return@safeLaunch
-
-            updateWithPaginationReset {
-                it.copy(
-                    suggestion = AiSuggestionQueries(
-                        id = result.id,
-                        name = name,
-                        reason = result.reason
-                    )
-                )
-            }
         }
     }
 

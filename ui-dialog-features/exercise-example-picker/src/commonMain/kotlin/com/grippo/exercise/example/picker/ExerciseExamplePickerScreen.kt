@@ -37,8 +37,7 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.select_exercise
-import com.grippo.exercise.example.picker.internal.AiSuggestionHeader
-import com.grippo.exercise.example.picker.internal.ManualHeader
+import com.grippo.exercise.example.picker.internal.Header
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -68,29 +67,11 @@ internal fun ExerciseExamplePickerScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        AnimatedContent(
+        Header(
             modifier = Modifier.fillMaxWidth(),
-            transitionSpec = {
-                (fadeIn(animationSpec = tween(220, delayMillis = 90)))
-                    .togetherWith(fadeOut(animationSpec = tween(90)))
-            },
-            targetState = state.suggestion,
-        ) { suggestion ->
-
-            when (suggestion) {
-                null -> ManualHeader(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = state.manual,
-                    contract = contract,
-                )
-
-                else -> AiSuggestionHeader(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = suggestion,
-                    contract = contract
-                )
-            }
-        }
+            value = state.queries,
+            contract = contract,
+        )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
@@ -181,7 +162,7 @@ internal fun ExerciseExamplePickerScreen(
 
 @AppPreview
 @Composable
-private fun ScreeManualPreview() {
+private fun ScreenPreview() {
     PreviewContainer {
         ExerciseExamplePickerScreen(
             state = ExerciseExamplePickerState(
@@ -189,28 +170,6 @@ private fun ScreeManualPreview() {
                     stubExerciseExample(),
                     stubExerciseExample()
                 ),
-            ),
-            loaders = persistentSetOf(),
-            contract = ExerciseExamplePickerContract.Empty
-        )
-    }
-}
-
-@AppPreview
-@Composable
-private fun ScreeSuggestionPreview() {
-    PreviewContainer {
-        ExerciseExamplePickerScreen(
-            state = ExerciseExamplePickerState(
-                exerciseExamples = persistentListOf(
-                    stubExerciseExample(),
-                    stubExerciseExample()
-                ),
-                suggestion = AiSuggestionQueries(
-                    id = stubExerciseExample().value.id,
-                    name = stubExerciseExample().value.name,
-                    reason = "For some reason to change something"
-                )
             ),
             loaders = persistentSetOf(),
             contract = ExerciseExamplePickerContract.Empty

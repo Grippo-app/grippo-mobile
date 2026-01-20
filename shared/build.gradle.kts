@@ -38,7 +38,6 @@ kotlin {
 
         implementation(projects.dataServices.database)
         implementation(projects.dataServices.backend)
-        implementation(projects.dataServices.aiAgent)
         implementation(projects.dataServices.googleAuth)
         api(projects.dataServices.firebase)
 
@@ -52,7 +51,6 @@ kotlin {
         implementation(projects.dataFeatures.excludedEquipments)
         implementation(projects.dataFeatures.trainings)
         implementation(projects.dataFeatures.exerciseExamples)
-        implementation(projects.dataFeatures.aiSuggestions)
         implementation(projects.dataFeatures.exerciseMetrics)
 
         implementation(projects.dataMappers.domainToState)

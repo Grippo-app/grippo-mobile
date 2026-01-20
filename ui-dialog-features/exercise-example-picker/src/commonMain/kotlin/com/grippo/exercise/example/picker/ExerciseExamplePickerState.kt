@@ -13,25 +13,15 @@ import kotlinx.collections.immutable.persistentListOf
 public data class ExerciseExamplePickerState(
     val exerciseExamples: ImmutableList<ExerciseExampleState> = persistentListOf(),
     val pagination: PaginationState = PaginationState.Next(),
-
-    // Keep both sub-states in one state holder
-    val manual: ManualQueries = ManualQueries(),
-    val suggestion: AiSuggestionQueries? = null,
+    val queries: Queries = Queries(),
 )
 
 @Immutable
-public data class ManualQueries(
+public data class Queries(
     val name: String = "",
     val selectedMuscleGroupId: String? = null,
     val filters: ImmutableList<FilterValueState> = ExerciseExampleState.filters,
     val muscleGroups: ImmutableList<MuscleGroupState<MuscleRepresentationState.Plain>> = persistentListOf(),
-)
-
-@Immutable
-public data class AiSuggestionQueries(
-    val id: String,
-    val name: String,
-    val reason: String,
 )
 
 @Immutable
