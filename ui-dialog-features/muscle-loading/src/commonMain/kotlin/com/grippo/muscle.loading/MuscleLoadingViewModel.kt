@@ -20,7 +20,7 @@ public class MuscleLoadingViewModel(
         trainingFeature
             .observeTrainings(range.from, range.to)
             .onEach(::provideMuscleLoad)
-            .safeLaunch(loader = MuscleLoadingLoader.Content)
+            .safeLaunch()
     }
 
     override fun onBack() {

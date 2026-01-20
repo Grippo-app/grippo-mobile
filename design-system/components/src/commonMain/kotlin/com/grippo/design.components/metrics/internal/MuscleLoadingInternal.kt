@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -11,12 +12,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.grippo.core.state.metrics.MuscleLoadEntryState
+import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.design.components.indicators.LineIndicator
 import com.grippo.design.core.AppTokens
+import com.grippo.design.preview.AppPreview
+import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.AppColor
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.muscle_load_trainings_count
 import com.grippo.design.resources.provider.percent
 import kotlin.math.roundToInt
+
+@Immutable
+public enum class MuscleLoadingItemStyle {
+    Expanded,
+    Collapsed
+}
 
 @Composable
 internal fun MuscleLoadingItem(
@@ -25,6 +36,7 @@ internal fun MuscleLoadingItem(
     label: String,
     modifier: Modifier = Modifier,
     dominant: Boolean = false,
+    style: MuscleLoadingItemStyle
 ) {
     val progress = (entry.value / 100f).coerceIn(0f, 1f)
 
@@ -80,6 +92,30 @@ internal fun MuscleLoadingItem(
             progress = progress,
             colors = indicatorColors
         )
+
+        if (style == MuscleLoadingItemStyle.Expanded) {
+            val trainingsCount = entry.hitTrainingsCount.coerceAtLeast(0)
+
+            val trainingsText = AppTokens.strings.res(
+                Res.string.muscle_load_trainings_count,
+                trainingsCount
+            )
+
+            if (trainingsText.isNotBlank()) {
+                Row(
+                    modifier = Modifier.wrapContentWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = trainingsText,
+                        style = AppTokens.typography.b12Med(),
+                        color = AppTokens.colors.text.tertiary,
+                        maxLines = 1
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -131,3 +167,29 @@ internal data class ColoredEntry(
     val entry: MuscleLoadEntryState,
     val color: Color,
 )
+
+@AppPreview
+@Composable
+private fun MuscleLoadingItemPreview() {
+    PreviewContainer {
+        val summary = stubMuscleLoadSummary()
+        val entry = summary.perGroup.entries.first()
+        val color = AppTokens.colors.muscle.palette6MuscleCalm.last()
+
+        MuscleLoadingItem(
+            entry = entry,
+            color = color,
+            label = entry.group.title().text(),
+            dominant = true,
+            style = MuscleLoadingItemStyle.Expanded
+        )
+
+        MuscleLoadingItem(
+            entry = entry,
+            color = color,
+            label = entry.group.title().text(),
+            dominant = true,
+            style = MuscleLoadingItemStyle.Collapsed
+        )
+    }
+}

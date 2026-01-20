@@ -227,6 +227,17 @@
     <string name="value_statistics">%1$s — статистика</string>
     <string name="value_muscle_loading">%1$s — м’язове навантаження</string>
     <string name="muscle_loading">М’язове навантаження</string>
+    <string name="muscle_load_balance">Баланс</string>
+    <string name="muscle_load_balance_score">%1$d/100</string>
+    <string name="muscle_load_balance_score_label">оцінка</string>
+    <string name="muscle_load_balance_status_balanced">рівномірно</string>
+    <string name="muscle_load_balance_status_moderate">помірний перекіс</string>
+    <string name="muscle_load_balance_status_strong">сильний перекіс</string>
+    <string name="muscle_load_balance_description">Показує, наскільки рівномірно розподілялось навантаження. 100 — ідеальний баланс, 0 — перекіс в одну групу.</string>
+    <string name="muscle_load_bias">Перекіс: %1$s +%2$d%</string>
+    <string name="muscle_load_gap">Прогалина: %1$s %2$s</string>
+    <string name="muscle_load_trainings_count">%1$d тренувань</string>
+    <string name="muscle_load_no_data">Немає даних.</string>
     <string name="value_training_streak">%1$s — серія тренувань</string>
     <string name="training_streak">Серія тренувань</string>
     <string name="value_performance_trend">%1$s — тренд %2$s</string>

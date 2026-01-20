@@ -236,7 +236,7 @@ public data object AppDp {
     }
 
     public data object Tip {
-        val radius: Dp = AppDp.radius.small
+        val radius: Dp = AppDp.radius.medium
         val horizontalPadding: Dp = padding.small
         val verticalPadding: Dp = padding.small
         val image: Dp = icon.large

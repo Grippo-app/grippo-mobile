@@ -2,7 +2,6 @@ package com.grippo.design.components.tip
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -15,8 +14,6 @@ import androidx.compose.ui.Modifier
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
-import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.advice
 import com.grippo.design.resources.provider.icons.Warning
 
 @Composable
@@ -43,23 +40,11 @@ public fun TipCard(
             tint = AppTokens.colors.semantic.success,
             contentDescription = null
         )
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
-        ) {
-
-            Text(
-                text = AppTokens.strings.res(Res.string.advice),
-                style = AppTokens.typography.b12Med(),
-                color = AppTokens.colors.semantic.success,
-            )
-
-            Text(
-                text = value,
-                style = AppTokens.typography.b13Semi(),
-                color = AppTokens.colors.text.primary,
-            )
-        }
+        Text(
+            text = value,
+            style = AppTokens.typography.b13Semi(),
+            color = AppTokens.colors.text.primary,
+        )
     }
 }
 

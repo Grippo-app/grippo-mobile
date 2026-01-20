@@ -40,7 +40,8 @@ public fun MuscleLoadingCard(
 
         MuscleLoading(
             summary = clippedData,
-            mode = MuscleLoadingMode.PerGroup
+            mode = MuscleLoadingMode.PerGroup,
+            style = MuscleLoadingStyle.Collapsed
         )
     }
 }

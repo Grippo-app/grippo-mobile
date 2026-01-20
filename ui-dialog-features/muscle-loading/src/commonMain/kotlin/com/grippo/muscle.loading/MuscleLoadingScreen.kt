@@ -1,9 +1,11 @@
 package com.grippo.muscle.loading
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -15,12 +17,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.metrics.MuscleLoadSummaryState
 import com.grippo.core.state.metrics.stubMuscleLoadSummary
-import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.MuscleLoading
+import com.grippo.design.components.metrics.MuscleLoadingBalanceCard
 import com.grippo.design.components.metrics.MuscleLoadingImagesMode
 import com.grippo.design.components.metrics.MuscleLoadingImagesRow
 import com.grippo.design.components.metrics.MuscleLoadingMode
+import com.grippo.design.components.metrics.MuscleLoadingStyle
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.segment.SegmentWidth
@@ -85,64 +89,89 @@ internal fun MuscleLoadingScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-    if (loaders.contains(MuscleLoadingLoader.Content)) {
-        Loader(modifier = Modifier.fillMaxWidth().weight(1f))
-    } else {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            contentPadding = PaddingValues(
-                start = AppTokens.dp.dialog.horizontalPadding,
-                end = AppTokens.dp.dialog.horizontalPadding,
-                top = AppTokens.dp.contentPadding.content,
-            ),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block)
-        ) {
-            state.summary?.let { summary ->
-                item(key = "images") {
-                    val mode = remember(state.mode) {
-                        when (state.mode) {
-                            MuscleLoadingShowingMode.PerGroup -> MuscleLoadingImagesMode.PerGroup
-                            MuscleLoadingShowingMode.PerMuscle -> MuscleLoadingImagesMode.PerMuscle
-                        }
-                    }
-
-                    MuscleLoadingImagesRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        summary = summary,
-                        mode = mode
-                    )
-                }
-
-                item(key = "summary") {
-                    val mode = remember(state.mode) {
-                        when (state.mode) {
-                            MuscleLoadingShowingMode.PerGroup -> MuscleLoadingMode.PerGroup
-                            MuscleLoadingShowingMode.PerMuscle -> MuscleLoadingMode.PerMuscle
-                        }
-                    }
-
-                    MuscleLoading(
-                        modifier = Modifier.fillMaxWidth(),
-                        summary = summary,
-                        mode = mode
-                    )
-                }
-                item(key = "tip") {
-                    TipCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = summary.tip()
-                    )
-                }
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f),
+        contentPadding = PaddingValues(
+            start = AppTokens.dp.dialog.horizontalPadding,
+            end = AppTokens.dp.dialog.horizontalPadding,
+            top = AppTokens.dp.contentPadding.content,
+        ),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+    ) {
+        state.summary?.let { summary ->
+            item(key = "summary") {
+                MuscleLoadingBalanceCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    summary = summary
+                )
             }
 
-            item("bottom_space") {
-                Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+            item(key = "overview") {
+                MuscleLoadOverviewCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    summary = summary,
+                    mode = state.mode
+                )
+            }
 
-                Spacer(modifier = Modifier.navigationBarsPadding())
+            item(key = "tip") {
+                TipCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = summary.tip()
+                )
             }
         }
+
+        item("bottom_space") {
+            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+
+            Spacer(modifier = Modifier.navigationBarsPadding())
+        }
+    }
+}
+
+@Composable
+private fun MuscleLoadOverviewCard(
+    summary: MuscleLoadSummaryState,
+    mode: MuscleLoadingShowingMode,
+    modifier: Modifier = Modifier,
+) {
+    val imagesMode = remember(mode) {
+        when (mode) {
+            MuscleLoadingShowingMode.PerGroup -> MuscleLoadingImagesMode.PerGroup
+            MuscleLoadingShowingMode.PerMuscle -> MuscleLoadingImagesMode.PerMuscle
+        }
+    }
+
+    val listMode = remember(mode) {
+        when (mode) {
+            MuscleLoadingShowingMode.PerGroup -> MuscleLoadingMode.PerGroup
+            MuscleLoadingShowingMode.PerMuscle -> MuscleLoadingMode.PerMuscle
+        }
+    }
+
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+    ) {
+        Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
+
+        MuscleLoadingImagesRow(
+            modifier = Modifier.fillMaxWidth(),
+            summary = summary,
+            mode = imagesMode
+        )
+
+        MuscleLoading(
+            modifier = Modifier.fillMaxWidth(),
+            summary = summary,
+            mode = listMode,
+            style = MuscleLoadingStyle.Expanded
+        )
+
+        Spacer(Modifier.height(AppTokens.dp.contentPadding.content))
     }
 }
 

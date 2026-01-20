@@ -94,10 +94,9 @@ public fun TrainingSummaryCard(
         MuscleLoading(
             modifier = Modifier.fillMaxWidth(),
             summary = summary,
-            mode = MuscleLoadingMode.PerGroup
+            mode = MuscleLoadingMode.PerGroup,
+            style = MuscleLoadingStyle.Collapsed
         )
-
-
     }
 }
 

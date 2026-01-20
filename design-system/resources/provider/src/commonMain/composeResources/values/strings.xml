@@ -228,6 +228,17 @@
     <string name="value_statistics">%1$s statistics</string>
     <string name="value_muscle_loading">%1$s muscle loading</string>
     <string name="muscle_loading">Muscle loading</string>
+    <string name="muscle_load_balance">Balance</string>
+    <string name="muscle_load_balance_score">%1$d/100</string>
+    <string name="muscle_load_balance_score_label">score</string>
+    <string name="muscle_load_balance_status_balanced">balanced load</string>
+    <string name="muscle_load_balance_status_moderate">moderate bias</string>
+    <string name="muscle_load_balance_status_strong">strong bias</string>
+    <string name="muscle_load_balance_description">Shows how evenly your muscles were trained. 100 = ideal balance, 0 = single-group bias.</string>
+    <string name="muscle_load_bias">Bias: %1$s +%2$d%</string>
+    <string name="muscle_load_gap">Gap: %1$s %2$s</string>
+    <string name="muscle_load_trainings_count">%1$d trainings</string>
+    <string name="muscle_load_no_data">No data yet.</string>
     <string name="value_training_streak">%1$s training streak</string>
     <string name="training_streak">Training streak</string>
     <string name="value_performance_trend">%1$s — %2$s trend</string>

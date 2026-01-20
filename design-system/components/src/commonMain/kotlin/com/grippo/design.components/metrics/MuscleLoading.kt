@@ -18,11 +18,18 @@ public enum class MuscleLoadingMode {
     PerMuscle,
 }
 
+@Immutable
+public enum class MuscleLoadingStyle {
+    Expanded,
+    Collapsed,
+}
+
 @Composable
 public fun MuscleLoading(
     summary: MuscleLoadSummaryState,
     modifier: Modifier = Modifier,
     mode: MuscleLoadingMode,
+    style: MuscleLoadingStyle
 ) {
     AnimatedContent(
         modifier = modifier,
@@ -32,11 +39,13 @@ public fun MuscleLoading(
             MuscleLoadingMode.PerGroup -> MuscleLoadingPerGroup(
                 modifier = Modifier.fillMaxWidth(),
                 summary = summary,
+                style = style
             )
 
             MuscleLoadingMode.PerMuscle -> MuscleLoadingPerMuscle(
                 modifier = Modifier.fillMaxWidth(),
                 summary = summary,
+                style = style
             )
         }
     }
@@ -49,6 +58,12 @@ private fun MuscleLoadingCollapsedPreview() {
         MuscleLoading(
             summary = stubMuscleLoadSummary(),
             mode = MuscleLoadingMode.PerGroup,
+            style = MuscleLoadingStyle.Collapsed
+        )
+        MuscleLoading(
+            summary = stubMuscleLoadSummary(),
+            mode = MuscleLoadingMode.PerGroup,
+            style = MuscleLoadingStyle.Expanded
         )
     }
 }
@@ -60,6 +75,12 @@ private fun MuscleLoadingExpandedPreview() {
         MuscleLoading(
             summary = stubMuscleLoadSummary(),
             mode = MuscleLoadingMode.PerMuscle,
+            style = MuscleLoadingStyle.Collapsed
+        )
+        MuscleLoading(
+            summary = stubMuscleLoadSummary(),
+            mode = MuscleLoadingMode.PerMuscle,
+            style = MuscleLoadingStyle.Expanded
         )
     }
 }

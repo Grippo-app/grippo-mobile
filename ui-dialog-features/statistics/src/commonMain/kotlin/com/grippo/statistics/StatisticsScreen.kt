@@ -27,6 +27,7 @@ import com.grippo.design.components.metrics.ExerciseDistributionChart
 import com.grippo.design.components.metrics.ForceTypeDistributionChart
 import com.grippo.design.components.metrics.MuscleLoading
 import com.grippo.design.components.metrics.MuscleLoadingMode
+import com.grippo.design.components.metrics.MuscleLoadingStyle
 import com.grippo.design.components.metrics.TrainingTotalSection
 import com.grippo.design.components.metrics.VolumeMetricChart
 import com.grippo.design.components.metrics.WeightTypeDistributionChart
@@ -174,7 +175,11 @@ internal fun StatisticsScreen(
                             MuscleLoading(
                                 modifier = Modifier.fillMaxWidth(),
                                 summary = summary,
-                                mode = MuscleLoadingMode.PerGroup
+                                mode = MuscleLoadingMode.PerGroup,
+                                style = when (state.mode) {
+                                    StatisticsMode.Exercises -> MuscleLoadingStyle.Collapsed
+                                    is StatisticsMode.Trainings -> MuscleLoadingStyle.Expanded
+                                }
                             )
                         }
                     }
