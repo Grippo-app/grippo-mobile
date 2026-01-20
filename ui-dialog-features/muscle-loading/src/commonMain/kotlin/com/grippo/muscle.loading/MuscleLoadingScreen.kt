@@ -28,7 +28,6 @@ import com.grippo.design.components.metrics.muscle.loading.MuscleLoadingStyle
 import com.grippo.design.components.segment.Segment
 import com.grippo.design.components.segment.SegmentStyle
 import com.grippo.design.components.segment.SegmentWidth
-import com.grippo.design.components.tip.TipCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
@@ -113,13 +112,6 @@ internal fun MuscleLoadingScreen(
                     modifier = Modifier.fillMaxWidth(),
                     summary = summary,
                     mode = state.mode
-                )
-            }
-
-            item(key = "tip") {
-                TipCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = summary.tip()
                 )
             }
         }

@@ -20,7 +20,7 @@ public class TrainingStreakViewModel(
         trainingFeature
             .observeTrainings(range.from, range.to)
             .onEach(::provideTrainingStreak)
-            .safeLaunch(loader = TrainingStreakLoader.Content)
+            .safeLaunch()
     }
 
     override fun onBack() {

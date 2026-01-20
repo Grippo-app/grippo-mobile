@@ -20,7 +20,7 @@ public class TrainingProfileViewModel(
         trainingFeature
             .observeTrainings(range.from, range.to)
             .onEach(::provideTrainingProfile)
-            .safeLaunch(loader = TrainingProfileLoader.Content)
+            .safeLaunch()
     }
 
     override fun onBack() {

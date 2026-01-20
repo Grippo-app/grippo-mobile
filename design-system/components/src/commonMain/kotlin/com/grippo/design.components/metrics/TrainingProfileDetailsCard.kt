@@ -1,9 +1,12 @@
 package com.grippo.design.components.metrics
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,11 +23,18 @@ public fun TrainingLoadProfileDetailsCard(
     value: TrainingLoadProfileState,
 ) {
     Column(
-        modifier = modifier,
+        modifier = modifier
+            .background(
+                AppTokens.colors.background.card,
+                RoundedCornerShape(AppTokens.dp.metrics.trainingProfile.details.radius)
+            ).padding(
+                horizontal = AppTokens.dp.metrics.trainingProfile.details.horizontalPadding,
+                vertical = AppTokens.dp.metrics.trainingProfile.details.verticalPadding
+            ),
     ) {
         Text(
             text = value.title(),
-            style = AppTokens.typography.h4(),
+            style = AppTokens.typography.h6(),
             color = AppTokens.colors.text.primary,
         )
 
@@ -32,7 +42,7 @@ public fun TrainingLoadProfileDetailsCard(
 
         Text(
             text = value.subtitle(),
-            style = AppTokens.typography.b14Med(),
+            style = AppTokens.typography.b13Med(),
             color = AppTokens.colors.text.secondary,
         )
 

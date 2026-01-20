@@ -4,7 +4,4 @@ import androidx.compose.runtime.Immutable
 import com.grippo.core.foundation.models.BaseLoader
 
 @Immutable
-public sealed interface TrainingProfileLoader : BaseLoader {
-    @Immutable
-    public data object Content : TrainingProfileLoader
-}
+public sealed interface TrainingProfileLoader : BaseLoader

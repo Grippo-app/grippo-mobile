@@ -227,6 +227,13 @@ public data object AppDp {
 
         public data object TrainingProfile {
             val radar: Radar = Radar
+            val details: Details = Details
+
+            public data object Details {
+                val radius: Dp = AppDp.radius.medium
+                val horizontalPadding: Dp = padding.medium
+                val verticalPadding: Dp = padding.medium
+            }
 
             public data object Radar {
                 val small: Small = Small

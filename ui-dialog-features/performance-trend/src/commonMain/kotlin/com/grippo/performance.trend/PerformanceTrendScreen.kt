@@ -17,7 +17,6 @@ import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.metrics.PerformanceMetricTypeState
 import com.grippo.core.state.metrics.stubPerformanceTrendHistory
-import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.PerformanceMetricCard
 import com.grippo.design.components.metrics.PerformanceTrendHistoryCard
 import com.grippo.design.core.AppTokens
@@ -67,80 +66,76 @@ internal fun PerformanceTrendScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-    if (loaders.contains(PerformanceTrendLoader.Content)) {
-        Loader(modifier = Modifier.fillMaxWidth().weight(1f))
-    } else {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f, false),
-            contentPadding = PaddingValues(
-                start = AppTokens.dp.dialog.horizontalPadding,
-                end = AppTokens.dp.dialog.horizontalPadding,
-            ),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-        ) {
-            item(key = "info") {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f, false),
+        contentPadding = PaddingValues(
+            start = AppTokens.dp.dialog.horizontalPadding,
+            end = AppTokens.dp.dialog.horizontalPadding,
+        ),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+    ) {
+        item(key = "info") {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = state.metricType.description(),
+                style = AppTokens.typography.b14Med(),
+                color = AppTokens.colors.text.secondary,
+                textAlign = TextAlign.Center
+            )
+        }
+
+        item(key = "chart") {
+            PerformanceTrendHistoryCard(
+                modifier = Modifier.fillMaxWidth(),
+                history = state.history,
+            )
+        }
+
+        itemsIndexed(
+            items = state.history,
+            key = { index, _ -> "history_$index" }
+        ) { index, entry ->
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
+            ) {
+                val formattedDate = DateCompose.rememberFormat(
+                    entry.range.to,
+                    DateFormat.DateOnly.DateMmmDdYyyy
+                )
+
+                val style = if (index == 0) {
+                    AppTokens.typography.h5()
+                } else {
+                    AppTokens.typography.b13Med()
+                }
+
+                val color = if (index == 0) {
+                    AppTokens.colors.text.primary
+                } else {
+                    AppTokens.colors.text.secondary
+                }
+
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = state.metricType.description(),
-                    style = AppTokens.typography.b14Med(),
-                    color = AppTokens.colors.text.secondary,
-                    textAlign = TextAlign.Center
+                    text = formattedDate,
+                    style = style,
+                    color = color
+                )
+
+                PerformanceMetricCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    metric = entry.metric
                 )
             }
+        }
 
-            item(key = "chart") {
-                PerformanceTrendHistoryCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    history = state.history,
-                )
-            }
+        item("bottom_space") {
+            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
 
-            itemsIndexed(
-                items = state.history,
-                key = { index, _ -> "history_$index" }
-            ) { index, entry ->
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent)
-                ) {
-                    val formattedDate = DateCompose.rememberFormat(
-                        entry.range.to,
-                        DateFormat.DateOnly.DateMmmDdYyyy
-                    )
-
-                    val style = if (index == 0) {
-                        AppTokens.typography.h5()
-                    } else {
-                        AppTokens.typography.b13Med()
-                    }
-
-                    val color = if (index == 0) {
-                        AppTokens.colors.text.primary
-                    } else {
-                        AppTokens.colors.text.secondary
-                    }
-
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = formattedDate,
-                        style = style,
-                        color = color
-                    )
-
-                    PerformanceMetricCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        metric = entry.metric
-                    )
-                }
-            }
-
-            item("bottom_space") {
-                Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-
-                Spacer(modifier = Modifier.navigationBarsPadding())
-            }
+            Spacer(modifier = Modifier.navigationBarsPadding())
         }
     }
 }

@@ -38,7 +38,6 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.muscles
 import com.grippo.design.resources.provider.statistics
-import com.grippo.design.resources.provider.trends
 import com.grippo.design.resources.provider.value_statistics
 import com.grippo.toolkit.date.utils.DateRange
 import kotlinx.collections.immutable.ImmutableSet
@@ -121,12 +120,6 @@ internal fun StatisticsScreen(
                             )
                         }
                     }
-
-                item(key = "trends_spliter") {
-                    ContentSpliter(
-                        text = AppTokens.strings.res(Res.string.trends)
-                    )
-                }
 
                 item(key = "distribution") {
                     Row(

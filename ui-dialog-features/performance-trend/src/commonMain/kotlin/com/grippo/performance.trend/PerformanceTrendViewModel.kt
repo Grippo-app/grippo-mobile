@@ -33,7 +33,7 @@ public class PerformanceTrendViewModel(
         trainingFeature
             .observeTrainings(range.from, range.to)
             .onEach(::providePerformance)
-            .safeLaunch(loader = PerformanceTrendLoader.Content)
+            .safeLaunch()
     }
 
     private suspend fun providePerformance(trainings: List<Training>) {

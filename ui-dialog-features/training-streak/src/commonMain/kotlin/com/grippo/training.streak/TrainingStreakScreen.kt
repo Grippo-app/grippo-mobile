@@ -14,7 +14,6 @@ import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.metrics.stubTrainingStreaks
-import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.TrainingStreakCard
 import com.grippo.design.components.metrics.TrainingStreakInsightsCard
 import com.grippo.design.components.metrics.TrainingStreakTimelineCard
@@ -60,48 +59,44 @@ internal fun TrainingStreakScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-    if (loaders.contains(TrainingStreakLoader.Content)) {
-        Loader(modifier = Modifier.fillMaxWidth().weight(1f))
-    } else {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f, false),
-            contentPadding = PaddingValues(
-                start = AppTokens.dp.dialog.horizontalPadding,
-                end = AppTokens.dp.dialog.horizontalPadding,
-                top = AppTokens.dp.contentPadding.content,
-            ),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-        ) {
-            state.streak?.let { streak ->
-                item(key = "summary") {
-                    TrainingStreakCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = streak
-                    )
-                }
-
-                item(key = "insights") {
-                    TrainingStreakInsightsCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = streak
-                    )
-                }
-
-                item(key = "timeline") {
-                    TrainingStreakTimelineCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        entries = streak.timeline
-                    )
-                }
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f, false),
+        contentPadding = PaddingValues(
+            start = AppTokens.dp.dialog.horizontalPadding,
+            end = AppTokens.dp.dialog.horizontalPadding,
+            top = AppTokens.dp.contentPadding.content,
+        ),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+    ) {
+        state.streak?.let { streak ->
+            item(key = "summary") {
+                TrainingStreakCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = streak
+                )
             }
 
-            item("bottom_space") {
-                Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-
-                Spacer(modifier = Modifier.navigationBarsPadding())
+            item(key = "insights") {
+                TrainingStreakInsightsCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = streak
+                )
             }
+
+            item(key = "timeline") {
+                TrainingStreakTimelineCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    entries = streak.timeline
+                )
+            }
+        }
+
+        item("bottom_space") {
+            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+
+            Spacer(modifier = Modifier.navigationBarsPadding())
         }
     }
 }
