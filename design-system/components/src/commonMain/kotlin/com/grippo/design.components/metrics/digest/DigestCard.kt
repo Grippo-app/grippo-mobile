@@ -1,13 +1,13 @@
-package com.grippo.design.components.metrics
+package com.grippo.design.components.metrics.digest
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.grippo.core.state.metrics.DigestState
 import com.grippo.core.state.metrics.stubDigest
-import com.grippo.design.components.metrics.internal.DigestCardStyle
-import com.grippo.design.components.metrics.internal.DigestMetric
-import com.grippo.design.components.metrics.internal.DigestsSection
+import com.grippo.design.components.metrics.digest.internal.DigestCardStyle
+import com.grippo.design.components.metrics.digest.internal.DigestMetric
+import com.grippo.design.components.metrics.digest.internal.DigestsSection
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer

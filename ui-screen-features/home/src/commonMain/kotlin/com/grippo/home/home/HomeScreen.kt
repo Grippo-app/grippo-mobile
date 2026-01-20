@@ -37,14 +37,14 @@ import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.frames.BottomOverlayContainer
 import com.grippo.design.components.loading.Loader
-import com.grippo.design.components.metrics.DigestCard
 import com.grippo.design.components.metrics.ExerciseSpotlightsCard
 import com.grippo.design.components.metrics.HighlightsHeader
 import com.grippo.design.components.metrics.LastTrainingCard
 import com.grippo.design.components.metrics.PerformanceMetricCard
-import com.grippo.design.components.metrics.TrainingLoadProfileCard
-import com.grippo.design.components.metrics.TrainingStreakCard
+import com.grippo.design.components.metrics.digest.DigestCard
 import com.grippo.design.components.metrics.muscle.loading.MuscleLoadingCard
+import com.grippo.design.components.metrics.streak.TrainingStreakCard
+import com.grippo.design.components.metrics.training.profile.TrainingLoadProfileCard
 import com.grippo.design.components.modifiers.scalableClick
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle

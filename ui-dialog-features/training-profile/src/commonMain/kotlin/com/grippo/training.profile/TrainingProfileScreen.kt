@@ -15,9 +15,9 @@ import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.metrics.stubTrainingLoadProfile
-import com.grippo.design.components.metrics.TrainingLoadProfileDetailsCard
-import com.grippo.design.components.metrics.TrainingProfileRadar
-import com.grippo.design.components.metrics.TrainingProfileRadarStyle
+import com.grippo.design.components.metrics.training.profile.TrainingLoadProfileDetailsCard
+import com.grippo.design.components.metrics.training.profile.TrainingProfileRadar
+import com.grippo.design.components.metrics.training.profile.TrainingProfileRadarStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer

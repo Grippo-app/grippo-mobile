@@ -1,4 +1,4 @@
-package com.grippo.design.components.metrics.internal
+package com.grippo.design.components.metrics.digest.internal
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +23,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import com.grippo.design.components.metrics.internal.MetricSectionPanel
+import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer

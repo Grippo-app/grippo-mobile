@@ -1,4 +1,4 @@
-package com.grippo.design.components.metrics
+package com.grippo.design.components.metrics.streak
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
