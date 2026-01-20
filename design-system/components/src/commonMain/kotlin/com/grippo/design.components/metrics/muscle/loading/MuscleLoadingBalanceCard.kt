@@ -108,17 +108,18 @@ public fun MuscleLoadingBalanceCard(
                     verticalAlignment = Alignment.Bottom
                 ) {
                     Text(
-                        text = AppTokens.strings.res(Res.string.muscle_load_balance),
-                        style = AppTokens.typography.b14Med(),
-                        color = AppTokens.colors.text.secondary
-                    )
-                    Text(
                         text = AppTokens.strings.res(
                             Res.string.muscle_load_balance_score,
                             balanceScore
                         ),
                         style = AppTokens.typography.h4(),
                         color = AppTokens.colors.text.primary
+                    )
+
+                    Text(
+                        text = AppTokens.strings.res(Res.string.muscle_load_balance),
+                        style = AppTokens.typography.b14Med(),
+                        color = AppTokens.colors.text.secondary
                     )
                 }
 
