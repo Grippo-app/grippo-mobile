@@ -347,9 +347,10 @@
 			baseConfigurationReference = F0054F872EE5B3C300F40B1C /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = QT8H6F64Q8;
+				DEVELOPMENT_TEAM = 5NJAG8U639;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = iosApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -361,6 +362,8 @@
 					"$(inherited)",
 					"-lsqlite3",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.grippo.app;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SHARED_XCFRAMEWORK_CONFIGURATION = debug;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -372,9 +375,10 @@
 			baseConfigurationReference = F0054F872EE5B3C300F40B1C /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = QT8H6F64Q8;
+				DEVELOPMENT_TEAM = 5NJAG8U639;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = iosApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -387,6 +391,8 @@
 					"$(inherited)",
 					"-lsqlite3",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.grippo.app;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SHARED_XCFRAMEWORK_CONFIGURATION = release;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

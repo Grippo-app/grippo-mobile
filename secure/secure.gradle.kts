@@ -67,7 +67,7 @@ abstract class SyncSecureConfigs : DefaultTask() {
         requireProp(googleProps, Keys.androidClientId, propsFile)
         val gidServerClientId = webClientId
         val gidRedirectUri = buildGidRedirectUri(iosClientId)
-        val gidReversedClientId = buildGidRedirectUri(iosClientId)
+        val gidReversedClientId = buildGidReversedClientId(iosClientId)
 
         val androidAppGradleFile = androidAppGradle.get().asFile
         replaceOrError(
@@ -107,6 +107,12 @@ abstract class SyncSecureConfigs : DefaultTask() {
         val suffix = ".apps.googleusercontent.com"
         val baseId = clientId.removeSuffix(suffix)
         return "com.googleusercontent.apps.$baseId:/oauthredirect"
+    }
+
+    private fun buildGidReversedClientId(clientId: String): String {
+        val suffix = ".apps.googleusercontent.com"
+        val baseId = clientId.removeSuffix(suffix)
+        return "com.googleusercontent.apps.$baseId"
     }
 
     private fun replaceOrError(
