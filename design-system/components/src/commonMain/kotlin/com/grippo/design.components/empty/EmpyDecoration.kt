@@ -58,7 +58,7 @@ public fun EmptyDecorations(modifier: Modifier = Modifier) {
             EmptyIcon(
                 painter = barbell,
                 alignment = Alignment.TopEnd,
-                offset = DpOffset((largeIconSize / 3), (52).dp),
+                offset = DpOffset((largeIconSize / 3), (92).dp),
                 rotation = 0f,
                 size = largeIconSize * 1.3f,
             ),
