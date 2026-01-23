@@ -150,6 +150,8 @@ public fun Chip(
             overflow = TextOverflow.Ellipsis,
             color = textColor
         )
+
+        Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.text))
     }
 }
 

@@ -485,7 +485,7 @@ public data object AppDp {
         val small: Small = Small
 
         public data object Medium {
-            val horizontalPadding: Dp = padding.medium
+            val horizontalPadding: Dp = padding.small
             val radius: Dp = AppDp.radius.medium
             val trailingSize: Dp = icon.small
             val spaceBetween: Dp = padding.small
@@ -493,7 +493,7 @@ public data object AppDp {
         }
 
         public data object Small {
-            val horizontalPadding: Dp = padding.small
+            val horizontalPadding: Dp = padding.extraSmall
             val verticalPadding: Dp = padding.extraSmall
             val radius: Dp = AppDp.radius.small
             val trailingSize: Dp = icon.extraSmall

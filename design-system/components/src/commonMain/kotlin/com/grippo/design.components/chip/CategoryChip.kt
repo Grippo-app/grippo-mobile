@@ -4,10 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
@@ -16,22 +16,12 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 
-@Immutable
-public enum class CategoryChipStyle {
-    DEFAULT
-}
-
 @Composable
 public fun CategoryChip(
     modifier: Modifier = Modifier,
     value: CategoryEnumState,
     size: ChipSize,
-    style: CategoryChipStyle = CategoryChipStyle.DEFAULT
 ) {
-    when (style) {
-        CategoryChipStyle.DEFAULT -> Unit
-    }
-
     Chip(
         modifier = modifier,
         label = ChipLabel.Empty,
@@ -42,7 +32,8 @@ public fun CategoryChip(
                     Modifier
                         .fillMaxHeight()
                         .aspectRatio(1f)
-                        .padding(5.dp)
+                        .wrapContentSize()
+                        .size(8.dp)
                         .background(
                             color = value.color(),
                             shape = CircleShape
