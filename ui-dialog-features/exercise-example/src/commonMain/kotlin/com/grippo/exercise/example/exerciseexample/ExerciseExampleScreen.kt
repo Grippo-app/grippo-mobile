@@ -16,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.SolidColor
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.achevements.stubAchievements
@@ -24,11 +23,10 @@ import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.core.state.metrics.stubEstimatedOneRepMax
 import com.grippo.core.state.trainings.stubExercises
 import com.grippo.design.components.achievement.AchievementsCard
-import com.grippo.design.components.chip.Chip
-import com.grippo.design.components.chip.ChipLabel
+import com.grippo.design.components.chip.CategoryChip
 import com.grippo.design.components.chip.ChipSize
-import com.grippo.design.components.chip.ChipStype
-import com.grippo.design.components.chip.ChipTrailing
+import com.grippo.design.components.chip.ForceTypeChip
+import com.grippo.design.components.chip.WeightTypeChip
 import com.grippo.design.components.equipment.EquipmentsCard
 import com.grippo.design.components.example.DescriptionText
 import com.grippo.design.components.example.ExerciseExampleImage
@@ -93,34 +91,19 @@ internal fun ExerciseExampleScreen(
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
         ) {
-            Chip(
-                label = ChipLabel.Empty,
-                value = example.value.category.title().text(),
-                size = ChipSize.Medium,
-                stype = ChipStype.Default,
-                trailing = ChipTrailing.Empty,
-                contentColor = AppTokens.colors.static.white,
-                brush = SolidColor(example.value.category.color())
+            CategoryChip(
+                value = example.value.category,
+                size = ChipSize.Medium
             )
 
-            Chip(
-                label = ChipLabel.Empty,
-                value = example.value.forceType.title().text(),
-                size = ChipSize.Medium,
-                stype = ChipStype.Default,
-                trailing = ChipTrailing.Empty,
-                contentColor = AppTokens.colors.static.white,
-                brush = SolidColor(example.value.forceType.color())
+            ForceTypeChip(
+                value = example.value.forceType,
+                size = ChipSize.Medium
             )
 
-            Chip(
-                label = ChipLabel.Empty,
-                value = example.value.weightType.title().text(),
-                size = ChipSize.Medium,
-                stype = ChipStype.Default,
-                trailing = ChipTrailing.Empty,
-                contentColor = AppTokens.colors.static.white,
-                brush = SolidColor(example.value.weightType.color())
+            WeightTypeChip(
+                value = example.value.weightType,
+                size = ChipSize.Medium
             )
         }
 

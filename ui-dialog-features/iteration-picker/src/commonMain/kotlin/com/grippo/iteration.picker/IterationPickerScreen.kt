@@ -160,7 +160,8 @@ internal fun IterationPickerScreen(
                         stype = ChipStype.Clickable(clickProvider),
                         value = "${item.volume.short()} ${item.repetitions.short()}",
                         trailing = ChipTrailing.Empty,
-                        contentColor = AppTokens.colors.text.secondary,
+                        textColor = AppTokens.colors.text.secondary,
+                        iconColor = AppTokens.colors.text.secondary,
                         size = ChipSize.Medium,
                         brush = SolidColor(AppTokens.colors.background.card)
                     )

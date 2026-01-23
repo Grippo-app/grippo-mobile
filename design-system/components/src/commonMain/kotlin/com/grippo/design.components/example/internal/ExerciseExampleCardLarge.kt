@@ -12,15 +12,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.examples.stubExerciseExample
-import com.grippo.design.components.chip.Chip
-import com.grippo.design.components.chip.ChipLabel
+import com.grippo.design.components.chip.CategoryChip
 import com.grippo.design.components.chip.ChipSize
-import com.grippo.design.components.chip.ChipStype
-import com.grippo.design.components.chip.ChipTrailing
+import com.grippo.design.components.chip.ForceTypeChip
+import com.grippo.design.components.chip.WeightTypeChip
 import com.grippo.design.components.example.ExerciseExampleCard
 import com.grippo.design.components.example.ExerciseExampleCardStyle
 import com.grippo.design.components.example.ExerciseExampleImage
@@ -66,34 +64,19 @@ internal fun ExerciseExampleCardLarge(
                     verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text),
                     horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
                 ) {
-                    Chip(
-                        label = ChipLabel.Empty,
-                        value = value.value.category.title().text(),
-                        size = ChipSize.Small,
-                        stype = ChipStype.Default,
-                        trailing = ChipTrailing.Empty,
-                        contentColor = AppTokens.colors.static.white,
-                        brush = SolidColor(value.value.category.color())
+                    CategoryChip(
+                        value = value.value.category,
+                        size = ChipSize.Small
                     )
 
-                    Chip(
-                        label = ChipLabel.Empty,
-                        value = value.value.forceType.title().text(),
-                        size = ChipSize.Small,
-                        stype = ChipStype.Default,
-                        trailing = ChipTrailing.Empty,
-                        contentColor = AppTokens.colors.static.white,
-                        brush = SolidColor(value.value.forceType.color())
+                    ForceTypeChip(
+                        value = value.value.forceType,
+                        size = ChipSize.Small
                     )
 
-                    Chip(
-                        label = ChipLabel.Empty,
-                        value = value.value.weightType.title().text(),
-                        size = ChipSize.Small,
-                        stype = ChipStype.Default,
-                        trailing = ChipTrailing.Empty,
-                        contentColor = AppTokens.colors.static.white,
-                        brush = SolidColor(value.value.weightType.color())
+                    WeightTypeChip(
+                        value = value.value.weightType,
+                        size = ChipSize.Small
                     )
                 }
             }

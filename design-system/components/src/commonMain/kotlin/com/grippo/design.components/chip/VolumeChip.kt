@@ -3,7 +3,7 @@ package com.grippo.design.components.chip
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.SolidColor
 import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.design.core.AppTokens
@@ -11,7 +11,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.icons.Volume
-import com.grippo.design.resources.provider.icons.Weight
 import com.grippo.design.resources.provider.tonnage_chip
 
 @Immutable
@@ -46,10 +45,9 @@ public fun VolumeChip(
         trailing = trailing,
         size = size,
         stype = ChipStype.Default,
-        contentColor = colors.contentColor,
-        brush = Brush.horizontalGradient(
-            colors = listOf(colors.startColor, colors.endColor)
-        )
+        textColor = colors.contentColor,
+        iconColor = colors.startColor,
+        brush = SolidColor(AppTokens.colors.background.card)
     )
 }
 

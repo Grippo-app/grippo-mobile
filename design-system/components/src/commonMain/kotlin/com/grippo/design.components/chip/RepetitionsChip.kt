@@ -3,7 +3,7 @@ package com.grippo.design.components.chip
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.SolidColor
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.UiText
 import com.grippo.design.core.AppTokens
@@ -45,10 +45,9 @@ public fun RepetitionsChip(
         trailing = trailing,
         size = size,
         stype = ChipStype.Default,
-        contentColor = colors.contentColor,
-        brush = Brush.horizontalGradient(
-            colors = listOf(colors.startColor, colors.endColor)
-        )
+        textColor = colors.contentColor,
+        iconColor = colors.startColor,
+        brush = SolidColor(AppTokens.colors.background.card)
     )
 }
 

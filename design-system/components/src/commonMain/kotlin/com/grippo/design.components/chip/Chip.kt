@@ -80,7 +80,8 @@ public fun Chip(
     stype: ChipStype,
     trailing: ChipTrailing,
     size: ChipSize,
-    contentColor: Color,
+    textColor: Color,
+    iconColor: Color,
     brush: Brush,
 ) {
     val tokens = resolveChipStyle(size)
@@ -117,7 +118,7 @@ public fun Chip(
                             modifier = Modifier.size(tokens.trailingSize),
                             imageVector = trailing.icon,
                             contentDescription = null,
-                            tint = contentColor
+                            tint = iconColor
                         )
                     }
                     Spacer(modifier = Modifier.width(tokens.spaceBetween))
@@ -133,7 +134,7 @@ public fun Chip(
                         style = tokens.labelTextStyle,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        color = contentColor
+                        color = textColor
                     )
                     Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.text))
                 }
@@ -147,7 +148,7 @@ public fun Chip(
             style = tokens.valueTextStyle,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            color = contentColor
+            color = textColor
         )
     }
 }
@@ -161,7 +162,8 @@ private fun ChipPreview() {
             value = "Value",
             trailing = ChipTrailing.Icon(AppTokens.icons.Weight),
             brush = Brush.linearGradient(listOf(Color.Gray, Color.LightGray)),
-            contentColor = Color.Black,
+            textColor = Color.Black,
+            iconColor = Color.Black,
             stype = ChipStype.Default,
             size = ChipSize.Small
         )
@@ -171,7 +173,8 @@ private fun ChipPreview() {
             value = "Value",
             trailing = ChipTrailing.Icon(AppTokens.icons.Weight),
             brush = Brush.linearGradient(listOf(Color.Gray, Color.LightGray)),
-            contentColor = Color.Black,
+            textColor = Color.Black,
+            iconColor = Color.Black,
             stype = ChipStype.Default,
             size = ChipSize.Medium
         )
