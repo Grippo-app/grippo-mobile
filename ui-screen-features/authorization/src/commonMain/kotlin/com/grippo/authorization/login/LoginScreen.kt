@@ -29,22 +29,20 @@ import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.inputs.InputEmail
 import com.grippo.design.components.inputs.InputPassword
-import com.grippo.design.components.spliter.ContentSpliter
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.continue_btn
 import com.grippo.design.resources.provider.continue_with_google
 import com.grippo.design.resources.provider.icons.Google
 import com.grippo.design.resources.provider.icons.GrippoLogo
-import com.grippo.design.resources.provider.login_button_login
 import com.grippo.design.resources.provider.login_button_registration
 import com.grippo.design.resources.provider.login_button_registration_label
-import com.grippo.design.resources.provider.login_description
 import com.grippo.design.resources.provider.login_title
-import com.grippo.design.resources.provider.or
+import com.grippo.design.resources.provider.track_real_progress_no_fluff
 import com.grippo.services.google.auth.rememberGoogleAuthUiContext
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -92,9 +90,9 @@ internal fun LoginScreen(
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.login_description),
+            text = AppTokens.strings.res(Res.string.track_real_progress_no_fluff),
             style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.tertiary,
+            color = AppTokens.colors.text.secondary,
             textAlign = TextAlign.Center
         )
 
@@ -127,24 +125,13 @@ internal fun LoginScreen(
 
         Button(
             modifier = Modifier.fillMaxWidth(),
-            content = ButtonContent.Text(
-                text = AppTokens.strings.res(Res.string.login_button_login),
-            ),
+            content = ButtonContent.Text(text = AppTokens.strings.res(Res.string.continue_btn)),
             state = buttonLoginByEmailState,
             style = ButtonStyle.Primary,
             onClick = contract::onLoginByEmailClick
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
-        if (state.isGoogleLoginAvailable) {
-
-            ContentSpliter(
-                text = AppTokens.strings.res(Res.string.or)
-            )
-
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-        }
 
         if (state.isGoogleLoginAvailable) {
 

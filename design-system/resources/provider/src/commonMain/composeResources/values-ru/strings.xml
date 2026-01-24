@@ -166,10 +166,11 @@
 
 
     <string name="login_title">Добро пожаловать в Grippo</string>
+    <string name="track_real_progress_no_fluff">💪 Только прогресс. Без шума.</string>
     <string name="login_description">Войдите в свой аккаунт</string>
     <string name="login_button_login">Войти</string>
     <string name="continue_with_google">Продолжить с Google</string>
-    <string name="login_button_registration_label">Ещё нет аккаунта?</string>
+    <string name="login_button_registration_label">Нет аккаунта?</string>
     <string name="login_button_registration">Зарегистрироваться</string>
 
     <string name="registration_credential_title">Давайте зарегистрируемся</string>

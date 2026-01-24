@@ -99,7 +99,7 @@ internal fun ProfileScreen(
 //            onClick = contract::onSettingsMenuClick
 //        )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Button(
             modifier = Modifier.fillMaxWidth(),

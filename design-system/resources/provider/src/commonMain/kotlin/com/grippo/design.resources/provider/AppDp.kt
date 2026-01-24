@@ -23,7 +23,6 @@ public data object AppDp {
         val small: Dp = 32.dp
         val medium: Dp = 50.dp
         val large: Dp = 64.dp
-        val xLarge: Dp = 72.dp
         val xxLarge: Dp = 96.dp
         val xxxLarge: Dp = 262.dp
     }
@@ -241,7 +240,7 @@ public data object AppDp {
                 val large: Large = Large
 
                 public data object Small {
-                    val size: Dp = Size.xLarge
+                    val size: Dp = Size.large
                 }
 
                 public data object Large {
@@ -280,18 +279,20 @@ public data object AppDp {
 
         public data object Medium {
             val height: Dp = size.medium
-            val horizontalPadding: Dp = padding.large
-            val icon: Dp = AppDp.icon.medium
-            val space: Dp = padding.tiny
-            val spaceTransparent: Dp = padding.tiny
-        }
-
-        public data object Small {
-            val height: Dp = size.small
             val horizontalPadding: Dp = padding.medium
             val icon: Dp = AppDp.icon.medium
             val space: Dp = padding.tiny
             val spaceTransparent: Dp = padding.tiny
+            val radius: Dp = AppDp.radius.medium
+        }
+
+        public data object Small {
+            val height: Dp = size.small
+            val horizontalPadding: Dp = padding.small
+            val icon: Dp = AppDp.icon.medium
+            val space: Dp = padding.tiny
+            val spaceTransparent: Dp = padding.tiny
+            val radius: Dp = AppDp.radius.small
         }
     }
 
@@ -376,7 +377,7 @@ public data object AppDp {
     }
 
     public data object EquipmentCard {
-        val icon: Dp = size.xLarge
+        val icon: Dp = size.large
     }
 
     public data object AchievementCard {

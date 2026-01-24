@@ -169,7 +169,8 @@
     <string name="login_description">Sign in to your account</string>
     <string name="login_button_login">Log in</string>
     <string name="continue_with_google">Continue with Google</string>
-    <string name="login_button_registration_label">Don't have an account yet?</string>
+    <string name="track_real_progress_no_fluff">💪 Track real progress. No fluff.</string>
+    <string name="login_button_registration_label">Don't have an account?</string>
     <string name="login_button_registration">Sign up</string>
 
     <string name="registration_credential_title">Let’s get you signed up</string>
