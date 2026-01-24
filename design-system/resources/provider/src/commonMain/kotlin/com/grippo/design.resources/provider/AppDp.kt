@@ -15,7 +15,7 @@ public data object AppDp {
         val small: Dp = 8.dp
         val medium: Dp = 12.dp
         val large: Dp = 16.dp
-        val extraLarge: Dp = 20.dp
+        val xLarge: Dp = 20.dp
     }
 
     private data object Size {
@@ -23,12 +23,11 @@ public data object AppDp {
         val small: Dp = 32.dp
         val medium: Dp = 50.dp
         val large: Dp = 64.dp
-        val xxLarge: Dp = 96.dp
-        val xxxLarge: Dp = 262.dp
+        val xLarge: Dp = 96.dp
+        val xxLarge: Dp = 262.dp
     }
 
     private data object Radius {
-        val tiny: Dp = 4.dp
         val small: Dp = 8.dp
         val medium: Dp = 12.dp
         val large: Dp = 28.dp
@@ -77,8 +76,8 @@ public data object AppDp {
 
     public data object Screen {
         val toolbar: Toolbar = Toolbar
-        val horizontalPadding: Dp = padding.extraLarge
-        val verticalPadding: Dp = padding.extraLarge
+        val horizontalPadding: Dp = padding.xLarge
+        val verticalPadding: Dp = padding.xLarge
 
         public data object Toolbar {
             val height: Dp = size.small
@@ -86,7 +85,7 @@ public data object AppDp {
     }
 
     public data object ContentPadding {
-        val block: Dp = padding.extraLarge
+        val block: Dp = padding.xLarge
         val content: Dp = padding.medium
         val subContent: Dp = padding.small
         val text: Dp = padding.extraSmall
@@ -103,8 +102,8 @@ public data object AppDp {
 
     public data object Dialog {
         val top: Dp = padding.small
-        val bottom: Dp = padding.extraLarge
-        val horizontalPadding: Dp = padding.extraLarge
+        val bottom: Dp = padding.xLarge
+        val horizontalPadding: Dp = padding.xLarge
     }
 
     public data object SuggestionCard {
@@ -117,7 +116,7 @@ public data object AppDp {
         val monthly: Monthly = Monthly
 
         public data object Monthly {
-            val cellHeight: Dp = size.xxLarge
+            val cellHeight: Dp = size.xLarge
         }
     }
 
@@ -166,7 +165,7 @@ public data object AppDp {
             val balance: Balance = Balance
 
             public data object Balance {
-                val chart: Dp = size.xxLarge
+                val chart: Dp = size.xLarge
                 val radius: Dp = AppDp.radius.medium
                 val horizontalPadding: Dp = padding.medium
                 val verticalPadding: Dp = padding.small
@@ -244,7 +243,7 @@ public data object AppDp {
                 }
 
                 public data object Large {
-                    val size: Dp = Size.xxxLarge
+                    val size: Dp = Size.xxLarge
                 }
             }
         }
@@ -269,7 +268,7 @@ public data object AppDp {
     public data object Input {
         val height: Dp = size.medium
         val radius: Dp = AppDp.radius.medium
-        val horizontalPadding: Dp = padding.extraLarge
+        val horizontalPadding: Dp = padding.xLarge
         val icon: Dp = AppDp.icon.medium
     }
 
@@ -472,7 +471,7 @@ public data object AppDp {
     }
 
     public data object ConnectionSnackbar {
-        val horizontalPadding: Dp = padding.extraLarge
+        val horizontalPadding: Dp = padding.xLarge
         val verticalPadding: Dp = padding.small
     }
 
