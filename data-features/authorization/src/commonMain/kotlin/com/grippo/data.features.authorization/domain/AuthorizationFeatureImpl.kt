@@ -17,6 +17,10 @@ internal class AuthorizationFeatureImpl(
         return repository.google(token)
     }
 
+    override suspend fun apple(token: String, code: String): Result<Unit> {
+        return repository.apple(token, code)
+    }
+
     override suspend fun register(email: String, password: String): Result<Unit> {
         return repository.register(email, password)
     }

@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -210,7 +211,7 @@ public fun Button(
                 if (content.endIcon != null) {
                     Spacer(modifier = Modifier.width(iconPadding))
                     ButtonIconContent(
-                        modifier = Modifier.size(iconSize),
+                        modifier = Modifier.height(iconSize),
                         icon = content.endIcon,
                         tint = colorTokens.icon,
                         tintImageIcons = tintImageIcons
@@ -250,7 +251,7 @@ public fun Button(
                         )
                     } else {
                         ButtonIconContent(
-                            modifier = Modifier.size(iconSize),
+                            modifier = Modifier.height(iconSize),
                             icon = content.icon,
                             tint = colorTokens.icon,
                             tintImageIcons = tintImageIcons
@@ -312,7 +313,7 @@ private fun StartIconOrLoader(
         // Icon layer
         ButtonIconContent(
             modifier = Modifier
-                .matchParentSize()
+                .fillMaxHeight()
                 .graphicsLayer { alpha = iconAlpha },
             icon = icon,
             tint = tint,

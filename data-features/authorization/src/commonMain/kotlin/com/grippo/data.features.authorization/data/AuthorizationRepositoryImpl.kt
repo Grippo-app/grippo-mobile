@@ -3,6 +3,7 @@ package com.grippo.data.features.authorization.data
 import com.grippo.data.features.authorization.domain.AuthorizationRepository
 import com.grippo.dto.entity.user.toEntityOrNull
 import com.grippo.services.backend.GrippoApi
+import com.grippo.services.backend.dto.auth.AppleBody
 import com.grippo.services.backend.dto.auth.EmailAuthBody
 import com.grippo.services.backend.dto.auth.GoogleBody
 import com.grippo.services.backend.dto.auth.RegisterBody
@@ -37,6 +38,23 @@ internal class AuthorizationRepositoryImpl(
 
     override suspend fun google(token: String): Result<Unit> {
         val response = api.google(GoogleBody(idToken = token))
+
+        response.onSuccess { r ->
+            val entity = r.toEntityOrNull() ?: return@onSuccess
+            tokenDao.insertOrUpdate(entity)
+            userActiveDao.insertOrReplace(UserActiveEntity(userId = entity.id))
+        }
+
+        return response.map { }
+    }
+
+    override suspend fun apple(token: String, code: String): Result<Unit> {
+        val response = api.apple(
+            AppleBody(
+                idToken = token,
+                authorizationCode = code,
+            )
+        )
 
         response.onSuccess { r ->
             val entity = r.toEntityOrNull() ?: return@onSuccess

@@ -170,6 +170,7 @@
     <string name="login_description">Войдите в свой аккаунт</string>
     <string name="login_button_login">Войти</string>
     <string name="continue_with_google">Продолжить с Google</string>
+    <string name="continue_with_apple">Продолжить с Apple</string>
     <string name="login_button_registration_label">Нет аккаунта?</string>
     <string name="login_button_registration">Зарегистрироваться</string>
 

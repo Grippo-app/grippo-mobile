@@ -8,6 +8,8 @@ public interface AuthorizationFeature {
 
     public suspend fun google(token: String): Result<Unit>
 
+    public suspend fun apple(token: String, code: String): Result<Unit>
+
     public suspend fun register(email: String, password: String): Result<Unit>
 
     public suspend fun logout()

@@ -9,4 +9,5 @@ internal data class LoginState(
     val email: EmailFormatState = EmailFormatState.of(""),
     val password: PasswordFormatState = PasswordFormatState.of(""),
     val isGoogleLoginAvailable: Boolean = false,
+    val isAppleLoginAvailable: Boolean = false,
 )

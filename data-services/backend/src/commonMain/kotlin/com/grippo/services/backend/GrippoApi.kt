@@ -3,6 +3,7 @@ package com.grippo.services.backend
 import com.grippo.services.backend.client.BackendClient
 import com.grippo.services.backend.dto.IdResponse
 import com.grippo.services.backend.dto.achievements.AchievementResponse
+import com.grippo.services.backend.dto.auth.AppleBody
 import com.grippo.services.backend.dto.auth.EmailAuthBody
 import com.grippo.services.backend.dto.auth.GoogleBody
 import com.grippo.services.backend.dto.auth.RefreshBody
@@ -44,6 +45,14 @@ public class GrippoApi internal constructor(private val client: BackendClient) {
         return request(
             method = HttpMethod.Post,
             path = "/auth/google",
+            body = body,
+        )
+    }
+
+    public suspend fun apple(body: AppleBody): Result<TokenResponse> {
+        return request(
+            method = HttpMethod.Post,
+            path = "/auth/apple",
             body = body,
         )
     }

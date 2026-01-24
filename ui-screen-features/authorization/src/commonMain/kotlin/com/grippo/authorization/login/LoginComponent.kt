@@ -19,6 +19,7 @@ internal class LoginComponent(
         LoginViewModel(
             loginUseCase = getKoin().get(),
             googleAuthProvider = getKoin().get(),
+            appleAuthProvider = getKoin().get(),
         )
     }
 

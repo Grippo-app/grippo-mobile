@@ -39,6 +39,7 @@ kotlin {
         implementation(projects.dataServices.database)
         implementation(projects.dataServices.backend)
         implementation(projects.dataServices.googleAuth)
+        implementation(projects.dataServices.appleAuth)
         api(projects.dataServices.firebase)
 
         implementation(projects.dataFeatures.featureApi)

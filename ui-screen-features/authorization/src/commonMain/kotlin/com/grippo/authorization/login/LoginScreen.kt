@@ -36,13 +36,16 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.continue_btn
+import com.grippo.design.resources.provider.continue_with_apple
 import com.grippo.design.resources.provider.continue_with_google
+import com.grippo.design.resources.provider.icons.Apple
 import com.grippo.design.resources.provider.icons.Google
 import com.grippo.design.resources.provider.icons.GrippoLogo
 import com.grippo.design.resources.provider.login_button_registration
 import com.grippo.design.resources.provider.login_button_registration_label
 import com.grippo.design.resources.provider.login_title
 import com.grippo.design.resources.provider.track_real_progress_no_fluff
+import com.grippo.services.apple.auth.rememberAppleAuthUiContext
 import com.grippo.services.google.auth.rememberGoogleAuthUiContext
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -162,6 +165,35 @@ internal fun LoginScreen(
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
         }
 
+        if (state.isAppleLoginAvailable) {
+
+            val appleAuthUiContext = rememberAppleAuthUiContext()
+
+            val buttonLoginByAppleState = remember(
+                loaders,
+                appleAuthUiContext
+            ) {
+                when {
+                    appleAuthUiContext == null -> ButtonState.Disabled
+                    loaders.contains(LoginLoader.LoginByAppleButton) -> ButtonState.Loading
+                    else -> ButtonState.Enabled
+                }
+            }
+
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                content = ButtonContent.Text(
+                    text = AppTokens.strings.res(Res.string.continue_with_apple),
+                    startIcon = ButtonIcon.Image(AppTokens.icons.Apple)
+                ),
+                state = buttonLoginByAppleState,
+                style = ButtonStyle.Secondary,
+                onClick = { appleAuthUiContext?.let(contract::onLoginByAppleClick) }
+            )
+
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+        }
+
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Row(
@@ -202,7 +234,8 @@ private fun ScreenPreviewEmpty() {
             state = LoginState(
                 email = EmailFormatState.of(""),
                 password = PasswordFormatState.of(""),
-                isGoogleLoginAvailable = true
+                isGoogleLoginAvailable = true,
+                isAppleLoginAvailable = true,
             ),
             loaders = persistentSetOf(LoginLoader.LoginByEmailButton),
             contract = LoginContract.Empty
@@ -218,7 +251,8 @@ private fun ScreenPreviewFilled() {
             state = LoginState(
                 email = EmailFormatState.of("user@email.com"),
                 password = PasswordFormatState.of("qwerty123"),
-                isGoogleLoginAvailable = false
+                isGoogleLoginAvailable = false,
+                isAppleLoginAvailable = false,
             ),
             loaders = persistentSetOf(),
             contract = LoginContract.Empty
@@ -234,7 +268,8 @@ private fun ScreenPreviewLoading() {
             state = LoginState(
                 email = EmailFormatState.of("user@email.com"),
                 password = PasswordFormatState.of("qwerty123"),
-                isGoogleLoginAvailable = true
+                isGoogleLoginAvailable = true,
+                isAppleLoginAvailable = true,
             ),
             loaders = persistentSetOf(LoginLoader.LoginByEmailButton),
             contract = LoginContract.Empty

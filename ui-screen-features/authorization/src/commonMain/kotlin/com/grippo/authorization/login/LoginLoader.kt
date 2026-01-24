@@ -10,4 +10,7 @@ internal sealed interface LoginLoader : BaseLoader {
 
     @Immutable
     data object LoginByGoogleButton : LoginLoader
+
+    @Immutable
+    data object LoginByAppleButton : LoginLoader
 }

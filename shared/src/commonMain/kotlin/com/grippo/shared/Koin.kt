@@ -15,6 +15,7 @@ import com.grippo.data.features.user.UserFeatureModule
 import com.grippo.data.features.weight.history.WeightHistoryFeatureModule
 import com.grippo.design.resources.provider.impl.ResourcesProviderModule
 import com.grippo.dialog.api.DialogModule
+import com.grippo.services.apple.auth.AppleAuthModule
 import com.grippo.services.backend.BackendModule
 import com.grippo.services.database.DatabaseModule
 import com.grippo.services.google.auth.GoogleAuthModule
@@ -38,6 +39,7 @@ public object Koin {
             DatabaseModule().module,
             BackendModule().module,
             GoogleAuthModule().module,
+            AppleAuthModule().module,
             CoreModule().module,
             DialogModule().module,
             AuthorizationFeatureModule().module,
