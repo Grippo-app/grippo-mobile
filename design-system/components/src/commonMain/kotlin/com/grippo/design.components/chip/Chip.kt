@@ -145,14 +145,13 @@ public fun Chip(
         }
 
         Text(
+            modifier = Modifier.padding(end = AppTokens.dp.contentPadding.text),
             text = value,
             style = tokens.valueTextStyle,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             color = textColor
         )
-
-        Spacer(modifier = Modifier.width(AppTokens.dp.contentPadding.text))
     }
 }
 
