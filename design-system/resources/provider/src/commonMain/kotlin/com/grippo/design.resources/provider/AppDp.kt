@@ -381,9 +381,9 @@ public data object AppDp {
 
     public data object AchievementCard {
         val icon: Dp = AppDp.icon.large
-        val horizontalPadding: Dp = padding.large
-        val verticalPadding: Dp = padding.medium
-        val radius: Dp = AppDp.radius.medium
+        val horizontalPadding: Dp = padding.medium
+        val verticalPadding: Dp = padding.small
+        val radius: Dp = AppDp.radius.small
         val chip: Chip = Chip
         val emblem: Emblem = Emblem
 
