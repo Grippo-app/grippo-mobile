@@ -7,9 +7,10 @@ exposes a single API surface.
 
 1. [Overview](#overview)
 2. [Integration at a glance](#integration-at-a-glance)
-3. [iOS configuration](#ios-configuration)
-4. [Compose usage](#compose-usage)
-5. [Troubleshooting](#troubleshooting)
+3. [Android configuration](#android-configuration)
+4. [iOS configuration](#ios-configuration)
+5. [Compose usage](#compose-usage)
+6. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -23,9 +24,9 @@ The module provides everything required to start and consume the Apple Sign-In U
   sheet.
 
 `AppleAccount` contains the authorization code only. `AppleAuthUiProvider.signIn()` returns
-`Result<AppleAccount>` so UI code can differentiate
-between user cancellations and actual errors. `appleAuthProvider.isSupported` is always `true` on
-iOS.
+`Result<AppleAccount>` so UI code can differentiate between user cancellations and actual errors.
+Check `appleAuthProvider.isSupported` before rendering a "Continue with Apple" button – the
+provider reports `false` on Android and `true` on iOS.
 
 When configured, the UI layer simply calls `appleAuthProvider.getUiProvider(context).signIn()` and
 handles the `Result`.
@@ -50,6 +51,14 @@ modules(
 - `AppleAuthModule` already bundles the required context/http/serialization modules – no extra DI
   bindings are needed.
 - On logout call `AppleAuthProvider.signOut()` (no-op at the moment, but it keeps API parity).
+- Ensure the iOS capability from the section below is enabled before presenting the action to users.
+
+---
+
+## Android configuration
+
+Sign in with Apple is not supported on Android. The provider always returns
+`appleAuthProvider.isSupported == false` and throws if you call `getUiProvider`.
 
 ---
 
@@ -57,6 +66,14 @@ modules(
 
 Enable **Sign in with Apple** in the Apple Developer portal for the target App ID and make sure the
 corresponding capability is enabled in Xcode for the iOS target.
+
+Apple Developer (Certificates, Identifiers & Profiles):
+- App ID → Capabilities → enable **Sign in with Apple** for your bundle ID.
+- Regenerate and download provisioning profiles after enabling the capability.
+
+Xcode:
+- Target → Signing & Capabilities → add **Sign in with Apple** capability.
+- Ensure the selected team and bundle identifier match the App ID you enabled in the portal.
 
 ---
 
