@@ -1,9 +1,7 @@
 package com.grippo.exercise.example.exerciseexample
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,12 +21,9 @@ import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.core.state.metrics.stubEstimatedOneRepMax
 import com.grippo.core.state.trainings.stubExercises
 import com.grippo.design.components.achievement.AchievementsCard
-import com.grippo.design.components.chip.CategoryChip
-import com.grippo.design.components.chip.ChipSize
-import com.grippo.design.components.chip.ForceTypeChip
-import com.grippo.design.components.chip.WeightTypeChip
 import com.grippo.design.components.equipment.EquipmentsCard
-import com.grippo.design.components.example.DescriptionText
+import com.grippo.design.components.example.ExampleDescriptionText
+import com.grippo.design.components.example.ExampleTypeSection
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
 import com.grippo.design.components.metrics.EstimatedOneRepMaxCard
@@ -85,31 +80,16 @@ internal fun ExerciseExampleScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
-        Row(
+        ExampleTypeSection(
             modifier = Modifier
                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.subContent),
-        ) {
-            CategoryChip(
-                value = example.value.category,
-                size = ChipSize.Medium
-            )
-
-            ForceTypeChip(
-                value = example.value.forceType,
-                size = ChipSize.Medium
-            )
-
-            WeightTypeChip(
-                value = example.value.weightType,
-                size = ChipSize.Medium
-            )
-        }
+            value = example.value
+        )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-        DescriptionText(
+        ExampleDescriptionText(
             modifier = Modifier
                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                 .fillMaxWidth(),

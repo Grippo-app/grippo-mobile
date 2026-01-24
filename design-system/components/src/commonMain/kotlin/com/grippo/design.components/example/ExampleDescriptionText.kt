@@ -21,7 +21,7 @@ import com.grippo.design.resources.provider.show_less
 import com.grippo.design.resources.provider.show_more
 
 @Composable
-public fun DescriptionText(
+public fun ExampleDescriptionText(
     modifier: Modifier = Modifier,
     text: String,
 ) {
@@ -65,13 +65,13 @@ public fun DescriptionText(
 
 @AppPreview
 @Composable
-private fun DescriptionTextPreview() {
+private fun ExampleDescriptionTextPreview() {
     PreviewContainer {
-        DescriptionText(
+        ExampleDescriptionText(
             text = "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text"
         )
 
-        DescriptionText(
+        ExampleDescriptionText(
             text = "Text Text Text Text Text Text Text Text"
         )
     }

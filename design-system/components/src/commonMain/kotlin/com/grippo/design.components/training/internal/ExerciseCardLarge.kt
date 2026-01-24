@@ -56,7 +56,7 @@ internal fun ExerciseCardLarge(
                 TrainingTotalSection(
                     modifier = Modifier.fillMaxWidth(),
                     value = value.total,
-                    chipSize = ChipSize.Small,
+                    size = ChipSize.Small,
                 )
 
                 if (value.iterations.isNotEmpty()) {

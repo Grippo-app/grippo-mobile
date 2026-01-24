@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import com.grippo.core.state.formatters.UiText
 import com.grippo.design.components.chip.internal.resolveChipStyle
 import com.grippo.design.components.modifiers.scalableClick
@@ -160,7 +161,7 @@ public fun Chip(
 private fun ChipPreview() {
     PreviewContainer {
         Chip(
-            label = ChipLabel.Text(UiText.Str(value = "Basic")),
+            label = ChipLabel.Text(UiText.Str(value = "Label")),
             value = "Value",
             trailing = ChipTrailing.Icon(AppTokens.icons.Weight),
             brush = Brush.linearGradient(listOf(Color.Gray, Color.LightGray)),
@@ -170,8 +171,10 @@ private fun ChipPreview() {
             size = ChipSize.Small
         )
 
+
         Chip(
-            label = ChipLabel.Text(UiText.Str(value = "Basic")),
+            modifier = Modifier.width(300.dp),
+            label = ChipLabel.Text(UiText.Str(value = "Label")),
             value = "Value",
             trailing = ChipTrailing.Icon(AppTokens.icons.Weight),
             brush = Brush.linearGradient(listOf(Color.Gray, Color.LightGray)),

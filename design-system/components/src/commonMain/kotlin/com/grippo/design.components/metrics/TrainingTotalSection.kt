@@ -22,7 +22,7 @@ import com.grippo.design.preview.PreviewContainer
 public fun TrainingTotalSection(
     modifier: Modifier = Modifier,
     value: TrainingTotalState,
-    chipSize: ChipSize = ChipSize.Medium,
+    size: ChipSize = ChipSize.Medium,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -35,7 +35,7 @@ public fun TrainingTotalSection(
                     modifier = Modifier.weight(1f),
                     value = value,
                     style = VolumeChipStyle.SHORT,
-                    size = chipSize,
+                    size = size,
                 )
             }
 
@@ -46,7 +46,7 @@ public fun TrainingTotalSection(
                     modifier = Modifier.weight(1f),
                     value = value,
                     style = RepetitionsChipStyle.SHORT,
-                    size = chipSize,
+                    size = size,
                 )
             }
 
@@ -57,7 +57,7 @@ public fun TrainingTotalSection(
                     modifier = Modifier.weight(1f),
                     value = value,
                     style = IntensityChipStyle.SHORT,
-                    size = chipSize,
+                    size = size,
                 )
             }
     }
