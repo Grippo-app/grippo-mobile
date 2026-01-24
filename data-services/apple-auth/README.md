@@ -22,11 +22,10 @@ The module provides everything required to start and consume the Apple Sign-In U
 - `rememberAppleAuthUiContext()` – Compose helper that prepares the UI context for the sign-in
   sheet.
 
-`AppleAccount` contains the identity token, authorization code, and optional profile data (name +
-email). `AppleAuthUiProvider.signIn()` returns `Result<AppleAccount>` so UI code can differentiate
-between user cancellations and actual errors. Check `appleAuthProvider.isSupported` before
-rendering a "Continue with Apple" button – the provider reports `false` when the platform is
-missing the required APIs.
+`AppleAccount` contains the authorization code only. `AppleAuthUiProvider.signIn()` returns
+`Result<AppleAccount>` so UI code can differentiate
+between user cancellations and actual errors. `appleAuthProvider.isSupported` is always `true` on
+iOS.
 
 When configured, the UI layer simply calls `appleAuthProvider.getUiProvider(context).signIn()` and
 handles the `Result`.
@@ -88,7 +87,7 @@ suspend fun handleAppleLogin(context: AppleAuthUiContext) {
         .signIn()
 
     result.onSuccess { account ->
-        // Use account.token / account.authorizationCode in your domain layer.
+        // Use account.authorizationCode in your domain layer.
     }.onFailure { error ->
         // Show an error message / report to analytics
     }

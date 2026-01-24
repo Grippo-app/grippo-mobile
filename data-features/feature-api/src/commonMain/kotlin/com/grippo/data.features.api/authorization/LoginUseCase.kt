@@ -40,8 +40,8 @@ public class LoginUseCase(
         return hasProfile
     }
 
-    public suspend fun executeApple(token: String, code: String): Boolean {
-        authorizationFeature.apple(token, code).getOrThrow()
+    public suspend fun executeApple(code: String): Boolean {
+        authorizationFeature.apple(code).getOrThrow()
 
         val hasProfile = userFeature.getUser().getOrThrow()
 

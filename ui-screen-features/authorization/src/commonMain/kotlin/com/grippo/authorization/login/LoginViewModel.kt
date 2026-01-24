@@ -75,7 +75,6 @@ internal class LoginViewModel(
                 .getOrThrow()
 
             val hasProfile = loginUseCase.executeApple(
-                token = appleAccount.token,
                 code = appleAccount.authorizationCode,
             )
 

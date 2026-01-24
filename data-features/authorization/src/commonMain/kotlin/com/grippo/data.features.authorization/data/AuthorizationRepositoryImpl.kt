@@ -48,13 +48,8 @@ internal class AuthorizationRepositoryImpl(
         return response.map { }
     }
 
-    override suspend fun apple(token: String, code: String): Result<Unit> {
-        val response = api.apple(
-            AppleBody(
-                idToken = token,
-                authorizationCode = code,
-            )
-        )
+    override suspend fun apple(code: String): Result<Unit> {
+        val response = api.apple(AppleBody(code = code))
 
         response.onSuccess { r ->
             val entity = r.toEntityOrNull() ?: return@onSuccess

@@ -2,6 +2,7 @@ package com.grippo.services.apple.auth
 
 import com.grippo.toolkit.context.NativeContext
 import io.ktor.client.HttpClient
+import kotlinx.cinterop.BetaInteropApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.serialization.json.Json
 import platform.AuthenticationServices.ASAuthorization
@@ -10,11 +11,10 @@ import platform.AuthenticationServices.ASAuthorizationAppleIDProvider
 import platform.AuthenticationServices.ASAuthorizationController
 import platform.AuthenticationServices.ASAuthorizationControllerDelegateProtocol
 import platform.AuthenticationServices.ASAuthorizationControllerPresentationContextProvidingProtocol
-import platform.AuthenticationServices.ASAuthorizationScopeEmail
-import platform.AuthenticationServices.ASAuthorizationScopeFullName
+import platform.AuthenticationServices.ASAuthorizationErrorCanceled
+import platform.AuthenticationServices.ASAuthorizationErrorDomain
 import platform.AuthenticationServices.ASPresentationAnchor
 import platform.Foundation.NSError
-import platform.Foundation.NSPersonNameComponentsFormatter
 import platform.Foundation.NSString
 import platform.Foundation.NSThread
 import platform.Foundation.NSUTF8StringEncoding
@@ -39,11 +39,24 @@ public actual class AppleAuthUiProvider internal constructor(
 
     private suspend fun beginSignIn(): AppleAccount =
         suspendCancellableCoroutine { continuation ->
-            runOnMain {
-                val request = ASAuthorizationAppleIDProvider().createRequest()
-                request.requestedScopes =
-                    listOf(ASAuthorizationScopeFullName, ASAuthorizationScopeEmail)
+            var completed = false
+            fun complete(result: Result<AppleAccount>) {
+                if (completed) return
+                completed = true
+                if (!continuation.isActive) return
+                result.fold(
+                    onSuccess = continuation::resume,
+                    onFailure = continuation::resumeWithException,
+                )
+            }
 
+            runOnMain {
+                if (currentController != null) {
+                    complete(Result.failure(AppleAuthException("Apple sign-in is already in progress")))
+                    return@runOnMain
+                }
+
+                val request = ASAuthorizationAppleIDProvider().createRequest()
                 val controller = ASAuthorizationController(listOf(request))
                 val delegate = AppleAuthorizationDelegate(
                     anchorProvider = anchorProvider,
@@ -53,7 +66,7 @@ public actual class AppleAuthUiProvider internal constructor(
                                 currentController = null
                                 currentDelegate = null
                             }
-                            continuation.resume(account)
+                            complete(Result.success(account))
                         }
                     },
                     onFailure = { error ->
@@ -62,7 +75,7 @@ public actual class AppleAuthUiProvider internal constructor(
                                 currentController = null
                                 currentDelegate = null
                             }
-                            continuation.resumeWithException(error)
+                            complete(Result.failure(error))
                         }
                     },
                 )
@@ -124,21 +137,11 @@ private class AppleAuthorizationDelegate(
                 didCompleteWithAuthorization.credential as? ASAuthorizationAppleIDCredential
                     ?: throw AppleAuthException("Unsupported Apple credential")
 
-            val token = credential.identityToken?.toUtf8String()
-                ?: throw AppleAuthException("Apple identity token is missing")
             val authorizationCode = credential.authorizationCode?.toUtf8String()
                 ?: throw AppleAuthException("Apple authorization code is missing")
-            val userId = credential.user
-            val name =
-                credential.fullName?.let { formatter.stringFromPersonNameComponents(it) }.orEmpty()
-            val email = credential.email.orEmpty()
 
             AppleAccount(
-                token = token,
                 authorizationCode = authorizationCode,
-                userId = userId,
-                fullName = name,
-                email = email,
             )
         }.fold(onSuccess = onSuccess, onFailure = { error ->
             onFailure(error.asAppleAuthException())
@@ -149,13 +152,17 @@ private class AppleAuthorizationDelegate(
         controller: ASAuthorizationController,
         didCompleteWithError: NSError,
     ) {
+        if (didCompleteWithError.domain == ASAuthorizationErrorDomain &&
+            didCompleteWithError.code == ASAuthorizationErrorCanceled.toLong()
+        ) {
+            onFailure(AppleAuthException("Apple sign-in was cancelled"))
+            return
+        }
+
         val description = didCompleteWithError.localizedDescription ?: "Apple sign-in failed"
         onFailure(AppleAuthException(description))
     }
 
-    private companion object {
-        val formatter = NSPersonNameComponentsFormatter()
-    }
 }
 
 private fun Throwable.asAppleAuthException(): AppleAuthException {
@@ -165,6 +172,7 @@ private fun Throwable.asAppleAuthException(): AppleAuthException {
     )
 }
 
+@OptIn(BetaInteropApi::class)
 private fun platform.Foundation.NSData.toUtf8String(): String? {
     return NSString.create(data = this, encoding = NSUTF8StringEncoding)?.toString()
 }

@@ -8,7 +8,7 @@ internal interface AuthorizationRepository {
 
     suspend fun google(token: String): Result<Unit>
 
-    suspend fun apple(token: String, code: String): Result<Unit>
+    suspend fun apple(code: String): Result<Unit>
 
     suspend fun register(email: String, password: String): Result<Unit>
 

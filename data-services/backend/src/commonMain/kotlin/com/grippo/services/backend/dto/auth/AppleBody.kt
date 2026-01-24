@@ -5,8 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class AppleBody(
-    @SerialName("idToken")
-    val idToken: String,
-    @SerialName("authorizationCode")
-    val authorizationCode: String,
+    @SerialName("code")
+    val code: String,
 )
