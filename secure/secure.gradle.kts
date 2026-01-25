@@ -1,3 +1,4 @@
+import java.io.File
 import java.util.Properties
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
@@ -8,6 +9,7 @@ import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 
 abstract class SyncSecureConfigs : DefaultTask() {
+
     @get:InputFile
     @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val googleAuthProps: RegularFileProperty
@@ -62,35 +64,48 @@ abstract class SyncSecureConfigs : DefaultTask() {
         logger.lifecycle("secure: ✅ firebase ios -> ${iosFirebaseTargetFile.path}")
 
         logger.lifecycle("secure: ✅ applying Google Sign-In identifiers")
+
         val webClientId = requireProp(googleProps, Keys.webClientId, propsFile)
         val iosClientId = requireProp(googleProps, Keys.iosClientId, propsFile)
         requireProp(googleProps, Keys.androidClientId, propsFile)
+
         val gidServerClientId = webClientId
         val gidRedirectUri = buildGidRedirectUri(iosClientId)
         val gidReversedClientId = buildGidReversedClientId(iosClientId)
 
         val androidAppGradleFile = androidAppGradle.get().asFile
         replaceOrError(
-            androidAppGradleFile,
-            Patterns.googleServerClientId,
-            "manifestPlaceholders[\"GOOGLE_SERVER_CLIENT_ID\"]"
+            file = androidAppGradleFile,
+            regex = Patterns.googleServerClientId,
+            label = "manifestPlaceholders[\"GOOGLE_SERVER_CLIENT_ID\"]"
         ) { match ->
             "${match.groupValues[1]}$webClientId${match.groupValues[3]}"
         }
 
         val iosInfoPlistFile = iosInfoPlist.get().asFile
-        replaceOrError(iosInfoPlistFile, Patterns.gidClientId, "GIDClientID") { match ->
-            "${match.groupValues[1]}$iosClientId${match.groupValues[3]}"
-        }
-        replaceOrError(iosInfoPlistFile, Patterns.gidServerClientId, "GIDServerClientID") { match ->
-            "${match.groupValues[1]}$gidServerClientId${match.groupValues[3]}"
-        }
-        replaceOrError(iosInfoPlistFile, Patterns.gidRedirectUri, "GIDRedirectURI") { match ->
-            "${match.groupValues[1]}$gidRedirectUri${match.groupValues[3]}"
-        }
-        replaceOrError(iosInfoPlistFile, Patterns.gidReversedClientId, "CFBundleURLSchemes") { match ->
-            "${match.groupValues[1]}$gidReversedClientId${match.groupValues[3]}"
-        }
+
+        replacePlistKeyStringOrError(
+            file = iosInfoPlistFile,
+            keyName = "GIDClientID",
+            value = iosClientId
+        )
+
+        replacePlistKeyStringOrError(
+            file = iosInfoPlistFile,
+            keyName = "GIDServerClientID",
+            value = gidServerClientId
+        )
+
+        replacePlistKeyStringOrError(
+            file = iosInfoPlistFile,
+            keyName = "GIDRedirectURI",
+            value = gidRedirectUri
+        )
+
+        replacePlistFirstUrlSchemeOrError(
+            file = iosInfoPlistFile,
+            schemeValue = gidReversedClientId
+        )
 
         logger.lifecycle("secure: ✅ updated androidApp/build.gradle.kts and iosApp/iosApp/Info.plist")
         logger.lifecycle("secure: ✅ done")
@@ -127,6 +142,49 @@ abstract class SyncSecureConfigs : DefaultTask() {
         file.writeText(updated)
     }
 
+    private fun replacePlistKeyStringOrError(
+        file: File,
+        keyName: String,
+        value: String
+    ) {
+        val content = file.readText()
+
+        val keyRegex = Regex(
+            "(<key>${Regex.escape(keyName)}</key>\\s*<string>)([\\s\\S]*?)(</string>)",
+            RegexOption.DOT_MATCHES_ALL
+        )
+
+        val match = keyRegex.find(content) ?: error("Missing $keyName in ${file.path}")
+
+        val updated = content.replaceRange(
+            match.range,
+            "${match.groupValues[1]}${value.trim()}${match.groupValues[3]}"
+        )
+
+        file.writeText(updated)
+    }
+
+    private fun replacePlistFirstUrlSchemeOrError(
+        file: File,
+        schemeValue: String
+    ) {
+        val content = file.readText()
+
+        val schemeRegex = Regex(
+            "(<key>CFBundleURLSchemes</key>[\\s\\S]*?<array>[\\s\\S]*?<string>)([\\s\\S]*?)(</string>)",
+            RegexOption.DOT_MATCHES_ALL
+        )
+
+        val match = schemeRegex.find(content) ?: error("Missing CFBundleURLSchemes in ${file.path}")
+
+        val updated = content.replaceRange(
+            match.range,
+            "${match.groupValues[1]}${schemeValue.trim()}${match.groupValues[3]}"
+        )
+
+        file.writeText(updated)
+    }
+
     private object Keys {
         const val webClientId = "GOOGLE_CLIENT_ID_WEB"
         const val androidClientId = "GOOGLE_CLIENT_ID_ANDROID"
@@ -136,17 +194,6 @@ abstract class SyncSecureConfigs : DefaultTask() {
     private object Patterns {
         val googleServerClientId =
             Regex("(manifestPlaceholders\\[\\\"GOOGLE_SERVER_CLIENT_ID\\\"\\]\\s*=\\s*\\\")([^\"]*)(\\\")")
-        val gidClientId =
-            Regex("(<key>GIDClientID</key>\\s*<string>)(.*?)(</string>)", RegexOption.DOT_MATCHES_ALL)
-        val gidServerClientId =
-            Regex("(<key>GIDServerClientID</key>\\s*<string>)(.*?)(</string>)", RegexOption.DOT_MATCHES_ALL)
-        val gidRedirectUri =
-            Regex("(<key>GIDRedirectURI</key>\\s*<string>)(.*?)(</string>)", RegexOption.DOT_MATCHES_ALL)
-        val gidReversedClientId =
-            Regex(
-                "(<key>CFBundleURLSchemes</key>\\s*<array>\\s*<string>)(.*?)(</string>)",
-                RegexOption.DOT_MATCHES_ALL
-            )
     }
 }
 
