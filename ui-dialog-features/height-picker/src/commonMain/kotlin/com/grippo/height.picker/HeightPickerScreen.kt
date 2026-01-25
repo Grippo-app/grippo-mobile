@@ -21,7 +21,6 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.height_picker_description
 import com.grippo.design.resources.provider.height_picker_title
 import com.grippo.design.resources.provider.submit_btn
 import com.grippo.height.picker.internal.HeightWheelPicker
@@ -49,16 +48,6 @@ internal fun HeightPickerScreen(
             text = AppTokens.strings.res(Res.string.height_picker_title),
             style = AppTokens.typography.h3(),
             color = AppTokens.colors.text.primary,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
-
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.height_picker_description),
-            style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.tertiary,
             textAlign = TextAlign.Center
         )
 

@@ -34,9 +34,8 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.continue_btn
-import com.grippo.design.resources.provider.registration_body_description
 import com.grippo.design.resources.provider.registration_name_description
-import com.grippo.design.resources.provider.registration_name_title
+import com.grippo.design.resources.provider.registration_user_title
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -67,14 +66,13 @@ internal fun UserScreen(
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.registration_name_title),
-//            text = AppTokens.strings.res(Res.string.registration_body_title),
+            text = AppTokens.strings.res(Res.string.registration_user_title),
             style = AppTokens.typography.h2(),
             color = AppTokens.colors.text.primary,
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Text(
             modifier = Modifier.fillMaxWidth(),
@@ -86,20 +84,9 @@ internal fun UserScreen(
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-
         InputName(
             value = state.name.display,
             onValueChange = contract::onNameChange
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.registration_body_description),
-            style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.secondary,
-            textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))

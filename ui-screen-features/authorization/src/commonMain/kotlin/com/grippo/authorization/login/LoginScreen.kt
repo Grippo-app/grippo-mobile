@@ -91,7 +91,7 @@ internal fun LoginScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Text(
             modifier = Modifier.fillMaxWidth(),

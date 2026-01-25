@@ -40,10 +40,7 @@ internal fun CheckSelectableCardLarge(
         label = "border"
     )
 
-    val iconTint by animateColorAsState(
-        if (isSelected) AppTokens.colors.semantic.success else AppTokens.colors.icon.tertiary,
-        label = "iconTint"
-    )
+    val iconTint = AppTokens.colors.icon.primary
 
     Column(
         modifier = modifier

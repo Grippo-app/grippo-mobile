@@ -81,7 +81,7 @@ internal fun MissingEquipmentsScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
         Text(
             modifier = Modifier
@@ -89,7 +89,7 @@ internal fun MissingEquipmentsScreen(
                 .fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.registration_equipment_description),
             style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.tertiary,
+            color = AppTokens.colors.text.secondary,
             textAlign = TextAlign.Center
         )
 

@@ -176,15 +176,18 @@
     <string name="continue_with_apple">Apple</string>
     <string name="login_button_registration_label">Не маєте облікового запису?</string>
     <string name="login_button_registration">Зареєструватися</string>
+    <string name="at_least_six_characters">Щонайменше 6 символів</string>
 
     <string name="registration_credential_title">Розпочнімо реєстрацію</string>
     <string name="registration_credential_description">Створіть акаунт, щоб зберігати тренування та відстежувати прогрес.</string>
 
+    <string name="registration_user_title">Налаштуємо твій профіль</string>
+
     <string name="registration_name_title">Як вас звати?</string>
-    <string name="registration_name_description">Ми будемо підбадьорювати вас під час тренувань!</string>
+    <string name="registration_name_description">Для більш персонального плану.</string>
 
     <string name="registration_body_title">Ваше тіло — ваша подорож</string>
-    <string name="registration_body_description">Вкажіть свою вагу й зріст.</string>
+    <string name="registration_body_description">Щоб підібрати рекомендації.</string>
 
     <string name="registration_experience_title">Скільки ви тренувалися?</string>
     <string name="registration_experience_description">Без паніки — у нас є плани для будь-якого рівня.</string>

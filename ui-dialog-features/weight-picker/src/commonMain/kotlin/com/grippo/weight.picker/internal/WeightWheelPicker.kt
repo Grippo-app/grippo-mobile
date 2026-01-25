@@ -10,6 +10,8 @@ import com.grippo.design.components.wheel.WheelItem
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.kg
 import com.grippo.weight.picker.DefaultWeightSuggestions
 import com.grippo.wheel.picker.DefaultSelectorProperties
 import com.grippo.wheel.picker.MultiWheelPicker
@@ -34,6 +36,7 @@ internal fun WeightWheelPicker(
         itemContent = { item, _ ->
             WheelItem(
                 text = item.toString(),
+                subText = AppTokens.strings.res(Res.string.kg),
                 isValid = true
             )
         },

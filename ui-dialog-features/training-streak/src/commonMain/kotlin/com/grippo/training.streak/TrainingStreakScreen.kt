@@ -47,13 +47,13 @@ internal fun TrainingStreakScreen(
         textAlign = TextAlign.Center
     )
 
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
     Text(
         modifier = Modifier.fillMaxWidth(),
         text = state.range.formatted(),
         style = AppTokens.typography.b14Semi(),
-        color = AppTokens.colors.text.tertiary,
+        color = AppTokens.colors.text.secondary,
         textAlign = TextAlign.Center
     )
 

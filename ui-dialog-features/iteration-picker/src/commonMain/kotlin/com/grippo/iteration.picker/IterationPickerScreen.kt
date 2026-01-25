@@ -91,7 +91,7 @@ internal fun IterationPickerScreen(
         textAlign = TextAlign.Center
     )
 
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
     state.example.hint()?.let { hint ->
         Text(
@@ -100,7 +100,7 @@ internal fun IterationPickerScreen(
                 .fillMaxWidth(),
             text = hint,
             style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.tertiary,
+            color = AppTokens.colors.text.secondary,
             textAlign = TextAlign.Center
         )
     }

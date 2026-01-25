@@ -22,7 +22,6 @@ import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.submit_btn
-import com.grippo.design.resources.provider.weight_picker_description
 import com.grippo.design.resources.provider.weight_picker_title
 import com.grippo.weight.picker.internal.WeightWheelPicker
 import kotlinx.collections.immutable.ImmutableSet
@@ -49,16 +48,6 @@ internal fun WeightPickerScreen(
             text = AppTokens.strings.res(Res.string.weight_picker_title),
             style = AppTokens.typography.h3(),
             color = AppTokens.colors.text.primary,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
-
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.weight_picker_description),
-            style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.tertiary,
             textAlign = TextAlign.Center
         )
 

@@ -44,7 +44,7 @@ public sealed class PasswordFormatState : FormatState<String> {
 
     private object PasswordValidator {
         fun isValid(value: String): Boolean {
-            return value.length > 6
+            return value.length >= 6
         }
     }
 }

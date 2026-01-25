@@ -178,15 +178,18 @@
     <string name="track_real_progress_no_fluff">💪 Track real progress. No fluff.</string>
     <string name="login_button_registration_label">Don't have an account?</string>
     <string name="login_button_registration">Sign up</string>
+    <string name="at_least_six_characters">At least 6 characters</string>
 
     <string name="registration_credential_title">Let’s get you signed up</string>
     <string name="registration_credential_description">Create an account to save workouts and track progress.</string>
 
+    <string name="registration_user_title">Let’s set up your profile</string>
+
     <string name="registration_name_title">What’s your name?</string>
-    <string name="registration_name_description">We’ll use it to cheer you on during your workouts!</string>
+    <string name="registration_name_description">For a more personal plan.</string>
 
     <string name="registration_body_title">Your body, your journey</string>
-    <string name="registration_body_description">Tell us your weight and height.</string>
+    <string name="registration_body_description">To tailor recommendations.</string>
 
     <string name="registration_experience_title">How much have you trained?</string>
     <string name="registration_experience_description">No worries — we’ve got plans for every level.</string>

@@ -176,15 +176,18 @@
     <string name="continue_with_apple">Apple</string>
     <string name="login_button_registration_label">Нет аккаунта?</string>
     <string name="login_button_registration">Зарегистрироваться</string>
+    <string name="at_least_six_characters">Минимум 6 символов</string>
 
     <string name="registration_credential_title">Давайте зарегистрируемся</string>
     <string name="registration_credential_description">Создайте аккаунт, чтобы сохранять тренировки и отслеживать прогресс.</string>
 
+    <string name="registration_user_title">Настроим профиль</string>
+
     <string name="registration_name_title">Как вас зовут?</string>
-    <string name="registration_name_description">Мы будем поддерживать вас во время тренировок!</string>
+    <string name="registration_name_description">Для более персонального плана.</string>
 
     <string name="registration_body_title">Ваше тело — ваш путь</string>
-    <string name="registration_body_description">Укажите вес и рост.</string>
+    <string name="registration_body_description">Чтобы подобрать рекомендации.</string>
 
     <string name="registration_experience_title">Сколько вы тренируетесь?</string>
     <string name="registration_experience_description">Не переживайте — у нас есть планы для любого уровня.</string>
