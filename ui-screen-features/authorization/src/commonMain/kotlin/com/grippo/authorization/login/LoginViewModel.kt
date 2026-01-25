@@ -83,7 +83,8 @@ internal class LoginViewModel(
     }
 
     override fun onRegisterClick() {
-        navigateTo(LoginDirection.Registration)
+        val email = state.value.email.takeIf { it is EmailFormatState.Valid }?.display
+        navigateTo(LoginDirection.Registration(email))
     }
 
     override fun onBack() {

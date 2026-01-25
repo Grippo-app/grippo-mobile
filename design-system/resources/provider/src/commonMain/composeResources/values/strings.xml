@@ -150,6 +150,7 @@
     <string name="total_value">Total %1$s</string>
     <string name="add_set_btn">Add Set</string>
     <string name="or">OR</string>
+    <string name="create_account_btn">Create account</string>
     <string name="email_placeholder">Enter email</string>
     <string name="password_placeholder_default">Enter password</string>
     <string name="password_placeholder_repeat">Repeat password</string>
@@ -179,7 +180,7 @@
     <string name="login_button_registration">Sign up</string>
 
     <string name="registration_credential_title">Let’s get you signed up</string>
-    <string name="registration_credential_description">Just your email and a password — quick and easy.</string>
+    <string name="registration_credential_description">Create an account to save workouts and track progress.</string>
 
     <string name="registration_name_title">What’s your name?</string>
     <string name="registration_name_description">We’ll use it to cheer you on during your workouts!</string>

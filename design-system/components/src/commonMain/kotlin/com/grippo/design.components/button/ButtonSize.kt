@@ -12,7 +12,6 @@ internal data class ButtonMetrics(
     val space: Dp,
     val spaceTransparent: Dp,
     val icon: Dp,
-    val radius: Dp,
 )
 
 @Composable
@@ -24,7 +23,6 @@ internal fun resolveButtonSize(size: ButtonSize): ButtonMetrics {
             space = AppTokens.dp.button.medium.space,
             spaceTransparent = AppTokens.dp.button.medium.spaceTransparent,
             icon = AppTokens.dp.button.medium.icon,
-            radius = AppTokens.dp.button.medium.radius,
         )
 
         ButtonSize.Small -> ButtonMetrics(
@@ -33,7 +31,6 @@ internal fun resolveButtonSize(size: ButtonSize): ButtonMetrics {
             space = AppTokens.dp.button.small.space,
             spaceTransparent = AppTokens.dp.button.small.spaceTransparent,
             icon = AppTokens.dp.button.small.icon,
-            radius = AppTokens.dp.button.small.radius,
         )
     }
 }

@@ -5,7 +5,7 @@ import androidx.compose.runtime.Immutable
 @Immutable
 internal interface AuthProcessContract {
     fun onClose()
-    fun toRegistration()
+    fun toRegistration(email: String?)
     fun toHome()
     fun toProfileCreation()
     fun onBack()
@@ -13,7 +13,7 @@ internal interface AuthProcessContract {
     @Immutable
     companion object Empty : AuthProcessContract {
         override fun onClose() {}
-        override fun toRegistration() {}
+        override fun toRegistration(email: String?) {}
         override fun toHome() {}
         override fun toProfileCreation() {}
         override fun onBack() {}

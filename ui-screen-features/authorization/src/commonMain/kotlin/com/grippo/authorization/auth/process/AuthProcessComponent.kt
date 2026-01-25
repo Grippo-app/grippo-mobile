@@ -35,11 +35,25 @@ internal class AuthProcessComponent(
 
     override suspend fun eventListener(direction: AuthProcessDirection) {
         when (direction) {
-            AuthProcessDirection.Close -> close.invoke()
-            AuthProcessDirection.Registration -> navigation.push(AuthProcessRouter.Registration)
-            AuthProcessDirection.Home -> toHome.invoke()
-            AuthProcessDirection.ProfileCreation -> toProfileCreation.invoke()
-            AuthProcessDirection.Back -> navigation.pop()
+            AuthProcessDirection.Close -> {
+                close.invoke()
+            }
+
+            is AuthProcessDirection.Registration -> {
+                navigation.push(AuthProcessRouter.Registration(direction.email))
+            }
+
+            AuthProcessDirection.Home -> {
+                toHome.invoke()
+            }
+
+            AuthProcessDirection.ProfileCreation -> {
+                toProfileCreation.invoke()
+            }
+
+            AuthProcessDirection.Back -> {
+                navigation.pop()
+            }
         }
     }
 
@@ -66,9 +80,10 @@ internal class AuthProcessComponent(
                 )
             )
 
-            AuthProcessRouter.Registration -> Child.Registration(
+            is AuthProcessRouter.Registration -> Child.Registration(
                 CredentialComponent(
                     componentContext = context,
+                    email = router.email,
                     toCreateProfile = viewModel::toProfileCreation,
                     toHome = viewModel::toHome,
                     back = viewModel::onBack

@@ -9,7 +9,7 @@ import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 
 internal class LoginComponent(
     componentContext: ComponentContext,
-    private val toRegistration: () -> Unit,
+    private val toRegistration: (email: String?) -> Unit,
     private val toHome: () -> Unit,
     private val toCreateProfile: () -> Unit,
     private val back: () -> Unit,
@@ -31,7 +31,7 @@ internal class LoginComponent(
 
     override suspend fun eventListener(direction: LoginDirection) {
         when (direction) {
-            LoginDirection.Registration -> toRegistration.invoke()
+            is LoginDirection.Registration -> toRegistration.invoke(direction.email)
             LoginDirection.Home -> toHome.invoke()
             LoginDirection.CreateProfile -> toCreateProfile.invoke()
             LoginDirection.Back -> back.invoke()

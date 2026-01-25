@@ -31,7 +31,7 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.next_btn
+import com.grippo.design.resources.provider.create_account_btn
 import com.grippo.design.resources.provider.registration_credential_description
 import com.grippo.design.resources.provider.registration_credential_title
 import kotlinx.collections.immutable.ImmutableSet
@@ -76,7 +76,7 @@ internal fun CredentialScreen(
             modifier = Modifier.fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.registration_credential_description),
             style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.tertiary,
+            color = AppTokens.colors.text.secondary,
             textAlign = TextAlign.Center
         )
 
@@ -110,7 +110,7 @@ internal fun CredentialScreen(
         Button(
             modifier = Modifier.fillMaxWidth(),
             content = ButtonContent.Text(
-                text = AppTokens.strings.res(Res.string.next_btn),
+                text = AppTokens.strings.res(Res.string.create_account_btn),
             ),
             state = buttonState,
             style = ButtonStyle.Primary,

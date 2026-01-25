@@ -6,8 +6,13 @@ import com.grippo.core.state.formatters.PasswordFormatState
 import com.grippo.data.features.api.authorization.RegisterUseCase
 
 internal class CredentialViewModel(
+    email: String?,
     private val registerUseCase: RegisterUseCase
-) : BaseViewModel<CredentialState, CredentialDirection, CredentialLoader>(CredentialState()),
+) : BaseViewModel<CredentialState, CredentialDirection, CredentialLoader>(
+    CredentialState(
+        email = EmailFormatState.of(email)
+    )
+),
     CredentialContract {
     override fun onEmailChange(value: String) {
         update { it.copy(email = EmailFormatState.of(value)) }

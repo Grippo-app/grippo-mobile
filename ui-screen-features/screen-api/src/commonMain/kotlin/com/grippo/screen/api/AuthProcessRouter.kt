@@ -10,5 +10,5 @@ public sealed class AuthProcessRouter : BaseRouter {
     public data object Login : AuthProcessRouter()
 
     @Serializable
-    public data object Registration : AuthProcessRouter()
+    public data class Registration(val email: String?) : AuthProcessRouter()
 }

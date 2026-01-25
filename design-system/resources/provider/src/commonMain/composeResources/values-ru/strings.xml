@@ -178,7 +178,7 @@
     <string name="login_button_registration">Зарегистрироваться</string>
 
     <string name="registration_credential_title">Давайте зарегистрируемся</string>
-    <string name="registration_credential_description">Только email и пароль — быстро и просто.</string>
+    <string name="registration_credential_description">Создайте аккаунт, чтобы сохранять тренировки и отслеживать прогресс.</string>
 
     <string name="registration_name_title">Как вас зовут?</string>
     <string name="registration_name_description">Мы будем поддерживать вас во время тренировок!</string>

@@ -143,7 +143,7 @@ internal fun LoginScreen(
             text = AppTokens.strings.res(Res.string.or_continue_with)
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         Row(
             Modifier.fillMaxWidth(),

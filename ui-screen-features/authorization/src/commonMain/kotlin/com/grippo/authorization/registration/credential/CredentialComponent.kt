@@ -9,6 +9,7 @@ import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 
 internal class CredentialComponent(
     componentContext: ComponentContext,
+    email: String?,
     private val toCreateProfile: () -> Unit,
     private val toHome: () -> Unit,
     private val back: () -> Unit,
@@ -16,6 +17,7 @@ internal class CredentialComponent(
 
     override val viewModel = componentContext.retainedInstance {
         CredentialViewModel(
+            email = email,
             registerUseCase = getKoin().get()
         )
     }

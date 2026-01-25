@@ -29,7 +29,11 @@ public sealed class EmailFormatState : FormatState<String> {
     ) : EmailFormatState()
 
     public companion object {
-        public fun of(value: String): EmailFormatState {
+        public fun of(value: String?): EmailFormatState {
+            if (value == null) {
+                return Empty()
+            }
+
             if (value.isEmpty()) {
                 return Empty()
             }

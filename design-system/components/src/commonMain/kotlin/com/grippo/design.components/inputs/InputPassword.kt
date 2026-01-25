@@ -12,7 +12,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -38,29 +37,18 @@ import com.grippo.design.resources.provider.icons.EyeOff
 import com.grippo.design.resources.provider.icons.EyeOn
 import com.grippo.design.resources.provider.icons.Lock
 import com.grippo.design.resources.provider.password_placeholder_default
-import com.grippo.design.resources.provider.password_placeholder_repeat
-
-@Immutable
-public enum class InputPasswordType {
-    DEFAULT,
-    REPEAT
-}
 
 @Composable
 public fun InputPassword(
     modifier: Modifier = Modifier,
     value: String,
-    type: InputPasswordType,
     onValueChange: (String) -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
 
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
 
-    val placeholder = when (type) {
-        InputPasswordType.DEFAULT -> AppTokens.strings.res(Res.string.password_placeholder_default)
-        InputPasswordType.REPEAT -> AppTokens.strings.res(Res.string.password_placeholder_repeat)
-    }
+    val placeholder = AppTokens.strings.res(Res.string.password_placeholder_default)
 
     Input(
         modifier = modifier,
@@ -136,9 +124,7 @@ public fun InputPassword(
             onValueChange = onValueChange,
         ),
         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-        placeholder = PlaceHolder.OverInput(
-            value = placeholder
-        ),
+        placeholder = PlaceHolder.OverInput(value = placeholder),
     )
 }
 
@@ -148,13 +134,11 @@ private fun InputPasswordPreview() {
     PreviewContainer {
         InputPassword(
             value = "qwerty123",
-            type = InputPasswordType.DEFAULT,
             onValueChange = {}
         )
 
         InputPassword(
             value = "",
-            type = InputPasswordType.REPEAT,
             onValueChange = {}
         )
     }

@@ -282,7 +282,6 @@ public data object AppDp {
             val icon: Dp = AppDp.icon.medium
             val space: Dp = padding.small
             val spaceTransparent: Dp = padding.extraSmall
-            val radius: Dp = AppDp.radius.medium
         }
 
         public data object Small {
@@ -291,7 +290,6 @@ public data object AppDp {
             val icon: Dp = AppDp.icon.medium
             val space: Dp = padding.small
             val spaceTransparent: Dp = padding.extraSmall
-            val radius: Dp = AppDp.radius.small
         }
     }
 

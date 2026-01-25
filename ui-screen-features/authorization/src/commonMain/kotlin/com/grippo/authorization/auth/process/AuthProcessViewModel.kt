@@ -10,8 +10,8 @@ internal class AuthProcessViewModel :
         navigateTo(AuthProcessDirection.Close)
     }
 
-    override fun toRegistration() {
-        navigateTo(AuthProcessDirection.Registration)
+    override fun toRegistration(email: String?) {
+        navigateTo(AuthProcessDirection.Registration(email))
     }
 
     override fun toHome() {
