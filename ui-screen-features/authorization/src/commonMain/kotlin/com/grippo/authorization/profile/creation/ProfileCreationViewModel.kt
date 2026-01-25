@@ -14,14 +14,9 @@ internal class ProfileCreationViewModel :
         navigateTo(ProfileCreationDirection.Close)
     }
 
-    override fun toBodyWithName(name: String) {
-        update { it.copy(name = name) }
-        navigateTo(ProfileCreationDirection.ToBodyWithName(name))
-    }
-
-    override fun toExperienceWithBody(weight: Float, height: Int) {
-        update { it.copy(weight = weight, height = height) }
-        navigateTo(ProfileCreationDirection.ToExperienceWithBody(weight, height))
+    override fun toExperienceWithUser(name: String, weight: Float, height: Int) {
+        update { it.copy(weight = weight, height = height, name = name) }
+        navigateTo(ProfileCreationDirection.ToExperienceWithBody(name, weight, height))
     }
 
     override fun toExcludedMusclesWithExperience(experience: ExperienceEnumState) {

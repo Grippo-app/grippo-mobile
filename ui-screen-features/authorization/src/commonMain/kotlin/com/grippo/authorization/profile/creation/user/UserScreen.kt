@@ -1,4 +1,4 @@
-package com.grippo.authorization.profile.creation.body
+package com.grippo.authorization.profile.creation.user
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,17 +10,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.HeightFormatState
+import com.grippo.core.state.formatters.NameFormatState
 import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
+import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.inputs.InputHeight
+import com.grippo.design.components.inputs.InputName
 import com.grippo.design.components.inputs.InputWeight
 import com.grippo.design.components.toolbar.Leading
 import com.grippo.design.components.toolbar.Toolbar
@@ -31,15 +35,16 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.continue_btn
 import com.grippo.design.resources.provider.registration_body_description
-import com.grippo.design.resources.provider.registration_body_title
+import com.grippo.design.resources.provider.registration_name_description
+import com.grippo.design.resources.provider.registration_name_title
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
-internal fun BodyScreen(
-    state: BodyState,
-    loaders: ImmutableSet<BodyLoader>,
-    contract: BodyContract
+internal fun UserScreen(
+    state: UserState,
+    loaders: ImmutableSet<UserLoader>,
+    contract: UserContract
 ) = BaseComposeScreen(
     ScreenBackground.Color(
         value = AppTokens.colors.background.screen
@@ -62,7 +67,8 @@ internal fun BodyScreen(
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.registration_body_title),
+            text = AppTokens.strings.res(Res.string.registration_name_title),
+//            text = AppTokens.strings.res(Res.string.registration_body_title),
             style = AppTokens.typography.h2(),
             color = AppTokens.colors.text.primary,
             textAlign = TextAlign.Center
@@ -72,9 +78,27 @@ internal fun BodyScreen(
 
         Text(
             modifier = Modifier.fillMaxWidth(),
+            text = AppTokens.strings.res(Res.string.registration_name_description),
+            style = AppTokens.typography.b14Med(),
+            color = AppTokens.colors.text.secondary,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+
+        InputName(
+            value = state.name.display,
+            onValueChange = contract::onNameChange
+        )
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+        Text(
+            modifier = Modifier.fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.registration_body_description),
             style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.tertiary,
+            color = AppTokens.colors.text.secondary,
             textAlign = TextAlign.Center
         )
 
@@ -94,11 +118,20 @@ internal fun BodyScreen(
 
         Spacer(modifier = Modifier.weight(1f))
 
+        val buttonState = remember(loaders, state.name) {
+            when {
+                state.name is NameFormatState.Invalid -> ButtonState.Disabled
+                state.name is NameFormatState.Empty -> ButtonState.Disabled
+                else -> ButtonState.Enabled
+            }
+        }
+
         Button(
             modifier = Modifier.fillMaxWidth(),
             content = ButtonContent.Text(
                 text = AppTokens.strings.res(Res.string.continue_btn),
             ),
+            state = buttonState,
             style = ButtonStyle.Primary,
             onClick = contract::onNextClick
         )
@@ -113,13 +146,13 @@ internal fun BodyScreen(
 @Composable
 private fun ScreenPreview() {
     PreviewContainer {
-        BodyScreen(
-            state = BodyState(
+        UserScreen(
+            state = UserState(
                 weight = WeightFormatState.of(64.0f),
                 height = HeightFormatState.of(144)
             ),
             loaders = persistentSetOf(),
-            contract = BodyContract.Empty
+            contract = UserContract.Empty
         )
     }
 }

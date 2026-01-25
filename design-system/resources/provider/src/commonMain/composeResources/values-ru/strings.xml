@@ -184,7 +184,7 @@
     <string name="registration_name_description">Мы будем поддерживать вас во время тренировок!</string>
 
     <string name="registration_body_title">Ваше тело — ваш путь</string>
-    <string name="registration_body_description">Укажите вес и рост, чтобы мы могли подобрать план.</string>
+    <string name="registration_body_description">Укажите вес и рост.</string>
 
     <string name="registration_experience_title">Сколько вы тренируетесь?</string>
     <string name="registration_experience_description">Не переживайте — у нас есть планы для любого уровня.</string>

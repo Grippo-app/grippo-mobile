@@ -1,15 +1,16 @@
-package com.grippo.authorization.profile.creation.body
+package com.grippo.authorization.profile.creation.user
 
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.HeightFormatState
+import com.grippo.core.state.formatters.NameFormatState
 import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 
-internal class BodyViewModel(
+internal class UserViewModel(
     private val dialogController: DialogController
-) : BaseViewModel<BodyState, BodyDirection, BodyLoader>(BodyState()),
-    BodyContract {
+) : BaseViewModel<UserState, UserDirection, UserLoader>(UserState()),
+    UserContract {
 
     override fun onWeightPickerClick() {
         val dialog = DialogConfig.WeightPicker(
@@ -27,11 +28,17 @@ internal class BodyViewModel(
         dialogController.show(dialog)
     }
 
+    override fun onNameChange(value: String) {
+        update { it.copy(name = NameFormatState.of(value)) }
+    }
+
     override fun onNextClick() {
+        val name = (state.value.name as? NameFormatState.Valid) ?: return
         val weight = (state.value.weight as? WeightFormatState.Valid) ?: return
         val height = (state.value.height as? HeightFormatState.Valid) ?: return
 
-        val direction = BodyDirection.Experience(
+        val direction = UserDirection.Experience(
+            name = name.value,
             weight = weight.value,
             height = height.value
         )
@@ -39,6 +46,6 @@ internal class BodyViewModel(
     }
 
     override fun onBack() {
-        navigateTo(BodyDirection.Back)
+        navigateTo(UserDirection.Back)
     }
 }

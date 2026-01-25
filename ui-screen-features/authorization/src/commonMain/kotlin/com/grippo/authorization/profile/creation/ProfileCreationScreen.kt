@@ -59,8 +59,7 @@ internal fun ProfileCreationScreen(
 }
 
 private val PROFILE_CREATION_FLOW = listOf(
-    ProfileCreationRouter.Name,
-    ProfileCreationRouter.Body,
+    ProfileCreationRouter.User,
     ProfileCreationRouter.Experience,
     ProfileCreationRouter.ExcludedMuscles,
     ProfileCreationRouter.MissingEquipments,

@@ -186,7 +186,7 @@
     <string name="registration_name_description">We’ll use it to cheer you on during your workouts!</string>
 
     <string name="registration_body_title">Your body, your journey</string>
-    <string name="registration_body_description">Tell us your weight and height so we can tailor your plan.</string>
+    <string name="registration_body_description">Tell us your weight and height.</string>
 
     <string name="registration_experience_title">How much have you trained?</string>
     <string name="registration_experience_description">No worries — we’ve got plans for every level.</string>

@@ -7,10 +7,7 @@ import kotlinx.serialization.Serializable
 public sealed class ProfileCreationRouter : BaseRouter {
 
     @Serializable
-    public data object Name : ProfileCreationRouter()
-
-    @Serializable
-    public data object Body : ProfileCreationRouter()
+    public data object User : ProfileCreationRouter()
 
     @Serializable
     public data object Experience : ProfileCreationRouter()

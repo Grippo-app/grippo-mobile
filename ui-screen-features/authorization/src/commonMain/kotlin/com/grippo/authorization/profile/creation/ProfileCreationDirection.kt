@@ -6,7 +6,9 @@ import com.grippo.core.state.profile.ExperienceEnumState
 internal sealed interface ProfileCreationDirection : BaseDirection {
     data object Close : ProfileCreationDirection
     data class ToBodyWithName(val name: String) : ProfileCreationDirection
-    data class ToExperienceWithBody(val weight: Float, val height: Int) : ProfileCreationDirection
+    data class ToExperienceWithBody(val name: String, val weight: Float, val height: Int) :
+        ProfileCreationDirection
+
     data class ToExcludedMusclesWithExperience(val experience: ExperienceEnumState) :
         ProfileCreationDirection
 

@@ -1,4 +1,4 @@
-package com.grippo.authorization.profile.creation.name
+package com.grippo.authorization.profile.creation.user
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
@@ -7,16 +7,14 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 
-internal class NameComponent(
+internal class UserComponent(
     componentContext: ComponentContext,
-    private val toBody: (name: String) -> Unit,
+    private val toExperience: (name: String, weight: Float, height: Int) -> Unit,
     private val back: () -> Unit,
-) : BaseComponent<NameDirection>(componentContext) {
+) : BaseComponent<UserDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        NameViewModel(
-            authorizationFeature = getKoin().get()
-        )
+        UserViewModel(dialogController = getKoin().get())
     }
 
     private val backCallback = BackCallback(onBack = viewModel::onBack)
@@ -25,10 +23,15 @@ internal class NameComponent(
         backHandler.register(backCallback)
     }
 
-    override suspend fun eventListener(direction: NameDirection) {
+    override suspend fun eventListener(direction: UserDirection) {
         when (direction) {
-            is NameDirection.Body -> toBody.invoke(direction.name)
-            NameDirection.Back -> back.invoke()
+            is UserDirection.Experience -> toExperience.invoke(
+                direction.name,
+                direction.weight,
+                direction.height
+            )
+
+            UserDirection.Back -> back.invoke()
         }
     }
 
@@ -36,6 +39,6 @@ internal class NameComponent(
     override fun Render() {
         val state = viewModel.state.collectAsStateMultiplatform()
         val loaders = viewModel.loaders.collectAsStateMultiplatform()
-        NameScreen(state.value, loaders.value, viewModel)
+        UserScreen(state.value, loaders.value, viewModel)
     }
 }

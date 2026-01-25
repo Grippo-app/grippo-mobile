@@ -10,12 +10,11 @@ import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.instancekeeper.retainedInstance
-import com.grippo.authorization.profile.creation.body.BodyComponent
 import com.grippo.authorization.profile.creation.completed.CompletedComponent
 import com.grippo.authorization.profile.creation.excluded.muscles.ExcludedMusclesComponent
 import com.grippo.authorization.profile.creation.experience.ExperienceComponent
 import com.grippo.authorization.profile.creation.missing.equipments.MissingEquipmentsComponent
-import com.grippo.authorization.profile.creation.name.NameComponent
+import com.grippo.authorization.profile.creation.user.UserComponent
 import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 import com.grippo.screen.api.ProfileCreationRouter
@@ -34,7 +33,7 @@ internal class ProfileCreationComponent(
     override suspend fun eventListener(direction: ProfileCreationDirection) {
         when (direction) {
             is ProfileCreationDirection.ToBodyWithName -> navigation.push(
-                ProfileCreationRouter.Body
+                ProfileCreationRouter.User
             )
 
             is ProfileCreationDirection.ToExperienceWithBody -> navigation.push(
@@ -71,7 +70,7 @@ internal class ProfileCreationComponent(
     internal val childStack: Value<ChildStack<ProfileCreationRouter, Child>> = childStack(
         source = navigation,
         serializer = ProfileCreationRouter.serializer(),
-        initialStack = { listOf(ProfileCreationRouter.Name) },
+        initialStack = { listOf(ProfileCreationRouter.User) },
         key = "ProfileCreationComponent",
         handleBackButton = true,
         childFactory = ::createChild,
@@ -79,18 +78,10 @@ internal class ProfileCreationComponent(
 
     private fun createChild(router: ProfileCreationRouter, context: ComponentContext): Child {
         return when (router) {
-            ProfileCreationRouter.Name -> Child.Name(
-                NameComponent(
+            ProfileCreationRouter.User -> Child.Body(
+                UserComponent(
                     componentContext = context,
-                    toBody = viewModel::toBodyWithName,
-                    back = viewModel::toLogin
-                ),
-            )
-
-            ProfileCreationRouter.Body -> Child.Body(
-                BodyComponent(
-                    componentContext = context,
-                    toExperience = viewModel::toExperienceWithBody,
+                    toExperience = viewModel::toExperienceWithUser,
                     back = viewModel::onBack
                 ),
             )
@@ -143,10 +134,7 @@ internal class ProfileCreationComponent(
     }
 
     internal sealed class Child(open val component: BaseComponent<*>) {
-        data class Name(override val component: NameComponent) :
-            Child(component)
-
-        data class Body(override val component: BodyComponent) :
+        data class Body(override val component: UserComponent) :
             Child(component)
 
         data class Experience(override val component: ExperienceComponent) :
