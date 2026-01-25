@@ -169,6 +169,8 @@
     <string name="login_title">Welcome to Grippo</string>
     <string name="login_description">Sign in to your account</string>
     <string name="login_button_login">Log in</string>
+    <string name="account_deletion">Account deletion</string>
+    <string name="account_deletion_description">Your account and data will be permanently removed. You won’t be able to restore them later.</string>
     <string name="continue_with_google">Google</string>
     <string name="continue_with_apple">Apple</string>
     <string name="track_real_progress_no_fluff">💪 Track real progress. No fluff.</string>

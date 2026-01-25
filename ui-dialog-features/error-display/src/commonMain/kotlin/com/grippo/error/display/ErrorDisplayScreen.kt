@@ -48,7 +48,7 @@ internal fun ErrorDisplayScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
         Icon(
-            modifier = Modifier.size(AppTokens.dp.error.icon),
+            modifier = Modifier.size(AppTokens.dp.semantic.icon),
             imageVector = AppTokens.icons.Warning,
             tint = AppTokens.colors.semantic.error,
             contentDescription = null
@@ -104,7 +104,7 @@ private fun ScreenPreview() {
     PreviewContainer {
         ErrorDisplayScreen(
             state = ErrorDisplayState(
-                error = AppErrorState.Unknown
+                error = AppErrorState.Expected("Text error title", "Text error description")
             ),
             contract = ErrorDisplayContract.Empty,
             loaders = persistentSetOf()

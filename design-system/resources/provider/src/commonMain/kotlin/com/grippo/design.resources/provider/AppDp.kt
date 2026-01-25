@@ -50,7 +50,7 @@ public data object AppDp {
     val dialog: Dialog = Dialog
     val input: Input = Input
     val button: Button = Button
-    val error: Error = Error
+    val semantic: Semantic = Semantic
     val loader: Loader = Loader
     val segment: Segment = Segment
     val menu: Menu = Menu
@@ -446,7 +446,7 @@ public data object AppDp {
         }
     }
 
-    public data object Error {
+    public data object Semantic {
         val icon: Dp = AppDp.icon.xxxLarge
     }
 

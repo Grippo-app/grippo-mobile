@@ -169,6 +169,8 @@
     <string name="track_real_progress_no_fluff">💪 Лише прогрес. Без шуму.</string>
     <string name="login_description">Увійдіть до свого облікового запису</string>
     <string name="login_button_login">Увійти</string>
+    <string name="account_deletion">Видалення акаунта</string>
+    <string name="account_deletion_description">Ваш акаунт і дані буде видалено назавжди. Ви не зможете відновити їх пізніше.</string>
     <string name="continue_with_google">Google</string>
     <string name="continue_with_apple">Apple</string>
     <string name="login_button_registration_label">Не маєте облікового запису?</string>

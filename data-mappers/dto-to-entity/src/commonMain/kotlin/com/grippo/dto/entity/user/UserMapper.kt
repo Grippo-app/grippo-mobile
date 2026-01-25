@@ -49,6 +49,10 @@ public fun UserResponse.toEntityOrNull(): UserEntity? {
         "UserResponse.updatedAt is null"
     } ?: return null
 
+    val entityRole = AppLogger.Mapping.log(role) {
+        "UserResponse.role is null"
+    } ?: return null
+
     return UserEntity(
         id = entityId,
         profileId = entityProfileId,
@@ -59,5 +63,6 @@ public fun UserResponse.toEntityOrNull(): UserEntity? {
         name = entityName,
         createdAt = entityCreatedAt,
         updatedAt = entityUpdatedAt,
+        role = entityRole
     )
 }

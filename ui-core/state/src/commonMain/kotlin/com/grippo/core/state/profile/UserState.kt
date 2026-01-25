@@ -16,7 +16,8 @@ public data class UserState(
     val height: HeightFormatState,
     val weight: WeightFormatState,
     val createdAt: LocalDateTime,
-    val experience: ExperienceEnumState
+    val experience: ExperienceEnumState,
+    val role: RoleEnumState,
 )
 
 public fun stubUser(): UserState = UserState(
@@ -26,5 +27,6 @@ public fun stubUser(): UserState = UserState(
     height = HeightFormatState.of(Random.nextInt(140, 200)),
     weight = WeightFormatState.of(Random.nextInt(60, 100).toFloat()),
     createdAt = DateRange.Range.Daily().range.from,
-    experience = ExperienceEnumState.INTERMEDIATE
+    experience = ExperienceEnumState.INTERMEDIATE,
+    role = RoleEnumState.ADMIN
 )

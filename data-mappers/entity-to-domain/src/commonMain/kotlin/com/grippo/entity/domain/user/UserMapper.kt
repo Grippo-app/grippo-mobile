@@ -1,6 +1,7 @@
 package com.grippo.entity.domain.user
 
 import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
+import com.grippo.data.features.api.user.models.RoleEnum
 import com.grippo.data.features.api.user.models.User
 import com.grippo.services.database.entity.UserEntity
 import com.grippo.toolkit.date.utils.DateTimeUtils
@@ -18,6 +19,7 @@ public fun UserEntity.toDomain(): User? {
         weight = weight,
         experience = mappedExperience,
         height = height,
-        createAt = DateTimeUtils.toLocalDateTime(createdAt)
+        createAt = DateTimeUtils.toLocalDateTime(createdAt),
+        role = RoleEnum.of(role)
     )
 }

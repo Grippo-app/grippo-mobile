@@ -169,6 +169,8 @@
     <string name="track_real_progress_no_fluff">💪 Только прогресс. Без шума.</string>
     <string name="login_description">Войдите в свой аккаунт</string>
     <string name="login_button_login">Войти</string>
+    <string name="account_deletion">Удаление аккаунта</string>
+    <string name="account_deletion_description">Ваш аккаунт и данные будут удалены безвозвратно. Вы не сможете восстановить их позже.</string>
     <string name="continue_with_google">Google</string>
     <string name="continue_with_apple">Apple</string>
     <string name="login_button_registration_label">Нет аккаунта?</string>

@@ -33,4 +33,5 @@ public data class UserEntity(
     val height: Int,
     val experience: String,
     val name: String,
+    val role: String
 )

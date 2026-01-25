@@ -14,6 +14,8 @@ import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.formatters.UiText
 import com.grippo.core.state.profile.ProfileMenu
+import com.grippo.core.state.profile.RoleEnumState
+import com.grippo.core.state.profile.SettingsMenu
 import com.grippo.core.state.profile.stubUser
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
@@ -77,29 +79,31 @@ internal fun ProfileScreen(
             onClick = contract::onProfileMenuClick
         )
 
-//        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-//
-//        val settingsMenu = SettingsMenu.entries.map {
-//            it to MenuItem(UiText.Str(it.text()), it.icon())
-//        }.toPersistentList()
-//
-//        Text(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(start = AppTokens.dp.contentPadding.subContent),
-//            text = SettingsMenu.title(),
-//            style = AppTokens.typography.b14Semi(),
-//            color = AppTokens.colors.text.secondary
-//        )
-//
-//        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-//
-//        Menu(
-//            items = settingsMenu,
-//            onClick = contract::onSettingsMenuClick
-//        )
+        if (state.user?.role == RoleEnumState.ADMIN) {
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+            val settingsMenu = SettingsMenu.entries.map {
+                it to MenuItem(UiText.Str(it.text()), it.icon())
+            }.toPersistentList()
+
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = AppTokens.dp.contentPadding.subContent),
+                text = SettingsMenu.title(),
+                style = AppTokens.typography.b14Semi(),
+                color = AppTokens.colors.text.secondary
+            )
+
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+
+            Menu(
+                items = settingsMenu,
+                onClick = contract::onSettingsMenuClick
+            )
+        }
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         Button(
             modifier = Modifier.fillMaxWidth(),
