@@ -151,7 +151,8 @@
     <string name="add_set_btn">Додати підхід</string>
     <string name="or">АБО</string>
     <string name="email_placeholder">Введіть електронну адресу</string>
-    <string name="password_placeholder">Введіть пароль</string>
+    <string name="password_placeholder_default">Введіть пароль</string>
+    <string name="password_placeholder_repeat">Повторіть пароль</string>
     <string name="name_placeholder">наприклад, Олексій</string>
     <string name="weight_placeholder">Вкажіть свою вагу</string>
     <string name="volume_placeholder">Обсяг</string>

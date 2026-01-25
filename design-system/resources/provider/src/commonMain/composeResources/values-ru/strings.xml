@@ -151,7 +151,8 @@
     <string name="add_set_btn">Добавить подход</string>
     <string name="or">ИЛИ</string>
     <string name="email_placeholder">Введите email</string>
-    <string name="password_placeholder">Введите пароль</string>
+    <string name="password_placeholder_default">Введите пароль</string>
+    <string name="password_placeholder_repeat">Повторите пароль</string>
     <string name="name_placeholder">например, Алекс</string>
     <string name="weight_placeholder">Введите свой вес</string>
     <string name="volume_placeholder">Объём</string>
