@@ -210,6 +210,7 @@ public fun Button(
 
                 if (content.endIcon != null) {
                     Spacer(modifier = Modifier.width(iconPadding))
+
                     ButtonIconContent(
                         modifier = Modifier.height(iconSize),
                         icon = content.endIcon,

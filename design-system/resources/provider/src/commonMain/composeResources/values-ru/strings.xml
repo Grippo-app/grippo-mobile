@@ -164,13 +164,13 @@
     <string name="history">История</string>
     <string name="achievements">Достижения</string>
 
-
+    <string name="or_continue_with">Или продолжить с</string>
     <string name="login_title">Добро пожаловать в Grippo</string>
     <string name="track_real_progress_no_fluff">💪 Только прогресс. Без шума.</string>
     <string name="login_description">Войдите в свой аккаунт</string>
     <string name="login_button_login">Войти</string>
-    <string name="continue_with_google">Продолжить с Google</string>
-    <string name="continue_with_apple">Продолжить с Apple</string>
+    <string name="continue_with_google">Google</string>
+    <string name="continue_with_apple">Apple</string>
     <string name="login_button_registration_label">Нет аккаунта?</string>
     <string name="login_button_registration">Зарегистрироваться</string>
 

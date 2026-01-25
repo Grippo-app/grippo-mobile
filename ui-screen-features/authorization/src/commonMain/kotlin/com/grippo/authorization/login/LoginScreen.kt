@@ -29,21 +29,23 @@ import com.grippo.design.components.button.ButtonState
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.inputs.InputEmail
 import com.grippo.design.components.inputs.InputPassword
+import com.grippo.design.components.spliter.ContentSpliter
 import com.grippo.design.components.toolbar.Toolbar
 import com.grippo.design.components.toolbar.ToolbarStyle
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.continue_btn
 import com.grippo.design.resources.provider.continue_with_apple
 import com.grippo.design.resources.provider.continue_with_google
 import com.grippo.design.resources.provider.icons.Apple
 import com.grippo.design.resources.provider.icons.Google
 import com.grippo.design.resources.provider.icons.GrippoLogo
+import com.grippo.design.resources.provider.login_button_login
 import com.grippo.design.resources.provider.login_button_registration
 import com.grippo.design.resources.provider.login_button_registration_label
 import com.grippo.design.resources.provider.login_title
+import com.grippo.design.resources.provider.or_continue_with
 import com.grippo.design.resources.provider.track_real_progress_no_fluff
 import com.grippo.services.apple.auth.rememberAppleAuthUiContext
 import com.grippo.services.google.auth.rememberGoogleAuthUiContext
@@ -128,73 +130,82 @@ internal fun LoginScreen(
 
         Button(
             modifier = Modifier.fillMaxWidth(),
-            content = ButtonContent.Text(text = AppTokens.strings.res(Res.string.continue_btn)),
+            content = ButtonContent.Text(text = AppTokens.strings.res(Res.string.login_button_login)),
             state = buttonLoginByEmailState,
             style = ButtonStyle.Primary,
             onClick = contract::onLoginByEmailClick
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        if (state.isGoogleLoginAvailable) {
-
-            val googleAuthUiContext = rememberGoogleAuthUiContext()
-
-            val buttonLoginByGoogleState = remember(
-                loaders,
-                googleAuthUiContext
-            ) {
-                when {
-                    googleAuthUiContext == null -> ButtonState.Disabled
-                    loaders.contains(LoginLoader.LoginByGoogleButton) -> ButtonState.Loading
-                    else -> ButtonState.Enabled
-                }
-            }
-
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                content = ButtonContent.Text(
-                    text = AppTokens.strings.res(Res.string.continue_with_google),
-                    startIcon = ButtonIcon.Image(AppTokens.icons.Google)
-                ),
-                state = buttonLoginByGoogleState,
-                style = ButtonStyle.Secondary,
-                onClick = { googleAuthUiContext?.let(contract::onLoginByGoogleClick) }
-            )
-
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-        }
-
-        if (state.isAppleLoginAvailable) {
-
-            val appleAuthUiContext = rememberAppleAuthUiContext()
-
-            val buttonLoginByAppleState = remember(
-                loaders,
-                appleAuthUiContext
-            ) {
-                when {
-                    appleAuthUiContext == null -> ButtonState.Disabled
-                    loaders.contains(LoginLoader.LoginByAppleButton) -> ButtonState.Loading
-                    else -> ButtonState.Enabled
-                }
-            }
-
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                content = ButtonContent.Text(
-                    text = AppTokens.strings.res(Res.string.continue_with_apple),
-                    startIcon = ButtonIcon.Image(AppTokens.icons.Apple)
-                ),
-                state = buttonLoginByAppleState,
-                style = ButtonStyle.Secondary,
-                onClick = { appleAuthUiContext?.let(contract::onLoginByAppleClick) }
-            )
-
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-        }
+        ContentSpliter(
+            modifier = Modifier.fillMaxWidth(),
+            text = AppTokens.strings.res(Res.string.or_continue_with)
+        )
 
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (state.isGoogleLoginAvailable) {
+
+                val googleAuthUiContext = rememberGoogleAuthUiContext()
+
+                val buttonLoginByGoogleState = remember(
+                    loaders,
+                    googleAuthUiContext
+                ) {
+                    when {
+                        googleAuthUiContext == null -> ButtonState.Disabled
+                        loaders.contains(LoginLoader.LoginByGoogleButton) -> ButtonState.Loading
+                        else -> ButtonState.Enabled
+                    }
+                }
+
+                Button(
+                    modifier = Modifier.weight(1f),
+                    content = ButtonContent.Text(
+                        text = AppTokens.strings.res(Res.string.continue_with_google),
+                        startIcon = ButtonIcon.Image(AppTokens.icons.Google)
+                    ),
+                    state = buttonLoginByGoogleState,
+                    style = ButtonStyle.Secondary,
+                    onClick = { googleAuthUiContext?.let(contract::onLoginByGoogleClick) }
+                )
+            }
+
+            if (state.isAppleLoginAvailable) {
+
+                val appleAuthUiContext = rememberAppleAuthUiContext()
+
+                val buttonLoginByAppleState = remember(
+                    loaders,
+                    appleAuthUiContext
+                ) {
+                    when {
+                        appleAuthUiContext == null -> ButtonState.Disabled
+                        loaders.contains(LoginLoader.LoginByAppleButton) -> ButtonState.Loading
+                        else -> ButtonState.Enabled
+                    }
+                }
+
+                Button(
+                    modifier = Modifier.weight(1f),
+                    content = ButtonContent.Text(
+                        text = AppTokens.strings.res(Res.string.continue_with_apple),
+                        startIcon = ButtonIcon.Image(AppTokens.icons.Apple)
+                    ),
+                    state = buttonLoginByAppleState,
+                    style = ButtonStyle.Secondary,
+                    onClick = { appleAuthUiContext?.let(contract::onLoginByAppleClick) }
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
