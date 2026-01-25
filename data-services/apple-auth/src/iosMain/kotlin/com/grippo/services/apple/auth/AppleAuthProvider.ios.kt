@@ -57,6 +57,7 @@ public actual class AppleAuthUiProvider internal constructor(
                 }
 
                 val request = ASAuthorizationAppleIDProvider().createRequest()
+                request.requestedScopes = listOf(platform.AuthenticationServices.ASAuthorizationScopeEmail)
                 val controller = ASAuthorizationController(listOf(request))
                 val delegate = AppleAuthorizationDelegate(
                     anchorProvider = anchorProvider,
