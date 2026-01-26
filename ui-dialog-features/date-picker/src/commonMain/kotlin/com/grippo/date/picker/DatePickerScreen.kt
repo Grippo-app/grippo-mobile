@@ -1,6 +1,5 @@
 package com.grippo.date.picker
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
@@ -37,59 +35,55 @@ internal fun DatePickerScreen(
     loaders: ImmutableSet<DatePickerLoader>,
     contract: DatePickerContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
+    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
-    Column(
+    Text(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+            .fillMaxWidth(),
+        text = state.title,
+        style = AppTokens.typography.h2(),
+        color = AppTokens.colors.text.primary,
+        textAlign = TextAlign.Center
+    )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = state.title,
-            style = AppTokens.typography.h2(),
-            color = AppTokens.colors.text.primary,
-            textAlign = TextAlign.Center
-        )
+    DateWheelPicker(
+        modifier = Modifier
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+            .height(AppTokens.dp.wheelPicker.height)
+            .fillMaxWidth(),
+        initial = state.value.value,
+        select = contract::onSelectDate,
+        limitations = state.limitations
+    )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        DateWheelPicker(
-            modifier = Modifier
-                .height(AppTokens.dp.wheelPicker.height)
-                .fillMaxWidth(),
-            initial = state.value.value,
-            select = contract::onSelectDate,
-            limitations = state.limitations
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-        val buttonState = remember(loaders, state.value) {
-            when {
-                state.value is DateFormatState.Invalid -> ButtonState.Disabled
-                state.value is DateFormatState.Empty -> ButtonState.Disabled
-                else -> ButtonState.Enabled
-            }
+    val buttonState = remember(loaders, state.value) {
+        when {
+            state.value is DateFormatState.Invalid -> ButtonState.Disabled
+            state.value is DateFormatState.Empty -> ButtonState.Disabled
+            else -> ButtonState.Enabled
         }
-
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            content = ButtonContent.Text(
-                text = AppTokens.strings.res(Res.string.continue_btn),
-            ),
-            style = ButtonStyle.Primary,
-            state = buttonState,
-            onClick = contract::onSubmitClick
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-
-        Spacer(modifier = Modifier.navigationBarsPadding())
     }
+
+    Button(
+        modifier = Modifier
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+            .fillMaxWidth(),
+        content = ButtonContent.Text(
+            text = AppTokens.strings.res(Res.string.continue_btn),
+        ),
+        style = ButtonStyle.Primary,
+        state = buttonState,
+        onClick = contract::onSubmitClick
+    )
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+
+    Spacer(modifier = Modifier.navigationBarsPadding())
 }
 
 @AppPreview

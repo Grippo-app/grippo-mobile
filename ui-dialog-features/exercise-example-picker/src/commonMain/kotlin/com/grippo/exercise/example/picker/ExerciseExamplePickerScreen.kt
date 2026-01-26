@@ -86,7 +86,7 @@ internal fun ExerciseExamplePickerScreen(
 
             false -> {
                 val basePadding = PaddingValues(
-                    horizontal = AppTokens.dp.screen.horizontalPadding,
+                    horizontal = AppTokens.dp.dialog.horizontalPadding,
                     vertical = AppTokens.dp.contentPadding.content
                 )
 

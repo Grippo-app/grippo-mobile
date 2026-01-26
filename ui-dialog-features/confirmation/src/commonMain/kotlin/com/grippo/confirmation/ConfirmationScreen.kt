@@ -1,7 +1,6 @@
 package com.grippo.confirmation
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,66 +33,64 @@ internal fun ConfirmationScreen(
     loaders: ImmutableSet<ConfirmationLoader>,
     contract: ConfirmationContract
 ) = BaseComposeScreen(background = ScreenBackground.Color(AppTokens.colors.background.dialog)) {
+    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
-    Column(
+    Text(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-    ) {
-        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+            .fillMaxWidth(),
+        text = state.title,
+        style = AppTokens.typography.h2(),
+        color = AppTokens.colors.text.primary,
+        textAlign = TextAlign.Center
+    )
+
+    if (state.description != null) {
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
         Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = state.title,
-            style = AppTokens.typography.h2(),
-            color = AppTokens.colors.text.primary,
-            textAlign = TextAlign.Center
+            modifier = Modifier
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                .fillMaxWidth()
+                .heightIn(max = 400.dp),
+            text = state.description,
+            style = AppTokens.typography.b14Med(),
+            color = AppTokens.colors.text.secondary,
+        )
+    }
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+    Row(
+        modifier = Modifier
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(
+            AppTokens.dp.contentPadding.content
+        )
+    ) {
+        Button(
+            modifier = Modifier.weight(1f),
+            content = ButtonContent.Text(
+                text = AppTokens.strings.res(Res.string.cancel_btn),
+            ),
+            style = ButtonStyle.Secondary,
+            onClick = contract::onBack
         )
 
-        if (state.description != null) {
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(max = 400.dp),
-                text = state.description,
-                style = AppTokens.typography.b14Med(),
-                color = AppTokens.colors.text.secondary,
-            )
-        }
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(
-                AppTokens.dp.contentPadding.content
-            )
-        ) {
-            Button(
-                modifier = Modifier.weight(1f),
-                content = ButtonContent.Text(
-                    text = AppTokens.strings.res(Res.string.cancel_btn),
-                ),
-                style = ButtonStyle.Secondary,
-                onClick = contract::onBack
-            )
-
-            Button(
-                modifier = Modifier.weight(1f),
-                content = ButtonContent.Text(
-                    text = AppTokens.strings.res(Res.string.confirm_btn),
-                ),
-                style = ButtonStyle.Primary,
-                onClick = contract::onConfirm
-            )
-        }
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-
-        Spacer(modifier = Modifier.navigationBarsPadding())
+        Button(
+            modifier = Modifier.weight(1f),
+            content = ButtonContent.Text(
+                text = AppTokens.strings.res(Res.string.confirm_btn),
+            ),
+            style = ButtonStyle.Primary,
+            onClick = contract::onConfirm
+        )
     }
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+
+    Spacer(modifier = Modifier.navigationBarsPadding())
 }
 
 @AppPreview

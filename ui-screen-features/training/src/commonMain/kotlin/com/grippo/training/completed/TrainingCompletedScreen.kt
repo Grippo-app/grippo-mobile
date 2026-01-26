@@ -180,7 +180,7 @@ internal fun TrainingCompletedScreen(
                             onClick = contract::onBack
                         )
 
-                        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+                        Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
 
                         Spacer(modifier = Modifier.navigationBarsPadding())
                     }

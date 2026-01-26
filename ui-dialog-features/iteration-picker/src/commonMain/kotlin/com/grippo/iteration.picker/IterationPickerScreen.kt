@@ -153,7 +153,7 @@ internal fun IterationPickerScreen(
         Row(
             modifier = Modifier
                 .horizontalScroll(rememberScrollState())
-                .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
         ) {
