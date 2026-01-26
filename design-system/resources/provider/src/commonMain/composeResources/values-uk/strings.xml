@@ -305,7 +305,7 @@
     <string name="timeout_error">Час очікування минув</string>
     <string name="unexpected_network_error">Неочікувана мережева помилка</string>
     <string name="select_exercise">Виберіть вправу</string>
-    <string name="draft_training_alert_title_add">Продовжити чернетку тренування</string>
+    <string name="draft_training_alert_title_add">Продовжити тренування</string>
     <string name="draft_training_alert_description_add">У вас є незавершена чернетка тренування, збережена локально. Продовжити з місця, де зупинилися?</string>
     <string name="draft_training_alert_title_edit">Продовжити редагування тренування</string>
     <string name="draft_training_alert_description_edit">Ви редагували збережене тренування і залишили незавершені зміни. Продовжити редагування?</string>

@@ -306,7 +306,7 @@
     <string name="timeout_error">Время ожидания истекло</string>
     <string name="unexpected_network_error">Неожиданная сетевая ошибка</string>
     <string name="select_exercise">Выберите упражнение</string>
-    <string name="draft_training_alert_title_add">Продолжить черновик тренировки</string>
+    <string name="draft_training_alert_title_add">Продолжить тренировку</string>
     <string name="draft_training_alert_description_add">У вас есть незавершённый черновик тренировки, сохранённый локально. Продолжить с места, где вы остановились?</string>
     <string name="draft_training_alert_title_edit">Продолжить редактирование тренировки</string>
     <string name="draft_training_alert_description_edit">Вы редактировали сохранённую тренировку и оставили незавершённые изменения. Продолжить редактирование?</string>

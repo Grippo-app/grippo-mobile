@@ -82,7 +82,7 @@ internal fun ColumnScope.ExercisesPage(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .weight(1f),
-                            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block),
+                            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
                             contentPadding = resolvedPadding
                         ) {
                             items(
