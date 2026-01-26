@@ -1,7 +1,7 @@
 package com.grippo.period.picker
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
@@ -34,52 +33,46 @@ internal fun PeriodPickerScreen(
     loaders: ImmutableSet<PeriodPickerLoader>,
     contract: PeriodPickerContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
+    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
-    Column(
+    Text(
+        modifier = Modifier
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+            .fillMaxWidth(),
+        text = state.title,
+        style = AppTokens.typography.h2(),
+        color = AppTokens.colors.text.primary,
+        textAlign = TextAlign.Center
+    )
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+    LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .weight(1f, false),
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content),
+        contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
     ) {
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
-
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = state.title,
-            style = AppTokens.typography.h2(),
-            color = AppTokens.colors.text.primary,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f, false),
-            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-        ) {
-            items(state.suggestions) { item ->
-                val onClickProvider = remember(item) {
-                    { contract.onSelectRange(item) }
-                }
-                CheckSelectableCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    style = CheckSelectableCardStyle.Medium(
-                        title = item.range?.label() ?: AppTokens.strings.res(Res.string.custom),
-                        description = item.range?.formatted(),
-                    ),
-                    isSelected = state.value == item,
-                    onSelect = onClickProvider
-                )
+        items(state.suggestions) { item ->
+            val onClickProvider = remember(item) {
+                { contract.onSelectRange(item) }
             }
+            CheckSelectableCard(
+                modifier = Modifier.fillMaxWidth(),
+                style = CheckSelectableCardStyle.Medium(
+                    title = item.range?.label() ?: AppTokens.strings.res(Res.string.custom),
+                    description = item.range?.formatted(),
+                ),
+                isSelected = state.value == item,
+                onSelect = onClickProvider
+            )
+        }
 
-            item(key = "bottom_spacer") {
-                Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+        item(key = "bottom_spacer") {
+            Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
 
-                Spacer(modifier = Modifier.navigationBarsPadding())
-            }
+            Spacer(modifier = Modifier.navigationBarsPadding())
         }
     }
 }
