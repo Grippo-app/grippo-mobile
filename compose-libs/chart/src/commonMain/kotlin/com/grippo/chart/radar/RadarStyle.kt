@@ -31,6 +31,8 @@ public data class RadarStyle(
         val labelPadding: Dp,
         val startAngleDeg: Float,
         val clockwise: Boolean,
+        val reserveAxisLabelSpace: Boolean = true,
+        val centered: Boolean = false,
     )
 
     @Immutable

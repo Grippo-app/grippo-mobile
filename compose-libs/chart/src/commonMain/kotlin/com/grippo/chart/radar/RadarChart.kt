@@ -311,7 +311,7 @@ private fun computeRadarLayout(
             yMin = max(yMin, chart.top + r + topLevelLabelPadPx)
         }
 
-        if (axisLabelLayouts.isNotEmpty()) {
+        if (axisLabelLayouts.isNotEmpty() && style.layout.reserveAxisLabelSpace) {
             val rr = r + labelPadPx
             for (i in 0 until n) {
                 val cosA = cos(angles[i])
@@ -335,16 +335,64 @@ private fun computeRadarLayout(
         )
     }
 
-    var lo = 0f
-    var hi = max(w, h)
+    val (radius, center) = if (style.layout.centered) {
+        val adjustedTop = chart.top + topLevelLabelPadPx
+        val fixedCenter = chart.center
 
-    repeat(26) {
-        val mid = (lo + hi) * 0.5f
-        if (centerForRadius(mid) != null) lo = mid else hi = mid
+        val maxByBounds = min(
+            min(fixedCenter.x - chart.left, chart.right - fixedCenter.x),
+            min(fixedCenter.y - adjustedTop, chart.bottom - fixedCenter.y),
+        ).coerceAtLeast(0f)
+
+        val labelPad = labelPadPx
+        val useLabels = axisLabelLayouts.isNotEmpty() && style.layout.reserveAxisLabelSpace
+
+        fun labelsFit(r: Float): Boolean {
+            if (!useLabels) return true
+            val rr = r + labelPad
+            for (i in 0 until n) {
+                val a = angles[i]
+                val p = Offset(
+                    x = fixedCenter.x + rr * cos(a),
+                    y = fixedCenter.y + rr * sin(a),
+                )
+                val textLayout = axisLabelLayouts[i]
+                val halfW = textLayout.size.width * 0.5f
+                val halfH = textLayout.size.height * 0.5f
+                val left = p.x - halfW
+                val right = p.x + halfW
+                val top = p.y - halfH
+                val bottom = p.y + halfH
+
+                if (left < chart.left) return false
+                if (right > chart.right) return false
+                if (top < adjustedTop) return false
+                if (bottom > chart.bottom) return false
+            }
+            return true
+        }
+
+        var lo = 0f
+        var hi = maxByBounds
+        repeat(26) {
+            val mid = (lo + hi) * 0.5f
+            if (labelsFit(mid)) lo = mid else hi = mid
+        }
+
+        lo to fixedCenter
+    } else {
+        var lo = 0f
+        var hi = max(w, h)
+
+        repeat(26) {
+            val mid = (lo + hi) * 0.5f
+            if (centerForRadius(mid) != null) lo = mid else hi = mid
+        }
+
+        val r = lo
+        val c = centerForRadius(r) ?: chart.center
+        r to c
     }
-
-    val radius = lo
-    val center = centerForRadius(radius) ?: chart.center
 
     fun polar(angle: Float, rr: Float): Offset = Offset(
         x = center.x + rr * cos(angle),
@@ -645,9 +693,14 @@ private fun DrawScope.drawRadar(
         is RadarStyle.Labels.None -> Unit
         is RadarStyle.Labels.Visible -> {
             val lp = style.layout.labelPadding.toPx()
+            val labelRadius = if (style.layout.reserveAxisLabelSpace) {
+                r + lp
+            } else {
+                (r - lp).coerceAtLeast(0f)
+            }
             for (i in 0 until n) {
                 val a = layout.angles[i]
-                val p = polar(a, r + lp)
+                val p = polar(a, labelRadius)
                 val textLayout = axisLabelLayouts[i]
                 val x = p.x - textLayout.size.width * 0.5f
                 val y = p.y - textLayout.size.height * 0.5f

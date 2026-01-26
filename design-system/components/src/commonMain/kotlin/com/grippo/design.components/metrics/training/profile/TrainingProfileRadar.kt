@@ -1,6 +1,6 @@
 package com.grippo.design.components.metrics.training.profile
 
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
@@ -89,7 +89,7 @@ public fun TrainingProfileRadar(
     }
 
     RadarChart(
-        modifier = modifier.size(size),
+        modifier = modifier.width(size),
         data = data,
         showLabels = showLabels,
         clickable = clickable
