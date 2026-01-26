@@ -68,7 +68,6 @@ internal fun TrainingProfileScreen(
         contentPadding = PaddingValues(
             start = AppTokens.dp.dialog.horizontalPadding,
             end = AppTokens.dp.dialog.horizontalPadding,
-            top = AppTokens.dp.contentPadding.content,
         ),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block)

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
@@ -46,6 +47,7 @@ internal fun ConfirmationScreen(
             text = state.title,
             style = AppTokens.typography.h2(),
             color = AppTokens.colors.text.primary,
+            textAlign = TextAlign.Center
         )
 
         if (state.description != null) {
