@@ -70,7 +70,7 @@ internal fun DraftTrainingScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
         Text(
             modifier = Modifier.fillMaxWidth(),
@@ -124,7 +124,7 @@ internal fun DraftTrainingScreen(
                         content = ButtonContent.Text(
                             text = AppTokens.strings.res(Res.string.clear_btn),
                         ),
-                        style = ButtonStyle.Error,
+                        style = ButtonStyle.Secondary,
                         onClick = contract::onDelete
                     )
 
@@ -133,7 +133,7 @@ internal fun DraftTrainingScreen(
                         content = ButtonContent.Text(
                             text = AppTokens.strings.res(Res.string.continue_btn),
                         ),
-                        style = ButtonStyle.Secondary,
+                        style = ButtonStyle.Primary,
                         onClick = contract::onContinue
                     )
                 }

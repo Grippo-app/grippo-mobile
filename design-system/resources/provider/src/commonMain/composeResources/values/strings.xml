@@ -156,7 +156,7 @@
     <string name="password_placeholder_repeat">Repeat password</string>
     <string name="name_placeholder">e.g. Alex</string>
     <string name="weight_placeholder">Enter your weight</string>
-    <string name="volume_placeholder">Volume</string>
+    <string name="volume_placeholder">Weight</string>
     <string name="repetitions_placeholder">Repetitions</string>
     <string name="height_placeholder">Enter your height</string>
     <string name="exercise_record">Exercise record</string>

@@ -9,12 +9,9 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
@@ -27,7 +24,6 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.cancel_btn
 import com.grippo.design.resources.provider.confirm_btn
-import com.grippo.design.resources.provider.icons.Question
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -42,26 +38,14 @@ internal fun ConfirmationScreen(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
-
-        Icon(
-            modifier = Modifier.size(AppTokens.dp.semantic.icon),
-            imageVector = AppTokens.icons.Question,
-            tint = AppTokens.colors.semantic.info,
-            contentDescription = null
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = state.title,
             style = AppTokens.typography.h2(),
             color = AppTokens.colors.text.primary,
-            textAlign = TextAlign.Center
         )
 
         if (state.description != null) {
@@ -74,7 +58,6 @@ internal fun ConfirmationScreen(
                 text = state.description,
                 style = AppTokens.typography.b14Med(),
                 color = AppTokens.colors.text.secondary,
-                textAlign = TextAlign.Center
             )
         }
 

@@ -155,7 +155,7 @@
     <string name="password_placeholder_repeat">Повторите пароль</string>
     <string name="name_placeholder">например, Алекс</string>
     <string name="weight_placeholder">Введите свой вес</string>
-    <string name="volume_placeholder">Объём</string>
+    <string name="volume_placeholder">Вес</string>
     <string name="repetitions_placeholder">Повторения</string>
     <string name="height_placeholder">Введите свой рост</string>
     <string name="exercise_record">Рекорд упражнения</string>

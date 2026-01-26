@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.examples.stubExerciseExample
@@ -38,7 +37,6 @@ import com.grippo.design.components.chip.ChipLabel
 import com.grippo.design.components.chip.ChipSize
 import com.grippo.design.components.chip.ChipStype
 import com.grippo.design.components.chip.ChipTrailing
-import com.grippo.design.components.equipment.EquipmentsCard
 import com.grippo.design.components.inputs.InputRepetitions
 import com.grippo.design.components.inputs.InputVolume
 import com.grippo.design.core.AppTokens
@@ -84,16 +82,17 @@ internal fun IterationPickerScreen(
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
     Text(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+            .fillMaxWidth(),
         text = AppTokens.strings.res(Res.string.set_value, state.number),
-        style = AppTokens.typography.h3(),
+        style = AppTokens.typography.h2(),
         color = AppTokens.colors.text.primary,
-        textAlign = TextAlign.Center
     )
 
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
     state.example.hint()?.let { hint ->
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+
         Text(
             modifier = Modifier
                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
@@ -101,16 +100,23 @@ internal fun IterationPickerScreen(
             text = hint,
             style = AppTokens.typography.b14Med(),
             color = AppTokens.colors.text.secondary,
-            textAlign = TextAlign.Center
         )
     }
 
-    Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
+    if (state.example.equipments.isNotEmpty()) {
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
-    EquipmentsCard(
-        modifier = Modifier.fillMaxWidth(),
-        value = state.example.equipments
-    )
+        val equipmentsText = state.example.equipments.map { it.type.title().text() }
+
+        Text(
+            modifier = Modifier
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                .fillMaxWidth(),
+            text = equipmentsText.joinToString(" • "),
+            style = AppTokens.typography.b12Med(),
+            color = AppTokens.colors.text.tertiary,
+        )
+    }
 
     Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
 

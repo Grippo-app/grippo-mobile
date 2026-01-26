@@ -445,7 +445,7 @@ public data object AppDp {
     }
 
     public data object Semantic {
-        val icon: Dp = AppDp.icon.xxxLarge
+        val icon: Dp = AppDp.icon.xxLarge
     }
 
     public data object Loader {
