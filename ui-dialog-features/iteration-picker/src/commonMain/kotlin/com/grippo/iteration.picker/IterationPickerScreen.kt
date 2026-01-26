@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.examples.stubExerciseExample
@@ -88,6 +89,7 @@ internal fun IterationPickerScreen(
         text = AppTokens.strings.res(Res.string.set_value, state.number),
         style = AppTokens.typography.h2(),
         color = AppTokens.colors.text.primary,
+        textAlign = TextAlign.Center
     )
 
     state.example.hint()?.let { hint ->
