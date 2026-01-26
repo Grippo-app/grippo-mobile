@@ -46,7 +46,7 @@ internal fun HeightPickerScreen(
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.height_picker_title),
-            style = AppTokens.typography.h3(),
+            style = AppTokens.typography.h2(),
             color = AppTokens.colors.text.primary,
             textAlign = TextAlign.Center
         )

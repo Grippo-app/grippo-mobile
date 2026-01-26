@@ -42,12 +42,12 @@ internal fun TrainingStreakScreen(
         text = state.range.label()?.let {
             AppTokens.strings.res(Res.string.value_training_streak, it)
         } ?: AppTokens.strings.res(Res.string.training_streak),
-        style = AppTokens.typography.h3(),
+        style = AppTokens.typography.h2(),
         color = AppTokens.colors.text.primary,
         textAlign = TextAlign.Center
     )
 
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
     Text(
         modifier = Modifier.fillMaxWidth(),

@@ -49,7 +49,7 @@ internal fun ConfirmationScreen(
         )
 
         if (state.description != null) {
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
             Text(
                 modifier = Modifier

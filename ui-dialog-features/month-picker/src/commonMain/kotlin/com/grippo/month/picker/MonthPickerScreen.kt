@@ -50,7 +50,7 @@ internal fun MonthPickerScreen(
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = state.title,
-            style = AppTokens.typography.h3(),
+            style = AppTokens.typography.h2(),
             color = AppTokens.colors.text.primary,
             textAlign = TextAlign.Center
         )

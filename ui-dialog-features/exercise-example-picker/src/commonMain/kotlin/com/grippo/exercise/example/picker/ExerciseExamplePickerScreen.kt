@@ -60,7 +60,7 @@ internal fun ExerciseExamplePickerScreen(
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.select_exercise),
-            style = AppTokens.typography.h3(),
+            style = AppTokens.typography.h2(),
             color = AppTokens.colors.text.primary,
             textAlign = TextAlign.Center
         )

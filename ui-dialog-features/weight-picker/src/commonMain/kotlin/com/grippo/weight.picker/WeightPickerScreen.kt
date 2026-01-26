@@ -46,7 +46,7 @@ internal fun WeightPickerScreen(
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = AppTokens.strings.res(Res.string.weight_picker_title),
-            style = AppTokens.typography.h3(),
+            style = AppTokens.typography.h2(),
             color = AppTokens.colors.text.primary,
             textAlign = TextAlign.Center
         )

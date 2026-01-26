@@ -62,7 +62,7 @@ internal fun StatisticsScreen(
                     AppTokens.strings.res(Res.string.value_statistics, it)
                 } ?: AppTokens.strings.res(Res.string.statistics)
             },
-            style = AppTokens.typography.h3(),
+            style = AppTokens.typography.h2(),
             color = AppTokens.colors.text.primary,
             textAlign = TextAlign.Center
         )
@@ -73,7 +73,7 @@ internal fun StatisticsScreen(
             }
 
             is StatisticsMode.Trainings -> {
-                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
+                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
                 Text(
                     modifier = Modifier.fillMaxWidth(),

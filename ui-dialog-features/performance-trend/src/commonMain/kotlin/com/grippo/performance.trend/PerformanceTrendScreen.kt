@@ -49,12 +49,12 @@ internal fun PerformanceTrendScreen(
     Text(
         modifier = Modifier.fillMaxWidth(),
         text = title,
-        style = AppTokens.typography.h3(),
+        style = AppTokens.typography.h2(),
         color = AppTokens.colors.text.primary,
         textAlign = TextAlign.Center
     )
 
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
     Text(
         modifier = Modifier.fillMaxWidth(),
