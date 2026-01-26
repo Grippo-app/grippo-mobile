@@ -72,7 +72,7 @@ internal fun UserScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
         Text(
             modifier = Modifier.fillMaxWidth(),

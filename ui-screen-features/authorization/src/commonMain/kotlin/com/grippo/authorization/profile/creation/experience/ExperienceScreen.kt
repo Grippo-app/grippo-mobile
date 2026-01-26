@@ -64,8 +64,6 @@ internal fun ExperienceScreen(
             .imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
         Text(
             modifier = Modifier
                 .padding(horizontal = AppTokens.dp.screen.horizontalPadding)
@@ -76,7 +74,7 @@ internal fun ExperienceScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
         Text(
             modifier = Modifier
