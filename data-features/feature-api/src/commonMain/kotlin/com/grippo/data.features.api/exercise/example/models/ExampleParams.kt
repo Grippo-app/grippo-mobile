@@ -19,8 +19,5 @@ public data class ExamplePage(
 
 public data class ExampleQueries(
     val name: String?,
-    val forceType: ForceTypeEnum?,
-    val weightType: WeightTypeEnum?,
-    val category: CategoryEnum?,
     val muscleGroupId: String?,
 )

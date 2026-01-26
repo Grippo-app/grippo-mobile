@@ -28,9 +28,6 @@ public interface ExerciseExampleDao {
     SELECT DISTINCT ee.*
     FROM exercise_example ee
     WHERE (:name IS NULL OR LOWER(ee.name) LIKE '%' || LOWER(:name) || '%')
-      AND (:forceType IS NULL OR ee.forceType = :forceType)
-      AND (:weightType IS NULL OR ee.weightType = :weightType)
-      AND (:category IS NULL OR ee.category = :category)
 
       -- Experience ladder filter
       AND (
@@ -105,9 +102,6 @@ public interface ExerciseExampleDao {
     )
     public fun getAll(
         name: String? = null,
-        forceType: String? = null,
-        weightType: String? = null,
-        category: String? = null,
         experience: String? = null,
         muscleGroupId: String? = null,
         excludedEquipmentIds: Set<String>,

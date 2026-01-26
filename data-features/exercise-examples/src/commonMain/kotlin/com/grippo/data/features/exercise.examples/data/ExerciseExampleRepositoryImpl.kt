@@ -31,9 +31,6 @@ internal class ExerciseExampleRepositoryImpl(
     ): Flow<List<ExerciseExample>> {
         return exerciseExampleDao.getAll(
             name = queries.name,
-            forceType = queries.forceType?.key,
-            weightType = queries.weightType?.key,
-            category = queries.category?.key,
             experience = experience.key,
             muscleGroupId = queries.muscleGroupId,
             excludedEquipmentIds = rules.excludedEquipmentIds,

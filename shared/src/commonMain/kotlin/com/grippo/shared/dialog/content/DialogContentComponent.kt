@@ -19,7 +19,6 @@ import com.grippo.error.display.ErrorDisplayComponent
 import com.grippo.exercise.ExerciseComponent
 import com.grippo.exercise.example.exerciseexample.ExerciseExampleComponent
 import com.grippo.exercise.example.picker.ExerciseExamplePickerComponent
-import com.grippo.filter.picker.FilterPickerComponent
 import com.grippo.height.picker.HeightPickerComponent
 import com.grippo.iteration.picker.IterationPickerComponent
 import com.grippo.menu.picker.MenuPickerComponent
@@ -204,15 +203,6 @@ internal class DialogContentComponent(
                 )
             )
 
-            is DialogConfig.FilterPicker -> Child.FilterPicker(
-                FilterPickerComponent(
-                    componentContext = context,
-                    initial = router.initial,
-                    onResult = { period -> viewModel.onBack { router.onResult.invoke(period) } },
-                    back = { viewModel.onBack(null) }
-                )
-            )
-
             is DialogConfig.MenuPicker -> Child.MenuPicker(
                 MenuPickerComponent(
                     componentContext = context,
@@ -320,9 +310,6 @@ internal class DialogContentComponent(
             Child(component)
 
         data class DraftTraining(override val component: DraftTrainingComponent) :
-            Child(component)
-
-        data class FilterPicker(override val component: FilterPickerComponent) :
             Child(component)
 
         data class MenuPicker(override val component: MenuPickerComponent) :

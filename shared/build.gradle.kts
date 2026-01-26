@@ -76,7 +76,6 @@ kotlin {
         implementation(projects.uiDialogFeatures.exerciseExample)
         implementation(projects.uiDialogFeatures.exercise)
         implementation(projects.uiDialogFeatures.iterationPicker)
-        implementation(projects.uiDialogFeatures.filterPicker)
         implementation(projects.uiDialogFeatures.exerciseExamplePicker)
         implementation(projects.uiDialogFeatures.menuPicker)
         implementation(projects.uiDialogFeatures.statistics)

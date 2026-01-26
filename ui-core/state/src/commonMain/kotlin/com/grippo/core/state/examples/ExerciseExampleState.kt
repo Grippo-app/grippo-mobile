@@ -6,7 +6,6 @@ import androidx.compose.runtime.remember
 import com.grippo.core.state.equipments.EquipmentEnumState
 import com.grippo.core.state.equipments.EquipmentState
 import com.grippo.core.state.equipments.stubEquipments
-import com.grippo.core.state.filters.FilterValueState
 import com.grippo.core.state.formatters.UiText
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.equipment_hint_common
@@ -22,10 +21,6 @@ public data class ExerciseExampleState(
     val bundles: ImmutableList<ExerciseExampleBundleState>,
     val equipments: ImmutableList<EquipmentState>,
 ) {
-    public companion object {
-        public val filters: ImmutableList<FilterValueState> = ExerciseExampleValueState.filters
-    }
-
     @Composable
     public fun hint(): String? {
         val equipmentTypes: List<EquipmentEnumState> = remember(equipments) {

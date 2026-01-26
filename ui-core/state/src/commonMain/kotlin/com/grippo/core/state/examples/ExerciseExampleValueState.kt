@@ -1,11 +1,8 @@
 package com.grippo.core.state.examples
 
 import androidx.compose.runtime.Immutable
-import com.grippo.core.state.filters.FilterValueState
 import com.grippo.core.state.profile.ExperienceEnumState
 import com.grippo.toolkit.date.utils.DateTimeUtils
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
@@ -23,15 +20,7 @@ public data class ExerciseExampleValueState(
     val category: CategoryEnumState,
     val usageCount: Int,
     val lastUsed: LocalDateTime?,
-) {
-    public companion object {
-        public val filters: ImmutableList<FilterValueState> = buildList {
-            add(FilterValueState.Category(value = null))
-            add(FilterValueState.WeightType(value = null))
-            add(FilterValueState.ForceType(value = null))
-        }.toPersistentList()
-    }
-}
+)
 
 public fun stubExerciseExampleValueState(): ExerciseExampleValueState {
     return ExerciseExampleValueState(

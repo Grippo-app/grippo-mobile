@@ -1,7 +1,6 @@
 package com.grippo.exercise.example.picker
 
 import com.grippo.core.foundation.BaseViewModel
-import com.grippo.core.state.filters.FilterValueState
 import com.grippo.data.features.api.exercise.example.UserExerciseExamplesUseCase
 import com.grippo.data.features.api.exercise.example.models.ExamplePage
 import com.grippo.data.features.api.exercise.example.models.ExampleParams
@@ -9,11 +8,9 @@ import com.grippo.data.features.api.exercise.example.models.ExampleQueries
 import com.grippo.data.features.api.exercise.example.models.ExerciseExample
 import com.grippo.data.features.api.muscle.MuscleFeature
 import com.grippo.data.features.api.muscle.models.MuscleGroup
-import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.exercise.example.toState
 import com.grippo.domain.state.muscles.toState
-import com.grippo.state.domain.example.toDomain
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
@@ -38,23 +35,9 @@ public class ExerciseExamplePickerViewModel(
             .map { current ->
                 val manual = current.queries
 
-                val manualFilters = manual.filters
-
                 ExampleParams(
                     queries = ExampleQueries(
                         name = manual.name.trim(),
-                        weightType = manualFilters
-                            .filterIsInstance<FilterValueState.WeightType>()
-                            .firstOrNull()
-                            ?.value?.toDomain(),
-                        forceType = manualFilters
-                            .filterIsInstance<FilterValueState.ForceType>()
-                            .firstOrNull()
-                            ?.value?.toDomain(),
-                        category = manualFilters
-                            .filterIsInstance<FilterValueState.Category>()
-                            .firstOrNull()
-                            ?.value?.toDomain(),
                         muscleGroupId = manual.selectedMuscleGroupId
                     ),
                     page = ExamplePage(
@@ -107,21 +90,6 @@ public class ExerciseExamplePickerViewModel(
                 queries = it.queries.copy(name = value),
             )
         }
-    }
-
-    override fun onFiltersClick() {
-        val dialog = DialogConfig.FilterPicker(
-            initial = state.value.queries.filters,
-            onResult = { value ->
-                updateWithPaginationReset {
-                    it.copy(
-                        queries = it.queries.copy(filters = value.toPersistentList()),
-                    )
-                }
-            }
-        )
-
-        dialogController.show(dialog)
     }
 
     override fun onMuscleGroupClick(id: String) {

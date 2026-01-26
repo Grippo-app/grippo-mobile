@@ -52,11 +52,9 @@ public class GenerateTrainingUseCase(
     private suspend fun loadExamples(random: Random): List<ExerciseExample>? {
         val queries = ExampleQueries(
             name = null,
-            forceType = null,
-            weightType = null,
-            category = null,
             muscleGroupId = null,
         )
+
         val page = ExamplePage(limits = 100, number = 1)
 
         val experiences = ExperienceEnum.entries.toMutableList().apply { shuffle(random) }
