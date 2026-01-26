@@ -34,7 +34,6 @@ internal fun TrainingProfileScreen(
     contract: TrainingProfileContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
-
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
     val baseTitle = AppTokens.strings.res(Res.string.training_profile)
@@ -59,18 +58,15 @@ internal fun TrainingProfileScreen(
         textAlign = TextAlign.Center
     )
 
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f, false),
-        contentPadding = PaddingValues(
-            start = AppTokens.dp.dialog.horizontalPadding,
-            end = AppTokens.dp.dialog.horizontalPadding,
-        ),
+        contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block)
+        verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
         state.profile?.let { profile ->
             item(key = "radar") {

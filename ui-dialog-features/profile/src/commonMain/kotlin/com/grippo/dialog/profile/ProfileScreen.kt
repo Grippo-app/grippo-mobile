@@ -1,6 +1,5 @@
 package com.grippo.dialog.profile
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
@@ -40,34 +38,55 @@ internal fun ProfileScreen(
     loaders: ImmutableSet<ProfileLoader>,
     contract: ProfileContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
+    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
-    Column(
+    if (state.user != null) {
+        UserCard(
+            modifier = Modifier
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                .fillMaxWidth(),
+            value = state.user
+        )
+    }
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+    val profileMenu = ProfileMenu.entries.map {
+        it to MenuItem(UiText.Str(it.text()), it.icon())
+    }.toPersistentList()
+
+    Text(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+            .padding(start = AppTokens.dp.contentPadding.subContent),
+        text = ProfileMenu.title(),
+        style = AppTokens.typography.b14Semi(),
+        color = AppTokens.colors.text.tertiary
+    )
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+
+    Menu(
+        modifier = Modifier
             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+        items = profileMenu,
+        onClick = contract::onProfileMenuClick
+    )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
-
-        if (state.user != null) {
-            UserCard(
-                modifier = Modifier.fillMaxWidth(),
-                value = state.user
-            )
-        }
-
+    if (state.user?.role == RoleEnumState.ADMIN) {
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        val profileMenu = ProfileMenu.entries.map {
+        val settingsMenu = SettingsMenu.entries.map {
             it to MenuItem(UiText.Str(it.text()), it.icon())
         }.toPersistentList()
 
         Text(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                 .padding(start = AppTokens.dp.contentPadding.subContent),
-            text = ProfileMenu.title(),
+            text = SettingsMenu.title(),
             style = AppTokens.typography.b14Semi(),
             color = AppTokens.colors.text.tertiary
         )
@@ -75,50 +94,30 @@ internal fun ProfileScreen(
         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
         Menu(
-            items = profileMenu,
-            onClick = contract::onProfileMenuClick
+            modifier = Modifier
+                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+            items = settingsMenu,
+            onClick = contract::onSettingsMenuClick
         )
-
-        if (state.user?.role == RoleEnumState.ADMIN) {
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-            val settingsMenu = SettingsMenu.entries.map {
-                it to MenuItem(UiText.Str(it.text()), it.icon())
-            }.toPersistentList()
-
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = AppTokens.dp.contentPadding.subContent),
-                text = SettingsMenu.title(),
-                style = AppTokens.typography.b14Semi(),
-                color = AppTokens.colors.text.secondary
-            )
-
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-            Menu(
-                items = settingsMenu,
-                onClick = contract::onSettingsMenuClick
-            )
-        }
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            style = ButtonStyle.Error,
-            content = ButtonContent.Text(
-                startIcon = ButtonIcon.Icon(AppTokens.icons.Logout),
-                text = AppTokens.strings.res(Res.string.logout_btn),
-            ),
-            onClick = contract::onLogoutClick
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-
-        Spacer(modifier = Modifier.navigationBarsPadding())
     }
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+    Button(
+        modifier = Modifier
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+            .fillMaxWidth(),
+        style = ButtonStyle.Error,
+        content = ButtonContent.Text(
+            startIcon = ButtonIcon.Icon(AppTokens.icons.Logout),
+            text = AppTokens.strings.res(Res.string.logout_btn),
+        ),
+        onClick = contract::onLogoutClick
+    )
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+
+    Spacer(modifier = Modifier.navigationBarsPadding())
 }
 
 @AppPreview

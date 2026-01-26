@@ -1,11 +1,9 @@
 package com.grippo.statistics
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.size
@@ -50,138 +48,131 @@ internal fun StatisticsScreen(
     contract: StatisticsContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
+    Text(
+        modifier = Modifier.fillMaxWidth(),
+        text = when (val mode = state.mode) {
+            is StatisticsMode.Exercises -> AppTokens.strings.res(Res.string.statistics)
+            is StatisticsMode.Trainings -> mode.range.label()?.let {
+                AppTokens.strings.res(Res.string.value_statistics, it)
+            } ?: AppTokens.strings.res(Res.string.statistics)
+        },
+        style = AppTokens.typography.h2(),
+        color = AppTokens.colors.text.primary,
+        textAlign = TextAlign.Center
+    )
 
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = when (val mode = state.mode) {
-                is StatisticsMode.Exercises -> AppTokens.strings.res(Res.string.statistics)
-                is StatisticsMode.Trainings -> mode.range.label()?.let {
-                    AppTokens.strings.res(Res.string.value_statistics, it)
-                } ?: AppTokens.strings.res(Res.string.statistics)
-            },
-            style = AppTokens.typography.h2(),
-            color = AppTokens.colors.text.primary,
-            textAlign = TextAlign.Center
-        )
+    when (val mode = state.mode) {
+        is StatisticsMode.Exercises -> {
 
-        when (val mode = state.mode) {
-            is StatisticsMode.Exercises -> {
-
-            }
-
-            is StatisticsMode.Trainings -> {
-                Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = mode.range.formatted(),
-                    style = AppTokens.typography.b14Med(),
-                    color = AppTokens.colors.text.secondary,
-                    textAlign = TextAlign.Center
-                )
-            }
         }
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+        is StatisticsMode.Trainings -> {
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
 
-        if (loaders.contains(StatisticsLoader.Charts)) {
-            Loader(modifier = Modifier.fillMaxWidth().weight(1f))
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                contentPadding = PaddingValues(
-                    start = AppTokens.dp.dialog.horizontalPadding,
-                    end = AppTokens.dp.dialog.horizontalPadding,
-                    top = AppTokens.dp.contentPadding.content,
-                ),
-                verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block)
-            ) {
-                state.total?.let { metrics ->
-                    item(key = "total_chips") {
-                        TrainingTotalSection(
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = mode.range.formatted(),
+                style = AppTokens.typography.b14Med(),
+                color = AppTokens.colors.text.secondary,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+    if (loaders.contains(StatisticsLoader.Charts)) {
+        Loader(modifier = Modifier.fillMaxWidth().weight(1f))
+    } else {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
+            verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.block)
+        ) {
+            state.total?.let { metrics ->
+                item(key = "total_chips") {
+                    TrainingTotalSection(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = metrics,
+                    )
+                }
+            }
+
+            state.exerciseVolume
+                ?.takeIf { it.entries.isNotEmpty() }
+                ?.let { data ->
+                    item(key = "exercise_volume") {
+                        VolumeMetricChart(
                             modifier = Modifier.fillMaxWidth(),
-                            value = metrics,
+                            value = data,
                         )
                     }
                 }
 
-                state.exerciseVolume
-                    ?.takeIf { it.entries.isNotEmpty() }
-                    ?.let { data ->
-                        item(key = "exercise_volume") {
-                            VolumeMetricChart(
-                                modifier = Modifier.fillMaxWidth(),
-                                value = data,
+            item(key = "distribution") {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+                ) {
+                    state.categoryDistribution
+                        ?.takeIf { it.entries.isNotEmpty() }
+                        ?.let { distribution ->
+                            ExerciseDistributionChart(
+                                modifier = Modifier.weight(1f),
+                                value = distribution
                             )
                         }
-                    }
 
-                item(key = "distribution") {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-                    ) {
-                        state.categoryDistribution
-                            ?.takeIf { it.entries.isNotEmpty() }
-                            ?.let { distribution ->
-                                ExerciseDistributionChart(
-                                    modifier = Modifier.weight(1f),
-                                    value = distribution
-                                )
-                            }
-
-                        state.weightTypeDistribution
-                            ?.takeIf { it.entries.isNotEmpty() }
-                            ?.let { distribution ->
-                                WeightTypeDistributionChart(
-                                    modifier = Modifier.weight(1f),
-                                    value = distribution
-                                )
-                            }
-
-                        state.forceTypeDistribution
-                            ?.takeIf { it.entries.isNotEmpty() }
-                            ?.let { distribution ->
-                                ForceTypeDistributionChart(
-                                    modifier = Modifier.weight(1f),
-                                    value = distribution
-                                )
-                            }
-                    }
-                }
-
-                item(key = "muscles_spliter") {
-                    ContentSpliter(
-                        text = AppTokens.strings.res(Res.string.muscles)
-                    )
-                }
-
-                state.muscleLoad
-                    ?.takeIf { it.perGroup.entries.isNotEmpty() }
-                    ?.let { summary ->
-                        item(key = "muscle_load") {
-                            MuscleLoading(
-                                modifier = Modifier.fillMaxWidth(),
-                                summary = summary,
-                                mode = MuscleLoadingMode.PerGroup,
-                                style = when (state.mode) {
-                                    StatisticsMode.Exercises -> MuscleLoadingStyle.Collapsed
-                                    is StatisticsMode.Trainings -> MuscleLoadingStyle.Expanded
-                                }
+                    state.weightTypeDistribution
+                        ?.takeIf { it.entries.isNotEmpty() }
+                        ?.let { distribution ->
+                            WeightTypeDistributionChart(
+                                modifier = Modifier.weight(1f),
+                                value = distribution
                             )
                         }
-                    }
 
-                item("bottom_space") {
-                    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-
-                    Spacer(modifier = Modifier.navigationBarsPadding())
+                    state.forceTypeDistribution
+                        ?.takeIf { it.entries.isNotEmpty() }
+                        ?.let { distribution ->
+                            ForceTypeDistributionChart(
+                                modifier = Modifier.weight(1f),
+                                value = distribution
+                            )
+                        }
                 }
+            }
+
+            item(key = "muscles_spliter") {
+                ContentSpliter(
+                    text = AppTokens.strings.res(Res.string.muscles)
+                )
+            }
+
+            state.muscleLoad
+                ?.takeIf { it.perGroup.entries.isNotEmpty() }
+                ?.let { summary ->
+                    item(key = "muscle_load") {
+                        MuscleLoading(
+                            modifier = Modifier.fillMaxWidth(),
+                            summary = summary,
+                            mode = MuscleLoadingMode.PerGroup,
+                            style = when (state.mode) {
+                                StatisticsMode.Exercises -> MuscleLoadingStyle.Collapsed
+                                is StatisticsMode.Trainings -> MuscleLoadingStyle.Expanded
+                            }
+                        )
+                    }
+                }
+
+            item("bottom_space") {
+                Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+
+                Spacer(modifier = Modifier.navigationBarsPadding())
             }
         }
     }

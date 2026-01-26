@@ -34,7 +34,6 @@ internal fun TrainingStreakScreen(
     contract: TrainingStreakContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
-
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
     Text(
