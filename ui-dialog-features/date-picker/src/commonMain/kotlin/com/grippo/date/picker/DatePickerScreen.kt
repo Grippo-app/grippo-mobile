@@ -62,9 +62,9 @@ internal fun DatePickerScreen(
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
     val buttonState = remember(loaders, state.value) {
-        when {
-            state.value is DateFormatState.Invalid -> ButtonState.Disabled
-            state.value is DateFormatState.Empty -> ButtonState.Disabled
+        when (state.value) {
+            is DateFormatState.Invalid -> ButtonState.Disabled
+            is DateFormatState.Empty -> ButtonState.Disabled
             else -> ButtonState.Enabled
         }
     }

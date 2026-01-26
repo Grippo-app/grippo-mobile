@@ -106,9 +106,9 @@ internal fun UserScreen(
         Spacer(modifier = Modifier.weight(1f))
 
         val buttonState = remember(loaders, state.name) {
-            when {
-                state.name is NameFormatState.Invalid -> ButtonState.Disabled
-                state.name is NameFormatState.Empty -> ButtonState.Disabled
+            when (state.name) {
+                is NameFormatState.Invalid -> ButtonState.Disabled
+                is NameFormatState.Empty -> ButtonState.Disabled
                 else -> ButtonState.Enabled
             }
         }
