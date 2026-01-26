@@ -1,15 +1,12 @@
 package com.grippo.exercise
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -47,108 +44,101 @@ internal fun ExerciseScreen(
 
     val exercise = state.exercise ?: return@BaseComposeScreen
 
-    Column(
+    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
+
+    ExerciseExampleImage(
+        modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+        value = exercise.exerciseExample.imageUrl,
+        style = ExerciseExampleImageStyle.LARGE
+    )
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+
+    Text(
+        modifier = Modifier
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+            .fillMaxWidth(),
+        text = exercise.exerciseExample.name,
+        style = AppTokens.typography.h1(),
+        color = AppTokens.colors.text.primary,
+    )
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
+
+    TrainingTotalSection(
         modifier = Modifier
             .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
-    ) {
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+        value = exercise.total,
+    )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
+    if (exercise.iterations.isNotEmpty()) {
 
-        ExerciseExampleImage(
-            modifier = Modifier.padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-            value = exercise.exerciseExample.imageUrl,
-            style = ExerciseExampleImageStyle.LARGE
-        )
+        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-        Text(
+        IterationsCard(
             modifier = Modifier
                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
                 .fillMaxWidth(),
+            value = exercise.iterations
+        )
+    }
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+    ContentSpliter(
+        text = AppTokens.strings.res(Res.string.more),
+    )
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+
+    val onExampleDetailsClick = remember {
+        { contract.onExampleDetailsClick(exercise.exerciseExample.id) }
+    }
+
+    Row(
+        modifier = Modifier
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+    ) {
+        Text(
+            modifier = Modifier.weight(1f),
             text = exercise.exerciseExample.name,
-            style = AppTokens.typography.h1(),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = AppTokens.typography.h6(),
             color = AppTokens.colors.text.primary,
         )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-        TrainingTotalSection(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-            value = exercise.total,
+        Button(
+            onClick = onExampleDetailsClick,
+            style = ButtonStyle.Transparent,
+            size = ButtonSize.Small,
+            content = ButtonContent.Text(
+                text = AppTokens.strings.res(Res.string.more),
+                endIcon = ButtonIcon.Icon(AppTokens.icons.ArrowRight)
+            ),
         )
-
-        if (exercise.iterations.isNotEmpty()) {
-
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
-
-            IterationsCard(
-                modifier = Modifier
-                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                    .fillMaxWidth(),
-                value = exercise.iterations
-            )
-        }
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-        ContentSpliter(
-            text = AppTokens.strings.res(Res.string.more),
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-        val onExampleDetailsClick = remember {
-            { contract.onExampleDetailsClick(exercise.exerciseExample.id) }
-        }
-
-        Row(
-            modifier = Modifier
-                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-        ) {
-            Text(
-                modifier = Modifier.weight(1f),
-                text = exercise.exerciseExample.name,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = AppTokens.typography.h6(),
-                color = AppTokens.colors.text.primary,
-            )
-
-            Button(
-                onClick = onExampleDetailsClick,
-                style = ButtonStyle.Transparent,
-                size = ButtonSize.Small,
-                content = ButtonContent.Text(
-                    text = AppTokens.strings.res(Res.string.more),
-                    endIcon = ButtonIcon.Icon(AppTokens.icons.ArrowRight)
-                ),
-            )
-        }
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
-
-        Text(
-            modifier = Modifier
-                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                .fillMaxWidth(),
-            text = exercise.exerciseExample.description,
-            maxLines = 3,
-            overflow = TextOverflow.Ellipsis,
-            style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.secondary,
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-
-        Spacer(modifier = Modifier.navigationBarsPadding())
     }
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
+
+    Text(
+        modifier = Modifier
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+            .fillMaxWidth(),
+        text = exercise.exerciseExample.description,
+        maxLines = 3,
+        overflow = TextOverflow.Ellipsis,
+        style = AppTokens.typography.b14Med(),
+        color = AppTokens.colors.text.secondary,
+    )
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+
+    Spacer(modifier = Modifier.navigationBarsPadding())
 }
 
 @AppPreview
