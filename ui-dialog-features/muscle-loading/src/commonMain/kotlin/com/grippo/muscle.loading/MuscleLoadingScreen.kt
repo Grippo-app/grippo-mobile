@@ -86,17 +86,13 @@ internal fun MuscleLoadingScreen(
         style = SegmentStyle.Fill
     )
 
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f),
-        contentPadding = PaddingValues(
-            start = AppTokens.dp.dialog.horizontalPadding,
-            end = AppTokens.dp.dialog.horizontalPadding,
-            top = AppTokens.dp.contentPadding.content,
-        ),
+        contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
         state.summary?.let { summary ->

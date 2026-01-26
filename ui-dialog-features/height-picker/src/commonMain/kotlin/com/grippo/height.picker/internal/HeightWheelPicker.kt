@@ -44,7 +44,7 @@ internal fun HeightWheelPicker(
     )
 
     MultiWheelPicker(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(AppTokens.dp.wheelPicker.height),
         selectorProperties = DefaultSelectorProperties(

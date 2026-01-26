@@ -64,16 +64,13 @@ internal fun PerformanceTrendScreen(
         textAlign = TextAlign.Center
     )
 
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
             .weight(1f, false),
-        contentPadding = PaddingValues(
-            start = AppTokens.dp.dialog.horizontalPadding,
-            end = AppTokens.dp.dialog.horizontalPadding,
-        ),
+        contentPadding = PaddingValues(horizontal = AppTokens.dp.dialog.horizontalPadding),
         verticalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
         item(key = "info") {

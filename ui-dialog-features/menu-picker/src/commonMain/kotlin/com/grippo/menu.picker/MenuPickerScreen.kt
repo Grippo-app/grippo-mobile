@@ -1,6 +1,5 @@
 package com.grippo.menu.picker
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
@@ -34,41 +32,36 @@ internal fun MenuPickerScreen(
     loaders: ImmutableSet<MenuPickerLoader>,
     contract: MenuPickerContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
+    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
-    Column(
+    Text(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+            .fillMaxWidth(),
+        text = AppTokens.strings.res(Res.string.menu),
+        style = AppTokens.typography.h2(),
+        color = AppTokens.colors.text.primary,
+        textAlign = TextAlign.Center
+    )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.menu),
-            style = AppTokens.typography.h2(),
-            color = AppTokens.colors.text.primary,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-        val menu = remember(state.items) {
-            state.items
-                .map { it.id to MenuItem(UiText.Str(it.text)) }
-                .toPersistentList()
-        }
-
-        Menu(
-            items = menu,
-            onClick = contract::onItemClick
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-
-        Spacer(modifier = Modifier.navigationBarsPadding())
+    val menu = remember(state.items) {
+        state.items
+            .map { it.id to MenuItem(UiText.Str(it.text)) }
+            .toPersistentList()
     }
+
+    Menu(
+        modifier = Modifier
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
+        items = menu,
+        onClick = contract::onItemClick
+    )
+
+    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
+
+    Spacer(modifier = Modifier.navigationBarsPadding())
 }
 
 @AppPreview

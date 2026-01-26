@@ -1,6 +1,5 @@
 package com.grippo.height.picker
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
@@ -33,48 +31,45 @@ internal fun HeightPickerScreen(
     loaders: ImmutableSet<HeightPickerLoader>,
     contract: HeightPickerContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
+    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
 
-    Column(
+    Text(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+            .fillMaxWidth(),
+        text = AppTokens.strings.res(Res.string.height_picker_title),
+        style = AppTokens.typography.h2(),
+        color = AppTokens.colors.text.primary,
+        textAlign = TextAlign.Center
+    )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.top))
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.height_picker_title),
-            style = AppTokens.typography.h2(),
-            color = AppTokens.colors.text.primary,
-            textAlign = TextAlign.Center
-        )
+    HeightWheelPicker(
+        modifier = Modifier
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+            .fillMaxWidth(),
+        suggestions = state.suggestions,
+        value = state.value.value,
+        select = contract::onSelectHeight
+    )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-        HeightWheelPicker(
-            modifier = Modifier.fillMaxWidth(),
-            suggestions = state.suggestions,
-            value = state.value.value,
-            select = contract::onSelectHeight
-        )
+    Button(
+        modifier = Modifier
+            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+            .fillMaxWidth(),
+        content = ButtonContent.Text(
+            text = AppTokens.strings.res(Res.string.submit_btn),
+        ),
+        style = ButtonStyle.Primary,
+        onClick = contract::onSubmitClick
+    )
 
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
+    Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
 
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            content = ButtonContent.Text(
-                text = AppTokens.strings.res(Res.string.submit_btn),
-            ),
-            style = ButtonStyle.Primary,
-            onClick = contract::onSubmitClick
-        )
-
-        Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))
-
-        Spacer(modifier = Modifier.navigationBarsPadding())
-    }
+    Spacer(modifier = Modifier.navigationBarsPadding())
 }
 
 @AppPreview
