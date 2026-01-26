@@ -74,6 +74,7 @@ internal fun DraftTrainingScreen(
         },
         style = AppTokens.typography.b14Med(),
         color = AppTokens.colors.text.secondary,
+        textAlign = TextAlign.Center
     )
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))

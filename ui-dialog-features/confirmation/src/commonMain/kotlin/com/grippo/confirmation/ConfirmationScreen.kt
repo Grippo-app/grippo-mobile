@@ -56,6 +56,7 @@ internal fun ConfirmationScreen(
             text = state.description,
             style = AppTokens.typography.b14Med(),
             color = AppTokens.colors.text.secondary,
+            textAlign = TextAlign.Center
         )
     }
 

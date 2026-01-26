@@ -102,6 +102,7 @@ internal fun IterationPickerScreen(
             text = hint,
             style = AppTokens.typography.b14Med(),
             color = AppTokens.colors.text.secondary,
+            textAlign = TextAlign.Center
         )
     }
 
@@ -117,6 +118,7 @@ internal fun IterationPickerScreen(
             text = equipmentsText.joinToString(" • "),
             style = AppTokens.typography.b12Med(),
             color = AppTokens.colors.text.tertiary,
+            textAlign = TextAlign.Center
         )
     }
 
