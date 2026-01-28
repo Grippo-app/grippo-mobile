@@ -71,9 +71,7 @@ internal fun HomeScreen(
         value = AppTokens.colors.background.screen,
     )
 ) {
-    val isEmptyState = state.lastTraining == null &&
-            state.streak == null &&
-            state.digest == null
+    val isEmptyState = state.lastTraining == null
 
     Toolbar(
         modifier = Modifier.fillMaxWidth(),
