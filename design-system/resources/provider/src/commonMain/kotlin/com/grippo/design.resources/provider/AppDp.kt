@@ -479,24 +479,24 @@ public data object AppDp {
     }
 
     public data object Chip {
-        val medium: Medium = Medium
         val small: Small = Small
-
-        public data object Medium {
-            val horizontalPadding: Dp = padding.small
-            val radius: Dp = AppDp.radius.medium
-            val trailingSize: Dp = icon.small
-            val spaceBetween: Dp = padding.small
-            val height: Dp = size.small
-        }
+        val medium: Medium = Medium
 
         public data object Small {
             val horizontalPadding: Dp = padding.extraSmall
             val verticalPadding: Dp = padding.extraSmall
             val radius: Dp = AppDp.radius.small
-            val trailingSize: Dp = icon.extraSmall
+            val trailingSize: Dp = icon.small
             val spaceBetween: Dp = padding.extraSmall
             val height: Dp = size.tiny
+        }
+
+        public data object Medium {
+            val horizontalPadding: Dp = padding.small
+            val radius: Dp = AppDp.radius.medium
+            val trailingSize: Dp = icon.medium
+            val spaceBetween: Dp = padding.small
+            val height: Dp = size.small
         }
     }
 }

@@ -51,7 +51,7 @@ public class ExerciseExampleViewModel(
         val exercisesState = value.toState()
 
         val exerciseVolume = volumeSeriesUseCase
-            .fromExercises(value)
+            .fromExercises(value.asReversed())
             .toState()
 
         val oneRepMax = estimatedOneRepMaxUseCase
