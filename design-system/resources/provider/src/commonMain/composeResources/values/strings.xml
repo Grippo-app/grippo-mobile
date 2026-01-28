@@ -17,6 +17,7 @@
     <string name="spotlight_missing_title">Due Back</string>
     <string name="low_confidence">Low confidence</string>
     <string name="repetitions_input_hint">1 - 99 reps</string>
+    <string name="exercise_details_btn">Exercise details</string>
     <string name="weight_input_hint">1 - 999 kg</string>
     <string name="advice">Advice</string>
     <string name="medium_confidence">Medium confidence</string>

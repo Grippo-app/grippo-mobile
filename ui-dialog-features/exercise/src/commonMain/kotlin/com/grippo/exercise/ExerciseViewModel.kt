@@ -31,7 +31,9 @@ public class ExerciseViewModel(
         navigateTo(ExerciseDirection.Back)
     }
 
-    override fun onExampleDetailsClick(id: String) {
+    override fun onExampleDetailsClick() {
+        val id = state.value.exercise?.exerciseExample?.id ?: return
+
         val dialog = DialogConfig.ExerciseExample(
             id = id,
         )

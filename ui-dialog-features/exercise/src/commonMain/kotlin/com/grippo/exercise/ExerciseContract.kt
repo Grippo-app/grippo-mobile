@@ -5,11 +5,11 @@ import androidx.compose.runtime.Immutable
 @Immutable
 internal interface ExerciseContract {
     fun onDismiss()
-    fun onExampleDetailsClick(id: String)
+    fun onExampleDetailsClick()
 
     @Immutable
     companion object Empty : ExerciseContract {
         override fun onDismiss() {}
-        override fun onExampleDetailsClick(id: String) {}
+        override fun onExampleDetailsClick() {}
     }
 }

@@ -1,7 +1,5 @@
 package com.grippo.exercise
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -9,29 +7,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextOverflow
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
 import com.grippo.core.state.trainings.stubExercise
 import com.grippo.design.components.button.Button
 import com.grippo.design.components.button.ButtonContent
-import com.grippo.design.components.button.ButtonIcon
-import com.grippo.design.components.button.ButtonSize
 import com.grippo.design.components.button.ButtonStyle
 import com.grippo.design.components.example.ExerciseExampleImage
 import com.grippo.design.components.example.ExerciseExampleImageStyle
 import com.grippo.design.components.metrics.TrainingTotalSection
-import com.grippo.design.components.spliter.ContentSpliter
 import com.grippo.design.components.training.IterationsCard
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.icons.ArrowRight
-import com.grippo.design.resources.provider.more
+import com.grippo.design.resources.provider.exercise_details_btn
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -86,54 +77,16 @@ internal fun ExerciseScreen(
 
     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-    ContentSpliter(
-        text = AppTokens.strings.res(Res.string.more),
-    )
 
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
-
-    val onExampleDetailsClick = remember {
-        { contract.onExampleDetailsClick(exercise.exerciseExample.id) }
-    }
-
-    Row(
+    Button(
         modifier = Modifier
             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
             .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
-    ) {
-        Text(
-            modifier = Modifier.weight(1f),
-            text = exercise.exerciseExample.name,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            style = AppTokens.typography.h6(),
-            color = AppTokens.colors.text.primary,
+        onClick = contract::onExampleDetailsClick,
+        style = ButtonStyle.Secondary,
+        content = ButtonContent.Text(
+            text = AppTokens.strings.res(Res.string.exercise_details_btn)
         )
-
-        Button(
-            onClick = onExampleDetailsClick,
-            style = ButtonStyle.Transparent,
-            size = ButtonSize.Small,
-            content = ButtonContent.Text(
-                text = AppTokens.strings.res(Res.string.more),
-                endIcon = ButtonIcon.Icon(AppTokens.icons.ArrowRight)
-            ),
-        )
-    }
-
-    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
-
-    Text(
-        modifier = Modifier
-            .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-            .fillMaxWidth(),
-        text = exercise.exerciseExample.description,
-        maxLines = 3,
-        overflow = TextOverflow.Ellipsis,
-        style = AppTokens.typography.b14Med(),
-        color = AppTokens.colors.text.secondary,
     )
 
     Spacer(modifier = Modifier.size(AppTokens.dp.dialog.bottom))

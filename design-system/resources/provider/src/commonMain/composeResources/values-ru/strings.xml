@@ -17,6 +17,7 @@
     <string name="spotlight_missing_title">Пора вернуть</string>
     <string name="low_confidence">Низкая уверенность</string>
     <string name="repetitions_input_hint">1 - 99 повторений</string>
+    <string name="exercise_details_btn">Детали упражнения</string>
     <string name="weight_input_hint">1 - 999 кг</string>
     <string name="advice">Совет</string>
     <string name="medium_confidence">Средняя уверенность</string>
