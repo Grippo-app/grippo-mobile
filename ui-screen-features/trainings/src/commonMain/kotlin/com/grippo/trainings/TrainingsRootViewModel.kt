@@ -27,7 +27,7 @@ public class TrainingsRootViewModel(
         if (hasDraftTraining) {
             safeLaunch {
                 val config = DialogConfig.DraftTraining(
-                    onResult = { navigateTo(TrainingsRootDirection.DraftTraining) }
+                    onContinue = { navigateTo(TrainingsRootDirection.DraftTraining) }
                 )
 
                 dialogController.show(config)

@@ -18,6 +18,8 @@
     <string name="low_confidence">Низкая уверенность</string>
     <string name="repetitions_input_hint">1 - 99 повторений</string>
     <string name="exercise_details_btn">Детали упражнения</string>
+    <string name="resume_training_btn">Продолжить тренировку</string>
+    <string name="start_new">Начать новое</string>
     <string name="weight_input_hint">1 - 999 кг</string>
     <string name="advice">Совет</string>
     <string name="medium_confidence">Средняя уверенность</string>
@@ -153,6 +155,7 @@
     <string name="total_value">Всего %1$s</string>
     <string name="add_set_btn">Добавить подход</string>
     <string name="or">ИЛИ</string>
+    <string name="create_account_btn">Создать аккаунт</string>
     <string name="email_placeholder">Введите email</string>
     <string name="password_placeholder_default">Введите пароль</string>
     <string name="password_placeholder_repeat">Повторите пароль</string>

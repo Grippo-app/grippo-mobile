@@ -12,6 +12,7 @@ internal interface HomeRootContract {
     fun toDebug()
     fun toTrainings()
     fun toAddTraining()
+    fun toDraftTraining()
     fun toSettings()
 
     @Immutable
@@ -24,6 +25,7 @@ internal interface HomeRootContract {
         override fun toDebug() {}
         override fun toTrainings() {}
         override fun toAddTraining() {}
+        override fun toDraftTraining() {}
         override fun toSettings() {}
     }
 }

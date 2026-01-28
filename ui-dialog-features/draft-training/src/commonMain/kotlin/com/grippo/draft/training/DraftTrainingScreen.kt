@@ -28,12 +28,12 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.clear_btn
 import com.grippo.design.resources.provider.continue_btn
 import com.grippo.design.resources.provider.draft_training_alert_description_add
 import com.grippo.design.resources.provider.draft_training_alert_description_edit
 import com.grippo.design.resources.provider.draft_training_alert_title_add
 import com.grippo.design.resources.provider.draft_training_alert_title_edit
+import com.grippo.design.resources.provider.start_new
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -116,10 +116,10 @@ internal fun DraftTrainingScreen(
                 Button(
                     modifier = Modifier.weight(1f),
                     content = ButtonContent.Text(
-                        text = AppTokens.strings.res(Res.string.clear_btn),
+                        text = AppTokens.strings.res(Res.string.start_new),
                     ),
                     style = ButtonStyle.Secondary,
-                    onClick = contract::onDelete
+                    onClick = contract::onStartNew
                 )
 
                 Button(

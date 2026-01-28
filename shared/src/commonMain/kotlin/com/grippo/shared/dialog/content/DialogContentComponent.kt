@@ -189,7 +189,8 @@ internal class DialogContentComponent(
             is DialogConfig.DraftTraining -> Child.DraftTraining(
                 DraftTrainingComponent(
                     componentContext = context,
-                    onResult = { viewModel.onBack { router.onResult.invoke() } },
+                    onContinue = { viewModel.onBack { router.onContinue.invoke() } },
+                    onStartNew = { viewModel.onBack { router.onStartNew.invoke() } },
                     back = { viewModel.onBack(null) }
                 )
             )

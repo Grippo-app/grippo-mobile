@@ -8,6 +8,7 @@ internal interface HomeContract {
     fun onOpenProfile()
     fun onOpenTrainingProfile()
     fun onStartTraining()
+    fun onResumeTraining()
     fun onOpenTrainings()
     fun onOpenExample(id: String)
     fun onOpenMuscleLoading()
@@ -22,6 +23,7 @@ internal interface HomeContract {
         override fun onOpenProfile() {}
         override fun onOpenTrainingProfile() {}
         override fun onStartTraining() {}
+        override fun onResumeTraining() {}
         override fun onOpenTrainings() {}
         override fun onOpenMuscleLoading() {}
         override fun onOpenTrainingStreak() {}

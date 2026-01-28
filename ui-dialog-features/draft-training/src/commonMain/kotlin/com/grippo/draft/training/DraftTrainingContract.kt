@@ -5,13 +5,13 @@ import androidx.compose.runtime.Immutable
 @Immutable
 internal interface DraftTrainingContract {
     fun onContinue()
-    fun onDelete()
+    fun onStartNew()
     fun onBack()
 
     @Immutable
     companion object Empty : DraftTrainingContract {
         override fun onContinue() {}
-        override fun onDelete() {}
+        override fun onStartNew() {}
         override fun onBack() {}
     }
 }

@@ -144,7 +144,8 @@ public sealed class DialogConfig(
 
     @Serializable
     public data class DraftTraining(
-        @Transient val onResult: () -> Unit = {},
+        @Transient val onContinue: () -> Unit = {},
+        @Transient val onStartNew: () -> Unit = {},
     ) : DialogConfig(
         onDismiss = null,
         dismissBySwipe = true

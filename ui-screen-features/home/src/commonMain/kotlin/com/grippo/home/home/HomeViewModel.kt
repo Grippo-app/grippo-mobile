@@ -12,6 +12,7 @@ import com.grippo.data.features.api.metrics.TrainingDigestUseCase
 import com.grippo.data.features.api.metrics.TrainingLoadProfileUseCase
 import com.grippo.data.features.api.metrics.TrainingStreakUseCase
 import com.grippo.data.features.api.training.TrainingFeature
+import com.grippo.data.features.api.training.models.SetDraftTraining
 import com.grippo.data.features.api.training.models.Training
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.period_picker_title
@@ -22,6 +23,7 @@ import com.grippo.domain.state.metrics.toState
 import com.grippo.domain.state.training.toState
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -67,6 +69,17 @@ internal class HomeViewModel(
         safeLaunch {
             exerciseExampleFeature.getExerciseExamples()
         }
+
+        // todo change to subscription
+        safeLaunch {
+            val training = trainingFeature.getDraftTraining().firstOrNull()
+            provideDraftTraining(training)
+        }
+    }
+
+    private fun provideDraftTraining(value: SetDraftTraining?) {
+        val hasDraftTraining = value != null
+        update { it.copy(hasDraftTraining = hasDraftTraining) }
     }
 
     private suspend fun provideTrainings(list: List<Training>) {
@@ -209,6 +222,15 @@ internal class HomeViewModel(
         )
 
         dialogController.show(dialog)
+    }
+
+    override fun onResumeTraining() {
+        val config = DialogConfig.DraftTraining(
+            onContinue = { navigateTo(HomeDirection.DraftTraining) },
+            onStartNew = { navigateTo(HomeDirection.AddTraining) }
+        )
+
+        dialogController.show(config)
     }
 
     override fun onOpenTrainingStreak() {

@@ -54,6 +54,7 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.dashboard
 import com.grippo.design.resources.provider.icons.User
+import com.grippo.design.resources.provider.resume_training_btn
 import com.grippo.design.resources.provider.start_workout
 import com.grippo.home.home.components.EmptyHomeContent
 import kotlinx.collections.immutable.ImmutableSet
@@ -303,16 +304,30 @@ internal fun HomeScreen(
         bottom = {
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.block))
 
-            Button(
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
-                content = ButtonContent.Text(
-                    text = AppTokens.strings.res(Res.string.start_workout),
-                ),
-                style = ButtonStyle.Primary,
-                onClick = contract::onStartTraining
-            )
+
+            if (state.hasDraftTraining) {
+                Button(
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+                    onClick = contract::onResumeTraining,
+                    style = ButtonStyle.Error,
+                    content = ButtonContent.Text(
+                        text = AppTokens.strings.res(Res.string.resume_training_btn)
+                    )
+                )
+            } else {
+                Button(
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(horizontal = AppTokens.dp.screen.horizontalPadding),
+                    content = ButtonContent.Text(
+                        text = AppTokens.strings.res(Res.string.start_workout),
+                    ),
+                    style = ButtonStyle.Primary,
+                    onClick = contract::onStartTraining
+                )
+            }
 
             Spacer(modifier = Modifier.size(AppTokens.dp.screen.verticalPadding))
 
@@ -336,7 +351,8 @@ private fun HomeScreenPreview() {
                 muscleLoad = stubMuscleLoadSummary(),
                 streak = stubTrainingStreaks().random(),
                 performance = stubPerformanceMetrics(),
-                profile = stubTrainingLoadProfile()
+                profile = stubTrainingLoadProfile(),
+                hasDraftTraining = true
             ),
             loaders = persistentSetOf(),
             contract = HomeContract.Empty

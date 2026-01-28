@@ -8,7 +8,8 @@ import com.grippo.core.foundation.BaseComponent
 import com.grippo.core.foundation.platform.collectAsStateMultiplatform
 
 public class DraftTrainingComponent(
-    private val onResult: () -> Unit,
+    private val onContinue: () -> Unit,
+    private val onStartNew: () -> Unit,
     private val back: () -> Unit,
     componentContext: ComponentContext,
 ) : BaseComponent<DraftTrainingDirection>(componentContext) {
@@ -27,8 +28,9 @@ public class DraftTrainingComponent(
 
     override suspend fun eventListener(direction: DraftTrainingDirection) {
         when (direction) {
-            DraftTrainingDirection.Continue -> onResult.invoke()
+            DraftTrainingDirection.Continue -> onContinue.invoke()
             DraftTrainingDirection.Back -> back.invoke()
+            DraftTrainingDirection.StartNew -> onStartNew.invoke()
         }
     }
 

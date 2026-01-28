@@ -36,10 +36,10 @@ public class DraftTrainingViewModel(
         navigateTo(DraftTrainingDirection.Continue)
     }
 
-    override fun onDelete() {
+    override fun onStartNew() {
         safeLaunch {
             trainingFeature.deleteDraftTraining().getOrThrow()
-            navigateTo(DraftTrainingDirection.Back)
+            navigateTo(DraftTrainingDirection.StartNew)
         }
     }
 

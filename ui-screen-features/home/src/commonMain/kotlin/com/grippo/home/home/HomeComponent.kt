@@ -17,6 +17,7 @@ internal class HomeComponent(
     private val toDebug: () -> Unit,
     private val toAddTraining: () -> Unit,
     private val toTrainings: () -> Unit,
+    private val toDraftTraining: () -> Unit,
     private val toSettings: () -> Unit,
 ) : BaseComponent<HomeDirection>(componentContext) {
 
@@ -45,6 +46,7 @@ internal class HomeComponent(
         when (direction) {
             HomeDirection.Back -> back.invoke()
             HomeDirection.AddTraining -> toAddTraining.invoke()
+            HomeDirection.DraftTraining -> toDraftTraining.invoke()
             HomeDirection.Debug -> toDebug.invoke()
             HomeDirection.ExcludedMuscles -> toExcludedMuscles.invoke()
             HomeDirection.MissingEquipment -> toMissingEquipment.invoke()

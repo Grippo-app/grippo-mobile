@@ -29,10 +29,7 @@ public class HomeRootComponent(
 ) : BaseComponent<HomeRootDirection>(componentContext) {
 
     override val viewModel: HomeRootViewModel = componentContext.retainedInstance {
-        HomeRootViewModel(
-            trainingFeature = getKoin().get(),
-            dialogController = getKoin().get(),
-        )
+        HomeRootViewModel()
     }
 
     private val backCallback = BackCallback(onBack = viewModel::onBack)
@@ -81,6 +78,7 @@ public class HomeRootComponent(
                     toWeightHistory = viewModel::toWeightHistory,
                     toExperience = viewModel::toExperience,
                     toAddTraining = viewModel::toAddTraining,
+                    toDraftTraining = viewModel::toDraftTraining,
                     toDebug = viewModel::toDebug,
                     toTrainings = viewModel::toTrainings,
                     toSettings = viewModel::toSettings,
