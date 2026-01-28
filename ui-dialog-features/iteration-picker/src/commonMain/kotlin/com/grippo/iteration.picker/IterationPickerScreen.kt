@@ -2,6 +2,7 @@ package com.grippo.iteration.picker
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -131,21 +132,45 @@ internal fun IterationPickerScreen(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
-        InputVolume(
-            modifier = Modifier
-                .focusRequester(volumeRequester)
-                .weight(1f),
-            value = state.value.volume.display,
-            onValueChange = contract::onVolumeChange
-        )
+        Column(modifier = Modifier.weight(1f)) {
+            InputVolume(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(volumeRequester),
+                value = state.value.volume.display,
+                onValueChange = contract::onVolumeChange
+            )
 
-        InputRepetitions(
-            modifier = Modifier
-                .focusRequester(repetitionsRequester)
-                .weight(1f),
-            value = state.value.repetitions.display,
-            onValueChange = contract::onRepetitionsChange
-        )
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
+
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = state.value.volume.hint(),
+                style = AppTokens.typography.b14Med(),
+                color = AppTokens.colors.text.tertiary,
+                textAlign = TextAlign.End
+            )
+        }
+
+        Column(modifier = Modifier.weight(1f)) {
+            InputRepetitions(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(repetitionsRequester),
+                value = state.value.repetitions.display,
+                onValueChange = contract::onRepetitionsChange
+            )
+
+            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
+
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = state.value.repetitions.hint(),
+                style = AppTokens.typography.b14Med(),
+                color = AppTokens.colors.text.tertiary,
+                textAlign = TextAlign.End
+            )
+        }
     }
 
     if (state.suggestions.isNotEmpty()) {

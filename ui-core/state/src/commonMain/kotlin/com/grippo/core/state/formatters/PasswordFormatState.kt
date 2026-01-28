@@ -1,6 +1,10 @@
 package com.grippo.core.state.formatters
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import com.grippo.design.core.AppTokens
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.at_least_six_characters
 import kotlinx.serialization.Serializable
 
 @Immutable
@@ -46,5 +50,10 @@ public sealed class PasswordFormatState : FormatState<String> {
         fun isValid(value: String): Boolean {
             return value.length >= 6
         }
+    }
+
+    @Composable
+    public fun hint(): String {
+        return AppTokens.strings.res(Res.string.at_least_six_characters)
     }
 }

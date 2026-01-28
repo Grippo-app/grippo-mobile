@@ -5,6 +5,7 @@ import androidx.compose.runtime.Immutable
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.kg
+import com.grippo.design.resources.provider.weight_input_hint
 import kotlinx.serialization.Serializable
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -113,5 +114,10 @@ public sealed class VolumeFormatState : FormatState<Float> {
         fun isValid(value: Float): Boolean {
             return value in 0f..1000f
         }
+    }
+
+    @Composable
+    public fun hint(): String {
+        return AppTokens.strings.res(Res.string.weight_input_hint)
     }
 }

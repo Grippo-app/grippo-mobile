@@ -31,7 +31,6 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
-import com.grippo.design.resources.provider.at_least_six_characters
 import com.grippo.design.resources.provider.create_account_btn
 import com.grippo.design.resources.provider.registration_credential_description
 import com.grippo.design.resources.provider.registration_credential_title
@@ -99,7 +98,7 @@ internal fun CredentialScreen(
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = AppTokens.strings.res(Res.string.at_least_six_characters),
+            text = state.password.hint(),
             style = AppTokens.typography.b14Med(),
             color = AppTokens.colors.text.tertiary,
             textAlign = TextAlign.End

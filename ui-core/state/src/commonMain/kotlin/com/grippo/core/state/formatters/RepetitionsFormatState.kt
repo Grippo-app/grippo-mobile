@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import com.grippo.design.core.AppTokens
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.repetitions_input_hint
 import com.grippo.design.resources.provider.x
 import kotlinx.serialization.Serializable
 
@@ -77,6 +78,11 @@ public sealed class RepetitionsFormatState : FormatState<Int> {
                 )
             }
         }
+    }
+
+    @Composable
+    public fun hint(): String {
+        return AppTokens.strings.res(Res.string.repetitions_input_hint)
     }
 
     @Composable

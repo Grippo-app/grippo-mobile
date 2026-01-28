@@ -16,6 +16,8 @@
     <string name="spotlight_best_title">Выше обычного</string>
     <string name="spotlight_missing_title">Пора вернуть</string>
     <string name="low_confidence">Низкая уверенность</string>
+    <string name="repetitions_input_hint">1 - 99 повторений</string>
+    <string name="weight_input_hint">1 - 999 кг</string>
     <string name="advice">Совет</string>
     <string name="medium_confidence">Средняя уверенность</string>
     <string name="high_confidence">Высокая уверенность</string>
