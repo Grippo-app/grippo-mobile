@@ -5,8 +5,19 @@ import kotlinx.serialization.Serializable
 
 @Immutable
 @Serializable
-public sealed class StageState(public open val id: String?) {
-    public data object Add : StageState(null)
-    public data class Edit(override val id: String) : StageState(id)
-    public data object Draft : StageState(null)
+public sealed class StageState {
+    public abstract val id: String?
+
+    @Serializable
+    public data object Add : StageState() {
+        override val id: String? = null
+    }
+
+    @Serializable
+    public data class Edit(override val id: String) : StageState()
+
+    @Serializable
+    public data object Draft : StageState() {
+        override val id: String? = null
+    }
 }
