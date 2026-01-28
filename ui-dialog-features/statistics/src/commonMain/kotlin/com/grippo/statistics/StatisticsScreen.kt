@@ -20,6 +20,7 @@ import com.grippo.core.state.metrics.stubMuscleLoadSummary
 import com.grippo.core.state.metrics.stubTotal
 import com.grippo.core.state.metrics.stubVolumeSeries
 import com.grippo.core.state.metrics.stubWeightDistribution
+import com.grippo.design.components.chart.internal.BarChartXAxisLabels
 import com.grippo.design.components.loading.Loader
 import com.grippo.design.components.metrics.ExerciseDistributionChart
 import com.grippo.design.components.metrics.ForceTypeDistributionChart
@@ -109,6 +110,10 @@ internal fun StatisticsScreen(
                         VolumeMetricChart(
                             modifier = Modifier.fillMaxWidth(),
                             value = data,
+                            xAxisLabels = when (state.mode) {
+                                StatisticsMode.Exercises -> BarChartXAxisLabels.WithoutLabels
+                                is StatisticsMode.Trainings -> BarChartXAxisLabels.WithLabels
+                            }
                         )
                     }
                 }

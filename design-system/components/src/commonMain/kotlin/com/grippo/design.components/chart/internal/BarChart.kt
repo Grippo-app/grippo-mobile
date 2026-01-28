@@ -2,6 +2,7 @@ package com.grippo.design.components.chart.internal
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -17,10 +18,17 @@ import com.grippo.design.preview.PreviewContainer
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
+@Immutable
+public enum class BarChartXAxisLabels {
+    WithLabels,
+    WithoutLabels,
+}
+
 @Composable
 internal fun BarChart(
     modifier: Modifier = Modifier,
     data: BarData,
+    xAxisLabels: BarChartXAxisLabels = BarChartXAxisLabels.WithLabels,
 ) {
     val colors = AppTokens.colors
     val typography = AppTokens.typography
@@ -84,11 +92,15 @@ internal fun BarChart(
             color = colors.border.default.copy(alpha = 0.4f),
             width = 1.dp
         ),
-        xAxis = BarStyle.XAxis.LabelsAdaptive(
-            textStyle = typography.b10Reg()
-                .copy(color = colors.text.tertiary),
-            minGapDp = 8.dp
-        ),
+        xAxis = if (xAxisLabels == BarChartXAxisLabels.WithLabels) {
+            BarStyle.XAxis.LabelsAdaptive(
+                textStyle = typography.b10Reg()
+                    .copy(color = colors.text.tertiary),
+                minGapDp = 8.dp
+            )
+        } else {
+            BarStyle.XAxis.None
+        },
         xBaseline = BarStyle.Baseline(
             color = colors.border.default.copy(alpha = 0.45f),
             width = 1.dp

@@ -21,6 +21,7 @@ import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.core.state.metrics.stubEstimatedOneRepMax
 import com.grippo.core.state.trainings.stubExercises
 import com.grippo.design.components.achievement.AchievementsCard
+import com.grippo.design.components.chart.internal.BarChartXAxisLabels
 import com.grippo.design.components.equipment.EquipmentsCard
 import com.grippo.design.components.example.ExampleDescriptionText
 import com.grippo.design.components.example.ExampleTypeSection
@@ -170,6 +171,7 @@ internal fun ExerciseExampleScreen(
                                 .fillMaxWidth()
                                 .padding(horizontal = AppTokens.dp.dialog.horizontalPadding),
                             value = data,
+                            xAxisLabels = BarChartXAxisLabels.WithoutLabels
                         )
 
                         Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.content))

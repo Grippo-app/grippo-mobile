@@ -79,7 +79,7 @@ public class VolumeSeriesUseCase {
     }
 
     private fun exerciseLabel(exercise: Exercise, index: Int): String {
-        return exercise.name.take(3)
+        return exercise.name
     }
 
     private fun exerciseVolume(iterations: List<Iteration>): Float {

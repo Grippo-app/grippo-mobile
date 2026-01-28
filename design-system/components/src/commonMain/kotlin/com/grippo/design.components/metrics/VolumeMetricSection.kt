@@ -13,6 +13,7 @@ import com.grippo.chart.bar.BarEntry
 import com.grippo.core.state.metrics.VolumeSeriesState
 import com.grippo.core.state.metrics.stubVolumeSeries
 import com.grippo.design.components.chart.internal.BarChart
+import com.grippo.design.components.chart.internal.BarChartXAxisLabels
 import com.grippo.design.components.metrics.internal.MetricSectionPanel
 import com.grippo.design.components.metrics.internal.MetricSectionPanelStyle
 import com.grippo.design.core.AppTokens
@@ -25,6 +26,7 @@ import com.grippo.design.resources.provider.tonnage
 public fun VolumeMetricChart(
     value: VolumeSeriesState,
     modifier: Modifier = Modifier,
+    xAxisLabels: BarChartXAxisLabels
 ) {
     MetricSectionPanel(
         modifier = modifier,
@@ -44,7 +46,8 @@ public fun VolumeMetricChart(
                 .fillMaxWidth()
                 .heightIn(min = AppTokens.dp.metrics.volume.height)
                 .aspectRatio(1.7f),
-            data = value.toBarData()
+            data = value.toBarData(),
+            xAxisLabels = xAxisLabels
         )
     }
 }
@@ -95,7 +98,13 @@ private fun assignColors(
 private fun VolumeMetricChartPreview() {
     PreviewContainer {
         VolumeMetricChart(
-            value = stubVolumeSeries()
+            value = stubVolumeSeries(),
+            xAxisLabels = BarChartXAxisLabels.WithoutLabels
+        )
+
+        VolumeMetricChart(
+            value = stubVolumeSeries(),
+            xAxisLabels = BarChartXAxisLabels.WithLabels
         )
     }
 }
