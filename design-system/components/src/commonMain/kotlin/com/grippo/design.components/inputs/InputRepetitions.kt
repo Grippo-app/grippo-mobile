@@ -12,7 +12,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.design.components.inputs.core.Input
+import com.grippo.design.components.inputs.core.InputError
 import com.grippo.design.components.inputs.core.InputStyle
 import com.grippo.design.components.inputs.core.PlaceHolder
 import com.grippo.design.core.AppTokens
@@ -25,19 +27,24 @@ import com.grippo.design.resources.provider.reps
 @Composable
 public fun InputRepetitions(
     modifier: Modifier = Modifier,
-    value: String,
+    value: RepetitionsFormatState,
     onValueChange: (String) -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
 
     Input(
         modifier = modifier,
-        value = value,
+        value = value.display,
         maxLines = 1,
         minLines = 1,
         inputStyle = InputStyle.Default(
             onValueChange = onValueChange,
         ),
+        error = when (value) {
+            is RepetitionsFormatState.Empty -> InputError.Non
+            is RepetitionsFormatState.Invalid -> InputError.Error("")
+            is RepetitionsFormatState.Valid -> InputError.Non
+        },
         trailing = { color ->
             Text(
                 modifier = Modifier.padding(end = 8.dp),
@@ -65,12 +72,12 @@ public fun InputRepetitions(
 private fun InputRepetitionsPreview() {
     PreviewContainer {
         InputRepetitions(
-            value = "12",
+            value = RepetitionsFormatState.of("12"),
             onValueChange = {}
         )
 
         InputRepetitions(
-            value = "123",
+            value = RepetitionsFormatState.of("123"),
             onValueChange = {}
         )
     }

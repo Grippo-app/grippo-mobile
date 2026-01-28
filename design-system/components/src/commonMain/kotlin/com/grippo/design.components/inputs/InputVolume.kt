@@ -12,7 +12,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.design.components.inputs.core.Input
+import com.grippo.design.components.inputs.core.InputError
 import com.grippo.design.components.inputs.core.InputStyle
 import com.grippo.design.components.inputs.core.PlaceHolder
 import com.grippo.design.core.AppTokens
@@ -25,16 +27,21 @@ import com.grippo.design.resources.provider.volume_placeholder
 @Composable
 public fun InputVolume(
     modifier: Modifier = Modifier,
-    value: String,
+    value: VolumeFormatState,
     onValueChange: (String) -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
 
     Input(
         modifier = modifier,
-        value = value,
+        value = value.display,
         maxLines = 1,
         minLines = 1,
+        error = when (value) {
+            is VolumeFormatState.Empty -> InputError.Non
+            is VolumeFormatState.Invalid -> InputError.Error("")
+            is VolumeFormatState.Valid -> InputError.Non
+        },
         inputStyle = InputStyle.Default(
             onValueChange = onValueChange,
         ),
@@ -65,12 +72,12 @@ public fun InputVolume(
 private fun InputVolumePreview() {
     PreviewContainer {
         InputVolume(
-            value = "12",
+            value = VolumeFormatState.of("12"),
             onValueChange = {}
         )
 
         InputVolume(
-            value = "123",
+            value = VolumeFormatState.of("1234"),
             onValueChange = {}
         )
     }

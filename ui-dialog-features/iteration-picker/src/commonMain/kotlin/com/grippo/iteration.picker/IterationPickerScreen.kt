@@ -137,8 +137,8 @@ internal fun IterationPickerScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(volumeRequester),
-                value = state.value.volume.display,
-                onValueChange = contract::onVolumeChange
+                value = state.value.volume,
+                onValueChange = contract::onVolumeChange,
             )
 
             Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
@@ -157,7 +157,7 @@ internal fun IterationPickerScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(repetitionsRequester),
-                value = state.value.repetitions.display,
+                value = state.value.repetitions,
                 onValueChange = contract::onRepetitionsChange
             )
 

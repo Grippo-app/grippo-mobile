@@ -137,12 +137,12 @@ internal fun Input(
         else -> colors.input.backgroundDisabled
     }
     val placeholderColor = when {
-        error is InputError.Error -> colors.semantic.error
+        error is InputError.Error -> colors.input.placeholder
         !enabled -> colors.input.placeholderDisabled
         else -> colors.input.placeholder
     }
     val labelColor = when {
-        error is InputError.Error -> colors.semantic.error
+        error is InputError.Error -> colors.input.label
         !enabled -> colors.input.placeholderDisabled
         else -> colors.input.label
     }
@@ -152,12 +152,12 @@ internal fun Input(
         else -> colors.input.text
     }
     val leadingColor = when {
-        error is InputError.Error -> colors.semantic.error
+        error is InputError.Error -> colors.input.leading
         !enabled -> colors.input.textDisabled
         else -> colors.input.leading
     }
     val trailingColor = when {
-        error is InputError.Error -> colors.semantic.error
+        error is InputError.Error -> colors.input.trailing
         !enabled -> colors.input.textDisabled
         else -> colors.input.trailing
     }
