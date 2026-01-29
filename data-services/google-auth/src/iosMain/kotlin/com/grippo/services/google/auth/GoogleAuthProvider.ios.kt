@@ -51,6 +51,7 @@ private const val AUTH_HOST = "accounts.google.com"
 private const val AUTH_PATH = "/o/oauth2/v2/auth"
 private const val TOKEN_URL = "https://oauth2.googleapis.com/token"
 private val SCOPES = listOf("openid", "profile", "email")
+private const val CLIENT_ID_SUFFIX = ".apps.googleusercontent.com"
 
 public actual class GoogleAuthUiProvider internal constructor(
     private val configuration: GoogleAuthConfiguration,
@@ -93,9 +94,16 @@ public actual class GoogleAuthUiProvider internal constructor(
         if (clientId.isEmpty()) {
             throw GoogleAuthException.ProviderMisconfigured("Google auth misconfigured: iosClientId is empty")
         }
-        if (!clientId.endsWith(".apps.googleusercontent.com")) {
+        if (!clientId.endsWith(CLIENT_ID_SUFFIX)) {
             throw GoogleAuthException.InvalidServerClientId(
                 "Google auth misconfigured: iosClientId must end with .apps.googleusercontent.com",
+            )
+        }
+
+        val serverClientId = config.serverClientId
+        if (serverClientId != null && !serverClientId.endsWith(CLIENT_ID_SUFFIX)) {
+            throw GoogleAuthException.InvalidServerClientId(
+                "Google auth misconfigured: serverClientId must end with .apps.googleusercontent.com",
             )
         }
 
@@ -244,7 +252,7 @@ public actual class GoogleAuthProvider actual constructor(
 
     private fun loadConfiguration(): GoogleAuthConfiguration? {
         val iosClientId = infoValue("GIDClientID") ?: return null
-        infoValue("GIDServerClientID") ?: return null
+        val serverClientId = infoValue("GIDServerClientID")
 
         val redirectUri =
             infoValue("GIDRedirectURI") ?: defaultRedirectUri(iosClientId) ?: return null
@@ -254,6 +262,7 @@ public actual class GoogleAuthProvider actual constructor(
             iosClientId = iosClientId,
             redirectUri = redirectUri,
             redirectScheme = redirectScheme,
+            serverClientId = serverClientId,
         )
     }
 }
@@ -262,6 +271,7 @@ internal data class GoogleAuthConfiguration(
     val iosClientId: String,
     val redirectUri: String,
     val redirectScheme: String,
+    val serverClientId: String?,
 )
 
 private class GoogleTokenClient(
@@ -412,7 +422,9 @@ private fun NSURL.extractAuthorizationCode(expectedState: String): String? {
         queryItems(components.queryItems) + parseFragment(components.percentEncodedFragment)
 
     val state = params["state"] ?: return null
-    if (state != expectedState) return null
+    if (state != expectedState) {
+        throw GoogleAuthException.CredentialManagerFailed("Google OAuth state mismatch")
+    }
 
     return params["code"]
 }
@@ -497,9 +509,8 @@ private fun infoValue(key: String): String? {
 }
 
 private fun defaultRedirectUri(clientId: String): String? {
-    val suffix = ".apps.googleusercontent.com"
-    if (!clientId.endsWith(suffix)) return null
-    val identifier = clientId.removeSuffix(suffix)
+    if (!clientId.endsWith(CLIENT_ID_SUFFIX)) return null
+    val identifier = clientId.removeSuffix(CLIENT_ID_SUFFIX)
     return "com.googleusercontent.apps.$identifier:/oauthredirect"
 }
 
