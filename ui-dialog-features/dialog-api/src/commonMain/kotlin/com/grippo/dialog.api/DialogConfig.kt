@@ -17,8 +17,8 @@ import kotlinx.serialization.Transient
 
 @Serializable
 public sealed class DialogConfig(
-    public open val onDismiss: (() -> Unit)?,
-    public open val dismissBySwipe: Boolean,
+    @Transient public open val onDismiss: (() -> Unit)? = null,
+    public open val dismissBySwipe: Boolean = true,
 ) {
 
     @Serializable

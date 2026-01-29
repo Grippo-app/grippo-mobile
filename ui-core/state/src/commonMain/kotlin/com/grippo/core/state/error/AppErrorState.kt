@@ -7,42 +7,51 @@ import com.grippo.design.resources.provider.no_internet_connection
 import com.grippo.design.resources.provider.something_went_wrong
 import com.grippo.design.resources.provider.timeout_error
 import com.grippo.design.resources.provider.unexpected_network_error
+import kotlinx.serialization.Serializable
 
 @Immutable
+@Serializable
 public sealed interface AppErrorState {
 
     @Immutable
+    @Serializable
     public sealed interface Network : AppErrorState {
 
         @Immutable
+        @Serializable
         public data class Expected(
             val title: String,
             val description: String?,
         ) : Network
 
         @Immutable
+        @Serializable
         public data class NoInternet(
             val description: String?,
         ) : Network
 
         @Immutable
+        @Serializable
         public data class Timeout(
             val description: String?,
         ) : Network
 
         @Immutable
+        @Serializable
         public data class Unexpected(
             val description: String?,
         ) : Network
     }
 
     @Immutable
+    @Serializable
     public data class Expected(
         val title: String,
         val description: String?,
     ) : Network
 
     @Immutable
+    @Serializable
     public data object Unknown : AppErrorState
 
     public fun title(): UiText {
