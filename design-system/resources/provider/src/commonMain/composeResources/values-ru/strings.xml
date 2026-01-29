@@ -7,6 +7,7 @@
     <string name="personal_digests">Персональные дайджесты</string>
     <string name="filters">Фильтры</string>
     <string name="repetitions">Повторения</string>
+    <string name="error_save_training_description">Мы сохранили вашу тренировку. Вы можете продолжать — вы можете завершить и сохранить её в любое время с главной страницы.</string>
     <string name="search_placeholder">Поиск..</string>
     <string name="set_value">Подход №%1$s</string>
     <string name="plus_value_more">+ ещё %1$s</string>

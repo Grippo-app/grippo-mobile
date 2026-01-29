@@ -1,5 +1,6 @@
 package com.grippo.training.completed
 
+import com.grippo.core.error.provider.AppError
 import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.stage.StageState
 import com.grippo.core.state.trainings.ExerciseState
@@ -10,6 +11,10 @@ import com.grippo.data.features.api.training.TrainingFeature
 import com.grippo.data.features.api.training.TrainingTimelineUseCase
 import com.grippo.data.features.api.training.models.SetTraining
 import com.grippo.data.features.api.training.models.Training
+import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.error_save_training_description
+import com.grippo.design.resources.provider.providers.StringProvider
+import com.grippo.design.resources.provider.something_went_wrong
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 import com.grippo.domain.state.metrics.toState
@@ -31,6 +36,7 @@ internal class TrainingCompletedViewModel(
     private val exerciseExampleFeature: ExerciseExampleFeature,
     private val trainingTimelineUseCase: TrainingTimelineUseCase,
     private val muscleLoadingSummaryUseCase: MuscleLoadingSummaryUseCase,
+    private val stringProvider: StringProvider,
 ) : BaseViewModel<TrainingCompletedState, TrainingCompletedDirection, TrainingCompletedLoader>(
     TrainingCompletedState()
 ), TrainingCompletedContract {
@@ -38,7 +44,10 @@ internal class TrainingCompletedViewModel(
     init {
         FirebaseProvider.logEvent(Event.WORKOUT_COMPLETED)
 
-        safeLaunch(loader = TrainingCompletedLoader.SaveTraining) {
+        safeLaunch(
+            loader = TrainingCompletedLoader.SaveTraining,
+            onError = ::onBack
+        ) {
             val duration = DateTimeUtils.ago(value = startAt)
 
             val domainExercises = exercises.toDomain()
@@ -59,14 +68,26 @@ internal class TrainingCompletedViewModel(
                 null -> {
                     val result = trainingFeature
                         .setTraining(training)
-                        .getOrThrow() ?: return@safeLaunch
+                        .onFailure {
+                            throw AppError.Expected(
+                                message = stringProvider.get(Res.string.something_went_wrong),
+                                description = stringProvider.get(Res.string.error_save_training_description)
+                            )
+                        }.getOrThrow() ?: return@safeLaunch
+
                     result
                 }
 
                 else -> {
                     val result = trainingFeature
                         .updateTraining(allocatedId, training)
-                        .getOrThrow() ?: return@safeLaunch
+                        .onFailure {
+                            throw AppError.Expected(
+                                message = stringProvider.get(Res.string.something_went_wrong),
+                                description = stringProvider.get(Res.string.error_save_training_description)
+                            )
+                        }.getOrThrow() ?: return@safeLaunch
+
                     result
                 }
             }

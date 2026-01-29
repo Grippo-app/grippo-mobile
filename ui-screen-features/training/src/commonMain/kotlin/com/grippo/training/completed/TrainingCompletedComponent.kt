@@ -29,6 +29,7 @@ internal class TrainingCompletedComponent(
             exerciseExampleFeature = getKoin().get(),
             trainingTimelineUseCase = getKoin().get(),
             muscleLoadingSummaryUseCase = getKoin().get(),
+            stringProvider = getKoin().get()
         )
     }
 
