@@ -17,6 +17,7 @@ import com.grippo.design.resources.provider.yearly
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.daysUntil
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kotlin.math.max
 
 @Serializable
@@ -28,45 +29,58 @@ public data class DateRange(
 
     @Serializable
     @Immutable
-    public sealed class Range(public open val range: DateRange?) {
+    public sealed class Range {
+        @Transient
+        public open val range: DateRange? = null
+
+        @Serializable
         @Immutable
         public data class Daily(override val range: DateRange = DateTimeUtils.thisDay()) :
-            Range(range)
+            Range()
 
+        @Serializable
         @Immutable
         public data class Weekly(override val range: DateRange = DateTimeUtils.thisWeek()) :
-            Range(range)
+            Range()
 
+        @Serializable
         @Immutable
         public data class Last7Days(override val range: DateRange = DateTimeUtils.trailingWeek()) :
-            Range(range)
+            Range()
 
+        @Serializable
         @Immutable
         public data class Last14Days(override val range: DateRange = DateTimeUtils.trailing14Days()) :
-            Range(range)
+            Range()
 
+        @Serializable
         @Immutable
         public data class Monthly(override val range: DateRange = DateTimeUtils.thisMonth()) :
-            Range(range)
+            Range()
 
+        @Serializable
         @Immutable
         public data class Last30Days(override val range: DateRange = DateTimeUtils.trailingMonth()) :
-            Range(range)
+            Range()
 
+        @Serializable
         @Immutable
         public data class Last60Days(override val range: DateRange = DateTimeUtils.trailing60Days()) :
-            Range(range)
+            Range()
 
+        @Serializable
         @Immutable
         public data class Last365Days(override val range: DateRange = DateTimeUtils.trailingYear()) :
-            Range(range)
+            Range()
 
+        @Serializable
         @Immutable
         public data class Yearly(override val range: DateRange = DateTimeUtils.thisYear()) :
-            Range(range)
+            Range()
 
+        @Serializable
         @Immutable
-        public data object Undefined : Range(null)
+        public data object Undefined : Range()
     }
 
     public fun range(): Range {
