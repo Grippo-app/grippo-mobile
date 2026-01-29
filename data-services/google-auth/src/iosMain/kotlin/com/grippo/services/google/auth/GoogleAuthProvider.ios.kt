@@ -12,6 +12,7 @@ import io.ktor.http.contentType
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -21,6 +22,8 @@ import kotlinx.serialization.json.jsonPrimitive
 import platform.AuthenticationServices.ASPresentationAnchor
 import platform.AuthenticationServices.ASWebAuthenticationPresentationContextProvidingProtocol
 import platform.AuthenticationServices.ASWebAuthenticationSession
+import platform.AuthenticationServices.ASWebAuthenticationSessionErrorCodeCanceledLogin
+import platform.AuthenticationServices.ASWebAuthenticationSessionErrorDomain
 import platform.Foundation.NSBundle
 import platform.Foundation.NSError
 import platform.Foundation.NSHTTPCookie
@@ -38,6 +41,7 @@ import platform.darwin.NSObject
 import platform.darwin.dispatch_async
 import platform.darwin.dispatch_get_main_queue
 import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.math.min
@@ -60,22 +64,70 @@ public actual class GoogleAuthUiProvider internal constructor(
     @OptIn(ExperimentalForeignApi::class)
     public actual suspend fun signIn(): Result<GoogleAccount> {
         return runCatching {
+            validateConfiguration(configuration)
+
             val pkce = GooglePkce.create()
             val state = randomState()
+
             val authUrl = authorizationUrl(configuration, pkce, state)
-                ?: throw GoogleAuthException("Failed to build Google OAuth URL")
-            val callback = beginSession(authUrl)
-                ?: throw GoogleAuthException("Google sign-in session finished without callback URL")
+                ?: throw GoogleAuthException.ProviderMisconfigured("Failed to build Google OAuth URL")
+
+            val callback = beginSessionOrThrow(authUrl)
+
+            callback.throwIfOAuthError()
+
             val authorizationCode = callback.extractAuthorizationCode(state)
-                ?: throw GoogleAuthException("Missing authorization code in Google OAuth callback")
+                ?: throw GoogleAuthException.CredentialManagerFailed(
+                    "Missing authorization code in Google OAuth callback",
+                )
+
             tokenClient.exchange(authorizationCode, pkce.verifier, configuration)
+        }.fold(
+            onSuccess = { Result.success(it) },
+            onFailure = { Result.failure(it.asGoogleAuthException()) },
+        )
+    }
+
+    private fun validateConfiguration(config: GoogleAuthConfiguration) {
+        val clientId = config.iosClientId.trim()
+        if (clientId.isEmpty()) {
+            throw GoogleAuthException.ProviderMisconfigured("Google auth misconfigured: iosClientId is empty")
+        }
+        if (!clientId.endsWith(".apps.googleusercontent.com")) {
+            throw GoogleAuthException.InvalidServerClientId(
+                "Google auth misconfigured: iosClientId must end with .apps.googleusercontent.com",
+            )
+        }
+
+        val redirectUri = config.redirectUri.trim()
+        val redirectScheme = config.redirectScheme.trim()
+
+        if (redirectUri.isEmpty()) {
+            throw GoogleAuthException.ProviderMisconfigured("Google auth misconfigured: redirectUri is empty")
+        }
+        if (redirectScheme.isEmpty()) {
+            throw GoogleAuthException.ProviderMisconfigured("Google auth misconfigured: redirectScheme is empty")
         }
     }
 
     @OptIn(ExperimentalForeignApi::class)
-    private suspend fun beginSession(authUrl: NSURL): NSURL? =
+    private suspend fun beginSessionOrThrow(authUrl: NSURL): NSURL =
         suspendCancellableCoroutine { continuation ->
             var createdSession: ASWebAuthenticationSession? = null
+            var finished = false
+
+            fun finishOnceSuccess(url: NSURL) {
+                if (finished) return
+                finished = true
+                continuation.resume(url)
+            }
+
+            fun finishOnceError(error: Throwable) {
+                if (finished) return
+                finished = true
+                continuation.resumeWithException(error)
+            }
+
             runOnMain {
                 val session = ASWebAuthenticationSession(
                     authUrl,
@@ -85,28 +137,88 @@ public actual class GoogleAuthUiProvider internal constructor(
                             if (currentSession === createdSession) {
                                 currentSession = null
                             }
-                            continuation.resume(if (error != null) null else url)
+
+                            if (error != null) {
+                                finishOnceError(error.toGoogleAuthException())
+                                return@runOnMain
+                            }
+
+                            if (url == null) {
+                                finishOnceError(
+                                    GoogleAuthException.CredentialManagerFailed(
+                                        "Google sign-in session finished without callback URL",
+                                    ),
+                                )
+                                return@runOnMain
+                            }
+
+                            finishOnceSuccess(url)
                         }
                     },
                 )
+
                 session.setPrefersEphemeralWebBrowserSession(true)
                 session.setPresentationContextProvider(SessionPresentationProvider(anchorProvider))
+
                 currentSession = session
                 createdSession = session
-                session.start()
+
+                val started = session.start()
+                if (!started) {
+                    if (currentSession === session) currentSession = null
+                    finishOnceError(
+                        GoogleAuthException.CredentialManagerFailed("ASWebAuthenticationSession failed to start"),
+                    )
+                }
             }
+
             continuation.invokeOnCancellation {
-                val session = createdSession
-                if (session != null) {
-                    runOnMain {
-                        session.cancel()
-                        if (currentSession === session) {
-                            currentSession = null
-                        }
+                val session = createdSession ?: return@invokeOnCancellation
+                runOnMain {
+                    session.cancel()
+                    if (currentSession === session) {
+                        currentSession = null
                     }
                 }
             }
         }
+
+    private fun NSError.toGoogleAuthException(): GoogleAuthException {
+        val codeInt = this.code.toInt()
+        val domainString = this.domain
+
+        if (domainString == ASWebAuthenticationSessionErrorDomain &&
+            codeInt == ASWebAuthenticationSessionErrorCodeCanceledLogin.toInt()
+        ) {
+            return GoogleAuthException.Cancelled(
+                "Google sign-in cancelled by user",
+                this.toThrowable()
+            )
+        }
+
+        val description = this.localizedDescription ?: "NSError(domain=$domainString code=$codeInt)"
+        val message =
+            "ASWebAuthenticationSession failed: $description (domain=$domainString code=$codeInt)"
+
+        return GoogleAuthException.CredentialManagerFailed(message, this.toThrowable())
+    }
+
+    private fun NSError.toThrowable(): Throwable {
+        val description = this.localizedDescription ?: "NSError(domain=$domain code=$code)"
+        return Throwable(description)
+    }
+
+    private fun Throwable.asGoogleAuthException(): GoogleAuthException {
+        return when (this) {
+            is GoogleAuthException -> this
+            is CancellationException -> GoogleAuthException.Cancelled(
+                "Google sign-in cancelled",
+                this
+            )
+
+            else -> GoogleAuthException.Unknown("Google sign-in failed", this)
+        }
+    }
 }
 
 public actual class GoogleAuthProvider actual constructor(
@@ -120,8 +232,9 @@ public actual class GoogleAuthProvider actual constructor(
         get() = configuration != null
 
     public actual fun getUiProvider(context: GoogleAuthUiContext): GoogleAuthUiProvider {
-        val config =
-            configuration ?: throw GoogleAuthException("Google auth is not configured on iOS")
+        val config = configuration ?: throw GoogleAuthException.ProviderMisconfigured(
+            "Google auth is not configured on iOS",
+        )
         return GoogleAuthUiProvider(config, httpClient, json)
     }
 
@@ -132,9 +245,11 @@ public actual class GoogleAuthProvider actual constructor(
     private fun loadConfiguration(): GoogleAuthConfiguration? {
         val iosClientId = infoValue("GIDClientID") ?: return null
         infoValue("GIDServerClientID") ?: return null
+
         val redirectUri =
             infoValue("GIDRedirectURI") ?: defaultRedirectUri(iosClientId) ?: return null
         val redirectScheme = redirectScheme(redirectUri) ?: return null
+
         return GoogleAuthConfiguration(
             iosClientId = iosClientId,
             redirectUri = redirectUri,
@@ -172,16 +287,51 @@ private class GoogleTokenClient(
                 contentType(ContentType.Application.FormUrlEncoded)
                 setBody(FormDataContent(parameters))
             }.bodyAsText()
-        }.getOrElse {
-            throw GoogleAuthException("Failed to exchange Google authorization code", it)
+        }.getOrElse { error ->
+            throw GoogleAuthException.CredentialManagerFailed(
+                "Failed to exchange Google authorization code",
+                error,
+            )
         }
 
-        val payload = runCatching { json.parseToJsonElement(responseText).jsonObject }.getOrElse {
-            throw GoogleAuthException("Google token endpoint returned unexpected payload", it)
+        val payload =
+            runCatching { json.parseToJsonElement(responseText).jsonObject }.getOrElse { error ->
+                throw GoogleAuthException.TokenParseFailed(
+                    "Google token endpoint returned unexpected payload",
+                    error,
+                )
+            }
+
+        val errorCode = payload["error"]?.jsonPrimitive?.contentOrNull
+        if (!errorCode.isNullOrBlank()) {
+            val errorDescription = payload["error_description"]?.jsonPrimitive?.contentOrNull
+            val msg = if (!errorDescription.isNullOrBlank()) {
+                "Google token endpoint error: $errorCode ($errorDescription)"
+            } else {
+                "Google token endpoint error: $errorCode"
+            }
+
+            val mapped = when {
+                errorCode.contains("invalid_grant", ignoreCase = true) &&
+                        (errorDescription?.contains("reauth", ignoreCase = true) == true ||
+                                errorDescription?.contains("re-auth", ignoreCase = true) == true) ->
+                    GoogleAuthException.ReauthFailed(msg)
+
+                errorCode.contains("invalid_client", ignoreCase = true) ->
+                    GoogleAuthException.ProviderMisconfigured(msg)
+
+                else ->
+                    GoogleAuthException.CredentialManagerFailed(msg)
+            }
+
+            throw mapped
         }
+
         val idToken = payload["id_token"]?.jsonPrimitive?.contentOrNull
-            ?: throw GoogleAuthException("Google token response is missing id_token")
+            ?: throw GoogleAuthException.TokenParseFailed("Google token response is missing id_token")
+
         val profile = decodeProfile(json, idToken)
+
         return GoogleAccount(
             token = idToken,
             displayName = profile?.first.orEmpty(),
@@ -223,17 +373,47 @@ private fun authorizationUrl(
             NSURLQueryItem(name = "prompt", value = "select_account"),
             NSURLQueryItem(name = "access_type", value = "offline"),
             NSURLQueryItem(name = "include_granted_scopes", value = "true"),
-        )
+        ),
     )
     return components.URL
+}
+
+private fun NSURL.throwIfOAuthError() {
+    val components = NSURLComponents(this, false)
+    val params =
+        queryItems(components.queryItems) + parseFragment(components.percentEncodedFragment)
+
+    val error = params["error"]?.takeIf { it.isNotBlank() } ?: return
+    val description = params["error_description"]?.takeIf { it.isNotBlank() }
+
+    val msg = if (description != null) {
+        "Google OAuth error: $error ($description)"
+    } else {
+        "Google OAuth error: $error"
+    }
+
+    val mapped = when {
+        error.equals("access_denied", ignoreCase = true) ->
+            GoogleAuthException.Cancelled(msg)
+
+        error.contains("invalid_client", ignoreCase = true) ->
+            GoogleAuthException.ProviderMisconfigured(msg)
+
+        else ->
+            GoogleAuthException.CredentialManagerFailed(msg)
+    }
+
+    throw mapped
 }
 
 private fun NSURL.extractAuthorizationCode(expectedState: String): String? {
     val components = NSURLComponents(this, false)
     val params =
         queryItems(components.queryItems) + parseFragment(components.percentEncodedFragment)
+
     val state = params["state"] ?: return null
     if (state != expectedState) return null
+
     return params["code"]
 }
 
