@@ -25,11 +25,11 @@ public class RootViewModel(
     }
 
     private fun provideConnectionStatus(value: Connectivity.Status) {
-        val connection = when (value) {
+        when (value) {
             is Connectivity.Status.Connected -> ConnectionSnackbarState.Hidden
             Connectivity.Status.Disconnected -> ConnectionSnackbarState.Visible
         }
-        update { it.copy(connection = connection) }
+        // update { it.copy(connection = connection) }
     }
 
     override fun onClose() {

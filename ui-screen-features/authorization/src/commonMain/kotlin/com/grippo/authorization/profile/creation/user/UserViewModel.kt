@@ -4,11 +4,13 @@ import com.grippo.core.foundation.BaseViewModel
 import com.grippo.core.state.formatters.HeightFormatState
 import com.grippo.core.state.formatters.NameFormatState
 import com.grippo.core.state.formatters.WeightFormatState
+import com.grippo.data.features.api.authorization.AuthorizationFeature
 import com.grippo.dialog.api.DialogConfig
 import com.grippo.dialog.api.DialogController
 
 internal class UserViewModel(
-    private val dialogController: DialogController
+    private val dialogController: DialogController,
+    private val authorizationFeature: AuthorizationFeature
 ) : BaseViewModel<UserState, UserDirection, UserLoader>(UserState()),
     UserContract {
 
@@ -46,6 +48,9 @@ internal class UserViewModel(
     }
 
     override fun onBack() {
-        navigateTo(UserDirection.Back)
+        safeLaunch {
+            authorizationFeature.logout()
+            navigateTo(UserDirection.Back)
+        }
     }
 }

@@ -31,7 +31,8 @@ internal class SplashViewModel(
             }
 
             val hasProfile = try {
-                userFeature.getUser().getOrThrow()
+                if (userFeature.observeUser().firstOrNull() != null) true
+                else userFeature.getUser().getOrThrow()
             } catch (_: Throwable) {
                 navigateTo(SplashDirection.AuthProcess)
                 return@safeLaunch

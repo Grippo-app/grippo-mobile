@@ -78,11 +78,11 @@ internal class ProfileCreationComponent(
 
     private fun createChild(router: ProfileCreationRouter, context: ComponentContext): Child {
         return when (router) {
-            ProfileCreationRouter.User -> Child.Body(
+            ProfileCreationRouter.User -> Child.User(
                 UserComponent(
                     componentContext = context,
                     toExperience = viewModel::toExperienceWithUser,
-                    back = viewModel::onBack
+                    back = viewModel::toLogin
                 ),
             )
 
@@ -134,7 +134,7 @@ internal class ProfileCreationComponent(
     }
 
     internal sealed class Child(open val component: BaseComponent<*>) {
-        data class Body(override val component: UserComponent) :
+        data class User(override val component: UserComponent) :
             Child(component)
 
         data class Experience(override val component: ExperienceComponent) :

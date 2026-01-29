@@ -14,7 +14,10 @@ internal class UserComponent(
 ) : BaseComponent<UserDirection>(componentContext) {
 
     override val viewModel = componentContext.retainedInstance {
-        UserViewModel(dialogController = getKoin().get())
+        UserViewModel(
+            dialogController = getKoin().get(),
+            authorizationFeature = getKoin().get()
+        )
     }
 
     private val backCallback = BackCallback(onBack = viewModel::onBack)
