@@ -23,7 +23,6 @@ import com.grippo.domain.state.metrics.toState
 import com.grippo.domain.state.training.toState
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -70,11 +69,9 @@ internal class HomeViewModel(
             exerciseExampleFeature.getExerciseExamples()
         }
 
-        // todo change to subscription
-        safeLaunch {
-            val training = trainingFeature.getDraftTraining().firstOrNull()
-            provideDraftTraining(training)
-        }
+        trainingFeature.getDraftTraining()
+            .onEach(::provideDraftTraining)
+            .safeLaunch()
     }
 
     private fun provideDraftTraining(value: SetDraftTraining?) {
