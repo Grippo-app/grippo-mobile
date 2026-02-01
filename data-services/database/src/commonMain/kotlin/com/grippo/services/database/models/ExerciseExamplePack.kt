@@ -4,12 +4,20 @@ import androidx.room.Embedded
 import androidx.room.Relation
 import com.grippo.services.database.entity.EquipmentEntity
 import com.grippo.services.database.entity.ExerciseExampleBundleEntity
+import com.grippo.services.database.entity.ExerciseExampleComponentsEntity
 import com.grippo.services.database.entity.ExerciseExampleEntity
 import com.grippo.services.database.entity.ExerciseExampleEquipmentEntity
 import com.grippo.services.database.entity.MuscleEntity
 
 public data class ExerciseExamplePack(
     @Embedded val example: ExerciseExampleEntity,
+
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "exerciseExampleId",
+        entity = ExerciseExampleComponentsEntity::class
+    )
+    val components: ExerciseExampleComponentsEntity? = null,
 
     @Relation(
         parentColumn = "id",

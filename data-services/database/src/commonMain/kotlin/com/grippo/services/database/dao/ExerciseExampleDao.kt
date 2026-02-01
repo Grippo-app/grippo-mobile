@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.grippo.services.database.entity.ExerciseExampleBundleEntity
+import com.grippo.services.database.entity.ExerciseExampleComponentsEntity
 import com.grippo.services.database.entity.ExerciseExampleEntity
 import com.grippo.services.database.entity.ExerciseExampleEquipmentEntity
 import com.grippo.services.database.models.ExerciseExamplePack
@@ -120,10 +121,12 @@ public interface ExerciseExampleDao {
     @Transaction
     public suspend fun insertOrReplace(
         example: ExerciseExampleEntity,
+        components: ExerciseExampleComponentsEntity,
         bundles: List<ExerciseExampleBundleEntity>,
         equipments: List<ExerciseExampleEquipmentEntity>,
     ) {
         insertExerciseExample(example)
+        insertComponents(components)
 
         if (bundles.isNotEmpty()) {
             insertBundles(bundles)
@@ -136,6 +139,9 @@ public interface ExerciseExampleDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public suspend fun insertExerciseExample(example: ExerciseExampleEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public suspend fun insertComponents(components: ExerciseExampleComponentsEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public suspend fun insertBundles(bundles: List<ExerciseExampleBundleEntity>)

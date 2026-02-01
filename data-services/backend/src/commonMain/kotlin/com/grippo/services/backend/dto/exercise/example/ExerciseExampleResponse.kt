@@ -21,6 +21,8 @@ public data class ExerciseExampleResponse(
     val category: String? = null,
     @SerialName("experience")
     val experience: String? = null,
+    @SerialName("components")
+    val components: ExerciseExampleComponentsResponse? = null,
     @SerialName("description")
     val description: String? = null,
     @SerialName("updatedAt")

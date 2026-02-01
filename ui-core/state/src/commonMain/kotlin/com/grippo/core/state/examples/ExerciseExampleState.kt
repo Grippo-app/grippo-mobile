@@ -18,6 +18,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 public data class ExerciseExampleState(
     val value: ExerciseExampleValueState,
+    val components: ExerciseExampleComponentsState,
     val bundles: ImmutableList<ExerciseExampleBundleState>,
     val equipments: ImmutableList<EquipmentState>,
 ) {
@@ -115,6 +116,11 @@ public data class ExerciseExampleState(
 public fun stubExerciseExample(): ExerciseExampleState {
     return ExerciseExampleState(
         value = stubExerciseExampleValueState(),
+        components = ExerciseExampleComponentsState.BodyAndExtra(
+            bodyRequired = true,
+            bodyMultiplier = 0.8,
+            extraRequired = false
+        ),
         bundles = stubExerciseExampleBundles(),
         equipments = stubEquipments().random().equipments.take(2).toPersistentList(),
     )

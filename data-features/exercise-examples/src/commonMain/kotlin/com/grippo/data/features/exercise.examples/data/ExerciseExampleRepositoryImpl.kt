@@ -8,6 +8,7 @@ import com.grippo.data.features.api.exercise.example.models.ExperienceEnum
 import com.grippo.data.features.api.exercise.example.models.UserExerciseExampleRules
 import com.grippo.data.features.exercise.examples.domain.ExerciseExampleRepository
 import com.grippo.dto.entity.example.toEntities
+import com.grippo.dto.entity.example.toEntity
 import com.grippo.dto.entity.example.toEntityOrNull
 import com.grippo.entity.domain.equipment.toDomain
 import com.grippo.services.backend.GrippoApi
@@ -60,9 +61,10 @@ internal class ExerciseExampleRepositoryImpl(
             it.forEach { r ->
                 val entity = r.entity ?: return@onSuccess
                 val example = r.toEntityOrNull() ?: return@onSuccess
+                val components = entity.components.toEntity(example.id)
                 val bundles = entity.exerciseExampleBundles.toEntities()
                 val equipments = entity.equipmentRefs.toEntities()
-                exerciseExampleDao.insertOrReplace(example, bundles, equipments)
+                exerciseExampleDao.insertOrReplace(example, components, bundles, equipments)
             }
         }
 
@@ -75,9 +77,10 @@ internal class ExerciseExampleRepositoryImpl(
         response.onSuccess { r ->
             val entity = r.entity ?: return@onSuccess
             val example = r.toEntityOrNull() ?: return@onSuccess
+            val components = entity.components.toEntity(example.id)
             val bundles = entity.exerciseExampleBundles.toEntities()
             val equipments = entity.equipmentRefs.toEntities()
-            exerciseExampleDao.insertOrReplace(example, bundles, equipments)
+            exerciseExampleDao.insertOrReplace(example, components, bundles, equipments)
         }
 
         return response.map { }

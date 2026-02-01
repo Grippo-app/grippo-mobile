@@ -15,6 +15,7 @@ public fun List<ExerciseExample>.toState(): ImmutableList<ExerciseExampleState> 
 public fun ExerciseExample.toState(): ExerciseExampleState {
     return ExerciseExampleState(
         value = value.toState(),
+        components = components.toState(),
         bundles = bundles.toState(),
         equipments = equipments
             .sortedWith(compareBy({ it.sortPriority() }, { it.type.name }))

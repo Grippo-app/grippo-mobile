@@ -9,7 +9,7 @@ public fun List<ExerciseExampleValueState>.toDomain(): List<ExerciseExampleValue
     return mapNotNull { it.toDomain() }.toPersistentList()
 }
 
-public fun ExerciseExampleValueState.toDomain(): ExerciseExampleValue? {
+public fun ExerciseExampleValueState.toDomain(): ExerciseExampleValue {
     return ExerciseExampleValue(
         id = id,
         name = name,

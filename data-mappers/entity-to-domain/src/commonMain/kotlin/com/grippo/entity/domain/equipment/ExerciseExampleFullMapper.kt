@@ -13,8 +13,13 @@ public fun ExerciseExamplePack.toDomain(): ExerciseExample? {
         "ExerciseExamplePack has invalid example and cannot be mapped"
     } ?: return null
 
+    val mappedComponents = AppLogger.Mapping.log(components.toDomain()) {
+        "ExerciseExamplePack ${example.id} has invalid components and cannot be mapped"
+    } ?: return null
+
     return ExerciseExample(
         value = mappedValue,
+        components = mappedComponents,
         bundles = bundles.toDomain(),
         equipments = equipments.toDomain(),
     )

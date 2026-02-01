@@ -19,6 +19,7 @@ import com.grippo.services.database.entity.EquipmentEntity
 import com.grippo.services.database.entity.EquipmentGroupEntity
 import com.grippo.services.database.entity.ExerciseEntity
 import com.grippo.services.database.entity.ExerciseExampleBundleEntity
+import com.grippo.services.database.entity.ExerciseExampleComponentsEntity
 import com.grippo.services.database.entity.ExerciseExampleEntity
 import com.grippo.services.database.entity.ExerciseExampleEquipmentEntity
 import com.grippo.services.database.entity.IterationEntity
@@ -45,6 +46,7 @@ import com.grippo.services.database.entity.WeightHistoryEntity
 
         ExerciseExampleEntity::class,
         ExerciseExampleBundleEntity::class,
+        ExerciseExampleComponentsEntity::class,
         ExerciseExampleEquipmentEntity::class,
 
         TrainingEntity::class,
