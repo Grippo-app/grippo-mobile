@@ -1,5 +1,6 @@
 package com.grippo.services.backend.dto.exercise.example
 
+import com.grippo.services.backend.dto.equipment.EquipmentResponse
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -8,7 +9,7 @@ public data class ExerciseExampleEquipmentRefResponse(
     @SerialName("createdAt")
     val createdAt: String? = null,
     @SerialName("equipment")
-    val equipment: com.grippo.services.backend.dto.equipment.EquipmentResponse? = null,
+    val equipment: EquipmentResponse? = null,
     @SerialName("equipmentId")
     val equipmentId: String? = null,
     @SerialName("exerciseExampleId")

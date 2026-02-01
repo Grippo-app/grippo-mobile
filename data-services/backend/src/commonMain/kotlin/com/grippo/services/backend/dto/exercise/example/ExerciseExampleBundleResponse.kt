@@ -1,5 +1,6 @@
 package com.grippo.services.backend.dto.exercise.example
 
+import com.grippo.services.backend.dto.muscle.MuscleResponse
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -12,7 +13,9 @@ public data class ExerciseExampleBundleResponse(
     @SerialName("id")
     val id: String? = null,
     @SerialName("muscle")
-    val muscle: com.grippo.services.backend.dto.muscle.MuscleResponse? = null,
+    val muscle: MuscleResponse? = null,
+    @SerialName("components")
+    val components: ExerciseExampleComponentsResponse? = null,
     @SerialName("muscleId")
     val muscleId: String? = null,
     @SerialName("updatedAt")
