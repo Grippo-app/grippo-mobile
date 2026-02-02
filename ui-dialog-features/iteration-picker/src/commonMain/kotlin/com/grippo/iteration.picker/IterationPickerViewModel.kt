@@ -21,7 +21,7 @@ public class IterationPickerViewModel(
     suggestions: List<IterationState>,
     number: Int,
     focus: IterationFocusState,
-    private val weightHistoryFeature: WeightHistoryFeature,
+    weightHistoryFeature: WeightHistoryFeature,
     private val dialogController: DialogController
 ) : BaseViewModel<IterationPickerState, IterationPickerDirection, IterationPickerLoader>(
     IterationPickerState(
@@ -42,27 +42,28 @@ public class IterationPickerViewModel(
     override fun onWeightPickerClick() {
         val dialog = DialogConfig.WeightPicker(
             initial = state.value.userWeight,
-            onResult = { value ->
-                val weight = value.value ?: return@WeightPicker
-                safeLaunch { weightHistoryFeature.updateWeight(weight).getOrThrow() }
-            }
+            onResult = { value -> selectBodyWeight(value) }
         )
         dialogController.show(dialog)
     }
 
     private fun provideWeight(value: WeightHistory?) {
-        val weight = value?.weight ?: return
+        val formatted = WeightFormatState.of(value?.weight)
+        selectBodyWeight(formatted)
+    }
 
-        update { it.copy(userWeight = WeightFormatState.of(weight)) }
+    private fun selectBodyWeight(value: WeightFormatState) {
+        val weight = value.value ?: return
+        update { it.copy(userWeight = value) }
 
         val multiplier: Double = when (val c = state.value.example.components) {
             is ExerciseExampleComponentsState.BodyAndAssist -> c.bodyMultiplier
             is ExerciseExampleComponentsState.BodyAndExtra -> c.bodyMultiplier
-            is ExerciseExampleComponentsState.BodyOnly -> c.multiplier
+            is ExerciseExampleComponentsState.BodyOnly -> c.bodyMultiplier
             is ExerciseExampleComponentsState.External -> return
         }
-        val volume = VolumeFormatState.of(weight * multiplier.toFloat())
 
+        val volume = VolumeFormatState.of(weight * multiplier.toFloat())
         update { s -> s.copy(value = s.value.copy(bodyWeight = volume)) }
     }
 

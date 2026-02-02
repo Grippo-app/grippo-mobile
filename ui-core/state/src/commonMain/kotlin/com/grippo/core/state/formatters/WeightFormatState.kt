@@ -60,8 +60,10 @@ public sealed class WeightFormatState : FormatState<Float> {
             }
         }
 
-        public fun of(value: Float): WeightFormatState {
+        public fun of(value: Float?): WeightFormatState {
             return when {
+                value == null -> Empty()
+
                 value == 0f -> Empty()
 
                 WeightValidator.isValid(value) -> Valid(

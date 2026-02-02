@@ -11,7 +11,7 @@ public fun ExerciseExampleComponents.toState(): ExerciseExampleComponentsState {
 
         is ExerciseExampleComponents.BodyOnly -> ExerciseExampleComponentsState.BodyOnly(
             required = required,
-            multiplier = multiplier
+            bodyMultiplier = multiplier
         )
 
         is ExerciseExampleComponents.BodyAndExtra -> ExerciseExampleComponentsState.BodyAndExtra(

@@ -1,5 +1,6 @@
 package com.grippo.core.state.examples
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 
@@ -17,8 +18,13 @@ public sealed class ExerciseExampleComponentsState {
     @Serializable
     public data class BodyOnly(
         val required: Boolean,
-        val multiplier: Double
-    ) : ExerciseExampleComponentsState()
+        val bodyMultiplier: Double
+    ) : ExerciseExampleComponentsState() {
+        @Composable
+        public fun bodyPercent(): String {
+            return "${(bodyMultiplier * 100)}%"
+        }
+    }
 
     @Immutable
     @Serializable
@@ -26,7 +32,12 @@ public sealed class ExerciseExampleComponentsState {
         val bodyRequired: Boolean,
         val bodyMultiplier: Double,
         val extraRequired: Boolean
-    ) : ExerciseExampleComponentsState()
+    ) : ExerciseExampleComponentsState() {
+        @Composable
+        public fun bodyPercent(): String {
+            return "${(bodyMultiplier * 100)}%"
+        }
+    }
 
     @Immutable
     @Serializable
@@ -34,5 +45,10 @@ public sealed class ExerciseExampleComponentsState {
         val bodyRequired: Boolean,
         val bodyMultiplier: Double,
         val assistRequired: Boolean
-    ) : ExerciseExampleComponentsState()
+    ) : ExerciseExampleComponentsState() {
+        @Composable
+        public fun bodyPercent(): String {
+            return "${(bodyMultiplier * 100)}%"
+        }
+    }
 }

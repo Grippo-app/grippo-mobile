@@ -117,22 +117,12 @@ internal fun IterationPickerScreen(
                     value = state.userWeight.display
                 )
 
-                Row(
+                Text(
                     modifier = Modifier.weight(1f),
-                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
-                ) {
-                    Text(
-                        text = "X",
-                        style = AppTokens.typography.b14Med(),
-                        color = AppTokens.colors.text.tertiary,
-                    )
-
-                    Text(
-                        text = "${components.bodyMultiplier}",
-                        style = AppTokens.typography.b14Med(),
-                        color = AppTokens.colors.text.primary,
-                    )
-                }
+                    text = components.bodyPercent(),
+                    style = AppTokens.typography.b14Bold(),
+                    color = AppTokens.colors.text.tertiary,
+                )
             }
         }
 
@@ -151,22 +141,12 @@ internal fun IterationPickerScreen(
                     value = state.userWeight.display
                 )
 
-                Row(
+                Text(
                     modifier = Modifier.weight(1f),
-                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
-                ) {
-                    Text(
-                        text = "X",
-                        style = AppTokens.typography.b14Med(),
-                        color = AppTokens.colors.text.tertiary,
-                    )
-
-                    Text(
-                        text = "${components.bodyMultiplier}",
-                        style = AppTokens.typography.b14Med(),
-                        color = AppTokens.colors.text.primary,
-                    )
-                }
+                    text = components.bodyPercent(),
+                    style = AppTokens.typography.b14Bold(),
+                    color = AppTokens.colors.text.tertiary,
+                )
             }
         }
 
@@ -185,22 +165,12 @@ internal fun IterationPickerScreen(
                     value = state.userWeight.display
                 )
 
-                Row(
+                Text(
                     modifier = Modifier.weight(1f),
-                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
-                ) {
-                    Text(
-                        text = "X",
-                        style = AppTokens.typography.b14Med(),
-                        color = AppTokens.colors.text.tertiary,
-                    )
-
-                    Text(
-                        text = "${components.multiplier}",
-                        style = AppTokens.typography.b14Med(),
-                        color = AppTokens.colors.text.primary,
-                    )
-                }
+                    text = components.bodyPercent(),
+                    style = AppTokens.typography.b14Bold(),
+                    color = AppTokens.colors.text.tertiary,
+                )
             }
         }
 
