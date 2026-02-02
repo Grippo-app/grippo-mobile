@@ -26,7 +26,7 @@ internal fun IterationCardSmallView(
     ) {
 
         Text(
-            text = value.volume.short(),
+            text = value.external.short(),
             style = AppTokens.typography.b14Bold(),
             color = AppTokens.colors.text.secondary
         )

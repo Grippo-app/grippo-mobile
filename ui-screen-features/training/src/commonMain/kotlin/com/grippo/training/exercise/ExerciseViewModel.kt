@@ -46,15 +46,18 @@ internal class ExerciseViewModel(
     override fun onAddIteration() {
         val value = IterationState(
             id = Uuid.random().toString(),
-            volume = VolumeFormatState.of(""),
-            repetitions = RepetitionsFormatState.of("")
+            external = VolumeFormatState.of(""),
+            extra = VolumeFormatState.of(""),
+            assist = VolumeFormatState.of(""),
+            body = VolumeFormatState.of(""),
+            repetitions = RepetitionsFormatState.of(""),
         )
 
         val number = state.value.exercise.iterations.count() + 1
 
         val suggestions = state.value.exercise.iterations
             .reversed()
-            .distinctBy { it.volume.value to it.repetitions.value }
+            .distinctBy { it.external.value to it.repetitions.value }
 
         val example = state.value.exerciseExample ?: return
 
@@ -115,7 +118,7 @@ internal class ExerciseViewModel(
 
         val suggestions = state.value.exercise.iterations
             .reversed()
-            .distinctBy { it.volume.value to it.repetitions.value }
+            .distinctBy { it.external.value to it.repetitions.value }
 
         val example = state.value.exerciseExample ?: return
 
@@ -154,7 +157,7 @@ internal class ExerciseViewModel(
 
         val suggestions = state.value.exercise.iterations
             .reversed()
-            .distinctBy { it.volume.value to it.repetitions.value }
+            .distinctBy { it.external.value to it.repetitions.value }
 
         val example = state.value.exerciseExample ?: return
 

@@ -11,12 +11,36 @@ import kotlin.uuid.Uuid
 @Serializable
 public data class IterationState(
     val id: String,
-    val volume: VolumeFormatState,
+    val external: VolumeFormatState,
+    val extra: VolumeFormatState,
+    val assist: VolumeFormatState,
+    val body: VolumeFormatState,
     val repetitions: RepetitionsFormatState,
 )
 
-public fun stubIteration(): IterationState = IterationState(
-    id = Uuid.random().toString(),
-    volume = VolumeFormatState.of(Random.nextInt(40, 250).toFloat()),
-    repetitions = RepetitionsFormatState.of(Random.nextInt(2, 16))
-)
+public fun stubIteration(): IterationState = listOf(
+    IterationState(
+        id = Uuid.random().toString(),
+        external = VolumeFormatState.of(Random.nextInt(40, 250).toFloat()),
+        repetitions = RepetitionsFormatState.of(Random.nextInt(2, 16)),
+        extra = VolumeFormatState.of(0f),
+        body = VolumeFormatState.of(0f),
+        assist = VolumeFormatState.of(0f),
+    ),
+    IterationState(
+        id = Uuid.random().toString(),
+        external = VolumeFormatState.of(0f),
+        repetitions = RepetitionsFormatState.of(Random.nextInt(2, 16)),
+        extra = VolumeFormatState.of(Random.nextInt(40, 250).toFloat()),
+        body = VolumeFormatState.of(Random.nextInt(40, 250).toFloat()),
+        assist = VolumeFormatState.of(0f),
+    ),
+    IterationState(
+        id = Uuid.random().toString(),
+        external = VolumeFormatState.of(0f),
+        repetitions = RepetitionsFormatState.of(Random.nextInt(2, 16)),
+        extra = VolumeFormatState.of(0f),
+        body = VolumeFormatState.of(Random.nextInt(40, 250).toFloat()),
+        assist = VolumeFormatState.of(Random.nextInt(40, 250).toFloat()),
+    )
+).random()
