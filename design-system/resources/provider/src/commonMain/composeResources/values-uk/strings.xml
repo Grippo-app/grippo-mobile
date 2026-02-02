@@ -12,6 +12,9 @@
     <string name="set_value">Підхід №%1$s</string>
     <string name="plus_value_more">+ ще %1$s</string>
     <string name="view_workout">Переглянути тренування</string>
+    <string name="external_weight_placeholder">Зовнішня вага</string>
+    <string name="extra_weight_placeholder">Додаткова вага</string>
+    <string name="assist_weight_placeholder">Асистована вага</string>
     <string name="last_workout">Останнє тренування</string>
     <string name="spotlight_anchor_title">Твоє базове</string>
     <string name="spotlight_best_title">Вище звичного</string>

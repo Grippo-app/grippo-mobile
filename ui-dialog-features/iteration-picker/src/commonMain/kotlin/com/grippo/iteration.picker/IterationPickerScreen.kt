@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextAlign
 import com.grippo.core.foundation.BaseComposeScreen
 import com.grippo.core.foundation.ScreenBackground
+import com.grippo.core.state.examples.ExerciseExampleComponentsState
 import com.grippo.core.state.examples.stubExerciseExample
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
@@ -45,6 +46,9 @@ import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
+import com.grippo.design.resources.provider.assist_weight_placeholder
+import com.grippo.design.resources.provider.external_weight_placeholder
+import com.grippo.design.resources.provider.extra_weight_placeholder
 import com.grippo.design.resources.provider.set_value
 import com.grippo.design.resources.provider.submit_btn
 import kotlinx.collections.immutable.ImmutableSet
@@ -125,6 +129,92 @@ internal fun IterationPickerScreen(
 
     Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
 
+    when (val components = state.example.components) {
+        is ExerciseExampleComponentsState.BodyAndAssist -> {
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+            ) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = state.userWeight?.display ?: "-",
+                    style = AppTokens.typography.b14Med(),
+                    color = AppTokens.colors.text.tertiary,
+                    textAlign = TextAlign.End
+                )
+
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = components.bodyMultiplier.toString(),
+                    style = AppTokens.typography.b14Med(),
+                    color = AppTokens.colors.text.tertiary,
+                    textAlign = TextAlign.End
+                )
+            }
+        }
+
+        is ExerciseExampleComponentsState.BodyAndExtra -> {
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+            ) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = state.userWeight?.display ?: "-",
+                    style = AppTokens.typography.b14Med(),
+                    color = AppTokens.colors.text.tertiary,
+                    textAlign = TextAlign.End
+                )
+
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = components.bodyMultiplier.toString(),
+                    style = AppTokens.typography.b14Med(),
+                    color = AppTokens.colors.text.tertiary,
+                    textAlign = TextAlign.End
+                )
+            }
+        }
+
+        is ExerciseExampleComponentsState.BodyOnly -> {
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
+            ) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = state.userWeight?.display ?: "-",
+                    style = AppTokens.typography.b14Med(),
+                    color = AppTokens.colors.text.tertiary,
+                    textAlign = TextAlign.End
+                )
+
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = components.multiplier.toString(),
+                    style = AppTokens.typography.b14Med(),
+                    color = AppTokens.colors.text.tertiary,
+                    textAlign = TextAlign.End
+                )
+            }
+        }
+
+        is ExerciseExampleComponentsState.External -> {
+
+        }
+    }
+
+    Spacer(Modifier.size(AppTokens.dp.contentPadding.content))
+
     Row(
         modifier = Modifier
             .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
@@ -132,24 +222,77 @@ internal fun IterationPickerScreen(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
     ) {
-        Column(modifier = Modifier.weight(1f)) {
-            InputVolume(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .focusRequester(volumeRequester),
-                value = state.value.externalWeight,
-                onValueChange = contract::onVolumeChange,
-            )
 
-            Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
+        when (state.example.components) {
+            is ExerciseExampleComponentsState.BodyAndAssist -> {
+                Column(modifier = Modifier.weight(1f)) {
+                    InputVolume(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(volumeRequester),
+                        value = state.value.assistWeight,
+                        placeholder = AppTokens.strings.res(Res.string.assist_weight_placeholder),
+                        onValueChange = contract::onAssistWeightChange,
+                    )
+                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
 
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = state.value.externalWeight.hint(),
-                style = AppTokens.typography.b14Med(),
-                color = AppTokens.colors.text.tertiary,
-                textAlign = TextAlign.End
-            )
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = state.value.externalWeight.hint(),
+                        style = AppTokens.typography.b14Med(),
+                        color = AppTokens.colors.text.tertiary,
+                        textAlign = TextAlign.End
+                    )
+                }
+            }
+
+            is ExerciseExampleComponentsState.BodyAndExtra -> {
+                Column(modifier = Modifier.weight(1f)) {
+                    InputVolume(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(volumeRequester),
+                        value = state.value.extraWeight,
+                        placeholder = AppTokens.strings.res(Res.string.extra_weight_placeholder),
+                        onValueChange = contract::onExtraWeightChange,
+                    )
+                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
+
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = state.value.externalWeight.hint(),
+                        style = AppTokens.typography.b14Med(),
+                        color = AppTokens.colors.text.tertiary,
+                        textAlign = TextAlign.End
+                    )
+                }
+            }
+
+            is ExerciseExampleComponentsState.BodyOnly -> {
+
+            }
+
+            is ExerciseExampleComponentsState.External -> {
+                Column(modifier = Modifier.weight(1f)) {
+                    InputVolume(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(volumeRequester),
+                        value = state.value.externalWeight,
+                        placeholder = AppTokens.strings.res(Res.string.external_weight_placeholder),
+                        onValueChange = contract::onExternalWeightChange,
+                    )
+                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
+
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = state.value.externalWeight.hint(),
+                        style = AppTokens.typography.b14Med(),
+                        color = AppTokens.colors.text.tertiary,
+                        textAlign = TextAlign.End
+                    )
+                }
+            }
         }
 
         Column(modifier = Modifier.weight(1f)) {

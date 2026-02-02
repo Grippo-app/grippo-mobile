@@ -17,6 +17,7 @@ kotlin {
         implementation(projects.designSystem.resources.provider)
         implementation(projects.designSystem.components)
         implementation(projects.designSystem.preview)
+        implementation(projects.dataFeatures.featureApi)
 
         implementation(compose.foundation)
         implementation(compose.material3)

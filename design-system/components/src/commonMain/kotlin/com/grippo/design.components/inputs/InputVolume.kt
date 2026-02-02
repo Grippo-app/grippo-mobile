@@ -28,6 +28,7 @@ import com.grippo.design.resources.provider.volume_placeholder
 public fun InputVolume(
     modifier: Modifier = Modifier,
     value: VolumeFormatState,
+    placeholder: String,
     onValueChange: (String) -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
@@ -73,11 +74,13 @@ private fun InputVolumePreview() {
     PreviewContainer {
         InputVolume(
             value = VolumeFormatState.of("12"),
+            placeholder = AppTokens.strings.res(Res.string.volume_placeholder),
             onValueChange = {}
         )
 
         InputVolume(
             value = VolumeFormatState.of("1234"),
+            placeholder = AppTokens.strings.res(Res.string.volume_placeholder),
             onValueChange = {}
         )
     }
