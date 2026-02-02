@@ -1,10 +1,8 @@
 package com.grippo.design.components.inputs
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -23,12 +21,12 @@ import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.cm
 import com.grippo.design.resources.provider.height_placeholder
-import com.grippo.design.resources.provider.icons.Height
 
 @Composable
 public fun InputHeight(
     modifier: Modifier = Modifier,
     value: String,
+    placeholder: String = AppTokens.strings.res(Res.string.height_placeholder),
     onClick: () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
@@ -41,14 +39,6 @@ public fun InputHeight(
         inputStyle = InputStyle.Clickable(
             onClick = onClick
         ),
-        leading = { color ->
-            Icon(
-                modifier = Modifier.size(AppTokens.dp.input.icon),
-                imageVector = AppTokens.icons.Height,
-                tint = color,
-                contentDescription = null
-            )
-        },
         trailing = { color ->
             Text(
                 modifier = Modifier.padding(end = 8.dp),
@@ -58,7 +48,7 @@ public fun InputHeight(
             )
         },
         placeholder = PlaceHolder.OverInput(
-            value = AppTokens.strings.res(Res.string.height_placeholder)
+            value = placeholder
         ),
         keyboardActions = KeyboardActions {
             focusManager.moveFocus(FocusDirection.Next)

@@ -36,6 +36,7 @@ import com.grippo.design.resources.provider.icons.Mail
 public fun InputEmail(
     modifier: Modifier = Modifier,
     value: String,
+    placeholder: String = AppTokens.strings.res(Res.string.email_placeholder),
     onValueChange: (String) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
@@ -82,7 +83,7 @@ public fun InputEmail(
             }
         },
         placeholder = PlaceHolder.OverInput(
-            value = AppTokens.strings.res(Res.string.email_placeholder)
+            value = placeholder
         ),
         keyboardActions = KeyboardActions {
             focusManager.moveFocus(FocusDirection.Next)

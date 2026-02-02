@@ -28,7 +28,7 @@ import com.grippo.design.resources.provider.volume_placeholder
 public fun InputVolume(
     modifier: Modifier = Modifier,
     value: VolumeFormatState,
-    placeholder: String,
+    placeholder: String = AppTokens.strings.res(Res.string.volume_placeholder),
     onValueChange: (String) -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
@@ -55,7 +55,7 @@ public fun InputVolume(
             )
         },
         placeholder = PlaceHolder.OverInput(
-            value = AppTokens.strings.res(Res.string.volume_placeholder)
+            value = placeholder
         ),
         keyboardActions = KeyboardActions {
             focusManager.moveFocus(FocusDirection.Next)

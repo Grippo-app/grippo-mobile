@@ -46,11 +46,11 @@ internal class ExerciseViewModel(
     override fun onAddIteration() {
         val value = IterationState(
             id = Uuid.random().toString(),
-            externalWeight = VolumeFormatState.of(""),
-            extraWeight = VolumeFormatState.of(""),
-            assistWeight = VolumeFormatState.of(""),
-            bodyWeight = VolumeFormatState.of(""),
-            repetitions = RepetitionsFormatState.of(""),
+            externalWeight = VolumeFormatState.Empty(),
+            extraWeight = VolumeFormatState.Empty(),
+            assistWeight = VolumeFormatState.Empty(),
+            bodyWeight = VolumeFormatState.Empty(),
+            repetitions = RepetitionsFormatState.Empty(),
         )
 
         val number = state.value.exercise.iterations.count() + 1

@@ -42,11 +42,13 @@ import com.grippo.design.components.chip.ChipStype
 import com.grippo.design.components.chip.ChipTrailing
 import com.grippo.design.components.inputs.InputRepetitions
 import com.grippo.design.components.inputs.InputVolume
+import com.grippo.design.components.inputs.InputWeight
 import com.grippo.design.core.AppTokens
 import com.grippo.design.preview.AppPreview
 import com.grippo.design.preview.PreviewContainer
 import com.grippo.design.resources.provider.Res
 import com.grippo.design.resources.provider.assist_weight_placeholder
+import com.grippo.design.resources.provider.body_weight_placeholder
 import com.grippo.design.resources.provider.external_weight_placeholder
 import com.grippo.design.resources.provider.extra_weight_placeholder
 import com.grippo.design.resources.provider.set_value
@@ -63,7 +65,7 @@ internal fun IterationPickerScreen(
     contract: IterationPickerContract
 ) = BaseComposeScreen(ScreenBackground.Color(AppTokens.colors.background.dialog)) {
 
-    val volumeRequester = remember { FocusRequester() }
+    val weightRequester = remember { FocusRequester() }
     val repetitionsRequester = remember { FocusRequester() }
 
     LaunchedEffect(state.focus) {
@@ -74,7 +76,7 @@ internal fun IterationPickerScreen(
 
         when (state.focus) {
             IterationFocusState.VOLUME -> {
-                volumeRequester.requestFocus()
+                weightRequester.requestFocus()
             }
 
             IterationFocusState.REPETITIONS -> {
@@ -97,36 +99,6 @@ internal fun IterationPickerScreen(
         textAlign = TextAlign.Center
     )
 
-    state.example.hint()?.let { hint ->
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-        Text(
-            modifier = Modifier
-                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                .fillMaxWidth(),
-            text = hint,
-            style = AppTokens.typography.b14Med(),
-            color = AppTokens.colors.text.secondary,
-            textAlign = TextAlign.Center
-        )
-    }
-
-    if (state.example.equipments.isNotEmpty()) {
-        Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.subContent))
-
-        val equipmentsText = state.example.equipments.map { it.type.title().text() }
-
-        Text(
-            modifier = Modifier
-                .padding(horizontal = AppTokens.dp.dialog.horizontalPadding)
-                .fillMaxWidth(),
-            text = equipmentsText.joinToString(" • "),
-            style = AppTokens.typography.b12Med(),
-            color = AppTokens.colors.text.tertiary,
-            textAlign = TextAlign.Center
-        )
-    }
-
     Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
 
     when (val components = state.example.components) {
@@ -138,21 +110,29 @@ internal fun IterationPickerScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
             ) {
-                Text(
+                InputWeight(
                     modifier = Modifier.weight(1f),
-                    text = state.userWeight?.display ?: "-",
-                    style = AppTokens.typography.b14Med(),
-                    color = AppTokens.colors.text.tertiary,
-                    textAlign = TextAlign.End
+                    onClick = contract::onWeightPickerClick,
+                    placeholder = AppTokens.strings.res(Res.string.body_weight_placeholder),
+                    value = state.userWeight.display
                 )
 
-                Text(
+                Row(
                     modifier = Modifier.weight(1f),
-                    text = components.bodyMultiplier.toString(),
-                    style = AppTokens.typography.b14Med(),
-                    color = AppTokens.colors.text.tertiary,
-                    textAlign = TextAlign.End
-                )
+                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
+                ) {
+                    Text(
+                        text = "X",
+                        style = AppTokens.typography.b14Med(),
+                        color = AppTokens.colors.text.tertiary,
+                    )
+
+                    Text(
+                        text = "${components.bodyMultiplier}",
+                        style = AppTokens.typography.b14Med(),
+                        color = AppTokens.colors.text.primary,
+                    )
+                }
             }
         }
 
@@ -164,21 +144,29 @@ internal fun IterationPickerScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
             ) {
-                Text(
+                InputWeight(
                     modifier = Modifier.weight(1f),
-                    text = state.userWeight?.display ?: "-",
-                    style = AppTokens.typography.b14Med(),
-                    color = AppTokens.colors.text.tertiary,
-                    textAlign = TextAlign.End
+                    onClick = contract::onWeightPickerClick,
+                    placeholder = AppTokens.strings.res(Res.string.body_weight_placeholder),
+                    value = state.userWeight.display
                 )
 
-                Text(
+                Row(
                     modifier = Modifier.weight(1f),
-                    text = components.bodyMultiplier.toString(),
-                    style = AppTokens.typography.b14Med(),
-                    color = AppTokens.colors.text.tertiary,
-                    textAlign = TextAlign.End
-                )
+                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
+                ) {
+                    Text(
+                        text = "X",
+                        style = AppTokens.typography.b14Med(),
+                        color = AppTokens.colors.text.tertiary,
+                    )
+
+                    Text(
+                        text = "${components.bodyMultiplier}",
+                        style = AppTokens.typography.b14Med(),
+                        color = AppTokens.colors.text.primary,
+                    )
+                }
             }
         }
 
@@ -190,21 +178,29 @@ internal fun IterationPickerScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.content)
             ) {
-                Text(
+                InputWeight(
                     modifier = Modifier.weight(1f),
-                    text = state.userWeight?.display ?: "-",
-                    style = AppTokens.typography.b14Med(),
-                    color = AppTokens.colors.text.tertiary,
-                    textAlign = TextAlign.End
+                    onClick = contract::onWeightPickerClick,
+                    placeholder = AppTokens.strings.res(Res.string.body_weight_placeholder),
+                    value = state.userWeight.display
                 )
 
-                Text(
+                Row(
                     modifier = Modifier.weight(1f),
-                    text = components.multiplier.toString(),
-                    style = AppTokens.typography.b14Med(),
-                    color = AppTokens.colors.text.tertiary,
-                    textAlign = TextAlign.End
-                )
+                    horizontalArrangement = Arrangement.spacedBy(AppTokens.dp.contentPadding.text)
+                ) {
+                    Text(
+                        text = "X",
+                        style = AppTokens.typography.b14Med(),
+                        color = AppTokens.colors.text.tertiary,
+                    )
+
+                    Text(
+                        text = "${components.multiplier}",
+                        style = AppTokens.typography.b14Med(),
+                        color = AppTokens.colors.text.primary,
+                    )
+                }
             }
         }
 
@@ -229,11 +225,12 @@ internal fun IterationPickerScreen(
                     InputVolume(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .focusRequester(volumeRequester),
+                            .focusRequester(weightRequester),
                         value = state.value.assistWeight,
                         placeholder = AppTokens.strings.res(Res.string.assist_weight_placeholder),
                         onValueChange = contract::onAssistWeightChange,
                     )
+
                     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
 
                     Text(
@@ -251,11 +248,35 @@ internal fun IterationPickerScreen(
                     InputVolume(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .focusRequester(volumeRequester),
+                            .focusRequester(weightRequester),
                         value = state.value.extraWeight,
                         placeholder = AppTokens.strings.res(Res.string.extra_weight_placeholder),
                         onValueChange = contract::onExtraWeightChange,
                     )
+
+                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
+
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = state.value.externalWeight.hint(),
+                        style = AppTokens.typography.b14Med(),
+                        color = AppTokens.colors.text.tertiary,
+                        textAlign = TextAlign.End
+                    )
+                }
+            }
+
+            is ExerciseExampleComponentsState.External -> {
+                Column(modifier = Modifier.weight(1f)) {
+                    InputVolume(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(weightRequester),
+                        value = state.value.externalWeight,
+                        placeholder = AppTokens.strings.res(Res.string.external_weight_placeholder),
+                        onValueChange = contract::onExternalWeightChange,
+                    )
+
                     Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
 
                     Text(
@@ -270,28 +291,6 @@ internal fun IterationPickerScreen(
 
             is ExerciseExampleComponentsState.BodyOnly -> {
 
-            }
-
-            is ExerciseExampleComponentsState.External -> {
-                Column(modifier = Modifier.weight(1f)) {
-                    InputVolume(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(volumeRequester),
-                        value = state.value.externalWeight,
-                        placeholder = AppTokens.strings.res(Res.string.external_weight_placeholder),
-                        onValueChange = contract::onExternalWeightChange,
-                    )
-                    Spacer(modifier = Modifier.size(AppTokens.dp.contentPadding.text))
-
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = state.value.externalWeight.hint(),
-                        style = AppTokens.typography.b14Med(),
-                        color = AppTokens.colors.text.tertiary,
-                        textAlign = TextAlign.End
-                    )
-                }
             }
         }
 
@@ -350,15 +349,39 @@ internal fun IterationPickerScreen(
 
     Spacer(Modifier.size(AppTokens.dp.contentPadding.block))
 
-    val buttonState = remember(loaders, state.value.repetitions, state.value.externalWeight) {
-        when {
-            state.value.repetitions is RepetitionsFormatState.Invalid -> ButtonState.Disabled
-            state.value.repetitions is RepetitionsFormatState.Empty -> ButtonState.Disabled
-            state.value.externalWeight is VolumeFormatState.Invalid -> ButtonState.Disabled
-            state.value.externalWeight is VolumeFormatState.Empty -> ButtonState.Disabled
-            else -> ButtonState.Enabled
+    val buttonState =
+        remember(loaders, state.value.repetitions, state.value, state.example.components) {
+            if (state.value.repetitions is RepetitionsFormatState.Invalid) return@remember ButtonState.Disabled
+            if (state.value.repetitions is RepetitionsFormatState.Empty) return@remember ButtonState.Disabled
+
+            when (state.example.components) {
+                is ExerciseExampleComponentsState.BodyAndAssist -> when {
+                    state.value.bodyWeight is VolumeFormatState.Invalid -> ButtonState.Disabled
+                    state.value.bodyWeight is VolumeFormatState.Empty -> ButtonState.Disabled
+                    state.value.assistWeight is VolumeFormatState.Invalid -> ButtonState.Disabled
+                    else -> ButtonState.Enabled
+                }
+
+                is ExerciseExampleComponentsState.BodyAndExtra -> when {
+                    state.value.bodyWeight is VolumeFormatState.Invalid -> ButtonState.Disabled
+                    state.value.bodyWeight is VolumeFormatState.Empty -> ButtonState.Disabled
+                    state.value.extraWeight is VolumeFormatState.Invalid -> ButtonState.Disabled
+                    else -> ButtonState.Enabled
+                }
+
+                is ExerciseExampleComponentsState.BodyOnly -> when (state.value.bodyWeight) {
+                    is VolumeFormatState.Invalid -> ButtonState.Disabled
+                    is VolumeFormatState.Empty -> ButtonState.Disabled
+                    else -> ButtonState.Enabled
+                }
+
+                is ExerciseExampleComponentsState.External -> when (state.value.externalWeight) {
+                    is VolumeFormatState.Invalid -> ButtonState.Disabled
+                    is VolumeFormatState.Empty -> ButtonState.Disabled
+                    else -> ButtonState.Enabled
+                }
+            }
         }
-    }
 
     Button(
         modifier = Modifier

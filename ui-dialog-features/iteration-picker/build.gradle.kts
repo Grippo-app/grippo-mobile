@@ -18,6 +18,7 @@ kotlin {
         implementation(projects.designSystem.components)
         implementation(projects.designSystem.preview)
         implementation(projects.dataFeatures.featureApi)
+        implementation(projects.uiDialogFeatures.dialogApi)
 
         implementation(compose.foundation)
         implementation(compose.material3)

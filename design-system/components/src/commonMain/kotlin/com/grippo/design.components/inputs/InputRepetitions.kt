@@ -28,6 +28,7 @@ import com.grippo.design.resources.provider.reps
 public fun InputRepetitions(
     modifier: Modifier = Modifier,
     value: RepetitionsFormatState,
+    placeholder: String = AppTokens.strings.res(Res.string.repetitions_placeholder),
     onValueChange: (String) -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
@@ -54,7 +55,7 @@ public fun InputRepetitions(
             )
         },
         placeholder = PlaceHolder.OverInput(
-            value = AppTokens.strings.res(Res.string.repetitions_placeholder)
+            value = placeholder
         ),
         keyboardActions = KeyboardActions {
             focusManager.moveFocus(FocusDirection.Next)

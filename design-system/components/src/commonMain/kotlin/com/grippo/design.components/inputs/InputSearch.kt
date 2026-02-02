@@ -35,6 +35,7 @@ import com.grippo.design.resources.provider.search_placeholder
 public fun InputSearch(
     modifier: Modifier = Modifier,
     value: String,
+    placeholder: String = AppTokens.strings.res(Res.string.search_placeholder),
     onValueChange: (String) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
@@ -81,7 +82,7 @@ public fun InputSearch(
             }
         },
         placeholder = PlaceHolder.OverInput(
-            value = AppTokens.strings.res(Res.string.search_placeholder)
+            value = placeholder
         ),
         keyboardActions = KeyboardActions {
             focusManager.clearFocus(force = true)

@@ -35,6 +35,7 @@ import com.grippo.design.resources.provider.name_placeholder
 public fun InputName(
     modifier: Modifier = Modifier,
     value: String,
+    placeholder: String = AppTokens.strings.res(Res.string.name_placeholder),
     onValueChange: (String) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
@@ -81,7 +82,7 @@ public fun InputName(
             }
         },
         placeholder = PlaceHolder.OverInput(
-            value = AppTokens.strings.res(Res.string.name_placeholder)
+            value = placeholder
         ),
         keyboardActions = KeyboardActions {
             focusManager.clearFocus(force = true)

@@ -36,6 +36,7 @@ internal class CompletedViewModel(
 
         safeLaunch(loader = CompletedLoader.ProfileCreation) {
             val mappedExperience = experience?.toDomain() ?: return@safeLaunch
+
             val profile = CreateUserProfile(
                 name = name,
                 weight = weight,

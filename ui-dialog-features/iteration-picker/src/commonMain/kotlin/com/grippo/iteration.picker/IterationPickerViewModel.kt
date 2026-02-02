@@ -1,14 +1,17 @@
 package com.grippo.iteration.picker
 
 import com.grippo.core.foundation.BaseViewModel
+import com.grippo.core.state.examples.ExerciseExampleComponentsState
 import com.grippo.core.state.examples.ExerciseExampleState
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import com.grippo.core.state.formatters.WeightFormatState
 import com.grippo.core.state.trainings.IterationFocusState
 import com.grippo.core.state.trainings.IterationState
-import com.grippo.data.features.api.user.UserFeature
-import com.grippo.data.features.api.user.models.User
+import com.grippo.data.features.api.weight.history.WeightHistoryFeature
+import com.grippo.data.features.api.weight.history.models.WeightHistory
+import com.grippo.dialog.api.DialogConfig
+import com.grippo.dialog.api.DialogController
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.onEach
 
@@ -18,7 +21,8 @@ public class IterationPickerViewModel(
     suggestions: List<IterationState>,
     number: Int,
     focus: IterationFocusState,
-    userFeature: UserFeature
+    private val weightHistoryFeature: WeightHistoryFeature,
+    private val dialogController: DialogController
 ) : BaseViewModel<IterationPickerState, IterationPickerDirection, IterationPickerLoader>(
     IterationPickerState(
         value = initial,
@@ -30,14 +34,36 @@ public class IterationPickerViewModel(
 ), IterationPickerContract {
 
     init {
-        userFeature.observeUser()
-            .onEach(::provideUser)
+        weightHistoryFeature.observeLastWeight()
+            .onEach(::provideWeight)
             .safeLaunch()
     }
 
-    private fun provideUser(user: User?) {
-        val weight = user?.weight ?: return
+    override fun onWeightPickerClick() {
+        val dialog = DialogConfig.WeightPicker(
+            initial = state.value.userWeight,
+            onResult = { value ->
+                val weight = value.value ?: return@WeightPicker
+                safeLaunch { weightHistoryFeature.updateWeight(weight).getOrThrow() }
+            }
+        )
+        dialogController.show(dialog)
+    }
+
+    private fun provideWeight(value: WeightHistory?) {
+        val weight = value?.weight ?: return
+
         update { it.copy(userWeight = WeightFormatState.of(weight)) }
+
+        val multiplier: Double = when (val c = state.value.example.components) {
+            is ExerciseExampleComponentsState.BodyAndAssist -> c.bodyMultiplier
+            is ExerciseExampleComponentsState.BodyAndExtra -> c.bodyMultiplier
+            is ExerciseExampleComponentsState.BodyOnly -> c.multiplier
+            is ExerciseExampleComponentsState.External -> return
+        }
+        val volume = VolumeFormatState.of(weight * multiplier.toFloat())
+
+        update { s -> s.copy(value = s.value.copy(bodyWeight = volume)) }
     }
 
     override fun onExternalWeightChange(value: String) {

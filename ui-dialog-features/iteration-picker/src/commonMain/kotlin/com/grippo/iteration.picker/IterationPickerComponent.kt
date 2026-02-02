@@ -28,7 +28,8 @@ public class IterationPickerComponent(
             number = number,
             suggestions = suggestions,
             focus = focus,
-            userFeature = getKoin().get()
+            dialogController = getKoin().get(),
+            weightHistoryFeature = getKoin().get()
         )
     }
 

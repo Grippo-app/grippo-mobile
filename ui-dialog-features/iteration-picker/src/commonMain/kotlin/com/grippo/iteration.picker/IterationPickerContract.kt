@@ -5,6 +5,7 @@ import androidx.compose.runtime.Immutable
 @Immutable
 internal interface IterationPickerContract {
     fun onExternalWeightChange(value: String)
+    fun onWeightPickerClick()
     fun onExtraWeightChange(value: String)
     fun onAssistWeightChange(value: String)
     fun onRepetitionsChange(value: String)
@@ -15,6 +16,7 @@ internal interface IterationPickerContract {
     @Immutable
     companion object Empty : IterationPickerContract {
         override fun onExternalWeightChange(value: String) {}
+        override fun onWeightPickerClick() {}
         override fun onExtraWeightChange(value: String) {}
         override fun onAssistWeightChange(value: String) {}
         override fun onRepetitionsChange(value: String) {}

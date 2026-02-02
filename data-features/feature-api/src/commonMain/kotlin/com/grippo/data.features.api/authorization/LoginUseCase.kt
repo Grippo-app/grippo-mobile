@@ -4,13 +4,15 @@ import com.grippo.data.features.api.excluded.equipments.ExcludedEquipmentsFeatur
 import com.grippo.data.features.api.excluded.muscles.ExcludedMusclesFeature
 import com.grippo.data.features.api.exercise.example.ExerciseExampleFeature
 import com.grippo.data.features.api.user.UserFeature
+import com.grippo.data.features.api.weight.history.WeightHistoryFeature
 
 public class LoginUseCase(
     private val authorizationFeature: AuthorizationFeature,
     private val userFeature: UserFeature,
     private val excludedMusclesFeature: ExcludedMusclesFeature,
     private val excludedEquipmentsFeature: ExcludedEquipmentsFeature,
-    private val exerciseExampleFeature: ExerciseExampleFeature
+    private val exerciseExampleFeature: ExerciseExampleFeature,
+    private val weightHistoryFeature: WeightHistoryFeature
 ) {
     public suspend fun executeEmail(email: String, password: String): Boolean {
         authorizationFeature.login(email, password).getOrThrow()
@@ -21,6 +23,7 @@ public class LoginUseCase(
             excludedMusclesFeature.getExcludedMuscles().getOrThrow()
             excludedEquipmentsFeature.getExcludedEquipments().getOrThrow()
             exerciseExampleFeature.getExerciseExamples().getOrThrow()
+            weightHistoryFeature.getWeightHistory().getOrThrow()
         }
 
         return hasProfile

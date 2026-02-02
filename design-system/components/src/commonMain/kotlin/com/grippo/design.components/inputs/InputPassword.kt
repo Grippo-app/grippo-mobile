@@ -42,13 +42,12 @@ import com.grippo.design.resources.provider.password_placeholder_default
 public fun InputPassword(
     modifier: Modifier = Modifier,
     value: String,
+    placeholder: String = AppTokens.strings.res(Res.string.password_placeholder_default),
     onValueChange: (String) -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
 
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
-
-    val placeholder = AppTokens.strings.res(Res.string.password_placeholder_default)
 
     Input(
         modifier = modifier,
@@ -124,7 +123,9 @@ public fun InputPassword(
             onValueChange = onValueChange,
         ),
         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-        placeholder = PlaceHolder.OverInput(value = placeholder),
+        placeholder = PlaceHolder.OverInput(
+            value = placeholder
+        ),
     )
 }
 
