@@ -57,7 +57,7 @@ internal fun IterationCardEditable(
                 .padding(horizontal = AppTokens.dp.iterationCard.editable.horizontalPadding)
                 .height(AppTokens.dp.iterationCard.editable.height)
                 .wrapContentHeight(),
-            text = value.externalWeight.short(),
+            text = value.volume().short(),
             textAlign = TextAlign.Center,
             style = AppTokens.typography.b14Bold(),
             color = AppTokens.colors.text.primary

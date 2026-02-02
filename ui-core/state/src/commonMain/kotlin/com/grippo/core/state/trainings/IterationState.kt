@@ -1,6 +1,8 @@
 package com.grippo.core.state.trainings
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
 import com.grippo.core.state.formatters.RepetitionsFormatState
 import com.grippo.core.state.formatters.VolumeFormatState
 import kotlinx.serialization.Serializable
@@ -16,7 +18,19 @@ public data class IterationState(
     val assistWeight: VolumeFormatState,
     val bodyWeight: VolumeFormatState,
     val repetitions: RepetitionsFormatState,
-)
+) {
+    @Composable
+    public fun volume(): VolumeFormatState {
+        return remember(externalWeight, extraWeight, bodyWeight, assistWeight) {
+            val external = (externalWeight.value ?: 0f)
+            val extra = (extraWeight.value ?: 0f)
+            val body = (bodyWeight.value ?: 0f)
+            val assist = (assistWeight.value ?: 0f)
+            VolumeFormatState.of(external + extra + body - assist)
+        }
+    }
+
+}
 
 public fun stubIteration(): IterationState = listOf(
     IterationState(
